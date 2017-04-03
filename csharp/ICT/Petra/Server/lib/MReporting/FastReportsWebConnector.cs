@@ -99,6 +99,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Load Report Data"));
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Initialise..."), 0);
+
             switch (AReportType)
             {
                 /* Partner Reports*/
@@ -121,6 +124,18 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 case "EndOfCommitmentReport":
                     ResultTbl = TPersonnelReportingWebConnector.EndOfCommitmentReport(AParameters, FDbAdapter);
+                    break;
+
+                case "JobAssignmentReport":
+                    ResultTbl = TPersonnelReportingWebConnector.JobAssignmentReport(AParameters, FDbAdapter);
+                    break;
+
+                case "StartOfCommitmentReport":
+                    ResultTbl = TPersonnelReportingWebConnector.StartOfCommitmentReport(AParameters, FDbAdapter);
+                    break;
+
+                case "UnitHierarchyReport":
+                    ResultTbl = TPersonnelReportingWebConnector.UnitHierarchyReport(AParameters, FDbAdapter);
                     break;
 
                 /* GL Reports */
@@ -245,6 +260,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 ResultTbl = null;
             }
 
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
             return ResultTbl;
         }
 
@@ -259,6 +276,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             DataSet ResultSet = null;
 
             FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Load Report Data"));
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Initialise..."), 0);
 
             switch (AReportType)
             {
@@ -282,13 +302,21 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultSet = TPersonnelReportingWebConnector.EmergencyDataReport(AParameters, FDbAdapter);
                     break;
 
+                case "PersonalDataReport":
+                    ResultSet = TPersonnelReportingWebConnector.PersonalDataReport(AParameters, FDbAdapter);
+                    break;
+
+                case "EmergencyContactReport":
+                    ResultSet = TPersonnelReportingWebConnector.EmergencyContactReport(AParameters, FDbAdapter);
+                    break;
+
                 /* Finance */
                 case "RecipientGiftStatement":
                     ResultSet = GetRecipientGiftStatementDataSet(AParameters, FDbAdapter);
                     break;
 
                 case "DonorGiftStatement":
-                    ResultSet = GetDonorGiftStatementDataSet(AParameters, FDbAdapter);
+                    ResultSet = GetDonorGiftStatementDataSet(AParameters, ref FDbAdapter);
                     break;
 
                 /* AP Reports */
@@ -340,6 +368,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             {
                 ResultSet = null;
             }
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return ResultSet;
         }
@@ -617,21 +647,25 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             TDBTransaction Transaction = null;
             DataTable tbl = null;
 
+            OdbcParameter[] parameters = new OdbcParameter[1];
+            parameters[0] = new OdbcParameter("ExtractName", OdbcType.VarChar);
+            parameters[0].Value = AParameters["param_extract_name"].ToString();
+
             ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
                     String Query =
-                        " (SELECT DISTINCT gift.p_donor_key_n FROM a_gift AS gift" +
+                        " SELECT DISTINCT gift.p_donor_key_n FROM a_gift AS gift" +
                         " LEFT JOIN m_extract AS extract ON gift.p_donor_key_n = extract.p_partner_key_n" +
                         " LEFT JOIN m_extract_master AS master ON extract.m_extract_id_i = master.m_extract_id_i" +
                         " LEFT JOIN a_gift_batch batch ON batch.a_batch_number_i = gift.a_batch_number_i" +
                         " AND batch.a_ledger_number_i = gift.a_ledger_number_i" +
-                        " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                        " WHERE master.m_extract_name_c = :ExtractName" +
                         " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
                         " AND batch.a_batch_status_c = 'Posted'" +
-                        " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
-                    tbl = ADbAdapter.RunQuery(Query, "Recipients", Transaction);
+                        " AND batch.a_ledger_number_i = " + LedgerNumber;
+                    tbl = ADbAdapter.RunQuery(Query, "Recipients", Transaction, AParametersArray : parameters);
                 });
             String Results = "";
 
@@ -655,7 +689,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        private static DataSet GetDonorGiftStatementDataSet(Dictionary <String, TVariant>AParameters, TReportingDbAdapter ADbAdapter)
+        private static DataSet GetDonorGiftStatementDataSet(Dictionary <String, TVariant>AParameters, ref TReportingDbAdapter ADbAdapter)
         {
             String reportType = AParameters["param_report_type"].ToString();
             String donorSelect = AParameters["param_donor"].ToString();
@@ -663,7 +697,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Donor Gift Statement"));
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Gathering information from the database"), 0);
+                Catalog.GetString("Gathering information from the database (Cancel button may seem unresponsive initially)"), 0);
 
             if (donorSelect == "One Donor")
             {
@@ -687,14 +721,52 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 return null;
             }
 
-            DataTable Recipients = new DataTable("Recipients");
+            // DWS bug 5883: doing this once for all donors (933ms in testing) turned out to be substantially quicker
+            // than calling it for each donor (533ms each).  Total runtime of this
+            // part of the report reduced from 31 minutes to 13 seconds (3500 donors).
+            // The behaviour should not be changed for other callers of GiftStatementRecipientTable(),
+            // because an empty DonorKeyList still results in donorKeyFilter="".
+            DataTable Recipients = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, donorKeyList);
+
+            // 5883 contd: Unfortunately the above can timeout, which it does silently (if it does timeout),
+            // so if this happens we revert to the previous code.
+            // This recreates the ADbAdapter, which was created by the caller, so that is why it needs passing in with "ref".
+            // Another solution could be to update ADbAdapter so that FCancelFlag can be set back to false; that would also
+            // remove the need to create a new connection.
+            DataTable tempTable;
+            bool retrieveRecipientsIndividually = false;
+
+            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+            {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Cancelling report generation"), 0);
+                return null;
+            }
+            else
+            {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Gathering information from the database"), 0);
+            }
+                
+
+            if (Recipients == null)
+            {
+                Recipients = new DataTable("Recipients");
+                retrieveRecipientsIndividually = true;
+
+                // If the query timed out then we can no longer use the current ADbAdapter since there is no way to
+                // set FCancelFlag back to false, so we close its connection and create a new adapter.  The time
+                // this will take is negligible compared to the time it will take to return all the data.
+                ADbAdapter.CloseConnection();
+                ADbAdapter = new TReportingDbAdapter(true);
+            }
+
             DataTable Totals = new DataTable("Totals");
 
             DataView View = new DataView(Donors);
             View.Sort = "DonorKey";
 
             DataTable DistinctDonors = new DataTable();
-            DataTable tempTable;
 
             if (View.Count > 0)
             {
@@ -771,12 +843,15 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                         DonorsRow["previousYearTotal"] = previousYearTotal;
                     }
 
-                    // Get recipient information for each donor
-                    tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey);
-
-                    if (tempTable != null)
+                    if (retrieveRecipientsIndividually)
                     {
-                        Recipients.Merge(tempTable);
+                        // Get recipient information for each donor
+                        tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey.ToString());
+
+                        if (tempTable != null)
+                        {
+                            Recipients.Merge(tempTable);
+                        }
                     }
 
                     if (ADbAdapter.IsCancelled)
@@ -790,6 +865,15 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             } // if (reportType == "Totals") else
 
+            // This check should be done immediately after the "if (reportType == "Totals") else" block because ALL 
+            // further processing is irrelevant if the user cancelled.
+            if (ADbAdapter.IsCancelled || TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+            {
+                return null;
+            }
+
+            // bug 5985: this needs to be before the next block so that the relevant DefaultView.Sort fields are present
+            // Adding "else" because if there are no columns then there can't be any rows, so sorting is a no-op
             if (Recipients.Columns.Count == 0)
             {
                 Recipients.Columns.Add("RecipientKey", typeof(Int32));
@@ -800,6 +884,30 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 Recipients.Columns.Add("thisYearTotal", typeof(Int32));
                 Recipients.Columns.Add("previousYearTotal", typeof(Int32));
             }
+
+            //
+            // If I previously failed to receive all the recipients in one query,
+            // I now need to sort them according to user's request:
+            else if (retrieveRecipientsIndividually)
+            {
+                string recipientOrder = AParameters["param_order_recipient"].ToString();
+
+                if (recipientOrder == "RecipientField")
+                {
+                    Recipients.DefaultView.Sort = "FieldName, RecipientKey";
+                }
+                else if (recipientOrder == "RecipientKey")
+                {
+                    Recipients.DefaultView.Sort = "RecipientKey";
+                }
+                else if (recipientOrder == "RecipientName")
+                {
+                    Recipients.DefaultView.Sort = "RecipientName";
+                }
+
+                Recipients = Recipients.DefaultView.ToTable("Recipients");
+            }
+
 
             if (Totals.Columns.Count == 0)
             {
@@ -832,7 +940,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
-            if (ADbAdapter.IsCancelled)
+            // Since the progress bar is still up it's still possible the user might have clicked Cancel since the last check
+            if (ADbAdapter.IsCancelled || TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
             {
                 return null;
             }

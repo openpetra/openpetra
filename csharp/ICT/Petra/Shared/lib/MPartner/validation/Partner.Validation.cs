@@ -629,19 +629,22 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 }
             }
 
-            // 'Date Cancelled' must not be before today
-            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
+            // Info: AlanP - we decided that there would be no validation on Date Cancelled because Petra did not have it and potentially
+            //  there appear to be arguments for not restricting the date cancelled.  We need more input from real users on this!
+            // See also UpdateExtractChangeSubscriptionDialog
+            //// 'Date Cancelled' must not be before today
+            //ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                         (ARow.DateCancelled, DateTime.Today,
-                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
-                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+            //if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            //{
+            //    VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate
+            //                             (ARow.DateCancelled, DateTime.Today,
+            //                             ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+            //                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
+            //    // Handle addition to/removal from TVerificationResultCollection
+            //    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            //}
 
             // 'First Sent' must not be later than 'Last Sent'
             ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];

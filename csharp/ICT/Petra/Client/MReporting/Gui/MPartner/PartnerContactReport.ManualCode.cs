@@ -220,6 +220,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
         private void grdAttribute_SetControls(TParameterList AParameters)
         {
+            // This is not very nice here but it is the place after the date range tab is initialized from settings file.
+            // We need to check if dates were set to "Today" because they were not initialized from settings file. In this case we want to reset them.
+            DateTime dtpDateFromDate = AParameters.Get("param_dtpDateFrom").ToDate();
+
+            if (((dtpDateFromDate <= DateTime.MinValue)
+                 || (dtpDateFromDate >= DateTime.MaxValue))
+                && (dtpDateFrom.Date == DateTime.Today))
+            {
+                dtpDateFrom.Text = "";
+            }
+
+            DateTime dtpDateToDate = AParameters.Get("param_dtpDateTo").ToDate();
+
+            if (((dtpDateToDate <= DateTime.MinValue)
+                 || (dtpDateToDate >= DateTime.MaxValue))
+                && (dtpDateTo.Date == DateTime.Today))
+            {
+                dtpDateTo.Text = "";
+            }
         }
 
         private void grdDetail_SetControls(TParameterList AParameters)

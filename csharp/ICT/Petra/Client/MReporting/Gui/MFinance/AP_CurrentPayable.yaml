@@ -20,7 +20,9 @@
         ModulePermissionRequired: [FINANCE-1]
     Controls:
         tpgReportSpecific:
-            Controls: [dtpReportDate]
+            Controls: [lblLedger, dtpReportDate]
         dtpReportDate:
             ParameterName: param_payment_date
+        lblLedger:
+            Label: Ledger
             

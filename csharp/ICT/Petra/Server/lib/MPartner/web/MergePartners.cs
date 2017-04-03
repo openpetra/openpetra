@@ -1122,11 +1122,20 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             PPartnerContactTable ContactTable = PPartnerContactAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
-            numChanges += ContactTable.Rows.Count;
 
             foreach (DataRow Row in ContactTable.Rows)
             {
-                ((PPartnerContactRow)Row).PartnerKey = AToPartnerKey;
+                if (!PPartnerContactAccess.Exists(AToPartnerKey, ((PPartnerContactRow)Row).ContactLogId, ATransaction))
+                {
+                    // only move this contact log to new partner if it does not already exist there
+                    ((PPartnerContactRow)Row).PartnerKey = AToPartnerKey;
+                    numChanges++;
+                }
+                else
+                {
+                    // if contact log exists in "to" partner then remove it from "from" partner
+                    Row.Delete();
+                }
             }
 
             PPartnerReminderAccess.SubmitChanges(ReminderTable, ATransaction);

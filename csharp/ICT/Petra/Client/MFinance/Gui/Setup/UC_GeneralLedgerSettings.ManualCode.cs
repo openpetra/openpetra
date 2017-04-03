@@ -74,10 +74,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FMainForm = AMainForm;
             FLedgerNumber = ALedgerNumber;
 
+            // In OM we do not allow a change to international currency.  It will always be USD.
+            cmbIntlCurrency.Enabled = false;
+
             if (!FMainForm.CurrencyChangeAllowed)
             {
                 cmbBaseCurrency.Enabled = false;
-                cmbIntlCurrency.Enabled = false;
             }
 
             if (!FMainForm.CalendarChangeAllowed)

@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
             }
 
-            if (FPreviouslySelectedDetailRow == null)
+            if (!ReverseWholeBatch && (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("Please select a Gift to Adjust/Reverse."));
                 ParentGiftBatchForm.Cursor = Cursors.Default;
@@ -123,11 +123,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
-
-            int workingLedgerNumber = FPreviouslySelectedDetailRow.LedgerNumber;
-            int workingBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-            int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
-            int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
             if (AdjustGift)
             {
@@ -143,22 +138,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ParentForm.ShowInTaskbar = false;
                 revertForm.LedgerNumber = FLedgerNumber;
-                revertForm.CurrencyCode = ((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
-                                               new object[] { workingLedgerNumber, workingBatchNumber })).CurrencyCode;
+                revertForm.CurrencyCode = giftBatch.CurrencyCode;
 
                 // put spaces inbetween words
                 revertForm.Text = Regex.Replace(AFunctionName.ToString(), "([a-z])([A-Z])", @"$1 $2");
 
                 revertForm.AddParam("Function", AFunctionName);
+                revertForm.AddParam("BatchNumber", giftBatch.BatchNumber);
 
-                revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
-                    new object[] { workingLedgerNumber, workingBatchNumber, workingTransactionNumber, workingDetailNumber });
+                if (AdjustGift)
+                {
+                    int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+                    int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
+                    revertForm.GiftDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
+                        new object[] { giftBatch.LedgerNumber, giftBatch.BatchNumber, workingTransactionNumber, workingDetailNumber });
+                }
+
+                if (ReverseWholeBatch)
+                {
+                    revertForm.GetGiftsForReverseAdjust(); // Added Feb '17 Tim Ingham - previously, reversing a whole batch didn't work.
+                }
 
                 if (!revertForm.IsDisposed && (revertForm.ShowDialog() == DialogResult.OK))
                 {
                     ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
 
-                    if ((revertForm.AdjustmentBatchNumber > 0) && (revertForm.AdjustmentBatchNumber != workingBatchNumber))
+                    if ((revertForm.AdjustmentBatchNumber > 0) && (revertForm.AdjustmentBatchNumber != giftBatch.BatchNumber))
                     {
                         // select the relevant batch
                         ParentGiftBatchForm.InitialBatchNumber = revertForm.AdjustmentBatchNumber;

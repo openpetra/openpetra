@@ -12,6 +12,6 @@
     <Parameter id="param_rgrStewardship" value="eString:Email" />
     <Parameter id="param_chkFees" value="eBoolean:true" />
     <Parameter id="param_rgrFees" value="eString:ByField" />
-    <Parameter id="param_fee_codes" value="eString:10 ADM,4% ADMIN,5 ADM,7.5 ADM,AFRICA,GIF,H/O ADM,H/O ALLO,ICT" />
+    <Parameter id="param_fee_codes" value="eString:" />
     <Parameter id="param_year_i" value="eInteger:0" />
 </Parameters>

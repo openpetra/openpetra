@@ -46,5 +46,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             // in csv export then enable this line
             // ACalc.AddParameter("csv_export_only_lowest_level", true);
         }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("EmergencyContactReport",
+                true,
+                new string[] { "Person", "EmergencyContacts" },
+                ACalc,
+                this,
+                true);
+        }
     }
 }

@@ -33,6 +33,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Common.Remoting.Server;
+//using Ict.Petra.Server.MPartner.Partner.WebConnectors;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -223,6 +225,46 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             return newDataTable;
+        }
+
+        /// <summary>
+        /// Adds The best address to a table of partners
+        /// </summary>
+        /// <param name="APartners"></param>
+        /// <param name="APartnerKeyColumn"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="APartnerDetails"></param>
+        /// <param name="ABuildAddressBlock"></param>
+        public static void AddBestAddressForPartner(ref DataTable APartners,
+            int APartnerKeyColumn,
+            TDBTransaction ATransaction,
+            Boolean APartnerDetails = false,
+            Boolean ABuildAddressBlock = false)
+        {
+            APartners = GetBestAddressForPartnersAsJoinedTable(APartners, APartnerKeyColumn, ATransaction, APartnerDetails);
+
+            if (ABuildAddressBlock)
+            {
+                DataTable TempTable = APartners.Copy();
+                TempTable.Columns.Add("Full_Address");
+
+                foreach (DataRow dr in TempTable.Rows)
+                {
+                    TFormDataPartner FormData = new TFormDataPartner();
+                    FormData.Address1 = dr["addr_p_locality_c"].ToString();
+                    FormData.Address3 = dr["addr_p_address_3_c"].ToString();
+                    FormData.AddressStreet2 = dr["addr_p_street_name_c"].ToString();
+                    FormData.City = dr["addr_p_city_c"].ToString();
+                    FormData.CountryCode = dr["addr_p_country_code_c"].ToString();
+                    FormData.PostalCode = dr["addr_p_postal_code_c"].ToString();
+
+                    dr["Full_Address"] =
+                        TFormLetterTools.BuildAddressBlock(FormData, "ONE_LINE",
+                            Shared.SharedTypes.PartnerClassStringToEnum(dr["p_partner_class_c"].ToString()), ATransaction);
+                }
+
+                APartners = TempTable.Copy();
+            }
         }
 
         /// <summary>

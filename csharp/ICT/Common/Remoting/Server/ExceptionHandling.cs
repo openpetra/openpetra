@@ -108,6 +108,7 @@ namespace Ict.Common.Remoting.Server
 
                     Environment.Exit(1);
                 });
+            HelperThread.Name = "Asynchronous_Server_Shutdown_Thread";
 
             HelperThread.Start();
             HelperThread.Join(); // wait until we have exited
@@ -135,6 +136,12 @@ namespace Ict.Common.Remoting.Server
                 {
                     DBConnectionBrokenCallback(ASource, AEventArgs.Exception);
                 }
+            }
+            else if (AEventArgs.Exception is OutOfMemoryException)
+            {
+                TLogging.Log(String.Format("FirstChanceException event raised because of an *out of memory condition* in {0}: {1}",
+                        AppDomain.CurrentDomain.FriendlyName, AEventArgs.Exception.Message));
+                TLogging.LogStackTrace(TLoggingType.ToLogfile);
             }
             else
             {

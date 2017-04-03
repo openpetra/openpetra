@@ -67,32 +67,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
             String RootCostCentre = "[" + FLedgerNumber + "]";
-            paramsDictionary.Add("param_cost_centre_code", new TVariant(RootCostCentre));
 
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("TrialBalance", paramsDictionary);
+            ACalc.AddParameter("param_cost_centre_code", new TVariant(RootCostCentre));
 
-            if (ReportTable == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "TrialBalance");
-
-            //
             // I need to get the name of the current ledger..
 
             ALedgerTable LedgerTbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
@@ -118,7 +96,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddParameter("param_period_closed", IsClosed);
 
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("TrialBalance", false, new string[] { "TrialBalance" }, ACalc, this, false);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

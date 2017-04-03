@@ -48,6 +48,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Collections.Generic;
+using System.Data;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -159,16 +160,28 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             LedgerInfo = new TLedgerInfo(intLedgerNumber);
             Assert.AreEqual(true, LedgerInfo.ProvisionalYearEndFlag, "Provisional YearEnd flag should be set");
 
-            //
-            // Reallocation is never called explicitly like this - it's not really appropriate
-            // because I'm about to call it again as part of YearEnd, below.
-            // But a tweak in the reallocation code means that it should now cope with being called twice.
 
             List <Int32>glBatches = new List <int>();
-            TReallocation reallocation = new TReallocation(LedgerInfo, glBatches);
-            reallocation.VerificationResultCollection = verificationResult;
-            reallocation.IsInInfoMode = false;
-            reallocation.RunOperation();
+            TDBTransaction transaction = null;
+            bool SubmissionOK = false;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+                IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    //
+                    // Reallocation is never called explicitly like this - it's not really appropriate
+                    // because I'm about to call it again as part of YearEnd, below.
+                    // But a tweak in the reallocation code means that it should now cope with being called twice.
+                    TReallocation reallocation = new TReallocation(LedgerInfo, glBatches, transaction);
+                    reallocation.VerificationResultCollection = verificationResult;
+                    reallocation.IsInInfoMode = false;
+                    reallocation.RunOperation();
+                    SubmissionOK = true;
+                });
 
             // check amounts after reallocation
             CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
@@ -260,7 +273,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
                 while (blnLoop)
                 {
-//                  System.Windows.Forms.MessageBox.Show(LedgerInfo.CurrentPeriod.ToString(), "MonthEnd Period");
+                    //                  System.Windows.Forms.MessageBox.Show(LedgerInfo.CurrentPeriod.ToString(), "MonthEnd Period");
 
                     if (LedgerInfo.ProvisionalYearEndFlag)
                     {
@@ -283,22 +296,34 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     }
                 }
 
-                TLogging.Log("Closing year number " + countYear.ToString());
-                List <Int32>glBatches = new List <int>();
-                TReallocation reallocation = new TReallocation(LedgerInfo, glBatches);
-                TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-                reallocation.VerificationResultCollection = verificationResult;
-                reallocation.IsInInfoMode = false;
-//                Assert.AreEqual(1, reallocation.GetJobSize(), "Check 1 reallocation job is required"); // No job size is published by Reallocation
-                reallocation.RunOperation();
+                TDBTransaction transaction = null;
+                bool SubmissionOK = false;
 
-                TYearEnd YearEndOperator = new TYearEnd(LedgerInfo);
-                TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, countYear, YearEndOperator);
-                glmNewYearInit.VerificationResultCollection = verificationResult;
-                glmNewYearInit.IsInInfoMode = false;
-//              Assert.Greater(glmNewYearInit.GetJobSize(), 0, "Check that NewYearInit has work to do"); // in this version, GetJobSize returns 0
-                glmNewYearInit.RunOperation();
-                YearEndOperator.SetNextPeriod();
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+                    IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                    ref SubmissionOK,
+                    delegate
+                    {
+                        TLogging.Log("Closing year number " + countYear.ToString());
+                        List <Int32>glBatches = new List <int>();
+                        TReallocation reallocation = new TReallocation(LedgerInfo, glBatches, transaction);
+                        TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+                        reallocation.VerificationResultCollection = verificationResult;
+                        reallocation.IsInInfoMode = false;
+                        //                Assert.AreEqual(1, reallocation.GetJobSize(), "Check 1 reallocation job is required"); // No job size is published by Reallocation
+                        reallocation.RunOperation();
+
+                        TYearEnd YearEndOperator = new TYearEnd(LedgerInfo);
+                        TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, countYear, YearEndOperator, transaction);
+                        glmNewYearInit.VerificationResultCollection = verificationResult;
+                        glmNewYearInit.IsInInfoMode = false;
+                        //              Assert.Greater(glmNewYearInit.GetJobSize(), 0, "Check that NewYearInit has work to do"); // in this version, GetJobSize returns 0
+                        glmNewYearInit.RunOperation();
+                        YearEndOperator.SetNextPeriod(transaction);
+                        SubmissionOK = true;
+                    });
             }
 
             Assert.AreEqual(2, LedgerInfo.CurrentFinancialYear, "After YearEnd, Ledger is in year 2");
@@ -307,7 +332,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(new DateTime(DateTime.Now.Year + 2,
                     1,
                     1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
-        }
+        } // Test_2YearEnds
 
         void CheckGLMEntry(int ALedgerNumber, int AYear, string AAccount,
             decimal cc1Base, decimal cc1Closing,
@@ -445,29 +470,41 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // create new ledger which is in year 2010
             int intLedgerNumber2010 = CommonNUnitFunctions.CreateNewLedger(new DateTime(2010, 1, 1));
 
-            // We are in 2010 and this and 2011 is not a leap year
-            TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-            TAccountPeriodToNewYear accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010);
+            TDBTransaction transaction = null;
+            bool SubmissionOK = false;
 
-            accountPeriodToNewYear.VerificationResultCollection = verificationResult;
-            accountPeriodToNewYear.IsInInfoMode = false;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+                IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    // We are in 2010 and this and 2011 is not a leap year
+                    TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+                    TAccountPeriodToNewYear accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010, transaction);
 
-            // RunEndOfPeriodOperation ...
-            accountPeriodToNewYear.RunOperation();
+                    accountPeriodToNewYear.VerificationResultCollection = verificationResult;
+                    accountPeriodToNewYear.IsInInfoMode = false;
 
-            TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
-            accountPeriodInfo.AccountingPeriodNumber = 2;
-            Assert.AreEqual(2011, accountPeriodInfo.PeriodStartDate.Year, "Test of the year");
-            Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
+                    // RunEndOfPeriodOperation ...
+                    accountPeriodToNewYear.RunOperation();
 
-            // Switch to 2012 - this is a leap year ...
-            accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010);
-            accountPeriodToNewYear.IsInInfoMode = false;
-            accountPeriodToNewYear.RunOperation();
+                    TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
+                    accountPeriodInfo.AccountingPeriodNumber = 2;
+                    Assert.AreEqual(2011, accountPeriodInfo.PeriodStartDate.Year, "Test of the year");
+                    Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
 
-            accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
-            accountPeriodInfo.AccountingPeriodNumber = 2;
-            Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
+                    // Switch to 2012 - this is a leap year ...
+                    accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010, transaction);
+                    accountPeriodToNewYear.IsInInfoMode = false;
+                    accountPeriodToNewYear.RunOperation();
+                    SubmissionOK = true;
+
+                    accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
+                    accountPeriodInfo.AccountingPeriodNumber = 2;
+                    Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
+                });
         }
 
         /// <summary>

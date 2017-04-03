@@ -318,7 +318,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             List <Int32>glBatchNumbers;
             Boolean stewardshipBatch;
 
-            Boolean revalueOk = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
+            Boolean revalueOk = TRevaluationWebConnector.Revaluate(FLedgerNumber,
+                new string[] { strAccountGift },
+                new string[] { "GBP" },
+                new decimal[] { 1.2m },
                 TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
                 out forexBatchNumber,
                 out verificationResult);
@@ -397,20 +400,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TPetraServerConnector.Connect();
             FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             FledgerInfo = new TLedgerInfo(FLedgerNumber);
-
-            // add costcentre 7300 for gift batch
-            ACostCentreTable CostCentres = new ACostCentreTable();
-            ACostCentreRow CCRow = CostCentres.NewRowTyped();
-            CCRow.LedgerNumber = FLedgerNumber;
-            CCRow.CostCentreCode = "7300";
-            CCRow.CostCentreName = "7300";
-            CCRow.CostCentreType = MFinanceConstants.FOREIGN_CC_TYPE;
-            CCRow.CostCentreToReportTo = MFinanceConstants.INTER_LEDGER_HEADING;
-            CCRow.PostingCostCentreFlag = true;
-            CCRow.CostCentreActiveFlag = true;
-            CostCentres.Rows.Add(CCRow);
-
-            ACostCentreAccess.SubmitChanges(CostCentres, null);
 
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }

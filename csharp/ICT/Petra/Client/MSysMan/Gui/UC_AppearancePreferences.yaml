@@ -32,7 +32,7 @@ RootNode:
                 Row2: [lblAlternate, btnAlternate]
                 Row3: [lblGridlines, btnGridlines]
                 Row4: [lblSelection, btnSelection]
-                Row5: [lblAlpha, nudAlpha]
+                #Row5: [lblAlpha, nudAlpha]
             Width: 220
             Height: 200
         pnlExample:
@@ -102,12 +102,12 @@ RootNode:
             Label: ...
             Width: 50
             Padding: -10,0,0,0
-        lblAlpha: {Label=Selected Row Transparency (0-255), Width=150, Height=30, Multiline: true}
-        nudAlpha:
-            Width: 50
-            Padding: -10,5,0,0
-            NoLabel: true
-            OnChange: OnNudAlpha
+        #lblAlpha: {Label=Selected Row Transparency (0-255), Width=150, Height=30, Multiline: true}
+        #nudAlpha:
+        #    Width: 50
+        #    Padding: -10,5,0,0
+        #    NoLabel: true
+        #    OnChange: OnNudAlpha
         btnRestore:
             ActionClick: OnBtnRestore
             Label: Restore to Default Colours

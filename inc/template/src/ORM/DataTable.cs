@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Odbc;
@@ -24,6 +25,9 @@ namespace {#NAMESPACE}
 [Serializable()]
 public class {#TABLENAME}Table : {#BASECLASSTABLE}
 {
+    private static String strCustomReportPermission = "{#CUSTOMREPORTPERMISSION}";
+    private static List<String> listCustomReportField = new List<String>{{#INITVARSCUSTOMREPORTFIELDLIST}};
+    
     /// TableId for Ict.Common.Data generic functions
     public {#NEW}static short TableId = {#TABLEID};
     {#COLUMNIDS}
@@ -145,10 +149,10 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     /// instance property to get the 'Label' of the table as it is used in the database (the 'Label' is usually a short description of what the db table is about)
     public override string TableDBLabel
     {
-		get
-		{
-			return {#TABLENAME}Table.GetTableDBLabel();
-		}
+        get
+        {
+            return {#TABLENAME}Table.GetTableDBLabel();
+        }
     }
     
     /// get an odbc parameter for the given column
@@ -157,6 +161,46 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
         return CreateOdbcParameter(TableId, AColumnNr);
     }
 
+    /// string to indicate which permissions a user needs to access table for custom reports
+    /// (e.g. "PTNRUSER", "OR(FINANCE-1,DEVUSER)", "AND(PTNRUSER,FINANCE-1)"
+    /// This should be returned by method in derived class
+    public static string {#TABLEINTDS}CustomReportPermission()
+    {
+        return strCustomReportPermission;
+    }
+
+    /// string to indicate which permissions a user needs to access table for custom reports
+    /// (e.g. "PTNRUSER", "OR(FINANCE-1,DEVUSER)", "AND(PTNRUSER,FINANCE-1)"
+    /// This should be returned by method in derived class
+    public override string GetCustomReportPermission()
+    {
+        return strCustomReportPermission;
+    }
+    
+    /// Is this table generally available in custom reports?
+    public static bool {#TABLEINTDS}AvailableForCustomReport()
+    {
+        return {#AVAILABLEFORCUSTOMREPORT};
+    }
+
+    /// Is this table generally available in custom reports?
+    public override bool IsAvailableForCustomReport()
+    {
+        return {#AVAILABLEFORCUSTOMREPORT};
+    }
+    
+    /// Return a list of fields that are available for custom reports
+    public static List<String> {#TABLEINTDS}CustomReportFieldList()
+    {
+        return listCustomReportField;
+    }
+
+    /// Return a list of fields that are available for custom reports
+    public override List<String> GetCustomReportFieldList()
+    {
+        return listCustomReportField;
+    }
+    
     {#STATICCOLUMNPROPERTIES}
 
 }
@@ -178,6 +222,12 @@ this.Columns.Add(new System.Data.DataColumn("{#COLUMNDBNAME}", typeof({#COLUMNDO
 {##INITVARSCOLUMN}
 this.Column{#COLUMNNAME} = this.Columns["{#COLUMNDBNAME}"];
 
+{##INITVARSCUSTOMREPORTFIELDLIST}
+{#LISTDELIMITER}"{#COLUMNDBNAME}"
+
+{##INITVARSCUSTOMREPORTFIELDLISTEMPTY}
+{#EMPTY}
+    
 {##STATICCOLUMNPROPERTIES}
 
 /// get the name of the field in the database for this column

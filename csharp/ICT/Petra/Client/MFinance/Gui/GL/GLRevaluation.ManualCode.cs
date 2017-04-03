@@ -266,6 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             string[] foreignAccounts = new string[intUsedEntries];
+            string[] foreignCurrencies = new string[intUsedEntries];
             decimal[] rates = new decimal[intUsedEntries];
             int j = 0;
 
@@ -274,6 +275,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (FcurrencyExchangeList[i].DoRevaluation)
                 {
                     foreignAccounts[j] = FcurrencyExchangeList[i].AccountCode;
+                    foreignCurrencies[j] = FcurrencyExchangeList[i].Currency;
                     rates[j] = FcurrencyExchangeList[i].mExchangeRate;
                     j++;
                 }
@@ -285,7 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Int32 forexBatchNumber;
             bool blnRevalutationState =
                 TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber,
-                    foreignAccounts, rates, ToCostCentre, out forexBatchNumber, out verificationResult);
+                    foreignAccounts, foreignCurrencies, rates, ToCostCentre, out forexBatchNumber, out verificationResult);
             this.Cursor = Cursors.Default;
 
             String Message = verificationResult.BuildVerificationResultString();

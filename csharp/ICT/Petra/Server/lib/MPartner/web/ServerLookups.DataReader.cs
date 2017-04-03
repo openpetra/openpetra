@@ -390,5 +390,29 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// Returns the Unit Key for the root node of the Unit Hierarchy
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static long GetUnitHierarchyRootUnitKey()
+        {
+            TDBTransaction Transaction = null;
+            DataTable dt = new DataTable();
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    String Query = "SELECT p_partner_key_n FROM p_unit WHERE u_unit_type_code_c = 'R'";
+                    dt = DBAccess.GDBAccessObj.SelectDT(Query, "UnitKey", Transaction);
+                });
+
+            long returnvalue = 0;
+            long.TryParse(dt.Rows[0][0].ToString(), out returnvalue);
+
+            return returnvalue;
+        }
     }
 }

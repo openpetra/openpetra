@@ -38,6 +38,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
@@ -610,7 +611,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if (Row["CurrencyCode"].Equals(MyCurrency))
                     {
-                        TotalSelected += (Decimal)(Row["TotalAmount"]);
+                        TotalSelected += (Decimal)(Row["OutstandingAmount"]);
                     }
                 }
             }
@@ -768,7 +769,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (rv.Row["Selected"].Equals(true))
                 {
-                    if (rv.Row["DocumentStatus"].ToString() == "OPEN")
+                    if (rv.Row["DocumentStatus"].ToString() == MFinanceConstants.AP_DOCUMENT_OPEN)
                     {
                         ApproveTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
                     }
@@ -816,37 +817,44 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// Delete all tagged rows
+        /// Cancel all tagged rows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void DeleteAllTagged(object sender, EventArgs e)
+        public void CancelAllTagged(object sender, EventArgs e)
         {
-            string MsgTitle = Catalog.GetString("Document Deletion");
+            string MsgTitle = Catalog.GetString("Cancel Documents");
 
-            // I can only delete invoices that are not posted already.
+            // I can only cancel invoices that are not posted already.
             // This method is only enabled when the grid shows items for Posting
-            List <int>DeleteTheseDocs = new List <int>();
+            List <int>CancelTheseDocs = new List <int>();
 
             foreach (DataRowView rv in grdInvoices.PagedDataTable.DefaultView)
             {
                 if (rv.Row["Selected"].Equals(true))
                 {
-                    if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + rv.Row["DocumentStatus"].ToString()) < 0)
+                    if ("|CANCELLED|POSTED|PARTPAID|PAID|".IndexOf("|" + rv.Row["DocumentStatus"].ToString()) < 0)
                     {
-                        DeleteTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
+                        CancelTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
+                    }
+                    else if (rv.Row["DocumentStatus"].ToString() == MFinanceConstants.AP_DOCUMENT_CANCELLED)
+                    {
+                        MessageBox.Show(Catalog.GetString("Cannot cancel a document that has already been cancelled."), MsgTitle);
+                        return;
                     }
                     else
                     {
-                        MessageBox.Show(Catalog.GetString("Cannot delete posted documents. Please reverse the document first."), MsgTitle);
+                        MessageBox.Show(Catalog.GetString(
+                                "Cannot cancel posted documents. Please reverse the document first if it has already been posted."), MsgTitle);
+                        return;
                     }
                 }
             }
 
-            if (DeleteTheseDocs.Count > 0)
+            if (CancelTheseDocs.Count > 0)
             {
                 string msg = String.Format(Catalog.GetString(
-                        "Are you sure that you want to delete the {0} tagged document(s)?"), DeleteTheseDocs.Count);
+                        "Are you sure that you want to cancel the {0} tagged document(s)?"), CancelTheseDocs.Count);
 
                 if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                         MessageBoxDefaultButton.Button2) == DialogResult.No)
@@ -855,16 +863,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 this.Cursor = Cursors.WaitCursor;
-                TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FMainForm.LedgerNumber, DeleteTheseDocs);
+                TRemote.MFinance.AP.WebConnectors.CancelAPDocuments(FMainForm.LedgerNumber, CancelTheseDocs, false);
                 this.Cursor = Cursors.Default;
                 FMainForm.IsInvoiceDataChanged = true;
 
                 LoadInvoices();
-                MessageBox.Show(Catalog.GetString("The tagged documents have been deleted successfully!"), MsgTitle);
+                MessageBox.Show(Catalog.GetString("The tagged documents have been cancelled successfully!"), MsgTitle);
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("There are no tagged invoices to be deleted."), MsgTitle);
+                MessageBox.Show(Catalog.GetString("There are no tagged invoices to be cancelled."), MsgTitle);
             }
         }
 
@@ -885,7 +893,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <int>PostTheseDocs = new List <int>();
             TempDS.AApDocument.DefaultView.Sort = AApDocumentDetailTable.GetApDocumentIdDBName();
 
-            string testString = "|POSTED|PARTPAID|PAID|";
+            string testString = "|CANCELLED|POSTED|PARTPAID|PAID|";
 
             if (FRequireApprovalBeforePosting)
             {
@@ -963,7 +971,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     taggedCount++;
 
-                    if ("POSTED" == rv.Row["DocumentStatus"].ToString())
+                    if (MFinanceConstants.AP_DOCUMENT_POSTED == rv.Row["DocumentStatus"].ToString())
                     {
                         ReverseTheseDocs.Add(Convert.ToInt32(rv.Row["ApDocumentId"]));
                     }
@@ -1123,14 +1131,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", canTag));
                 ActionEnabledEvent(null, new ActionEventArgs("actOpenSelectedInvoice", gotRows));
                 ActionEnabledEvent(null, new ActionEventArgs("actRunTagAction", canTag));
-                ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
+                ActionEnabledEvent(null, new ActionEventArgs("actCancelTagged", canPost || canApprove));
                 ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
 
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceOpenSelected", gotRows));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceOpenTagged", gotRows && canTag));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceApproveTagged", canApprove));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoicePostTagged", canPost));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceDeleteTagged", canPost));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceCancelTagged", canPost || canApprove));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoicePayTagged", canPay));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceReverseTagged", canPay));
 
@@ -1139,7 +1147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnTagAll.Visible = canTag;
                 btnUntagAll.Visible = canTag;
                 btnRunTagAction.Visible = canTag;
-                btnDeleteTagged.Visible = canTag;
+                btnCancelTagged.Visible = canTag;
                 btnReverseTagged.Visible = canTag;
 
                 if (canTag)

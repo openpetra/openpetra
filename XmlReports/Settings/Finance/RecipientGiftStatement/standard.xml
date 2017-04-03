@@ -48,5 +48,6 @@
   <Parameter id="param_recipientkey" value="eInteger:0" />
   <Parameter id="param_extract_name" value="eString:" />
   <Parameter id="param_gift_amount_column" value="eInteger:10" />
-  <Parameter id="param_order_by_name" value="eString:RecipientKey" />
+  <Parameter id="param_order_donor" value="eString:Date" />
+  <Parameter id="param_order_recipient" value="eString:RecipientName" />
 </Parameters>

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -52,6 +53,7 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -2235,7 +2237,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         if (IchNumber == 0)
                         {
-                            StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " + period;
+                            StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " +
+                                                 period +
+                                                 " AND a_ich_stewardship.a_year_i = " +
+                                                 Year;
                         }
                         else
                         {
@@ -2272,7 +2277,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         string Actual = "GLMP1." + ActualCurrency;
 
-                        // if period is not 1 then we need to subract the actual for the previous period from the actual for the current period
+                        //
+                        // if period is not 1 then we need to subract the actual for the previous period
+                        // from the actual for the current period
+
                         if (period > 1)
                         {
                             Actual = "(" + Actual + " - GLMP2." + ActualCurrency + ")";
@@ -2394,6 +2402,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  " AND GiftBatch2.a_ledger_number_i = GiftDetail2.a_ledger_number_i" +
                                  " AND GiftBatch2.a_batch_number_i = GiftDetail2.a_batch_number_i" +
                                  " AND GiftBatch2.a_batch_year_i = " + YearNumber + " AND GiftBatch2.a_batch_period_i = " + period +
+                                 " AND GiftBatch2.a_batch_status_c = 'Posted'" +
                                  ") AS GiftAmount";
                     }
                     else
@@ -2440,6 +2449,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Query += "WHERE " +
                              "a_gift_batch.a_ledger_number_i = " + LedgerNumber +
                              " AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period +
+                             " AND a_gift_batch.a_batch_status_c = 'Posted'" +
                              " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber +
                              " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i ";
 
@@ -3140,6 +3150,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable TotalGiftsThroughField(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Preparing"), 1);
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             DateTime startDate = AParameters["param_StartDate"].ToDate();
             string strStartDate = startDate.ToString("#yyyy-MM-dd#");
@@ -3243,6 +3254,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         }
                     }
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Getting Data"), 20);
                     tempTbl = DbAdapter.RunQuery(SqlQuery, "AllGifts", Transaction);
                 });
 
@@ -3259,6 +3271,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             resultTable.Columns.Add("MonthWorkerTaxDeduct", typeof(Decimal));
             resultTable.Columns.Add("MonthFieldTaxDeduct", typeof(Decimal));
             resultTable.Columns.Add("MonthTotalTaxDeduct", typeof(Decimal));
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Processing Data"), 40);
+            int steps = (int)60 / (endDate.Year - startDate.Year);
+            int CurrentState = 0;
 
             for (Int32 Year = endDate.Year; Year >= startDate.Year; Year--)
             {
@@ -3328,8 +3344,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     resultTable.Rows.Add(resultRow);
                 } // For Month
 
+                CurrentState++;
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Processing Data " + CurrentState + "/" + (int)(endDate.Year - startDate.Year)), 40 + CurrentState * steps);
             } // For Year
 
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Done"), 100);
+
+            resultTable.TableName = "MonthlyGifts";
             return resultTable;
         } // Total Gifts Through Field
 
@@ -3412,7 +3434,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " WHERE" +
                         " gift.p_donor_key_n =  PUB_m_extract.p_partner_key_n" +
                         " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                        " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                        " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" +
                         " AND";
                     break;
 
@@ -3589,7 +3611,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             if (fromExtract)
             {
-                String extractName = AParameters["param_extract_name"].ToString();
+                String extractName = AParameters["param_extract_name"].ToString().Replace("'", "''");
                 SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster " +
                              "WHERE " +
                              "recipient.p_partner_key_n = Extract.p_partner_key_n " +

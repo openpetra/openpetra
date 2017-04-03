@@ -51,7 +51,7 @@ RootNode:
             Name: Emergency Contact Type
             Parameter: 2.0
         Para10:
-            Name: Primary E-Mail
+            Name: Primary Email
             Parameter: 3.0
         Para11:
             Name: Fax

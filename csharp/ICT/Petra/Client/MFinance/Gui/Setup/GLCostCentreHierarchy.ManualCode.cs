@@ -103,12 +103,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 bool RemoteCanBeParent = false;
                 bool RemoteCanDelete = false;
 
-                if (TRemote.MFinance.Setup.WebConnectors.GetCostCentreAttributes(FLedgerNumber, CostCentreRow.CostCentreCode,
+                if (!TRemote.MFinance.Setup.WebConnectors.GetCostCentreAttributes(FLedgerNumber, CostCentreRow.CostCentreCode,
                         out RemoteCanBeParent, out RemoteCanDelete, out Msg))
                 {
-                    CanHaveChildren = RemoteCanBeParent;
-                    CanDelete = RemoteCanDelete;
+                    MessageBox.Show(Msg, Catalog.GetString("Get Cost Centre Attributes"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+
+                CanHaveChildren = RemoteCanBeParent;
+                CanDelete = RemoteCanDelete;
             }
         }
 
@@ -148,6 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>This is set to prevent infinite cascades</summary>
         public Int32 FIAmUpdating = 0;
+        private Boolean FIAmMoving = false;
 
         private String strOldDetailCostCentreCode; // this string is used to detect that the user has renamed an existing Cost Centre.
 
@@ -408,8 +411,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ALedgerRow LedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
             txtDetailProjectConstraintAmount.CurrencyCode = LedgerRow.BaseCurrency;
-
+            sptSplitter.SplitterMoved += OnSplitterMoved;
+            OnSplitterMoved(null, null);
             FInitialised = true;
+        }
+
+        private void OnSplitterMoved(object sender, SplitterEventArgs e)
+        {
+            if (FIAmMoving)
+            {
+                return;
+            }
+
+            Int32 maxSplitterPos = Width - 400;
+            Int32 splitterPos = sptSplitter.SplitterDistance;
+
+            if ((splitterPos > maxSplitterPos) || (splitterPos < 140))
+            {
+                FIAmMoving = true;
+                sptSplitter.SplitterDistance = Math.Max(Math.Min(splitterPos, maxSplitterPos), 140);
+                FIAmMoving = false;
+            }
         }
 
         void chkDetailProjectStatus_CheckedChanged(object sender, EventArgs e)

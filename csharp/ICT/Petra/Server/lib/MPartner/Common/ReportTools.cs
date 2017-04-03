@@ -37,6 +37,7 @@ using Ict.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MCommon;
 using System.Linq;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -114,6 +115,34 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             return query;
+        }
+
+        /// <summary>
+        /// Reuturns a DataTable called ContactInformation
+        /// </summary>
+        /// <param name="APartnerKeys"></param>
+        /// <param name="ADbAdapter"></param>
+        /// <param name="AIncludeMobile"></param>
+        /// <param name="AIncludeAlternateTelephone"></param>
+        /// <param name="AIncludeURL"></param>
+        /// <returns></returns>
+        public static DataTable GetPrimaryPhoneFax(List <string>APartnerKeys, TReportingDbAdapter ADbAdapter,
+            Boolean AIncludeMobile = false, Boolean AIncludeAlternateTelephone = false, Boolean AIncludeURL = false)
+        {
+            DataTable ReturnTable = new DataTable("ContactInformation");
+
+            ReturnTable.Columns.Add("PartnerKey");
+
+            foreach (string PartnerKey in APartnerKeys)
+            {
+                DataRow dr = ReturnTable.NewRow();
+                dr[0] = PartnerKey;
+                ReturnTable.Rows.Add(dr);
+            }
+
+            AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0, ADbAdapter, AIncludeMobile, AIncludeAlternateTelephone, AIncludeURL);
+
+            return ReturnTable;
         }
 
         /// <summary>
@@ -301,7 +330,7 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// Converts the field names from the database to a readable name
+        /// Converts the field names from the database to a readable name (DataTable)
         /// </summary>
         /// <param name="ADataTable"></param>
         public static void ConvertDbFieldNamesToReadable(DataTable ADataTable)
@@ -342,6 +371,18 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     ADataTable.Columns[i].ColumnName = NewColumnName;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Converts the field names from the database to a readable name (DataSet)
+        /// </summary>
+        /// <param name="ADataSet"></param>
+        public static void ConvertDbFieldNamesToReadable(DataSet ADataSet)
+        {
+            foreach (DataTable Table in ADataSet.Tables)
+            {
+                ConvertDbFieldNamesToReadable(Table);
             }
         }
 
@@ -478,13 +519,14 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ASortingColumnsAsText">Comma seperated list of Column Names.</param>
         /// <param name="AColumns">Column Collection of the DataTable to check if the given names are valid.</param>
         /// <param name="AMappingDictionaryWithoutBlanks">The Dictionary to use for the translation. Key is the old name, values is the new name. </param>
+        /// <param name="AReportName">Used for the Log.</param>
         /// <returns></returns>
         public static string ColumnMapping(string ASortingColumnsAsText,
             DataColumnCollection AColumns,
-            Dictionary <string, string>AMappingDictionaryWithoutBlanks)
+            Dictionary <string, string>AMappingDictionaryWithoutBlanks, string AReportName)
         {
             return ColumnNameMapping(ASortingColumnsAsText, AColumns.Cast <DataColumn>().Select(
-                    x => x.ColumnName).ToArray(), AMappingDictionaryWithoutBlanks);
+                    x => x.ColumnName).ToArray(), AMappingDictionaryWithoutBlanks, AReportName);
         }
 
         /// <summary>
@@ -493,10 +535,11 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ASortingColumnsAsText">Comma seperated list of Column Names.</param>
         /// <param name="ADataTableColumns">Column Names of the DataTable as a string[] to check if the given names are valid.</param>
         /// <param name="AMappingDictionaryWithoutBlanks">The Dictionary to use for the translation. Key is the old name, values is the new name. </param>
+        /// <param name="AReportName">Used for the Log.</param>
         /// <returns></returns>
         public static string ColumnNameMapping(string ASortingColumnsAsText,
             string[] ADataTableColumns,
-            Dictionary <string, string>AMappingDictionaryWithoutBlanks)
+            Dictionary <string, string>AMappingDictionaryWithoutBlanks, string AReportName)
         {
             List <string>list = new List <string>();
 
@@ -508,13 +551,20 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (part.Replace(" ", "") == entry.Key)
                     {
-                        list.Add(entry.Value);
+                        if (!list.Contains(entry.Key))
+                        {
+                            list.Add(entry.Value);
+                        }
+
                         AMappingDictionaryWithoutBlanks.Remove(entry.Key);
                         break;
                     }
                     else
                     {
-                        list.Add(part.Replace(" ", ""));
+                        if (!list.Contains(part.Replace(" ", "")))
+                        {
+                            list.Add(part.Replace(" ", ""));
+                        }
                     }
                 }
             }
@@ -534,7 +584,8 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (delete)
                 {
                     TLogging.Log(String.Format(Catalog.GetString(
-                                "FastReport Sorting Error: The column name '{0}' couldn't be found in the DataTable. Therefore it has been ignored."),
+                                "{0} Sorting Error: The column name '{1}' couldn't be found in the DataTable. Therefore it has been ignored."),
+                            AReportName,
                             list[i]));
                     list.Remove(list[i]);
                     i--;
@@ -542,6 +593,102 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             return String.Join(",", list);
+        }
+
+        /// <summary>
+        /// Replaces the field name with NULL if it is not needed in order to improve the performance of certain reports.
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="AColumnDBNamesAndAliases">Dictionary of the column names. Key: full DB Name, Value: Alias.</param>
+        /// <returns></returns>
+        public static string ReplaceColumnWithNullWhenUnused(Dictionary <String, TVariant>AParameters,
+            Dictionary <String, String>AColumnDBNamesAndAliases)
+        {
+            List <string>Columns = new List <string>();
+
+            TColumnSettingCollection tcsc = new TColumnSettingCollection();
+            tcsc.DeserialiseCollection(AParameters["param_columns"].ToString());
+
+            foreach (KeyValuePair <string, string>entry in AColumnDBNamesAndAliases)
+            {
+                if (tcsc.HasSettingForColumn(entry.Value))
+                {
+                    Columns.Add(entry.Key + " AS " + entry.Value);
+                }
+                else
+                {
+                    Columns.Add("NULL AS " + entry.Value);
+                }
+            }
+
+            return String.Join(",", Columns);
+        }
+
+        /// <summary>
+        /// Returns the Partner Keys for UCPartnerSelection as a comma seperated list.
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        public static String GetPartnerKeysAsString(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            if (AParameters["param_selection"].ToString() == "one partner")
+            {
+                return AParameters["param_partnerkey"].ToString();
+            }
+
+            List <string>PartnerKeys = new List <string>();
+
+            DataTable Partners = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query = "";
+
+                    if (AParameters["param_selection"].ToString() == "an extract")
+                    {
+                        Query =
+                            "SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
+                            +
+                            AParameters["param_extract"].ToString().Replace("'", "''") + "')";
+                    }
+                    else if (AParameters["param_selection"].ToString() == "all current staff")
+                    {
+                        string date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
+                        Query = "SELECT p_partner_key_n FROM pm_staff_data WHERE pm_start_of_commitment_d <= '" + date +
+                                "' AND (pm_end_of_commitment_d >= '" + date + "' OR pm_end_of_commitment_d IS NULL)";
+                    }
+
+                    if (Query != "")
+                    {
+                        Partners = DbAdapter.RunQuery(Query, "Partners", Transaction);
+                    }
+                    else
+                    {
+                        Partners.Columns.Add("partnerkey");
+                        Partners.Rows.Add(new object[] { 0 });
+                    }
+                });
+
+            if (Partners.Rows.Count == 0)
+            {
+                return "-1";
+            }
+            else
+            {
+                foreach (DataRow dr in Partners.Rows)
+                {
+                    PartnerKeys.Add(dr[0].ToString());
+                }
+
+                return String.Join(",", PartnerKeys);
+            }
         }
     }
 }

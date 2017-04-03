@@ -16,9 +16,9 @@ RootNode:
         actExportHierarchy: {Label=E&xport Hierarchy, ActionClick=ExportHierarchy}
     Controls:
         pnlContent:
-            Controls: [sptAccountSplitter]
+            Controls: [sptSplitter]
             Dock: Fill
-        sptAccountSplitter:
+        sptSplitter:
             Panel1: tabAccounts
             Panel2: pnlDetails
             SplitterDistance: 84

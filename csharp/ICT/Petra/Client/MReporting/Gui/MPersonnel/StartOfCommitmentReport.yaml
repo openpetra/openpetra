@@ -76,7 +76,7 @@ RootNode:
             Name: Partner Address
             Parameter: 10.0
         Para8:
-            Name: Primary E-Mail
+            Name: Primary Email
             Parameter: 3.0
         Para9:
             Name: Primary Phone

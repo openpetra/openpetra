@@ -38,6 +38,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
@@ -130,20 +131,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length >= 1)
             {
                 string status = SelectedGridRow[0]["Status"].ToString();
-                bool canReverse = (status == "POSTED") || (status.Length == 0);
-                bool canDelete = (status == "OPEN") || (status == "APPROVED");
+                bool canReverse = (status == MFinanceConstants.AP_DOCUMENT_POSTED) || (status.Length == 0);
+                bool canCancel = (status == MFinanceConstants.AP_DOCUMENT_OPEN) || (status == MFinanceConstants.AP_DOCUMENT_APPROVED);
 
                 // Payments can be reversed as can posted invoices
                 ActionEnabledEvent(null, new ActionEventArgs("actReverseSelected", canReverse));
-                ActionEnabledEvent(null, new ActionEventArgs("actDeleteSelected", canDelete));
+                ActionEnabledEvent(null, new ActionEventArgs("actCancelSelected", canCancel));
 
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actTransactionReverseSelected", canReverse));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actTransactionDeleteSelected", canDelete));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actTransactionCancelSelected", canCancel));
             }
             else
             {
                 ActionEnabledEvent(null, new ActionEventArgs("actReverseSelected", false));
-                ActionEnabledEvent(null, new ActionEventArgs("actDeleteSelected", false));
+                ActionEnabledEvent(null, new ActionEventArgs("actCancelSelected", false));
             }
         }
 
@@ -335,6 +336,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             FAgedOlderThan = AgedOlderThan.ToString("u");
 
+            grpOutstandingTotals.Text = "Outstanding Totals for " + FMainDS.PPartner[0].PartnerShortName;
             txtSupplierName.Text = FMainDS.PPartner[0].PartnerShortName;
             txtSupplierCurrency.Text = FSupplierRow.CurrencyCode;
             FFindObject = TRemote.MFinance.AP.UIConnectors.Find();
@@ -370,6 +372,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void FocusGrid()
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.Focused) // I want to hand my focus to the grid,
             {                 // but if another form is currently in focus, don't usurp that.
                 grdDetails.Focus();
@@ -545,6 +552,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((Row["Type"].ToString() == "Invoice") && (Row["CreditNote"].Equals(true)))
                 {
                     Row["Type"] = "Credit Note";
+                    Row["Amount"] = -Convert.ToDecimal(Row["Amount"]);
+                    Row["OutstandingAmount"] = -Convert.ToDecimal(Row["OutstandingAmount"]);
                 }
 
 /*
@@ -605,16 +614,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     DataRow Row = rv.Row;
 
-                    if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["OutstandingAmount"].GetType() == typeof(Decimal)))
+                    if ((Row["Currency"].ToString() == txtSupplierCurrency.Text)
+                        && (Row["OutstandingAmount"].GetType() == typeof(Decimal))
+                        && (Row["Status"].ToString() != MFinanceConstants.AP_DOCUMENT_CANCELLED))
                     {
-                        if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
-                        {
-                            balance -= (Decimal)Row["OutstandingAmount"];
-                        }
-                        else
-                        {
-                            balance += (Decimal)Row["OutstandingAmount"];
-                        }
+                        balance += (Decimal)Row["OutstandingAmount"];
                     }
                 }
             }
@@ -699,17 +703,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if (Row["Type"].ToString() != "Payment")
                     {
-                        // If it's a credit note, I'll subract it
-                        // If it's an invoice, I'll add it!
-                        //
-                        if (Row["CreditNote"].Equals(true))
-                        {
-                            TotalSelected -= (Decimal)(Row["OutstandingAmount"]);
-                        }
-                        else
-                        {
-                            TotalSelected += (Decimal)(Row["OutstandingAmount"]);
-                        }
+                        TotalSelected += (Decimal)(Row["OutstandingAmount"]);
                     }
                 }
             }
@@ -930,33 +924,33 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        /// Delete the selected transaction
-        public void DeleteSelected(object sender, EventArgs e)
+        /// Cancel the selected transaction.  This actually sets the document status to CANCELLED
+        public void CancelSelected(object sender, EventArgs e)
         {
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
             {
-                if (MessageBox.Show(Catalog.GetString("Delete the selected invoice?"),
-                        Catalog.GetString("Delete Invoice"),
+                if (MessageBox.Show(Catalog.GetString("Cancel the selected invoice?"),
+                        Catalog.GetString("Cancel Invoice"),
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }
 
-                // I can only delete invoices that are not posted already.
+                // I can only cancel invoices that are not posted already.
                 // This method is only enabled when the grid shows items for Posting
-                List <int>DeleteTheseDocs = new List <int>();
+                List <int>CancelTheseDocs = new List <int>();
 
                 string status = SelectedGridRow[0]["Status"].ToString();
 
-                if ((status == "OPEN") || (status == "APPROVED"))
+                if ((status == MFinanceConstants.AP_DOCUMENT_OPEN) || (status == MFinanceConstants.AP_DOCUMENT_APPROVED))
                 {
                     Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["ApDocumentId"]);
-                    DeleteTheseDocs.Add(DocumentId);
+                    CancelTheseDocs.Add(DocumentId);
 
                     this.Cursor = Cursors.WaitCursor;
-                    TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs);
+                    TRemote.MFinance.AP.WebConnectors.CancelAPDocuments(FLedgerNumber, CancelTheseDocs, false);
                     Reload();
                     this.Cursor = Cursors.Default;
                 }
@@ -1113,7 +1107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 if ((rv.Row["Tagged"].Equals(true)) && (rv.Row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
-                    && (rv.Row["Status"].ToString() == "OPEN")
+                    && (rv.Row["Status"].ToString() == MFinanceConstants.AP_DOCUMENT_OPEN)
                     && (rv.Row["Currency"].ToString() == txtSupplierCurrency.Text)
                     )
                 {
@@ -1168,7 +1162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 if ((rv.Row["Tagged"].Equals(true)) && (rv.Row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
-                    && ("|POSTED|PARTPAID|PAID".IndexOf("|" + rv.Row["Status"].ToString()) < 0)
+                    && ("|CANCELLED|POSTED|PARTPAID|PAID".IndexOf("|" + rv.Row["Status"].ToString()) < 0)
                     && (rv.Row["Currency"].ToString() == txtSupplierCurrency.Text)
                     )
                 {

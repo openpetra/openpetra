@@ -89,7 +89,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FPrivatePartner;
         private DataTable FInstalledSitesDT;
         private Boolean FDataGridRowEnteredRepeatedly;
-        private Boolean FFamilyPartnerSelectionSetup;
         private Boolean FFormSetupFinished = false;
 
         private void DataGrid_FocusRowEntered(System.Object ASender, RowEventArgs AEventArgs)
@@ -229,81 +228,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowFamilyPartnerSelection(Boolean AShow)
         {
-            if (AShow)
-            {
-                if (!FFamilyPartnerSelectionSetup)
-                {
-                    if (FFamilyPartnerKey != -1)
-                    {
-                        txtFamilyPartnerBox.Text = FFamilyPartnerKey.ToString();
-                    }
-                    else
-                    {
-                        this.Cursor = Cursors.WaitCursor;
-
-                        try
-                        {
-                            FFamilyPartnerKey = GetLastUsedFamilyKey();
-
-                            if (FFamilyPartnerKey != 0)
-                            {
-                                TLocationPK FamilysBestAddress = TRemote.MPartner.Partner.WebConnectors.DetermineBestAddress(FFamilyPartnerKey);
-
-                                FFamilyLocationKey = FamilysBestAddress.LocationKey;
-                                FFamilySiteKey = FamilysBestAddress.SiteKey;
-
-                                txtFamilyPartnerBox.Text = FFamilyPartnerKey.ToString();
-                            }
-                            else
-                            {
-                                FFamilyPartnerKey = -1;
-                            }
-                        }
-                        finally
-                        {
-                            this.Cursor = Cursors.Default;
-                        }
-                    }
-
-                    FFamilyPartnerSelectionSetup = true;
-                }
-            }
+            // Note from 14-02-2017: This method used to run code that initialised the 'Family' to the most recently used Family.
+            // However this is not what Petra did.  It forced the user to pick a Family by setting the initial Partner Key to 00000000000
+            // It is too easy to accidentally add the person to the wrong Family.  If you want to see the previous code look in the source code history.
+            // See:  https://tracker.openpetra.org/view.php?id=5897
 
             txtFamilyPartnerBox.Visible = AShow;
-        }
-
-        /// <summary>
-        /// Makes a server call to get the key of the last used family
-        /// <returns>FamilyKey of the last accessed family</returns>
-        /// </summary>
-        private System.Int64 GetLastUsedFamilyKey()
-        {
-            bool LastFamilyFound = false;
-            const int MaxPartnersCount = 7;
-
-            System.Int64 FamilyKey = 0000000000;
-            Dictionary <long, string>RecentlyUsedPartners;
-            ArrayList PartnerClasses = new ArrayList();
-
-            PartnerClasses.Add("*");
-
-            TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
-
-            foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
-            {
-                //search for the last FamilyKey
-                //assign it only to FamilyKey if there hasn't been yet found another Family
-
-                //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
-                //TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
-                if (CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
-                {
-                    FamilyKey = CurrentEntry.Key;
-                    LastFamilyFound = true;
-                }
-            }
-
-            return FamilyKey;
         }
 
         private void BtnHelp_Click(System.Object sender, System.EventArgs e)

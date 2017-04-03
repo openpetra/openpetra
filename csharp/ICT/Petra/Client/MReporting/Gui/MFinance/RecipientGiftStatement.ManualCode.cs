@@ -5,7 +5,7 @@
 //       berndr
 //       Tim Ingham
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -189,16 +189,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void RecipientSelectionChanged(object sender, EventArgs e)
         {
-            if (tpgReportSorting.Enabled && rbtPartner.Checked)
-            {
-                tpgReportSorting.Enabled = false;
-                this.Refresh();
-            }
-            else if (!tpgReportSorting.Enabled && (rbtAllRecipients.Checked || rbtExtract.Checked))
-            {
-                tpgReportSorting.Enabled = true;
-                this.Refresh();
-            }
+            //
+            // I'm not going to hide and show the sorting page:
+
+            /*
+             *         if (tpgReportSorting.Enabled && rbtPartner.Checked)
+             *         {
+             *             tpgReportSorting.Enabled = false;
+             *             this.Refresh();
+             *         }
+             *         else if (!tpgReportSorting.Enabled && (rbtAllRecipients.Checked || rbtExtract.Checked))
+             *         {
+             *             tpgReportSorting.Enabled = true;
+             *             this.Refresh();
+             *         }
+             */
         }
 
         #endregion

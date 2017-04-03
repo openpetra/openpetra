@@ -911,8 +911,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool TransactionDataChanged = false;
             bool JournalDataChanged = false;
 
-            int CurrentTransBatchNumber = 0;
-            int CurrentTransJournalNumber = 0;
+            int CurrentTransBatchNumber = FBatchNumber;
+            int CurrentTransJournalNumber = FJournalNumber;
             int CurrentTransNumber = 0;
 
             int CurrentJournalNumber = 0;
@@ -1627,47 +1627,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Specify current action
                 FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.DELETINGALLTRANS;
 
-                //Backup the Dataset for reversion purposes
+                // Backup the Dataset for reversion purposes
                 BackupMainDS = (GLBatchTDS)FMainDS.GetChangesTyped(false);
 
-                //Unbind any transactions currently being editied in the Transaction Tab
+                // Unbind any transactions currently being edited in the Transaction Tab
                 // but do not reset FBatchNumber to -1
                 ClearCurrentSelection(0, false);
 
                 //Delete transactions
-                DataView TransDV = new DataView(FMainDS.ATransaction);
-                DataView TransAttribDV = new DataView(FMainDS.ATransAnalAttrib);
+                DataRow[] deleteTheseAttrib = FMainDS.ATransAnalAttrib.Select(String.Format("{0}={1} AND {2}={3}",
+                        ATransAnalAttribTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ATransAnalAttribTable.GetJournalNumberDBName(),
+                        FJournalNumber));
 
-                TransDV.AllowDelete = true;
-                TransAttribDV.AllowDelete = true;
-
-                TransDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    FBatchNumber,
-                    ATransactionTable.GetJournalNumberDBName(),
-                    FJournalNumber);
-
-                TransDV.Sort = String.Format("{0} ASC",
-                    ATransactionTable.GetTransactionNumberDBName());
-
-                TransAttribDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    FBatchNumber,
-                    ATransactionTable.GetJournalNumberDBName(),
-                    FJournalNumber);
-
-                TransAttribDV.Sort = String.Format("{0} ASC, {1} ASC",
-                    ATransAnalAttribTable.GetTransactionNumberDBName(),
-                    ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
-
-                for (int i = TransAttribDV.Count - 1; i >= 0; i--)
+                foreach (DataRow row in deleteTheseAttrib)
                 {
-                    TransAttribDV.Delete(i);
+                    row.Delete();
                 }
 
-                for (int i = TransDV.Count - 1; i >= 0; i--)
+                DataRow[] deleteTheseTrans = FMainDS.ATransaction.Select(String.Format("{0}={1} AND {2}={3}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ATransactionTable.GetJournalNumberDBName(),
+                        FJournalNumber));
+
+                foreach (DataRow row in deleteTheseTrans)
                 {
-                    TransDV.Delete(i);
+                    row.Delete();
                 }
 
                 //Set last journal number
@@ -1675,12 +1662,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPetraUtilsObject.SetChangedFlag();
 
-                //Need to call save
+                // I Need to call save now, otherwise UpdateTransactionTotals will pull back the transactions I've just deleted!
                 if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction, true, false))
                 {
                     FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary();
 
-                    MessageBox.Show(Catalog.GetString("The transactions have been deleted but the changes are not saved!"),
+                    MessageBox.Show(Catalog.GetString("The transactions were deleted but the changes could not be saved!"),
                         Catalog.GetString("Deletion Warning"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
@@ -1696,10 +1683,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                    FPetraUtilsObject.SetChangedFlag();
+                    //Always update LastTransactionNumber first before updating totals
+                    GLRoutines.UpdateJournalLastTransaction(FMainDS, FJournalRow);
+
                     //Update transaction totals and save the new figures
                     UpdateTransactionTotals();
                     FMyForm.SaveChanges();
                 }
+
+                FPreviouslySelectedDetailRow = null;
             }
             catch (Exception ex)
             {
@@ -1764,7 +1757,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     //Always update LastTransactionNumber first before updating totals
-                    GLRoutines.UpdateJournalLastTransaction(ref FMainDS, ref FJournalRow);
+                    GLRoutines.UpdateJournalLastTransaction(FMainDS, FJournalRow);
                     UpdateTransactionTotals();
 
                     if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction))

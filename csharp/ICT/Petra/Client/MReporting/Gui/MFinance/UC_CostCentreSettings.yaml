@@ -15,32 +15,35 @@ RootNode:
         grpCostCentreSelection:
             Width: 650
             ParameterName: param_costcentreoptions
-            Controls: [rbtSelectedCostCentres, rbtAllCostCentres, rbtAllActiveCostCentres, rbtAccountLevel, chkExcludeInactiveCostCentres]
+            Controls: [rbtSelectedCostCentres, rbtAllCostCentres, rbtAllActiveCostCentres, rbtAccountLevel]
         grpCostCentreOptions:
             Width: 650
             Controls: [pnlAutoEmail, chkCostCentreBreakdown, rgrDepth]
         rbtSelectedCostCentres:
-            Controls: [clbCostCentres, btnUnselectAllCostCentres]
-            ControlsOrientation: horizontal
+            Controls: [clbCostCentres, pnlListOptions]
+            ControlsOrientation: Horizontal
             OnChange: rbtSelectedCostCentresChanged
         rbtAllCostCentres:
         rbtAllActiveCostCentres:
         rbtAccountLevel:
-        chkExcludeInactiveCostCentres:
-            Label: Exclude inactive Cost Centres
-            CheckBoxAttachedLabel: right
-            ParameterName: param_ExcludeInactiveCostCentres
-            OnChange: chkExcludeCostCentresChanged
-        clbCostCentres: 
+        clbCostCentres:
             List: UserDefinedList
             AutoFindColumn: 2
             NoLabel:true
             ParameterName: param_cost_centre_codes
-            Width: 365
-            Stretch: vertically
+            Width: 330
+            Height:160
+        pnlListOptions:
+            Width: 100
+            Controls: [btnUnselectAllCostCentres, chkExcludeInactiveCostCentres]
         btnUnselectAllCostCentres: 
             Label: Unselect All
             Action: actUnselectAll
+        chkExcludeInactiveCostCentres:
+            Label: Hide inactive
+            CheckBoxAttachedLabel: right
+            ParameterName: param_ExcludeInactiveCostCentres
+            OnChange: chkExcludeCostCentresChanged
         pnlAutoEmail:
             Controls: [chkPaginate,chkAutoEmail]
             ControlsOrientation: horizontal

@@ -61,8 +61,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
             Int32 LedgerNumber = (Int32)requestParams["ALedgerNumber"];
-            Int32 GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
-            Int32 GiftNumber = (Int32)requestParams["GiftNumber"];
             Int32 BatchNumber = (Int32)requestParams["BatchNumber"];
 
             AMessages = new TVerificationResultCollection();
@@ -87,6 +85,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                     else
                     {
+                        Int32 GiftNumber = (Int32)requestParams["GiftNumber"];
+                        Int32 GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
                         AGiftAccess.LoadByPrimaryKey(MainDS, LedgerNumber, BatchNumber, GiftNumber, Transaction);
 
                         if (Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail))
@@ -327,7 +327,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
             Boolean BatchSelected = (Boolean)requestParams["NewBatchSelected"];
             GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
-            Int32 GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
+            Int32 GiftDetailNumber = -1;
+
+            if (Function == GiftAdjustmentFunctionEnum.ReverseGiftDetail)
+            {
+                GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
+            }
+
             bool NoReceipt = (Boolean)requestParams["NoReceipt"];
 
             DateTime DateEffective;
@@ -396,6 +402,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftBatch.LastGiftNumber++;
                                     gift.LinkToPreviousGift = (cycle != 0);
                                     gift.LastDetailNumber = 0;
+                                    gift.FirstTimeGift = false;
 
                                     // do not print a receipt for reversed gifts
                                     if (cycle == 0)
@@ -418,8 +425,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         // if gift detail belongs to gift
                                         if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
                                             && (oldGiftDetail.BatchNumber == oldGift.BatchNumber)
-                                            && (!Function.Equals(GiftAdjustmentFunctionEnum.ReverseGiftDetail)
-                                                || (oldGiftDetail.DetailNumber == GiftDetailNumber)))
+                                            && (Function != GiftAdjustmentFunctionEnum.ReverseGiftDetail)
+                                            || (oldGiftDetail.DetailNumber == GiftDetailNumber))
                                         {
                                             AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, Transaction,
                                                 requestParams);

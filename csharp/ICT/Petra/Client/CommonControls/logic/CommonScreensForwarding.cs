@@ -48,6 +48,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
         static TDelegateOpenGetMergeDataDialog FOpenGetMergeDataDialog;
         static TDelegateOpenPrintPartnerDialog FOpenPrintPartnerDialog;
         static TDelegateTaxDeductiblePctAdjust FTaxDeductiblePctAdjust;
+        static TDelegateOpenPrintUnitHierarchy FOpenPrintUnitHierarchy;
 
         /// <summary>
         /// This property is used to provide a function which opens a modal Partner Find screen.
@@ -286,6 +287,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenPrintPartnerDialog = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens the Print Partner report dialog.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenPrintUnitHierarchy OpenPrintUnitHierarchy
+        {
+            get
+            {
+                return FOpenPrintUnitHierarchy;
+            }
+
+            set
+            {
+                FOpenPrintUnitHierarchy = value;
             }
         }
 

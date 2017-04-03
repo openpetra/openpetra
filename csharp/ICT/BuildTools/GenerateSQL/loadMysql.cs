@@ -67,6 +67,16 @@ namespace GenerateSQL
                     {
                         string line = sr.ReadLine();
 
+                        while (!line.Trim().StartsWith("--") && !line.Trim().EndsWith(";") && !sr.EndOfStream)
+                        {
+                            string templine = sr.ReadLine();
+
+                            if (!templine.StartsWith("--"))
+                            {
+                                line += " " + templine;
+                            }
+                        }
+
                         if (line.Trim().ToUpper().StartsWith("INSERT"))
                         {
                             DBAccess.GDBAccessObj.ExecuteNonQuery(line, WriteTransaction);

@@ -458,6 +458,7 @@ namespace Ict.Petra.Server.MFinance.Common
         AAccountTable FAccountTable;
         AAccountRow FAccountRow = null;
         Int32 FLedgerNumber;
+        TDBTransaction FTransaction;
         THandleAccountPropertyInfo FAccountPropertyHandler = null;
 
         int FRowIdx;
@@ -466,60 +467,56 @@ namespace Ict.Petra.Server.MFinance.Common
         /// This mininmal constructor defines the result collection for the error messages and
         /// Ledger Info to select the ledger ...
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        public TAccountInfo(Int32 ALedgerNumber)
+        public TAccountInfo(Int32 ALedgerNumber, TDBTransaction ATransaction = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FTransaction = ATransaction;
             LoadData();
         }
 
         /// <summary>
         /// The Constructor defines a first value of a specific accounting code too.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AAccountCode"></param>
-        public TAccountInfo(Int32 ALedgerNumber, String AAccountCode)
+        public TAccountInfo(Int32 ALedgerNumber, String AAccountCode, TDBTransaction ATransaction = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FTransaction = ATransaction;
             LoadData();
             AccountCode = AAccountCode;
         }
 
         private void LoadData()
         {
-            TDBTransaction Transaction = null;
+            FAccountRow = null;
 
-            try
+            if (FTransaction != null)
             {
+                FAccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, FTransaction);
+            }
+            else
+            {
+                TDBTransaction Transaction = null;
+
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
                         FAccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, Transaction);
-
-                        #region Validate Data
-
-                        if ((FAccountTable == null) || (FAccountTable.Count == 0))
-                        {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Account data for Ledger {1} does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true),
-                                    FLedgerNumber));
-                        }
-
-                        #endregion Validate Data
                     });
             }
-            catch (Exception ex)
+
+            #region Validate Data
+
+            if ((FAccountTable == null) || (FAccountTable.Count == 0))
             {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
+                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                            "Function:{0} - Account data for Ledger {1} does not exist or could not be accessed!"),
+                        Utilities.GetMethodName(true),
+                        FLedgerNumber));
             }
-            finally
-            {
-                FAccountRow = null;
-            }
+
+            #endregion Validate Data
         }
 
         /// <summary>

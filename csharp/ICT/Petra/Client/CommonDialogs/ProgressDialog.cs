@@ -269,5 +269,14 @@ namespace Ict.Petra.Client.CommonDialogs
                 BtnCancelClick(null, null);
             }
         }
+
+        /// <summary>
+        /// Sets the Refresh Interval
+        /// </summary>
+        /// <param name="AInterval"></param>
+        public void SetRefreshInterval(int AInterval)
+        {
+            timer1.Interval = AInterval;
+        }
     }
 }

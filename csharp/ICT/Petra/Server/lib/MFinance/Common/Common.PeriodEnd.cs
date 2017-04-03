@@ -73,7 +73,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// The operator is going to set 1, (period + 1).
         /// </summary>
-        public abstract void SetNextPeriod();
+        public abstract void SetNextPeriod(TDBTransaction ATransaction);
 
         /// <summary>
         /// This is for all info only routines that means JobSize has no definition

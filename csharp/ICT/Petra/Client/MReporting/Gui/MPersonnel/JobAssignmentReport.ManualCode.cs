@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
@@ -34,6 +35,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private void InitializeManualCode()
         {
             ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("JobAssignmentReport",
+                false,
+                new string[] { "JobAssignmentReport" },
+                ACalc,
+                this,
+                true);
         }
     }
 }

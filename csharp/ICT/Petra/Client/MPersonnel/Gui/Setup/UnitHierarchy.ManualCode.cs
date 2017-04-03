@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -94,8 +95,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
         }
 
-        private TreeNode FindChild(TreeNode AParentNode, Int64 AUnitKey)
+        private TreeNode FindChild(TreeNode AParentNode, Int64 AUnitKey, Boolean AIncludeParentNodeInSearch = false)
         {
+            if (AIncludeParentNodeInSearch)
+            {
+                if (((UnitHierarchyNode)AParentNode.Tag).MyUnitKey == AUnitKey)
+                {
+                    return AParentNode;
+                }
+            }
+
             foreach (TreeNode Node in AParentNode.Nodes)
             {
                 if (((UnitHierarchyNode)Node.Tag).MyUnitKey == AUnitKey)
@@ -103,7 +112,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                     return Node;
                 }
 
-                TreeNode ChildResult = FindChild(Node, AUnitKey);
+                TreeNode ChildResult = FindChild(Node, AUnitKey, false);
 
                 if (ChildResult != null)
                 {
@@ -197,6 +206,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 txtChild.Text = ((UnitHierarchyNode)ASelThis.Tag).MyUnitKey.ToString("D10");
                 txtParent.Text = ((UnitHierarchyNode)ASelThis.Tag).ParentUnitKey.ToString("D10");
                 btnMove.Enabled = false;
+                EvaluateParentChange(null, null);
             }
         }
 
@@ -301,12 +311,28 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 ChildKey = Convert.ToInt64(txtChild.Text);
                 ParentKey = Convert.ToInt64(txtParent.Text);
-                FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey);
-                FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey);
+
+                // search child below root organisation node
+                FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey, false);
+
+                if (FChildNodeReference == null)
+                {
+                    // if not found yet then search below "Unassigned" node
+                    FChildNodeReference = FindChild(trvUnits.Nodes[1], ChildKey, false);
+                }
+
+                // search parent as or below root organisation node
+                FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey, true);
+
+                if (FParentNodeReference == null)
+                {
+                    // if not found yet then search below "Unassigned" node
+                    FParentNodeReference = FindChild(trvUnits.Nodes[1], ParentKey, true);
+                }
 
                 if ((FChildNodeReference != null) && (FParentNodeReference != null))
                 {
-                    if (!IsDescendantOf(FParentNodeReference, FChildNodeReference))
+                    if (FChildNodeReference.Parent != FParentNodeReference)
                     {
                         ICanReassign = true;
                     }
@@ -367,9 +393,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             if (SelectedNode != null)
             {
                 trvUnits.CollapseAll();
+                SelectNode(SelectedNode);
+                trvUnits.SelectedNode = SelectedNode;
                 SelectedNode.Expand();
                 SelectedNode.EnsureVisible();
-                SelectNode(SelectedNode);
             }
 
             return SelectedNode != null;
@@ -409,16 +436,39 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //  * The root node appears first,
             //  * a parent appears before its child.
             UnitHierarchyNode RootData = (UnitHierarchyNode)UnitNodes[0];
+            UnitHierarchyNode UnassignedData = (UnitHierarchyNode)UnitNodes[1];
+
+            // build up actual root node
             TreeNode RootNode = new TreeNode(RootData.Description);
             RootNode.Tag = RootData;
             RootNode.ToolTipText = RootData.TypeCode;
             UnitNodes.RemoveAt(0);
             trvUnits.Nodes.Add(RootNode);
             AddChildren(RootNode, UnitNodes);
+
+            // build up node for unassigned units
+            TreeNode UnassignedNode = new TreeNode(UnassignedData.Description);
+            UnassignedNode.Tag = UnassignedData;
+            UnassignedNode.ToolTipText = UnassignedData.TypeCode;
+            UnitNodes.RemoveAt(0);
+            trvUnits.Nodes.Add(UnassignedNode);
+            AddChildren(UnassignedNode, UnitNodes);
+
             Int64 MySiteKey = TSystemDefaults.GetSiteKeyDefault();
             ShowThisUnit(MySiteKey);
 
             FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+            //Active the print menu item
+            mniFilePrint.Enabled = true;
+            mniFilePrint.Click += new EventHandler(print);
+        }
+
+        private void print(object sender, EventArgs ea)
+        {
+            Form MainWindow = FPetraUtilsObject.GetCallerForm();
+
+            TCommonScreensForwarding.OpenPrintUnitHierarchy.Invoke(TRemote.MPartner.Partner.WebConnectors.GetUnitHierarchyRootUnitKey(), MainWindow);
         }
 
         private void GetAllChildren(TreeNode Parent, ref ArrayList UnitNodes)
@@ -429,6 +479,66 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 GetAllChildren(Node, ref UnitNodes);
             }
+        }
+
+        /// Our main keyboard handler
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Home | Keys.Control:
+                case Keys.Home:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.FirstNode);
+                    }
+                    else
+                    {
+                        SelectNode(trvUnits.GetNodeAt(1, 1));
+                    }
+
+                    break;
+
+                case Keys.Up | Keys.Control:
+                case Keys.Up:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.PrevVisibleNode);
+                    }
+
+                    break;
+
+                case Keys.Down | Keys.Control:
+                case Keys.Down:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.NextVisibleNode);
+                    }
+
+                    break;
+
+                case Keys.End | Keys.Control:
+                case Keys.End:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.LastNode);
+                    }
+                    else
+                    {
+                        SelectNode(trvUnits.GetNodeAt(1, trvUnits.Bottom - 2));
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         /// <summary>
@@ -456,7 +566,18 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             ArrayList UnitNodes = new ArrayList();
+            // collect all children under root organisational node
             GetAllChildren(trvUnits.Nodes[0], ref UnitNodes);
+
+            // Collect all children under 'Unassigned' so that substructures are preserved (but not the ones directly under 'Unassigned' since that is not actually a Unit).
+            // We need to go 2 levels deep as on the server each node is stored alongside it's parent unit key
+            foreach (TreeNode Node in trvUnits.Nodes[1].Nodes)
+            {
+                foreach (TreeNode SubNode in Node.Nodes)
+                {
+                    GetAllChildren(SubNode, ref UnitNodes);
+                }
+            }
 
             TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
 

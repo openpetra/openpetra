@@ -39,6 +39,7 @@ RootNode:
             Stretch: horizontally
             Controls:
                 Row0: [txtDetailRegion]
+                Row1: [txtDetailDescription]
         pnlRangeButtons:
             Dock: Bottom
             Controls: [btnAdd, btnRemove]
@@ -63,7 +64,7 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [DetailRegion]
+            Columns: [DetailRegion, DetailDescription]
             SortOrder: DetailRegion ASC
             ActionFocusRow: FocusedRowChanged
             EnableMultiSelection: false
@@ -72,3 +73,4 @@ RootNode:
             ActionFocusRow: FocusedRangeRowChanged
 
         txtDetailRegion: {Label=Region Name, Width=200}
+        txtDetailDescription: {Label=Region Description, Width=200}

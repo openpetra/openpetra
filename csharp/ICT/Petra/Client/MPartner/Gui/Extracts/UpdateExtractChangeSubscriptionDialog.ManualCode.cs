@@ -896,22 +896,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     }
                 }
 
-                // 'Date Cancelled' must not be before today
-                if (chkChangeDateCancelled.Checked)
-                {
-                    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
+                // Info: AlanP - we decided that there would be no validation on Date Cancelled because Petra did not have it and potentially
+                //  there appear to be arguments for not restricting the date cancelled.  We need more input from real users on this!
+                //  See also Partner.Validation.cs in Shared
+                //// 'Date Cancelled' must not be before today
+                //if (chkChangeDateCancelled.Checked)
+                //{
+                //    ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
 
-                    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-                    {
-                        VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
-                                                 (ARow.DateCancelled, DateTime.Today,
-                                                 ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
-                                                 this, ValidationColumn, ValidationControlsData.ValidationControl);
+                //    if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                //    {
+                //        VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate
+                //                                 (ARow.DateCancelled, DateTime.Today,
+                //                                 ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                //                                 this, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                        // Handle addition to/removal from TVerificationResultCollection
-                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
-                    }
-                }
+                //        // Handle addition to/removal from TVerificationResultCollection
+                //        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                //    }
+                //}
 
                 // 'First Sent' must not be later than 'Last Sent'
                 if (chkChangeFirstIssue.Checked

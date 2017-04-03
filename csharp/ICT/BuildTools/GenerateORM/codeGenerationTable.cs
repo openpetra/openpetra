@@ -47,7 +47,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="currentTable"></param>
         /// <param name="origTable"></param>
         /// <param name="WhereToInsert"></param>
-        public static void InsertTableDefinition(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
+        /// <param name="CalledFromDataSet"></param>
+        public static void InsertTableDefinition(ProcessTemplate Template,
+            TTable currentTable,
+            TTable origTable,
+            string WhereToInsert,
+            Boolean CalledFromDataSet)
         {
             ProcessTemplate snippet = Template.GetSnippet("TYPEDTABLE");
             string derivedTable = "";
@@ -67,6 +72,26 @@ namespace Ict.Tools.CodeGeneration.DataStore
             snippet.SetCodelet("NEW", derivedTable);
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
+
+            if (CalledFromDataSet)
+            {
+                snippet.SetCodelet("TABLEINTDS", "TableInTDS");
+            }
+            else
+            {
+                snippet.SetCodelet("TABLEINTDS", "");
+            }
+
+            if (currentTable.AvailableForCustomReport)
+            {
+                snippet.SetCodelet("AVAILABLEFORCUSTOMREPORT", "true");
+            }
+            else
+            {
+                snippet.SetCodelet("AVAILABLEFORCUSTOMREPORT", "false");
+            }
+
+            snippet.SetCodelet("CUSTOMREPORTPERMISSION", currentTable.CustomReportPermission);
 
             if (currentTable.strVariableNameInDataset != null)
             {
@@ -173,11 +198,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
 
             int colOrder = 0;
+            Boolean CustomReportFieldAdded = false;
+            ProcessTemplate tempTemplate = null;
 
             foreach (TTableField col in currentTable.grpTableField)
             {
                 col.strTableName = currentTable.strName;
-                ProcessTemplate tempTemplate = null;
                 string columnOverwrite = "";
                 bool writeColumnProperties = true;
 
@@ -234,6 +260,26 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                 snippet.InsertSnippet("INITVARSCOLUMN", tempTemplate);
 
+                if (col.bAvailableForCustomReport)
+                {
+                    tempTemplate = Template.GetSnippet("INITVARSCUSTOMREPORTFIELDLIST");
+
+                    if (CustomReportFieldAdded)
+                    {
+                        tempTemplate.SetCodelet("LISTDELIMITER", ",");
+                    }
+                    else
+                    {
+                        tempTemplate.SetCodelet("LISTDELIMITER", "");
+                    }
+
+                    tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
+
+                    snippet.InsertSnippet("INITVARSCUSTOMREPORTFIELDLIST", tempTemplate);
+
+                    CustomReportFieldAdded = true;
+                }
+
                 if (writeColumnProperties)
                 {
                     tempTemplate = Template.GetSnippet("STATICCOLUMNPROPERTIES");
@@ -246,6 +292,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 }
 
                 colOrder++;
+            }
+
+            if (!CustomReportFieldAdded)
+            {
+                // fill snippet if nothing was added yet
+                tempTemplate = Template.GetSnippet("INITVARSCUSTOMREPORTFIELDLISTEMPTY");
+                tempTemplate.SetCodelet("EMPTY", "");
+                snippet.InsertSnippet("INITVARSCUSTOMREPORTFIELDLIST", tempTemplate);
             }
 
             Template.InsertSnippet(WhereToInsert, snippet);
@@ -395,7 +449,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         TLogging.Log("Warning: there is no primary key for table " + currentTable.strName);
                     }
 
-                    InsertTableDefinition(Template, currentTable, null, "TABLELOOP");
+                    InsertTableDefinition(Template, currentTable, null, "TABLELOOP", false);
                     InsertRowDefinition(Template, currentTable, null, "TABLELOOP");
                 }
             }

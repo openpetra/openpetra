@@ -316,9 +316,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoSupplierTransactionHistory.OpenTaggedDocuments(sender, e);
         }
 
-        private void TransactionDeleteSelected(object sender, EventArgs e)
+        private void TransactionCancelSelected(object sender, EventArgs e)
         {
-            ucoSupplierTransactionHistory.DeleteSelected(sender, e);
+            ucoSupplierTransactionHistory.CancelSelected(sender, e);
         }
 
         private void TransactionReverseSelected(object sender, EventArgs e)
@@ -345,9 +345,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoOutstandingInvoices.OpenAllTagged(sender, e);
         }
 
-        private void InvoiceDeleteAllTagged(object sender, EventArgs e)
+        private void InvoiceCancelAllTagged(object sender, EventArgs e)
         {
-            ucoOutstandingInvoices.DeleteAllTagged(sender, e);
+            ucoOutstandingInvoices.CancelAllTagged(sender, e);
         }
 
         private void InvoiceReverseAllTagged(object sender, EventArgs e)

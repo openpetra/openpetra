@@ -203,31 +203,44 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                     // run month end
                     TMonthEnd MonthEndOperator = new TMonthEnd(LedgerInfo);
-                    MonthEndOperator.SetNextPeriod();
+                    MonthEndOperator.SetNextPeriod(null);
+
 
                     if (period == 12)
                     {
-                        TYearEnd YearEndOperator = new TYearEnd(LedgerInfo);
-                        // run year end
-                        TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-                        List <Int32>glBatches = new List <int>();
-                        TReallocation reallocation = new TReallocation(LedgerInfo, glBatches);
-                        reallocation.VerificationResultCollection = verificationResult;
-                        reallocation.IsInInfoMode = false;
-                        reallocation.RunOperation();
+                        TDBTransaction transaction = null;
+                        bool SubmissionOK = false;
 
-                        TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, yearCounter, YearEndOperator);
-                        glmNewYearInit.VerificationResultCollection = verificationResult;
-                        glmNewYearInit.IsInInfoMode = false;
-                        glmNewYearInit.RunOperation();
-                        YearEndOperator.SetNextPeriod();
+                        DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+                            IsolationLevel.Serializable,
+                            TEnforceIsolationLevel.eilMinimum,
+                            ref transaction,
+                            ref SubmissionOK,
+                            delegate
+                            {
+                                TYearEnd YearEndOperator = new TYearEnd(LedgerInfo);
+                                // run year end
+                                TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+                                List <Int32>glBatches = new List <int>();
+                                TReallocation reallocation = new TReallocation(LedgerInfo, glBatches, transaction);
+                                reallocation.VerificationResultCollection = verificationResult;
+                                reallocation.IsInInfoMode = false;
+                                reallocation.RunOperation();
 
-                        SampleDataLedger.InitExchangeRate();
+                                TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, yearCounter, YearEndOperator, transaction);
+                                glmNewYearInit.VerificationResultCollection = verificationResult;
+                                glmNewYearInit.IsInInfoMode = false;
+                                glmNewYearInit.RunOperation();
+                                YearEndOperator.SetNextPeriod(transaction);
 
-                        YearAD++;
-                        yearCounter++;
-                        SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber);
-                        period = 0;
+                                SampleDataLedger.InitExchangeRate();
+
+                                YearAD++;
+                                yearCounter++;
+                                SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber);
+                                period = 0;
+                                SubmissionOK = true;
+                            });
                     }
                 }
 

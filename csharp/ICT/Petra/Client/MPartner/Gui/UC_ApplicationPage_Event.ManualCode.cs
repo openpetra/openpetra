@@ -114,6 +114,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDetails(PmGeneralApplicationRow ARow)
         {
             GetDataFromControls(ARow);
+
+            // this one needs to be done manually since this field is automatically be filled for GenApp but not for ShortTermApp record
+            FMainDS.PmShortTermApplication[0].StApplicationType = cmbApplicationType.GetSelectedString();
         }
 
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)

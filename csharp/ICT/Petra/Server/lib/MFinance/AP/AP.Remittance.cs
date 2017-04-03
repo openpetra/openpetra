@@ -62,79 +62,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 counter++;
 
-                // Get the details for this payment
-                AccountsPayableTDS paymentDetails = TAPTransactionWebConnector.LoadAPPayment(ALedgerNumber, paymentNumber);
-
-                if (paymentDetails.PPartner.Rows.Count == 0) // unable to load this partner..
-                {
-                    continue;
-                }
-
-                if (paymentDetails.AApPayment.Rows.Count == 0) // unable to load this payment..
-                {
-                    continue;
-                }
-
                 decimal progress = counter / APaymentNumberList.Count * 100.0m;
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString(string.Format("Printing payment {0} ...", paymentNumber)),
                     progress);
 
-                TFormDataPartner formData = new TFormDataPartner();
-                TDBTransaction ReadTransaction = null;
-
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-                    delegate
-                    {
-                        // Deal with the supplier part
-                        Int64 supplierKey = paymentDetails.PPartner[0].PartnerKey;
-
-                        TFormLettersWebConnector.FillFormDataFromPartner(supplierKey, formData, AFormLetterFinanceInfo);
-
-                        // Deal with the top-level details of the Payment in the ApPayment table.  This will only have one row
-                        //  but may contain information about multiple invoices (documents)
-                        formData.PaymentNumber = paymentNumber;
-
-                        formData.PaymentDate = paymentDetails.AApPayment[0].PaymentDate.HasValue ?
-                                               paymentDetails.AApPayment[0].PaymentDate.Value.ToString("dd MMMM yyyy") : string.Empty;
-                        formData.TotalPayment = paymentDetails.AApPayment[0].Amount.ToString(
-                            "N2");
-
-                        formData.OurReference =
-                            (paymentDetails.AApSupplier.Rows.Count > 0) ? paymentDetails.AApSupplier[0].OurReference : string.Empty;
-
-                        string currencyCode = string.Empty;
-
-                        // A payment may be made up of multiple invoices
-                        foreach (AApDocumentRow documentRow in paymentDetails.AApDocument.Rows)
-                        {
-                            TFormDataAPPayment invoiceDetails = new TFormDataAPPayment();
-                            invoiceDetails.InvoiceNumber = documentRow.DocumentCode;
-                            invoiceDetails.InvoiceDate = documentRow.DateIssued.ToString("dd MMMM yyyy");
-                            invoiceDetails.InvoiceAmount = documentRow.TotalAmount.ToString(
-                                "N2");
-                            invoiceDetails.InvoiceCurrencyCode =
-                                (paymentDetails.AApSupplier.Rows.Count > 0) ? paymentDetails.AApSupplier[0].CurrencyCode : string.Empty;
-                            currencyCode = invoiceDetails.InvoiceCurrencyCode;
-
-                            invoiceDetails.PaymentAmount = string.Empty;
-
-                            // An invoice in this payment may only be part-paid, so how much of the invoice amount was paid in this payment??
-                            foreach (AApDocumentPaymentRow documentPayment in paymentDetails.AApDocumentPayment.Rows)
-                            {
-                                if ((documentPayment.ApDocumentId == documentRow.ApDocumentId) && (documentPayment.PaymentNumber == paymentNumber))
-                                {
-                                    invoiceDetails.PaymentAmount = documentPayment.Amount.ToString("N2");
-                                }
-                            }
-
-                            formData.AddPayment(invoiceDetails);
-                        }
-
-                        formData.CurrencyCode = currencyCode;
-                    });
-
-                AFormDataList.Add(formData);
+                CreateFormDataInternal(ALedgerNumber, paymentNumber, AFormLetterFinanceInfo, AFormDataList, false);
             }
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
@@ -143,60 +76,124 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
-        /// create the Cheque Printing Form Data for Templater documents
+        /// Create the Remittance Advice Form Data AND optionally the Cheque Data for Templater documents
+        /// This method allows the client to print cheque counterfoil information that includes remittance info
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean CreateChequeFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
-            Int32 AFirstPaymentNumber,
-            Int32 ALastPaymentNumber,
+        public static Boolean CreateRemittanceAdviceAndChequeFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
+            ref AccountsPayableTDSAApPaymentTable APaymentTable,
             Int32 ALedgerNumber,
-            Int32 AChequeNumber,
-            string AChequeAmountInWords,
-            decimal AChequeAmountToPay,
+            bool AIncludeChequeFormData,
             out List <TFormData>AFormDataList)
         {
             AFormDataList = new List <TFormData>();
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Creating Cheque"));
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Creating Remittance Advice"));
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Starting ..."), 10.0m);
 
-            int totalPayments = ALastPaymentNumber - AFirstPaymentNumber + 1;
+            // Print in payment number order
+            APaymentTable.DefaultView.Sort = string.Format("{0} ASC", AccountsPayableTDSAApPaymentTable.GetPaymentNumberDBName());
 
-            for (Int32 paymentNumber = AFirstPaymentNumber; paymentNumber <= ALastPaymentNumber; paymentNumber++)
+            for (int i = 0; i < APaymentTable.DefaultView.Count; i++)
             {
-                AccountsPayableTDS paymentDetails = TAPTransactionWebConnector.LoadAPPayment(ALedgerNumber, paymentNumber);
+                AccountsPayableTDSAApPaymentRow row = (AccountsPayableTDSAApPaymentRow)APaymentTable.DefaultView[i].Row;
+                int paymentNumber = row.PaymentNumber;
 
-                if (paymentDetails.PPartner.Rows.Count == 0) // unable to load this partner..
-                {
-                    continue;
-                }
-
-                decimal progress = (paymentNumber - AFirstPaymentNumber + 1) / totalPayments * 100.0m;
+                decimal progress = i / APaymentTable.DefaultView.Count * 100.0m;
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString(string.Format("Printing cheque for payment number {0} ...", paymentNumber)),
+                    Catalog.GetString(string.Format("Printing payment {0} ...", paymentNumber)),
                     progress);
 
-                TFormDataPartner formData = new TFormDataPartner();
-                TDBTransaction ReadTransaction = null;
-
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-                    delegate
-                    {
-                        Int64 supplierKey = paymentDetails.PPartner[0].PartnerKey;
-
-                        TFormLettersWebConnector.FillFormDataFromPartner(supplierKey, formData, AFormLetterFinanceInfo);
-
-                        formData.ChequeDate = DateTime.Today.ToString("dd MMM yyyy");
-                        formData.ChequeAmountInWords = AChequeAmountInWords;
-                        formData.ChequeAmountToPay = AChequeAmountToPay.ToString("n2");
-                        formData.ChequeNumber = AChequeNumber.ToString("D6");
-                    });
-
-                AFormDataList.Add(formData);
+                CreateFormDataInternal(ALedgerNumber, paymentNumber, AFormLetterFinanceInfo, AFormDataList,
+                    AIncludeChequeFormData, row.ChequeNumber, row.ChequeAmountInWords);
             }
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return true;
+        }
+
+        private static void CreateFormDataInternal(Int32 ALedgerNumber, int APaymentNumber,
+            TFormLetterFinanceInfo AFormLetterFinanceInfo, List <TFormData>AFormDataList, bool AIncludeChequeFormData,
+            int AChequeNumber = 0, string AChequeAmountInWords = "")
+        {
+            // Get all the details for this payment.  This creates a transaction.
+            AccountsPayableTDS paymentDetails = TAPTransactionWebConnector.LoadAPPayment(ALedgerNumber, APaymentNumber);
+
+            if (paymentDetails.PPartner.Rows.Count == 0) // unable to load this partner..
+            {
+                return;
+            }
+
+            if (paymentDetails.AApPayment.Rows.Count == 0) // unable to load this payment..
+            {
+                return;
+            }
+
+            if (AIncludeChequeFormData && paymentDetails.AApPayment[0].PrintCheque && (paymentDetails.AApPayment[0].Amount <= 0.0m))
+            {
+                // Cannot print cheques unless they are for a positive amount
+                return;
+            }
+
+            TFormDataPartner formData = new TFormDataPartner();
+
+            // Deal with the supplier part
+            Int64 supplierKey = paymentDetails.PPartner[0].PartnerKey;
+
+            TFormLettersWebConnector.FillFormDataFromPartner(supplierKey, formData, AFormLetterFinanceInfo);
+
+            // Deal with the top-level details of the Payment in the ApPayment table.  This will only have one row
+            //  but may contain information about multiple invoices (documents)
+            formData.PaymentNumber = paymentDetails.AApPayment[0].PaymentNumber;
+
+            formData.PaymentDate = paymentDetails.AApPayment[0].PaymentDate.HasValue ?
+                                   paymentDetails.AApPayment[0].PaymentDate.Value.ToString("dd MMMM yyyy") : string.Empty;
+            formData.TotalPayment = paymentDetails.AApPayment[0].Amount.ToString(
+                "N2");
+
+            formData.OurReference =
+                (paymentDetails.AApSupplier.Rows.Count > 0) ? paymentDetails.AApSupplier[0].OurReference : string.Empty;
+
+            string currencyCode = string.Empty;
+
+            // A payment may be made up of multiple invoices
+            foreach (AApDocumentRow documentRow in paymentDetails.AApDocument.Rows)
+            {
+                TFormDataAPPayment invoiceDetails = new TFormDataAPPayment();
+                invoiceDetails.InvoiceNumber = documentRow.DocumentCode;
+                invoiceDetails.InvoiceDate = documentRow.DateIssued.ToString("dd MMMM yyyy");
+                invoiceDetails.InvoiceAmount = documentRow.TotalAmount.ToString(
+                    "N2");
+                invoiceDetails.InvoiceCurrencyCode =
+                    (paymentDetails.AApSupplier.Rows.Count > 0) ? paymentDetails.AApSupplier[0].CurrencyCode : string.Empty;
+                currencyCode = invoiceDetails.InvoiceCurrencyCode;
+
+                invoiceDetails.PaymentAmount = string.Empty;
+
+                // An invoice in this payment may only be part-paid, so how much of the invoice amount was paid in this payment??
+                foreach (AApDocumentPaymentRow documentPayment in paymentDetails.AApDocumentPayment.Rows)
+                {
+                    if ((documentPayment.ApDocumentId == documentRow.ApDocumentId)
+                        && (documentPayment.PaymentNumber == paymentDetails.AApPayment[0].PaymentNumber))
+                    {
+                        invoiceDetails.PaymentAmount = documentPayment.Amount.ToString("N2");
+                    }
+                }
+
+                formData.AddPayment(invoiceDetails);
+            }
+
+            formData.CurrencyCode = currencyCode;
+
+            if (AIncludeChequeFormData && paymentDetails.AApPayment[0].PrintCheque)
+            {
+                formData.ChequeDate = DateTime.Today.ToString("dd MMM yyyy");
+                formData.ChequeAmountToPay = paymentDetails.AApPayment[0].Amount.ToString("n2");
+                formData.ChequeAmountInWords = AChequeAmountInWords;
+                formData.ChequeNumber = AChequeNumber.ToString("D6");
+            }
+
+            AFormDataList.Add(formData);
         }
     }
 }

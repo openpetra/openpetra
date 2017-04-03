@@ -2632,11 +2632,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PreviouslyImportedPartnerRow = (PPartnerRow)FMainDS.PPartner.DefaultView[0].Row;
                 PartnerImportedPreviously = true;
 
-                MessageBox.Show(string.Format(Catalog.GetString(
-                            "The Record with this Partner Key ({0}) has already been updated during this Import and will not be updated again."),
-                        ExistingPartnerKey),
-                    Catalog.GetString("Update Name"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Comment out the following message box for now as it is more confusing to users and it also appears unnecessarily when importing events from .ext files
+
+                /*MessageBox.Show(string.Format(Catalog.GetString(
+                 *          "The Record with this Partner Key ({0}) has already been updated during this Import and will not be updated again."),
+                 *      ExistingPartnerKey),
+                 *  Catalog.GetString("Update Name"),
+                 *  MessageBoxButtons.OK, MessageBoxIcon.Information);*/
             }
 
             // If the import file had a negative PartnerKey, I need to create a new one here,

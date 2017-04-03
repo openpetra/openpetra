@@ -125,7 +125,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     cmbReversalCommentThreeType.Text = FGiftDetailRow.CommentThreeType;
                 }
 
-                AddParam("BatchNumber", FGiftDetailRow.BatchNumber);
                 AddParam("GiftNumber", FGiftDetailRow.GiftTransactionNumber);
                 AddParam("GiftDetailNumber", FGiftDetailRow.DetailNumber);
                 AddParam("CostCentre", FGiftDetailRow.CostCentreCode);
@@ -242,7 +241,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             chkNoReceipt.Enabled = ((GiftAdjustmentFunctionEnum)requestParams["Function"] == GiftAdjustmentFunctionEnum.AdjustGift);
         }
 
-        private void GetGiftsForReverseAdjust()
+        /// <summary>
+        /// Load up my FGiftMainDS with the batch and gifts to be reversed.
+        /// </summary>
+        public void GetGiftsForReverseAdjust()
         {
             Boolean ok;
             TVerificationResultCollection Messages;

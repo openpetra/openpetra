@@ -35,7 +35,9 @@
           <Field name="LanguageDescription" sqltable="p_language" sqlfield="p_language_description_c"/>
         </Table>
         <Table sqltable="pm_person_ability"/>             <!-- Personal Abilities (should be merged with Professional Areas)-->
-        <Table sqltable="pm_past_experience"/>            <!-- Previous Experience -->
+        <Table sqltable="pm_past_experience">             <!-- Previous Experience -->
+          <CustomField name="EventName" type="string"/>
+        </Table>
         <Table sqltable="pm_staff_data"/>                 <!-- Commitment Periods -->
         <Table sqltable="pm_job_assignment"/>             <!-- Job Assignments -->
         <Table sqltable="pm_person_evaluation"/>          <!-- Progress Reports -->

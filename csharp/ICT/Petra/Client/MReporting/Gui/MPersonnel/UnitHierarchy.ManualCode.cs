@@ -112,5 +112,60 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 txtPartnerKey.Text = PartnerKey.ToString();
             }
         }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("UnitHierarchyReport",
+                false,
+                new string[] { "UnitHierarchy" },
+                ACalc,
+                this,
+                true,
+                false);
+        }
+
+        /// <summary>
+        /// Sets the Unit Key
+        /// </summary>
+        /// <param name="AUnitKey"></param>
+        public void SetParameters(Int64 AUnitKey)
+        {
+            txtPartnerKey.Text = AUnitKey.ToString();
+        }
+    }
+    /// <summary>
+    /// Manages the opening of a new/showing of an existing Instance of the Print Unit Hierarchy Screen.
+    /// </summary>
+    public static class TPrintUnitHierarchy
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Print Unit Hierarchy screen.
+        /// </summary>
+        /// <param name="AUnitKey">UnitKey of the Partner to print.</param>
+        /// <param name="AParentForm"></param>
+        public static bool OpenModalForm(Int64 AUnitKey, Form AParentForm)
+        {
+            TFrmUnitHierarchy UnitHierarchyForm;
+            DialogResult dlgResult;
+
+            UnitHierarchyForm = new TFrmUnitHierarchy(AParentForm);
+            UnitHierarchyForm.SetParameters(AUnitKey);
+
+            dlgResult = UnitHierarchyForm.ShowDialog();
+
+            if (dlgResult == System.Windows.Forms.DialogResult.OK)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

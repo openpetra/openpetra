@@ -104,36 +104,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
             String RootCostCentre = "[" + FLedgerNumber + "]";
-            paramsDictionary.Add("param_cost_centre_code", new TVariant(RootCostCentre));
 
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("SurplusDeficit", paramsDictionary);
+            ACalc.AddParameter("param_cost_centre_code", new TVariant(RootCostCentre));
 
-            if (ReportTable == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "SurplusDeficit");
-
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
-
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("SurplusDeficit",
+                false,
+                new string[] { "SurplusDeficit" },
+                ACalc,
+                this,
+                false,
+                true,
+                FLedgerNumber);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

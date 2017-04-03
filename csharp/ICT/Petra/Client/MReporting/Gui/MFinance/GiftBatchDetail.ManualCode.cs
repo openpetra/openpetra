@@ -106,46 +106,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
 
-            if (ACalc.GetParameters().Exists("param_currency")
-                && (ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction")))
-            {
-                ACalc.RemoveParameter("param_currency_name");
-                ACalc.AddParameter("param_currency_name",
-                    TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, FBatchNumber, true));
-            }
+            ACalc.AddParameter("param_currency_name",
+                TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, FBatchNumber, true));
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_batch_number_i", FBatchNumber);
 
 
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("GiftBatchDetail", paramsDictionary);
-
-            if (this.IsDisposed) // There's no cancel function as such - if the user has pressed Esc the form is closed!
-            {
-                return false;
-            }
-
-            if (ReportTable == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "GiftBatchDetail");
-
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("GiftBatchDetail",
+                false,
+                new string[] { "GiftBatchDetail" },
+                ACalc,
+                this,
+                false);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

@@ -994,6 +994,76 @@ namespace Ict.Common.DB.Exceptions
 
     #endregion
 
+    #region EDBNullTransactionException
+
+    /// <summary>
+    /// Thrown if a transaction is expected on a DB connection but the current transaction is null.
+    /// </summary>
+    [Serializable()]
+    public class EDBNullTransactionException : EOPDBException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBNullTransactionException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance with a specific error message.
+        /// </summary>
+        /// <param name="AMessage">An error message explaining the reason for this exception.</param>
+        public EDBNullTransactionException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance with a specific error message and the inner exception which caused this one.
+        /// </summary>
+        /// <param name="AMessage">An error message explaining the reason for this exception.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBNullTransactionException(String AMessage, Exception AInnerException)
+            : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBNullTransactionException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
 
     #region EDBAttemptingToUseTransactionThatIsInvalidException
 

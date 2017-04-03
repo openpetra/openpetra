@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowMaintainCachableTable
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template inc\template\src\winforms\windowMaintainCachableTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -817,7 +817,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
     /// There is full support for multi-row deletion.
-    /// Optional manual code can be included to take action prior, during or after each deletion.
+    /// Optional manual methods can be implemented - PreDeleteManual, DeleteRowManual, and PostDeleteManual - see details below.
     /// When the row(s) have been deleted the highlighted row index stays the same unless the deleted row was the last one.
     /// The Details for the newly highlighted row are automatically displayed - or not, if the grid has now become empty.
     /// </summary>
@@ -862,10 +862,12 @@ namespace {#NAMESPACE}
         return DeletionQuestion;
     }
 
-    /// <summary>
-    /// Handler for optional Pre-Delete manual code
-    /// </summary>
-    public void HandlePreDelete(DataRow ARowToDelete, ref bool AAllowDeletion, ref string ADeletionQuestion)
+/// <summary>
+/// Handler for optional Pre-Delete manual code.
+/// Implement Boolean PreDeleteManual (DataRow ARow, ref String ADeletionQuestion)
+/// (return true to allow deletion), otherwise nothing happens.
+/// </summary>
+public void HandlePreDelete(DataRow ARowToDelete, ref bool AAllowDeletion, ref string ADeletionQuestion)
     {
 {#IFDEF HASPREDELETEMANUAL}
         AAllowDeletion = PreDeleteManual(({#DETAILTABLE}Row)ARowToDelete, ref ADeletionQuestion);
@@ -874,8 +876,9 @@ namespace {#NAMESPACE}
 
     /// <summary>
     /// Handler for optional manual deletion code.  Return True if manual code handles deletion or false to use the default processing
+    /// Implement Boolean DeleteRowManual (DataRow ARow, ref String ACompletionMessage), otherwise nothing happens.
     /// </summary>
-    public bool HandleDeleteRow(DataRow ARowToDelete, ref bool ADeletionPerformed, ref string ACompletionMessage)
+public bool HandleDeleteRow(DataRow ARowToDelete, ref bool ADeletionPerformed, ref string ACompletionMessage)
     {
 {#IFDEF HASDELETEROWMANUAL}
         ADeletionPerformed = DeleteRowManual(({#DETAILTABLE}Row)ARowToDelete, ref ACompletionMessage);
@@ -888,8 +891,9 @@ namespace {#NAMESPACE}
 
     /// <summary>
     /// Handler for optional Post-Delete manual code.  Return True if manual code handles post-deletion or false to use the default processing
+    /// Implement Boolean PostDeleteManual (DataRow ARow, bool AAllowDeletion, bool ADeletionPerformed, String ACompletionMessage), otherwise nothing happens.
     /// </summary>
-    public bool HandlePostDelete(DataRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+public bool HandlePostDelete(DataRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
     {
 {#IFDEF HASPOSTDELETEMANUAL}
         PostDeleteManual(({#DETAILTABLE}Row)ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);

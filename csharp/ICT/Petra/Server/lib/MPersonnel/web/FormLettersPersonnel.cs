@@ -463,6 +463,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     // retrieve actual past experience records
                     PmPastExperienceTable PersonExpTable;
                     PersonExpTable = PmPastExperienceAccess.LoadViaPPerson(APartnerKey, AReadTransaction);
+                    PUnitTable UnitTable;
+                    PUnitRow UnitRow;
 
                     foreach (PmPastExperienceRow PersonExpRow in PersonExpTable.Rows)
                     {
@@ -477,6 +479,20 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         PersonExpRecord.SameOrg = PersonExpRow.PrevWorkHere;
                         PersonExpRecord.SimilarOrg = PersonExpRow.PrevWork;
                         PersonExpRecord.Comment = PersonExpRow.PastExpComments;
+
+                        // check if previous experience came from an event with location set to event code
+                        // -> in this case don't set event code as location but rather the event name
+                        PUnitRow template = new PUnitTable().NewRowTyped(false);
+
+                        template.OutreachCode = PersonExpRow.PrevLocation;
+
+                        UnitTable = PUnitAccess.LoadUsingTemplate(template, AReadTransaction);
+
+                        if (UnitTable.Rows.Count > 0)
+                        {
+                            UnitRow = (PUnitRow)UnitTable.Rows[0];
+                            PersonExpRecord.Location = UnitRow.UnitName;
+                        }
 
                         AFormDataPerson.AddWorkExperience(PersonExpRecord);
                     }

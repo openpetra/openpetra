@@ -854,17 +854,20 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
         /// <summary>
         /// This Test asserts that calling CheckRunningDBTransactionThreadIsCompatible when there is no current DB Transaction
-        /// returns true.
+        /// throws EDBNullTransactionException.
         /// </summary>
         [Test]
-        public void TestDBAccess_MultiThreading_CheckRunningDBTransactionThreadIsCompatible_ExpectTrue1()
+        public void TestDBAccess_MultiThreading_CheckRunningDBTransactionThreadIsCompatible_ExpectEDBNullTransactionException()
         {
             // Guard Assert
             Assert.IsNull(DBAccess.GDBAccessObj.Transaction);
 
             // Act and Primary Assert
-            Assert.IsTrue(DBAccess.GDBAccessObj.CheckRunningDBTransactionThreadIsCompatible(),
-                "Calling CheckRunningDBTransactionThreadIsCompatible when there is no current DB Transaction did not return true");
+            Assert.Catch <EDBNullTransactionException>(delegate
+                                                       {
+                                                           DBAccess.GDBAccessObj.CheckRunningDBTransactionThreadIsCompatible();
+                                                       },
+                                                       "Calling CheckRunningDBTransactionThreadIsCompatible when there is no current DB Transaction did not throw EDBNullTransactionException");
         }
 
         /// <summary>
@@ -910,18 +913,20 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
         /// <summary>
         /// This Test asserts that calling CheckRunningDBTransactionIsCompatible when there is no current DB Transaction
-        /// returns true.
+        /// throws EDBNullTransactionException.
         /// </summary>
         [Test]
-        public void TestDBAccess_MultiThreading_CheckRunningDBTransactionIsCompatible_ExpectTrue1()
+        public void TestDBAccess_MultiThreading_CheckRunningDBTransactionIsCompatible_ExpectEDBNullTransactionException()
         {
             // Guard Assert
             Assert.IsNull(DBAccess.GDBAccessObj.Transaction);
 
             // Act and Primary Assert
-            Assert.IsTrue(DBAccess.GDBAccessObj.CheckRunningDBTransactionIsCompatible(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilExact), "Calling CheckRunningDBTransactionIsCompatible when there is no current " +
-                "DB Transaction did not return true");
+            Assert.Catch <EDBNullTransactionException>(delegate {
+                                                           DBAccess.GDBAccessObj.CheckRunningDBTransactionIsCompatible(IsolationLevel.ReadCommitted,
+                                                               TEnforceIsolationLevel.eilExact);
+                                                       }, "Calling CheckRunningDBTransactionIsCompatible when there is no current " +
+                                                       "DB Transaction did not throw an EDBNullTransactionException");
         }
 
         /// <summary>
@@ -1035,6 +1040,59 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
         #endregion
 
+        #region SimpleAutoDBConnAndReadTransactionSelector
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector will create a new DB connection and transaction if the requested DB connection already
+        /// has an existing transaction with a compatible IsolationLevel but was started on a different thread.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_MultiThreading_SimpleSelector()
+        {
+            TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
+
+            RequestedConnection.BeginTransaction(ATransactionName : "First DB Transaction");
+
+            ThreadStart StartConnection = delegate
+            {
+                TDBTransaction ReadTransaction = null;
+                int Result = 0;
+
+                // Need to instantiate a TSrvSetting for DBAccess.SimpleEstablishDBConnection() to create a new connection for us.
+                var oink = new TSrvSetting();
+                Assert.NotNull(oink);
+
+                // As this transaction request comes from a different thread from the one the existing connection was started on,
+                // we can't join it and so must create a new connection on this thread.
+                DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "Second DB Transaction",
+                    ADatabase : RequestedConnection,
+                    AEncapsulatedDBAccessCode : delegate
+                    {
+                        Result =
+                            Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar(
+                                    "SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                    ReadTransaction));
+
+                        // Is this the expected connection?
+                        Assert.AreEqual("Second DB Transaction", ReadTransaction.DataBaseObj.ConnectionName);
+                    });
+
+                //// Check we get a result
+                Assert.AreEqual(1, Result);
+
+                //// Check the new transaction is rolled back
+                Assert.False(ReadTransaction.Valid);
+            };
+            Thread FirstThread = new Thread(StartConnection);
+
+            FirstThread.Start();
+            FirstThread.Join();
+
+
+            RequestedConnection.RollbackTransaction();
+            RequestedConnection.CloseDBConnection();
+        }
+
+        #endregion
 
         #region Helper Methods
 

@@ -135,6 +135,27 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                 case TIndividualDataItemEnum.idiPreviousExperiences:
                     PmPastExperienceAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
+
+                    PUnitTable UnitTable;
+                    PUnitRow UnitRow;
+
+                    // For outreaches the event code is currently stored in the location field. Try to retrieve the correct
+                    // outreach event and return it's actual name (as the event does not mean much to anybody).
+                    foreach (IndividualDataTDSPmPastExperienceRow PastExpRow in IndividualDataDS.PmPastExperience.Rows)
+                    {
+                        PUnitRow template = new PUnitTable().NewRowTyped(false);
+
+                        template.OutreachCode = PastExpRow.PrevLocation;
+
+                        UnitTable = PUnitAccess.LoadUsingTemplate(template, AReadTransaction);
+
+                        if (UnitTable.Rows.Count > 0)
+                        {
+                            UnitRow = (PUnitRow)UnitTable.Rows[0];
+                            PastExpRow.EventName = UnitRow.UnitName;
+                        }
+                    }
+
                     break;
 
                 case TIndividualDataItemEnum.idiPersonalDocuments:

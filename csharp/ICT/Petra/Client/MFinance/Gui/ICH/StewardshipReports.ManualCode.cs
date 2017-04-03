@@ -5,7 +5,7 @@
 //       christophert
 //       Tim Ingham
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -104,6 +104,13 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 FPetraUtilsObject.LoadDefaultSettings();
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            //
+            // I don't want to see the "Select template" option on this form.
+            FPetraUtilsObject.EnableDisableFastReports(false);
         }
 
         //

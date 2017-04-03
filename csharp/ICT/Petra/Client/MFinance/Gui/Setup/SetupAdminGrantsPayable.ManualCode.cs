@@ -228,5 +228,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     AFeesPayableTable.ColumnAccountCodeId
                 });
         }
+
+        //
+        // Called before row deletion. I return true unless this row should not be deleted.
+        private Boolean PreDeleteManual(AFeesPayableRow ARow, ref String ADeletionQuestion)
+        {
+            if ((ARow.FeeCode == "ICT") || (ARow.FeeCode == "GIF"))
+            {
+                MessageBox.Show(
+                    Catalog.GetString("Fees ICT and GIF are protected and cannot be deleted."),
+                    Catalog.GetString("Delete Fees"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void ShowDetailsManual(AFeesPayableRow ARow)
+        {
+            if (ARow == null)
+            {
+                return;
+            }
+
+            bool isNotIctOrGif = (ARow.FeeCode != "GIF" && ARow.FeeCode != "ICT");
+
+            txtDetailFeeDescription.Enabled = isNotIctOrGif;
+            cmbDetailChargeOption.Enabled = isNotIctOrGif;
+            txtDetailChargePercentage.ReadOnly = !isNotIctOrGif;
+            cmbDetailCostCentreCode.Enabled = isNotIctOrGif;
+        }
     }
 }

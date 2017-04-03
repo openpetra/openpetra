@@ -947,31 +947,46 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <summary>
         /// Documents can only be deleted if they're not posted yet.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ADeleteTheseDocs"></param>
+        /// <param name="ALedgerNumber">Ledger</param>
+        /// <param name="ACancelTheseDocs">List of documents</param>
+        /// <param name="ADeleteCancelledRows">If true the documents are removed from the database.
+        /// The standard AP behaviour is to set the status to Cancelled.  The Delete option should only be set to true in special circumstances
+        /// (for example when running a test and the desire is to clean the database of added test rows).</param>
         [RequireModulePermission("FINANCE-1")]
-        public static void DeleteAPDocuments(Int32 ALedgerNumber, List <Int32>ADeleteTheseDocs)
+        public static void CancelAPDocuments(Int32 ALedgerNumber, List <Int32>ACancelTheseDocs, bool ADeleteCancelledRows)
         {
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
-            foreach (Int32 ApDocumentId in ADeleteTheseDocs)
+            foreach (Int32 ApDocumentId in ACancelTheseDocs)
             {
                 TempDS.Merge(LoadAApDocument(ALedgerNumber, ApDocumentId)); // This gives me documents, details, and potentially ap_anal_attrib records.
             }
 
-            foreach (AApAnalAttribRow AnalAttribRow in TempDS.AApAnalAttrib.Rows)
+            if (ADeleteCancelledRows == false)
             {
-                AnalAttribRow.Delete();
+                // This is the 'standard' behaviour
+                foreach (AApDocumentRow DocRow in TempDS.AApDocument.Rows)
+                {
+                    DocRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_CANCELLED;
+                }
             }
-
-            foreach (AApDocumentDetailRow DetailRow in TempDS.AApDocumentDetail.Rows)
+            else
             {
-                DetailRow.Delete();
-            }
+                // Special case where we remove the data rows
+                foreach (AApAnalAttribRow AnalAttribRow in TempDS.AApAnalAttrib.Rows)
+                {
+                    AnalAttribRow.Delete();
+                }
 
-            foreach (AApDocumentRow DocRow in TempDS.AApDocument.Rows)
-            {
-                DocRow.Delete();
+                foreach (AApDocumentDetailRow DetailRow in TempDS.AApDocumentDetail.Rows)
+                {
+                    DetailRow.Delete();
+                }
+
+                foreach (AApDocumentRow DocRow in TempDS.AApDocument.Rows)
+                {
+                    DocRow.Delete();
+                }
             }
 
             Boolean submissionOK = true;
@@ -1473,6 +1488,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool CreatePaymentTableEntries(ref AccountsPayableTDS ADataset, Int32 ALedgerNumber, List <Int32>ADocumentsToPay)
         {
+            // Create a dictionary to keep our running total for each supplier
+            Dictionary <long, decimal>workingSupplierTotals = new Dictionary <long, decimal>();
+
+            // Now go through our list of documents to pay
             ADataset.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
 
             foreach (Int32 ApDocId in ADocumentsToPay)
@@ -1492,17 +1511,23 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     AccountsPayableTDSAApDocumentRow apDocumentRow =
                         (AccountsPayableTDSAApDocumentRow)ADataset.AApDocument.DefaultView[indexDocument].Row;
 
-                    AApSupplierRow supplierRow = GetSupplier(ADataset.AApSupplier, apDocumentRow.PartnerKey);
+                    long supplierPartnerKey = apDocumentRow.PartnerKey;
+                    AApSupplierRow supplierRow = GetSupplier(ADataset.AApSupplier, supplierPartnerKey);
 
                     if (supplierRow == null)
                     {
                         // I need to load the supplier record into the TDS...
-                        ADataset.Merge(LoadAApSupplier(apDocumentRow.LedgerNumber, apDocumentRow.PartnerKey));
-                        supplierRow = GetSupplier(ADataset.AApSupplier, apDocumentRow.PartnerKey);
+                        ADataset.Merge(LoadAApSupplier(apDocumentRow.LedgerNumber, supplierPartnerKey));
+                        supplierRow = GetSupplier(ADataset.AApSupplier, supplierPartnerKey);
                     }
 
                     if (supplierRow != null)
                     {
+                        if (workingSupplierTotals.ContainsKey(supplierPartnerKey) == false)
+                        {
+                            workingSupplierTotals.Add(supplierPartnerKey, 0.0m);
+                        }
+
                         AccountsPayableTDSAApPaymentRow supplierPaymentsRow = null;
 
                         // My TDS may already have a AApPayment row for this supplier.
@@ -1515,14 +1540,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                             if (apDocumentRow.CreditNoteFlag)
                             {
-                                supplierPaymentsRow.TotalAmountToPay -= apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] -= apDocumentRow.OutstandingAmount;
                             }
                             else
                             {
-                                supplierPaymentsRow.TotalAmountToPay += apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] += apDocumentRow.OutstandingAmount;
                             }
 
-                            supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
+                            supplierPaymentsRow.Amount = workingSupplierTotals[supplierPartnerKey]; // The user may choose to change the amount paid.
                         }
                         else
                         {
@@ -1549,14 +1574,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                             if (apDocumentRow.CreditNoteFlag)
                             {
-                                supplierPaymentsRow.TotalAmountToPay = 0 - apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] = 0 - apDocumentRow.OutstandingAmount;
                             }
                             else
                             {
-                                supplierPaymentsRow.TotalAmountToPay = apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] = apDocumentRow.OutstandingAmount;
                             }
 
-                            supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
+                            supplierPaymentsRow.Amount = workingSupplierTotals[supplierPartnerKey]; // The user may choose to change the amount paid.
+                            supplierPaymentsRow.PrintRemittanceAdvice = true;
+                            supplierPaymentsRow.PrintCheque = string.Compare(supplierRow.PaymentType,
+                                "CHEQUE",
+                                true) == 0;
+                            supplierPaymentsRow.ChequeNumber = 0;
+                            supplierPaymentsRow.ChequeAmountInWords = string.Empty;
 
                             ADataset.AApPayment.Rows.Add(supplierPaymentsRow);
                         }
@@ -1600,6 +1631,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ref AccountsPayableTDS AMainDS,
             DateTime APostingDate,
             out Int32 AglBatchNumber,
+            out AccountsPayableTDSAApPaymentTable ANewPayments,
             out TVerificationResultCollection AVerificationResult)
         {
             AccountsPayableTDS MainDS = AMainDS;
@@ -1607,6 +1639,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
             AglBatchNumber = -1;
+            ANewPayments = new AccountsPayableTDSAApPaymentTable();
+            AccountsPayableTDSAApPaymentTable newPayments = ANewPayments;
 
             if ((MainDS.AApPayment.Rows.Count < 1) || (MainDS.AApDocumentPayment.Rows.Count < 1))
             {
@@ -1692,6 +1726,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         }
 
                         paymentRow.PaymentNumber = NewPaymentNumber;
+
+                        // Now that we have the new payment number we create a new row in our newPayments table
+                        AccountsPayableTDSAApPaymentRow paymentRowCopy = newPayments.NewRowTyped();
+                        DataUtilities.CopyAllColumnValues(paymentRow, paymentRowCopy);
+                        newPayments.Rows.Add(paymentRowCopy);
                     }
 
                     // create GL batch
@@ -1729,6 +1768,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         {
                         }
 
+                        newPayments.Clear();
+
                         return; // return from delegate
                     }
 
@@ -1745,6 +1786,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             if (PostingWorkedOk)
             {
                 AglBatchNumber = batch.BatchNumber;
+                ANewPayments.AcceptChanges();
             }
 
             AVerificationResult = VerificationResult;
@@ -1816,6 +1858,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         PPartnerLocationAccess.LoadViaPPartner(MainDs, PartnerKey, transaction);
                         PLocationAccess.LoadViaPPartner(MainDs, PartnerKey, transaction);
                         AApSupplierAccess.LoadByPrimaryKey(MainDs, PartnerKey, transaction);
+
+                        supplierPaymentsRow.PrintRemittanceAdvice = true;
+                        supplierPaymentsRow.PrintCheque = string.Compare(((AApSupplierRow)MainDs.AApSupplier.Rows[0]).PaymentType,
+                            "CHEQUE",
+                            true) == 0;
+                        supplierPaymentsRow.ChequeNumber = 0;
+                        supplierPaymentsRow.ChequeAmountInWords = string.Empty;
                     }
                 }); // Get NewOrExisting AutoReadTransaction
 
@@ -1986,10 +2035,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         // created to balance the books.
                     }
 
+                    AccountsPayableTDSAApPaymentTable newPayments;
+
                     if (!PostAPPayments(
                             ref ReverseDS,
                             APostingDate,
                             out batchNumber,
+                            out newPayments,
                             out Verifications))
                     {
                         return;

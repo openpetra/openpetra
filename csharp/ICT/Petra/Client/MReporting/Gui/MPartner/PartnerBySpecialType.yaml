@@ -80,7 +80,7 @@ RootNode:
             Name: County
             Parameter: 2.0
         Para8:
-            Name: Primary EMail
+            Name: Primary Email
             Parameter: 4.0
         Para9:
             Name: Fax

@@ -509,9 +509,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             DocPayment.PaymentNumber = Payment.PaymentNumber;
             MainDS.AApDocumentPayment.Rows.Add(DocPayment);
             Int32 glBatchNumber;
+            AccountsPayableTDSAApPaymentTable newPayments;
 
             if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, APeriodEndDate,
                     out glBatchNumber,
+                    out newPayments,
                     out VerificationResult))
             {
                 Assert.Fail(AssertFailMessage +

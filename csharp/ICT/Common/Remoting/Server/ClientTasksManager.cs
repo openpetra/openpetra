@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,6 +45,8 @@ namespace Ict.Common.Remoting.Server
 
         /// <summary>DataTable holding Tasks that have been fetched by the Client.</summary>
         private DataTable FClientTasksHistoryDataTable;
+
+        private DateTime? FLastEntryAdded = null;
 
         /// <summary>
         /// Gets called by KeepAlive to inquire if there are Tasks
@@ -156,6 +158,8 @@ namespace Ict.Common.Remoting.Server
             object ATaskParameter4,
             Int16 ATaskPriority)
         {
+            int UnusuallyFewSeconds = Convert.ToInt16(TAppSettingsManager.GetValue(
+                    "Server.DEBUG.ClientTasks_UnusuallyFewSeconds", "3", false));
             DataRow NewEntry;
 
             if (ATaskParameter1 == null)
@@ -189,6 +193,32 @@ namespace Ict.Common.Remoting.Server
             NewEntry["TaskPercentDone"] = '0';
             NewEntry["TaskStatus"] = "New";
             FClientTasksNewDataTable.Rows.Add(NewEntry);
+
+            //
+            // Debugging
+            //
+            if (TLogging.DL >= 2)
+            {
+                if (FLastEntryAdded.HasValue)
+                {
+                    // Calculate time between the last adding of a ClientTask and now
+                    var Duration = DateTime.Now.Subtract(FLastEntryAdded.Value);
+
+                    // Determine whether the time has been very close
+                    if (Duration.TotalSeconds < UnusuallyFewSeconds)
+                    {
+                        TLogging.Log(String.Format(
+                                "TClientTasksManager: A new Client Task has been added, but the last added Client Task was added less than {0} seconds ago (only {1} second ago) and the Client Tasks Table now holds {2} entries!!!   Details of new Client Task: : TaskGroup: '{3}'; TaskCode: '{4}'; TaskParameter1: '{5}', ; TaskParameter2: '{6}'    AppDomain: '{7}'",
+                                UnusuallyFewSeconds, Duration.TotalSeconds, FClientTasksNewDataTable.Rows.Count,
+                                NewEntry["TaskGroup"], NewEntry["TaskCode"], NewEntry["TaskParameter1"], NewEntry["TaskParameter2"],
+                                AppDomain.CurrentDomain.FriendlyName));
+
+                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                    }
+                }
+            }
+
+            FLastEntryAdded = DateTime.Now;
 
             // TLogging.LogAtLevel(1, "Added new Task '" + ATaskCode + "'; TaskID: " + NewEntry["TaskID"].ToString());
 

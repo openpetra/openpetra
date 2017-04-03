@@ -4,6 +4,7 @@
 // @Authors:
 //       timop
 //       Tim Ingham
+//       alanP
 //
 // Copyright 2004-2016
 // This file is part of OpenPetra.org.
@@ -56,15 +57,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPPayment
     {
+        string AP_PAYMENT_MSG_TITLE = Catalog.GetString("AP Payment");
+
         AccountsPayableTDS FMainDS = null;
         Int32 FLedgerNumber = -1;
         ALedgerRow FLedgerRow = null;
         AccountsPayableTDSAApPaymentRow FSelectedPaymentRow = null;
         AccountsPayableTDSAApDocumentPaymentRow FSelectedDocumentRow = null;
         ACurrencyTable FCurrencyTable = null;
+        TFormLetterFinanceInfo FFormLetterFinanceInfo = null;
+        string FBasePaymentDetailsText = string.Empty;
 
         // For Templater printing of remittance advice
         List <TFormData>FFormDataList = null;
+
+        // Grid
+        int FSupplierGridRow = -1;
 
         private void RunOnceOnActivationManual()
         {
@@ -80,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtBaseAmount.CurrencyCode = LedgerRow.BaseCurrency;
 
             TExchangeRateCache.ResetCache();
-            FocusedRowChanged(null, null);
+            FocusedRowChanged(null, new SourceGrid.RowEventArgs(1));
         }
 
         private void LookupExchangeRate(Object sender, EventArgs e)
@@ -117,13 +125,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FMainDS.AApDocument[0].LedgerNumber, true, false, true, true, "");
 
+            FBasePaymentDetailsText = grpPaymentDetails.Text;
+
 //          grdDocuments.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
-            grdDocuments.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode, 180);
+            grdDocuments.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode);
             grdDocuments.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
 //          grdDocuments.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
             grdDocuments.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
 //          grdDocuments.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);
-            grdDocuments.Columns[2].Width = 120;
             grdDocuments.Columns.StretchToFit();
 
             grdPayments.AddTextColumn("Supplier", FMainDS.AApPayment.ColumnListLabel);
@@ -140,10 +149,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 txtPaymntNum.Text = FMainDS.AApPayment[0].PaymentNumber.ToString();
                 txtAmountToPay.Enabled = false;
-                txtChequeNumber.Enabled = true;
+                txtChequeNumber.Enabled = false;
                 txtCurrency.Enabled = false;
                 txtExchangeRate.Enabled = false;
-                txtAmountInWords.Enabled = true;
+                txtAmountInWords.Enabled = false;
                 btnLookupExchangeRate.Enabled = false;
                 txtExchangeRate.NumberValueDecimal = FMainDS.AApPayment[0].ExchangeRateToBase;
 
@@ -152,10 +161,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 cmbBankAccount.Enabled = false;
                 cmbPaymentType.Enabled = false;
 
-                grdDocuments.Enabled = true;
+                grdDocuments.Enabled = false;
                 grdPayments.Enabled = false;
 
+                tbbRemove.Enabled = false;
                 tbbMakePayment.Enabled = false;
+                tbbReprintCheque.Enabled = (string.Compare(FMainDS.AApPayment[0].MethodOfPayment, "Cheque", true) == 0);
 
                 rgrAmountToPay.Enabled = false;
                 tbbPrintReport.Enabled = true;
@@ -257,11 +268,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             TRemote.MFinance.AP.WebConnectors.CreatePaymentTableEntries(ref FMainDS, ALedgerNumber, ADocumentsToPay);
+
+            // Initialise the controls with our default values
             chkPrintRemittance.Checked = true;
             chkClaimDiscount.Enabled = false;
-            chkPrintCheque.Enabled = true;
             chkPrintLabel.Enabled = false;
             ShowDataManual();
+
+            OnChangePaymentType(null, null);    // set the enabled state for Print Cheque
+
             return true;
         }
 
@@ -274,6 +289,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (FSelectedDocumentRow != null)
             {
+                // It doesn't make much sense to remove the only invoice on the page
+                if ((grdPayments.Rows.Count == 2) && (grdDocuments.Rows.Count == 2))
+                {
+                    string msg = Catalog.GetString(
+                        "If you remove this invoice there will be nothing left to pay.  Do you want to close this screen without paying any invoices?");
+
+                    if (MessageBox.Show(msg, AP_PAYMENT_MSG_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        this.Close();
+                    }
+
+                    return;
+                }
+
+                if (MessageBox.Show(Catalog.GetString("Are you sure you want to remove the highlighted invoice from this payment?"),
+                        AP_PAYMENT_MSG_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return;
+                }
+
                 FSelectedPaymentRow.Amount -= FSelectedDocumentRow.Amount;
 
                 FMainDS.AApDocumentPayment.Rows.Remove(FSelectedDocumentRow);
@@ -283,8 +318,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if (FSelectedPaymentRow.Amount <= 0)
                 {
                     FMainDS.AApPayment.Rows.Remove(FSelectedPaymentRow);
+
+                    int newSupplierRow = FSupplierGridRow;
+
+                    if (newSupplierRow > grdPayments.Rows.Count - 1)
+                    {
+                        newSupplierRow = grdPayments.Rows.Count - 1;
+                    }
+
+                    grdPayments.Selection.SelectRow(newSupplierRow, true);
                     FSelectedPaymentRow = null;
-                    FocusedRowChanged(null, null);
+                    FocusedRowChanged(null, new SourceGrid.RowEventArgs(newSupplierRow));
                 }
             }
         }
@@ -342,18 +386,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
         {
-            DataRowView[] SelectedGridRow = grdPayments.SelectedDataRowsAsDataRowView;
+            // The Grid Row that shows suppliers names has changed
+            DataRowView[] SelectedPaymentRow = grdPayments.SelectedDataRowsAsDataRowView;
 
-            if (SelectedGridRow.Length >= 1)
+            if (e != null)
             {
-                FSelectedPaymentRow = (AccountsPayableTDSAApPaymentRow)SelectedGridRow[0].Row;
+                FSupplierGridRow = e.Row;
+            }
+
+            if (SelectedPaymentRow.Length >= 1)
+            {
+                GetPaymentDetailsFromControlsManual();
+
+                FSelectedPaymentRow = (AccountsPayableTDSAApPaymentRow)SelectedPaymentRow[0].Row;
+
                 tbbReprintRemittanceAdvice.Enabled = FSelectedPaymentRow.PaymentDate != null;
-                tbbReprintCheque.Enabled = FSelectedPaymentRow.PaymentDate != null;
+                tbbReprintCheque.Enabled =
+                    ((FSelectedPaymentRow.PaymentDate != null) && (string.Compare(FSelectedPaymentRow.MethodOfPayment, "Cheque", true) == 0));
 
                 if (!FSelectedPaymentRow.IsSupplierKeyNull())
                 {
                     AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, FSelectedPaymentRow.SupplierKey);
                     txtCurrency.Text = supplier.CurrencyCode;
+                    grpPaymentDetails.Text = FBasePaymentDetailsText + " for " + FSelectedPaymentRow.SupplierName;
 
                     if (FCurrencyTable != null)
                     {
@@ -369,7 +424,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
  *                      false);
  */
                     txtExchangeRate.NumberValueDecimal = FSelectedPaymentRow.ExchangeRateToBase;
-                    cmbPaymentType.SetSelectedString(supplier.PaymentType);
+                    cmbPaymentType.SetSelectedString(FSelectedPaymentRow.MethodOfPayment);     // This will trigger possible change to cheque controls
+
+                    if (chkPrintCheque.Enabled)
+                    {
+                        chkPrintCheque.Checked = FSelectedPaymentRow.PrintCheque;
+                        txtChequeNumber.NumberValueInt = FSelectedPaymentRow.ChequeNumber;
+                        txtAmountInWords.Text = FSelectedPaymentRow.ChequeAmountInWords;
+                    }
+                    else
+                    {
+                        chkPrintCheque.Checked = false;
+                        txtChequeNumber.NumberValueInt = 0;
+                        txtAmountInWords.Text = string.Empty;
+                    }
+
+                    chkPrintCheque_Clicked(null, null);
 
                     if (txtCurrency.Text == FLedgerRow.BaseCurrency)
                     {
@@ -384,6 +454,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 cmbBankAccount.SetSelectedString(FSelectedPaymentRow.BankAccount, -1);
+                txtReference.Text = FSelectedPaymentRow.Reference;
+                chkPrintRemittance.Checked = FSelectedPaymentRow.PrintRemittanceAdvice;
 
                 FMainDS.AApDocumentPayment.DefaultView.RowFilter = AccountsPayableTDSAApDocumentPaymentTable.GetPaymentNumberDBName() +
                                                                    " = " + FSelectedPaymentRow.PaymentNumber.ToString();
@@ -404,6 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void FocusedRowChangedDetails(System.Object sender, SourceGrid.RowEventArgs e)
         {
+            // The Invoices to be paid grid row has changed.  This is showing the default view on FMainDS.AApDocumentPaymen
             DataRowView[] SelectedGridRow = grdDocuments.SelectedDataRowsAsDataRowView;
 
             if (FSelectedDocumentRow != null)  // unload amount to pay into currently selected record
@@ -425,9 +498,34 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 EnablePartialPayment(null, null);
             }
+
+            grdDocuments.AutoResizeGrid();
         }
 
-        private Boolean GetPaymentNumbersAfterPosting(out Int32 MinPaymentNumber, out Int32 MaxPaymentNumber)
+        private bool GetPaymentDetailsFromControlsManual()
+        {
+            if (FSelectedPaymentRow != null)
+            {
+                FSelectedPaymentRow.PrintRemittanceAdvice = chkPrintRemittance.Checked;
+                FSelectedPaymentRow.PrintCheque = chkPrintCheque.Checked;
+
+                if (chkPrintCheque.Checked)
+                {
+                    FSelectedPaymentRow.ChequeNumber = txtChequeNumber.NumberValueInt.Value;
+                    FSelectedPaymentRow.ChequeAmountInWords = txtAmountInWords.Text;
+                }
+
+                FSelectedPaymentRow.BankAccount = cmbBankAccount.GetSelectedString();
+                FSelectedPaymentRow.Reference = txtReference.Text;
+                FSelectedPaymentRow.MethodOfPayment = cmbPaymentType.GetSelectedString();
+            }
+
+            return true;
+        }
+
+        private Boolean GetPaymentNumbersAfterPosting(AccountsPayableTDSAApPaymentTable ANewPayments,
+            out Int32 MinPaymentNumber,
+            out Int32 MaxPaymentNumber)
         {
             //
             // I need to find the min and max payment numbers, which have been returned from PostAPPayments..
@@ -438,7 +536,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             Boolean MaxSet = false;
             Boolean MinSet = false;
 
-            foreach (AccountsPayableTDSAApPaymentRow PaymentRow in FMainDS.AApPayment.Rows)
+            foreach (AccountsPayableTDSAApPaymentRow PaymentRow in ANewPayments.Rows)
             {
                 if (PaymentRow.PaymentNumber < MinPaymentNumber)
                 {
@@ -458,32 +556,28 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void PrintPaymentReport(object sender, EventArgs e)
         {
-            Int32 MinPaymentNumber;
-            Int32 MaxPaymentNumber;
+            PrintPaymentReport(FSelectedPaymentRow.PaymentNumber, FSelectedPaymentRow.PaymentNumber);
+        }
 
-            GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
-
+        private void PrintPaymentReport(Int32 AMinPaymentNumber, Int32 AMaxPaymentNumber)
+        {
             Int32 LedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
 
             // Print Payment report..
-            TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, MinPaymentNumber, MaxPaymentNumber, this);
+            TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, AMinPaymentNumber, AMaxPaymentNumber, this);
         }
 
         /// <summary>
         /// Print the remittance advice using HTML forms
         /// </summary>
-        private void PrintRemittanceAdvice()
+        private void PrintRemittanceAdvice(AccountsPayableTDSAApPaymentTable APaymentTable)
         {
-            if (chkPrintRemittance.Checked)
+            foreach (AccountsPayableTDSAApPaymentRow paymentRow in APaymentTable.Rows)
             {
-                Int32 MinPaymentNumber;
-                Int32 MaxPaymentNumber;
-                GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
-
-                for (Int32 PayNum = MinPaymentNumber; PayNum <= MaxPaymentNumber; PayNum++)
+                if (paymentRow.PrintRemittanceAdvice)
                 {
                     TFrmAP_RemittanceAdvice PreviewFrame = new TFrmAP_RemittanceAdvice(this);
-                    PreviewFrame.PrintRemittanceAdvice(PayNum, FMainDS.AApPayment[0].LedgerNumber);
+                    PreviewFrame.PrintRemittanceAdvice(paymentRow.PaymentNumber, FMainDS.AApPayment[0].LedgerNumber);
                     PreviewFrame.ShowDialog();
                 }
             }
@@ -492,41 +586,55 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <summary>
         /// Print the remittance advice using Templater
         /// </summary>
-        private void PrintRemittanceAdviceTemplater()
+        private void PrintRemittanceAdviceTemplater(AccountsPayableTDSAApPaymentTable APaymentTable)
         {
-            if (chkPrintRemittance.Checked)
-            {
-                TFormLetterFinanceInfo FormLetterFinanceInfo;
-                GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_REMITTANCE, out FormLetterFinanceInfo);
+            // Have a look and see if there are any remittance advice notes to print
+            bool gotRemittanceAdvice = false;
 
-                if (FormLetterFinanceInfo == null)
+            foreach (AccountsPayableTDSAApPaymentRow paymentRow in APaymentTable.Rows)
+            {
+                if (paymentRow.PrintCheque)
                 {
+                    gotRemittanceAdvice = true;
+                    break;
+                }
+            }
+
+            if (gotRemittanceAdvice)
+            {
+                GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_REMITTANCE, out FFormLetterFinanceInfo);
+
+                if (FFormLetterFinanceInfo == null)
+                {
+                    // We failed either because the user cancelled the dialog or because we could not read the template from the server.
+                    //  No need to display a message here because messages have been displayed already
                     return;
                 }
 
-                List <int>paymentNumberList = new List <int>();
-                Int32 MinPaymentNumber;
-                Int32 MaxPaymentNumber;
-                GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
-
-                for (int paymentNumber = MinPaymentNumber; paymentNumber <= MaxPaymentNumber; paymentNumber++)
-                {
-                    paymentNumberList.Add(paymentNumber);
-                }
-
-                PrintRemittanceAdviceTemplater(paymentNumberList,
+                PrintRemittanceAdviceTemplater(APaymentTable,
                     FMainDS.AApPayment[0].LedgerNumber,
-                    FormLetterFinanceInfo,
-                    !chkPrintCheque.Checked);
+                    FFormLetterFinanceInfo);
             }
         }
 
         /// <summary>
         /// Print the cheque using Templater
         /// </summary>
-        private void PrintChequeTemplater()
+        private void PrintChequeTemplater(AccountsPayableTDSAApPaymentTable APaymentTable)
         {
-            if (chkPrintCheque.Checked)
+            // Have a look and see if there are any cheques to print
+            bool gotCheque = false;
+
+            foreach (AccountsPayableTDSAApPaymentRow paymentRow in APaymentTable.Rows)
+            {
+                if (paymentRow.PrintCheque && (paymentRow.Amount > 0.0m))
+                {
+                    gotCheque = true;
+                    break;
+                }
+            }
+
+            if (gotCheque)
             {
                 TFormLetterFinanceInfo FormLetterFinanceInfo;
                 GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_CHEQUE, out FormLetterFinanceInfo);
@@ -536,10 +644,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     return;
                 }
 
-                Int32 MinPaymentNumber;
-                Int32 MaxPaymentNumber;
-                GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
-                PrintChequeTemplater(MinPaymentNumber, MaxPaymentNumber, FMainDS.AApPayment[0].LedgerNumber, FormLetterFinanceInfo);
+                // The server will not print any cheques for 0.00 or less, if the payment table includes any
+                PrintChequeTemplater(APaymentTable, FMainDS.AApPayment[0].LedgerNumber, FormLetterFinanceInfo);
             }
         }
 
@@ -566,12 +672,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            List <int>paymentNumberList = new List <int>();
-            paymentNumberList.Add(FSelectedDocumentRow.PaymentNumber);
-            PrintRemittanceAdviceTemplater(paymentNumberList,
+            PrintRemittanceAdviceTemplater(FMainDS.AApPayment,
                 FMainDS.AApPayment[0].LedgerNumber,
-                FormLetterFinanceInfo,
-                !chkPrintCheque.Checked);
+                FormLetterFinanceInfo);
         }
 
         /// <summary>
@@ -582,6 +685,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void ReprintCheque(object sender, EventArgs e)
         {
             // This code uses Templater
+            TFrmReprintChequeDialog chequeDetailsDlg = new TFrmReprintChequeDialog(this);
+
+            chequeDetailsDlg.Initialise(FSelectedPaymentRow.SupplierName,
+                FSelectedPaymentRow.Amount,
+                FSelectedPaymentRow.CurrencyCode,
+                txtAmountToPay.DecimalPlaces);
+
+            if (chequeDetailsDlg.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            int chqNum;
+            string chqAmount;
+            chequeDetailsDlg.GetValidatedData(out chqNum, out chqAmount);
+
+            AccountsPayableTDSAApPaymentTable workTable = new AccountsPayableTDSAApPaymentTable();
+            AccountsPayableTDSAApPaymentRow row = workTable.NewRowTyped();
+            DataUtilities.CopyAllColumnValues(FSelectedPaymentRow, row);
+            row.ChequeNumber = chqNum;
+            row.ChequeAmountInWords = chqAmount;
+            workTable.Rows.Add(row);
+
             TFormLetterFinanceInfo FormLetterFinanceInfo;
 
             GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_CHEQUE, out FormLetterFinanceInfo);
@@ -591,8 +717,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            int paymentNumber = FSelectedDocumentRow.PaymentNumber;
-            PrintChequeTemplater(paymentNumber, paymentNumber, FMainDS.AApPayment[0].LedgerNumber, FormLetterFinanceInfo);
+            PrintChequeTemplater(workTable, FSelectedPaymentRow.LedgerNumber, FormLetterFinanceInfo);
         }
 
         private void MakePayment(object sender, EventArgs e)
@@ -602,33 +727,46 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            //FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+            // Update the Row data from the controls
             FSelectedDocumentRow.Amount = txtAmountToPay.NumberValueDecimal.Value;
-            FSelectedPaymentRow.BankAccount = cmbBankAccount.GetSelectedString();
-
-            //
-            // I can't go ahead if the bank account isn't set.
-            //
-            if (FSelectedPaymentRow.BankAccount == "")
-            {
-                System.Windows.Forms.MessageBox.Show(
-                    Catalog.GetString("Error: no Bank account was specified."),
-                    Catalog.GetString("AP Payment"));
-                cmbBankAccount.Focus();
-                return;
-            }
+            GetPaymentDetailsFromControlsManual();
+            FocusedRowChanged(null, null);
 
             AccountsPayableTDSAApPaymentTable AApPayment = FMainDS.AApPayment;
 
-            //
-            // I want to check whether the user is paying more than the due amount on any of these payments...
-            //
+            int paymentsToPay = AApPayment.Rows.Count;
+            int invoicesToPay = 0;
+            int invoicesToPartPay = 0;
+            int creditNotesToClaim = 0;
+            int creditNotesToPartClaim = 0;
+            int remittancesToPrint = 0;
+            int chequesToPrint = 0;
+            decimal totalToPay = 0.0m;
+            string totalToPayString = string.Empty;
+
+            // Do some validation
             foreach (AccountsPayableTDSAApPaymentRow PaymentRow in AApPayment.Rows)
             {
-                FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}",
+                // Got a valid bank account?
+                if (PaymentRow.BankAccount == "")
+                {
+                    MessageBox.Show(
+                        string.Format(Catalog.GetString("Error: no Bank account was specified for the payment to {0}."), PaymentRow.SupplierName),
+                        AP_PAYMENT_MSG_TITLE);
+                    return;
+                }
+
+                remittancesToPrint += PaymentRow.PrintRemittanceAdvice ? 1 : 0;
+                chequesToPrint += PaymentRow.PrintCheque ? 1 : 0;
+
+                //
+                // I want to check whether the user is paying more than the due amount on any of these invoices...
+                //
+                DataView docPaymentView = new DataView(FMainDS.AApDocumentPayment);
+                docPaymentView.RowFilter = String.Format("{0}={1}",
                     AApDocumentPaymentTable.GetPaymentNumberDBName(), PaymentRow.PaymentNumber);
 
-                foreach (DataRowView rv in FMainDS.AApDocumentPayment.DefaultView)
+                foreach (DataRowView rv in docPaymentView)
                 {
                     AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
                     Boolean overPayment = (DocPaymentRow.DocType == "INVOICE") ?
@@ -642,35 +780,100 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 StringHelper.FormatUsingCurrencyCode(DocPaymentRow.Amount, PaymentRow.CurrencyCode),
                                 PaymentRow.CurrencyCode, PaymentRow.SupplierName);
 
-                        System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("AP Payment"));
+                        System.Windows.Forms.MessageBox.Show(strMessage, AP_PAYMENT_MSG_TITLE);
+                        return;
+                    }
+
+                    if (DocPaymentRow.Amount == 0.0m)
+                    {
+                        MessageBox.Show(
+                            string.Format(Catalog.GetString("Error: there is nothing to pay on invoice {0} for the payment to {1}."),
+                                DocPaymentRow.DocumentCode,
+                                PaymentRow.SupplierName),
+                            AP_PAYMENT_MSG_TITLE);
+                        return;
+                    }
+
+                    if (DocPaymentRow.DocType == "CREDIT")
+                    {
+                        creditNotesToClaim++;
+
+                        if (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal)
+                        {
+                            creditNotesToPartClaim++;
+                        }
+                    }
+                    else
+                    {
+                        invoicesToPay++;
+
+                        if (DocPaymentRow.Amount < DocPaymentRow.InvoiceTotal)
+                        {
+                            invoicesToPartPay++;
+                        }
+                    }
+
+                    totalToPay += (DocPaymentRow.Amount / PaymentRow.ExchangeRateToBase);
+                }
+
+                if (totalToPay > 0.00m)
+                {
+                    totalToPayString = totalToPay.ToString("F" + txtBaseAmount.DecimalPlaces.ToString()) + " " + txtBaseAmount.CurrencyCode;
+                }
+                else
+                {
+                    totalToPayString = "(" + (-totalToPay).ToString("F" + txtBaseAmount.DecimalPlaces.ToString()) + ") " + txtBaseAmount.CurrencyCode;
+                }
+
+                if (totalToPay < 0.0m)
+                {
+                    if (MessageBox.Show(string.Format(Catalog.GetString(
+                                    "It is unusual to make a negative payment to a supplier.  Are you sure that you want a payment of {0} to {1}"),
+                                totalToPayString, PaymentRow.SupplierName),
+                            AP_PAYMENT_MSG_TITLE,
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2) == DialogResult.No)
+                    {
                         return;
                     }
                 }
-            }
 
-            if (chkPrintCheque.Checked)
-            {
-                if ((txtChequeNumber.NumberValueInt.HasValue == false) || (txtChequeNumber.NumberValueInt == 0))
+                // Got the necessary cheque information
+                if (PaymentRow.PrintCheque)
                 {
-                    MessageBox.Show(Catalog.GetString("Please enter a cheque number"), Catalog.GetString("Print Cheque"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
+                    if (totalToPay <= 0.0m)
+                    {
+                        MessageBox.Show(string.Format(
+                                Catalog.GetString(
+                                    "Cheques can only be printed for amounts greater than zero.  The cheque to supplier {0} will not be printed."),
+                                PaymentRow.SupplierName),
+                            AP_PAYMENT_MSG_TITLE,
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        chequesToPrint--;
+                        // Note: we don't modify the check box in case the user goes back and changes the amounts to result in a positive amount to pay
+                    }
+                    else
+                    {
+                        if (PaymentRow.ChequeNumber == 0)
+                        {
+                            MessageBox.Show(string.Format(
+                                    Catalog.GetString("Please enter a cheque number for the cheque to supplier {0}"), PaymentRow.SupplierName),
+                                AP_PAYMENT_MSG_TITLE,
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
 
-                if (txtAmountToPay.NumberValueDecimal.HasValue == false)
-                {
-                    MessageBox.Show(Catalog.GetString("Please enter an amount to pay"), Catalog.GetString("Print Cheque"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (txtAmountInWords.Text.Trim().Length == 0)
-                {
-                    MessageBox.Show(string.Format(
-                            Catalog.GetString("Please enter an amount in words to be printed on the cheque (corresponding to {0} {1})"),
-                            txtAmountToPay.Text, txtCurrency.Text),
-                        Catalog.GetString("Print Cheque"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                        if (PaymentRow.ChequeAmountInWords.Trim().Length == 0)
+                        {
+                            MessageBox.Show(string.Format(
+                                    Catalog.GetString("Please enter an amount in words to be printed on the cheque to {0} (corresponding to {1} {2})"),
+                                    PaymentRow.SupplierName,
+                                    PaymentRow.Amount, PaymentRow.CurrencyCode),
+                                AP_PAYMENT_MSG_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -681,21 +884,60 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
-                MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
-                        "AP Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString(
+                        "No payments have been made."), AP_PAYMENT_MSG_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             DateTime PaymentDate = dateEffectiveDialog.SelectedDate;
+
+            string msg = string.Format(Catalog.GetPluralString(
+                    "You are about to make {0} payment to the listed supplier", "You are about to make payments to all {0} listed suppliers",
+                    paymentsToPay), paymentsToPay);
+
+            msg += string.Format(Catalog.GetString(
+                    "{0}-  Invoices to pay: {1}"),
+                Environment.NewLine, invoicesToPay);
+            msg += string.Format(Catalog.GetString(
+                    "{0}     of which Paid in Full: {1}{0}     Part Paid: {2}"),
+                Environment.NewLine, invoicesToPay - invoicesToPartPay, invoicesToPartPay);
+
+            if (creditNotesToClaim > 0)
+            {
+                msg += string.Format(Catalog.GetString(
+                        "{0}-  Credit Notes to claim: {1}"),
+                    Environment.NewLine, creditNotesToClaim);
+                msg += string.Format(Catalog.GetString(
+                        "{0}     of which Claimed in Full: {1}{0}     Part Claimed: {2}"),
+                    Environment.NewLine, creditNotesToClaim - creditNotesToPartClaim, creditNotesToPartClaim);
+            }
+
+            msg += string.Format(Catalog.GetString(
+                    "{0}-  Remittance Advice Notes to print: {1}{0}-  Cheques to print: {2}"),
+                Environment.NewLine, remittancesToPrint, chequesToPrint);
+            msg += string.Format(Catalog.GetString("{0}The total of all payments is {1}"), Environment.NewLine, totalToPayString);
+            msg += string.Format(Catalog.GetPluralString(
+                    "{0}The payment will be dated {1}{0}{0}", "{0}All payments will be dated {1}{0}{0}", paymentsToPay),
+                Environment.NewLine, PaymentDate.ToLongDateString());
+            msg += Catalog.GetString("Are you ready to proceed?");
+
+            if (MessageBox.Show(msg, AP_PAYMENT_MSG_TITLE,
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+            {
+                return;
+            }
+
             TVerificationResultCollection Verifications;
 
             this.Cursor = Cursors.WaitCursor;
             Int32 glBatchNumber;
+            AccountsPayableTDSAApPaymentTable newPayments;
 
             if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
                     ref FMainDS,
                     PaymentDate,
                     out glBatchNumber,
+                    out newPayments,
                     out Verifications))
             {
                 this.Cursor = Cursors.Default;
@@ -718,12 +960,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
                 ReportGui.PrintReportNoUi(FLedgerNumber, glBatchNumber);
 
-                PrintPaymentReport(sender, e);
-                // PrintRemittanceAdvice();             // Use this for HTML printing
-                PrintRemittanceAdviceTemplater();       // Use this for Templater printing
-                PrintChequeTemplater();                 // Use this for Templater printing
+                // For printing stuff about payments we need our newPayments because those rows have the new Payment Numbers in place of -1, -2 etc.
+                int minNewPaymentNumber;
+                int maxNewPaymentNumber;
 
-                // After the payment, one or more documents may have changed.
+                if (GetPaymentNumbersAfterPosting(newPayments, out minNewPaymentNumber, out maxNewPaymentNumber))
+                {
+                    PrintPaymentReport(minNewPaymentNumber, maxNewPaymentNumber);
+                }
+
+                //PrintRemittanceAdvice(newPayments);                // Use this for HTML printing
+                PrintRemittanceAdviceTemplater(newPayments);       // Use this for Templater printing
+                PrintChequeTemplater(newPayments);                 // Use this for Templater printing
+
+                // After the payment(s), one or more documents may have changed.
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
                 broadcastMessage.SetMessageDataAPTransaction(String.Empty);
                 TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
@@ -896,7 +1146,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void OnChangePaymentType(object sender, EventArgs e)
         {
-            txtChequeNumber.Enabled = (cmbPaymentType.GetSelectedString() == "Cheque");
+            string paymentType = cmbPaymentType.GetSelectedString();
+            bool isCheque = (string.Compare(paymentType, "Cheque", true) == 0);
+
+            txtChequeNumber.Enabled = isCheque;
+            txtAmountInWords.Enabled = isCheque;
+            chkPrintCheque.Enabled = isCheque;
+            chkPrintCheque.Checked = isCheque;
+
+            if (FSelectedPaymentRow != null)
+            {
+                // Change the text in the supplier list
+                FSelectedPaymentRow.ListLabel = FSelectedPaymentRow.ListLabel.Substring(0, FSelectedPaymentRow.ListLabel.IndexOf('(')) +
+                                                "(" + paymentType + ")";
+            }
         }
 
         private void Invoice_DoubleClicked(object sender, EventArgs e)
@@ -932,27 +1195,28 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return;
         }
 
-        private Boolean CreateRemittanceAdviceFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
-            List <int>APaymentNumberList,
+        private Boolean CreateRemittanceAdviceAndChequeFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
+            AccountsPayableTDSAApPaymentTable APaymentTable,
             int ALedgerNumber,
+            bool AIncludeChequeFormData,
             ref Boolean ACallFinished)
         {
-            bool formDataCreated = TRemote.MFinance.AP.WebConnectors.CreateRemittanceAdviceFormData(
-                AFormLetterFinanceInfo, APaymentNumberList, ALedgerNumber, out FFormDataList);
+            bool formDataCreated = TRemote.MFinance.AP.WebConnectors.CreateRemittanceAdviceAndChequeFormData(
+                AFormLetterFinanceInfo, ref APaymentTable, ALedgerNumber, AIncludeChequeFormData, out FFormDataList);
 
             ACallFinished = true;
             return formDataCreated;
         }
 
-        private void PrintRemittanceAdviceTemplater(List <int>APaymentNumberList, int ALedgerNumber,
-            TFormLetterFinanceInfo AFormLetterFinanceInfo, bool ACloseThisOnCompletion)
+        private void PrintRemittanceAdviceTemplater(AccountsPayableTDSAApPaymentTable APaymentTable, int ALedgerNumber,
+            TFormLetterFinanceInfo AFormLetterFinanceInfo)
         {
             Boolean ThreadFinished = false;
             Boolean FormLetterDataCreated = false;
 
             // create form letter data in separate thread. This will fill FFormDataList
-            Thread t = new Thread(() => FormLetterDataCreated = CreateRemittanceAdviceFormData(
-                    AFormLetterFinanceInfo, APaymentNumberList, ALedgerNumber, ref ThreadFinished));
+            Thread t = new Thread(() => FormLetterDataCreated = CreateRemittanceAdviceAndChequeFormData(
+                    AFormLetterFinanceInfo, APaymentTable, ALedgerNumber, false, ref ThreadFinished));
 
             using (TProgressDialog dialog = new TProgressDialog(t))
             {
@@ -977,32 +1241,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             // not implemented in OpenSource OpenPetra
             // string targetFolder = TTemplaterAccess.GetFormLetterBaseDirectory(TModule.mFinance);
-
-            if (ACloseThisOnCompletion)
-            {
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                this.Close();
-            }
         }
 
-        private Boolean CreateChequeFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
-            int AFirstPaymentNumber,
-            int ALastPaymentNumber,
-            int ALedgerNumber,
-            int AChequeNumber,
-            string AChequeAmountInWords,
-            decimal AChequeAmountToPay,
-            ref Boolean ACallFinished)
-        {
-            bool formDataCreated = TRemote.MFinance.AP.WebConnectors.CreateChequeFormData(AFormLetterFinanceInfo,
-                AFirstPaymentNumber, ALastPaymentNumber, ALedgerNumber, AChequeNumber, AChequeAmountInWords, AChequeAmountToPay, out FFormDataList);
-
-            ACallFinished = true;
-            return formDataCreated;
-        }
-
-        private void PrintChequeTemplater(int AFirstPaymentNumber,
-            int ALastPaymentNumber,
+        private void PrintChequeTemplater(AccountsPayableTDSAApPaymentTable APaymentTable,
             int ALedgerNumber,
             TFormLetterFinanceInfo AFormLetterFinanceInfo)
         {
@@ -1010,9 +1251,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             Boolean FormLetterDataCreated = false;
 
             // create form letter data in separate thread. This will fill FFormDataList
-            Thread t = new Thread(() => FormLetterDataCreated = CreateChequeFormData(AFormLetterFinanceInfo, AFirstPaymentNumber, ALastPaymentNumber,
-                    ALedgerNumber, txtChequeNumber.NumberValueInt.Value, txtAmountInWords.Text, txtTotalAmount.NumberValueDecimal.Value,
-                    ref ThreadFinished));
+            Thread t = new Thread(() => FormLetterDataCreated = CreateRemittanceAdviceAndChequeFormData(AFormLetterFinanceInfo,
+                    APaymentTable, ALedgerNumber, true, ref ThreadFinished));
 
             using (TProgressDialog dialog = new TProgressDialog(t))
             {

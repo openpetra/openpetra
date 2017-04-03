@@ -527,7 +527,7 @@ namespace Ict.Common.Controls
                     InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
-                    InternalContentDisabledFontColour = Color.FromArgb(44, 58, 56);
+                    InternalContentDisabledFontColour = Color.FromArgb(144, 158, 156);
 
                     // Padding Variables
                     InternalTitlePaddingTop = 4;
@@ -578,7 +578,7 @@ namespace Ict.Common.Controls
                     InternalContentFontColour = Color.FromArgb(62, 117, 255);
                     InternalContentHoverFontColour = Color.FromArgb(90, 155, 252);
                     InternalContentActivatedFontColour = InternalContentFontColour;
-                    InternalContentDisabledFontColour = Color.FromArgb(44, 58, 56);
+                    InternalContentDisabledFontColour = Color.FromArgb(144, 158, 156);
 
                     // Padding Variables
                     InternalTitlePaddingTop = 6;
@@ -723,7 +723,7 @@ namespace Ict.Common.Controls
                     InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
-                    InternalContentDisabledFontColour = Color.FromArgb(44, 58, 56);
+                    InternalContentDisabledFontColour = Color.FromArgb(144, 158, 156);
 
                     //CollapsedInfoTextFont Variables
                     InternalCollapsedInfoTextFont = InternalTitleFont;

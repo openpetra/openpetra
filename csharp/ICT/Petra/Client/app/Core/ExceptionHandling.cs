@@ -207,6 +207,12 @@ namespace Ict.Petra.Client.App.Core
                         ProcessSecurityAccessDeniedException.ToString());
                 }
             }
+            else if (TheException is System.OutOfMemoryException)
+            {
+                TExceptionHelper.ShowExceptionCausedByOutOfMemoryMessage(false);
+
+                TLogging.Log(TheException.ToString());
+            }
             else
             {
                 //      MessageBox.Show("UnhandledExceptionHandler  Unhandled Exception: \r\n\r\n" +
@@ -340,6 +346,12 @@ namespace Ict.Petra.Client.App.Core
                         "Message of the ProcessSecurityAccessDeniedException instance:" + Environment.NewLine +
                         ProcessSecurityAccessDeniedException.ToString());
                 }
+            }
+            else if (TheException is System.OutOfMemoryException)
+            {
+                TExceptionHelper.ShowExceptionCausedByOutOfMemoryMessage(false);
+
+                TLogging.Log(TheException.ToString());
             }
             else if ((TheException is InvalidOperationException)
                      && (Application.OpenForms.Count == 0)

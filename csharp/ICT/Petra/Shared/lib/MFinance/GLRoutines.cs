@@ -93,7 +93,7 @@ namespace Ict.Petra.Shared.MFinance
                     ActualLastJournalNumber = journalRow.JournalNumber;
                 }
 
-                if (UpdateJournalLastTransaction(ref AMainDS, ref journalRow))
+                if (UpdateJournalLastTransaction(AMainDS, journalRow))
                 {
                     RowUpdated = true;
                 }
@@ -116,8 +116,8 @@ namespace Ict.Petra.Shared.MFinance
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
         /// <returns>false if no change to journal totals</returns>
-        public static bool UpdateJournalLastTransaction(ref GLBatchTDS AMainDS,
-            ref GLBatchTDSAJournalRow ACurrentJournal)
+        public static bool UpdateJournalLastTransaction(GLBatchTDS AMainDS,
+            GLBatchTDSAJournalRow ACurrentJournal)
         {
             #region Validate Arguments
 

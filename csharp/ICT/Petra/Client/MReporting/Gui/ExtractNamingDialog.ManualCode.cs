@@ -99,6 +99,16 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
+            // extract name can't contain apostrophe
+            if (txtExtractName.Text.Contains("'"))
+            {
+                MessageBox.Show(Catalog.GetString("Extract name must not contain any apostrophe (')"),
+                    Catalog.GetString("Invalid Data entered"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+
             // check if extract already exists
             if (TRemote.MPartner.Partner.WebConnectors.ExtractExists(txtExtractName.Text))
             {

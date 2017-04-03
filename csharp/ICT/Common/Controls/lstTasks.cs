@@ -49,7 +49,8 @@ namespace Ict.Common.Controls
         private static bool FTaxGovIdEnabled = false;
         private static string FTaxGovIdLabel = string.Empty;
         private static bool FDevelopersOnly = false;
-
+        private static bool FRunningAsPartOfUnitTests =
+            (TAppSettingsManager.GetValue("Testing.Path", false) != TAppSettingsManager.UNDEFINEDVALUE);
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TaskAppearance FTaskAppearance;
         private bool FSingleClickExecution = false;
@@ -360,7 +361,11 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// The object of the last opened screen - useful for testing.
+        /// The object of the last opened screen - useful for evaluation in Unit Tests. This will only
+        /// be populated if TAppSettingsManager.GetValue("Testing.Path") yields something, i.e. when
+        /// the Client runs as part of Unit Tests! (If this would also be done in a regularly running
+        /// Client then this would cause a 'memory leak' because we would hold a reference to any last-opened
+        /// screen until the next one is opened!)
         /// </summary>
         static public Form LastOpenedScreen
         {
@@ -685,7 +690,12 @@ namespace Ict.Common.Controls
                     if (method != null)
                     {
                         method.Invoke(screen, null);
-                        FLastOpenedScreen = (Form)screen;
+
+                        if (FRunningAsPartOfUnitTests)
+                        {
+                            // *Only* when running the client as part of Unit Tests we keep a reference to the last opened screen for programmatic evaluation
+                            FLastOpenedScreen = (Form)screen;
+                        }
                     }
                     else
                     {

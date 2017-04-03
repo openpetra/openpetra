@@ -129,5 +129,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 }
             }
         }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("StartOfCommitmentReport",
+                false,
+                new string[] { "StartOfCommitment" },
+                ACalc,
+                this,
+                true);
+        }
     }
 }

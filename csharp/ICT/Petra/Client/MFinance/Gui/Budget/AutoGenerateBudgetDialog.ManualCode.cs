@@ -121,11 +121,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
                     //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
 
-                    DataView view = new DataView(ABdgTable);
-                    view.RowFilter = String.Format("{0}={1}",
-                        ABudgetTable.GetLedgerNumberDBName(),
-                        FLedgerNumber);
-                    DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+                    // We create a copy of the ABudget table but this time only with three columns and ensuring we get didtinct rows.
+                    // This caters for having multiple budget revisions by 'filtering' them out.
+                    // We already have a specific ledger and year from the server in ABdgTable.
+                    DataTable ABdgTable2 = ABdgTable.DefaultView.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
 
                     ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
                     ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
@@ -135,8 +134,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     clbCostCentreAccountCodes.Columns.Clear();
                     clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
                     clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
-                    clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
-                    clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, false, true, false);
+                    clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc]);
+                    clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, CCAccDesc, CheckedMember, BudgetSeqKey, false, true, false);
 
                     clbCostCentreAccountCodes.SetCheckedStringList("");
                 }
@@ -181,15 +180,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 if ((rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0))
                     || (rbtAllBudgets.Checked == true))
                 {
+                    int count = 0;
+
                     foreach (string BudgetItem in CheckedItems)
                     {
                         /* Generate report. Parameters are recid of the budget and the forecast type.
                          * RUN gb4000.p (RECID(a_budget), rad_forecast_type_c:SCREEN-VALUE).*/
                         int BudgetItemNo = Convert.ToInt32(BudgetItem);
-                        TRemote.MFinance.Budget.WebConnectors.GenBudgetForNextYear(FLedgerNumber, BudgetItemNo, ForecastType);
+
+                        if (TRemote.MFinance.Budget.WebConnectors.GenBudgetForNextYear(FLedgerNumber, BudgetItemNo, ForecastType))
+                        {
+                            count++;
+                        }
                     }
 
-                    MessageBox.Show("Budget Auto-Generate Complete.");
+                    MessageBox.Show(string.Format(Catalog.GetString("Budget Auto-Generate Complete.  {0} budget lines were updated."), count),
+                        Catalog.GetString("Generate Budget"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {

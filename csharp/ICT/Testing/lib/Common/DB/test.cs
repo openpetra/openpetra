@@ -503,10 +503,10 @@ namespace Ict.Common.DB.Testing
 
         /// <summary>
         /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible when there is no current DB
-        /// Transaction returns true.
+        /// Transaction throws EDBNullTransactionException.
         /// </summary>
         [Test]
-        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectTrue1()
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectEDBNullTransactionException()
         {
             bool Result;
 
@@ -514,13 +514,16 @@ namespace Ict.Common.DB.Testing
             Assert.IsNull(DBAccess.GDBAccessObj.Transaction);
 
 
-            // Act
-            Result = DBAccess.GDBAccessObj.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilExact);
-
-            // Primary Assert
-            Assert.IsTrue(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
-                "IsolationLevel that is exactly what the running DB Transaction has got did not return true");
+            // Act/Assert
+            Assert.Catch <EDBNullTransactionException>(delegate
+                                                       {
+                                                           Result =
+                                                               DBAccess.GDBAccessObj.CheckRunningDBTransactionIsolationLevelIsCompatible(
+                                                                   IsolationLevel.ReadCommitted,
+                                                                   TEnforceIsolationLevel.eilExact);
+                                                       },
+                                                       "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
+                                                       "IsolationLevel that is exactly what the running DB Transaction has got did not throw EDBNullTransactionException");
         }
 
         /// <summary>
@@ -804,6 +807,281 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList, 
 AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
                         "SelectUsingDataAdapterMulti using NO Prepared Command did not yield 1 records, but ought to.");
                 });
+        }
+
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector() can create a new transaction on the default DB connection.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_DefaultConnection()
+        {
+            TDBTransaction ReadTransaction = null;
+            int Result = 0;
+
+
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "Test1Transaction",
+                AEncapsulatedDBAccessCode : delegate
+                {
+                    Result =
+                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                ReadTransaction));
+
+                    // Is this the expected connection?
+                    Assert.AreEqual("Default NUnit TTestCommonDB DB Connection", ReadTransaction.DataBaseObj.ConnectionName);
+                });
+
+            // Did we get the expected transaction?
+            Assert.AreEqual("Test1Transaction", ReadTransaction.TransactionName);
+
+            // Check we get a result
+            Assert.AreEqual(1, Result);
+
+            // Check the transaction is rolled back
+            Assert.False(ReadTransaction.Valid);
+        }
+
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector() can create a new transaction on a new DB connection.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_NewConnection()
+        {
+            TDBTransaction ReadTransaction = null;
+            int Result = 0;
+
+            // Initialize TSrvSetting; needed by DBAccess.SimpleEstablishDBConnection()
+            var oink = new TSrvSetting();
+
+            Assert.NotNull(oink);
+
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "Test2Transaction",
+                ASeparateDBConnection : true,
+                AEncapsulatedDBAccessCode : delegate
+                {
+                    Result =
+                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                ReadTransaction));
+
+                    // Is this the expected connection?
+                    Assert.AreEqual("Test2Transaction", ReadTransaction.DataBaseObj.ConnectionName);
+                });
+
+            // Did we get the expected transaction?
+            Assert.AreEqual("Test2Transaction", ReadTransaction.TransactionName);
+
+            // Check we get a result
+            Assert.AreEqual(1, Result);
+
+            // Check the transaction is rolled back
+            Assert.False(ReadTransaction.Valid);
+        }
+
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector() can join an existing compatible transaction on the default DB connection.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_JoinExistingTransaction()
+        {
+            TDBTransaction FirstTransaction = DBAccess.GDBAccessObj.BeginTransaction(ATransactionName : "FirstTransaction");
+            TDBTransaction ReadTransaction = null;
+            int Result = 0;
+
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "SecondTransaction",
+                AEncapsulatedDBAccessCode : delegate
+                {
+                    Result =
+                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                ReadTransaction));
+
+                    // Is this the expected connection?
+                    Assert.AreEqual("Default NUnit TTestCommonDB DB Connection", ReadTransaction.DataBaseObj.ConnectionName);
+                });
+
+            // Did we get the expected transaction?
+            Assert.AreEqual("FirstTransaction", ReadTransaction.TransactionName);
+
+            // Check we get a result
+            Assert.AreEqual(1, Result);
+
+            // Check the existing transaction we joined is not rolled back
+            Assert.True(ReadTransaction.Valid);
+
+            // Clear up the FirstTransaction we Began earlier
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector() will create a new DB connection and transaction if there is an
+        /// incompatible transaction already running on the default DB connection.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_CantJoinExistingTransaction()
+        {
+            if (FDBType == TDBType.SQLite)
+            {
+                // do not run this test with SQLite
+                return;
+            }
+
+            TDBTransaction FirstTransaction = DBAccess.GDBAccessObj.BeginTransaction(ATransactionName : "FirstTransaction");
+            TDBTransaction ReadTransaction = null;
+            int Result = 0;
+
+            // Initialize TSrvSetting; needed by DBAccess.SimpleEstablishDBConnection()
+            var oink = new TSrvSetting();
+
+            Assert.NotNull(oink);
+
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "SecondTransaction",
+                AIsolationLevel : IsolationLevel.Serializable,
+                AEncapsulatedDBAccessCode : delegate
+                {
+                    Result =
+                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                ReadTransaction));
+
+                    // Is this the expected connection?
+                    Assert.AreEqual("SecondTransaction", ReadTransaction.DataBaseObj.ConnectionName);
+                });
+
+            // Did we get the expected transaction?
+            Assert.AreEqual("SecondTransaction", ReadTransaction.TransactionName);
+
+            // Check we get a result
+            Assert.AreEqual(1, Result);
+
+            // Check the new transaction is rolled back
+            Assert.False(ReadTransaction.Valid);
+
+            // Check the existing transaction is not rolled back
+            Assert.True(FirstTransaction.Valid);
+
+            // Clear up the FirstTransaction we Began earlier
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector() will create an new transaction on a particular requested DB connection.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnection()
+        {
+            TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
+            TDBTransaction ReadTransaction = null;
+            int Result = 0;
+
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "NewTransaction",
+                ADatabase : RequestedConnection,
+                AEncapsulatedDBAccessCode : delegate
+                {
+                    Result =
+                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                ReadTransaction));
+
+                    // Is this the expected connection?
+                    Assert.AreEqual("New DB Connection", ReadTransaction.DataBaseObj.ConnectionName);
+                });
+
+            // Did we get the expected transaction?
+            Assert.AreEqual("NewTransaction", ReadTransaction.TransactionName);
+
+            // Check we get a result
+            Assert.AreEqual(1, Result);
+
+            // Check the new transaction is rolled back
+            Assert.False(ReadTransaction.Valid);
+
+            RequestedConnection.CloseDBConnection();
+        }
+
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector() will join an existing compatible transaction on a particular
+        /// requested DB connection.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnectionJoin()
+        {
+            if (FDBType == TDBType.SQLite)
+            {
+                // do not run this test with SQLite
+                return;
+            }
+
+            TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
+            TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(ATransactionName : "FirstTransaction");
+            TDBTransaction ReadTransaction = null;
+            int Result = 0;
+
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "NewTransaction",
+                ADatabase : RequestedConnection,
+                AEncapsulatedDBAccessCode : delegate
+                {
+                    Result =
+                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                ReadTransaction));
+
+                    // Is this the expected connection?
+                    Assert.AreEqual("New DB Connection", ReadTransaction.DataBaseObj.ConnectionName);
+                });
+
+            // Did we get the expected transaction?
+            Assert.AreEqual("FirstTransaction", ReadTransaction.TransactionName);
+
+            // Check we get a result
+            Assert.AreEqual(1, Result);
+
+            // Check the transaction we joined is left open
+            Assert.True(ReadTransaction.Valid);
+
+            RequestedConnection.RollbackTransaction();
+            RequestedConnection.CloseDBConnection();
+        }
+
+        /// <summary>
+        /// Tests SimpleAutoDBConnAndReadTransactionSelector() will create a new DB connection and transaction if there is already an
+        /// existing incompatible transaction running on the requested DB connection.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnectionCantJoin()
+        {
+            if (FDBType == TDBType.SQLite)
+            {
+                // do not run this test with SQLite
+                return;
+            }
+
+            TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
+            TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(ATransactionName : "FirstTransaction");
+            TDBTransaction ReadTransaction = null;
+            int Result = 0;
+
+            var oink = new TSrvSetting();
+
+            Assert.NotNull(oink);
+
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "NewTransaction",
+                ADatabase : RequestedConnection, AIsolationLevel : IsolationLevel.Serializable,
+                AEncapsulatedDBAccessCode : delegate
+                {
+                    Result =
+                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
+                                ReadTransaction));
+
+                    // Is this the expected connection?
+                    Assert.AreEqual("NewTransaction", ReadTransaction.DataBaseObj.ConnectionName);
+                });
+
+            // Did we get the expected transaction?
+            Assert.AreEqual("NewTransaction", ReadTransaction.TransactionName);
+
+            // Check we get a result
+            Assert.AreEqual(1, Result);
+
+            // Check the transaction we created is rolled back
+            Assert.False(ReadTransaction.Valid);
+
+            RequestedConnection.RollbackTransaction();
+            RequestedConnection.CloseDBConnection();
         }
     }
 }

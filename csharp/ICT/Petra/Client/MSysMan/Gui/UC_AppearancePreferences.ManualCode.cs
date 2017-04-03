@@ -62,6 +62,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private System.Drawing.Color FilterColour;
         private System.Drawing.Color FindColour;
 
+        // This screen previously had a numberUpDown control for transparency
+        // As of Feb 2017 we no longer draw grid selection using a semi-transparent colour, but this unused control allows us to retain the code
+        //  in case we want to go back.  It preserves the format of the database value entry.
+        private NumericUpDown nudAlpha = new NumericUpDown();
+
         private void InitializeManualCode()
         {
             if (TUserDefaults.GetStringDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, "Tiles") == "List")
@@ -387,7 +392,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             AlternateColorDialog.Color = System.Drawing.Color.FromArgb(230, 230, 230);
             GridlinesColorDialog.Color = System.Drawing.Color.FromArgb(211, 211, 211);
             SelectionColorDialog.Color = System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Highlight);
-            nudAlpha.Value = 120;
+            nudAlpha.Value = 135;
 
             grdExample.BackColor = BackgroundColorDialog.Color;
             grdExample.CellBackgroundColour = CellBackgroundColorDialog.Color;

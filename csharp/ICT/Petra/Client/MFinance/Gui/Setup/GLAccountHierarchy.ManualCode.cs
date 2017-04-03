@@ -5,7 +5,7 @@
 //      timop, wolfgangu
 //      Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -153,6 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>This prevents the updates causing cascading functions</summary>
         public Int32 FIAmUpdating = 0;
+        private Boolean FIAmMoving = false;
 
         // The routine ChangeAccountCodeValue() needs the old value of
         // txtDetailAccountCode and the new actual value.
@@ -341,7 +342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tbrMain.Items.Remove(tbbImportHierarchy);
                 tbrMain.Items.Remove(tbbExportHierarchy);
 
-                // remove all items except the onces we want
+                // Remove all items except the onces we want
                 mniAccounts.DropDownItems.Clear();
                 mniAccounts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                         mniAddNewAccount,
@@ -349,7 +350,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     });
             }
 
-            this.Text += String.Format(" for Ledger {0}", FLedgerNumber);
+            this.Text = String.Format(Catalog.GetString("Account Hierarchy for Ledger {0}"), FLedgerNumber);
+            sptSplitter.SplitterMoved += OnSplitterMoved;
+            OnSplitterMoved(null, null);
+        }
+
+        private void OnSplitterMoved(object sender, SplitterEventArgs e)
+        {
+            if (FIAmMoving)
+            {
+                return;
+            }
+
+            Int32 maxSplitterPos = Width - 400;
+            Int32 splitterPos = sptSplitter.SplitterDistance;
+
+            if ((splitterPos > maxSplitterPos) || (splitterPos < 140))
+            {
+                FIAmMoving = true;
+                sptSplitter.SplitterDistance = Math.Max(Math.Min(splitterPos, maxSplitterPos), 140);
+                FIAmMoving = false;
+            }
         }
 
         /// <summary>If the user sets this strangely, I'll just warn her...</summary>

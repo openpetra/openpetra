@@ -70,11 +70,11 @@ RootNode:
             Label: Re&verse Selected
             ActionClick: TransactionReverseSelected
             Tooltip: Reverse the selected invoice that has been posted
-        actTransactionDeleteSelected:
-            Label: De&lete Selected
+        actTransactionCancelSelected:
+            Label: Cance&l Selected
             Image: Delete_Record.ico
-            ActionClick: TransactionDeleteSelected
-            Tooltip: Delete the selected invoice that has been opened or approved
+            ActionClick: TransactionCancelSelected
+            Tooltip: Cancel the selected invoice that has been opened or approved
         actTransactionApproveTagged:
             Label: &Approve Tagged
             ActionClick: TransactionRunTagAction
@@ -102,11 +102,11 @@ RootNode:
             Label: Re&verse Tagged
             ActionClick: InvoiceReverseAllTagged
             Tooltip: Reverse the tagged invoices that have been posted
-        actInvoiceDeleteTagged:
-            Label: De&lete Tagged
+        actInvoiceCancelTagged:
+            Label: Cance&l Tagged
             Image: Delete_Record.ico
-            ActionClick: InvoiceDeleteAllTagged
-            Tooltip: Delete the tagged invoices that have been opened or approved
+            ActionClick: InvoiceCancelAllTagged
+            Tooltip: Cancel the tagged invoices that have been opened or approved
         actInvoiceApproveTagged:
             Label: &Approve Tagged
             ActionClick: InvoiceRunTagAction
@@ -205,7 +205,7 @@ RootNode:
             mniTransactionOpenTagged: {Action=actTransactionOpenTagged}
             mniTransactionApproveTagged: {Action=actTransactionApproveTagged}
             mniSeparator: {Label=-}
-            mniTransactionDeleteSelected: {Action=actTransactionDeleteSelected}
+            mniTransactionCancelSelected: {Action=actTransactionCancelSelected}
             mniTransactionPostTagged: {Action=actTransactionPostTagged}
             mniSeparator: {Label=-}
             mniTransactionReverseSelected: {Action=actTransactionReverseSelected}
@@ -216,7 +216,7 @@ RootNode:
             mniInvoiceOpenTagged: {Action=actInvoiceOpenTagged}
             mniInvoiceApproveTagged: {Action=actInvoiceApproveTagged}
             mniSeparator: {Label=-}
-            mniInvoiceDeleteTagged: {Action=actInvoiceDeleteTagged}
+            mniInvoiceCancelTagged: {Action=actInvoiceCancelTagged}
             mniInvoicePostTagged: {Action=actInvoicePostTagged}
             mniSeparator: {Label=-}
             mniInvoiceReverseTagged: {Action=actInvoiceReverseTagged}

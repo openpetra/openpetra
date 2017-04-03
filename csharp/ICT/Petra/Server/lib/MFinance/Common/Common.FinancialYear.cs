@@ -195,9 +195,10 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// get the start and end date of the given period in the current year
+        /// Get the start and end date of the given period in the given year
         /// </summary>
         public static bool GetStartAndEndDateOfPeriod(Int32 ALedgerNumber,
+            Int32 AYear,
             Int32 APeriodNumber,
             out DateTime APeriodStartDate,
             out DateTime APeriodEndDate,
@@ -246,11 +247,40 @@ namespace Ict.Petra.Server.MFinance.Common
             #endregion Validate Data
 
             AAccountingPeriodRow AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
+            Int32 currentYear = LedgerTable[0].CurrentFinancialYear;
+            Int32 yearsAgo = currentYear - AYear;
 
-            APeriodStartDate = AccPeriodRow.PeriodStartDate;
-            APeriodEndDate = AccPeriodRow.PeriodEndDate;
+            APeriodStartDate = AccPeriodRow.PeriodStartDate.AddYears(0 - yearsAgo);
+            APeriodEndDate = AccPeriodRow.PeriodEndDate.AddYears(0 - yearsAgo);
 
             return true;
+        }
+
+        /// <summary>
+        /// Get the start and end date of the given period in the current year
+        /// </summary>
+        public static bool GetStartAndEndDateOfPeriod(Int32 ALedgerNumber,
+            Int32 APeriodNumber,
+            out DateTime APeriodStartDate,
+            out DateTime APeriodEndDate,
+            TDBTransaction ATransaction)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
+            Int32 currentYear = LedgerTable[0].CurrentFinancialYear;
+
+            return GetStartAndEndDateOfPeriod(ALedgerNumber, currentYear, APeriodNumber, out APeriodStartDate, out APeriodEndDate, ATransaction);
         }
 
         /// <summary>

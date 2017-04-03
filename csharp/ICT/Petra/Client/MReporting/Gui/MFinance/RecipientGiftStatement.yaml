@@ -25,7 +25,7 @@
             
         tpgReportSorting:
             Label: Sorting
-            Controls: [rgrSorting]
+            Controls: [rgrRecipientSort, rgrDonorSort]
         tpgColumnSettings:
             Label: Column Settings
             Controls: [uco_Columns]
@@ -50,14 +50,21 @@
             Label: Select Currency
             Stretch: horizontally
             Controls: [cmbCurrency]
-   
-        rgrSorting: {ParameterName=param_order_by_name}
-            Label: Sorting
+
+        rgrRecipientSort:
+            ParameterName:param_order_recipient
+            Label: Recipient Sort
             Controls: [rbtRecipientField, rbtRecipientKey, rbtRecipientName]
         rbtRecipientField:
         rbtRecipientKey:
         rbtRecipientName:
-
+        rgrDonorSort:
+            ParameterName:param_order_donor
+            Label: Donor Sort
+            Controls: [rbtDate, rbtDonorName, rbtAmount]
+        rbtDate:
+        rbtDonorName:
+        rbtAmount:
         cmbReportType:
             ParameterName: param_report_type
             OptionalValues: [=Complete, Donors Only, Gifts Only]

@@ -39,5 +39,6 @@
   <Parameter id="param_donorkey" value="eInteger:0" />
   <Parameter id="param_extract_name" value="eString:" />
   <Parameter id="param_gift_amount_column" value="eInteger:7" />
-  <Parameter id="param_order_by_name" value="eString:PartnerKey" />
+  <Parameter id="param_order_donor" value="eString:PartnerKey" />
+  <Parameter id="param_order_recipient" value="eString:RecipientName" />
 </Parameters>

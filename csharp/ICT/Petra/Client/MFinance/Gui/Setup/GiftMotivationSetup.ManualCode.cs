@@ -85,6 +85,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                     clbDetailFeesReceivable.Columns[colNum].AutoSizeMode = sizeMode;
                 }
 
+                sptDetails.Panel2MinSize = 110;
+
                 // Sort the grid
                 DataView myDataView = FMainDS.AMotivationDetail.DefaultView;
                 myDataView.AllowNew = false;
@@ -328,6 +330,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 {
                     cmbDetailCostCentreCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_COST_CENTRE;
                 }
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    if (ARow.IsTaxDeductibleAccountCodeNull())
+                    {
+                        cmbDeductibleAccountCode.SelectedIndex = 0;
+                    }
+                    else
+                    {
+                        cmbDeductibleAccountCode.SetSelectedString(ARow.TaxDeductibleAccountCode, -1);
+                    }
+                }
             }
 
             // set the ORDER column to true if row is checked
@@ -341,18 +355,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             clbDetailFeesReceivable.CheckedColumn = "CHECKED";
             clbDetailFeesPayable.SetCheckedStringList(FeesPayable);
             clbDetailFeesReceivable.SetCheckedStringList(FeesReceivable);
-
-            if (FTaxDeductiblePercentageEnabled)
-            {
-                if (ARow.IsTaxDeductibleAccountCodeNull())
-                {
-                    cmbDeductibleAccountCode.SelectedIndex = 0;
-                }
-                else
-                {
-                    cmbDeductibleAccountCode.SetSelectedString(ARow.TaxDeductibleAccountCode, -1);
-                }
-            }
         }
 
         private void GetDetailDataFromControlsManual(AMotivationDetailRow ARow)

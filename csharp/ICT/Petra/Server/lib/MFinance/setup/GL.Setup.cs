@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Xml;
 using System.IO;
+using System.Globalization;
 using System.Text;
 
 using Ict.Common;
@@ -3428,6 +3429,49 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null);
         }
 
+        private static void SetupILTCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, TDBTransaction ATransaction)
+        {
+            // For easier readability
+            // SELECT p.p_partner_key_n, p.p_partner_short_name_c
+            // FROM p_partner p JOIN p_partner_type t
+            // ON p.p_partner_key_n=t.p_partner_key_n
+            // WHERE t.p_type_code_c='LEDGER' AND p_partner_key_n<>the-ledger-number-multiplied-by-1000000
+            // ORDER BY p.p_partner_key_n
+
+            string SqlQuery = string.Format(
+                "SELECT p.{0}, p.{1} FROM {2} p JOIN {3} t ON p.{0}=t.{4} WHERE t.{5}='LEDGER' AND p.{0}<>{6} ORDER BY p.{0}",
+                PPartnerTable.GetPartnerKeyDBName(),
+                PPartnerTable.GetPartnerShortNameDBName(),
+                PPartnerTable.GetTableDBName(),
+                PPartnerTypeTable.GetTableDBName(),
+                PPartnerTypeTable.GetPartnerKeyDBName(),
+                PPartnerTypeTable.GetTypeCodeDBName(),
+                ALedgerNumber * 1000000);
+            DataTable t = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ILTCostCentres", ATransaction);
+
+            foreach (DataRow row in t.Rows)
+            {
+                Int64 partnerKey = Convert.ToInt64(row[0]);
+                string costCentreCode = string.Format("{0:0000}", partnerKey / 10000);
+
+                ACostCentreRow ccRow = AMainDS.ACostCentre.NewRowTyped(true);
+                ccRow.LedgerNumber = ALedgerNumber;
+                ccRow.CostCentreCode = costCentreCode;
+                ccRow.CostCentreName = Convert.ToString(row[1]);
+                ccRow.CostCentreToReportTo = "ILT";
+                ccRow.CostCentreType = "Foreign";
+                ccRow.SystemCostCentreFlag = true;
+                AMainDS.ACostCentre.Rows.Add(ccRow);
+
+                AValidLedgerNumberRow vlRow = AMainDS.AValidLedgerNumber.NewRowTyped();
+                vlRow.LedgerNumber = ALedgerNumber;
+                vlRow.PartnerKey = partnerKey;
+                vlRow.IltProcessingCentre = 4000000;
+                vlRow.CostCentreCode = costCentreCode;
+                AMainDS.AValidLedgerNumber.Rows.Add(vlRow);
+            }
+        }
+
         private static void CreateMotivationDetailFee(ref GLSetupTDS AMainDS,
             Int32 ALedgerNumber,
             XmlNode ACurrentNode,
@@ -3989,7 +4033,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
                     }
 
-                    accountingPeriodRow.AccountingPeriodDesc = periodStartDate.ToString("MMMM");
+                    // The month 'description' is always in English but can be edited in the Calendar GUI
+                    accountingPeriodRow.AccountingPeriodDesc = periodStartDate.ToString("MMMM", CultureInfo.InvariantCulture);
                     MainDS.AAccountingPeriod.Rows.Add(accountingPeriodRow);
                     periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);
                 }
@@ -4089,6 +4134,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber, ref AVerificationResult);
                 ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
+
+                if (MainDS.ACostCentre.Rows.Find(new object[] { ANewLedgerNumber, "ILT" }) != null)
+                {
+                    SetupILTCostCentreHierarchy(ref MainDS, ANewLedgerNumber, Transaction);
+                }
+
                 ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
@@ -5119,7 +5170,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         ///          AND it has no children.
         ///          But I can't delete System Cost Centres.
         /// </summary>
-        /// <returns>true if the attributes were found. (If not found, that's a serious fault!)</returns>
+        /// <returns>true if the attributes were found.</returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber,
             String ACostCentreCode,
@@ -5161,10 +5212,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                         if ((tempTbl == null) || (tempTbl.Count == 0))
                         {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Cost Centre data for Cost Centre Code {1} does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true),
-                                    ACostCentreCode));
+                            DBSuccess = false;
+                            CanBeParent = false;
+                            CanDelete = false;
+                            Msg = String.Format(Catalog.GetString("Cost Centre Code {0} is not in the database."), ACostCentreCode);
+                            return;
                         }
 
                         #endregion Validate Data

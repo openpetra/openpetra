@@ -231,60 +231,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && !paramsDictionary.ContainsKey(p.name))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("SYBUNT", paramsDictionary);
-
-            if (this.IsDisposed) // There's no cancel function as such - if the user has pressed Esc the form is closed!
-            {
-                return false;
-            }
-
-            if (ReportTable == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            DataView Dv = ReportTable.DefaultView;
-
-            // sort the table
-            Dv.Sort = ACalc.GetParameters().Get("param_sortby_readable").ToString().Replace(" ", "");
-
-            ReportTable = Dv.ToTable();
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "SYBUNT");
-            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-            DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
-            String LedgerName = "";
-
-            if (LedgerView.Count > 0)
-            {
-                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
-            }
-
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
-
-            Boolean HasData = ReportTable.Rows.Count > 0;
-
-            if (!HasData)
-            {
-                MessageBox.Show(Catalog.GetString("No Motivation Response data found."), "Motivation Response");
-            }
-
-            return HasData;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("SYBUNT",
+                false,
+                new string[] { "SYBUNT" },
+                ACalc,
+                this,
+                false,
+                true,
+                FLedgerNumber,
+                "",
+                ACalc.GetParameters().Get("param_sortby_readable").ToString().Replace(" ", ""));
         }
     }
 }

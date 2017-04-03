@@ -19,10 +19,10 @@ RootNode:
         actReverseTagged:
             Enabled: cndCanReverse
             ActionClick: ReverseAllTagged
-        actDeleteTagged:
+        actCancelTagged:
             Enabled: cndCanPost
             Image: Delete_Record.ico
-            ActionClick: DeleteAllTagged
+            ActionClick: CancelAllTagged
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlOutstandingTotals, pnlButtons]
@@ -32,7 +32,7 @@ RootNode:
             Controls: [pnlFilterAndFind, grdInvoices]
             Dock: Fill
         pnlButtons:
-            Controls: [btnTagAll, btnUntagAll, btnRunTagAction, btnReverseTagged, btnDeleteTagged]
+            Controls: [btnTagAll, btnUntagAll, btnRunTagAction, btnReverseTagged, btnCancelTagged]
             ControlsOrientation: horizontal
             Dock:Bottom
         btnTagAll: {Label=Tag all}
@@ -44,7 +44,7 @@ RootNode:
             Width: 120
         btnReverseTagged: {Label=Reverse Tagged}
             Action: actReverseTagged
-        btnDeleteTagged: {Label=Delete Tagged, Width=115}
+        btnCancelTagged: {Label=Cancel Tagged, Width=115}
             Action: actDeleteTagged
         
         pnlFilterAndFind:
