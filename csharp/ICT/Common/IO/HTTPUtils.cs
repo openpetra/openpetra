@@ -187,12 +187,12 @@ namespace Ict.Common.IO
                 {
                     // do not show passwords in the log file which could be encoded in the parameters
                     TLogging.Log("Trying to download: " + url.Substring(0, url.IndexOf("?")) + "?..." + Environment.NewLine +
-                        e.Message, TLoggingType.ToLogfile);
+                        e.ToString(), TLoggingType.ToLogfile);
                 }
                 else
                 {
                     TLogging.Log("Trying to download: " + url + Environment.NewLine +
-                        e.Message, TLoggingType.ToLogfile);
+                        e.ToString(), TLoggingType.ToLogfile);
                 }
             }
 
