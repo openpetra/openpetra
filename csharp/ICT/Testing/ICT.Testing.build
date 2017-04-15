@@ -110,10 +110,12 @@
 </target>
 
 <target name="test-without-display">
-    <echo message="Target test-without-display started at: ${datetime::now()}" /> 
-    
+    <echo message="Target test-without-display started at: ${datetime::now()}" />
+
     <call target="test-common"/>
-    
+    <call target="test-tools"/>
+    <call target="test-server"/>
+
     <echo message="Target test-without-display finished at: ${datetime::now()}" /> 
 </target>
 
