@@ -13,36 +13,6 @@
     </pageheader>
 
     <calculations>
-      <calculation id="AccountFilter" returns="template" returnsFormat="string">
-        <query>
-          <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
-            <value>
-                  AND filter BETWEEN {param_account_code_start} AND {param_account_code_end}
-              </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_rgrAccounts},AccountList)">
-            <value>AND (</value>
-            <value function = "csv" text="filter" variable="param_account_codes"/>
-            <value>)</value>
-          </queryDetail>
-        </query>
-      </calculation>
-
-      <calculation id="CostCentreFilter" returns="template" returnsFormat="string">
-        <query>
-          <queryDetail condition="eq({param_rgrCostCentres},CostCentreRange)">
-            <value>
-                  AND filter BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
-              </value>
-          </queryDetail>
-          <queryDetail condition="eq({param_rgrCostCentres},CostCentreList)">
-            <value>AND (</value>
-            <value function = "csv" text="filter" variable="param_cost_centre_codes"/>
-            <value>)</value>
-          </queryDetail>
-        </query>
-      </calculation>
-
       <calculation id="Select Account Detail SortBy Account"
         returns="line_a_account_alias_c, line_a_account_code_c, account_name, a_debit_credit_indicator_l"
         returnsFormat="row">
@@ -65,7 +35,6 @@
               AND acc.a_posting_status_l = 1
             </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, acc.a_account_code_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
                 AND acc.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -94,7 +63,6 @@
             AND acc.a_posting_status_l = 1
           </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, prop.a_property_value_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
                 AND prop.a_property_value_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -127,7 +95,6 @@
             AND cc.a_posting_cost_centre_flag_l = 1
            </value>
           </queryDetail>
-          <!--value function="replace(template(CostCentreFilter), filter, cc.a_cost_centre_code_c)"/-->
           <queryDetail condition="eq({param_rgrCostCentres},CostCentreRange)">
             <value>
             AND cc.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
@@ -160,7 +127,6 @@
             AND cc.a_posting_cost_centre_flag_l = 1
           </value>
           </queryDetail>
-          <!--value function="replace(template(CostCentreFilter), filter, cc.a_cost_centre_code_c)"/-->
           <queryDetail condition="eq({param_rgrCostCentres},CostCentreRange)">
             <value>
                 AND cc.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
@@ -196,7 +162,6 @@
             AND acc.a_posting_status_l = 1
             </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, acc.a_account_code_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
                 AND acc.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -232,7 +197,6 @@
             AND acc.a_posting_status_l = 1
           </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, prop.a_property_value_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
               AND prop.a_property_value_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -263,7 +227,6 @@
           WHERE trans.a_ledger_number_i = {{param_ledger_number_i}}
           </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, trans.a_account_code_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
                 AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -274,7 +237,6 @@
             <value function = "csv" text="trans.a_account_code_c" variable="param_account_codes" format="Text"/>
             <value>)</value>
           </queryDetail>
-          <!--value function="replace(template(CostCentreFilter), filter, trans.a_cost_centre_code_c)"/-->
           <queryDetail condition="eq({param_rgrCostCentres},CostCentreRange)">
             <value>
                 AND trans.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
@@ -320,7 +282,6 @@
             AND trans.a_ledger_number_i = {{param_ledger_number_i}}
           </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, trans.a_account_code_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
                 AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -331,7 +292,6 @@
             <value function = "csv" text="trans.a_account_code_c" variable="param_account_codes" format="Text"/>
             <value>)</value>
           </queryDetail>
-          <!--value function="replace(template(CostCentreFilter), filter, trans.a_cost_centre_code_c)"/-->
           <queryDetail condition="eq({param_rgrCostCentres},CostCentreRange)">
             <value>
                 AND trans.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
@@ -418,7 +378,6 @@
             AND trans.a_ledger_number_i = {{param_ledger_number_i}}
           </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, trans.a_account_code_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
                 AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -429,7 +388,6 @@
             <value function = "csv" text="trans.a_account_code_c" variable="param_account_codes" format="Text"/>
             <value>)</value>
           </queryDetail>
-          <!--value function="replace(template(CostCentreFilter), filter, trans.a_cost_centre_code_c)"/-->
           <queryDetail condition="eq({param_rgrCostCentres},CostCentreRange)">
             <value>
               AND trans.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
@@ -481,7 +439,6 @@
             AND trans.a_ledger_number_i = {{param_ledger_number_i}}
           </value>
           </queryDetail>
-          <!--value function="replace(template(AccountFilter), filter, trans.a_account_code_c)"/-->
           <queryDetail condition="eq({param_rgrAccounts},AccountRange)">
             <value>
               AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
@@ -492,7 +449,6 @@
             <value function = "csv" text="trans.a_account_code_c" variable="param_account_codes" format="Text"/>
             <value>)</value>
           </queryDetail>
-          <!--value function="replace(template(CostCentreFilter), filter, trans.a_cost_centre_code_c)"/-->
           <queryDetail condition="eq({param_rgrCostCentres},CostCentreRange)">
             <value>
               AND trans.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}

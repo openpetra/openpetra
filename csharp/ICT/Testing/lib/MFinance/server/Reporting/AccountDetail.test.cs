@@ -96,5 +96,30 @@ namespace Tests.MFinance.Server.Reporting
 
             TReportTestingTools.TestResult(testFile, LedgerNumber);
         }
-    }
+
+        /// <summary>
+        /// Test the account detail report with selected account
+        /// </summary>
+        [Test]
+        public void TestAccountDetailSelectedAccount()
+        {
+            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetailSelectedAccount.Test.xml";
+            int LedgerNumber = 43;
+            TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_start_period_i", 1);
+            SpecificParameters.Add("param_end_period_i", 1);
+
+            // make sure that the parameters are explicitly strings
+            SpecificParameters.Add("param_rgrAccounts", "AccountList");
+            SpecificParameters.Add("param_account_codes", new TVariant("0100", true));
+            SpecificParameters.Add("param_account_code_start", "*NOTUSED*");
+            SpecificParameters.Add("param_account_code_end", "*NOTUSED*");
+            SpecificParameters.Add("param_cost_centre_code_start", new TVariant("10100", true));
+            SpecificParameters.Add("param_cost_centre_code_end", new TVariant("10500", true));
+
+            TReportTestingTools.CalculateReport(testFile, SpecificParameters, LedgerNumber);
+
+            TReportTestingTools.TestResult(testFile, LedgerNumber);
+        }
+     }
 }
