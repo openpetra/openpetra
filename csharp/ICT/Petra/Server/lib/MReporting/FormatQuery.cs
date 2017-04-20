@@ -152,6 +152,23 @@ namespace Ict.Petra.Server.MReporting
 #endif
         }
 
+        /// convert to string for debugging purposes only
+        public override string ToString()
+        {
+            string result = String.Empty;
+
+            if (IsVariant)
+            {
+                result = this.VariantValue.EncodeToString();
+            }
+            else
+            {
+                result = this.FSQLStmt;
+            }
+
+            return result + " with " + this.FOdbcParameters.Count.ToString() + " Parameters";
+        }
+
         /// read the odbc parameters
         public List<OdbcParameter> OdbcParameters
         {
@@ -187,7 +204,8 @@ namespace Ict.Petra.Server.MReporting
             }
             else if (!IsVariant)
             {
-                throw new Exception("there is already a string, we cannot add a TVariant value " + ".." + FSQLStmt +"...");
+                this.FVariantValue = new TVariant(this.FSQLStmt);
+                FSQLStmt = "TVariant";
             }
 
             this.FVariantValue.Add(v, format);
@@ -217,11 +235,11 @@ namespace Ict.Petra.Server.MReporting
                 }
 
                 this.FSQLStmt += AQueryToAdd.SQLStmt;
-    
-                foreach (OdbcParameter p in AQueryToAdd.FOdbcParameters)
-                {
-                    this.FOdbcParameters.Add(p);
-                }
+            }
+
+            foreach (OdbcParameter p in AQueryToAdd.FOdbcParameters)
+            {
+                this.FOdbcParameters.Add(p);
             }
         }
 

@@ -1590,7 +1590,8 @@ namespace Ict.Petra.Server.MReporting
                 ReturnValue.ReplaceVariables();
             }
 
-            // TLogging.log('Result of TRptDataCalcCalculation.evaluateCalculationAll: '+result.encodetostring());
+            TLogging.LogAtLevel(4, "Result of TRptDataCalcCalculation.evaluateCalculationAll: " + ReturnValue.ToString());
+
             return ReturnValue;
         }
 
