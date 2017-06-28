@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,7 +32,6 @@ using System.Text;
 using System.Threading;
 using System.IO;
 
-using System.Threading;
 using Ict.Common;
 using Ict.Common.Exceptions;
 
