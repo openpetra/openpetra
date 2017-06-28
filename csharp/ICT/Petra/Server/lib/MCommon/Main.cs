@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop, TimI
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -495,15 +495,15 @@ namespace Ict.Petra.Server.MCommon
                         }
                     }, 60, FFindParameters.FParametersArray);
             }
-            catch (NpgsqlException Exp)
+            catch (PostgresException Exp)
             {
-                if (Exp.Code == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
+                if (Exp.SqlState == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
                 {
                     TLogging.LogAtLevel(7, this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; proper reply from Npgsql!");
                 }
                 else
                 {
-                    TLogging.Log(this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; general NpgsqlException occured: " + Exp.ToString());
+                    TLogging.Log(this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; general PostgresException occured: " + Exp.ToString());
                 }
 
                 TProgressTracker.SetCurrentState(FProgressID, "Query cancelled!", 0.0m);
@@ -1238,20 +1238,20 @@ namespace Ict.Petra.Server.MCommon
                         AOptionalColumnNameMapping, ASelectCommandTimeout, AParameterDefinitions, AParameterValues,
                         APrepareSelectCommand, AProgressUpdateEveryNRecs, AMultipleParamQueryProgressUpdateCallback);
                 }
-                catch (NpgsqlException Exp)
+                catch (PostgresException Exp)
                 {
-                    if (Exp.Code == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
+                    if (Exp.SqlState == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
                     {
                         TLogging.LogAtLevel(7, this.GetType().FullName + ".RunQuery: Query got cancelled; proper reply from Npgsql!");
                     }
-                    else if (Exp.Code == "25P02")  // Exception with Code 25P02 is what Npgsql raises as a response to a cancellation of a request of a Command when that happens in another code path (eg. on a different Thread [e.g. Partner Find
+                    else if (Exp.SqlState == "25P02")  // Exception with Code 25P02 is what Npgsql raises as a response to a cancellation of a request of a Command when that happens in another code path (eg. on a different Thread [e.g. Partner Find
                     {                               // screen: Cancel got pressed while Report Query ran, for instance])
                         TLogging.LogAtLevel(1, this.GetType().FullName +
                             ".RunQuery: Query got cancelled (likely trought another code path [likely on another Thread]); proper reply from Npgsql!");
                     }
                     else
                     {
-                        TLogging.Log(this.GetType().FullName + ".RunQuery: Query got cancelled; general NpgsqlException occured: " + Exp.ToString());
+                        TLogging.Log(this.GetType().FullName + ".RunQuery: Query got cancelled; general PostgresException occured: " + Exp.ToString());
                     }
 
                     FCancelFlag = true;

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, ChristianK
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -220,11 +220,11 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
                 if (DbExc.InnerException is Exception)
                 {
-                    if (DbExc.InnerException is NpgsqlException)
+                    if (DbExc.InnerException is PostgresException)
                     {
-                        NpgsqlException PgExc = (NpgsqlException)DbExc.InnerException;
+                        PostgresException PgExc = (PostgresException)DbExc.InnerException;
 
-                        if (PgExc.Code == "57014") // SQL statement timeout problem
+                        if (PgExc.SqlState == "57014") // SQL statement timeout problem
                         {
                             FErrorMessage = Catalog.GetString(
                                 "Error - Database took too long to respond. Try different parameters to return fewer results.");

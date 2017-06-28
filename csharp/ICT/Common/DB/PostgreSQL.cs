@@ -90,10 +90,10 @@ namespace Ict.Common.DB
                 }
 
                 AConnectionString = String.Format(
-                    "Server={0};Port={1};User Id={2};Database={3};Timeout={4};ConnectionLifeTime={5};CommandTimeout={6}" +
+                    "Server={0};Port={1};User Id={2};Database={3};Timeout={4};ConnectionIdleLifeTime={5};CommandTimeout={6}" +
                     ";Password=", AServer, APort, AUsername, ADatabaseName,
                     TAppSettingsManager.GetInt32("Server.DBConnectionTimeout", 10),
-                    TAppSettingsManager.GetInt32("Server.DBConnectionLifeTime", 60),
+                    TAppSettingsManager.GetInt32("Server.DBConnectionLifeTime", 300),
                     TAppSettingsManager.GetInt32("Server.DBCommandTimeout", 3600));
                 // Note: We must use TAppSettingsManager above and not TSrvSetting because if we would be using the latter
                 // somehow some NUnit Tests fail with extremely weird timeouts...
@@ -142,25 +142,21 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Formats an error message if the Exception is of Type 'NpgsqlException'.
+        /// Formats an error message if the Exception is of Type 'PostgresException'.
         /// </summary>
         /// <param name="AException"></param>
         /// <param name="AErrorMessage"></param>
         /// <returns>True if this is an NpgsqlException.</returns>
         public bool LogException(Exception AException, ref string AErrorMessage)
         {
-            if (AException is NpgsqlException)
+            if (AException is PostgresException)
             {
-                for (int Counter = 0; Counter <= ((NpgsqlException)AException).Errors.Count - 1; Counter += 1)
-                {
-                    AErrorMessage = AErrorMessage +
-                                    "Index #" + Counter.ToString() + Environment.NewLine +
-                                    "Message: " + ((NpgsqlException)AException)[Counter].Message + Environment.NewLine +
-                                    "Detail: " + ((NpgsqlException)AException)[Counter].Detail.ToString() + Environment.NewLine +
-                                    "Where: " + ((NpgsqlException)AException)[Counter].Where + Environment.NewLine +
-                                    "SQL: " + ((NpgsqlException)AException)[Counter].ErrorSql + Environment.NewLine +
-                                    "Position in SQL: " + ((NpgsqlException)AException)[Counter].Position + Environment.NewLine;
-                }
+                AErrorMessage = AErrorMessage +
+                                "Message: " + ((PostgresException)AException).Message + Environment.NewLine +
+                                "Detail: " + ((PostgresException)AException).Detail.ToString() + Environment.NewLine +
+                                "Where: " + ((PostgresException)AException).Where + Environment.NewLine +
+                                "SQL: " + ((PostgresException)AException).Statement.SQL + Environment.NewLine +
+                                "Position in SQL: " + ((PostgresException)AException).Position + Environment.NewLine;
 
                 return true;
             }
@@ -690,7 +686,7 @@ namespace Ict.Common.DB
         /// </remarks>
         public void ClearConnectionPool(DbConnection ADBConnection)
         {
-            ((NpgsqlConnection)ADBConnection).ClearPool();
+            NpgsqlConnection.ClearPool((NpgsqlConnection)ADBConnection);
         }
     }
 }
