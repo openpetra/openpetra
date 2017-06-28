@@ -264,7 +264,7 @@ namespace Ict.Common
                 {
                     // eg cannot find directory
                     Console.WriteLine("TLogWriter:Log was not able to write to the log file. msg: " + strMessage);
-                    //Console.WriteLine(e.ToString());
+                    Console.WriteLine(e.ToString());
 
                     // do not throw, this causes somehow problems on running nant test on ci-win
                     // throw;
