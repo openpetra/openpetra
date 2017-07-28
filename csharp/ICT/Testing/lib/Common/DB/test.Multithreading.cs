@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,6 +86,12 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_Multithreading__GNoETransaction_throws_proper_ExceptionMultiThreaded(
             bool ASimulateLongerRunningThread)
         {
+            if ((ASimulateLongerRunningThread == false) && (FDBType == TDBType.SQLite))
+            {
+                // do not run this test with SQLite
+                return;
+            }
+
             IAsyncResult TestCallDBCommand1AsyncResult;
             IAsyncResult TestCallDBCommand2AsyncResult;
 
