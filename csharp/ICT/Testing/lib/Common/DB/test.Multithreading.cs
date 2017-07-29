@@ -86,12 +86,6 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_Multithreading__GNoETransaction_throws_proper_ExceptionMultiThreaded(
             bool ASimulateLongerRunningThread)
         {
-            if ((ASimulateLongerRunningThread == false) && (FDBType == TDBType.SQLite))
-            {
-                // do not run this test with SQLite
-                return;
-            }
-
             IAsyncResult TestCallDBCommand1AsyncResult;
             IAsyncResult TestCallDBCommand2AsyncResult;
 
@@ -128,6 +122,7 @@ namespace Ict.Common.DB.Testing
 
             // 1st Step: Call the first Delegate set up in the Arrange section above asynchronously by using BeginInvoke. This
             // will execute all the code defined in the Delegate on a separate Thread (which comes from the .NET ThreadPool).
+            // it seems with Mono 4.6, threads are being reused, and therefore we cannot change the name on an existing thread
             TestCallDBCommand1AsyncResult = FTestCallDBCommand1.BeginInvoke(
                 new AsyncCallback(TestCallDBCommand1Callback), FTestCallDBCommand1);
 
@@ -501,7 +496,14 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
                        if (AThreadNumber == 1)
                        {
                            FTestingThread1 = Thread.CurrentThread;
-                           FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                           if (FTestingThread1.Name == String.Empty)
+                           {
+                               // using a Guid to avoid confusion
+                               //FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+                               FTestingThread1.Name = String.Format(TestThreadName, Guid.NewGuid());
+                           }
 
                            if (FTestDBInstance1 == null)
                            {
