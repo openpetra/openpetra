@@ -1315,12 +1315,26 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
                        if (AThreadNumber == 1)
                        {
                            FTestingThread1 = Thread.CurrentThread;
-                           FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                           if (FTestingThread1.Name == String.Empty)
+                           {
+                               // using a Guid to avoid confusion
+                               //FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+                               FTestingThread1.Name = String.Format(TestThreadName, Guid.NewGuid());
+                           }
                        }
                        else
                        {
                            FTestingThread2 = Thread.CurrentThread;
-                           FTestingThread2.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                           if (FTestingThread2.Name == String.Empty)
+                           {
+                               // using a Guid to avoid confusion
+                               //FTestingThread2.Name = String.Format(TestThreadName, AThreadNumber);
+                               FTestingThread2.Name = String.Format(TestThreadName, Guid.NewGuid());
+                           }
                        }
 
                        try
