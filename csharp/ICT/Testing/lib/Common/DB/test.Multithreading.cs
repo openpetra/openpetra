@@ -1121,7 +1121,13 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
             return () =>
                    {
-                       Thread.CurrentThread.Name = String.Format(TestThreadName, AThreadNumber);
+                       // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                       if (Thread.CurrentThread.Name == String.Empty)
+                       {
+                           // using a Guid to avoid confusion
+                           //Thread.CurrentThread.Name = String.Format(TestThreadName, AThreadNumber);
+                           Thread.CurrentThread.Name = String.Format(TestThreadName, Guid.NewGuid());
+                       }
 
                        try
                        {
