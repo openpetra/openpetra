@@ -111,6 +111,12 @@ namespace Ict.Common.DB.Testing
             FTestCallDBCommand1 = GetActionDelegateForGNoET(1, ASimulateLongerRunningThread);
             FTestCallDBCommand2 = GetActionDelegateForGNoET(2, false);
 
+            if (DBAccess.GDBAccessObj != null)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+                DBAccess.GDBAccessObj = null;
+            }
+
             // Create a separate instance of TDataBase and establish a separate DB connection on it
             TDataBase TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), false);
             DBAccess.GDBAccessObj = TestDBInstance;
