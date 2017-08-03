@@ -7,6 +7,17 @@
     <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}" failonerror="false"/>
 </target>
 
+<target name="remove_dlls">
+  <!-- similar to inc/nant/OpenPetra.default.targets.xml -->
+  <if test="${'unix'==platform::get-name()}" >
+      <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
+      <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
+      <delete file="${dir.bin}/sqlite3.dll" failonerror="false"/>
+      <delete file="${dir.bin}/libsodium.dll" failonerror="false"/>
+      <delete file="${dir.bin}/libsodium-64.dll" failonerror="false"/>
+  </if>
+</target>
+
 <target name="test-client">
     <property name="nant.onfailure" value="cleanup" />
 
@@ -86,8 +97,10 @@
 </target>
 
 <target name="test-common">
-    <echo message="Target test-common started at: ${datetime::now()}" /> 
-    
+    <echo message="Target test-common started at: ${datetime::now()}" />
+
+    <call target="remove_dlls"/>
+
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.IO.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.DB.dll" />

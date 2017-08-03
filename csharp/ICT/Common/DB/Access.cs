@@ -5317,7 +5317,7 @@ namespace Ict.Common.DB
             string ErrorMessage = "";
             string FormattedSqlStatement = "";
 
-            if ((AException.GetType() == typeof(NpgsqlException)) && (((NpgsqlException)AException).Code == "25P02"))
+            if ((AException.GetType() == typeof(PostgresException)) && (((PostgresException)AException).SqlState == "25P02"))
             {
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
                 {

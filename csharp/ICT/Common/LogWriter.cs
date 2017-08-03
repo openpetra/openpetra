@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, simonj, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -228,6 +228,9 @@ namespace Ict.Common
             return FCanWriteLogFile;
         }
 
+        /// make Log() method threadsafe
+        private static readonly object _locker = new object();
+
         /// <summary>
         /// Log to file
         /// </summary>
@@ -235,44 +238,37 @@ namespace Ict.Common
         /// <param name="strMessage">message to log</param>
         private static void Log(string strFile, string strMessage)
         {
-            StreamWriter SWriter;
-            FileStream FStream;
-
-            try
+            lock (_locker)
             {
-                FStream = new FileStream(strFile, FileMode.OpenOrCreate, FileAccess.Write);
-                SWriter = new StreamWriter(FStream);
-
-                SWriter.BaseStream.Seek(0, SeekOrigin.End);
-
+                string line = String.Empty;
                 if (TLogging.DebugLevel > 0)
                 {
-                    SWriter.WriteLine(Environment.NewLine +
+                    line = Environment.NewLine +
                         (!USuppressDateAndTime ? DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty) + "  " + ULogtextPrefix +
                         (!(USuppressDateAndTime && ULogtextPrefix.Length == 0) ? " : " : String.Empty) +
-                        strMessage);
+                        strMessage + Environment.NewLine;
                 }
                 else
                 {
-                    SWriter.WriteLine(
-                        Environment.NewLine + (!USuppressDateAndTime ? DateTime.Now.ToString(
-                                                   "dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty) + ULogtextPrefix +
+                    line = Environment.NewLine + 
+                        (!USuppressDateAndTime ? DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty) + ULogtextPrefix +
                         (!(USuppressDateAndTime && ULogtextPrefix.Length == 0) ? " : " : String.Empty) +
-                        strMessage);
+                        strMessage + Environment.NewLine;
                 }
 
-                SWriter.Flush();
-                SWriter.Close();
-                FStream.Close();
-            }
-            catch (Exception e)
-            {
-                // eg cannot find directory
-                Console.WriteLine("TLogWriter:Log was not able to write to the log file");
-                Console.WriteLine(e.ToString());
+                try
+		{
+                    File.AppendAllText(strFile, line);
+                }
+                catch (Exception e)
+                {
+                    // eg cannot find directory
+                    Console.WriteLine("TLogWriter:Log was not able to write to the log file. msg: " + strMessage);
+                    Console.WriteLine(e.ToString());
 
-                // do not throw, this causes somehow problems on running nant test on ci-win
-                // throw;
+                    // do not throw, this causes somehow problems on running nant test on ci-win
+                    // throw;
+                }
             }
         }
 

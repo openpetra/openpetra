@@ -833,7 +833,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                         SubmitSuccessful = true;
                     }
-                    catch (Npgsql.NpgsqlException Exc)
+                    catch (Npgsql.PostgresException Exc)
                     {
                         // Check if we ran into the error 'could not serialize access due to read/write dependencies among transactions'
                         // which has error code 40001. This is due to the 'Predicate Locking' implementation in PostgreSQL.
@@ -842,7 +842,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                         // That error has been encountered with the 'PetraMultiStart' test program where many clients may open a Partner Edit
                         // at nearly the same time, but it could be encountered in a 'real office scenario' as well when two users open a
                         // Partner Edit screen at nearly the same time.
-                        if (String.Compare(Exc.Code, "40001") == 0)
+                        if (String.Compare(Exc.SqlState, "40001") == 0)
                         {
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: We need to retry issuing SubmitChanges as the RDBMS suggested to do that when 'Predicate Locking' failed (PostgreSQL Error Code 40001).");
 

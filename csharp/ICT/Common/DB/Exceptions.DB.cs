@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2506,11 +2506,11 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         public static bool IsFirstChanceNpgsql40001Exception(Exception AException)
         {
-            if (AException is NpgsqlException)
+            if (AException is PostgresException)
             {
-                NpgsqlException e = (NpgsqlException)AException;
+                PostgresException e = (PostgresException)AException;
 
-                if ((e.Code == "40001") && (e.Severity == "ERROR"))
+                if ((e.SqlState == "40001") && (e.Severity == "ERROR"))
                 {
                     return true;
                 }
@@ -2525,15 +2525,15 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         public static bool IsFirstChanceNpgsql23505Exception(Exception AException)
         {
-            if (AException is NpgsqlException)
+            if (AException is PostgresException)
             {
-                NpgsqlException e = (NpgsqlException)AException;
+                PostgresException e = (PostgresException)AException;
 
                 // AlanP note: We check for these three things...  The error could also be raised by a unique key constraint error that is not a primary key.
                 // But we will assume that that is not a transaction collision for now.
                 // Note that we may get a pk constraint error that is not a transaction collision but then it would probably be a programming error??
                 // Raising this exception will result in a friendly message suggesting there was another user that used this pk at the same time.
-                if ((e.Code == "23505") && (e.Severity == "ERROR") && (e.ConstraintName.EndsWith("_pk")))
+                if ((e.SqlState == "23505") && (e.Severity == "ERROR") && (e.ConstraintName.EndsWith("_pk")))
                 {
                     return true;
                 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -111,6 +111,12 @@ namespace Ict.Common.DB.Testing
             FTestCallDBCommand1 = GetActionDelegateForGNoET(1, ASimulateLongerRunningThread);
             FTestCallDBCommand2 = GetActionDelegateForGNoET(2, false);
 
+            if (DBAccess.GDBAccessObj != null)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+                DBAccess.GDBAccessObj = null;
+            }
+
             // Create a separate instance of TDataBase and establish a separate DB connection on it
             TDataBase TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), false);
             DBAccess.GDBAccessObj = TestDBInstance;
@@ -122,6 +128,7 @@ namespace Ict.Common.DB.Testing
 
             // 1st Step: Call the first Delegate set up in the Arrange section above asynchronously by using BeginInvoke. This
             // will execute all the code defined in the Delegate on a separate Thread (which comes from the .NET ThreadPool).
+            // it seems with Mono 4.6, threads are being reused, and therefore we cannot change the name on an existing thread
             TestCallDBCommand1AsyncResult = FTestCallDBCommand1.BeginInvoke(
                 new AsyncCallback(TestCallDBCommand1Callback), FTestCallDBCommand1);
 
@@ -495,7 +502,14 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
                        if (AThreadNumber == 1)
                        {
                            FTestingThread1 = Thread.CurrentThread;
-                           FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                           if (FTestingThread1.Name == String.Empty)
+                           {
+                               // using a Guid to avoid confusion
+                               //FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+                               FTestingThread1.Name = String.Format(TestThreadName, Guid.NewGuid());
+                           }
 
                            if (FTestDBInstance1 == null)
                            {
@@ -507,7 +521,14 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
                        else
                        {
                            FTestingThread2 = Thread.CurrentThread;
-                           FTestingThread2.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                           if (FTestingThread2.Name == String.Empty)
+                           {
+                               // using a Guid to avoid confusion
+                               //FTestingThread2.Name = String.Format(TestThreadName, AThreadNumber);
+                               FTestingThread2.Name = String.Format(TestThreadName, Guid.NewGuid());
+                           }
 
                            // reusing test instance from first thread
                            DBAccess.GDBAccessObj = FTestDBInstance1;
@@ -1113,7 +1134,13 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
             return () =>
                    {
-                       Thread.CurrentThread.Name = String.Format(TestThreadName, AThreadNumber);
+                       // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                       if (Thread.CurrentThread.Name == String.Empty)
+                       {
+                           // using a Guid to avoid confusion
+                           //Thread.CurrentThread.Name = String.Format(TestThreadName, AThreadNumber);
+                           Thread.CurrentThread.Name = String.Format(TestThreadName, Guid.NewGuid());
+                       }
 
                        try
                        {
@@ -1307,12 +1334,26 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
                        if (AThreadNumber == 1)
                        {
                            FTestingThread1 = Thread.CurrentThread;
-                           FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                           if (FTestingThread1.Name == String.Empty)
+                           {
+                               // using a Guid to avoid confusion
+                               //FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+                               FTestingThread1.Name = String.Format(TestThreadName, Guid.NewGuid());
+                           }
                        }
                        else
                        {
                            FTestingThread2 = Thread.CurrentThread;
-                           FTestingThread2.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // threads from the ThreadPool can be reused, and we are not allowed to set the name again in Mono
+                           if (FTestingThread2.Name == String.Empty)
+                           {
+                               // using a Guid to avoid confusion
+                               //FTestingThread2.Name = String.Format(TestThreadName, AThreadNumber);
+                               FTestingThread2.Name = String.Format(TestThreadName, Guid.NewGuid());
+                           }
                        }
 
                        try

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -929,28 +929,28 @@ namespace Ict.Common.Exceptions
         /// false if not.</returns>
         public static bool IsExceptionCausedByUnavailableDBConnectionServerSide(Exception AException)
         {
-            bool ProcessNpgsqlException = true;
+            bool ProcessPostgresException = true;
 
-            if (AException is NpgsqlException)
+            if (AException is PostgresException)
             {
                 if (AException.Message.StartsWith("Failed to establish a connection to")  // Unfortnately there's no Code available for this Message so we have to check for the string...
                     || (AException.Message.StartsWith("A timeout has occured. If you were establishing a connection, "))  // Unfortnately there's no Code available for this Message so we have to check for the string...
-                    || (((NpgsqlException)AException).Code == "57P03"))  // Message: 'the database system is starting up'
+                    || (((PostgresException)AException).SqlState == "57P03"))  // Message: 'the database system is starting up'
                 {
                     if (AException.Message.StartsWith("A timeout has occured. If you were establishing a connection, "))
                     {
                         if (!AException.StackTrace.Contains("IsDBConnectionOK"))
                         {
-                            ProcessNpgsqlException = false;
+                            ProcessPostgresException = false;
                         }
                     }
 
-                    if (ProcessNpgsqlException)
+                    if (ProcessPostgresException)
                     {
                         if (TLogging.DebugLevel >= 1)
                         {
                             TLogging.Log(String.Format("NpgsqlException with Message {0} raised by Npgql in {1}: {2}",
-                                    ((NpgsqlException)AException).Code == "57P03" ? "'The database system is starting up...'" :
+                                    ((PostgresException)AException).SqlState == "57P03" ? "'The database system is starting up...'" :
                                     "'" + AException.Message + "'",
                                     AppDomain.CurrentDomain.FriendlyName, AException.Message));
                             TLogging.LogStackTrace(TLoggingType.ToLogfile);
