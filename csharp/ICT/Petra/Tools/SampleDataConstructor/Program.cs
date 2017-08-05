@@ -4,7 +4,7 @@
 // @Authors:
 //       thomass, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -173,8 +173,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     SampleDataLedger.InitExchangeRate();
 
                     SampleDataUnitPartners.FLedgerNumber = SampleDataLedger.FLedgerNumber;
-                    SampleDataUnitPartners.GenerateFieldsFinanceOnly(
-                        Path.Combine(datadirectory, "fields.csv"));
 
                     SampleDataLedger.PopulateData(datadirectory);
                 }
