@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -133,60 +133,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
 
             PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
-
-            GLSetupTDSAccess.SubmitChanges(GLSetupDS);
-        }
-
-        /// <summary>
-        /// link the fields in the current ledger
-        /// </summary>
-        /// <param name="AFieldCSVFile"></param>
-        public static void GenerateFieldsFinanceOnly(string AFieldCSVFile)
-        {
-            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AFieldCSVFile, ",");
-
-            XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
-
-            GLSetupTDS GLSetupDS = new GLSetupTDS();
-
-            PCountryTable CountryTable = null;
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    CountryTable = PCountryAccess.LoadAll(Transaction);
-                });
-
-            while (RecordNode != null)
-            {
-                long id = 100 + Convert.ToInt64(TXMLParser.GetAttribute(RecordNode, "id"));
-                string CountryCode = TXMLParser.GetAttribute(RecordNode, "Name");
-                string UnitName = ((PCountryRow)CountryTable.Rows.Find(CountryCode)).CountryName;
-                Int64 PartnerKey = id * 1000000;
-
-                // create cost centre
-                ACostCentreRow CostCentreRow = GLSetupDS.ACostCentre.NewRowTyped();
-                CostCentreRow.LedgerNumber = FLedgerNumber;
-                CostCentreRow.CostCentreCode = (id * 100).ToString("0000");
-                CostCentreRow.CostCentreName = UnitName;
-                CostCentreRow.CostCentreToReportTo = MFinanceConstants.INTER_LEDGER_HEADING;
-                CostCentreRow.CostCentreType = MFinanceConstants.FOREIGN_CC_TYPE;
-                GLSetupDS.ACostCentre.Rows.Add(CostCentreRow);
-
-                // create foreign ledger, cost centre link validledgernumber
-                AValidLedgerNumberRow ValidLedgerNumber = GLSetupDS.AValidLedgerNumber.NewRowTyped();
-                ValidLedgerNumber.LedgerNumber = FLedgerNumber;
-                ValidLedgerNumber.PartnerKey = PartnerKey;
-                ValidLedgerNumber.CostCentreCode = CostCentreRow.CostCentreCode;
-                ValidLedgerNumber.IltProcessingCentre = Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) * 10000;
-                GLSetupDS.AValidLedgerNumber.Rows.Add(ValidLedgerNumber);
-
-                RecordNode = RecordNode.NextSibling;
-            }
 
             GLSetupTDSAccess.SubmitChanges(GLSetupDS);
         }
