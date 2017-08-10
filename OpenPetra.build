@@ -25,15 +25,11 @@ list of available commands:
   startServer: run a local OpenPetra Server
   stopServer: stop the local OpenPetra Server
   startAdmin: run the admin console
-  startClient: run the OpenPetra Client
-  startStandalone: run the OpenPetra standalone application, if generateSolution was run with -D:compileForStandalone=true
   deleteBakFiles: delete all backup files
-  initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
+  initConfigFiles: write and overwrite the config files for server and testing, and the version.txt
   initPlugins: install some default plugins
-  test: will run the NUnit tests (smaller tests: test-without-display, test-main-navigation-screens, test-client)
-      nant test-without-display             runs all basic tests (excl. GUI tests)
-      nant test-main-navigation-screens     tests the opening of all screens from the main menu
-      nant test-client
+  test: will run the NUnit tests (smaller tests: test-without-display, test-main-navigation-screens)
+      nant test-without-display             runs all basic tests
   devzip: build a zip file for developers for easy start
 
 compat:
@@ -63,12 +59,9 @@ compat:
   generateGuidedTranslations: Simplifies the translation of the .po files
   createI18NYamlFiles: create localised yaml files
     createI18NYamlFiles -language=de-DE -path=...
-  copyFrDlls: Copy the FastReports DLLS from the path specified in FASTREPORT_DLL_PATH to the bin folder
 
 releases:
-  buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
-  buildLinuxSourceforgeRelease: will build the linux files that we upload to Sourceforge. creates tar files for local server and client
-  buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
+  buildRPM: will build the linux files that can be used for RPM. creates tar files for local server
 
 demodata:
   generateDemodata: create demo data
