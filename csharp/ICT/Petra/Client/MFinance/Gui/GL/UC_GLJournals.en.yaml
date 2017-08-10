@@ -1,5 +1,0 @@
-RootNode:
-    BaseYaml: UC_GLJournals.yaml
-    Controls:
-        pnlInfo: {Width=500, Height=50}
-        pnlDetails: {Width=500, Height=177}

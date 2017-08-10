@@ -56,14 +56,6 @@ compat:
   generateORM: generates Object Relational Mapping routines from petra.xml
     sub items: generateORMCachedTables, generateORMData, generateORMAccess, generateORMReferenceCounts
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
-  generateWinforms: generates all yaml files in csharp\ICT\Petra\Client and csharp\ICT\Petra\Plugins
-  generateWinform: generate a single yaml file, compile it and optionally and start the client
-       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
-       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
-  generateWinformNoCompile: generate a single yaml file without any subsequent compilation
-       nant generateWinformNoCompile -D:file=MFinance/Gui/GL/GLBatch.yaml
-  previewWinform: preview a single yaml file
-       nant previewWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translation: download new language files, and create the dlls required to be delivered with a new release
@@ -248,7 +240,6 @@ useful parameters
     <echo message="Target minimalGenerateSolution started at: ${datetime::now()}" /> 
     
     <call target="generateTools"/>
-    <call target="generateWinforms"/>
     <call target="generateORM"/>
     <call target="generateGlue"/>
     <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
@@ -294,7 +285,7 @@ useful parameters
     NamespaceMap3rdParty="${namespaceFile3rdParty}"
     DependencyMapFilename="${projectDependenciesFile}"
     ShowWarnings="false"
-    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools.DBXML,Ict.Tools.CodeGeneration,Ict.Tools.GenerateGlue,Ict.Tools.GenerateI18N,Ict.Tools.GenerateORM,Ict.Tools.GenerateWinForms,Ict.Tools.GenerateSQL,Ict.Tools.PackageReports"/>
+    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools.DBXML,Ict.Tools.CodeGeneration,Ict.Tools.GenerateGlue,Ict.Tools.GenerateI18N,Ict.Tools.GenerateORM,Ict.Tools.GenerateSQL,Ict.Tools.PackageReports"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <call target="generateProjectFilesInternal"/>
@@ -418,44 +409,6 @@ useful parameters
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
   
   <echo message="Target generateORMAccess finished at: ${datetime::now()}" />         
-</target>
-
-<target name="generateWinforms">
-  <echo message="Target generateWinforms started at: ${datetime::now()}" />
-  
-  <property name="WithWindowsClient" value="true" overwrite="false"/>
-  <property name="WithLinuxClient" value="false" overwrite="false"/>
-  <if test="${WithWindowsClient or WithLinuxClient}">
-    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
-    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Plugins/Plugins.build')}" verbose="${verbose}"/>
-  </if>
-  
-  <echo message="Target generateWinforms finished at: ${datetime::now()}" />
-</target>
-
-<target name="generateWinform">
-  <echo message="Target generateWinform (outer) started at: ${datetime::now()}" />
-  
-  <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  
-  <echo message="Target generateWinform (outer) finished at: ${datetime::now()}" />
-</target>
-
-<target name="generateWinformNoCompile">
-  <echo message="Target generateWinformNoCompile (outer) started at: ${datetime::now()}" />
-  
-  <nant inheritall="true" target="generateWinformNoCompile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  
-  <echo message="Target generateWinformNoCompile (outer) finished at: ${datetime::now()}" />
-</target>
-
-<target name="previewWinform">
-  <echo message="Target previewWinform (outer) started at: ${datetime::now()}" />
-  
-  <nant inheritall="true" target="previewWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  
-  <echo message="Target previewWinform (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="test" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">

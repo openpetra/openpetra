@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,7 +129,6 @@ namespace Ict.Tools.GenerateGlue
 
                 CreateInterfaces interfaces = new CreateInterfaces();
                 interfaces.CreateFiles(namespaceRoot, AOutputDir + "/Shared/lib/Interfaces", ACmd.GetOptValue("TemplateDir"));
-                GenerateClientGlue.GenerateCode(namespaceRoot, AOutputDir + "/Client/app/Core/Remoteobjects", ACmd.GetOptValue("TemplateDir"));
                 GenerateClientGlue.GenerateConnectorCode(AOutputDir + "/../Common/Remoting/Client", ACmd.GetOptValue("TemplateDir"));
                 GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server/app/WebService", ACmd.GetOptValue("TemplateDir"));
 
@@ -177,8 +176,8 @@ namespace Ict.Tools.GenerateGlue
 
             try
             {
-                CreateInterfaces interfaces = new CreateInterfaces();
 #if disabled
+                CreateInterfaces interfaces = new CreateInterfaces();
                 // at the moment, we do not support UIConnectors for plugins. Better to focus on Webconnectors!
                 if (!Directory.Exists(AOutputDir + "/Shared"))
                 {
@@ -186,7 +185,6 @@ namespace Ict.Tools.GenerateGlue
                 }
                 interfaces.CreateFiles(namespaceRoot, AOutputDir + "/Shared", ACmd.GetOptValue("TemplateDir"));
 #endif
-                GenerateClientGlue.GenerateCode(namespaceRoot, AOutputDir + "/Client", ACmd.GetOptValue("TemplateDir"));
                 GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server", ACmd.GetOptValue("TemplateDir"));
             }
             catch (Exception e)

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -332,37 +332,10 @@ namespace Ict.Tools.NAntTasks
                             }
 
                             if (!FCompilingForStandalone && Namespace.StartsWith("Ict.Petra.Server")
-                                && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Client"))
-                            {
-                                Console.WriteLine(
-                                    "Warning: we must not reference a Server namespace (" + Namespace + ") from the client side in "
-                                    +
-                                    filename);
-                            }
-
-                            if (!FCompilingForStandalone && Namespace.StartsWith("Ict.Petra.Server")
                                 && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Shared"))
                             {
                                 Console.WriteLine(
                                     "Warning: we must not reference a Server namespace (" + Namespace + ") from the shared directory in "
-                                    +
-                                    filename);
-                            }
-
-                            if (Namespace.StartsWith("Ict.Petra.Client")
-                                && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Shared"))
-                            {
-                                Console.WriteLine(
-                                    "Warning: we must not reference a Client namespace (" + Namespace + ") from the shared directory in "
-                                    +
-                                    filename);
-                            }
-
-                            if (Namespace.StartsWith("Ict.Petra.Client")
-                                && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Server"))
-                            {
-                                Console.WriteLine(
-                                    "Warning: we must not reference a Client namespace (" + Namespace + ") from the server directory in "
                                     +
                                     filename);
                             }

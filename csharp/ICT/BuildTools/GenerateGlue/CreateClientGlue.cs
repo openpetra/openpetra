@@ -577,6 +577,8 @@ namespace GenerateGlue
         /// </summary>
         static public void GenerateConnectorCode(String AOutputPath, String ATemplateDir)
         {
+            FTemplateDir = ATemplateDir;
+
             String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "ClientGlue.Connector-generated.cs";
 
             Console.WriteLine("working on " + OutputFile);

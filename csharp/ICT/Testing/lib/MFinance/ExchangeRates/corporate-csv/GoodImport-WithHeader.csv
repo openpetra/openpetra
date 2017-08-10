@@ -1,5 +1,0 @@
-From Currency,To Currency,Effective Date, Effective Rate
-"USD", "EUR", "01/01/2012", "1.10"
-"USD","EUR","02/01/2012","1.12"
-USD, EUR, 04/01/2012, 1.25
-USD,EUR,03/01/2012,1.15

@@ -1,5 +1,0 @@
-RootNode:
-    BaseYaml: UC_GLTransactions.yaml
-    Controls:
-        pnlInfo: {Width=500, Height=50}
-        pnlDetails: {Width=500, Height=306}

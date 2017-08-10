@@ -1,7 +1,0 @@
-﻿RootNode:
-    BaseYaml: AccountDetail.yaml
-    WindowHeight: 670
-    Controls:
-        rgrSorting: {Height=160}
-        rbtSortByReference: {Height=40}
-        rbtSortByAnalysisType: {Height=40}

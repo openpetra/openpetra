@@ -1,1 +1,0 @@
-<%@ WebService Language="C#" Class="Tests.HTTPRemoting.Service.TMyService" %>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,6 @@ using System.Drawing.Printing;
 using System.Drawing;
 using System.Reflection;
 using Ict.Petra.Shared;
-//using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Shared.MReporting
 {
