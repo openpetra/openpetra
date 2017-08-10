@@ -38,17 +38,6 @@
       if (ServerUrl.StartsWith("demo."))
       {
 %>
-        <div class="form-signin">
-          <div class="bs-callout bs-callout-warning"><h4>Download</h4>
-            <p>Install the Windows client and connect to our Demo OpenPetra server:</p>
-               <button id="btnDownload" class="btn btn-lg btn-primary btn-block"
-                  onclick="location.href = '?download=<% Response.Write(Filename); %>'">
-                    Get the Windows Client!
-               </button>
-          </div>
-          <div class="bs-callout bs-callout-warning"><h4>Login information</h4><p>Please login with user <b>demo</b> and password <b>demo</b></p></div>
-        </div>
-
         <form class="form-signin">
           <p>If you want to try something experimental, have a look at this preview of OpenPetra in the webbrowser:</p>
           <input type="text" class="form-control" placeholder="Email address" id="txtEmail">
@@ -74,21 +63,12 @@
       else
       {
 %>
-        <div class="form-signin">
-          <div class="bs-callout bs-callout-warning"><h4>Download</h4>
-            <p>Install the Windows client and connect to your OpenPetra server:</p>
-               <button id="btnDownload" class="btn btn-lg btn-primary btn-block"
-                  onclick="location.href = '?download=<% Response.Write(Filename); %>'">
-                    Get the Windows Client!
-               </button>
-          </div>
-        </div>
 
-        <div class="form-signin">
-          <div class="bs-callout bs-callout-info">
-              <p>Brought to you by <a href="https://www.openpetra.org">OpenPetra.org</a></p>
-          </div>
-        </div>
+        <form class="form-signin">
+          <input type="text" class="form-control" placeholder="Email address" id="txtEmail">
+          <input type="password" class="form-control" placeholder="Password" id="txtPassword">
+          <button id="btnLogin" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        </form>
 
         <div class="form-signin">
           <div class="bs-callout bs-callout-info">
