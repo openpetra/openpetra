@@ -71,6 +71,7 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.IO.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.DB.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Data.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Verification.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Shared.dll" />
 
 <!--
