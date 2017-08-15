@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -42,17 +41,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         static partial void ValidateApDocumentDetailManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[AApDocumentDetailTable.ColumnAmountId],
-                new TValidationControlsData(null, AApDocumentDetailTable.GetAmountDBName()));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedFinanceValidation_AP.ValidateApDocumentDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (AApDocumentDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (AApDocumentDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
     }

@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop, PeterS
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,6 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Exceptions;

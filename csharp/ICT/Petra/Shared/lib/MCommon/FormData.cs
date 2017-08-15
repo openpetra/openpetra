@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;

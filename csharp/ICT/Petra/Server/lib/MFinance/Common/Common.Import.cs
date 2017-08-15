@@ -4,7 +4,7 @@
 // @Authors:
 //       alanP
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.Globalization;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -50,7 +49,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADataColumn"></param>
         /// <param name="ARowNumber"></param>
         /// <param name="AMessages"></param>
-        /// <param name="AValidationColumnsDict"></param>
         /// <param name="ATreatEmptyStringAsText">When true the return value will be the empty string. When false the return value will be null.</param>
         /// <returns>The string value.  The AImportLine parameter will have been clipped.</returns>
         public static String ImportString(ref String AImportLine,
@@ -59,14 +57,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
             bool ATreatEmptyStringAsText = true)
         {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
             String sReturn = StringHelper.GetNextCSV(ref AImportLine, ADelimiter);
 
             if ((sReturn == StringHelper.CSV_STRING_FORMAT_ERROR) && (AMessages != null))
@@ -94,7 +86,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADataColumn"></param>
         /// <param name="ARowNumber"></param>
         /// <param name="AMessages"></param>
-        /// <param name="AValidationColumnsDict"></param>
         /// <param name="ADefaultString">A string to apply if the import returns empty text.  Must be either 'yes' or 'no'</param>
         /// <returns>Returns true if the text is 'yes', false if the text is 'no'. Otherwise the method returns a critical Verification Result.</returns>
         public static Boolean ImportBoolean(ref String AImportLine,
@@ -103,14 +94,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
             String ADefaultString = "")
         {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
             String sReturn = StringHelper.GetNextCSV(ref AImportLine, ADelimiter).ToLower();
             String sDefault = ADefaultString.ToLower();
 
@@ -144,7 +129,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADataColumn"></param>
         /// <param name="ARowNumber"></param>
         /// <param name="AMessages"></param>
-        /// <param name="AValidationColumnsDict"></param>
         /// <param name="ADefaultString"></param>
         /// <returns>The value.  The AImportLine parameter will have been clipped.</returns>
         public static Int64 ImportInt64(ref String AImportLine,
@@ -153,14 +137,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
             String ADefaultString = "")
         {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
             String sReturn = StringHelper.GetNextCSV(ref AImportLine, ADelimiter);
 
             if (sReturn == String.Empty)
@@ -191,7 +169,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADataColumn"></param>
         /// <param name="ARowNumber"></param>
         /// <param name="AMessages"></param>
-        /// <param name="AValidationColumnsDict"></param>
         /// <param name="ADefaultString"></param>
         /// <returns>The value.  The AImportLine parameter will have been clipped.</returns>
         public static Int32 ImportInt32(ref String AImportLine,
@@ -200,14 +177,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
             String ADefaultString = "")
         {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
             String sReturn = StringHelper.GetNextCSV(ref AImportLine, ADelimiter);
 
             if (sReturn == String.Empty)
@@ -239,7 +210,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADataColumn"></param>
         /// <param name="ARowNumber"></param>
         /// <param name="AMessages"></param>
-        /// <param name="AValidationColumnsDict"></param>
         /// <param name="ADefaultString"></param>
         /// <returns>The value.  The AImportLine parameter will have been clipped.</returns>
         public static decimal ImportDecimal(ref String AImportLine,
@@ -249,14 +219,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
             String ADefaultString = "")
         {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
             String sReturn = StringHelper.GetNextCSV(ref AImportLine, ADelimiter);
 
             if (sReturn == String.Empty)
@@ -300,7 +264,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADataColumn"></param>
         /// <param name="ARowNumber"></param>
         /// <param name="AMessages"></param>
-        /// <param name="AValidationColumnsDict"></param>
         /// <param name="ADefaultString"></param>
         /// <returns>The date value.  The AImportLine parameter will have been clipped.</returns>
         public static DateTime ImportDate(ref String AImportLine,
@@ -311,14 +274,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DataColumn ADataColumn,
             int ARowNumber,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationColumnsDict,
             String ADefaultString = "")
         {
-            if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
-            {
-                AValidationColumnsDict.Add(ADataColumn, new TValidationControlsData(null, AColumnTitle));
-            }
-
             String sDate = StringHelper.GetNextCSV(ref AImportLine, ADelimiter);
 
             int dateAsInt;

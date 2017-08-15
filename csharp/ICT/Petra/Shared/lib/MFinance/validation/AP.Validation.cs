@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -44,13 +43,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateApDocumentDetailManual(object AContext, AApDocumentDetailRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
             // Don't validate deleted DataRows
@@ -62,14 +58,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // 'Detail Amount' must be positive or 0
             ValidationColumn = ARow.Table.Columns[AApDocumentDetailTable.ColumnAmountId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TNumericalChecks.IsPositiveOrZeroDecimal(ARow.IsAmountNull() ? 0 : ARow.Amount,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
     }

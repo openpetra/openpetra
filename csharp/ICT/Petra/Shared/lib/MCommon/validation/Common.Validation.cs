@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -47,13 +46,11 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AInternatPostalTypeCode" /> is null,
         /// otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult IsValidInternationalPostalCode(string AInternatPostalTypeCode,
-            string ADescription = "", object AResultContext = null, System.Data.DataColumn AResultColumn = null,
-            System.Windows.Forms.Control AResultControl = null)
+            string ADescription = "", object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -72,7 +69,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
 
                         if (AResultColumn != null)
                         {
-                            ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                            ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                         }
                     }
                 }
@@ -83,81 +80,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
 
                     if (AResultColumn != null)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                     }
                 }
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// Additional manual validation for Form Design Setup
-        /// </summary>
-        /// <param name="AContext">Context that describes what I'm validating.</param>
-        /// <param name="ARow">DataRow with the the data I'm validating</param>
-        /// <param name="AVerificationResultCollection">Will be filled with TVerificationResult items if data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        public static void ValidateFormDesignManual(object AContext, PFormRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {
-            // Don't validate deleted DataRows
-            if (ARow.RowState == DataRowState.Deleted)
-            {
-                return;
-            }
-
-            TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
-
-            //  FormTypeCode must not be blank
-            DataColumn ValidationColumn = ARow.Table.Columns[PFormTable.ColumnFormTypeCodeId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.FormTypeCode, ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-
-            // MinimumAmount must be zero or positive
-            ValidationColumn = ARow.Table.Columns[PFormTable.ColumnMinimumAmountId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TNumericalChecks.IsPositiveOrZeroDecimal(ARow.MinimumAmount, ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-
-            //  Description must not be blank
-            ValidationColumn = ARow.Table.Columns[PFormTable.ColumnFormDescriptionId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.FormDescription, ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-
-            // Formality level must be between 1 and 6
-            ValidationColumn = ARow.Table.Columns[PFormTable.ColumnFormalityLevelId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TNumericalChecks.IsInRange(ARow.FormalityLevel, 1, 6, ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
         }
     }
 }

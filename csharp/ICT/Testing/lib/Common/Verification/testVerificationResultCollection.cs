@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 using System.Threading;
 using System.Collections;
 using System.Collections.Specialized;
@@ -194,13 +193,6 @@ namespace Ict.Common.Verification.Testing
             Assert.IsFalse(coll.Contains("testcontext"), "should not contain testcontext");
             coll.Add(res1);
             Assert.IsTrue(coll.Contains("testcontext"), "should contain testcontext (by string)");
-
-            // Contains(object AResultContext) with a control
-            TextBox txtTest1 = new TextBox();
-            res2 = new TScreenVerificationResult(txtTest1, null, "test1", "t1", txtTest1, TResultSeverity.Resv_Noncritical);
-            Assert.IsFalse(coll.Contains(txtTest1), "should not contain txtTest1 box");
-            coll.Add(res2);
-            Assert.IsTrue(coll.Contains(txtTest1), "should contain txtTest1 box");
 
             // Contains(DataColumn)
             DataColumn col = new DataColumn("test", typeof(int));
@@ -399,11 +391,6 @@ namespace Ict.Common.Verification.Testing
             coll.Add(res0);
             res1 = new TVerificationResult(null, "test1", TResultSeverity.Resv_Noncritical);
             coll.Add(res1);
-            TextBox tb1 = new TextBox();
-            res2 = new TVerificationResult(tb1, "test2", TResultSeverity.Resv_Noncritical);
-            coll.Add(res2);
-            res3 = new TVerificationResult(tb1, "test3", TResultSeverity.Resv_Noncritical);
-            coll.Add(res3);
             DataColumn col = new DataColumn("test", typeof(int));
             res4 = new TScreenVerificationResult(null, col, "test4", null, TResultSeverity.Resv_Noncritical);
             coll.Add(res4);
@@ -432,7 +419,6 @@ namespace Ict.Common.Verification.Testing
             // Remove(IResultInterface value)
             coll.Remove(res1);
             Assert.AreEqual(7, coll.Count, "res1 should have been removed");
-            Assert.AreEqual(1, coll.IndexOf(res2), "res1 was removed");
             coll.Insert(1, res1);
             Assert.Throws(typeof(ArgumentException),
                 delegate { coll.Remove(new TVerificationResult(null, "test3", TResultSeverity.Resv_Info)); },
@@ -445,51 +431,6 @@ namespace Ict.Common.Verification.Testing
             Assert.AreEqual(7, coll.Count, "should have removed res4");
             Assert.AreEqual(res6, coll.FindBy(col), "first result with col should be res6");
             coll.Insert(4, res4);
-
-            // Remove(object AResultContext)
-            coll.Remove(new TextBox());
-            Assert.AreEqual(8, coll.Count, "nothing happens when trying to remove unknown object");
-            coll.Remove(tb1);
-            Assert.AreEqual(6, coll.Count, "should have removed res2 and res3");
-            Assert.AreEqual(null, coll.FindBy(tb1), "there should not be any result with tb1");
-        }
-
-        /// <summary>
-        /// Test the DowngradeScreenVerificationResults method
-        /// </summary>
-        [Test]
-        public void TestDowngradeScreenVerificationResults()
-        {
-            TScreenVerificationResult res0, res1;
-            TVerificationResultCollection coll = new TVerificationResultCollection();
-
-            DataColumn col = new DataColumn("test", typeof(int));
-
-            res0 = new TScreenVerificationResult(null, col, "test0", null, TResultSeverity.Resv_Noncritical);
-            coll.Add(res0);
-
-            DataColumn col2 = new DataColumn("test2", typeof(int));
-            TextBox txtField = new TextBox();
-            TVerificationResult resVR = new TVerificationResult(null, "test", TResultSeverity.Resv_Critical);
-            res1 = new TScreenVerificationResult(resVR, col2, txtField);
-            coll.Add(res1);
-
-            Assert.AreEqual(2, coll.Count, "there should be two results");
-
-            foreach (object o in coll)
-            {
-                Assert.IsInstanceOf(typeof(TScreenVerificationResult), o, "should be TScreenVerificationResult");
-            }
-
-            TVerificationResultCollection.DowngradeScreenVerificationResults(coll);
-
-            Assert.AreEqual(2, coll.Count, "there should be two results after downgrade");
-
-            foreach (object o in coll)
-            {
-                Assert.IsInstanceOf(typeof(TVerificationResult), o, "should be TVerificationResult");
-                Assert.IsNotInstanceOf(typeof(TScreenVerificationResult), o, "should not be TScreenVerificationResult");
-            }
         }
 
         /// <summary>
@@ -505,11 +446,6 @@ namespace Ict.Common.Verification.Testing
             coll.Add(res0);
             res1 = new TVerificationResult(null, "test1", TResultSeverity.Resv_Info);
             coll.Add(res1);
-            TextBox tb1 = new TextBox();
-            res2 = new TVerificationResult(tb1, "test2", TResultSeverity.Resv_Critical);
-            coll.Add(res2);
-            res3 = new TVerificationResult(tb1, "test3", TResultSeverity.Resv_Noncritical);
-            coll.Add(res3);
             DataColumn col = new DataColumn("test", typeof(int));
             res4 = new TScreenVerificationResult(null, col, "test4", null, TResultSeverity.Resv_Noncritical);
             coll.Add(res4);
@@ -530,8 +466,6 @@ namespace Ict.Common.Verification.Testing
 
             const string expectedString =
                 "\r\n    Problem: test0\r\n    (Non-critical)\r\n\r\n" +
-                "\r\n    Status: test1\r\n\r\n\r\nSystem.Windows.Forms.TextBox, Text: " +
-                "\r\n    Problem: test2\r\n    (Critical)\r\n\r\nSystem.Windows.Forms.TextBox, Text: " +
                 "\r\n    Problem: test3\r\n    (Non-critical)\r\n\r\n" +
                 "\r\n    Problem: test4\r\n    (Non-critical)\r\n\r\n" +
                 "\r\n    Status: test5\r\n\r\n\r\n" +
@@ -554,11 +488,6 @@ namespace Ict.Common.Verification.Testing
             coll.Add(res0);
             res1 = new TVerificationResult(null, "test1", TResultSeverity.Resv_Info);
             coll.Add(res1);
-            TextBox tb1 = new TextBox();
-            res2 = new TVerificationResult(tb1, "test2", TResultSeverity.Resv_Critical);
-            coll.Add(res2);
-            res3 = new TVerificationResult(tb1, "test3", TResultSeverity.Resv_Noncritical);
-            coll.Add(res3);
             DataColumn col = new DataColumn("test", typeof(int));
             res4 = new TScreenVerificationResult(null, col, "test4", null, TResultSeverity.Resv_Noncritical);
             coll.Add(res4);
@@ -576,98 +505,16 @@ namespace Ict.Common.Verification.Testing
             res8 = new TScreenVerificationResult("test8", col3, "test8", null, TResultSeverity.Resv_Noncritical);
             coll.Add(res8);
 
-            string ErrorMessages;
-            Control FirstControl;
-            coll.BuildScreenVerificationResultList(null, out ErrorMessages, out FirstControl, true);
+            String ErrorMessages;
+            Object testObject;
+            coll.BuildScreenVerificationResultList(out ErrorMessages, out testObject, null, true);
 
             Console.WriteLine(ErrorMessages);
             Console.WriteLine(ErrorMessages.Replace("\n", "\\n").Replace("\r", "\\r"));
 
-            string expectedErrorMessages =
-                "test4\r\n\r\ntest5\r\n\r\ntest6\r\n\r\ntest7\r\n\r\n";
-            Assert.AreEqual(expectedErrorMessages, ErrorMessages, "only show errors of unspecified resultcontext and of TVerificationScreenResult");
-
-            coll.BuildScreenVerificationResultList("test8", out ErrorMessages, out FirstControl, true);
-
-            Console.WriteLine(ErrorMessages);
-            Console.WriteLine(ErrorMessages.Replace("\n", "\\n").Replace("\r", "\\r"));
-
-            expectedErrorMessages =
+            String expectedErrorMessages =
                 "test8\r\n\r\n";
             Assert.AreEqual(expectedErrorMessages, ErrorMessages, "only show errors of resultcontext test1 and of TVerificationScreenResult");
-
-            // test first control, but with updatefirstcontrol false
-            TextBox tb2 = new TextBox();
-            res9 = new TScreenVerificationResult(null, null, "test9", tb2, TResultSeverity.Resv_Critical);
-            coll.Add(res9);
-            TextBox tb3 = new TextBox();
-            res10 = new TScreenVerificationResult(null, null, "test10", tb3, TResultSeverity.Resv_Critical);
-            coll.Add(res10);
-            coll.BuildScreenVerificationResultList(null, out ErrorMessages, out FirstControl, false);
-
-            Console.WriteLine(ErrorMessages);
-            Console.WriteLine(ErrorMessages.Replace("\n", "\\n").Replace("\r", "\\r"));
-
-            expectedErrorMessages =
-                "test4\r\n\r\ntest5\r\n\r\ntest6\r\n\r\ntest7\r\n\r\ntest9\r\n\r\ntest10\r\n\r\n";
-            Assert.AreEqual(expectedErrorMessages, ErrorMessages, "added test9 and test10");
-            Assert.AreEqual(tb2, FirstControl, "expect to return tb2 as first control");
-            Assert.AreEqual(null, coll.FirstErrorControl, "expect to not select tb2 as first control");
-
-            // test updatefirstcontrol true
-            coll.BuildScreenVerificationResultList(null, out ErrorMessages, out FirstControl, true);
-            Assert.AreEqual(tb2, FirstControl, "expect to return tb2 as first control");
-            Assert.AreEqual(tb2, coll.FirstErrorControl, "expect to select tb2 as first control");
-
-            // remove res9, so that first control is tb3, but call with updatefirstcontrol false
-            coll.Remove(res9);
-            coll.BuildScreenVerificationResultList(null, out ErrorMessages, out FirstControl, false);
-            Assert.AreEqual(tb3, FirstControl, "expect to return tb3 as first control");
-            Assert.AreEqual(tb2, coll.FirstErrorControl, "expect tb2 to be still selected as first control");
-
-            // test other overload of BuildScreenVerificationResult, ignorewarnings etc
-            object FirstErrorContext;
-
-            // test ignorewarnings true
-            coll.BuildScreenVerificationResultList(out ErrorMessages, out FirstControl, out FirstErrorContext, true, null, true);
-
-            Assert.AreEqual(null, FirstErrorContext, "FirstErrorContext is null");
-
-            Console.WriteLine(ErrorMessages);
-            Console.WriteLine(ErrorMessages.Replace("\n", "\\n").Replace("\r", "\\r"));
-
-            expectedErrorMessages = "test1\r\n\r\ntest2\r\n\r\ntest5\r\n\r\ntest10\r\n\r\n";
-            Assert.AreEqual(expectedErrorMessages, ErrorMessages, "ignore warnings (ie. noncritical). Include TVerificationResults");
-
-            // test ignorewarnings false
-            coll.BuildScreenVerificationResultList(out ErrorMessages, out FirstControl, out FirstErrorContext, true, null, false);
-
-            Console.WriteLine(ErrorMessages);
-            Console.WriteLine(ErrorMessages.Replace("\n", "\\n").Replace("\r", "\\r"));
-
-            expectedErrorMessages =
-                "test0\r\n\r\ntest1\r\n\r\ntest2\r\n\r\ntest3\r\n\r\ntest4\r\n\r\ntest5\r\n\r\ntest6\r\n\r\ntest7\r\n\r\ntest8\r\n\r\ntest10\r\n\r\n";
-            Assert.AreEqual(expectedErrorMessages, ErrorMessages, "do not ignore warnings (ie. noncritical). Include TVerificationResults");
-
-            // test ARestrictToTypeWhichRaisesError, restrict to string errorcontext
-            coll.BuildScreenVerificationResultList(out ErrorMessages, out FirstControl, out FirstErrorContext, true, typeof(string), false);
-            Console.WriteLine(ErrorMessages);
-            Console.WriteLine(ErrorMessages.Replace("\n", "\\n").Replace("\r", "\\r"));
-
-            expectedErrorMessages =
-                "test8\r\n\r\n";
-            Assert.AreEqual(expectedErrorMessages, ErrorMessages, "restrict to string errorcontext");
-
-            // test AUpdateFirstErrorControl
-            coll.BuildScreenVerificationResultList(out ErrorMessages, out FirstControl, out FirstErrorContext, true, null, false);
-            // it seems that res2/tb1 is ignored, because it is not a screenverificationresult
-            Assert.AreEqual(tb3, FirstControl, "first control should be tb3");
-            Assert.AreEqual(tb3, coll.FirstErrorControl, "first error control should be tb3");
-            // now testing with res8/tb3 inserted before tb2, and not updating first error control
-            coll.Insert(3, res9);
-            coll.BuildScreenVerificationResultList(out ErrorMessages, out FirstControl, out FirstErrorContext, false, null, false);
-            Assert.AreEqual(tb2, FirstControl, "first control should be tb2");
-            Assert.AreEqual(tb3, coll.FirstErrorControl, "first error control should still be tb3");
         }
     }
 }

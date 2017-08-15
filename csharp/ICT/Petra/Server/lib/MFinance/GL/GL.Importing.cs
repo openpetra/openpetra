@@ -168,11 +168,6 @@ namespace Ict.Petra.Server.MFinance.GL
             Boolean gotFirstBatch = false;
             Boolean CancelledByUser = false;
 
-            // Create some validation dictionaries
-            TValidationControlsDict ValidationControlsDictBatch = new TValidationControlsDict();
-            TValidationControlsDict ValidationControlsDictJournal = new TValidationControlsDict();
-            TValidationControlsDict ValidationControlsDictTransaction = new TValidationControlsDict();
-
             // This needs to be initialised because we will be calling the method
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
@@ -228,8 +223,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                 int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
                                 // Read the row analysisType - there is no 'validation' on this so we can make the call with null parameters
                                 string RowType =
-                                    TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, RowNumber, Messages,
-                                        null).Trim();
+                                    TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, RowNumber,
+                                    Messages).Trim();
 
                                 if (RowType == "")  // don't object if there are "empty" lines
                                 {
@@ -295,16 +290,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     NewBatch.BatchDescription =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Batch description"),
-                                            MainDS.ABatch.ColumnBatchDescription, RowNumber, Messages, ValidationControlsDictBatch);
+                                            MainDS.ABatch.ColumnBatchDescription, RowNumber, Messages);
 
                                     NewBatch.BatchControlTotal =
                                         TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat,
                                             Catalog.GetString("Batch hash value"),
-                                            MainDS.ABatch.ColumnBatchControlTotal, RowNumber, Messages, ValidationControlsDictBatch);
+                                            MainDS.ABatch.ColumnBatchControlTotal, RowNumber, Messages);
                                     NewBatch.DateEffective =
                                         TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, datesMayBeIntegers,
                                             Catalog.GetString("Batch effective date"),
-                                            MainDS.ABatch.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictBatch);
+                                            MainDS.ABatch.ColumnDateEffective, RowNumber, Messages);
 
                                     if (Messages.Count == preParseMessageCount)
                                     {
@@ -330,11 +325,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                         // Validate using the standard validation
                                         ImportMessage = Catalog.GetString("Validating the batch data");
-                                        ABatchValidation.Validate(this, NewBatch, ref Messages, ValidationControlsDictBatch);
+                                        ABatchValidation.Validate(this, NewBatch, ref Messages);
 
                                         // Now do the additional manual validation
                                         ImportMessage = Catalog.GetString("Additional validation of the batch data");
-                                        TSharedFinanceValidation_GL.ValidateGLBatchManual(this, NewBatch, ref Messages, ValidationControlsDictBatch);
+                                        TSharedFinanceValidation_GL.ValidateGLBatchManual(this, NewBatch, ref Messages);
 
                                         for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
                                         {
@@ -413,25 +408,25 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     NewJournal.JournalDescription =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal description"),
-                                            MainDS.AJournal.ColumnJournalDescription, RowNumber, Messages, ValidationControlsDictJournal);
+                                            MainDS.AJournal.ColumnJournalDescription, RowNumber, Messages);
 
                                     NewJournal.SubSystemCode =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal sub system code"),
-                                            MainDS.AJournal.ColumnSubSystemCode, RowNumber, Messages, ValidationControlsDictJournal).ToUpper();
+                                            MainDS.AJournal.ColumnSubSystemCode, RowNumber, Messages).ToUpper();
                                     NewJournal.TransactionTypeCode =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal transaction type"),
-                                            MainDS.AJournal.ColumnTransactionTypeCode, RowNumber, Messages, ValidationControlsDictJournal).ToUpper();
+                                            MainDS.AJournal.ColumnTransactionTypeCode, RowNumber, Messages).ToUpper();
                                     NewJournal.TransactionCurrency =
                                         TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Journal transaction currency"),
-                                            MainDS.AJournal.ColumnTransactionCurrency, RowNumber, Messages, ValidationControlsDictJournal).ToUpper();
+                                            MainDS.AJournal.ColumnTransactionCurrency, RowNumber, Messages).ToUpper();
                                     NewJournal.ExchangeRateToBase =
                                         TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat,
                                             Catalog.GetString("Journal exchange rate"),
-                                            MainDS.AJournal.ColumnExchangeRateToBase, RowNumber, Messages, ValidationControlsDictJournal);
+                                            MainDS.AJournal.ColumnExchangeRateToBase, RowNumber, Messages);
                                     NewJournal.DateEffective =
                                         TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, datesMayBeIntegers,
                                             Catalog.GetString("Journal effective date"),
-                                            MainDS.AJournal.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictJournal);
+                                            MainDS.AJournal.ColumnDateEffective, RowNumber, Messages);
 
                                     if (Messages.Count == preParseMessageCount)
                                     {
@@ -439,12 +434,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                         // Validate using the standard validation
                                         ImportMessage = Catalog.GetString("Validating the journal data");
-                                        AJournalValidation.Validate(this, NewJournal, ref Messages, ValidationControlsDictJournal);
+                                        AJournalValidation.Validate(this, NewJournal, ref Messages);
 
                                         // Now do the additional manual validation
                                         ImportMessage = Catalog.GetString("Additional validation of the journal data");
                                         TSharedFinanceValidation_GL.ValidateGLJournalManual(this, NewJournal, ref Messages,
-                                            ValidationControlsDictJournal, SetupDS, CurrencyTable,
+                                            SetupDS, CurrencyTable,
                                             CorporateExchangeRateTable, LedgerBaseCurrency, LedgerIntlCurrency);
 
                                         for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
@@ -591,8 +586,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     }
 
                                     ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
-                                        intlRateFromBase, datesMayBeIntegers, ref transaction, ref ImportMessage, ref Messages,
-                                        ref ValidationControlsDictTransaction);
+                                        intlRateFromBase, datesMayBeIntegers, ref transaction, ref ImportMessage, ref Messages);
                                 }
                                 else
                                 {
@@ -878,9 +872,6 @@ namespace Ict.Petra.Server.MFinance.GL
             Boolean CancelledByUser = false;
             int transactionsAdded = 0;
 
-            // Create some validation dictionaries
-            TValidationControlsDict ValidationControlsDictTransaction = new TValidationControlsDict();
-
             try
             {
                 // This needs to be initialised because we will be calling the method
@@ -993,8 +984,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
 
                                 ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
-                                    intlRateFromBase, datesMayBeIntegers, ref Transaction, ref ImportMessage, ref Messages,
-                                    ref ValidationControlsDictTransaction);
+                                    intlRateFromBase, datesMayBeIntegers, ref Transaction, ref ImportMessage, ref Messages);
 
                                 transactionsAdded++;
                             }  // if the CSV line qualifies
@@ -1198,8 +1188,7 @@ namespace Ict.Petra.Server.MFinance.GL
             bool ADatesMayBeIntegers,
             ref TDBTransaction ATransaction,
             ref string AImportMessage,
-            ref TVerificationResultCollection AMessages,
-            ref TValidationControlsDict AValidationControlsDictTransaction)
+            ref TVerificationResultCollection AMessages)
         {
             AImportMessage = Catalog.GetString("Parsing a transaction line.");
             string strIgnoreAnalysisTypeAndValue = Catalog.GetString(" The analysis type/value pair will be ignored.");
@@ -1217,10 +1206,10 @@ namespace Ict.Petra.Server.MFinance.GL
             int nonCriticalErrorCount = 0;
 
             string costCentreCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre"),
-                AMainDS.ATransaction.ColumnCostCentreCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
+                AMainDS.ATransaction.ColumnCostCentreCode, ARowNumber, AMessages).ToUpper().Trim();
 
             string accountCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Account code"),
-                AMainDS.ATransaction.ColumnAccountCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
+                AMainDS.ATransaction.ColumnAccountCode, ARowNumber, AMessages).ToUpper().Trim();
 
             // This might add a non-critical error
             int msgCount = AMessages.Count;
@@ -1232,20 +1221,20 @@ namespace Ict.Petra.Server.MFinance.GL
             NewTransaction.AccountCode = accountCode;
 
             NewTransaction.Narrative = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Narrative"),
-                AMainDS.ATransaction.ColumnNarrative, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
+                AMainDS.ATransaction.ColumnNarrative, ARowNumber, AMessages).Trim();
 
             NewTransaction.Reference = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Reference"),
-                AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
+                AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages).Trim();
 
             DateTime TransactionDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, ADatesMayBeIntegers,
                 Catalog.GetString(
-                    "Transaction date"), AMainDS.ATransaction.ColumnTransactionDate, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                    "Transaction date"), AMainDS.ATransaction.ColumnTransactionDate, ARowNumber, AMessages);
 
             decimal DebitAmount = TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Debit amount"),
-                AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
+                AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, "0");
             decimal CreditAmount =
                 TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Credit amount"),
-                    AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");
+                    AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, "0");
 
             // The critical parsing is complete now
             bool hasParsingErrors = (AMessages.Count != (preParseMessageCount + nonCriticalErrorCount));
@@ -1253,9 +1242,9 @@ namespace Ict.Petra.Server.MFinance.GL
             for (int i = 0; i < 10; i++)
             {
                 String analysisType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Type") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, ARowNumber, AMessages).ToUpper().Trim();
                 String analysisValue = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Value") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, ARowNumber, AMessages).Trim();
 
                 bool gotType = (analysisType != null) && (analysisType.Length > 0);
                 bool gotValue = (analysisValue != null) && (analysisValue.Length > 0);
@@ -1379,16 +1368,14 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 // Do our standard gift batch validation checks on this row
                 AImportMessage = Catalog.GetString("Validating the transaction data");
-                ATransactionValidation.Validate(this, NewTransaction, ref AMessages, AValidationControlsDictTransaction);
+                ATransactionValidation.Validate(this, NewTransaction, ref AMessages);
 
                 // And do the additional manual ones
                 AImportMessage = Catalog.GetString("Additional validation of the transaction data");
                 TSharedFinanceValidation_GL.ValidateGLDetailManual(this,
                     ANewBatchRow,
                     NewTransaction,
-                    null,
                     ref AMessages,
-                    AValidationControlsDictTransaction,
                     ASetupDS.ACostCentre,
                     ASetupDS.AAccount);
 

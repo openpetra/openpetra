@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -257,6 +257,13 @@ namespace Ict.Tools.NAntTasks
 
         private bool CompileHere()
         {
+            if (File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".dll")) ||
+                  File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".exe")))
+            {
+                Console.WriteLine("Skipping " + FCSProjFile);
+                return true;
+            }
+
             Console.WriteLine("Compiling " + FCSProjFile);
 
             XmlDocument doc = new XmlDocument();

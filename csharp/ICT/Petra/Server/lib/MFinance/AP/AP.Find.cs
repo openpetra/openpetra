@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Threading;
 using System.Collections;
 using Ict.Petra.Shared;
 using Ict.Common;
+using Ict.Common.Conversion;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -39,7 +40,6 @@ using Ict.Common.Session;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance;
-using Ict.Common.Conversion;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;

@@ -26,7 +26,6 @@ using System.Collections;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.Serialization;
-using System.Windows.Forms;
 
 using Npgsql;
 
@@ -1030,10 +1029,6 @@ namespace Ict.Common.Exceptions
                                                       StrDBConnectionBrokenContactITSupport);
 
             TLogging.Log(Message);
-
-            MessageBox.Show(Message + Environment.NewLine + Environment.NewLine + Catalog.GetString(String.Format(
-                        TExceptionHelper.StrDBConnectionIssueDateTimeFooter, DateTime.Now)),
-                StrDBConnectionBrokenTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>
@@ -1055,9 +1050,6 @@ namespace Ict.Common.Exceptions
                 "then please contact OpenPetra Support.");
 
             TLogging.Log(Message.ToString(), TLoggingType.ToLogfile);
-
-            MessageBox.Show(Message, Catalog.GetString("Request Cannot be Handled"),
-                MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

@@ -10,7 +10,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.Runtime.Serialization;
 using System.Xml;
-using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -38,14 +37,11 @@ public class {#TABLENAME}Validation
     /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
     /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
     /// data validation errors occur.</param>
-    /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-    /// display data that is about to be validated.</param>
     public static void Validate(object AContext, {#TABLENAME}Row ARow,
-        ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        ref TVerificationResultCollection AVerificationResultCollection)
     {
 {#IFDEF VALIDATECOLUMNS}
         DataColumn ValidationColumn;
-        TValidationControlsData ValidationControlsData;
         TVerificationResult VerificationResult;
 
 {#IFNDEF DELETABLEROWVALIDATION}
@@ -70,32 +66,17 @@ public class {#TABLENAME}Validation
     /// <param name="ASubmitTable">validate all rows in this table</param>
     /// <param name="AVerificationResult">Will be filled with any <see cref="TVerificationResult" /> items if
     /// data validation errors occur.</param>
-    /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-    /// display data that is about to be validated. If there are no columns in the dictionary, then all columns will be checked (defaults to null, in which case an empty <see cref="TValidationControlsDict" /> will be created on-the-fly).</param>
     public static void Validate(
         TTypedDataTable ASubmitTable,
-        ref TVerificationResultCollection AVerificationResult,
-        TValidationControlsDict AValidationControlsDict = null)
+        ref TVerificationResultCollection AVerificationResult)
     {
-        if (AValidationControlsDict == null) 
-        {
-            AValidationControlsDict = new TValidationControlsDict();
-        }            
-        
-        if (AValidationControlsDict.Count == 0)
-        {
-            // add all columns
-            AValidationControlsDict = TValidationControlsDict.PopulateDictionaryWithAllColumns(ASubmitTable);
-        }
-
         for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
         {
             if (ASubmitTable.Rows[Counter].RowState != DataRowState.Deleted)
             {
                 Validate("{#TABLENAME}Validation " +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    ({#TABLENAME}Row)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    AValidationControlsDict);
+                    ({#TABLENAME}Row)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
     }
@@ -108,12 +89,12 @@ if (!ARow.Is{#COLUMNNAME}Null())
     // {#COLUMNSPECIFICCOMMENT}
     ValidationColumn = ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id];
 
-    if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+    if (true)
     {
         {#COLUMNSPECIFICCHECK}
 
         // Handle addition to/removal from TVerificationResultCollection
-        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
     }
 }
 
@@ -122,24 +103,23 @@ if (!ARow.Is{#COLUMNNAME}Null())
 // {#COLUMNSPECIFICCOMMENT}
 ValidationColumn = ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id];
 
-if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+if (true)
 {
     {#COLUMNSPECIFICCHECK}
 
     // Handle addition to/removal from TVerificationResultCollection
-    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
 }
 
 {##SNIPDELETABLEROWVALIDATION}
 if (ARow.RowState == DataRowState.Deleted)
 {
     // Special case for server side validation during saving
-    if (AValidationControlsDict.AllControlsAreNull && (Convert.ToBoolean(ARow[{#TABLENAME}Table.Column{#COLUMNNAME}Id, DataRowVersion.Original]) == false))
+    if (Convert.ToBoolean(ARow[{#TABLENAME}Table.Column{#COLUMNNAME}Id, DataRowVersion.Original]) == false)
     {
         // Add an error notification
         AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext,
-            new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_BY_DESIGN)),
-            ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id]);
+            new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_RECORD_DELETION_NOT_POSSIBLE_BY_DESIGN)));
     }
 }
 // No further validation on deleted or detached rows
@@ -147,32 +127,32 @@ if (ARow.RowState == DataRowState.Deleted)
 
 {##CHECKEMPTYSTRING}
 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.{#COLUMNNAME},
-    ValidationControlsData.ValidationControlLabel,
-    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    String.Empty,
+    AContext, ValidationColumn);
 
 {##CHECKSTRINGLENGTH}
 VerificationResult = TStringChecks.StringLengthLesserOrEqual(ARow.{#COLUMNNAME}, {#COLUMNLENGTH},
-    ValidationControlsData.ValidationControlLabel,
-    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    String.Empty,
+    AContext, ValidationColumn);
 
 {##CHECKNUMBERRANGE}
 VerificationResult = TNumericalChecks.IsNumberPrecisionNotExceeded(ARow.{#COLUMNNAME}, {#NUMBEROFDECIMALDIGITS}, {#NUMBEROFFRACTIONALDIGITS},
-    ValidationControlsData.ValidationControlLabel,
-    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    String.Empty,
+    AContext, ValidationColumn);
 
 {##CHECKEMPTYDATE}
 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
-    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    String.Empty, AVerificationResultCollection, true,
+    AContext, ValidationColumn);
 
 {##CHECKVALIDDATE}
 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
-    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
-    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    String.Empty, AVerificationResultCollection, false,
+    AContext, ValidationColumn);
     
 
 {##CHECKGENERALNOTNULL}
 VerificationResult = TGeneralChecks.ValueMustNotBeNull(ARow.Is{#COLUMNNAME}Null() ? null : "",
-    ValidationControlsData.ValidationControlLabel,
-    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    String.Empty,
+    AContext, ValidationColumn);
     

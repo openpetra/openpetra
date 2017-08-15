@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -48,11 +47,8 @@ namespace Ict.Petra.Shared.MConference.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        /// <param name="AGridData">A <see cref="TValidationControlsDict" />Contains all rows that are included in the grid</param>
         public static void ValidateConferenceStandardCost(object AContext, PcConferenceCostRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResultCollection,
             DataRowCollection AGridData)
         {
             // Don't validate deleted DataRows
@@ -93,17 +89,16 @@ namespace Ict.Petra.Shared.MConference.Validation
             // if an inconsistency is found
             if (StandardCostInconsistency == true)
             {
-                TValidationControlsData ValidationControlsData;
                 TScreenVerificationResult VerificationResult = null;
                 DataColumn ValidationColumn = ARow.Table.Columns[PcConferenceCostTable.ColumnChargeId];
 
                 // displays a warning message (non-critical error)
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
                             PetraErrorCodes.ERR_STANDARD_COST_INCONSISTENCY, InconsistentRows)),
-                    ValidationColumn, ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -114,15 +109,12 @@ namespace Ict.Petra.Shared.MConference.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        /// <param name="AGridData">A <see cref="TValidationControlsDict" />Contains all rows that are included in the grid</param>
+        /// <param name="AGridData">Contains all rows that are included in the grid</param>
         /// <param name="AEndDate">The End date for the selected conference</param>
         public static void ValidateEarlyLateRegistration(object AContext, PcEarlyLateRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResultCollection,
             DataRowCollection AGridData, DateTime AEndDate)
         {
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult = null;
             DataColumn ValidationColumn;
 
@@ -139,10 +131,10 @@ namespace Ict.Petra.Shared.MConference.Validation
                 // displays an error message
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
                             PetraErrorCodes.ERR_APPLICABLE_DATE_AFTER_CONFERENCE_END_DATE)),
-                    ValidationColumn, ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             // Check the row being validated is consistent with the rest of the data in the table
@@ -179,10 +171,10 @@ namespace Ict.Petra.Shared.MConference.Validation
                 // displays a warning message (non-critical error)
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
                             PetraErrorCodes.ERR_EARLY_APPLICABLE_DATE_LATER_THAN_LATE_APPLICABLE_DATE)),
-                    ValidationColumn, ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
             else if (ApplicableDateTooLate == true)
             {
@@ -191,10 +183,10 @@ namespace Ict.Petra.Shared.MConference.Validation
                 // displays a warning message (non-critical error)
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
                             PetraErrorCodes.ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE)),
-                    ValidationColumn, ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
     }

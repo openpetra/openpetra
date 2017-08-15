@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -46,13 +45,10 @@ namespace Ict.Petra.Shared.MConference.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateConferenceCostType(object AContext, PcCostTypeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -64,17 +60,17 @@ namespace Ict.Petra.Shared.MConference.Validation
             // 'UnassignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PcCostTypeTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
     }

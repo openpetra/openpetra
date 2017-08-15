@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2012 by OM International
+// Copyright 2012-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,7 +32,6 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
-using System.Windows.Forms;
 using System.Collections;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.MPartner.Partner.Data;

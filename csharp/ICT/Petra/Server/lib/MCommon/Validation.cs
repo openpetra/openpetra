@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -42,21 +41,11 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         static partial void ValidateInternationalPostalTypeManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnInternatPostalTypeCodeId],
-                new TValidationControlsData(null, PInternationalPostalTypeTable.GetInternatPostalTypeCodeDBName()));
-            ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnDescriptionId],
-                new TValidationControlsData(null, PInternationalPostalTypeTable.GetDescriptionDBName()));
-            ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnDeletableId],
-                new TValidationControlsData(null, PInternationalPostalTypeTable.GetDeletableDBName()));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 PInternationalPostalTypeValidation.Validate("TCommonDataReader.ValidateInternationalPostalTypeManual" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (PInternationalPostalTypeRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (PInternationalPostalTypeRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
     }

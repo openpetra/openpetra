@@ -40,7 +40,6 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Security;
-using Ict.Petra.Server.MSysMan.Security.UserManager;
 using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
 using Ict.Common.Remoting.Shared;
 

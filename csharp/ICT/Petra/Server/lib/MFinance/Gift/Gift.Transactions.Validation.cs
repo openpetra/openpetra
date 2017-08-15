@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -43,30 +42,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         static partial void ValidateGiftBatchManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[AGiftBatchTable.ColumnBatchDescriptionId],
-                new TValidationControlsData(null, AGiftBatchTable.GetBatchDescriptionDBName()));
-            ValidationControlsDict.Add(ASubmitTable.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId],
-                new TValidationControlsData(null, AGiftBatchTable.GetExchangeRateToBaseDBName()));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedFinanceValidation_Gift.ValidateGiftBatchManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (AGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (AGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
 
         static partial void ValidateGiftDetailManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[AGiftDetailTable.ColumnGiftCommentOneId],
-                new TValidationControlsData(null, AGiftDetailTable.GetGiftCommentOneDBName()));
-
             TPartnerClass RecipientPartnerClass;
             string RecipientDescription;
 
@@ -82,8 +68,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     TSharedFinanceValidation_Gift.ValidateGiftDetailManual("TTransactionWebConnector" +
                         " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                        Row, ref AVerificationResult,
-                        ValidationControlsDict);
+                        Row, ref AVerificationResult);
                 }
             }
         }
@@ -91,34 +76,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         static partial void ValidateRecurringGiftBatchManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[ARecurringGiftBatchTable.ColumnBatchDescriptionId],
-                new TValidationControlsData(null, ARecurringGiftBatchTable.GetBatchDescriptionDBName()));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (ARecurringGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (ARecurringGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
 
         static partial void ValidateRecurringGiftDetailManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[ARecurringGiftDetailTable.ColumnGiftCommentOneId],
-                new TValidationControlsData(null, ARecurringGiftDetailTable.GetGiftCommentOneDBName()));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (GiftBatchTDSARecurringGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (GiftBatchTDSARecurringGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
     }

@@ -311,26 +311,6 @@ namespace Ict.Tools.NAntTasks
                                 ReferencesWinForms = true;
                             }
 
-                            if (Namespace.StartsWith("System.Web")
-                                && !Path.GetDirectoryName(filename).EndsWith("WebService")
-                                && !Path.GetDirectoryName(filename).EndsWith("Session")
-                                && !Path.GetDirectoryName(filename).EndsWith("Server")
-                                && !Path.GetDirectoryName(filename).EndsWith("RuntimeHost"))
-                            {
-                                Console.WriteLine(
-                                    "Warning: we should not reference System.Web since that is not part of the client profile of .net 4.0! in " +
-                                    filename);
-                            }
-
-                            if (Namespace.StartsWith("System.Runtime.Caching")
-                                && !Path.GetDirectoryName(filename).EndsWith("WebService"))
-                            {
-                                Console.WriteLine(
-                                    "Warning: we should not reference System.Runtime.Caching since that is not part of the client profile of .net 4.0! in "
-                                    +
-                                    filename);
-                            }
-
                             if (!FCompilingForStandalone && Namespace.StartsWith("Ict.Petra.Server")
                                 && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Shared"))
                             {

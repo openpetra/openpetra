@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@ using System;
 using System.IO;
 using System.Data;
 using System.Threading;
-using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
 using Ict.Petra.Shared.MFinance.Account.Data;

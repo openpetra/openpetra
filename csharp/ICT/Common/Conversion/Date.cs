@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.Globalization;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -106,7 +105,7 @@ namespace Ict.Common.Conversion
                         else
                         {
                             // characters following the + or  are not an Int32
-                            MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
+                            TLogging.Log(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText + " "+
                                 TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                             return ReturnValue;
                         }
@@ -234,7 +233,7 @@ namespace Ict.Common.Conversion
                         else
                         {
                             // format with other number of digits not supported
-                            MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
+                            TLogging.Log(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText + " " +
                                 TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
 
                             return ReturnValue;
@@ -257,12 +256,12 @@ namespace Ict.Common.Conversion
 
                             if (TmpMonthDayExchange != "")
                             {
-                                MessageBox.Show(StrMonthDayExchangedInfo, StrMonthDayExchangedInfoTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                TLogging.Log(StrMonthDayExchangedInfo + " " + StrMonthDayExchangedInfoTitle);
                             }
                         }
                         catch (Exception)
                         {
-                            MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
+                            TLogging.Log(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText + " " +
                                 TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                             return ReturnValue;
                         }
@@ -292,7 +291,7 @@ namespace Ict.Common.Conversion
                         if (AShowVerificationError)
                         {
                             // not an accepted date parse string
-                            MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
+                            TLogging.Log(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText + " " +
                                 TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
                         }
 
@@ -306,7 +305,7 @@ namespace Ict.Common.Conversion
             }
             catch (Exception)
             {
-                MessageBox.Show(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText,
+                TLogging.Log(TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultText + " " +
                     TDateChecks.GetInvalidDateVerificationResult(ADescription).ResultTextCaption);
             }
 
