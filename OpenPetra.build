@@ -17,10 +17,11 @@ list of available commands:
   generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
   quickCompile: will just compile the solution file, with msbuild (Windows) or our own builder (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
+      nant quickCompile -D:onlyonce=true   will compile the OpenPetra.sln but only the dlls that have not been compiled yet
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
   compileProject: compile a single project file
-      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Testing.ControlTestBench.csproj 
+      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Common.csproj
   start: start both the local server and client
   startServer: run a local OpenPetra Server
   stopServer: stop the local OpenPetra Server
@@ -363,11 +364,12 @@ useful parameters
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CompileSolution')}"/>
   <property name="solution" value="OpenPetra" overwrite="false"/>
+  <property name="onlyonce" value="false" overwrite="false"/>
   <property name="solution.file" value="${path::combine(dir.projectfiles,
                               path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
 
-  <CompileSolution SolutionFile="${solution.file}"/>
+  <CompileSolution SolutionFile="${solution.file}" OnlyOnce="${onlyonce == 'true'}"/>
   
   <echo message="Target quickCompile finished at: ${datetime::now()}" />         
 </target>

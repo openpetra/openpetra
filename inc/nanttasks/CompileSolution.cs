@@ -57,6 +57,22 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private bool FOnlyOnce = false;
+        /// <summary>
+        /// if this is set to true, the project is skipped if the deliverable dll or exe file already exists
+        /// </summary>
+        [TaskAttribute("OnlyOnce", Required = false)]
+        public bool OnlyOnce {
+            set
+            {
+                FOnlyOnce = value;
+            }
+            get
+            {
+                return FOnlyOnce;
+            }
+        }
+
         /// <summary>
         /// compile the solution
         /// </summary>
@@ -123,6 +139,7 @@ namespace Ict.Tools.NAntTasks
                     string[] projDef = line.Substring(line.IndexOf("=") + 1).Split(new char[] { ',' });
                     compileProject.CSProjFile = projDef[1].Trim().Trim(new char[] { '"' });
                     compileProject.UseCSC = true;
+                    compileProject.OnlyOnce = OnlyOnce;
 
                     if (!Path.IsPathRooted(compileProject.CSProjFile))
                     {

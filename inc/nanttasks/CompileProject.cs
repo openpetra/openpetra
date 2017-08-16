@@ -128,6 +128,22 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private bool FOnlyOnce = false;
+        /// <summary>
+        /// if this is set to true, the project is skipped if the deliverable dll or exe file already exists
+        /// </summary>
+        [TaskAttribute("OnlyOnce", Required = false)]
+        public bool OnlyOnce {
+            set
+            {
+                FOnlyOnce = value;
+            }
+            get
+            {
+                return FOnlyOnce;
+            }
+        }
+
         protected void RunCscTask()
         {
             CscTask csc = new CscTask();
@@ -257,8 +273,8 @@ namespace Ict.Tools.NAntTasks
 
         private bool CompileHere()
         {
-            if (File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".dll")) ||
-                  File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".exe")))
+            if (OnlyOnce && (File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".dll")) ||
+                  File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".exe"))))
             {
                 Console.WriteLine("Skipping " + FCSProjFile);
                 return true;
