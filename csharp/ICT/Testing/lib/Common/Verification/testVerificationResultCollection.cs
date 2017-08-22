@@ -384,7 +384,7 @@ namespace Ict.Common.Verification.Testing
         [Test]
         public void TestRemove()
         {
-            TVerificationResult res0, res1, res2, res3, res4, res5, res6, res7;
+            TVerificationResult res0, res1, res4, res5, res6, res7;
             TVerificationResultCollection coll = new TVerificationResultCollection();
 
             res0 = new TVerificationResult(null, "test0", TResultSeverity.Resv_Noncritical);
@@ -406,19 +406,19 @@ namespace Ict.Common.Verification.Testing
             res7 = new TScreenVerificationResult(null, col3, "test7", null, TResultSeverity.Resv_Noncritical);
             coll.Add(res7);
 
-            Assert.AreEqual(8, coll.Count, "should be 8 elements at the start of the test");
+            Assert.AreEqual(6, coll.Count, "should be 6 elements at the start of the test");
 
             // Remove(DataColumn)
             coll.Remove(col);
-            Assert.AreEqual(7, coll.Count, "only one element should be removed, even if there are 2 results with column col");
-            Assert.AreEqual(4, coll.IndexOf(res5), "res4 was removed");
-            coll.Insert(4, res4);
+            Assert.AreEqual(5, coll.Count, "only one element should be removed, even if there are 2 results with column col");
+            Assert.AreEqual(2, coll.IndexOf(res5), "res4 was removed");
+            coll.Insert(2, res4);
             coll.Remove(new DataColumn("test"));
-            Assert.AreEqual(8, coll.Count, "nothing happens when trying to remove unknown column");
+            Assert.AreEqual(6, coll.Count, "nothing happens when trying to remove unknown column");
 
             // Remove(IResultInterface value)
             coll.Remove(res1);
-            Assert.AreEqual(7, coll.Count, "res1 should have been removed");
+            Assert.AreEqual(5, coll.Count, "res1 should have been removed");
             coll.Insert(1, res1);
             Assert.Throws(typeof(ArgumentException),
                 delegate { coll.Remove(new TVerificationResult(null, "test3", TResultSeverity.Resv_Info)); },
@@ -426,9 +426,9 @@ namespace Ict.Common.Verification.Testing
 
             // Remove(String AResultColumnName)
             coll.Remove("nonexisting");
-            Assert.AreEqual(8, coll.Count, "nothing happens when trying to remove unknown resultcolumnname");
+            Assert.AreEqual(6, coll.Count, "nothing happens when trying to remove unknown resultcolumnname");
             coll.Remove(col.ColumnName);
-            Assert.AreEqual(7, coll.Count, "should have removed res4");
+            Assert.AreEqual(5, coll.Count, "should have removed res4");
             Assert.AreEqual(res6, coll.FindBy(col), "first result with col should be res6");
             coll.Insert(4, res4);
         }
@@ -439,7 +439,7 @@ namespace Ict.Common.Verification.Testing
         [Test]
         public void TestBuildVerificationResultString()
         {
-            TVerificationResult res0, res1, res2, res3, res4, res5, res6, res7;
+            TVerificationResult res0, res1, res4, res5, res6, res7;
             TVerificationResultCollection coll = new TVerificationResultCollection();
 
             res0 = new TVerificationResult(null, "test0", TResultSeverity.Resv_Noncritical);
@@ -464,13 +464,13 @@ namespace Ict.Common.Verification.Testing
             Console.WriteLine(coll.BuildVerificationResultString());
             Console.WriteLine(coll.BuildVerificationResultString().Replace("\n", "\\n").Replace("\r", "\\r"));
 
-            const string expectedString =
-                "\r\n    Problem: test0\r\n    (Non-critical)\r\n\r\n" +
-                "\r\n    Problem: test3\r\n    (Non-critical)\r\n\r\n" +
-                "\r\n    Problem: test4\r\n    (Non-critical)\r\n\r\n" +
-                "\r\n    Status: test5\r\n\r\n\r\n" +
-                "\r\n    Problem: test6\r\n    (Non-critical)\r\n\r\n" +
-                "\r\n    Problem: test7\r\n    (Non-critical)\r\n\r\n";
+            string expectedString =
+                Environment.NewLine + "    Problem: test0" + Environment.NewLine + "    (Non-critical)" + Environment.NewLine + Environment.NewLine +
+                Environment.NewLine + "    Status: test1" + Environment.NewLine + Environment.NewLine + Environment.NewLine +
+                Environment.NewLine + "    Problem: test4" + Environment.NewLine + "    (Non-critical)" + Environment.NewLine + Environment.NewLine +
+                Environment.NewLine + "    Status: test5" + Environment.NewLine + Environment.NewLine + Environment.NewLine +
+                Environment.NewLine + "    Problem: test6" + Environment.NewLine + "    (Non-critical)" + Environment.NewLine + Environment.NewLine +
+                Environment.NewLine + "    Problem: test7" + Environment.NewLine + "    (Non-critical)" + Environment.NewLine + Environment.NewLine;
 
             Assert.AreEqual(expectedString, coll.BuildVerificationResultString(), "comparing the string");
         }
@@ -481,7 +481,7 @@ namespace Ict.Common.Verification.Testing
         [Test]
         public void TestBuildScreenVerificationResultList()
         {
-            TVerificationResult res0, res1, res2, res3, res4, res5, res6, res7, res8, res9, res10;
+            TVerificationResult res0, res1, res4, res5, res6, res7, res8;
             TVerificationResultCollection coll = new TVerificationResultCollection();
 
             res0 = new TVerificationResult(null, "test0", TResultSeverity.Resv_Noncritical);
@@ -509,11 +509,13 @@ namespace Ict.Common.Verification.Testing
             Object testObject;
             coll.BuildScreenVerificationResultList(out ErrorMessages, out testObject, null, true);
 
+            coll.BuildScreenVerificationResultList("test8", out ErrorMessages);
+
             Console.WriteLine(ErrorMessages);
             Console.WriteLine(ErrorMessages.Replace("\n", "\\n").Replace("\r", "\\r"));
 
             String expectedErrorMessages =
-                "test8\r\n\r\n";
+                "test8" + Environment.NewLine + Environment.NewLine;
             Assert.AreEqual(expectedErrorMessages, ErrorMessages, "only show errors of resultcontext test1 and of TVerificationScreenResult");
         }
     }

@@ -91,8 +91,6 @@ namespace Ict.Common.Verification.Testing
             string Testname;
             string ExpectedErrorText;
             string VerificationProblemListing;
-            object TestContext = new Object();
-            DataColumn TestColumn = new DataColumn("TestColumn");
 
             #region IsValid...
 
@@ -108,15 +106,15 @@ namespace Ict.Common.Verification.Testing
 
             Testname = "Test with 5.1";
             TestResult = TNumericalChecks.IsValidInteger("5.1", Testname);
-            ExpectedResult = new TVerificationResult(TestContext, "Invalid number entered." + Environment.NewLine +
+            ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidInteger: " + Testname);
 
             Testname = "Test with null";
             TestResult = TNumericalChecks.IsValidInteger(null, Testname);
-            ExpectedResult = new TScreenVerificationResult(null, null, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", null, TResultSeverity.Resv_Critical);;
+            ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidInteger: " + Testname);
 
@@ -1048,8 +1046,6 @@ namespace Ict.Common.Verification.Testing
             string Testname;
             string ExpectedErrorText;
             string VerificationProblemListing;
-            object TestContext = new Object();
-            DataColumn TestColumn = new DataColumn("TestColumn");
 
             #region StringMustNotBeEmpty
 
@@ -1207,7 +1203,6 @@ namespace Ict.Common.Verification.Testing
             string ExpectedErrorText;
             string VerificationProblemListing;
             object TestContext = new Object();
-            DataColumn TestColumn = new DataColumn("TestColumn");
 
             #region IsNotUndefinedDateTime
 
@@ -1240,8 +1235,7 @@ namespace Ict.Common.Verification.Testing
 
             Testname = "Test with null";
             TestResult = TDateChecks.IsValidDateTime(null, Testname);
-            ExpectedResult = new TScreenVerificationResult(null, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00001V", null, TResultSeverity.Resv_Critical);
+            ExpectedResult = TDateChecks.GetInvalidDateVerificationResult(Testname);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidDateTime: " + Testname);
 

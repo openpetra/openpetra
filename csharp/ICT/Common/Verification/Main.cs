@@ -493,12 +493,14 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">context of verification</param>
         /// <param name="AResultColumn">which column failed</param>
         /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultControl">for compatibility reasons, just pass null</param>
         /// <param name="AResultCode">error code to identify the error message</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
             DataColumn AResultColumn,
             String AResultText,
             String AResultCode,
+            Object AResultControl,
             System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
@@ -515,11 +517,13 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">context of verification</param>
         /// <param name="AResultColumn">which column failed</param>
         /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultControl">for compatibility reasons, just pass null</param>
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
             DataColumn AResultColumn,
             String AResultText,
+            Object AResultControl,
             TResultSeverity AResultSeverity,
             System.Guid ADataValidationRunID = new System.Guid())
         {
@@ -638,9 +642,9 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    ({1}: {3})");
-        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    ({1})");
-        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}" + Environment.NewLine + "    Problem: {2}" + Environment.NewLine + "    ({1}: {3})");
+        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}" + Environment.NewLine + "    Problem: {2}" + Environment.NewLine + "    ({1})");
+        private static readonly string StrStatusFooter = Catalog.GetString("{0}" + Environment.NewLine + "    Status: {2}" + Environment.NewLine);
 
         #endregion
 
@@ -992,7 +996,7 @@ namespace Ict.Common.Verification
                         break;
                 }
 
-                if ((Formatter == StrErrorFooter) && (si.ResultCode == "")) // If no code was given, don't show the empty placeholder.
+                if ((Formatter == StrErrorFooter) && (si.ResultCode == "" || si.ResultCode == null)) // If no code was given, don't show the empty placeholder.
                 {
                     Formatter = StrErrorNoCodeFooter;
                 }
