@@ -606,6 +606,28 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context of verification</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultSeverity">is this serious, or just a warning</param>
+        /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
+        public TScreenVerificationResult(object AResultContext,
+            DataColumn AResultColumn,
+            String AResultText,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
+        {
+            FResultContext = AResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AResultText;
+            FResultCode = String.Empty;
+            FResultSeverity = AResultSeverity;
+            FDataValidationRunID = ADataValidationRunID;
+        }
+
+        /// <summary>
         /// the DataColumn of the verification failure
         /// </summary>
         /// <returns></returns>
