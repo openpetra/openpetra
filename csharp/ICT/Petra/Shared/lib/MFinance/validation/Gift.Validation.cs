@@ -797,7 +797,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         ValidationColumn = ValidationColumns[i];
 
-                        if (true)
+                        if (AccountCodes[i] != String.Empty)
                         {
                             // We even need to check that the code exists!
                             DataRow foundRow = AAccounts.Rows.Find(new object[] { ARow.LedgerNumber, AccountCodes[i] });
