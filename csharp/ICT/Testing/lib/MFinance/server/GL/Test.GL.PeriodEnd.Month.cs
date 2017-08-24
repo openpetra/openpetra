@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -271,7 +271,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             // load foreign currency account 6001
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +
                 "test-sql\\gl-test-account-data.sql", FLedgerNumber);
 
             // post a batch for foreign currency account 6001
@@ -433,7 +433,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (batches.Rows.Count == 0)
             {
-                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +
                     "test-sql\\gl-test-batch-data.sql", FLedgerNumber);
             }
         }

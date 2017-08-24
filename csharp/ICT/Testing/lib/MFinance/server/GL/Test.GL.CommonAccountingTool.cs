@@ -138,13 +138,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (!AccountTestCasesAvailable)
             {
-                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +
                     "test-sql\\gl-test-account-data.sql", LedgerNumber);
             }
 
             if (!CostCentreTestCasesAvailable)
             {
-                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql", LedgerNumber);
             }
         }

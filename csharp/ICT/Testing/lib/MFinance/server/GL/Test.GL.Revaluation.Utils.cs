@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,7 +80,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (currencyTable.Rows.Count == 0)
             {
-                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +
                     "test-sql\\gl-test-currency-data.sql");
             }
         }

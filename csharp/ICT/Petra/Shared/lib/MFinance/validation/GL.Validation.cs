@@ -504,7 +504,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (true)
             {
-                //TODO: Check if "Reference" is mandatory then make sure it is set
+                // "Reference" is mandatory
                 ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnReferenceId];
                 ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
                     ARow.TransactionNumber,

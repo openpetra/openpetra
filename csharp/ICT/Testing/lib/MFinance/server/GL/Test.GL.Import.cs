@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -73,7 +73,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             requestParams.Add("NumberFormat", "European");
             requestParams.Add("NewLine", Environment.NewLine);
 
-            string strContent = CommonNUnitFunctions.LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+            string strContent = CommonNUnitFunctions.LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +
                 "test-csv\\glbatch-import.csv");
 
             strContent = strContent.Replace("31/07/2010", "31/07/" + DateTime.Now.Year.ToString());
@@ -120,7 +120,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             if (!CostCentreTestCasesAvailable)
             {
-                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +
                     "test-sql\\gl-test-costcentre-data.sql", FLedgerNumber);
             }
         }
