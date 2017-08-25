@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -43,40 +42,22 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         static partial void ValidatePPartnerManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[PPartnerTable.ColumnStatusCodeId],
-                new TValidationControlsData(null, Catalog.GetString("Partner &Status")));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedPartnerValidation_Partner.ValidatePartnerManual("TPartnerEditUIConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (PPartnerRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (PPartnerRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
 
         static partial void ValidatePBankManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[PPartnerTable.ColumnStatusCodeId],
-                new TValidationControlsData(null, Catalog.GetString("Partner &Status")));
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[PBankTable.ColumnBranchCodeId],
-                new TValidationControlsData(null, Catalog.GetString("Bank/Branch Code"),
-                    null, Catalog.GetString("BIC/SWIFT Code")));
-            ValidationControlsDict.Add(ASubmitTable.Columns[PBankTable.ColumnBicId],
-                new TValidationControlsData(null, Catalog.GetString("BIC/SWIFT Code")));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedPartnerValidation_Partner.ValidatePartnerBankManual("TPartnerEditUIConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (PBankRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (PBankRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
     }

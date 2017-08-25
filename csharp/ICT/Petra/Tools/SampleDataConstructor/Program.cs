@@ -33,8 +33,6 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Server.App.Core;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;

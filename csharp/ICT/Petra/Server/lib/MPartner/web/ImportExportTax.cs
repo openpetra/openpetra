@@ -4,7 +4,7 @@
 // @Authors:
 //       alanP
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -165,7 +165,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                             importLine = importLine.TrimStart(' ');     // TCommonImport.ImportInt64 does not remove leading spaces before optional quotes
                             Int64 partnerKey = TCommonImport.ImportInt64(ref importLine, delimiter, null, null, rowNumber, errorMessages, null);
                             importLine = importLine.TrimStart(' ');     // TCommonImport.ImportString does not remove leading spaces before optional quotes
-                            string taxCode = TCommonImport.ImportString(ref importLine, delimiter, null, null, rowNumber, errorMessages, null, false);
+                            string taxCode = TCommonImport.ImportString(ref importLine, delimiter, null, null, rowNumber, errorMessages, false);
 
                             if (errorMessages.Count > preParseMessageCount)
                             {

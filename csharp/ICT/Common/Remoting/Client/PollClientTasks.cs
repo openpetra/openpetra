@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,6 @@ using System.Data;
 using System.Net.Sockets;
 using System.Runtime.Remoting;
 using System.Threading;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.IO;

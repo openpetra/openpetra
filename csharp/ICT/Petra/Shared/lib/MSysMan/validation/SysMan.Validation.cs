@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -45,13 +44,10 @@ namespace Ict.Petra.Shared.MSysMan.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateSUserDetails(object AContext, SUserRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -61,17 +57,16 @@ namespace Ict.Petra.Shared.MSysMan.Validation
             }
 
             ValidationColumn = ARow.Table.Columns[SUserTable.ColumnPasswordHashId];
-            AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData);
 
             // PasswordHash must not be empty.
             if ((ARow.RowState != DataRowState.Unchanged) && string.IsNullOrEmpty(ARow.PasswordHash))
             {
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                         ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_MISSING_PASSWORD, new string[] { ARow.UserId })),
-                    ValidationColumn, ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             // If this is a first password (no salt) check that the password is valid.
@@ -81,8 +76,8 @@ namespace Ict.Petra.Shared.MSysMan.Validation
 
                 if (!CheckPasswordQuality(ARow.PasswordHash, out VerificationResult))
                 {
-                    VerificationResult = new TScreenVerificationResult(VerificationResult, ValidationColumn, ValidationControlsData.ValidationControl);
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    VerificationResult = new TScreenVerificationResult(VerificationResult, ValidationColumn);
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 }
             }
         }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -49,13 +48,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateCountrySetupManual(object AContext, PCountryRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
             // Don't validate deleted DataRows
@@ -67,30 +63,24 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'International Access Code' must have a value
             ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatAccessCodeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.InternatAccessCode,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+            VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.InternatAccessCode,
+                String.Empty,
+                AContext, ValidationColumn);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
+            // Handle addition to/removal from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
 
             if (!ARow.IsInternatTelephoneCodeNull())
             {
                 // 'International Telephone Code' must be positive
                 ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-                {
-                    VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
+                    String.Empty,
+                    AContext, ValidationColumn);
 
-                    // Handle addition/removal to/from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                }
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             if (!ARow.IsTimeZoneMinimumNull()
@@ -99,30 +89,24 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 // 'Time Zone From' must be <= 'Time Zone To'
                 ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnTimeZoneMinimumId];
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-                {
-                    VerificationResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
-                        ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
-                        ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
+                    ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
+                    String.Empty, String.Empty,
+                    AContext, ValidationColumn);
 
-                    // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                }
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             // 'International Postal Type' must be in 'p_international_postal_type' DB Table (this DB Table is not a Cacheable DataTable)
             ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatPostalTypeCodeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TSharedCommonValidation.IsValidInternationalPostalCode(ARow.InternatPostalTypeCode,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+            VerificationResult = TSharedCommonValidation.IsValidInternationalPostalCode(ARow.InternatPostalTypeCode,
+                String.Empty,
+                AContext, ValidationColumn);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
+            // Handle addition to/removal from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
         }
 
         /// <summary>
@@ -132,13 +116,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateFrequencySetupManual(object AContext, AFrequencyRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
             bool bFoundNegativeValue = false;
 
@@ -151,70 +132,64 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'NumberOfYears' cannot be negative
             ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfYearsId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfYears,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+            VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfYears,
+                String.Empty,
+                AContext, ValidationColumn);
 
-                // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                bFoundNegativeValue |= (VerificationResult != null);
-            }
+            // Handle addition/removal to/from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
+            bFoundNegativeValue |= (VerificationResult != null);
 
             // 'NumberOfMonths' cannot be negative
             ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfMonthsId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfMonths,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+            VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfMonths,
+                String.Empty,
+                AContext, ValidationColumn);
 
-                // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                bFoundNegativeValue |= (VerificationResult != null);
-            }
+            // Handle addition/removal to/from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
+            bFoundNegativeValue |= (VerificationResult != null);
 
             // 'NumberOfDays' cannot be negative
             ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfDaysId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfDays,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 bFoundNegativeValue |= (VerificationResult != null);
             }
 
             // 'NumberOfHours' cannot be negative
             ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfHoursId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfHours,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 bFoundNegativeValue |= (VerificationResult != null);
             }
 
             // 'NumberOfMinutes' cannot be negative
             ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfMinutesId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfMinutes,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 bFoundNegativeValue |= (VerificationResult != null);
             }
 
@@ -225,7 +200,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // It will not be possible to leave this record.
             ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfYearsId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 // Check for success as a positive integer in TotalOfBoxes
                 // If we had a negative number anywhere we always make this test pass, because that is a more serious error
@@ -237,11 +212,11 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 }
 
                 VerificationResult = TNumericalChecks.IsPositiveInteger(TotalOfBoxes,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
 
                 if (VerificationResult != null)
                 {
@@ -260,13 +235,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateAcquisitionCodeSetup(object AContext, PAcquisitionRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
             // Don't validate deleted DataRows
@@ -278,14 +250,14 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AcquisitionDescription' must have a value
             ValidationColumn = ARow.Table.Columns[PAcquisitionTable.ColumnAcquisitionDescriptionId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.AcquisitionDescription,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -296,13 +268,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateMaritalStatus(object AContext, PtMaritalStatusRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -314,18 +283,15 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtMaritalStatusTable.ColumnAssignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (!ARow.AssignableFlag)
             {
-                if (!ARow.AssignableFlag)
-                {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.AssignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.AssignableDate,
+                    String.Empty, AVerificationResultCollection, true,
+                    AContext, ValidationColumn);
             }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
         }
 
         /// <summary>
@@ -335,13 +301,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateRelationCategory(object AContext, PRelationCategoryRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -353,18 +316,15 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'UnssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtMaritalStatusTable.ColumnAssignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (ARow.UnassignableFlag)
             {
-                if (ARow.UnassignableFlag)
-                {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    String.Empty, AVerificationResultCollection, true,
+                    AContext, ValidationColumn);
             }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
         }
 
         /// <summary>
@@ -374,13 +334,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateLocalDataFieldSetup(object AContext, PDataLabelRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -393,24 +350,21 @@ namespace Ict.Petra.Shared.MCommon.Validation
             VerificationResult = null;
             ValidationColumn = ARow.Table.Columns[PDataLabelTable.ColumnLookupCategoryCodeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (String.Compare(ARow.DataType, "lookup", true) == 0)
             {
-                if (String.Compare(ARow.DataType, "lookup", true) == 0)
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.LookupCategoryCode,
+                    String.Empty,
+                    AContext, ValidationColumn);
+
+                if (VerificationResult != null)
                 {
-                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.LookupCategoryCode,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                    if (VerificationResult != null)
-                    {
-                        VerificationResult.OverrideResultText(Catalog.GetString(
-                                "You cannot use the option list until you have defined at least one option using the 'Local Data Option List Names' main menu selection"));
-                    }
+                    VerificationResult.OverrideResultText(Catalog.GetString(
+                            "You cannot use the option list until you have defined at least one option using the 'Local Data Option List Names' main menu selection"));
                 }
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
         }
 
         /// <summary>
@@ -420,13 +374,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateApplicationType(object AContext, PtApplicationTypeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -438,18 +389,15 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtApplicationTypeTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (ARow.UnassignableFlag)
             {
-                if (ARow.UnassignableFlag)
-                {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    String.Empty, AVerificationResultCollection, true,
+                    AContext, ValidationColumn);
             }
+
+             // Handle addition to/removal from TVerificationResultCollection
+             AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
         }
 
         /// <summary>
@@ -459,13 +407,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateApplicantStatus(object AContext, PtApplicantStatusRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -477,18 +422,15 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtApplicantStatusTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (ARow.UnassignableFlag)
             {
-                if (ARow.UnassignableFlag)
-                {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    String.Empty, AVerificationResultCollection, true,
+                    AContext, ValidationColumn);
             }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
         }
 
         /// <summary>
@@ -498,13 +440,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateLeadershipRating(object AContext, PtLeadershipRatingRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -516,17 +455,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtLeadershipRatingTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -537,13 +476,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateEventRole(object AContext, PtCongressCodeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -555,17 +491,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtCongressCodeTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -576,13 +512,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateArrivalDeparturePoint(object AContext, PtArrivalPointRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -594,17 +527,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtArrivalPointTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -615,13 +548,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateAbilityArea(object AContext, PtAbilityAreaRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -633,17 +563,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAbilityAreaTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -654,13 +584,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateAbilityLevel(object AContext, PtAbilityLevelRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -672,17 +599,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAbilityLevelTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -693,13 +620,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateProfessionalArea(object AContext, PtQualificationAreaRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -711,17 +635,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtQualificationAreaTable.ColumnQualificationDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.QualificationFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.QualificationDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -732,13 +656,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateQualificationLevel(object AContext, PtQualificationLevelRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -750,17 +671,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtQualificationLevelTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -771,13 +692,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidatePositions(object AContext, PtPositionRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -789,17 +707,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtPositionTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -810,13 +728,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateJobAssignmentTypes(object AContext, PtAssignmentTypeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -828,17 +743,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAssignmentTypeTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -849,13 +764,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateLanguageLevel(object AContext, PtLanguageLevelRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -867,17 +779,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtLanguageLevelTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -888,13 +800,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidatePassportType(object AContext, PtPassportTypeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -906,17 +815,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtPassportTypeTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -927,13 +836,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateDocumentType(object AContext, PmDocumentTypeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -945,23 +851,23 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PmDocumentTypeTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             // 'Document Category' must not be unassignable
             ValidationColumn = ARow.Table.Columns[PmDocumentTypeTable.ColumnDocCategoryId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 PmDocumentCategoryTable DocumentCategoryTable;
                 PmDocumentCategoryRow DocumentCategoryRow;
@@ -983,13 +889,13 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
-                                    new string[] { ValidationControlsData.ValidationControlLabel, ARow.DocCategory })),
-                            ValidationColumn, ValidationControlsData.ValidationControl);
+                                    new string[] { String.Empty, ARow.DocCategory })),
+                            ValidationColumn);
                     }
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -1000,13 +906,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateDocumentTypeCategory(object AContext, PmDocumentCategoryRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -1018,17 +921,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'Unssignable Date' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PmDocumentCategoryTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -1039,13 +942,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateSkillCategory(object AContext, PtSkillCategoryRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -1057,17 +957,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtSkillCategoryTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -1078,13 +978,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateSkillLevel(object AContext, PtSkillLevelRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -1096,17 +993,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtSkillLevelTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -1117,13 +1014,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateCountryEventLevel(object AContext, PtOutreachPreferenceLevelRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -1135,17 +1029,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtOutreachPreferenceLevelTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -1156,13 +1050,10 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateOrganisationContact(object AContext, PtContactRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
@@ -1174,17 +1065,17 @@ namespace Ict.Petra.Shared.MCommon.Validation
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtContactTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.UnassignableFlag)
                 {
                     VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty, AVerificationResultCollection, true,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
 
@@ -1195,30 +1086,24 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         public static void ValidateTransportType(object AContext, PtTravelTypeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtTravelTypeTable.ColumnUnassignableDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (ARow.UnassignableFlag)
             {
-                if (ARow.UnassignableFlag)
-                {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    String.Empty, AVerificationResultCollection, true,
+                    AContext, ValidationColumn);
             }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
         }
     }
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,7 +27,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.DB.Exceptions;

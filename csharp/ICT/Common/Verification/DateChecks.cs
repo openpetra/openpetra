@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,6 @@ using System;
 using Ict.Common;
 using Ict.Common.Verification;
 using GNU.Gettext;
-using System.Windows.Forms;
 
 namespace Ict.Common.Verification
 {
@@ -85,15 +84,13 @@ namespace Ict.Common.Verification
         /// <param name="ATreatNullAsInvalid">Set this to true to treated null value in <paramref name="ADate" /> as invalid.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method
         /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
         /// empty dates, but dates that are invalid in other respects (e.g. exceeding a valid date range)!!!</remarks>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotUndefinedDateTime(DateTime? ADate, String ADescription,
-            bool ATreatNullAsInvalid = false, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
-            System.Windows.Forms.Control AResultControl = null)
+            bool ATreatNullAsInvalid = false, object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
@@ -114,7 +111,7 @@ namespace Ict.Common.Verification
 
                     if (AResultColumn != null)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                     }
                 }
             }
@@ -134,7 +131,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 
@@ -149,7 +146,6 @@ namespace Ict.Common.Verification
         /// <param name="ADescription">The name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <param name="AAlternativeFirstDayOfPeriod"></param>
         /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method
         /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
@@ -158,7 +154,7 @@ namespace Ict.Common.Verification
         /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotCorporateDateTime(DateTime? ADate, String ADescription,
             object AResultContext = null, System.Data.DataColumn AResultColumn = null,
-            System.Windows.Forms.Control AResultControl = null, int AAlternativeFirstDayOfPeriod = 1)
+            int AAlternativeFirstDayOfPeriod = 1)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
@@ -199,7 +195,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 
@@ -218,12 +214,11 @@ namespace Ict.Common.Verification
         /// <param name="ADescription">The name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AString" /> contains a valid DateTime, otherwise a
         /// <see cref="TVerificationResult" /> with a message which uses
         /// <paramref name="ADescription" /> is returned.</returns>
         public static TVerificationResult IsValidDateTime(String AString, String ADescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -236,7 +231,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 
@@ -256,12 +251,11 @@ namespace Ict.Common.Verification
         /// <param name="ADescription">Name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if the date <paramref name="ADate" /> is today or in the future,
         /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsCurrentOrFutureDate(DateTime? ADate, String ADescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
@@ -288,7 +282,7 @@ namespace Ict.Common.Verification
 
                     if (AResultColumn != null)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                     }
                 }
                 else
@@ -312,12 +306,11 @@ namespace Ict.Common.Verification
         /// <param name="ADescription">The name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if the date <paramref name="ADate" /> is today or in the past,
         /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsCurrentOrPastDate(DateTime? ADate, String ADescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -341,7 +334,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 
@@ -369,7 +362,6 @@ namespace Ict.Common.Verification
         /// <param name="AUpperRangeCheckType">Type of Date Check: upper end of the valid Date Range (defaults to <see cref="TDateBetweenDatesCheckType.dbdctUnspecific" />).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if the date <paramref name="ADate" /> is between the lower and the upper end of the Date Range specified
         /// (lower and upper end dates are included), otherwise a verification result with a message that uses
         /// <paramref name="ADescription" />.
@@ -378,7 +370,7 @@ namespace Ict.Common.Verification
             String ADescription,
             TDateBetweenDatesCheckType ALowerRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
             TDateBetweenDatesCheckType AUpperRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue = null;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
@@ -456,7 +448,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
             else
@@ -483,13 +475,12 @@ namespace Ict.Common.Verification
         /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -516,7 +507,7 @@ namespace Ict.Common.Verification
 
                     if (AResultColumn != null)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                     }
                 }
                 else
@@ -540,13 +531,12 @@ namespace Ict.Common.Verification
         /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstLesserThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -573,7 +563,7 @@ namespace Ict.Common.Verification
 
                     if (AResultColumn != null)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                     }
                 }
                 else
@@ -604,13 +594,12 @@ namespace Ict.Common.Verification
         /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstGreaterOrEqualThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -637,7 +626,7 @@ namespace Ict.Common.Verification
 
                     if (AResultColumn != null)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                     }
                 }
                 else
@@ -665,13 +654,12 @@ namespace Ict.Common.Verification
         /// the error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstGreaterThanSecondDate(DateTime? ADate1,
             DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -698,7 +686,7 @@ namespace Ict.Common.Verification
 
                     if (AResultColumn != null)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                     }
                 }
                 else
@@ -780,12 +768,11 @@ namespace Ict.Common.Verification
         /// message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or is null,
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
         /// with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult IsValidIntegerTime(Int64? AValue, String ADescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -805,7 +792,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 

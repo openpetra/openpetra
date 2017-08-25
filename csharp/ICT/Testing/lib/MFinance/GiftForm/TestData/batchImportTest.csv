@@ -1,6 +1,0 @@
-"B";"a first batch";"6200";0.0000000000;02/01/2011;"EUR";1.0000000000;"4300";"Gift"
-"T";43005001;"you should not see this in the client";"";"";"";"";73000000;"you should not see this in the client";0.99;no;"GIFT";"FIELD";"4300";"";"";"";"";"";"";"";yes
-"B";"a second batch";"6200";0.0000000000;02/01/2011;"EUR";1.0000000000;"4300";"Gift"
-"T";43005001;"you should not see this in the client";"";"";"";"";73000000;"you should not see this in the client";100000.49;no;"GIFT";"FIELD";"4300";"";"";"";"";"";"";"";yes
-"B";"a third batch";"6200";0.0000000000;02/01/2011;"EUR";1.0000000000;"4300";"Gift"
-"T";43005001;"you should not see this in the client";"";"";"";"";73000000;"you should not see this in the client";10000000000;yes;"GIFT";"FIELD";"4300";"";"";"";"";"";"";"";yes

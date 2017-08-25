@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -273,9 +273,6 @@ namespace Ict.Tools.NAntTasks
                     "OpenPetra.Server.sln",
                     "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.PetraServerConsole,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Server");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
-                    "OpenPetra.Client.sln",
-                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Client,Ict.Petra.PetraClient,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Client");
-                WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Tools.sln",
                     "Ict.Common.csproj,Ict.Common.IO,Ict.Tools");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
@@ -486,7 +483,7 @@ namespace Ict.Tools.NAntTasks
 
             // Now, for selected solutions, we add some solution files
             // This functionality is not available for all IDE's at present
-            if ((ASolutionFilename == "OpenPetra.Client.sln") || (ASolutionFilename == "OpenPetra.Server.sln")
+            if ((ASolutionFilename == "OpenPetra.Server.sln")
                 || (ASolutionFilename == "OpenPetra.sln"))
             {
                 if (File.Exists(ATemplateDir + "template.sln.folder"))
@@ -749,21 +746,8 @@ namespace Ict.Tools.NAntTasks
 
             template.Replace("${PreBuildEvent}", replaceWith);
 
-            // Set the Post-build event if required by the environment and if the project is PetraClient
+            // Set the Post-build event (was used for PetraClient)
             replaceWith = String.Empty;
-
-            if ((AProjectName == "PetraClient") && (Environment.GetEnvironmentVariable("OPDA_StartServer") != null))
-            {
-                string path = Environment.GetEnvironmentVariable("OPDA_PATH");
-
-                if (path != null)
-                {
-                    Uri u = new Uri(path);
-                    temp = GetTemplateFile(ATemplateDir + "template.csproj.postBuildEvent");
-                    temp = temp.Replace("${opda-path}", String.Format("\"{0}\"", u.LocalPath));
-                    replaceWith = temp.ToString();
-                }
-            }
 
             template.Replace("${PostBuildEvent}", replaceWith);
 

@@ -18,38 +18,6 @@
   </if>
 </target>
 
-<target name="test-client">
-    <property name="nant.onfailure" value="cleanup" />
-
-    <!-- this test will start and stop the server itself -->
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.ClientServerRemoting.dll" />
-
-    <echo message="Target test-client started at: ${datetime::now()}" /> 
-    
-    <!-- stop old server that might still be running from earlier (failed) builds -->
-    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}" failonerror="false"/>
-    <nant inheritall="false" target="startServerBackground" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
-    <!-- If we were called by 'test-all' we have done a database reset already and the property 'combinedTest' will have been set.
-         Otherwise, by simply calling test-client we need to do a resetDatabase now so as to get Corporate Exchange Rates set correctly... -->
-    <if test="${not property::exists('combinedTest')}">
-      <nant inheritall="false" target="resetDatabase" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
-    </if>
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Verification.dll" />
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.ExchangeRates.dll" />
-
-    <call target="load-reports-test-db"/>
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
-
-<!-- TODO
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GiftForm.dll" />
--->
-    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
-    
-    <echo message="Target test-client finished at: ${datetime::now()}" /> 
-</target>
-
 <target name="test-tools">
     <echo message="Target test-tools started at: ${datetime::now()}" /> 
     
@@ -64,15 +32,13 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Budget.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" />
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GL.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.GL.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.ICH.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.CrossLedger.dll" />
 
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
     
-    <!-- <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" /> -->
-
     <call target="test-server-reports"/>
 
 </target>
@@ -105,6 +71,7 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.IO.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.DB.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Data.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Verification.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Shared.dll" />
 
 <!--
@@ -137,33 +104,8 @@
     
     <property name="combinedTest" value="true"/>
     <call target="test-without-display"/>
-    <call target="test-client"/>
     
     <echo message="Target test-all finished at: ${datetime::now()}" /> 
-</target>
-
-<target name="test-main-navigation-screens-core">
-    <echo message="Target test-main-navigation-screens-core started at: ${datetime::now()}" /> 
-    
-	<NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MainNavigationScreens.dll" />
-    
-    <echo message="Target test-main-navigation-screens-core finished at: ${datetime::now()}" /> 
-</target>
-
-<target name="test-main-navigation-screens">
-    <echo message="Target test-main-navigation-screens started at: ${datetime::now()}" /> 
-
-    <property name="nant.onfailure" value="cleanup" />
-
-    <!-- stop old server that might still be running from earlier (failed) builds -->
-    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}" failonerror="false"/>
-    <nant inheritall="false" target="startServerBackground" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
-    
-    <call target="test-main-navigation-screens-core" />
-    
-    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
-    
-    <echo message="Target test-main-navigation-screens finished at: ${datetime::now()}" /> 
 </target>
 
 </project>

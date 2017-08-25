@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,6 @@ using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Ict.Common;
-using System.Windows.Forms;
 
 namespace Ict.Common.Remoting.Client
 {

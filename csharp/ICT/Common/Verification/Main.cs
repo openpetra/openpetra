@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,7 +37,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Windows.Forms;
 using Ict.Common.Exceptions;
 
 namespace Ict.Common.Verification
@@ -489,25 +488,19 @@ namespace Ict.Common.Verification
         private DataColumn FResultColumn;
 
         /// <summary>
-        /// specify the control that failed the verification
-        /// </summary>
-        [NonSerializedAttribute()]
-        private Control FResultControl;
-
-        /// <summary>
         /// constructor
         /// </summary>
         /// <param name="AResultContext">context of verification</param>
         /// <param name="AResultColumn">which column failed</param>
         /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultControl">for compatibility reasons, just pass null</param>
         /// <param name="AResultCode">error code to identify the error message</param>
-        /// <param name="AResultControl">which control is involved</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
             DataColumn AResultColumn,
             String AResultText,
             String AResultCode,
-            Control AResultControl,
+            Object AResultControl,
             System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
@@ -515,7 +508,6 @@ namespace Ict.Common.Verification
             FResultText = AResultText;
             FResultSeverity = TResultSeverity.Resv_Critical;
             FResultCode = AResultCode;
-            FResultControl = AResultControl;
             FDataValidationRunID = ADataValidationRunID;
         }
 
@@ -525,13 +517,13 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">context of verification</param>
         /// <param name="AResultColumn">which column failed</param>
         /// <param name="AResultText">description and error message for the user</param>
-        /// <param name="AResultControl">which control is involved</param>
+        /// <param name="AResultControl">for compatibility reasons, just pass null</param>
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
             DataColumn AResultColumn,
             String AResultText,
-            Control AResultControl,
+            Object AResultControl,
             TResultSeverity AResultSeverity,
             System.Guid ADataValidationRunID = new System.Guid())
         {
@@ -539,7 +531,6 @@ namespace Ict.Common.Verification
             FResultColumn = AResultColumn;
             FResultText = AResultText;
             FResultSeverity = AResultSeverity;
-            FResultControl = AResultControl;
             FDataValidationRunID = ADataValidationRunID;
         }
 
@@ -550,14 +541,12 @@ namespace Ict.Common.Verification
         /// <param name="AResultColumn">which column failed</param>
         /// <param name="AResultText">description and error message for the user</param>
         /// <param name="AResultCode">error code to identify the error message</param>
-        /// <param name="AResultControl">which control is involved</param>
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
             DataColumn AResultColumn,
             String AResultText,
             String AResultCode,
-            Control AResultControl,
             TResultSeverity AResultSeverity,
             System.Guid ADataValidationRunID = new System.Guid())
         {
@@ -565,7 +554,6 @@ namespace Ict.Common.Verification
             FResultColumn = AResultColumn;
             FResultText = AResultText;
             FResultCode = AResultCode;
-            FResultControl = AResultControl;
             FResultSeverity = AResultSeverity;
             FDataValidationRunID = ADataValidationRunID;
         }
@@ -578,7 +566,6 @@ namespace Ict.Common.Verification
         /// <param name="AResultText">description and error message for the user</param>
         /// <param name="AResultCaption">caption for error message box</param>
         /// <param name="AResultCode">error code to identify the error message</param>
-        /// <param name="AResultControl">which control is involved</param>
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
@@ -586,7 +573,6 @@ namespace Ict.Common.Verification
             String AResultText,
             String AResultCaption,
             String AResultCode,
-            Control AResultControl,
             TResultSeverity AResultSeverity,
             System.Guid ADataValidationRunID = new System.Guid())
         {
@@ -595,7 +581,6 @@ namespace Ict.Common.Verification
             FResultText = AResultText;
             FResultTextCaption = AResultCaption;
             FResultCode = AResultCode;
-            FResultControl = AResultControl;
             FResultSeverity = AResultSeverity;
             FDataValidationRunID = ADataValidationRunID;
         }
@@ -604,22 +589,41 @@ namespace Ict.Common.Verification
         /// Constructor
         /// </summary>
         /// <param name="AVerificationResult"><see cref="TVerificationResult" /> which
-        /// contains the basic data to which the <paramref name="AResultColumn" /> and
-        /// <paramref name="AResultControl" /> are getting added.</param>
+        /// contains the basic data to which the <paramref name="AResultColumn" />  is getting added.</param>
         /// <param name="AResultColumn">which column failed</param>
-        /// <param name="AResultControl">which control is involved</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(TVerificationResult AVerificationResult,
-            DataColumn AResultColumn, Control AResultControl, System.Guid ADataValidationRunID = new System.Guid())
+            DataColumn AResultColumn, System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AVerificationResult.ResultContext;
             FResultColumn = AResultColumn;
             FResultText = AVerificationResult.ResultText;
             FResultTextCaption = AVerificationResult.ResultTextCaption;
             FResultCode = AVerificationResult.ResultCode;
-            FResultControl = AResultControl;
             FResultSeverity = AVerificationResult.ResultSeverity;
             FControlValueUndoRequested = AVerificationResult.ControlValueUndoRequested;
+            FDataValidationRunID = ADataValidationRunID;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context of verification</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultSeverity">is this serious, or just a warning</param>
+        /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
+        public TScreenVerificationResult(object AResultContext,
+            DataColumn AResultColumn,
+            String AResultText,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
+        {
+            FResultContext = AResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AResultText;
+            FResultCode = String.Empty;
+            FResultSeverity = AResultSeverity;
             FDataValidationRunID = ADataValidationRunID;
         }
 
@@ -632,18 +636,6 @@ namespace Ict.Common.Verification
             get
             {
                 return FResultColumn;
-            }
-        }
-
-        /// <summary>
-        /// get the Control for the verification failure
-        /// </summary>
-        /// <returns></returns>
-        public Control ResultControl
-        {
-            get
-            {
-                return FResultControl;
             }
         }
     }
@@ -672,28 +664,13 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    ({1}: {3})");
-        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    ({1})");
-        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}" + Environment.NewLine + "    Problem: {2}" + Environment.NewLine + "    ({1}: {3})");
+        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}" + Environment.NewLine + "    Problem: {2}" + Environment.NewLine + "    ({1})");
+        private static readonly string StrStatusFooter = Catalog.GetString("{0}" + Environment.NewLine + "    Status: {2}" + Environment.NewLine);
 
         #endregion
 
         private List <IResultInterface>FList = new List <IResultInterface>();
-
-        /// <summary>
-        /// Control for which the first data validation error is recorded.
-        /// </summary>
-        /// <remarks>Updated when one of the overloads of Method
-        /// <see cref="M:BuildScreenVerificationResultList(out String, out Control, out Object, bool, Type)" /> or
-        /// <see cref="M:BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
-        /// except if their Argument 'AUpdateFirstErrorControl' is set to false.</remarks>
-        [NonSerializedAttribute()]
-        Control FFirstErrorControl = null;
-
-        /// <summary>
-        /// Should the Focus be set on the FirstErrorControl?
-        /// </summary>
-        bool FFocusOnFirstErrorControlRequested = false;
 
         /// <summary>
         /// Data Validation Run ID that this instance is associated with.
@@ -853,42 +830,6 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// Control for which the first data validation error is recorded.
-        /// </summary>
-        /// <remarks>Updated when one of the overloads of Method
-        /// <see cref="M:BuildScreenVerificationResultList(out String, out Control, out Object, bool, Type)" /> or
-        /// <see cref="M:BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
-        /// except if their Argument 'AUpdateFirstErrorControl' is set to false.</remarks>
-        public Control FirstErrorControl
-        {
-            get
-            {
-                return FFirstErrorControl;
-            }
-
-            set
-            {
-                FFirstErrorControl = value;
-            }
-        }
-
-        /// <summary>
-        /// Inspect this from outside this Class to inquire whether the Focus should be set on the FirstErrorControl.
-        /// </summary>
-        public bool FocusOnFirstErrorControlRequested
-        {
-            get
-            {
-                return FFocusOnFirstErrorControlRequested;
-            }
-
-            set
-            {
-                FFocusOnFirstErrorControlRequested = value;
-            }
-        }
-
-        /// <summary>
         /// Data Validation Run ID that this instance is associated with.
         /// </summary>
         public System.Guid CurrentDataValidationRunID
@@ -961,23 +902,18 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <param name="AErrorMessages">String containing a formatted list of error messages that is taken from the
         /// <see cref="TVerificationResultCollection" />.</param>
-        /// <param name="AFirstErrorControl">Control which the Focus should be set to as it is the first Control for which a
-        /// Verification failure is recorded against.</param>
         /// <param name="AFirstErrorContext"><see cref="TVerificationResult.ResultContext" /> of the first error.</param>
-        /// <param name="AUpdateFirstErrorControl">Set to false to not update the <see cref="FirstErrorControl" /> Property
-        /// of this Class (defaults to true).</param>
         /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that
         /// are added to the result list to those whose <see cref="TVerificationResult.ResultContext" /> matches
         /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref> (defaults to null).</param>
         /// <param name="AIgnoreWarnings">Set to true if Warnings are to be ignored (defaults to false).</param>
-        public void BuildScreenVerificationResultList(out String AErrorMessages, out Control AFirstErrorControl, out object AFirstErrorContext,
-            bool AUpdateFirstErrorControl = true, Type ARestrictToTypeWhichRaisesError = null, bool AIgnoreWarnings = false)
+        public void BuildScreenVerificationResultList(out String AErrorMessages, out object AFirstErrorContext,
+            Type ARestrictToTypeWhichRaisesError = null, bool AIgnoreWarnings = false)
         {
             TVerificationResult si;
             TScreenVerificationResult siScr;
             bool IncludeVerificationResult;
 
-            AFirstErrorControl = null;
             AErrorMessages = "";
             AFirstErrorContext = null;
 
@@ -1023,16 +959,7 @@ namespace Ict.Common.Verification
 
                     if (siScr != null)
                     {
-                        if (AFirstErrorControl == null)
-                        {
-                            AFirstErrorControl = siScr.ResultControl;
-                            AFirstErrorContext = siScr.ResultContext;
-
-                            if (AUpdateFirstErrorControl)
-                            {
-                                FFirstErrorControl = AFirstErrorControl;
-                            }
-                        }
+                        AFirstErrorContext = siScr.ResultContext;
                     }
                 }
             }
@@ -1044,15 +971,10 @@ namespace Ict.Common.Verification
         /// <remarks>This method ignores non-screen verification results and builds the list from screen verification results only.</remarks>
         /// <param name="AResultContext">only show errors of the given context</param>
         /// <param name="AErrorMessages">will have the list of error messages</param>
-        /// <param name="AFirstErrorControl">for focusing the first control that caused verification failure</param>
-        /// <param name="AUpdateFirstErrorControl" >Set to false to not update the <see cref="FirstErrorControl" /> Property
-        /// of this Class (defaults to true).</param>
-        public void BuildScreenVerificationResultList(object AResultContext, out String AErrorMessages, out Control AFirstErrorControl,
-            bool AUpdateFirstErrorControl = true)
+        public void BuildScreenVerificationResultList(object AResultContext, out String AErrorMessages)
         {
             TScreenVerificationResult si;
 
-            AFirstErrorControl = null;
             AErrorMessages = "";
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
@@ -1062,16 +984,6 @@ namespace Ict.Common.Verification
                 if ((si != null) && (si.ResultContext == AResultContext))
                 {
                     AErrorMessages = AErrorMessages + si.ResultText + Environment.NewLine + Environment.NewLine;
-
-                    if (AFirstErrorControl == null)
-                    {
-                        AFirstErrorControl = si.ResultControl;
-
-                        if (AUpdateFirstErrorControl)
-                        {
-                            FFirstErrorControl = AFirstErrorControl;
-                        }
-                    }
                 }
             }
         }
@@ -1106,7 +1018,7 @@ namespace Ict.Common.Verification
                         break;
                 }
 
-                if ((Formatter == StrErrorFooter) && (si.ResultCode == "")) // If no code was given, don't show the empty placeholder.
+                if ((Formatter == StrErrorFooter) && (si.ResultCode == "" || si.ResultCode == null)) // If no code was given, don't show the empty placeholder.
                 {
                     Formatter = StrErrorNoCodeFooter;
                 }
@@ -1295,11 +1207,8 @@ namespace Ict.Common.Verification
         /// removal from collection will only happen if <paramref name="AResultContext"></paramref>.ToString() matches an
         /// <see cref="TVerificationResult" />'s ResultContext.ToString() that is stored in the collection for the
         /// <see cref="System.Data.DataColumn" />.  (Default: null.)</param>
-        /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
-        /// where it is placed on as identical ResultContexts. (Default: false.)</param>
         /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
-        public bool AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn, object AResultContext = null,
-            bool ATreatUserControlAndFormContextsAsIdentical = false)
+        public bool AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn, object AResultContext = null)
         {
             List <TScreenVerificationResult>si = FindAllBy(AResultColumn);
             bool ReturnValue = false;
@@ -1325,8 +1234,7 @@ namespace Ict.Common.Verification
 
                     foreach (TScreenVerificationResult SingleEntry in si)
                     {
-                        if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, false,
-                                ATreatUserControlAndFormContextsAsIdentical))
+                        if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, false))
                         {
                             // The existing TVerificationResult is identical to AVerificationResult:
                             // update the existing TVerificationResult's DataValidationRunID to the current one as it will need to be
@@ -1386,36 +1294,20 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// Calls either the <see cref="Add" /> or <see cref="AddOrRemove" /> Method. Which Method is
-        /// called is determined by evaluating the Type of <paramref name="AContext" />: if it is
-        /// <see cref="System.Windows.Forms.Form" /> then the <see cref="AddOrRemove" /> Method is
-        /// called, otherwise the <see cref="Add" /> Method.
+        /// Calls the <see cref="Add" /> Method.
         /// </summary>
         /// <param name="AContext">Context that describes where the data verification failed.</param>
         /// <param name="AVerificationResult">An instance of <see cref="TVerificationResult" />
         /// that is to be added/to be added or removed from the <see cref="TVerificationResultCollection" />.</param>
-        /// <param name="AValidationColumn">The <see cref="DataRow" /> which holds the the data against which
-        /// the validation was run. Only used if the <see cref="AddOrRemove" /> Methods is called.</param>
-        /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
-        /// where it is placed on as identical ResultContexts. (Default: false.)</param>
         /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
-        public bool Auto_Add_Or_AddOrRemove(object AContext, TVerificationResult AVerificationResult, DataColumn AValidationColumn,
-            bool ATreatUserControlAndFormContextsAsIdentical = false)
+        public bool Auto_Add_Or_AddOrRemove(object AContext, TVerificationResult AVerificationResult)
         {
             bool ReturnValue = false;
 
-            if ((AContext is System.Windows.Forms.Form)
-                || (AContext is System.Windows.Forms.UserControl))
+            if (AVerificationResult != null)
             {
-                ReturnValue = this.AddOrRemove(AVerificationResult, AValidationColumn, null, ATreatUserControlAndFormContextsAsIdentical);
-            }
-            else
-            {
-                if (AVerificationResult != null)
-                {
-                    this.Add(AVerificationResult);
-                    ReturnValue = true;
-                }
+                this.Add(AVerificationResult);
+                ReturnValue = true;
             }
 
             return ReturnValue;
@@ -1659,7 +1551,7 @@ namespace Ict.Common.Verification
             }
             catch (Exception Exp)
             {
-                MessageBox.Show("Exception occured in TVerificationResultCollection.Remove(AResultColumnName): " +
+                TLogging.Log("Exception occured in TVerificationResultCollection.Remove(AResultColumnName): " +
                     Exp.ToString());
             }
         }
@@ -1756,12 +1648,10 @@ namespace Ict.Common.Verification
         /// <param name="AVerificationResult2">Second <see cref="TVerificationResult" />.</param>
         /// <param name="ACompareResultContextsAsStrings">Set to true to compare the ResultContexts not as objects, but
         /// compare what a call of the .ToString() Method on the two object yields. (Default: false.)</param>
-        /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
-        /// where it is placed on as identical ResultContexts. (Default: false.)</param>
         /// <returns>True if the two <see cref="TVerificationResult" />s are completely identical,
         /// otherwise false.</returns>
         public static bool AreVerificationResultsIdentical(TVerificationResult AVerificationResult1, TVerificationResult AVerificationResult2,
-            bool ACompareResultContextsAsStrings = false, bool ATreatUserControlAndFormContextsAsIdentical = false)
+            bool ACompareResultContextsAsStrings = false)
         {
             if ((AVerificationResult1 == null)
                 || (AVerificationResult2 == null))
@@ -1785,72 +1675,14 @@ namespace Ict.Common.Verification
 
                 if (!ACompareResultContextsAsStrings)
                 {
-                    if (ATreatUserControlAndFormContextsAsIdentical)
-                    {
-                        if ((AVerificationResult1.ResultContext is UserControl)
-                            || (AVerificationResult2.ResultContext is UserControl))
-                        {
-                            if ((AVerificationResult1.ResultContext is UserControl)
-                                && (AVerificationResult2.ResultContext is Form))
-                            {
-                                if (((UserControl)AVerificationResult1.ResultContext)
-                                    != AVerificationResult2.ResultContext)
-                                {
-                                    return false;
-                                }
-                            }
-                            else if ((AVerificationResult2.ResultContext is UserControl)
-                                     && (AVerificationResult1.ResultContext is Form))
-                            {
-                                if (((UserControl)AVerificationResult2.ResultContext).ParentForm
-                                    != AVerificationResult1.ResultContext)
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                        else if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
-                        {
-                            return false;
-                        }
-                    }
-                    else if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
+                    if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (ATreatUserControlAndFormContextsAsIdentical)
-                    {
-                        if ((AVerificationResult1.ResultContext is UserControl)
-                            || (AVerificationResult2.ResultContext is UserControl))
-                        {
-                            if ((AVerificationResult1.ResultContext is UserControl)
-                                && (AVerificationResult2.ResultContext is Form))
-                            {
-                                if (((UserControl)AVerificationResult1.ResultContext).ParentForm.ToString()
-                                    != AVerificationResult2.ResultContext.ToString())
-                                {
-                                    return false;
-                                }
-                            }
-                            else if ((AVerificationResult2.ResultContext is UserControl)
-                                     && (AVerificationResult1.ResultContext is Form))
-                            {
-                                if (((UserControl)AVerificationResult2.ResultContext).ParentForm.ToString()
-                                    != AVerificationResult1.ResultContext.ToString())
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                        else if (AVerificationResult1.ResultContext.ToString() != AVerificationResult2.ResultContext.ToString())
-                        {
-                            return false;
-                        }
-                    }
-                    else if (AVerificationResult1.ResultContext.ToString() != AVerificationResult2.ResultContext.ToString())
+                    if (AVerificationResult1.ResultContext.ToString() != AVerificationResult2.ResultContext.ToString())
                     {
                         return false;
                     }

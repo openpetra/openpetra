@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 using System.Threading;
 using System.Collections;
 using System.Collections.Specialized;
@@ -92,10 +91,6 @@ namespace Ict.Common.Verification.Testing
             string Testname;
             string ExpectedErrorText;
             string VerificationProblemListing;
-            object TestContext = new Object();
-            DataColumn TestColumn = new DataColumn("TestColumn");
-
-            System.Windows.Forms.Control TestControl = new System.Windows.Forms.TextBox();
 
             #region IsValid...
 
@@ -109,30 +104,17 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidInteger: " + Testname);
 
-            Testname = "Test with 5";
-            TestResult = TNumericalChecks.IsValidInteger("5", Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidInteger: " + Testname);
-
             Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsValidInteger("5.1", Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TVerificationResult(TestContext, "Invalid number entered." + Environment.NewLine +
+            TestResult = TNumericalChecks.IsValidInteger("5.1", Testname);
+            ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidInteger: " + Testname);
-
-            Testname = "Test with 5.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsValidInteger("", Testname);
-            ExpectedResult = new TScreenVerificationResult(null, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidInteger: " + Testname);
 
             Testname = "Test with null";
             TestResult = TNumericalChecks.IsValidInteger(null, Testname);
-            ExpectedResult = new TScreenVerificationResult(null, null, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", null, TResultSeverity.Resv_Critical);;
+            ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidInteger: " + Testname);
 
@@ -161,12 +143,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidDouble: " + Testname);
 
-            Testname = "Test with -5";
-            TestResult = TNumericalChecks.IsValidDouble("-5", Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidDouble: " + Testname);
-
             Testname = "Test with 5.1";
             TestResult = TNumericalChecks.IsValidDouble("5.1", Testname);
             ExpectedResult = null;
@@ -187,13 +163,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidDouble: " + Testname);
 
-            Testname = "Test with String.Empty (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsValidDouble(String.Empty, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidDouble: " + Testname);
-
             #endregion
 
 
@@ -203,12 +172,6 @@ namespace Ict.Common.Verification.Testing
 
             Testname = "Test with -5";
             TestResult = TNumericalChecks.IsValidDecimal("-5", Testname);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidDecimal: " + Testname);
-
-            Testname = "Test with -5";
-            TestResult = TNumericalChecks.IsValidDecimal("-5", Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidDecimal: " + Testname);
@@ -233,13 +196,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidDecimal: " + Testname);
 
-            Testname = "Test with String.Empty (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsValidDecimal(String.Empty, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidDecimal: " + Testname);
-
             #endregion
 
             #endregion
@@ -257,12 +213,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveInteger: " + Testname);
 
-            Testname = "Test with 5";
-            TestResult = TNumericalChecks.IsPositiveInteger(5, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveInteger: " + Testname);
-
             Testname = "Test with 0";
             TestResult = TNumericalChecks.IsPositiveInteger(0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -274,13 +224,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsPositiveInteger(-1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveInteger: " + Testname);
-
-            Testname = "Test with -1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveInteger(-1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveInteger: " + Testname);
 
@@ -302,12 +245,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveDouble: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsPositiveDouble(5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveDouble: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsPositiveDouble(0.0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -319,13 +256,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsPositiveDouble(-0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveDouble: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveDouble(-0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveDouble: " + Testname);
 
@@ -347,18 +277,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveDecimal: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsPositiveDecimal((decimal)5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveDecimal: " + Testname);
-
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsPositiveDecimal((decimal)5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveDecimal: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsPositiveDecimal((decimal)0.0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -370,20 +288,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsPositiveDecimal((decimal) - 0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveDecimal((decimal) - 0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveDecimal((decimal) - 0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveDecimal: " + Testname);
 
@@ -410,12 +314,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroInteger: " + Testname);
 
-            Testname = "Test with 5";
-            TestResult = TNumericalChecks.IsPositiveOrZeroInteger(5, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroInteger: " + Testname);
-
             Testname = "Test with 0";
             TestResult = TNumericalChecks.IsPositiveOrZeroInteger(0, Testname);
             ExpectedResult = null;
@@ -426,13 +324,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsPositiveOrZeroInteger(-1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroInteger: " + Testname);
-
-            Testname = "Test with -1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveOrZeroInteger(-1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroInteger: " + Testname);
 
@@ -454,12 +345,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDouble: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsPositiveOrZeroDouble(5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDouble: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsPositiveOrZeroDouble(0.0, Testname);
             ExpectedResult = null;
@@ -470,13 +355,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsPositiveOrZeroDouble(-0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDouble: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveOrZeroDouble(-0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDouble: " + Testname);
 
@@ -498,18 +376,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDecimal: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsPositiveOrZeroDecimal((decimal)5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDecimal: " + Testname);
-
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsPositiveOrZeroDecimal((decimal)5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDecimal: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsPositiveOrZeroDecimal((decimal)0.0, Testname);
             ExpectedResult = null;
@@ -520,20 +386,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsPositiveOrZeroDecimal((decimal) - 0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveOrZeroDecimal((decimal) - 0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsPositiveOrZeroDecimal((decimal) - 0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsPositiveOrZeroDecimal: " + Testname);
 
@@ -560,13 +412,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeInteger: " + Testname);
 
-            Testname = "Test with 5";
-            TestResult = TNumericalChecks.IsNegativeInteger(-5, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeInteger: " + Testname);
-
-            Testname = "Test with 0";
             TestResult = TNumericalChecks.IsNegativeInteger(0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
@@ -577,13 +422,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsNegativeInteger(1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeInteger: " + Testname);
-
-            Testname = "Test with -1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeInteger(1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeInteger: " + Testname);
 
@@ -605,12 +443,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDouble: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeDouble(-5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeDouble: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsNegativeDouble(0.0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -622,13 +454,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsNegativeDouble(0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeDouble: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeDouble(0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDouble: " + Testname);
 
@@ -650,18 +475,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
-
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsNegativeDecimal((decimal)0.0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -673,20 +486,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsNegativeDecimal((decimal)0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
 
@@ -713,12 +512,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroInteger: " + Testname);
 
-            Testname = "Test with 5";
-            TestResult = TNumericalChecks.IsNegativeOrZeroInteger(-5, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroInteger: " + Testname);
-
             Testname = "Test with 0";
             TestResult = TNumericalChecks.IsNegativeOrZeroInteger(0, Testname);
             ExpectedResult = null;
@@ -729,13 +522,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsNegativeOrZeroInteger(1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroInteger: " + Testname);
-
-            Testname = "Test with -1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeOrZeroInteger(1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroInteger: " + Testname);
 
@@ -757,13 +543,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDouble: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDouble(-5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDouble: " + Testname);
-
-            Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsNegativeOrZeroDouble(0.0, Testname);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
@@ -773,13 +552,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsNegativeOrZeroDouble(0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDouble: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDouble(0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDouble: " + Testname);
 
@@ -801,18 +573,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
-
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)0.0, Testname);
             ExpectedResult = null;
@@ -823,20 +583,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
 
@@ -862,12 +608,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
 
-            Testname = "Test with 5";
-            TestResult = TNumericalChecks.IsNonZeroInteger(5, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
-
             Testname = "Test with 0";
             TestResult = TNumericalChecks.IsNonZeroInteger(0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -877,12 +617,6 @@ namespace Ict.Common.Verification.Testing
 
             Testname = "Test with -1";
             TestResult = TNumericalChecks.IsNonZeroInteger(-1, Testname);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
-
-            Testname = "Test with -1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNonZeroInteger(-1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
@@ -905,12 +639,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNonZeroDouble(-5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsNonZeroDouble(0.0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -920,12 +648,6 @@ namespace Ict.Common.Verification.Testing
 
             Testname = "Test with -0.1";
             TestResult = TNumericalChecks.IsNonZeroDouble(0.1, Testname);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNonZeroDouble(0.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
@@ -948,18 +670,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
 
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
-
-            Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
-
             Testname = "Test with 0.0";
             TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.0, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
@@ -969,18 +679,6 @@ namespace Ict.Common.Verification.Testing
 
             Testname = "Test with -0.1";
             TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.1, Testname);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
-
-            Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
@@ -1008,23 +706,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondInteger: " + Testname);
 
-            Testname = "Test with 5 and 10";
-            TestResult = TNumericalChecks.FirstLesserThanSecondInteger(5, 10, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondInteger: " + Testname);
-
             Testname = "Test with 6 and 5";
             TestResult = TNumericalChecks.FirstLesserThanSecondInteger(6, 5, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondInteger: " + Testname);
-
-            Testname = "Test with 6 and 5 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.FirstLesserThanSecondInteger(6, 5, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondInteger: " + Testname);
 
@@ -1070,23 +755,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDouble: " + Testname);
 
-            Testname = "Test with 5.1 and 5.2";
-            TestResult = TNumericalChecks.FirstLesserThanSecondDouble(5.1, 5.2, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDouble: " + Testname);
-
             Testname = "Test with 5.2 and 5.1";
             TestResult = TNumericalChecks.FirstLesserThanSecondDouble(5.2, 5.1, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDouble: " + Testname);
-
-            Testname = "Test with 5.2 and 5.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.FirstLesserThanSecondDouble(5.2, 5.1, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDouble: " + Testname);
 
@@ -1132,35 +804,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDecimal: " + Testname);
 
-            Testname = "Test with 5.1 and 5.2";
-            TestResult = TNumericalChecks.FirstLesserThanSecondDecimal((decimal)5.1,
-                (decimal)5.2,
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDecimal: " + Testname);
-
             Testname = "Test with 5.2 and 5.1";
             TestResult = TNumericalChecks.FirstLesserThanSecondDecimal((decimal)5.2, (decimal)5.1, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDecimal: " + Testname);
-
-            Testname = "Test with 5.2 and 5.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.FirstLesserThanSecondDecimal((decimal)5.2,
-                (decimal)5.1,
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDecimal: " + Testname);
 
@@ -1213,23 +860,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondInteger: " + Testname);
 
-            Testname = "Test with 5 and 10";
-            TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondInteger(5, 10, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondInteger: " + Testname);
-
             Testname = "Test with 6 and 5";
             TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondInteger(6, 5, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondInteger: " + Testname);
-
-            Testname = "Test with 6 and 5 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondInteger(6, 5, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondInteger: " + Testname);
 
@@ -1286,23 +920,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDouble: " + Testname);
 
-            Testname = "Test with 5.1 and 5.2";
-            TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondDouble(5.1, 5.2, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDouble: " + Testname);
-
             Testname = "Test with 5.2 and 5.1";
             TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondDouble(5.2, 5.1, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDouble: " + Testname);
-
-            Testname = "Test with 5.2 and 5.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondDouble(5.2, 5.1, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDouble: " + Testname);
 
@@ -1359,35 +980,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDecimal: " + Testname);
 
-            Testname = "Test with 5.1 and 5.2";
-            TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal((decimal)5.1,
-                (decimal)5.2,
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDecimal: " + Testname);
-
             Testname = "Test with 5.2 and 5.1";
             TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal((decimal)5.2, (decimal)5.1, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDecimal: " + Testname);
-
-            Testname = "Test with 5.2 and 5.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal((decimal)5.2,
-                (decimal)5.1,
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00006V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDecimal: " + Testname);
 
@@ -1450,10 +1046,6 @@ namespace Ict.Common.Verification.Testing
             string Testname;
             string ExpectedErrorText;
             string VerificationProblemListing;
-            object TestContext = new Object();
-            DataColumn TestColumn = new DataColumn("TestColumn");
-
-            System.Windows.Forms.Control TestControl = new System.Windows.Forms.TextBox();
 
             #region StringMustNotBeEmpty
 
@@ -1465,23 +1057,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "StringMustNotBeEmpty: " + Testname);
 
-            Testname = "Test with 'blahblah' (TScreenVerificationResult)";
-            TestResult = TStringChecks.StringMustNotBeEmpty("blahblah", Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "StringMustNotBeEmpty: " + Testname);
-
             Testname = "Test with String.Empty";
             TestResult = TStringChecks.StringMustNotBeEmpty(String.Empty, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid value entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00008V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "StringMustNotBeEmpty: " + Testname);
-
-            Testname = "Test with String.Empty (TScreenVerificationResult)";
-            TestResult = TStringChecks.StringMustNotBeEmpty(String.Empty, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid value entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00008V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "StringMustNotBeEmpty: " + Testname);
 
@@ -1505,35 +1084,10 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondString: " + Testname);
 
-            Testname = "Test with 'aaa' and 'aab'";
-            TestResult = TStringChecks.FirstLesserOrEqualThanSecondString("aaa",
-                "aab",
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = null;
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondString: " + Testname);
-
             Testname = "Test with 'aab' and 'aaa'";
             TestResult = TStringChecks.FirstLesserOrEqualThanSecondString("aab", "aaa", "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null,
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00007V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondString: " + Testname);
-
-            Testname = "Test with 'aab' and 'aaa'";
-            TestResult = TStringChecks.FirstLesserOrEqualThanSecondString("aab",
-                "aaa",
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn,
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00007V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondString: " + Testname);
 
@@ -1572,14 +1126,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TStringChecks.ValidateEmail("test@test.com.x");
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText, "test@test.com.x"),
                 "GENC.00017V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
-
-            Testname = "Test with 'test@test.com.x'";
-            TestResult = TStringChecks.ValidateEmail("test@test.com.x", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn,
-                String.Format(ExpectedErrorText, "test@test.com.x"), "GENC.00017V", TestControl,
-                TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1622,16 +1168,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
-            Testname = "Test with 'test@test.com;blah@blah.org'";
-            TestResult = TStringChecks.ValidateEmail("test@test.com;blah@blah.org", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, String.Format(ExpectedErrorText + Environment.NewLine +
-                    "Reason: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses. However, in this case only ONE e-mail address is allowed!",
-                    "test@test.com;blah@blah.org"),
-                "GENC.00017V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
-
-
             ExpectedErrorText = "The e-mail address '{0}' (or a part of it, '{1}') is not valid.";
 
             Testname = "Test with 'test@test.com.x;blah@blah.org'";
@@ -1643,30 +1179,12 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
-            Testname = "Test with 'test@test.com.x;blah@blah.org'";
-            TestResult = TStringChecks.ValidateEmail("test@test.com.x;blah@blah.org", true, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, String.Format(ExpectedErrorText + Environment.NewLine +
-                    "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
-                    "test@test.com.x;blah@blah.org", "test@test.com.x"),
-                "GENC.00017V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
-
             Testname = "Test with 'test@test.com;blah@blah.org.a'";
             TestResult = TStringChecks.ValidateEmail("test@test.com;blah@blah.org.a", true);
             ExpectedResult = new TVerificationResult(null, String.Format(ExpectedErrorText + Environment.NewLine +
                     "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
                     "test@test.com;blah@blah.org.a", "blah@blah.org.a"),
                 "GENC.00017V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
-
-            Testname = "Test with 'test@test.com.x,'";
-            TestResult = TStringChecks.ValidateEmail("test@test.com.x,", true, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, String.Format(ExpectedErrorText + Environment.NewLine +
-                    "Note: The submitted e-mail address contains a comma (',') or a semicolon (';'). These characters are not valid in an e-mail address, but they can be used to separate several e-mail addresses.",
-                    "test@test.com.x,", "test@test.com.x"),
-                "GENC.00017V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "ValidateEmail: " + Testname);
 
@@ -1685,9 +1203,6 @@ namespace Ict.Common.Verification.Testing
             string ExpectedErrorText;
             string VerificationProblemListing;
             object TestContext = new Object();
-            DataColumn TestColumn = new DataColumn("TestColumn");
-
-            System.Windows.Forms.Control TestControl = new System.Windows.Forms.TextBox();
 
             #region IsNotUndefinedDateTime
 
@@ -1699,40 +1214,12 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);
 
-            Testname = "Test with DateTime.MinValue";
-            TestResult = TDateChecks.IsNotUndefinedDateTime(DateTime.MinValue, Testname, false, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TVerificationResult(TestContext, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00002V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);
-
-            Testname = "Test with DateTime.MinValue (TScreenVerificationResult)";
-            TestResult = TDateChecks.IsNotUndefinedDateTime(DateTime.MinValue, Testname, false, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00002V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);
-
             Testname = "Test with null #1";
             TestResult = TDateChecks.IsNotUndefinedDateTime(null, Testname);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);
 
-            Testname = "Test with null #2";
-            TestResult = TDateChecks.IsNotUndefinedDateTime(null, Testname, true, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00002V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);
-
-
-            Testname = "Test with null #3";
-            TestResult = TDateChecks.IsNotUndefinedDateTime(null, Testname, true, TestContext);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00002V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);
             #endregion
 
 
@@ -1746,24 +1233,9 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidDateTime: " + Testname);
 
-            Testname = "Test with String.Empty";
-            TestResult = TDateChecks.IsValidDateTime(String.Empty, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TVerificationResult(TestContext, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00001V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidDateTime: " + Testname);
-
-            Testname = "Test with String.Empty (TScreenVerificationResult)";
-            TestResult = TDateChecks.IsValidDateTime(String.Empty, Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00001V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsValidDateTime: " + Testname);
-
             Testname = "Test with null";
             TestResult = TDateChecks.IsValidDateTime(null, Testname);
-            ExpectedResult = new TScreenVerificationResult(null, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00001V", null, TResultSeverity.Resv_Critical);
+            ExpectedResult = TDateChecks.GetInvalidDateVerificationResult(Testname);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsValidDateTime: " + Testname);
 
@@ -1801,13 +1273,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsCurrentOrFutureDate: " + Testname);
 
-            Testname = "Test with DateTime.Now.Date.AddDays(-1) (TScreenVerificationResult)";
-            TestResult = TDateChecks.IsCurrentOrFutureDate(DateTime.Now.Date.AddDays(-1), Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00004V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsCurrentOrFutureDate: " + Testname);
-
             Testname = "Test with null";
             TestResult = TDateChecks.IsCurrentOrFutureDate(null, Testname);
             ExpectedResult = null;
@@ -1837,13 +1302,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TDateChecks.IsCurrentOrPastDate(DateTime.Now.Date.AddDays(1), Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00003V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsCurrentOrPastDate: " + Testname);
-
-            Testname = "Test with DateTime.Now.Date.AddDays(1) (TScreenVerificationResult)";
-            TestResult = TDateChecks.IsCurrentOrPastDate(DateTime.Now.Date.AddDays(1), Testname, TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname), "GENC.00003V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsCurrentOrPastDate: " + Testname);
 
@@ -1889,14 +1347,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDate: " + Testname);
 
-            Testname = "Test with DateTime.Now.Date.AddDays(1), DateTime.Now.Date (TScreenVerificationResult)";
-            TestResult = TDateChecks.FirstLesserOrEqualThanSecondDate(DateTime.Now.Date.AddDays(
-                    1), DateTime.Now.Date, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00001V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserOrEqualThanSecondDate: " + Testname);
-
             Testname = "Test with null, DateTime.Now.Date";
             TestResult = TDateChecks.FirstLesserOrEqualThanSecondDate(null, DateTime.Now.Date, "1st value", "2nd value");
             ExpectedResult = null;
@@ -1937,19 +1387,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TDateChecks.FirstLesserThanSecondDate(DateTime.Now.Date, DateTime.Now.Date, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00001V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDate: " + Testname);
-
-            Testname = "Test with DateTime.Now.Date, DateTime.Now.Date (TScreenVerificationResult)";
-            TestResult = TDateChecks.FirstLesserThanSecondDate(DateTime.Now.Date,
-                DateTime.Now.Date,
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00001V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstLesserThanSecondDate: " + Testname);
 
@@ -2007,14 +1444,6 @@ namespace Ict.Common.Verification.Testing
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstGreaterOrEqualThanSecondDate: " + Testname);
 
-            Testname = "Test with DateTime.Now.Date.AddDays(-1), DateTime.Now.Date (TScreenVerificationResult)";
-            TestResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(DateTime.Now.Date.AddDays(
-                    -1), DateTime.Now.Date, "1st value", "2nd value", TestContext, TestColumn, TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00001V", TestControl, TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstGreaterOrEqualThanSecondDate: " + Testname);
-
             Testname = "Test with null, DateTime.Now.Date";
             TestResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(null, DateTime.Now.Date, "1st value", "2nd value");
             ExpectedResult = null;
@@ -2055,19 +1484,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TDateChecks.FirstGreaterThanSecondDate(DateTime.Now.Date, DateTime.Now.Date, "1st value", "2nd value");
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00001V", TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "FirstGreaterThanSecondDate: " + Testname);
-
-            Testname = "Test with DateTime.Now.Date, DateTime.Now.Date (TScreenVerificationResult)";
-            TestResult = TDateChecks.FirstGreaterThanSecondDate(DateTime.Now.Date,
-                DateTime.Now.Date,
-                "1st value",
-                "2nd value",
-                TestContext,
-                TestColumn,
-                TestControl);
-            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, "1st value", "2nd value"), "GENC.00001V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "FirstGreaterThanSecondDate: " + Testname);
 
@@ -2223,17 +1639,6 @@ namespace Ict.Common.Verification.Testing
             TestResult = TDateChecks.IsDateBetweenDates(new DateTime(2099, 1, 1), new DateTime(1850, 1, 1), new DateTime(2012, 1, 1),
                 Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctUnspecific);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)),
-                    StringHelper.DateToLocalizedString(new DateTime(2012, 1, 1))), "GENC.00013V",
-                TResultSeverity.Resv_Critical);
-            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
-
-            Testname = "Test with Jan. 1st, 1850 for lower date and DateTime.Today for upper date: validated date is Jan. 1st, 2099(future date)";
-            TestResult = TDateChecks.IsDateBetweenDates(new DateTime(2099, 1, 1), new DateTime(1850, 1, 1), new DateTime(2012, 1, 1),
-                Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctUnspecific,
-                TestContext, TestColumn, TestControl);
-            ExpectedResult = new TVerificationResult(TestContext, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)),
                     StringHelper.DateToLocalizedString(new DateTime(2012, 1, 1))), "GENC.00013V",
                 TResultSeverity.Resv_Critical);

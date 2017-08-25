@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,12 +78,11 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AValue" /> is not null and not <see cref="String.Empty" />,
         /// otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult StringMustNotBeEmpty(string AValue, string ADescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -98,7 +97,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 
@@ -118,12 +117,11 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AValue" /> is not null and not <see cref="String.Empty" />,
         /// otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
         public static TVerificationResult StringLengthLesserOrEqual(string AValue, int APermittedStringLength, string ADescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -138,7 +136,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 
@@ -160,14 +158,13 @@ namespace Ict.Common.Verification
         /// error message).</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="ATxt1" /> is lesser or equal than
         /// <paramref name="ATxt2" />, otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="AFirstDescription" />
         /// and <paramref name="ASecondDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondString(String ATxt1, String ATxt2,
             String AFirstDescription, String ASecondDescription,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
 
@@ -188,7 +185,7 @@ namespace Ict.Common.Verification
 
                 if (AResultColumn != null)
                 {
-                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                 }
             }
 
@@ -208,11 +205,9 @@ namespace Ict.Common.Verification
         /// <param name="AActiveColumn"></param>
         /// <param name="AResultContext"></param>
         /// <param name="AResultColumn"></param>
-        /// <param name="AResultControl"></param>
         /// <returns></returns>
         public static TVerificationResult ValidateValueIsActive(Int32 ALedgerNumber, DataTable ADataTable, String AKeyValue,
-            String AActiveColumn, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
-            System.Windows.Forms.Control AResultControl = null)
+            String AActiveColumn, object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue;
 
@@ -232,7 +227,7 @@ namespace Ict.Common.Verification
 
                         if (AResultColumn != null)
                         {
-                            ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                            ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
                         }
                     }
                     else
@@ -282,16 +277,15 @@ namespace Ict.Common.Verification
         /// <param name="AEmailAddress">E-mail address that should be verified.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AEmailAddress" /> contains a valid email address,
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about
         /// the problem (also in the case where more than one e-mail Address is contained in
         /// <paramref name="AEmailAddress" /> - even if the e-mail Addresses are correct!).
         /// </returns>
         public static TVerificationResult ValidateEmail(String AEmailAddress,
-            object AResultContext, System.Data.DataColumn AResultColumn, System.Windows.Forms.Control AResultControl)
+            object AResultContext, System.Data.DataColumn AResultColumn)
         {
-            return ValidateEmail(AEmailAddress, false, AResultContext, AResultColumn, AResultControl);
+            return ValidateEmail(AEmailAddress, false, AResultContext, AResultColumn);
         }
 
         /// <summary>
@@ -306,7 +300,6 @@ namespace Ict.Common.Verification
         /// comma and semicolon (',' and ';').</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
-        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
         /// <returns>Null if <paramref name="AEmailAddress" /> contains a valid email address,
         /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about
         /// the problem (also in the case where <paramref name="AAllowMoreThanOneEMailAddress" />
@@ -314,7 +307,7 @@ namespace Ict.Common.Verification
         /// <paramref name="AEmailAddress" /> - even if the e-mail Addresses are correct!).
         /// </returns>
         public static TVerificationResult ValidateEmail(String AEmailAddress, Boolean AAllowMoreThanOneEMailAddress,
-            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
             TVerificationResult ReturnValue = null;
 
@@ -411,7 +404,7 @@ namespace Ict.Common.Verification
             if ((AResultColumn != null)
                 && (ReturnValue != null))
             {
-                ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
             }
 
             return ReturnValue;

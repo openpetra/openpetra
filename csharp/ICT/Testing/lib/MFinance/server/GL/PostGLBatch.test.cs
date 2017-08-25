@@ -4,7 +4,7 @@
 // @Authors:
 //      peters
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,11 +85,12 @@ namespace Tests.MFinance.Server.GL
             try
             {
                 TGLPosting.PostGLBatch(-1, 1, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemInvalidLedgerNumberException e)
-            {
-                Assert.AreEqual(-1, e.LedgerNumber, Message);
+
+                if ((VerificationResult.CountCriticalErrors != 1) ||
+                    (!VerificationResult.BuildVerificationResultString().Contains("The Ledger number must be greater than 0")))
+                {
+                    Assert.Fail(Message);
+                }
             }
             catch
             {
@@ -102,12 +103,12 @@ namespace Tests.MFinance.Server.GL
             try
             {
                 TGLPosting.PostGLBatch(1, -1, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemInvalidBatchNumberException e)
-            {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
-                Assert.AreEqual(-1, e.BatchNumber, Message);
+
+                if ((VerificationResult.CountCriticalErrors != 1) ||
+                    (!VerificationResult.BuildVerificationResultString().Contains("The Batch number must be greater than 0")))
+                {
+                    Assert.Fail(Message);
+                }
             }
             catch
             {
@@ -131,11 +132,11 @@ namespace Tests.MFinance.Server.GL
             try
             {
                 TGLPosting.PostGLBatches(-1, BatchNumbers, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemInvalidLedgerNumberException e)
-            {
-                Assert.AreEqual(-1, e.LedgerNumber, Message);
+                if ((VerificationResult.CountCriticalErrors != 1) ||
+                    (!VerificationResult.BuildVerificationResultString().Contains("The Ledger number must be greater than 0")))
+                {
+                    Assert.Fail(Message);
+                }
             }
             catch
             {
@@ -148,12 +149,12 @@ namespace Tests.MFinance.Server.GL
             try
             {
                 TGLPosting.PostGLBatches(1, BatchNumbers, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (ArgumentException e)
-            {
-                Assert.AreEqual("Function:Post GL Batches - The list of GL Batch numbers to post is empty!", e.Message,
-                    Message);
+
+                if ((!VerificationResult.HasCriticalOrNonCriticalErrors) ||
+                    (!VerificationResult.BuildVerificationResultString().Contains("No GL Batches to post")))
+                {
+                    Assert.Fail(Message);
+                }
             }
             catch
             {
@@ -167,12 +168,12 @@ namespace Tests.MFinance.Server.GL
             try
             {
                 TGLPosting.PostGLBatches(1, BatchNumbers, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemInvalidBatchNumberException e)
-            {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
-                Assert.AreEqual(-1, e.BatchNumber, Message);
+
+                if ((VerificationResult.CountCriticalErrors != 1) ||
+                    (!VerificationResult.BuildVerificationResultString().Contains("The Batch number must be greater than 0")))
+                {
+                    Assert.Fail(Message);
+                }
             }
             catch
             {

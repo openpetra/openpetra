@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, alanp
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,7 +27,6 @@ using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 using Ict.Common;
 using Ict.Tools.CodeGeneration.DataStore;
-using Ict.Tools.CodeGeneration.ReferenceCountConnectors;
 
 namespace Ict.Tools.GenerateORM
 {
@@ -87,21 +86,6 @@ namespace Ict.Tools.GenerateORM
 
             try
             {
-                if (cmdLine.GetOptValue("do") == "referencecount")
-                {
-                    // No need to parse the petra.xml document for this task - so we just run and exit
-                    new TLogging();
-                    TCreateReferenceCountConnectors createConnectors = new TCreateReferenceCountConnectors();
-
-                    if (!createConnectors.CreateFiles(cmdLine.GetOptValue("outputserver"), cmdLine.GetOptValue("inputclient"),
-                            cmdLine.GetOptValue("templatedir")))
-                    {
-                        return -1;
-                    }
-
-                    return 0;
-                }
-
                 parser = new TDataDefinitionParser(cmdLine.GetOptValue("petraxml"));
                 store = new TDataDefinitionStore();
 

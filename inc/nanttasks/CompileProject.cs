@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -125,6 +125,22 @@ namespace Ict.Tools.NAntTasks
             get
             {
                 return FUseCSC;
+            }
+        }
+
+        private bool FOnlyOnce = false;
+        /// <summary>
+        /// if this is set to true, the project is skipped if the deliverable dll or exe file already exists
+        /// </summary>
+        [TaskAttribute("OnlyOnce", Required = false)]
+        public bool OnlyOnce {
+            set
+            {
+                FOnlyOnce = value;
+            }
+            get
+            {
+                return FOnlyOnce;
             }
         }
 
@@ -257,6 +273,13 @@ namespace Ict.Tools.NAntTasks
 
         private bool CompileHere()
         {
+            if (OnlyOnce && (File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".dll")) ||
+                  File.Exists("delivery/bin/" + Path.GetFileName(FCSProjFile).Replace(".csproj", ".exe"))))
+            {
+                Console.WriteLine("Skipping " + FCSProjFile);
+                return true;
+            }
+
             Console.WriteLine("Compiling " + FCSProjFile);
 
             XmlDocument doc = new XmlDocument();

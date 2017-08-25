@@ -1,7 +1,0 @@
-RootNode:
-    BaseYaml: UC_GLBatches.yaml
-    Controls:
-        pnlLedgerInfo: {Width=190, Height=50}
-        rgrShowBatches: {Width=300, Height=50}
-        pnlInfo: {Width=500, Height=50}
-        pnlDetails: {Width=500, Height=80}

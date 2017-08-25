@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -47,8 +46,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <param name="AMinDateTime">The earliest allowable date.</param>
         /// <param name="AMaxDateTime">The latest allowable date.</param>
         /// <param name="AIgnoreZeroRateCheck">If true a zero rate will be allowed.  This will be the case when the Daily Exchange Rate screen is modal.</param>
@@ -58,7 +55,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         public static void ValidateDailyExchangeRate(object AContext,
             ADailyExchangeRateRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
-            TValidationControlsDict AValidationControlsDict,
             DateTime AMinDateTime,
             DateTime AMaxDateTime,
             bool AIgnoreZeroRateCheck,
@@ -67,7 +63,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             DateTime ALatestAccountingPeriodEndDate)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
             // Don't validate deleted DataRows
@@ -79,36 +74,36 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // RateOfExchange must be positive (definitely not zero unless in modal mode)
             ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnRateOfExchangeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (AIgnoreZeroRateCheck)
                 {
                     VerificationResult = TNumericalChecks.IsPositiveOrZeroDecimal(ARow.RateOfExchange,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty,
+                        AContext, ValidationColumn);
                 }
                 else
                 {
                     VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.RateOfExchange,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty,
+                        AContext, ValidationColumn);
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             // Date must not be empty and must be in range
             ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnDateEffectiveFromId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.DateEffectiveFrom,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty, AVerificationResultCollection, true,
+                    AContext, ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
 
                 if (VerificationResult == null)
                 {
@@ -118,21 +113,19 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         VerificationResult = TDateChecks.IsDateBetweenDates(ARow.DateEffectiveFrom,
                             AMinDateTime,
                             AMaxDateTime,
-                            ValidationControlsData.ValidationControlLabel,
+                            String.Empty,
                             TDateBetweenDatesCheckType.dbdctUnspecific,
                             TDateBetweenDatesCheckType.dbdctUnspecific,
                             AContext,
-                            ValidationColumn,
-                            ValidationControlsData.ValidationControl);
+                            ValidationColumn);
                     }
                     else if (AMaxDateTime < DateTime.MaxValue)
                     {
                         VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate(ARow.DateEffectiveFrom, AMaxDateTime,
-                            ValidationControlsData.ValidationControlLabel, Ict.Common.StringHelper.DateToLocalizedString(AMaxDateTime),
-                            AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                            String.Empty, Ict.Common.StringHelper.DateToLocalizedString(AMaxDateTime),
+                            AContext, ValidationColumn);
 
-                        if ((VerificationResult == null) && (ARow.RowState == DataRowState.Added)
-                            && (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl))
+                        if ((VerificationResult == null) && (ARow.RowState == DataRowState.Added))
                         {
                             // even without a specific minimum date it should not be too far back
                             if (ARow.DateEffectiveFrom < AEarliestAccountingPeriodStartDate)
@@ -140,18 +133,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                 VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
                                     Catalog.GetString(
                                         "The date is before the start of the earliest current accounting period of any active ledger."),
-                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                                    TResultSeverity.Resv_Noncritical);
                             }
                         }
                     }
                     else if (AMinDateTime > DateTime.MinValue)
                     {
                         VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.DateEffectiveFrom, AMinDateTime,
-                            ValidationControlsData.ValidationControlLabel, Ict.Common.StringHelper.DateToLocalizedString(AMinDateTime),
-                            AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                            String.Empty, Ict.Common.StringHelper.DateToLocalizedString(AMinDateTime),
+                            AContext, ValidationColumn);
 
-                        if ((VerificationResult == null) && (ARow.RowState == DataRowState.Added)
-                            && (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl))
+                        if ((VerificationResult == null) && (ARow.RowState == DataRowState.Added))
                         {
                             // even without a specific maximum date it should not be too far ahead
                             if (ARow.DateEffectiveFrom > ALatestAccountingPeriodEndDate)
@@ -159,13 +151,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                 VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
                                     Catalog.GetString(
                                         "The date is after the end of the latest forwarding period of any active ledger."),
-                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                                    TResultSeverity.Resv_Noncritical);
                             }
                         }
                     }
                     else if ((AMinDateTime == DateTime.MinValue) && (AMaxDateTime == DateTime.MaxValue)
-                             && (ARow.RowState == DataRowState.Added)
-                             && (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl))
+                             && (ARow.RowState == DataRowState.Added))
                     {
                         // even without a specific maximum date it should not be too far ahead
                         if (ARow.DateEffectiveFrom > ALatestAccountingPeriodEndDate)
@@ -173,7 +164,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
                                 Catalog.GetString(
                                     "The date is after the end of the latest forwarding period of any active ledger."),
-                                ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                                TResultSeverity.Resv_Noncritical);
                         }
                         // even without a specific minimum date it should not be too far back
                         else if (ARow.DateEffectiveFrom < AEarliestAccountingPeriodStartDate)
@@ -181,37 +172,37 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
                                 Catalog.GetString(
                                     "The date is before the start of the earliest current accounting period of any active ledger."),
-                                ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                                TResultSeverity.Resv_Noncritical);
                         }
                     }
 
                     // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 }
             }
 
             // Time must not be negative (indicating an error)
             ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnTimeEffectiveFromId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TTimeChecks.IsValidIntegerTime(ARow.TimeEffectiveFrom,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
-            if (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl)
+            if (true)
             {
                 // These tests are for the GUI only
                 ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnToCurrencyCodeId];
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     // One of the currencies should be the base currency of one of the ledgers
-                    if (ValidationControlsData.ValidationControl.Enabled && (ARow.RowState == DataRowState.Added))
+                    if (ARow.RowState == DataRowState.Added)
                     {
                         // Only do this test if the To Currency ComboBox is enabled
                         TScreenVerificationResult vr = null;
@@ -227,12 +218,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             {
                                 vr = new TScreenVerificationResult(AContext, ValidationColumn,
                                     "One of the currencies should normally be a base currency for one of the Ledgers",
-                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                                    TResultSeverity.Resv_Noncritical);
                             }
                         }
 
                         // Handle addition to/removal from TVerificationResultCollection
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, vr, ValidationColumn);
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, vr);
                     }
                 }
             }
@@ -245,17 +236,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <param name="ALedgerTableRef">A reference to a ledger table that has contains the ledgers that a client has access to</param>
         /// <param name="AAlternativeFirstDayOfPeriod">An alternative day (apart from 1) that is the start of an accounting period
         /// for at least one of the availbale ledgers</param>
         public static void ValidateCorporateExchangeRate(object AContext, ACorporateExchangeRateRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResultCollection,
             ALedgerTable ALedgerTableRef, int AAlternativeFirstDayOfPeriod)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
             // Don't validate deleted DataRows
@@ -267,33 +255,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // RateOfExchange must be positive (definitely not zero because we can invert it)
             ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnRateOfExchangeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.RateOfExchange,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             // Date must not be empty
             ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnDateEffectiveFromId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.DateEffectiveFrom,
-                    ValidationControlsData.ValidationControlLabel,
-                    true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty,
+                    true, AContext, ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             // Date must be first of month or first day in accounting period of a ledger
             ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnDateEffectiveFromId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = null;
 
@@ -301,8 +289,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     // day must be either 1 or AAlternativeFirstDayOfPeriod
                     VerificationResult = TDateChecks.IsNotCorporateDateTime(ARow.DateEffectiveFrom,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl, AAlternativeFirstDayOfPeriod);
+                        String.Empty,
+                        AContext, ValidationColumn, AAlternativeFirstDayOfPeriod);
                 }
                 else
                 {
@@ -311,15 +299,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
-            if (AContext is System.Windows.Forms.Form || AContext is System.Windows.Forms.UserControl)
+            if (true)
             {
                 // These tests are for the GUI only
                 ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnToCurrencyCodeId];
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     // One of the currencies should be the base currency of one of the ledgers
                     if ((ARow.RowState == DataRowState.Added) && (ALedgerTableRef != null))
@@ -338,12 +326,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             {
                                 vr = new TScreenVerificationResult(AContext, ValidationColumn,
                                     "One of the currencies should normally be a base currency for one of the Ledgers",
-                                    ValidationControlsData.ValidationControl, TResultSeverity.Resv_Noncritical);
+                                    TResultSeverity.Resv_Noncritical);
                             }
                         }
 
                         // Handle addition to/removal from TVerificationResultCollection
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, vr, ValidationColumn);
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, vr);
                     }
                 }
             }
@@ -355,9 +343,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>
         /// <param name="AVerificationResultCollection"></param>
-        /// <param name="AValidationControlsDict"></param>
         public static void ValidateAdminGrantPayable(object AContext, AFeesPayableRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             // ChargeOption = { "Minimum", "Maximum", "Fixed", "Percentage" }
 
@@ -370,35 +357,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (ARow.ChargeOption == "Percentage")
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesPayableTable.ColumnChargePercentageId];
-                TValidationControlsData ValidationControlsData;
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     decimal enteredValue = (ARow.IsChargePercentageNull() ? -1 : ARow.ChargePercentage); // If the user has cleared the value in the control, I'll treat it as -1.
 
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(enteredValue,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty,
+                        AContext, ValidationColumn);
 
                     // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 }
             }
             else // the ChargeOption relates to an amount
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesPayableTable.ColumnChargeAmountId];
-                TValidationControlsData ValidationControlsData;
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     decimal enteredValue = (ARow.IsChargeAmountNull() ? -1 : ARow.ChargeAmount); // If the user has cleared the value in the control, I'll treat it as -1.
 
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(enteredValue,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty,
+                        AContext, ValidationColumn);
 
                     // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 }
             }
         }
@@ -409,9 +394,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>
         /// <param name="AVerificationResultCollection"></param>
-        /// <param name="AValidationControlsDict"></param>
         public static void ValidateAdminGrantReceivable(object AContext, AFeesReceivableRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             // ChargeOption = { "Minimum", "Maximum", "Fixed", "Percentage" }
 
@@ -424,35 +408,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (ARow.ChargeOption == "Percentage")
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesReceivableTable.ColumnChargePercentageId];
-                TValidationControlsData ValidationControlsData;
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     decimal enteredValue = (ARow.IsChargePercentageNull() ? -1 : ARow.ChargePercentage); // If the user has cleared the value in the control, I'll treat it as -1.
 
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(enteredValue,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty,
+                        AContext, ValidationColumn);
 
                     // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 }
             }
             else // the ChargeOption relates to an amount
             {
                 DataColumn ValidationColumn = ARow.Table.Columns[AFeesReceivableTable.ColumnChargeAmountId];
-                TValidationControlsData ValidationControlsData;
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     decimal enteredValue = (ARow.IsChargeAmountNull() ? -1 : ARow.ChargeAmount); // If the user has cleared the value in the control, I'll treat it as -1.
 
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(enteredValue,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty,
+                        AContext, ValidationColumn);
 
                     // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 }
             }
         }
@@ -463,25 +445,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>
         /// <param name="AVerificationResultCollection"></param>
-        /// <param name="AValidationControlsDict"></param>
         public static void ValidateAccountingPeriod(object AContext, AAccountingPeriodRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
             // 'Period End Date' must be later than 'Period Start Date'
             ValidationColumn = ARow.Table.Columns[AAccountingPeriodTable.ColumnPeriodEndDateId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.PeriodEndDate, ARow.PeriodStartDate,
-                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty, String.Empty,
+                    AContext, ValidationColumn);
 
                 // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
         }
     }

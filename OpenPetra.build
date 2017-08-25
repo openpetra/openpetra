@@ -17,23 +17,20 @@ list of available commands:
   generateSolutionNoCompile: generates the project and solution files. minimalGenerateSolution should already be executed
   quickCompile: will just compile the solution file, with msbuild (Windows) or our own builder (Linux)
       nant quickCompile                    will compile the OpenPetra.sln
+      nant quickCompile -D:onlyonce=true   will compile the OpenPetra.sln but only the dlls that have not been compiled yet
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
   compileProject: compile a single project file
-      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Testing.ControlTestBench.csproj 
+      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Common.csproj
   start: start both the local server and client
   startServer: run a local OpenPetra Server
   stopServer: stop the local OpenPetra Server
   startAdmin: run the admin console
-  startClient: run the OpenPetra Client
-  startStandalone: run the OpenPetra standalone application, if generateSolution was run with -D:compileForStandalone=true
   deleteBakFiles: delete all backup files
-  initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
+  initConfigFiles: write and overwrite the config files for server and testing, and the version.txt
   initPlugins: install some default plugins
-  test: will run the NUnit tests (smaller tests: test-without-display, test-main-navigation-screens, test-client)
-      nant test-without-display             runs all basic tests (excl. GUI tests)
-      nant test-main-navigation-screens     tests the opening of all screens from the main menu
-      nant test-client
+  test: will run the NUnit tests (smaller tests: test-without-display, test-main-navigation-screens)
+      nant test-without-display             runs all basic tests
   devzip: build a zip file for developers for easy start
 
 compat:
@@ -54,16 +51,8 @@ compat:
   loadDatabaseFromBackup: load the database from a backup
         (includes table specification)
   generateORM: generates Object Relational Mapping routines from petra.xml
-    sub items: generateORMCachedTables, generateORMData, generateORMAccess, generateORMReferenceCounts
+    sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
-  generateWinforms: generates all yaml files in csharp\ICT\Petra\Client and csharp\ICT\Petra\Plugins
-  generateWinform: generate a single yaml file, compile it and optionally and start the client
-       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
-       nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
-  generateWinformNoCompile: generate a single yaml file without any subsequent compilation
-       nant generateWinformNoCompile -D:file=MFinance/Gui/GL/GLBatch.yaml
-  previewWinform: preview a single yaml file
-       nant previewWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translation: download new language files, and create the dlls required to be delivered with a new release
@@ -71,12 +60,9 @@ compat:
   generateGuidedTranslations: Simplifies the translation of the .po files
   createI18NYamlFiles: create localised yaml files
     createI18NYamlFiles -language=de-DE -path=...
-  copyFrDlls: Copy the FastReports DLLS from the path specified in FASTREPORT_DLL_PATH to the bin folder
 
 releases:
-  buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
-  buildLinuxSourceforgeRelease: will build the linux files that we upload to Sourceforge. creates tar files for local server and client
-  buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
+  buildRPM: will build the linux files that can be used for RPM. creates tar files for local server
 
 demodata:
   generateDemodata: create demo data
@@ -248,7 +234,6 @@ useful parameters
     <echo message="Target minimalGenerateSolution started at: ${datetime::now()}" /> 
     
     <call target="generateTools"/>
-    <call target="generateWinforms"/>
     <call target="generateORM"/>
     <call target="generateGlue"/>
     <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
@@ -294,7 +279,7 @@ useful parameters
     NamespaceMap3rdParty="${namespaceFile3rdParty}"
     DependencyMapFilename="${projectDependenciesFile}"
     ShowWarnings="false"
-    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools.DBXML,Ict.Tools.CodeGeneration,Ict.Tools.GenerateGlue,Ict.Tools.GenerateI18N,Ict.Tools.GenerateORM,Ict.Tools.GenerateWinForms,Ict.Tools.GenerateSQL,Ict.Tools.PackageReports"/>
+    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools.DBXML,Ict.Tools.CodeGeneration,Ict.Tools.GenerateGlue,Ict.Tools.GenerateI18N,Ict.Tools.GenerateORM,Ict.Tools.GenerateSQL,Ict.Tools.PackageReports"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <call target="generateProjectFilesInternal"/>
@@ -379,11 +364,12 @@ useful parameters
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CompileSolution')}"/>
   <property name="solution" value="OpenPetra" overwrite="false"/>
+  <property name="onlyonce" value="false" overwrite="false"/>
   <property name="solution.file" value="${path::combine(dir.projectfiles,
                               path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
 
-  <CompileSolution SolutionFile="${solution.file}"/>
+  <CompileSolution SolutionFile="${solution.file}" OnlyOnce="${onlyonce == 'true'}"/>
   
   <echo message="Target quickCompile finished at: ${datetime::now()}" />         
 </target>
@@ -393,7 +379,7 @@ useful parameters
   <CompileProject CSProjFile="${path::get-full-path(file)}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
-<target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess,generateORMReferenceCounts">
+<target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
   <echo message="Target generateORM started at: ${datetime::now()}" />         
   
   <echo message="please compile the code after the files have been regenerated"/>
@@ -418,44 +404,6 @@ useful parameters
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
   
   <echo message="Target generateORMAccess finished at: ${datetime::now()}" />         
-</target>
-
-<target name="generateWinforms">
-  <echo message="Target generateWinforms started at: ${datetime::now()}" />
-  
-  <property name="WithWindowsClient" value="true" overwrite="false"/>
-  <property name="WithLinuxClient" value="false" overwrite="false"/>
-  <if test="${WithWindowsClient or WithLinuxClient}">
-    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
-    <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Plugins/Plugins.build')}" verbose="${verbose}"/>
-  </if>
-  
-  <echo message="Target generateWinforms finished at: ${datetime::now()}" />
-</target>
-
-<target name="generateWinform">
-  <echo message="Target generateWinform (outer) started at: ${datetime::now()}" />
-  
-  <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  
-  <echo message="Target generateWinform (outer) finished at: ${datetime::now()}" />
-</target>
-
-<target name="generateWinformNoCompile">
-  <echo message="Target generateWinformNoCompile (outer) started at: ${datetime::now()}" />
-  
-  <nant inheritall="true" target="generateWinformNoCompile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  
-  <echo message="Target generateWinformNoCompile (outer) finished at: ${datetime::now()}" />
-</target>
-
-<target name="previewWinform">
-  <echo message="Target previewWinform (outer) started at: ${datetime::now()}" />
-  
-  <nant inheritall="true" target="previewWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
-  
-  <echo message="Target previewWinform (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="test" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">

@@ -88,12 +88,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <ExecDotNet program="${tool-generateORM}" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${dir.root}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
 </target>
 
-<target name="generateORMReferenceCounts" depends="" description="Generates the server web connector classes that perform table reference counting">
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="ReferenceCountParameters" value="-inputclient:${dir.root}/csharp/ICT/Petra/Client -outputserver:${dir.root}/csharp/ICT/Petra/Server -templatedir:${dir.incdir.template.src}"/>
-  <ExecDotNet program="${tool-generateORM}" commandline="-do:referencecount ${ReferenceCountParameters}"/>
-</target>
-
 <target name="generateGlue" depends="" description="Generate the glue between client and server, ie. interfaces and instantiators">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
   <property name="module" value="all" overwrite="false"/>

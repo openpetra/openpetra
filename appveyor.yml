@@ -14,4 +14,4 @@ test_script:
 - NAnt.Portable.0.92\NAnt recreateDatabase resetDatabase
 # commented out the nant task: test
 before_deploy:
-- nant buildWindowsStandalone
+- nant buildRPM

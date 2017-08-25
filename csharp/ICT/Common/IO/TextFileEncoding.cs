@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.Text;
-using System.Windows.Forms;
 
 namespace Ict.Common.IO
 {
@@ -162,63 +161,6 @@ namespace Ict.Common.IO
             {
                 CreateRow(userCodePage, userEncoding.IsSingleByte ? CLASS_ANSI_SINGLE_BYTE : CLASS_ANSI_MULTI_BYTE);
             }
-        }
-
-        /// <summary>
-        /// This method sets the content of a ComboBox that was populated from a TTextFileEncoding data table.
-        /// </summary>
-        /// <param name="AComboBox">The ComboBox whose DataSource is a TTextFileEncoding data table</param>
-        /// <param name="AHasBOM">True if the file has a BOM</param>
-        /// <param name="AIsAmbiguousUTF">True if the encoding is ambiguous</param>
-        /// <param name="AEncoding">The initial encoding</param>
-        public static void SetComboBoxProperties(ComboBox AComboBox, bool AHasBOM, bool AIsAmbiguousUTF, Encoding AEncoding)
-        {
-            DataView dv = (DataView)AComboBox.DataSource;
-
-            string rowFilter = string.Empty;
-            bool allowMBCS = false;                 // User can change this with a user setting (below)
-            bool needsWindows = true;
-
-            if (FRetrieveUserDefaultBoolean != null)
-            {
-                allowMBCS = FRetrieveUserDefaultBoolean(TTextFileEncoding.ALLOW_MBCS_TEXT_ENCODING, false);
-            }
-
-            if (IsUnicodeCodePage(AEncoding.CodePage))
-            {
-                // Deal with filtering the UTF ones
-                rowFilter += string.Format("({0}={1}) ", TTextFileEncoding.ColumnCodeDbName, AEncoding.CodePage);
-
-                if ((allowMBCS == true) && (AHasBOM == false))
-                {
-                    // With no BOM a UTF code page can always be a MBCS ANSI one
-                    rowFilter += string.Format(" OR ({0}='{1}')", TTextFileEncoding.ColumnClassDbName, CLASS_ANSI_MULTI_BYTE);
-                }
-
-                if (AIsAmbiguousUTF)
-                {
-                    // Although it is 'probably' Unicode there were not enough examples to be statistically certain
-                    rowFilter += "OR ";
-                }
-                else
-                {
-                    // This is NOT ambiguous so we won't need the Windows code pages
-                    needsWindows = false;
-                }
-            }
-
-            if (needsWindows)
-            {
-                rowFilter += string.Format("({0}='{1}'{2})",
-                    TTextFileEncoding.ColumnClassDbName,
-                    TTextFileEncoding.CLASS_ANSI_SINGLE_BYTE,
-                    allowMBCS ?
-                    string.Format(" OR {0}='{1}'", TTextFileEncoding.ColumnClassDbName, TTextFileEncoding.CLASS_ANSI_MULTI_BYTE) : "");
-            }
-
-            dv.RowFilter = rowFilter;
-
-            AComboBox.Enabled = dv.Count > 1;
         }
 
         /// <summary>

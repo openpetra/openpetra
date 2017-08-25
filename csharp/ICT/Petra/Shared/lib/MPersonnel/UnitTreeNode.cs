@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Shared;

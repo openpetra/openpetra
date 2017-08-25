@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace Ict.Common
 {
@@ -268,67 +267,6 @@ namespace Ict.Common
 
             newArray[currentArray.Length] = newValue;
             return newArray;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="HtmlString">May be a whole document, or just a fragment.</param>
-        public static void CopyHtmlToClipboard(String HtmlString)
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
-            // Build the CF_HTML header. See format specification here:
-            // http://msdn.microsoft.com/library/default.asp?url=/workshop/networking/clipboard/htmlclipboard.asp
-
-            // The string contains index references to other spots in the string, so we need placeholders so we can compute the offsets.
-            // The <<<<<<<_ strings are just placeholders. I'll backpatch the actual values afterwards.
-            sb.Append(
-                "Format:HTML Format" + Environment.NewLine +
-                "Version:1.0" + Environment.NewLine +
-                "StartHTML:<<<<<<<1" + Environment.NewLine +
-                "EndHTML:<<<<<<<2" + Environment.NewLine +
-                "StartFragment:<<<<<<<3" + Environment.NewLine +
-                "EndFragment:<<<<<<<4" + Environment.NewLine +
-                "StartSelection:<<<<<<<3" + Environment.NewLine +
-                "EndSelection:<<<<<<<4" + Environment.NewLine +
-                "SourceURL:OpenPetra" + Environment.NewLine);
-
-            int startHTML = sb.Length;
-            int fragmentEnd;
-            int fragmentStart = HtmlString.ToLower().IndexOf("<body>");
-
-            if (fragmentStart < 0)
-            {
-                sb.Append(
-                    @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN""><HTML><HEAD><TITLE>From clipboard</TITLE></HEAD><BODY><!--StartFragment-->");
-                fragmentStart = sb.Length;
-
-                fragmentEnd = sb.Length;
-
-                sb.Append(@"<!--EndFragment--></BODY></HTML>");
-            }
-            else
-            {
-                fragmentStart = fragmentStart + 6 + sb.Length;
-                fragmentEnd = HtmlString.ToLower().IndexOf("</body>") + sb.Length;
-                sb.Append(HtmlString);
-            }
-
-            int endHTML = sb.Length;
-
-
-            // Backpatch offsets
-            sb.Replace("<<<<<<<1", startHTML.ToString("D8"));
-            sb.Replace("<<<<<<<2", endHTML.ToString("D8"));
-            sb.Replace("<<<<<<<3", fragmentStart.ToString("D8"));
-            sb.Replace("<<<<<<<4", fragmentEnd.ToString("D8"));
-
-
-            // Finally copy to clipboard.
-            string data = sb.ToString();
-            Clipboard.Clear();
-            Clipboard.SetText(data, TextDataFormat.Html);
         }
     }
 }

@@ -22,7 +22,6 @@
 
 <patternset id="3rdPartyPattern">
   <include name="GNU.Gettext.dll"/>
-  <include name="SourceGrid.dll"/>
   <include name="PdfSharp.dll"/>
   <include name="EPPlus.dll"/>
   <include name="Npgsql.dll"/>
@@ -35,8 +34,6 @@
   <include name="ExcelLibrary.dll"/>
   <include name="Jayrock.Json.dll"/>
   <include name="ICSharpCode.NRefactory.dll"/> <!-- Winforms Generator -->
-  <include name="CustomControl.OrientedTextControls.dll"/>
-  <include name="Owf.Controls.A1Panel.dll"/>
   <include name="PasswordUtilities.dll"/>
   <include name="Sodium.dll"/>
   <include name="libsodium.dll"/>
@@ -45,7 +42,6 @@
 
 <patternset id="NunitPattern">
   <include name="nunit.framework.dll"/>
-  <include name="NUnitForms.dll"/>
 </patternset>
 
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">

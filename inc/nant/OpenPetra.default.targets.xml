@@ -38,21 +38,6 @@
   </copy>
 </target>
 
-<target name="initConfigFiles-client">
-  <property name="templateFile" value="${dir.incdir.template.etc}/Client.config"/>
-  <if test="${compileForStandalone == 'true'}">
-    <property name="templateFile" value="${dir.incdir.template.etc}/Standalone-${DBMS.Type}.config"/>
-  </if>
-  <property name="configFile" value="${ClientConfigFile}"/>
-  <call target="initConfigFiles-internal"/>
-
-  <property name="templateFile" value="${dir.incdir.template.etc}/TestClient.config"/>
-  <property name="configFile" value="${path::combine(dir.etc, 'TestClient.config')}"/>
-  <call target="initConfigFiles-internal"/>
-
-  <mkdir dir="${dir.log}" failonerror="false"/>
-</target>
-
 <target name="initConfigFiles-server">
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
   
@@ -81,7 +66,7 @@
   <call target="initConfigFiles-internal"/>
 </target>
 
-<target name="initConfigFiles" depends="initConfigFiles-client, initConfigFiles-server, initConfigFiles-admin" description="write and overwrite the config files for client, server and testing, and the version.txt">
+<target name="initConfigFiles" depends="initConfigFiles-server, initConfigFiles-admin" description="write and overwrite the config files for server and testing, and the version.txt">
 </target>
 
 <target name="startPetraServer" description="Starts a local Petra Server">
@@ -89,9 +74,7 @@
 </target>
 
 <target name="startServer" description="Starts a local Petra Server">
-  <if test="${compileForStandalone == 'false'}">
-    <call target="startServer-internal"/>
-  </if>
+  <call target="startServer-internal"/>
 </target>
 
 <target name="startServerBackground" description="Starts the OpenPetra Server in the background">
@@ -246,45 +229,6 @@
     </foreach>
 </target>
 
-<target name="startPetraClient" description="start the OpenPetra Client">
-    <call target="startClient"/>
-</target>
-<target name="startClient" depends="initConfigFiles-client" description="start the OpenPetra Client">
-  <if test="${platform::is-windows()}">
-    <if test="${compileForStandalone == 'false'}">
-        <call target="startServer-internal" unless="${target::has-executed('startServer-internal')}"/>
-    </if>
-    <if test="${compileForStandalone != 'false'}">
-        <call target="copySQLFiles" />
-    </if>
-    <exec program="cmd.exe" 
-          workingdir="${dir.bin}"
-          spawn="true">
-       <environment>
-          <variable name="LANGUAGE" value="${SelectedLanguage}"/>
-       </environment>
-       <arg value="/c" />
-       <arg value="start" />
-       <arg value="PetraClient.exe" />
-       <arg value="-C:${ClientConfigFile}" />
-    </exec>
-  </if>
-
-  <if test="${not platform::is-windows()}">
-   <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
-   <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
-   <!-- Open a xterm with OpenPetra Server? -->
-   <exec program="${MonoExecutable.file}" 
-              workingdir="${dir.bin}"
-              commandline="PetraClient.exe -C:${ClientConfigFile}"
-              spawn="true">
-         <environment>
-            <variable name="LANGUAGE" value="${SelectedLanguage}"/>
-         </environment>
-   </exec>
-  </if>
-</target> 
-
 <target name="stopPetraServer" description="stop the local OpenPetra Server">
     <call target="stopServer"/>
 </target>
@@ -332,12 +276,7 @@
   </if>
 </target> 
 
-<target name="start" depends="initConfigFiles, startServerBackground, startClient">
-</target>
-
-<target name="startStandalone">
-    <property name="compileForStandalone" value="true" overwrite="true"/>
-    <call target="startClient"/>
+<target name="start" depends="initConfigFiles, startServerBackground">
 </target>
 
 </project>

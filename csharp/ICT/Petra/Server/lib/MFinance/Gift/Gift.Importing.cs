@@ -266,7 +266,6 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         // Go round a loop reading the file line by line
                         FImportLine = sr.ReadLine();
-                        TValidationControlsDict EmptyControlsDict = new TValidationControlsDict();
 
                         while (FImportLine != null)
                         {
@@ -282,8 +281,8 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                 // Read the row analysisType - there is no 'validation' on this so we can make the call with null parameters
                                 string RowType =
-                                    TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, RowNumber, Messages,
-                                        null).Trim();
+                                    TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, RowNumber,
+                                        Messages).Trim();
 
                                 if (RowType == "")  // don't object if there are "empty" lines
                                 {
@@ -345,7 +344,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     // Parse the complete line and validate it
                                     ParseBatchLine(ref giftBatch, ref Transaction, ref LedgerTable, ref ImportMessage, RowNumber, LedgerBaseCurrency,
                                         LedgerIntlCurrency, datesMayBeIntegers, Messages,
-                                        EmptyControlsDict, AccountTable, AccountPropertyTable, AccountingPeriodTable, CostCentreTable,
+                                        AccountTable, AccountPropertyTable, AccountingPeriodTable, CostCentreTable,
                                         CorporateExchangeRateTable, CurrencyTable);
 
                                     if (TVerificationHelper.IsNullOrOnlyNonCritical(Messages))
@@ -480,15 +479,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         Row.RecipientClass = RecipientClass.ToString();
 
                                         // Do our standard validation on this gift
-                                        AGiftValidation.Validate(this, gift, ref Messages, EmptyControlsDict);
+                                        AGiftValidation.Validate(this, gift, ref Messages);
                                         TSharedFinanceValidation_Gift.ValidateGiftManual(
                                             this,
                                             gift,
                                             giftBatch.BatchYear,
                                             giftBatch.BatchPeriod,
-                                            null,
                                             ref Messages,
-                                            EmptyControlsDict,
                                             MethodOfGivingTable,
                                             MethodOfPaymentTable);
 
@@ -497,14 +494,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         AGiftDetailValidation.Validate(
                                             this,
                                             giftDetails,
-                                            ref Messages,
-                                            EmptyControlsDict);
+                                            ref Messages);
 
                                         TSharedFinanceValidation_Gift.ValidateGiftDetailManual(
                                             this,
                                             Row,
                                             ref Messages,
-                                            EmptyControlsDict,
                                             null,
                                             CostCentreTable,
                                             AccountTable,
@@ -1012,7 +1007,6 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         Int32 InitialTextLength = AImportString.Length;
                         Int32 totalRows = AImportString.Split('\n').Length;
-                        TValidationControlsDict EmptyControlsDict = new TValidationControlsDict();
 
                         if (FDelimiter.Length < 1)
                         {
@@ -1106,15 +1100,15 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Row.DateEntered = gift.DateEntered;
 
                                     // Do our standard validation on this gift
-                                    AGiftValidation.Validate(this, gift, ref Messages, EmptyControlsDict);
+                                    AGiftValidation.Validate(this, gift, ref Messages);
                                     TSharedFinanceValidation_Gift.ValidateGiftManual(this, gift, giftBatch.BatchYear, giftBatch.BatchPeriod,
-                                        null, ref Messages, EmptyControlsDict, MethodOfGivingTable, MethodOfPaymentTable, MailingFormTable);
+                                        ref Messages, MethodOfGivingTable, MethodOfPaymentTable, MailingFormTable);
 
                                     ImportMessage = Catalog.GetString("Validating the gift details data");
 
-                                    AGiftDetailValidation.Validate(this, giftDetails, ref Messages, EmptyControlsDict);
+                                    AGiftDetailValidation.Validate(this, giftDetails, ref Messages);
                                     TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, Row,
-                                        ref Messages, EmptyControlsDict, null, CostCentreTable, AccountTable,
+                                        ref Messages, null, CostCentreTable, AccountTable,
                                         MotivationGroupTable, MotivationDetailTable, MailingTable, giftDetails.RecipientKey);
 
                                     // Fix up the messages
@@ -1342,7 +1336,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             string ALedgerIntlCurrency,
             bool ADateMayBeAnInteger,
             TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationControlsDictBatch,
             AAccountTable AValidationAccountTable,
             AAccountPropertyTable AValidationAccountPropertyTable,
             AAccountingPeriodTable AValidationAccountingPeriodTable,
@@ -1355,13 +1348,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             // There are 8 elements to import (the last of which can be blank)
             string BatchDescription = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Batch description"),
-                FMainDS.AGiftBatch.ColumnBatchDescription, ARowNumber, AMessages, AValidationControlsDictBatch);
+                FMainDS.AGiftBatch.ColumnBatchDescription, ARowNumber, AMessages);
             string BankAccountCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Bank account code"),
-                FMainDS.AGiftBatch.ColumnBankAccountCode, ARowNumber, AMessages, AValidationControlsDictBatch).ToUpper();
+                FMainDS.AGiftBatch.ColumnBankAccountCode, ARowNumber, AMessages).ToUpper();
             decimal HashTotal = TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Hash total"),
-                FMainDS.AGiftBatch.ColumnHashTotal, ARowNumber, AMessages, AValidationControlsDictBatch);
+                FMainDS.AGiftBatch.ColumnHashTotal, ARowNumber, AMessages);
             DateTime GlEffectiveDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, ADateMayBeAnInteger,
-                Catalog.GetString("Effective Date"), FMainDS.AGiftBatch.ColumnGlEffectiveDate, ARowNumber, AMessages, AValidationControlsDictBatch);
+                Catalog.GetString("Effective Date"), FMainDS.AGiftBatch.ColumnGlEffectiveDate, ARowNumber, AMessages);
 
             AImportMessage = "Creating new batch";
 
@@ -1379,15 +1372,15 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftBatch.BatchDescription = BatchDescription;
             AGiftBatch.HashTotal = HashTotal;
             AGiftBatch.CurrencyCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Currency code"),
-                FMainDS.AGiftBatch.ColumnCurrencyCode, ARowNumber, AMessages, AValidationControlsDictBatch).ToUpper();
+                FMainDS.AGiftBatch.ColumnCurrencyCode, ARowNumber, AMessages).ToUpper();
             AGiftBatch.ExchangeRateToBase =
                 TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Exchange rate to base"),
-                    FMainDS.AGiftBatch.ColumnExchangeRateToBase, ARowNumber, AMessages, AValidationControlsDictBatch);
+                    FMainDS.AGiftBatch.ColumnExchangeRateToBase, ARowNumber, AMessages);
 
             string BankCostCentre = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Bank cost centre"),
-                FMainDS.AGiftBatch.ColumnBankCostCentre, ARowNumber, AMessages, AValidationControlsDictBatch).ToUpper();
+                FMainDS.AGiftBatch.ColumnBankCostCentre, ARowNumber, AMessages).ToUpper();
             AGiftBatch.GiftType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Gift type"),
-                FMainDS.AGiftBatch.ColumnGiftType, ARowNumber, AMessages, AValidationControlsDictBatch);
+                FMainDS.AGiftBatch.ColumnGiftType, ARowNumber, AMessages);
 
             // End of parsing
             int postParseMessageCount = AMessages.Count;
@@ -1421,11 +1414,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 // Do our standard gift batch validation checks on this row
                 AImportMessage = Catalog.GetString("Validating the gift batch data");
-                AGiftBatchValidation.Validate(this, AGiftBatch, ref AMessages, AValidationControlsDictBatch);
+                AGiftBatchValidation.Validate(this, AGiftBatch, ref AMessages);
 
                 // And do the additional manual ones
                 AImportMessage = Catalog.GetString("Additional validation of the gift batch data");
-                TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages, AValidationControlsDictBatch,
+                TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages,
                     AValidationAccountTable, AValidationCostCentreTable, AValidationAccountPropertyTable, AValidationAccountingPeriodTable,
                     AValidationCorporateExchTable, AValidationCurrencyTable,
                     ALedgerBaseCurrency, ALedgerIntlCurrency);
@@ -1480,20 +1473,20 @@ namespace Ict.Petra.Server.MFinance.Gift
             AImportMessage = Catalog.GetString("Importing the gift data");
 
             AGift.DonorKey = TCommonImport.ImportInt64(ref FImportLine, FDelimiter, Catalog.GetString("Donor key"),
-                FMainDS.AGift.ColumnDonorKey, ARowNumber, AMessages, null);
+                FMainDS.AGift.ColumnDonorKey, ARowNumber, AMessages);
 
             TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString(
-                    "short name of donor (unused)"), null, ARowNumber, AMessages, null);                     // unused
+                    "short name of donor (unused)"), null, ARowNumber, AMessages);                     // unused
 
             // This group is optional and database NULL's are allowed
             AGift.MethodOfGivingCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Method of giving Code"),
-                FMainDS.AGift.ColumnMethodOfGivingCode, ARowNumber, AMessages, null, false);
+                FMainDS.AGift.ColumnMethodOfGivingCode, ARowNumber, AMessages, false);
             AGift.MethodOfPaymentCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Method Of Payment Code"),
-                FMainDS.AGift.ColumnMethodOfPaymentCode, ARowNumber, AMessages, null, false);
+                FMainDS.AGift.ColumnMethodOfPaymentCode, ARowNumber, AMessages, false);
             AGift.Reference = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Reference"),
-                FMainDS.AGift.ColumnReference, ARowNumber, AMessages, null, false);
+                FMainDS.AGift.ColumnReference, ARowNumber, AMessages, false);
             AGift.ReceiptLetterCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Receipt letter code"),
-                FMainDS.AGift.ColumnReceiptLetterCode, ARowNumber, AMessages, null, false);
+                FMainDS.AGift.ColumnReceiptLetterCode, ARowNumber, AMessages, false);
 
             if (AGift.MethodOfGivingCode != null)
             {
@@ -1513,11 +1506,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (HasExtraColumns) // I'm not actually importing these things - this information is thrown away:
             {
                 TCommonImport.ImportInt32(ref FImportLine, FDelimiter, Catalog.GetString("Receipt number"),
-                    null, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages);
                 TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("First time gift"),
-                    null, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages);
                 TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Receipt printed"),
-                    null, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages);
             }
 
             AGift.FirstTimeGift = !TGiftTransactionWebConnector.DonorHasGiven(FLedgerNumber, AGift.DonorKey);
@@ -1556,20 +1549,20 @@ namespace Ict.Petra.Server.MFinance.Gift
             FMainDS.AGiftDetail.Rows.Add(AGiftDetails);
 
             AGiftDetails.RecipientKey = TCommonImport.ImportInt64(ref FImportLine, FDelimiter, Catalog.GetString("Recipient key"),
-                FMainDS.AGiftDetail.ColumnRecipientKey, ARowNumber, AMessages, null);
+                FMainDS.AGiftDetail.ColumnRecipientKey, ARowNumber, AMessages);
 
             TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString(
-                    "short name of recipient (unused)"), null, ARowNumber, AMessages, null);                           // unused
+                    "short name of recipient (unused)"), null, ARowNumber, AMessages);                           // unused
 
             if (HasExtraColumns) // I'm not actually importing this - the information is thrown away:
             {
                 TCommonImport.ImportInt32(ref FImportLine, FDelimiter, Catalog.GetString("Recipient ledger number"),
-                    null, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages);
             }
 
             decimal currentGiftAmount =
                 TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Gift amount"),
-                    FMainDS.AGiftDetail.ColumnGiftTransactionAmount, ARowNumber, AMessages, null);
+                    FMainDS.AGiftDetail.ColumnGiftTransactionAmount, ARowNumber, AMessages);
             AGiftDetails.GiftTransactionAmount = currentGiftAmount;     // amount in batch currency
             ATotalBatchAmount += currentGiftAmount;
 
@@ -1579,7 +1572,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 // amount in international currency
                 TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Gift amount intl"),
-                    FMainDS.AGiftDetail.ColumnGiftAmountIntl, ARowNumber, AMessages, null);
+                    FMainDS.AGiftDetail.ColumnGiftAmountIntl, ARowNumber, AMessages);
             }
             else if (AIntlRateFromBase > 0.0m)
             {
@@ -1587,11 +1580,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             AGiftDetails.ConfidentialGiftFlag = TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Confidential gift"),
-                FMainDS.AGiftDetail.ColumnConfidentialGiftFlag, ARowNumber, AMessages, null);
+                FMainDS.AGiftDetail.ColumnConfidentialGiftFlag, ARowNumber, AMessages);
             AGiftDetails.MotivationGroupCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation group code"),
-                FMainDS.AGiftDetail.ColumnMotivationGroupCode, ARowNumber, AMessages, null).ToUpper().Trim();
+                FMainDS.AGiftDetail.ColumnMotivationGroupCode, ARowNumber, AMessages).ToUpper().Trim();
             AGiftDetails.MotivationDetailCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation detail"),
-                FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper().Trim();
+                FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages).ToUpper().Trim();
 
             //Always lookup the RecipientLedgerNumber
             AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(AGiftDetails.RecipientKey,
@@ -1612,7 +1605,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (HasExtraColumns) // I'm not actually importing this - the information is thrown away:
             {
                 TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre code"),
-                    null, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages);
             }
 
             // Cost Centre is always inferred from recipient field and motivation detail:
@@ -1641,21 +1634,21 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             // All the remaining columns are optional and can contain database NULL
             AGiftDetails.GiftCommentOne = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Gift comment one"),
-                FMainDS.AGiftDetail.ColumnGiftCommentOne, ARowNumber, AMessages, null, false);
+                FMainDS.AGiftDetail.ColumnGiftCommentOne, ARowNumber, AMessages, false);
             string commentOneType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Comment one type"),
-                FMainDS.AGiftDetail.ColumnCommentOneType, ARowNumber, AMessages, null, false);
+                FMainDS.AGiftDetail.ColumnCommentOneType, ARowNumber, AMessages, false);
 
             AGiftDetails.MailingCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Mailing code"),
-                FMainDS.AGiftDetail.ColumnMailingCode, ARowNumber, AMessages, null, false);
+                FMainDS.AGiftDetail.ColumnMailingCode, ARowNumber, AMessages, false);
 
             AGiftDetails.GiftCommentTwo = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Gift comment two"),
-                FMainDS.AGiftDetail.ColumnGiftCommentTwo, ARowNumber, AMessages, null, false);
+                FMainDS.AGiftDetail.ColumnGiftCommentTwo, ARowNumber, AMessages, false);
             string commentTwoType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Comment two type"),
-                FMainDS.AGiftDetail.ColumnCommentTwoType, ARowNumber, AMessages, null, false);
+                FMainDS.AGiftDetail.ColumnCommentTwoType, ARowNumber, AMessages, false);
             AGiftDetails.GiftCommentThree = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Gift comment three"),
-                FMainDS.AGiftDetail.ColumnGiftCommentThree, ARowNumber, AMessages, null, false);
+                FMainDS.AGiftDetail.ColumnGiftCommentThree, ARowNumber, AMessages, false);
             string commentThreeType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Comment three type"),
-                FMainDS.AGiftDetail.ColumnCommentThreeType, ARowNumber, AMessages, null, false);
+                FMainDS.AGiftDetail.ColumnCommentThreeType, ARowNumber, AMessages, false);
 
             SetCommentTypeCase(ref commentOneType);
             AGiftDetails.CommentOneType = commentOneType;
@@ -1679,7 +1672,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                  && motivationDetailRow.TaxDeductible) ? "yes" : "no";
 
             AGiftDetails.TaxDeductible = TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Tax deductible"),
-                FMainDS.AGiftDetail.ColumnTaxDeductible, ARowNumber, AMessages, null, defaultTaxDeductible);
+                FMainDS.AGiftDetail.ColumnTaxDeductible, ARowNumber, AMessages, defaultTaxDeductible);
 
             // Account Codes are always inferred from the motivation detail and so is not needed in the import.
             string NewAccountCode = null;

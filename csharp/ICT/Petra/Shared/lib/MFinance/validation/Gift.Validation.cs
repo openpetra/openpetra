@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop, alanP
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -51,8 +50,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <param name="AAccountTableRef">Account Table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="ACostCentreTableRef">Cost centre table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
         /// <param name="AAccountPropertyTableRef">Account Property Table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
@@ -66,7 +63,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         public static bool ValidateGiftBatchManual(object AContext,
             AGiftBatchRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
-            TValidationControlsDict AValidationControlsDict,
             AAccountTable AAccountTableRef = null,
             ACostCentreTable ACostCentreTableRef = null,
             AAccountPropertyTable AAccountPropertyTableRef = null,
@@ -78,7 +74,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             bool AValidateAccountCostCentre = false)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult;
             int VerifResultCollAddedCount = 0;
 
@@ -93,7 +88,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Bank Account Code must be active
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankAccountCodeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsBankAccountCodeNull() && (AAccountTableRef != null))
                 {
@@ -104,11 +99,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         new TVerificationResult(AContext,
                             String.Format(Catalog.GetString("Unknown bank account code '{0}'."), ARow.BankAccountCode),
                             TResultSeverity.Resv_Critical),
-                        ValidationColumn,
-                        ValidationControlsData.ValidationControl)
+                        ValidationColumn)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -125,11 +119,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                             "The bank account code '{0}' is a foreign currency account so the currency code for the batch must be '{1}'."),
                                         ARow.BankAccountCode, foundRow.ForeignCurrencyCode),
                                     TResultSeverity.Resv_Critical),
-                                ValidationColumn,
-                                ValidationControlsData.ValidationControl)
+                                ValidationColumn)
                                                  : null;
 
-                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                             {
                                 VerifResultCollAddedCount++;
                             }
@@ -144,11 +137,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     String.Format(Catalog.GetString(
                                             "The bank account code '{0}' is not a posting account."), ARow.BankAccountCode),
                                     TResultSeverity.Resv_Critical),
-                                ValidationColumn,
-                                ValidationControlsData.ValidationControl)
+                                ValidationColumn)
                                                  : null;
 
-                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                             {
                                 VerifResultCollAddedCount++;
                             }
@@ -169,11 +161,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                                 "The bank account code '{0}' must be associated with a real 'Bank Account' when the gift type is a 'Gift'."),
                                             ARow.BankAccountCode),
                                         TResultSeverity.Resv_Critical),
-                                    ValidationColumn,
-                                    ValidationControlsData.ValidationControl)
+                                    ValidationColumn)
                                                      : null;
 
-                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                                 {
                                     VerifResultCollAddedCount++;
                                 }
@@ -189,12 +180,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         ARow.BankAccountCode.ToString(),
                         AAccountTable.GetAccountActiveFlagDBName(),
                         AContext,
-                        ValidationColumn,
-                        ValidationControlsData.ValidationControl);
+                        ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if ((VerificationResult != null)
-                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -204,7 +194,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Bank Cost Centre Code validation
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankCostCentreId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsBankCostCentreNull() && (ACostCentreTableRef != null))
                 {
@@ -214,11 +204,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                          new TScreenVerificationResult(AContext,
                         ValidationColumn,
                         String.Format(Catalog.GetString("Unknown Bank Cost Centre: '{0}'."), ARow.BankCostCentre),
-                        ValidationControlsData.ValidationControl,
                         TResultSeverity.Resv_Critical)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -230,11 +219,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                              new TScreenVerificationResult(AContext,
                             ValidationColumn,
                             String.Format(Catalog.GetString("The cost centre '{0}' is not a Posting Cost Centre."), ARow.BankCostCentre),
-                            ValidationControlsData.ValidationControl,
                             TResultSeverity.Resv_Critical)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -249,12 +237,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         ARow.BankCostCentre.ToString(),
                         ACostCentreTable.GetCostCentreActiveFlagDBName(),
                         AContext,
-                        ValidationColumn,
-                        ValidationControlsData.ValidationControl);
+                        ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if ((VerificationResult != null)
-                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -264,7 +251,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Currency Code validation
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnCurrencyCodeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsCurrencyCodeNull() && (ACurrencyTableRef != null))
                 {
@@ -274,11 +261,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                          new TScreenVerificationResult(AContext,
                         ValidationColumn,
                         String.Format(Catalog.GetString("Unknown currency code '{0}'."), ARow.CurrencyCode),
-                        ValidationControlsData.ValidationControl,
                         TResultSeverity.Resv_Critical)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -288,17 +274,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // 'Exchange Rate' must be greater than 0
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsExchangeRateToBaseNull())
                 {
                     VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
-                        ValidationControlsData.ValidationControlLabel +
+                        String.Empty +
                         (IsImporting ? String.Empty : " of Batch Number " + ARow.BatchNumber.ToString()),
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -313,11 +299,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                              new TScreenVerificationResult(AContext,
                             ValidationColumn,
                             Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."),
-                            ValidationControlsData.ValidationControl,
                             TResultSeverity.Resv_Critical)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -334,20 +319,19 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate,
                     StartDateCurrentPeriod,
                     EndDateLastForwardingPeriod,
-                    ValidationControlsData.ValidationControlLabel + (IsImporting ? String.Empty : " of Batch Number " + ARow.BatchNumber.ToString()),
+                    String.Empty + (IsImporting ? String.Empty : " of Batch Number " + ARow.BatchNumber.ToString()),
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     AContext,
-                    ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -371,10 +355,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     ABaseCurrency, AInternationalCurrency,
                                     StringHelper.DateToLocalizedString(firstOfMonth)),
                                 TResultSeverity.Resv_Critical),
-                            ValidationColumn, ValidationControlsData.ValidationControl)
+                            ValidationColumn)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -385,7 +369,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Gift Type must be one of our predefined constants
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnGiftTypeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsGiftTypeNull())
                 {
@@ -398,11 +382,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         String.Format(Catalog.GetString("Unknown gift type '{0}'. Expected one of '{1}', '{2}' or '{3}'"),
                             ARow.GiftType,
                             MFinanceConstants.GIFT_TYPE_GIFT, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND, MFinanceConstants.GIFT_TYPE_OTHER),
-                        ValidationControlsData.ValidationControl,
                         TResultSeverity.Resv_Critical)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -419,8 +402,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <param name="ASetupForILT">Optional - Is the recipient set up for inter-ledger transfers.</param>
         /// <param name="ACostCentres">Optional - a CostCentres table.  Is required for import validation. </param>
         /// <param name="AAccounts">Optional - a Accounts table.  Is required for import validation. </param>
@@ -433,7 +414,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         public static bool ValidateGiftDetailManual(object AContext,
             GiftBatchTDSAGiftDetailRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
-            TValidationControlsDict AValidationControlsDict,
             bool? ASetupForILT = null,
             ACostCentreTable ACostCentres = null,
             AAccountTable AAccounts = null,
@@ -444,7 +424,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             bool ARecipientZeroIsValid = true)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult = null;
             string ValidationContext;
             int VerifResultCollAddedCount = 0;
@@ -473,8 +452,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARecipientZeroIsValid,
                 ImportInProcess ? Catalog.GetString("Recipient key") : "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
-                ValidationColumn,
-                null);
+                ValidationColumn);
 
             if (VerificationResult != null)
             {
@@ -490,8 +468,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.RecipientKey,
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
-                ValidationColumn,
-                null);
+                ValidationColumn);
 
             if (VerificationResult2 != null)
             {
@@ -512,11 +489,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsNonZeroDecimal(ARow.GiftTransactionAmount,
-                    ValidationControlsData.ValidationControlLabel + (ImportInProcess ? String.Empty : " of " + ValidationContext),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty + (ImportInProcess ? String.Empty : " of " + ValidationContext),
+                    AContext, ValidationColumn);
 
                 if (VerificationResult != null)
                 {
@@ -524,7 +501,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -537,16 +514,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if ((ARow.RecipientKey > 0) && ValidPartner && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
                         "Recipient field of " + ValidationContext + " is 0",
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -556,7 +533,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Motivation Group code must exist. Group code cannot be Gift if Recipient = 0
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationGroupCodeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsMotivationGroupCodeNull())
                 {
@@ -574,9 +551,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     String.Format(Catalog.GetString("Unknown motivation group code '{0}'."),
                                         ARow.MotivationGroupCode),
                                     TResultSeverity.Resv_Critical),
-                                ValidationColumn, ValidationControlsData.ValidationControl);
+                                ValidationColumn);
 
-                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                             {
                                 VerifResultCollAddedCount++;
                             }
@@ -590,9 +567,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                 String.Format(Catalog.GetString("Motivation group code cannot be '{0}' when Recipient Key is '0000000000'!"),
                                     ARow.MotivationGroupCode),
                                 TResultSeverity.Resv_Critical),
-                            ValidationColumn, ValidationControlsData.ValidationControl);
+                            ValidationColumn);
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -606,7 +583,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = null;
 
@@ -621,11 +598,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if (ARow.IsMotivationDetailCodeNull() || (ARow.MotivationDetailCode == String.Empty))
                     {
                         VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.MotivationDetailCode,
-                            (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Motivation Detail code " + ValidationContext),
-                            AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                            (ImportInProcess ? String.Empty : "Motivation Detail code " + ValidationContext),
+                            AContext, ValidationColumn);
 
                         // Handle addition/removal to/from TVerificationResultCollection
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -646,10 +623,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                 String.Format(Catalog.GetString("Unknown motivation detail code '{0}' for group '{1}'."),
                                     ARow.MotivationDetailCode, ARow.MotivationGroupCode),
                                 TResultSeverity.Resv_Critical),
-                            ValidationColumn, ValidationControlsData.ValidationControl)
+                            ValidationColumn)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -662,10 +639,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     String.Format(Catalog.GetString("Motivation detail code '{0}' is no longer in use."),
                                         ARow.MotivationDetailCode),
                                     TResultSeverity.Resv_Critical),
-                                ValidationColumn, ValidationControlsData.ValidationControl)
+                                ValidationColumn)
                                                  : null;
 
-                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                             {
                                 VerifResultCollAddedCount++;
                             }
@@ -680,10 +657,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                                     "The recipient partner key for motivation detail code '{0}' does not match the recipient partner key in the import line."),
                                                 ARow.MotivationDetailCode),
                                             TResultSeverity.Resv_Critical),
-                                        ValidationColumn, ValidationControlsData.ValidationControl)
+                                        ValidationColumn)
                                     : null;
 
-                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                                 {
                                     VerifResultCollAddedCount++;
                                 }
@@ -721,11 +698,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                                      new TScreenVerificationResult(AContext,
                                     ValidationColumn,
                                     Message,
-                                    ValidationControlsData.ValidationControl,
                                     TResultSeverity.Resv_Critical)
                                                      : null;
 
-                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                                 {
                                     VerifResultCollAddedCount++;
                                 }
@@ -760,7 +736,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 //        null);
 
                 //    // Handle addition/removal to/from TVerificationResultCollection
-                //    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                //    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 //    {
                 //        VerifResultCollAddedCount++;
                 //    }
@@ -771,7 +747,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCostCentreCodeId];
 
-                    if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    if (true)
                     {
                         // We even need to check that the code exists!
                         DataRow foundRow = ACostCentres.Rows.Find(new object[] { ARow.LedgerNumber, ARow.CostCentreCode });
@@ -780,11 +756,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                              new TScreenVerificationResult(AContext,
                             ValidationColumn,
                             String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
-                            ValidationControlsData.ValidationControl,
                             TResultSeverity.Resv_Critical)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -796,11 +771,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                 ARow.CostCentreCode.ToString(),
                                 ACostCentreTable.GetCostCentreActiveFlagDBName(),
                                 AContext,
-                                ValidationColumn,
-                                ValidationControlsData.ValidationControl);
+                                ValidationColumn);
 
                             // Handle addition/removal to/from TVerificationResultCollection
-                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                             {
                                 VerifResultCollAddedCount++;
                             }
@@ -823,7 +797,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         ValidationColumn = ValidationColumns[i];
 
-                        if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                        if (AccountCodes[i] != String.Empty)
                         {
                             // We even need to check that the code exists!
                             DataRow foundRow = AAccounts.Rows.Find(new object[] { ARow.LedgerNumber, AccountCodes[i] });
@@ -833,10 +807,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                 new TVerificationResult(AContext,
                                     String.Format(Catalog.GetString("Unknown account code '{0}'."), AccountCodes[i]),
                                     TResultSeverity.Resv_Critical),
-                                ValidationColumn, ValidationControlsData.ValidationControl)
+                                ValidationColumn)
                                                  : null;
 
-                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                             {
                                 VerifResultCollAddedCount++;
                             }
@@ -848,11 +822,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     AccountCodes[i],
                                     AAccountTable.GetAccountActiveFlagDBName(),
                                     AContext,
-                                    ValidationColumn,
-                                    ValidationControlsData.ValidationControl);
+                                    ValidationColumn);
 
                                 // Handle addition/removal to/from TVerificationResultCollection
-                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                                 {
                                     VerifResultCollAddedCount++;
                                 }
@@ -879,10 +852,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         String.Format(Catalog.GetString("Unknown mailing code '{0}'."),
                             ARow.MailingCode),
                         TResultSeverity.Resv_Critical),
-                    ValidationColumn, ValidationControlsData.ValidationControl)
+                    ValidationColumn)
                                      : null;
 
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -895,16 +868,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsGiftCommentOneNull() && (ARow.GiftCommentOne != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
-                        (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Comment 1 type " + ValidationContext),
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        (ImportInProcess ? String.Empty : "Comment 1 type " + ValidationContext),
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -924,10 +897,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     MFinanceConstants.GIFT_COMMENT_TYPE_BOTH,
                                     MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE),
                                 TResultSeverity.Resv_Critical),
-                            ValidationColumn, ValidationControlsData.ValidationControl)
+                            ValidationColumn)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -942,16 +915,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsGiftCommentTwoNull() && (ARow.GiftCommentTwo != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
-                        (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Comment 2 type " + ValidationContext),
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        (ImportInProcess ? String.Empty : "Comment 2 type " + ValidationContext),
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -971,10 +944,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     MFinanceConstants.GIFT_COMMENT_TYPE_BOTH,
                                     MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE),
                                 TResultSeverity.Resv_Critical),
-                            ValidationColumn, ValidationControlsData.ValidationControl)
+                            ValidationColumn)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -989,16 +962,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsGiftCommentThreeNull() && (ARow.GiftCommentThree != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
-                        (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Comment 3 type " + ValidationContext),
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        (ImportInProcess ? String.Empty : "Comment 3 type " + ValidationContext),
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1018,10 +991,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                     MFinanceConstants.GIFT_COMMENT_TYPE_BOTH,
                                     MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE),
                                 TResultSeverity.Resv_Critical),
-                            ValidationColumn, ValidationControlsData.ValidationControl)
+                            ValidationColumn)
                                              : null;
 
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                         {
                             VerifResultCollAddedCount++;
                         }
@@ -1039,16 +1012,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateTaxDeductiblePct(object AContext,
             GiftBatchTDSAGiftDetailRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection,
-            TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult = null;
             string ValidationContext;
             int VerifResultCollAddedCount = 0;
@@ -1066,17 +1035,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 // it should be impossible for this to ever happen
                 if (ARow.TaxDeductiblePct != 0)
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.TaxDeductibleAccountCode,
                         "Tax-Deductible Account " + ValidationContext,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1093,23 +1062,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow"></param>
         /// <param name="AYear"></param>
         /// <param name="APeriod"></param>
-        /// <param name="AControl">Need to pass the validation control because it is not a bound control</param>
         /// <param name="AVerificationResultCollection"></param>
-        /// <param name="AValidationControlsDict"></param>
         /// <param name="AMethodOfGivingRef">Required for import validation</param>
         /// <param name="AMethodOfPaymentRef">Required for</param>
         /// <param name="AFormLetterCodeTbl">Supplied in import validation</param>
         /// <param name="ADonorZeroIsValid">Whether or not donor zero is valid</param>
         /// <returns></returns>
-        public static bool ValidateGiftManual(object AContext, AGiftRow ARow, Int32 AYear, Int32 APeriod, Control AControl,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+        public static bool ValidateGiftManual(object AContext, AGiftRow ARow, Int32 AYear, Int32 APeriod,
+            ref TVerificationResultCollection AVerificationResultCollection,
             AMethodOfGivingTable AMethodOfGivingRef = null,
             AMethodOfPaymentTable AMethodOfPaymentRef = null,
             PFormTable AFormLetterCodeTbl = null,
             bool ADonorZeroIsValid = false)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult = null;
             string ValidationContext;
             int VerifResultCollAddedCount = 0;
@@ -1135,8 +1101,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ADonorZeroIsValid,
                 (isImporting) ? String.Empty : "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
-                ValidationColumn,
-                null);
+                ValidationColumn);
 
             if (VerificationResult != null)
             {
@@ -1164,11 +1129,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     AContext,
-                    ValidationColumn,
-                    AControl);          // Note this control is specifically passed in
+                    ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -1182,7 +1146,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (!ARow.IsMethodOfGivingCodeNull() && (AMethodOfGivingRef != null))
             {
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     AMethodOfGivingRow foundRow = (AMethodOfGivingRow)AMethodOfGivingRef.Rows.Find(ARow.MethodOfGivingCode);
 
@@ -1192,10 +1156,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             String.Format(Catalog.GetString("Unknown method of giving code '{0}'."),
                                 ARow.MethodOfGivingCode),
                             TResultSeverity.Resv_Critical),
-                        ValidationColumn, ValidationControlsData.ValidationControl)
+                        ValidationColumn)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1210,7 +1174,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (!ARow.IsMethodOfPaymentCodeNull() && (AMethodOfPaymentRef != null))
             {
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     AMethodOfPaymentRow foundRow = (AMethodOfPaymentRow)AMethodOfPaymentRef.Rows.Find(ARow.MethodOfPaymentCode);
 
@@ -1220,10 +1184,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             String.Format(Catalog.GetString("Unknown method of payment code '{0}'."),
                                 ARow.MethodOfPaymentCode),
                             TResultSeverity.Resv_Critical),
-                        ValidationColumn, ValidationControlsData.ValidationControl)
+                        ValidationColumn)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1235,7 +1199,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (!ARow.IsReceiptLetterCodeNull() && (AFormLetterCodeTbl != null))
             {
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     AFormLetterCodeTbl.DefaultView.RowFilter = String.Format("p_form_name_c='{0}'", ARow.ReceiptLetterCode);
 
@@ -1245,10 +1209,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             String.Format(Catalog.GetString("Unknown Letter Code '{0}'."),
                                 ARow.ReceiptLetterCode),
                             TResultSeverity.Resv_Critical),
-                        ValidationColumn, ValidationControlsData.ValidationControl)
+                        ValidationColumn)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1265,14 +1229,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateRecurringGiftBatchManual(object AContext, ARecurringGiftBatchRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult;
             string ValidationContext;
             int VerifResultCollAddedCount = 0;
@@ -1287,16 +1248,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ValidationColumn = ARow.Table.Columns[ARecurringGiftBatchTable.ColumnBatchDescriptionId];
             ValidationContext = String.Format("Description in Recurring Batch no.: {0}", ARow.BatchNumber); //ARow.BankAccountCode;
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TStringChecks.StringMustNotBeEmpty(ARow.BatchDescription,
                     ValidationContext,
                     AContext,
-                    ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -1306,16 +1266,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ValidationColumn = ARow.Table.Columns[ARecurringGiftBatchTable.ColumnBankAccountCodeId];
             ValidationContext = String.Format("Bank Account in Recurring Batch no.: {0}", ARow.BatchNumber); //ARow.BankAccountCode;
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TStringChecks.StringMustNotBeEmpty(ARow.BankAccountCode,
                     ValidationContext,
                     AContext,
-                    ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -1325,16 +1284,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ValidationColumn = ARow.Table.Columns[ARecurringGiftBatchTable.ColumnBankCostCentreId];
             ValidationContext = String.Format("Cost Centre in Recurring Batch no.: {0}", ARow.BatchNumber); //ARow.BankCostCentre;
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TStringChecks.StringMustNotBeEmpty(ARow.BankCostCentre,
                     ValidationContext,
                     AContext,
-                    ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                    ValidationColumn);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -1349,17 +1307,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>
         /// <param name="AVerificationResultCollection"></param>
-        /// <param name="AValidationControlsDict"></param>
         /// <param name="ADonorZeroIsValid"></param>
         /// <returns></returns>
         public static bool ValidateRecurringGiftManual(object AContext,
             ARecurringGiftRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
-            TValidationControlsDict AValidationControlsDict,
             bool ADonorZeroIsValid = false)
         {
             DataColumn ValidationColumn;
-            //TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult = null;
             string ValidationContext;
             int VerifResultCollAddedCount = 0;
@@ -1383,8 +1338,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ADonorZeroIsValid,
                 "Donor of " + THelper.NiceValueDescription(ValidationContext),
                 AContext,
-                ValidationColumn,
-                null);
+                ValidationColumn);
 
             if (VerificationResult != null)
             {
@@ -1393,7 +1347,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             // Handle addition/removal to/from TVerificationResultCollection
-            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
             {
                 VerifResultCollAddedCount++;
             }
@@ -1408,20 +1362,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <param name="ARecipientField">Optional</param>
         /// <param name="ARecipientZeroIsValid">Optional</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateRecurringGiftDetailManual(object AContext,
             GiftBatchTDSARecurringGiftDetailRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
-            TValidationControlsDict AValidationControlsDict,
             Int64 ARecipientField = -1,
             bool ARecipientZeroIsValid = true)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult = null;
             string ValidationContext;
             int VerifResultCollAddedCount = 0;
@@ -1448,8 +1398,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARecipientZeroIsValid,
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
-                ValidationColumn,
-                null);
+                ValidationColumn);
 
             if (VerificationResult != null)
             {
@@ -1465,8 +1414,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.RecipientKey,
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
-                ValidationColumn,
-                null);
+                ValidationColumn);
 
             if (VerificationResult2 != null)
             {
@@ -1487,11 +1435,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.GiftAmount,
-                    ValidationControlsData.ValidationControlLabel + " of " + ValidationContext,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    String.Empty + " of " + ValidationContext,
+                    AContext, ValidationColumn);
 
                 if (VerificationResult != null)
                 {
@@ -1499,7 +1447,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -1512,16 +1460,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if ((ARow.RecipientKey > 0) && ValidPartner && (ARow.RecipientLedgerNumber == 0))
                 {
                     VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsGreaterThanZero(ARow.RecipientLedgerNumber,
                         "Recipient field of " + ValidationContext + " is 0",
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1535,16 +1483,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (ARow.IsMotivationDetailCodeNull() || (ARow.MotivationDetailCode == String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.MotivationDetailCode,
                         "Motivation Detail code " + ValidationContext,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1581,11 +1529,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                                          new TScreenVerificationResult(AContext,
                         ValidationColumn,
                         Message,
-                        ValidationControlsData.ValidationControl,
                         TResultSeverity.Resv_Critical)
                                          : null;
 
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1599,16 +1546,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsGiftCommentOneNull() && (ARow.GiftCommentOne != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
                         "Comment 1 type " + ValidationContext,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1622,16 +1569,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsGiftCommentTwoNull() && (ARow.GiftCommentTwo != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
                         "Comment 2 type " + ValidationContext,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1645,16 +1592,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 if (!ARow.IsGiftCommentThreeNull() && (ARow.GiftCommentThree != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
                         "Comment 3 type " + ValidationContext,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
                     {
                         VerifResultCollAddedCount++;
                     }
@@ -1672,14 +1619,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ATaxDeductiblePercentageEnabled">True if Tax Deductible Percentage is enabled</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
         /// <returns>void</returns>
         public static void ValidateGiftMotivationSetupManual(object AContext, AMotivationDetailRow ARow, bool ATaxDeductiblePercentageEnabled,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection)
         {
             DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult;
 
             // Don't validate deleted DataRows
@@ -1691,7 +1635,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // 'Motivation Group' must not be unassignable
             ValidationColumn = ARow.Table.Columns[AMotivationDetailTable.ColumnMotivationGroupCodeId];
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (true)
             {
                 AMotivationGroupTable MotivationGroupTable;
                 AMotivationGroupRow MotivationGroupPointRow;
@@ -1715,14 +1659,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
-                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.MotivationGroupCode })),
-                                ValidationColumn, ValidationControlsData.ValidationControl);
+                                        new string[] { String.Empty, ARow.MotivationGroupCode })),
+                                ValidationColumn);
                         }
                     }
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
             }
 
             if (ATaxDeductiblePercentageEnabled)
@@ -1730,14 +1674,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 // 'TaxDeductibleAccount' must have a value (NOT NULL constraint)
                 ValidationColumn = ARow.Table.Columns[AMotivationDetailTable.ColumnTaxDeductibleAccountCodeId];
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (true)
                 {
                     VerificationResult = (TScreenVerificationResult)TStringChecks.StringMustNotBeEmpty(ARow.TaxDeductibleAccountCode,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                        String.Empty,
+                        AContext, ValidationColumn);
 
                     // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult);
                 }
             }
         }

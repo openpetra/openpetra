@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Windows.Forms;
 
 using Ict.Common.Data;
 using Ict.Common.Verification;
@@ -41,22 +40,11 @@ namespace Ict.Petra.Server.MCommon.Cacheable
 
         partial void ValidateCountryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnInternatTelephoneCodeId],
-                new TValidationControlsData(null, PCountryTable.GetInternatTelephoneCodeDBName()));
-            ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnInternatPostalTypeCodeId],
-                new TValidationControlsData(null, PCountryTable.GetInternatAccessCodeDBName()));
-            ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnTimeZoneMinimumId],
-                new TValidationControlsData(null, PCountryTable.GetTimeZoneMinimumDBName(),
-                    null, PCountryTable.GetTimeZoneMaximumDBName()));
-
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedValidation_CacheableDataTables.ValidateCountrySetupManual(this.GetType().Name +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (PCountryRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
+                    (PCountryRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
         }
     }
