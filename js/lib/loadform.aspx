@@ -7,9 +7,9 @@
 <%
     Response.ContentType = "text/html";
     Response.CacheControl = "no-cache";
-    string form = Request.QueryString["form"];
+    string form = Request.QueryString["form"].Replace("_", "/");
 
-    if (form.Length > 0 && !form.Contains("/"))
+    if (form.Length > 0 && !form.Contains("../"))
     {
         string content = string.Empty;
         string path = TAppSettingsManager.GetValue("Forms.Path");

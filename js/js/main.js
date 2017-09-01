@@ -1,36 +1,36 @@
 function OpenTab(name, title)
 {
-    if ($("#TabbedWindows:has(#tab" + name + ")").length == 0)
+    tabname = name.replace(/\//g, '_');
+    if ($("#TabbedWindows:has(#tab" + tabname + ")").length == 0)
     {
-        $("#TabbedWindows").append("<li class='tab' id='tab" + name + "'><a href='#'>" +
-            // could use <span class='glyphicon glyphicon-remove'></span> instead of x?
-            "<button class='close closeTab' type='button' id='btnClose" + name + "'>x</button>" + title + "</a>" +
+        $("#TabbedWindows").append("<li class='tab' id='tab" + tabname + "'><a href='#'>" +
+            "<button class='close closeTab' type='button' id='btnClose" + tabname + "'><span class='glyphicon glyphicon-remove'></span></button>" + title + "</a>" +
             "</li>");
-        $("#tab" + name).click(function() { ActivateTab(name); });
+        $("#tab" + tabname).click(function() { ActivateTab(this.getAttribute('id').substring(3)); });
         
         // fetch screen content from the server
-        if (name.substring(0, "frm".length) === "frm")
+        if (name.substring(0, "frm".length) === "frm" || name.indexOf('/frm') > 0)
         {
-            src = "lib/loadform.aspx?form=" + name;
+            src = "lib/loadform.aspx?form=" + tabname;
         }
         else // fetch navigation page
         {
-            src = "lib/loadnavpage.aspx?page=" + name;
+            src = "lib/loadnavpage.aspx?page=" + tabname;
         }
 
-        iframe = '<div class="OpenPetraWindow" id="wnd' + name + '">' + 
-            '<iframe class="openpetraiframe" id="iframe' + name + '" frameborder="0" scrolling="no" src="' + src + '"/>' + 
+        iframe = '<div class="OpenPetraWindow" id="wnd' + tabname + '">' + 
+            '<iframe class="openpetraiframe" id="iframe' + tabname + '" frameborder="0" scrolling="no" src="' + src + '"/>' + 
             '</div>';
 
         $(iframe).appendTo('#containerIFrames');
 
-        $("#btnClose" + name).click(function(e) 
+        $("#btnClose" + tabname).click(function(e)
         {
             e.preventDefault();
-            $("#tab"+name).hide();
+            $("#tab"+tabname).hide();
 
             // find a neighboring tab that is visible
-            focusTab = $("#tab"+name).prev();
+            focusTab = $("#tab"+tabname).prev();
             while (focusTab.length == 1 && focusTab.css("display") == "none")
             {
                 focusTab = focusTab.prev();
@@ -38,7 +38,7 @@ function OpenTab(name, title)
 
             if (focusTab.length == 0)
             {
-                focusTab = $("#tab"+name).next();
+                focusTab = $("#tab"+tabname).next();
                 while (focusTab.length == 1 && focusTab.css("display") == "none")
                 {
                     focusTab = focusTab.next();
@@ -56,7 +56,7 @@ function OpenTab(name, title)
             return false;
         });
     }
-    ActivateTab(name);
+    ActivateTab(tabname);
 };
 
 function ActivateTab(name)

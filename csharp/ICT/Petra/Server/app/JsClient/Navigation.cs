@@ -4,8 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
-// Copyright 2013-2014 by SolidCharity
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -260,8 +259,7 @@ namespace Ict.Petra.Server.app.JSClient
             }
 
             XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
-            XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
-            XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
+            XmlNode MainMenuNode = OpenPetraNode.FirstChild;
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
@@ -341,7 +339,7 @@ namespace Ict.Petra.Server.app.JSClient
             return JavascriptCode;
         }
 
-        private static StringBuilder AddSection(XmlNode ASectionNode, string AUserId)
+        private static StringBuilder AddSection(string path, XmlNode ASectionNode, string AUserId)
         {
             // TODO icon?
 
@@ -359,22 +357,17 @@ namespace Ict.Petra.Server.app.JSClient
 
             foreach (XmlNode child in ASectionNode.ChildNodes)
             {
-                if (child.Name == "SearchBoxes")
-                {
-                    continue;
-                }
-
                 if (child.FirstChild == null)
                 {
                     string style = string.Empty;
 
-                    if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/frm" + child.Name + ".html"))
+                    if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + path.Replace('_', '/') + "/" + child.Name + "/frm" + child.Name + ".html"))
                     {
                         style = " class = 'notimplemented' ";
                         continue;
                     }
 
-                    ScreenCode.Append("<a href='javascript:OpenTab(\"frm" + child.Name + "\", \"" +
+                    ScreenCode.Append("<a href='javascript:OpenTab(\"" + path.Replace('_', '/') + "/frm" + child.Name + "\", \"" +
                         GetCaption(child) + "\")'" + style + ">" + GetCaption(child) + "</a><br/>" + Environment.NewLine);
                     TaskDisplayed = true;
                 }
@@ -392,13 +385,13 @@ namespace Ict.Petra.Server.app.JSClient
                     {
                         string style = string.Empty;
 
-                        if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/frm" + task.Name + ".html"))
+                        if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + ".html"))
                         {
                             style = " class = 'notimplemented' ";
                             continue;
                         }
 
-                        ScreenCode.Append("<a href='javascript:OpenTab(\"frm" + task.Name + "\", \"" +
+                        ScreenCode.Append("<a href='javascript:OpenTab(\"" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + "\", \"" +
                             GetCaption(task) + "\")'" + style + ">" + GetCaption(task) + "</a><br/>" + Environment.NewLine);
                         TaskDisplayed = true;
                     }
@@ -418,6 +411,36 @@ namespace Ict.Petra.Server.app.JSClient
             return "LEDGER" + ALedgerNumber.ToString("0000");
         }
 
+        private static XmlNode FindSectionNode(XmlNode ACurrentNode, string[] ATaskName, int ADepth = 0)
+        {
+            while (ACurrentNode != null && ADepth < ATaskName.Length)
+            {
+                if (ACurrentNode.Name == ATaskName[ADepth])
+                {
+                    if (ADepth == ATaskName.Length-1)
+                    {
+                        return ACurrentNode;
+                    }
+
+                    if (TYml2Xml.GetAttribute(ACurrentNode.FirstChild, "SkipThisLevel") == "true")
+                    {
+                        ACurrentNode = ACurrentNode.FirstChild;
+                    }
+
+                    XmlNode SectionNode = FindSectionNode(ACurrentNode.FirstChild, ATaskName, ADepth+1);
+
+                    if (SectionNode != null)
+                    {
+                        return SectionNode;
+                    }
+                }
+
+                ACurrentNode = ACurrentNode.NextSibling;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// load the html code for a single navigation page, based on the UINavigation file
         /// </summary>
@@ -433,38 +456,15 @@ namespace Ict.Petra.Server.app.JSClient
 
             StringBuilder ScreenContent = new StringBuilder();
 
-            string Department = ANavigationPage.Split(new char[] { '_' })[0];
-            string Page = ANavigationPage.Split(new char[] { '_' })[1];
+            string[] pageNameSplit = ANavigationPage.Split(new char[] { '_' });
 
-            while (DepartmentNode != null)
+            XmlNode SectionNode = FindSectionNode(DepartmentNode, pageNameSplit);
+
+            if (SectionNode != null)
             {
-                if (DepartmentNode.Name == Department)
-                {
-                    if (TYml2Xml.GetAttribute(DepartmentNode.FirstChild, "SkipThisLevel") == "true")
-                    {
-                        DepartmentNode = DepartmentNode.FirstChild;
-                    }
-
-                    XmlNode SectionNode = DepartmentNode.FirstChild;
-
-                    while (SectionNode != null)
-                    {
-                        if (SectionNode.Name == Page)
-                        {
-                            ScreenContent.Append(AddSection(SectionNode, UserInfo.GUserInfo.UserID));
-                            break;
-                        }
-
-                        SectionNode = SectionNode.NextSibling;
-                    }
-
-                    break;
-                }
-
-                DepartmentNode = DepartmentNode.NextSibling;
+                ScreenContent.Append(AddSection(ANavigationPage, SectionNode, UserInfo.GUserInfo.UserID));
             }
-
-            if (ScreenContent.Length == 0)
+            else
             {
                 return "cannot find " + ANavigationPage;
             }

@@ -14,7 +14,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="img/favicon.png">
 
-    <title>OpenPetra.js</title>
+    <title>OpenPetra</title>
 
     <!-- Bootstrap core CSS -->
     <link href="ThirdParty/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -55,18 +55,20 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href='javascript:OpenTab("frmHome", "Home");'>Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="https://www.openpetra.org" target="newwindow">About</a></li>
+            <li><a href="https://forum.openpetra.org" target="newwindow">Contact</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
+                <li><a href='javascript:OpenTab("Settings/frmChangePassword", "Change Password");'>Change Password</a></li>
+                <li><a href='javascript:OpenTab("Settings/frmChangeLanguage", "Change Language");'>Change Language</a></li>
+<!--
                 <li><a href="#">Something else here</a></li>
                 <li class="divider"></li>
                 <li class="dropdown-header">Nav header</li>
                 <li><a href="#">Separated link</a></li>
                 <li><a href="#">One more separated link</a></li>
+-->
               </ul>
             </li>
           </ul>
