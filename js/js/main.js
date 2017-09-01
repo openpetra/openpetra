@@ -27,6 +27,7 @@ function OpenTab(name, title)
         $("#btnClose" + tabname).click(function(e)
         {
             e.preventDefault();
+            tabname = this.getAttribute('id').substring("btnClose".length);
             $("#tab"+tabname).hide();
 
             // find a neighboring tab that is visible
