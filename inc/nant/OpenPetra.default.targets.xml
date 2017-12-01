@@ -177,11 +177,11 @@
     </if>
   </if>
   <if test="${'unix'==platform::get-name()}" >
-      <!-- create symbolic links for OpenPetra.js -->
-      <if test="${not directory::exists(dir.delivery + '/ThirdParty')}">
+      <!-- create symbolic link for api page -->
+      <if test="${not file::exists(dir.delivery + '/Default.aspx')}">
         <exec program="bash"
             workingdir="${dir.delivery}"
-            commandline="-c &quot;for f in ../js/*;do ln -s $f; done&quot;"/>
+            commandline="-c &quot;ln -s ../csharp/ICT/Petra/Server/app/WebService/Default.aspx"/>
       </if>
       <if test="${not file::exists(dir.bin + '/libsodium.so')}">
         <exec program="bash"
