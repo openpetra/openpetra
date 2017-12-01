@@ -40,15 +40,8 @@ using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 namespace Ict.Petra.Server.app.JSClient
 {
     /// <summary>
-    /// Load navigation from UINavigation.yml and produce javascript code
-    ///
-    /// this class is based on code from the winforms client:
-    /// https://github.com/openpetra/openpetra/blob/master/csharp/ICT/Petra/Client/app/MainWindow/MainWindowNew.ManualCode.cs
-    ///
-    /// TODO: only supports one ledger at the moment
-    /// Frage: soll ich den Client umprogrammieren, um das Auslesen der Navigation auf dem Server zu machen?
-    /// Dann könnte Winforms und Javascript client dieselben Funktionen verwenden, nur anders darstellen?
-    /// einen branch mit änderungen an upstream openpetra?
+    /// Load navigation from UINavigation.yml and return as json
+    /// specific for this user, disabling parts that he does not have access to
     /// </summary>
     public class TUINavigation
     {
@@ -267,9 +260,9 @@ namespace Ict.Petra.Server.app.JSClient
         }
 
         /// <summary>
-        /// load the navigation and return the Javascript code
+        /// load the navigation ready to be converted to JSON
         /// </summary>
-        public static string LoadNavigationUI(bool ADontUseDefaultLedger = false)
+        public static Dictionary<string, object> LoadNavigationUI(bool ADontUseDefaultLedger = false)
         {
             // Force re-calculation of available Ledgers and correct setting of FCurrentLedger
             FLedgersAvailableToUser = null;
@@ -277,16 +270,16 @@ namespace Ict.Petra.Server.app.JSClient
             XmlNode MainMenuNode = BuildNavigationXml(ADontUseDefaultLedger);
             XmlNode DepartmentNode = MainMenuNode.FirstChild;
 
-            StringBuilder JavascriptCode = new StringBuilder();
+            Dictionary<string, object> result = new Dictionary<string, object>();
 
             while (DepartmentNode != null)
             {
-                JavascriptCode.Append(AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID));
+                result.Add(DepartmentNode.Name, AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID));
 
                 DepartmentNode = DepartmentNode.NextSibling;
             }
 
-            return JavascriptCode.ToString();
+            return result;
         }
 
         private static string GetCaption(XmlNode ANode)
@@ -295,7 +288,7 @@ namespace Ict.Petra.Server.app.JSClient
                     "Label") : StringHelper.ReverseUpperCamelCase(ANode.Name)).Replace("&", "");
         }
 
-        private static StringBuilder AddFolder(XmlNode AFolderNode, string AUserId)
+        private static Dictionary<string, object> AddFolder(XmlNode AFolderNode, string AUserId)
         {
             // TODO icon?
 
@@ -312,10 +305,10 @@ namespace Ict.Petra.Server.app.JSClient
             }
 #endif
 
-            StringBuilder JavascriptCode = new StringBuilder();
-            JavascriptCode.Append("AddMenuGroup('" + AFolderNode.Name + "', '" + GetCaption(
-                    AFolderNode) + "', function(parent) " + Environment.NewLine);
-            JavascriptCode.Append("{" + Environment.NewLine);
+            Dictionary<string, object> folder = new Dictionary<string, object>();
+            folder.Add("caption", GetCaption(AFolderNode));
+            folder.Add("icon", TYml2Xml.GetAttribute(AFolderNode, "fa-icon"));
+            Dictionary<string, object> items = new Dictionary<string, object>();
 
             foreach (XmlNode child in AFolderNode.ChildNodes)
             {
@@ -323,20 +316,22 @@ namespace Ict.Petra.Server.app.JSClient
                 {
                     foreach (XmlNode child2 in child.ChildNodes)
                     {
-                        JavascriptCode.Append("AddMenuItem(parent, '" + AFolderNode.Name + "_" + child2.Name + "', '" +
-                            GetCaption(child2) + "', '" + GetCaption(AFolderNode) + ": " + GetCaption(child2) + "');" + Environment.NewLine);
+                        Dictionary<string, object> item = new Dictionary<string, object>();
+                        item.Add("caption", GetCaption(child2));
+                        items.Add(child2.Name, item);
                     }
                 }
                 else
                 {
-                    JavascriptCode.Append("AddMenuItem(parent, '" + AFolderNode.Name + "_" + child.Name + "', '" +
-                        GetCaption(child) + "', '" + GetCaption(AFolderNode) + " " + GetCaption(child) + "');" + Environment.NewLine);
+                    Dictionary<string, object> item = new Dictionary<string, object>();
+                    item.Add("caption", GetCaption(child));
+                    items.Add(child.Name, item);
                 }
             }
 
-            JavascriptCode.Append("});" + Environment.NewLine);
+            folder.Add("items", items);
 
-            return JavascriptCode;
+            return folder;
         }
 
         private static StringBuilder AddSection(string path, XmlNode ASectionNode, string AUserId)
@@ -391,7 +386,7 @@ namespace Ict.Petra.Server.app.JSClient
                             continue;
                         }
 
-                        ScreenCode.Append("<a href='javascript:OpenTab(\"" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + "\", \"" +
+                        ScreenCode.Append("<a href='javascript:nav.OpenTab(\"" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + "\", \"" +
                             GetCaption(task) + "\")'" + style + ">" + GetCaption(task) + "</a><br/>" + Environment.NewLine);
                         TaskDisplayed = true;
                     }
@@ -466,7 +461,7 @@ namespace Ict.Petra.Server.app.JSClient
             }
             else
             {
-                return "cannot find " + ANavigationPage;
+                return "error: cannot find " + ANavigationPage;
             }
 
             return ScreenContent.ToString();
