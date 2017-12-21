@@ -182,6 +182,8 @@
     <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
 </if>
 
+<property name="dir.jsclient" value="../../openpetra-client-js/" overwrite="false" />
+
 <!-- Version number -->
 <property name="ReleaseID" value="${OP::GetReleaseIDFromVersionTxt(dir.root)}" overwrite="false"  />
 
@@ -411,7 +413,12 @@
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>
     <property name="external.sql2dia" value="/usr/bin/sql2dia" overwrite="false"/>
-    <property name="libsodium.so" value="/usr/lib64/libsodium.so.18"/>
+    <!-- Fedora has version 18 -->
+    <property name="libsodium.so" value="/usr/lib64/libsodium.so.18" overwrite="false"/>
+    <if test="${not file::exists(libsodium.so)}">
+        <!-- CentOS7 has version 13 -->
+        <property name="libsodium.so" value="/usr/lib64/libsodium.so.13" overwrite="true"/>
+    </if>
 
     <!-- this is the location of NUnit on mono-openpetra rpm -->
     <property name="search.NUnitConsole" value="/opt/mono/lib/mono/4.5/nunit-console.exe"/>

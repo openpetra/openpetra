@@ -83,13 +83,14 @@
 </target>
 
 <target name="startServer-internal" depends="initConfigFiles-server, copySQLFiles" description="Starts a local Petra Server">
-  <copy todir="${dir.delivery}" overwrite="true">
+  <mkdir dir="${dir.delivery}/api" failonerror="false"/>
+  <copy todir="${dir.delivery}/api" overwrite="true">
     <fileset basedir="${dir.csharp}/ICT/Petra/Server/app/WebService/">
       <include name="*.asmx" />
     </fileset>
   </copy>
 
-  <copy todir="${dir.delivery}" overwrite="true" flatten="true">
+  <copy todir="${dir.delivery}/api" overwrite="true" flatten="true">
     <fileset basedir="${dir.csharp}/ICT/Petra/Plugins/">
       <include name="**/*.asmx" />
     </fileset>
@@ -178,10 +179,16 @@
   </if>
   <if test="${'unix'==platform::get-name()}" >
       <!-- create symbolic link for api page -->
-      <if test="${not file::exists(dir.delivery + '/Default.aspx')}">
+      <if test="${not file::exists(dir.delivery + '/api/Default.aspx')}">
+        <exec program="bash"
+            workingdir="${dir.delivery}/api"
+            commandline="-c &quot;ln -s ../../csharp/ICT/Petra/Server/app/WebService/Default.aspx&quot;"/>
+      </if>
+      <!-- create symbolic links for the javascript client in delivery directory -->
+      <if test="${not file::exists(dir.delivery + '/index.html')}">
         <exec program="bash"
             workingdir="${dir.delivery}"
-            commandline="-c &quot;ln -s ../csharp/ICT/Petra/Server/app/WebService/Default.aspx"/>
+            commandline="-c &quot;js=${dir.jsclient}; ln -s $js/img; ln -s $js/src; ln -s $js/css; ln -s $js/index.html&quot;"/>
       </if>
       <if test="${not file::exists(dir.bin + '/libsodium.so')}">
         <exec program="bash"
@@ -194,6 +201,7 @@
       <delete file="${dir.bin}/libsodium.dll"/>
       <delete file="${dir.bin}/libsodium-64.dll"/>
       <echo message="in your browser, go to http://localhost:${Server.Port}/"/>
+      <echo message="   for the api,  go to http://localhost:${Server.Port}/api/"/>
       <property name="spawnxsp" value="false" overwrite="false"/>
       <exec program="xsp4" 
               workingdir="${dir.delivery}"
