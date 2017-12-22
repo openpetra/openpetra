@@ -33,6 +33,7 @@
   <include name="ICSharpCode.SharpZipLib.dll"/>
   <include name="ExcelLibrary.dll"/>
   <include name="Jayrock.Json.dll"/>
+  <include name="Newtonsoft.Json.dll" />
   <include name="ICSharpCode.NRefactory.dll"/> <!-- Winforms Generator -->
   <include name="PasswordUtilities.dll"/>
   <include name="Sodium.dll"/>

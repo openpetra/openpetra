@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,9 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Principal;
+
+using Newtonsoft.Json;
+
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
@@ -48,6 +51,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Ict.Petra.Server.app.JSClient;
 
 namespace Ict.Petra.Server.App.WebService
 {
@@ -230,15 +234,19 @@ namespace Ict.Petra.Server.App.WebService
 
         /// <summary>Login a user</summary>
         [WebMethod(EnableSession = true)]
-        public eLoginEnum Login(string username, string password)
+        public string Login(string username, string password)
         {
             string WelcomeMessage;
             bool SystemEnabled;
             IPrincipal UserInfo;
             Int32 ClientID;
 
-            return LoginInternal(username, password, TFileVersionInfo.GetApplicationVersion().ToVersion(),
+            eLoginEnum resultCode =  LoginInternal(username, password, TFileVersionInfo.GetApplicationVersion().ToVersion(),
                 out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo);
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            result.Add("resultcode", resultCode.ToString());
+            return JsonConvert.SerializeObject(result);
         }
 
         /// <summary>Login a user</summary>
@@ -360,21 +368,27 @@ namespace Ict.Petra.Server.App.WebService
 
         /// <summary>check if the user has logged in successfully</summary>
         [WebMethod(EnableSession = true)]
-        public bool IsUserLoggedIn()
+        public string IsUserLoggedIn()
         {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
             object loggedIn = TSession.GetVariable("LoggedIn");
 
             if ((null != loggedIn) && ((bool)loggedIn == true))
             {
-                return true;
+                result.Add("resultcode", "success");
+            }
+            else
+            {
+                result.Add("resultcode", "error");
             }
 
-            return false;
+            return JsonConvert.SerializeObject(result);
         }
 
         /// <summary>log the user out</summary>
         [WebMethod(EnableSession = true)]
-        public bool Logout()
+        public string Logout()
         {
             string clientName = "unknown";
 
@@ -394,19 +408,54 @@ namespace Ict.Petra.Server.App.WebService
                 DomainManager.CurrentClient.EndSession();
             }
 
-            return true;
+            Dictionary<string, object> result = new Dictionary<string, object>();
+            result.Add("resultcode", "success");
+            return JsonConvert.SerializeObject(result);
         }
 
-        /// <summary>get user information</summary>
+        /// <summary>get the navigation menu</summary>
         [WebMethod(EnableSession = true)]
-        public string GetUserInfo()
+        public string GetNavigationMenu()
         {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
             if (UserInfo.GUserInfo == null)
             {
-                return THttpBinarySerializer.SerializeObject(false);
+                result.Add("resultcode", "error");
+                result.Add("error", "invalid user");
+                return JsonConvert.SerializeObject(result);
             }
 
-            return THttpBinarySerializer.SerializeObject(UserInfo.GUserInfo, true);
+            result.Add("resultcode", "success");
+            result.Add("navigation", TUINavigation.LoadNavigationUI());
+            return JsonConvert.SerializeObject(result);
+        }
+
+        /// <summary>load a specific navigation page</summary>
+        [WebMethod(EnableSession = true)]
+        public string LoadNavigationPage(string ANavigationPage)
+        {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (UserInfo.GUserInfo == null)
+            {
+                result.Add("resultcode", "error");
+                result.Add("error", "invalid user");
+                return JsonConvert.SerializeObject(result);
+            }
+
+            string htmlcode = TUINavigation.LoadNavigationPage(ANavigationPage);
+
+            if (htmlcode.StartsWith("error:"))
+            {
+                result.Add("resultcode", "error");
+                result.Add("message", htmlcode);
+            } else {
+                result.Add("resultcode", "success");
+                result.Add("htmlpage", htmlcode);
+            }
+                
+            return JsonConvert.SerializeObject(result);
         }
 
         /// <summary>client gets tasks, and lets the server know that it is still connected</summary>
