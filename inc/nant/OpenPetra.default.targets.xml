@@ -240,6 +240,9 @@
 <target name="stopPetraServer" description="stop the local OpenPetra Server">
     <call target="stopServer"/>
 </target>
+<target name="stop" description="stop the local OpenPetra Server">
+    <call target="stopServer"/>
+</target>
 
 <target name="stopServer" depends="initConfigFiles-admin" description="stop the local OpenPetra Server">
   <if test="${platform::is-windows()}" >
