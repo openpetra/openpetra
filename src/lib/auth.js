@@ -71,7 +71,7 @@ class Auth {
 
 		// what if the session timed out on the server?
 		// how long ago was the last auth check? check every 5 minutes
-		if (lastAuthCheck != 0 && ((new Date() - lastAuthCheck) / 1000 / 60 <= 5)) {
+		if (lastAuthCheck != null && ((new Date() - lastAuthCheck) / 1000 / 60 <= 5)) {
 			fnAuthenticatedUser();
 		} else {
 			api.post('serverSessionManager.asmx/IsUserLoggedIn', null, null)
@@ -81,7 +81,7 @@ class Auth {
 						localStorage.setItem('authenticated', new Date());
 						fnAuthenticatedUser();
 					} else {
-						if (lastAuthCheck != 0) {
+						if (lastAuthCheck != null) {
 							alert("session has expired");
 							localStorage.setItem('username', '');
 							localStorage.setItem('authenticated', 0);

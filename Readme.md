@@ -13,9 +13,4 @@ Copyright 2017 by TBits.net GmbH
 Setup for Development
 =====================
 
-on CentOS7, as user root:
-
-    yum install epel-release
-    yum install mono-complete nant nginx git
-
-TODO nginx configuration
+See the [instructions for the OpenPetra server](https://github.com/openpetra/openpetra#development-setup), which includes the installation of the client.
