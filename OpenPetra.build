@@ -504,7 +504,7 @@ useful parameters
     <!-- calling script must get a fresh git tree, write OpenPetra.build.config with sqlite -->
 
     <!-- if ../openpetra-client-js does not exist, download from Github -->
-    <if test="not ${directory::exists(dir.root + '/openpetra-client-js')}">
+    <if test="${not directory::exists(dir.root + '/openpetra-client-js')}">
         <exec program="git" commandline="clone --depth 1 https://github.com/openpetra/openpetra-client-js.git ${dir.root}/../openpetra-client-js"/> 
     </if>
 
