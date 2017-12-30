@@ -501,7 +501,12 @@ useful parameters
 <target name="devzip">
     <echo message="Target devzip started at: ${datetime::now()}" />
     
-    <!-- calling script must get a fresh bzr tree, write OpenPetra.build.config with sqlite -->
+    <!-- calling script must get a fresh git tree, write OpenPetra.build.config with sqlite -->
+
+    <!-- if ../openpetra-client-js does not exist, download from Github -->
+    <if test="!${directory::exists(dir.root + '/openpetra-client-js')}">
+        <exec program="git" commandline="clone --depth 1 https://github.com/openpetra/openpetra-client-js.git ${dir.root}/../openpetra-client-js"/> 
+    </if>
 
     <call target="quickClean"/>
     <call target="generateSolution"/>
