@@ -501,7 +501,12 @@ useful parameters
 <target name="devzip">
     <echo message="Target devzip started at: ${datetime::now()}" />
     
-    <!-- calling script must get a fresh bzr tree, write OpenPetra.build.config with sqlite -->
+    <!-- calling script must get a fresh git tree, write OpenPetra.build.config with sqlite -->
+
+    <!-- if ../openpetra-client-js does not exist, download from Github -->
+    <if test="${not directory::exists(dir.root + '/openpetra-client-js')}">
+        <exec program="git" commandline="clone --depth 1 https://github.com/openpetra/openpetra-client-js.git ${dir.root}/../openpetra-client-js"/> 
+    </if>
 
     <call target="quickClean"/>
     <call target="generateSolution"/>
@@ -515,7 +520,7 @@ useful parameters
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
     <call target="initConfigFiles"/>
     <call target="startServerBackground"/>
-    <sleep seconds="3"/>
+    <sleep seconds="10"/>
     <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe"
         commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
     <call target="stopPetraServer"/>

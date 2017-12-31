@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,7 +108,7 @@ namespace Ict.Common.Remoting.Client
         /// </summary>
         public Boolean DisconnectClient(out String ACantDisconnectReason)
         {
-            THttpConnector.CallWebConnector("SessionManager", "Logout", null, "System.Boolean");
+            THttpConnector.CallWebConnector("SessionManager", "Logout", null, "System.String");
             ACantDisconnectReason = string.Empty;
             return true;
         }
@@ -118,7 +118,7 @@ namespace Ict.Common.Remoting.Client
         /// </summary>
         public Boolean DisconnectClient(String AReason, out String ACantDisconnectReason)
         {
-            THttpConnector.CallWebConnector("SessionManager", "Logout", null, "System.Boolean");
+            THttpConnector.CallWebConnector("SessionManager", "Logout", null, "System.String");
             ACantDisconnectReason = string.Empty;
             return true;
         }
