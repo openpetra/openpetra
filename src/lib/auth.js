@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2017 by TBits.net
+// Copyright 2017-2018 by TBits.net
 //
 // This file is part of OpenPetra.
 //
@@ -71,7 +71,7 @@ class Auth {
 
 		// what if the session timed out on the server?
 		// how long ago was the last auth check? check every 5 minutes
-		if (lastAuthCheck != null && ((new Date() - lastAuthCheck) / 1000 / 60 <= 5)) {
+		if (lastAuthCheck != null && lastAuthCheck != 0 && ((new Date() - lastAuthCheck) / 1000 / 60 <= 5)) {
 			fnAuthenticatedUser();
 		} else {
 			api.post('serverSessionManager.asmx/IsUserLoggedIn', null, null)
@@ -81,7 +81,7 @@ class Auth {
 						localStorage.setItem('authenticated', new Date());
 						fnAuthenticatedUser();
 					} else {
-						if (lastAuthCheck != null) {
+						if (lastAuthCheck != null && lastAuthCheck != 0) {
 							alert("session has expired");
 							localStorage.setItem('username', '');
 							localStorage.setItem('authenticated', 0);
