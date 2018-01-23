@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2017 by TBits.net
+// Copyright 2017-2018 by TBits.net
 //
 // This file is part of OpenPetra.
 //
@@ -41,8 +41,8 @@ class Navigation {
 		if (name.substring(0, "frm".length) === "frm" || name.indexOf('/frm') > 0)
 		{
 			axios.get("/src/forms/" + name + ".html")
-                        .then(function(response) {
-				$("#containerIFrames").html(response.data);
+				.then(function(response) {
+					$("#containerIFrames").html(response.data);
 			});
 		}
 		else // fetch navigation page
