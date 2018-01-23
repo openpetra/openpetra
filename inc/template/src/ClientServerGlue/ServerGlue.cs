@@ -38,11 +38,6 @@ public class TM{#TOPLEVELMODULE}WebService : System.Web.Services.WebService
 {
     private static SortedList<string, object> FUIConnectors = new SortedList<string, object>();
 
-    private bool isJSClient()
-    {
-        return THttpBinarySerializer.isJSClient();
-    }
-
     /// <summary>
     /// constructor, which is called for each http request
     /// </summary>

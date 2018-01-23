@@ -194,7 +194,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// Any user can call this, but they must only change their own password, they need to know their current password,
         /// the new password must meet the password quality criteria and it must not be the same than the current password!
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static bool SetUserPassword(string AUserID,
             string ANewPassword,
             string ACurrentPassword,
@@ -212,6 +212,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             AVerification = new TVerificationResultCollection();
 
             // Security check: Is the user that is performing the password change request the current user?
+            AUserID = AUserID.ToUpper();
             if (AUserID != UserInfo.GUserInfo.UserID)
             {
                 throw new EOPAppException(

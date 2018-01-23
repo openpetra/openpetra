@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -315,7 +315,7 @@ namespace GenerateGlue
                     }
 
                     returnCodeJSClient +=
-                        "THttpBinarySerializer.SerializeObjectWithType(" +
+                        "THttpBinarySerializer.SerializeObject(" +
                         (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
                         p.ParameterName + ")";
 
@@ -360,7 +360,7 @@ namespace GenerateGlue
                             returnCodeJSClient = "\"{ \\\"0\\\": \" + " + returnCodeJSClient;
                         }
 
-                        returnCodeJSClient += "+\", \\\"" + returnCounter.ToString() + "\\\": \"+" +
+                        returnCodeJSClient += "+\", \\\"result\\\": \"+" +
                                               "THttpBinarySerializer.SerializeObjectWithType(Result)";
 
                         returnCounter++;
@@ -408,7 +408,7 @@ namespace GenerateGlue
                 if ((returnCodeFatClient.Length > 0) || (returnCodeJSClient.Length > 0))
                 {
                     snippet.SetCodelet("RETURN",
-                        returntype != "void" ? "return isJSClient()?" + returnCodeJSClient + ":" + returnCodeFatClient + ";" : string.Empty);
+                        returntype != "void" ? "return " + returnCodeJSClient + ";" : string.Empty);
                 }
 
                 snippet.SetCodelet("RETURNTYPE", returntype);
