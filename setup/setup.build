@@ -15,7 +15,7 @@
   <property name="solution" value="Server"/>
   <property name="onlyonce" value="true"/>
   <call target="quickCompile"/>
-  <property name="solution" value="PetraTools"/>
+  <property name="solution" value="YmlGzImportExport"/>
   <call target="quickCompile"/>
   <call target="createSQLStatements"/>
   <call target="translation"/>
