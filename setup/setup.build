@@ -67,26 +67,12 @@
   </copy>
   <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/bin30" overwrite="true"/>
 
-  <copy todir="${dir.setup}/js30">
-    <fileset basedir="${dir.root}/js">
-      <include name="**/*"/>
-    </fileset>
-  </copy>
-
   <delete>
     <fileset>
       <include name="${dir.setup}/bin30/sqlite3.dll" />
     </fileset>
   </delete>
 
-  <property name="UINavigation.file" value="${dir.root}/js/UINavigation.yml.my"/>
-  <if test="${file::exists(UINavigation.file)}">
-    <copy file="${UINavigation.file}" tofile="${dir.setup}/bin30/UINavigation.yml" overwrite="true"/>
-  </if>
-  <if test="${not file::exists(UINavigation.file)}">
-    <property name="UINavigation.file" value="${dir.root}/js/UINavigation.yml"/>
-    <copy file="${UINavigation.file}" tofile="${dir.setup}/bin30/UINavigation.yml" overwrite="true"/>
-  </if>
   <copy todir="${dir.setup}/resources30">
     <fileset basedir="${dir.root}/resources">
       <include name="*.ico" />
