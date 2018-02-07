@@ -11,9 +11,8 @@
   <property name="OpenBuildService" value="true"/>
 
   <call target="nanttasks"/>
-  <call target="generateTools"/>
   <call target="minimalGenerateSolution"/>
-  <property name="solution" value="OpenPetra.Server"/>
+  <property name="solution" value="Server"/>
   <property name="onlyonce" value="true"/>
   <call target="quickCompile"/>
   <call target="createSQLStatements"/>
