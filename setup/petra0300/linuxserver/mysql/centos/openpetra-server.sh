@@ -161,34 +161,41 @@ init() {
        | sed -e "s/USERNAME/$userName/" \
        | sed -e "s/openpetraOPENPETRA_PORT/$userName/" \
        > /home/$userName/etc/PetraServerAdminConsole.config
+    OPENPETRA_HTTP_PORT=$((OPENPETRA_PORT-1000))
 
     chown -R $userName:$userName /home/$userName
 
-    # configure lighttpd
-    cat > /etc/lighttpd/vhosts.d/$userName.conf <<FINISH
-\$HTTP["url"] =~ "^/$userName" {
-  var.server_name = "$userName"
+    # configure nginx
+    cat > /etc/nginx/conf.d/$userName.conf <<FINISH
+server {
+    listen $OPENPETRA_HTTP_PORT;
+    server_name $OPENPETRA_URL;
 
-  server.name = "localhost/$userName"
+    root /var/www/openpetra-client;
 
-  server.document-root = "$documentroot"
+    location / {
+         rewrite ^/Settings.*$ /;
+         rewrite ^/Partner.*$ /;
+         rewrite ^/Finance.*$ /;
+         rewrite ^/CrossLedger.*$ /;
+         rewrite ^/System.*$ /;
+         rewrite ^/.git/.*$ / redirect;
+         rewrite ^/etc/.*$ / redirect;
+    }
 
-  fastcgi.server = (
-        "/$userName" => ((
-                "host" => "127.0.0.1",
-                "port" => $OPENPETRA_PORT,
-                "check-local" => "disable"
-        ))
-  )
+    location /api {
+         index index.html index.htm default.aspx Default.aspx;
+         fastcgi_index Default.aspx;
+         fastcgi_pass 127.0.0.1:$OPENPETRA_PORT;
+         include /etc/nginx/fastcgi_params;
+         sub_filter_types text/html text/css text/xml;
+         sub_filter 'http://127.0.0.1:$OPENPETRA_PORT' 'https://$OPENPETRA_URL/api';
+         sub_filter 'http://_/api' 'https://$OPENPETRA_URL/api';
+    }
 }
 FINISH
-    sed -i 's~"mod_fastcgi",~#"mod_fastcgi",~g' /etc/lighttpd/modules.conf
-    sed -i 's~server.modules = (~server.modules = (\n  "mod_fastcgi",~g' /etc/lighttpd/modules.conf
-    sed -i 's/server.use-ipv6 = "enable"/server.use-ipv6 = "disable"/g' /etc/lighttpd/lighttpd.conf
-    sed -i 's/server.max-connections = 1024/server.max-connections = 512/g' /etc/lighttpd/lighttpd.conf
-    sed -i 's~#include_shell "cat /etc/lighttpd/vhosts\.d/\*\.conf"~include_shell "cat /etc/lighttpd/vhosts.d/*.conf"~g' /etc/lighttpd/lighttpd.conf
-    systemctl restart lighttpd
-    systemctl enable lighttpd
+    systemctl restart nginx
+    systemctl enable nginx
 
     if [[ "$NAME" != "openpetra-server" ]]
     then
