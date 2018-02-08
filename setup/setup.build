@@ -109,6 +109,8 @@
        <include name="**/*.asmx" />
     </fileset>
   </copy>
+  <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/Default.aspx"
+      tofile="${dir.setup}/asmx/Default.aspx"/>
 
   <foreach item="String" property="LinuxTargetDistribution" delim="," in="${LinuxTargetDistribution-list}" >
    <if test="${string::contains(LinuxTargetDistribution, DBMS.Type)}">
