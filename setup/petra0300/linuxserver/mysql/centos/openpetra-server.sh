@@ -4,7 +4,7 @@
 #
 
 export OpenPetraPath=/usr/local/openpetra
-export documentroot=/var/www/openpetra
+export documentroot=/var/www/openpetra-server
 export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 
@@ -18,7 +18,10 @@ then
   export userName=openpetra
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
+  export OPENPETRA_URL=localhost
+  export OPENPETRA_HTTP_URL=http://localhost
   export OPENPETRA_PORT=9000
+  export OPENPETRA_HTTP_PORT=80
   export OPENPETRA_DBHOST=localhost
 fi
 
@@ -39,7 +42,7 @@ start() {
     echo "Starting OpenPetra server"
     if [ "`whoami`" = "$userName" ]
     then
-      cd /var/www/openpetra
+      cd $documentroot
       LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenPetraPath/bin30 fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null
       # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
     else
@@ -161,11 +164,24 @@ init() {
        | sed -e "s/USERNAME/$userName/" \
        | sed -e "s/openpetraOPENPETRA_PORT/$userName/" \
        > /home/$userName/etc/PetraServerAdminConsole.config
-    OPENPETRA_HTTP_PORT=$((OPENPETRA_PORT-1000))
 
     chown -R $userName:$userName /home/$userName
 
     # configure nginx
+    if [ $OPENPETRA_HTTP_PORT == 80 ]
+    then
+      # let the default nginx server run on another port
+      sed -i "s/listen\(.*\)80/listen\181/g" /etc/nginx/nginx.conf
+    fi
+
+    if [[ "`grep SCRIPT_FILENAME /etc/nginx/fastcgi_params`" == "" ]]
+    then
+      cat >> /etc/nginx/fastcgi_params <<FINISH
+fastcgi_param  PATH_INFO          "";
+fastcgi_param  SCRIPT_FILENAME    \$document_root\$fastcgi_script_name;
+FINISH
+    fi
+
     cat > /etc/nginx/conf.d/$userName.conf <<FINISH
 server {
     listen $OPENPETRA_HTTP_PORT;
@@ -189,8 +205,8 @@ server {
          fastcgi_pass 127.0.0.1:$OPENPETRA_PORT;
          include /etc/nginx/fastcgi_params;
          sub_filter_types text/html text/css text/xml;
-         sub_filter 'http://127.0.0.1:$OPENPETRA_PORT' 'https://$OPENPETRA_URL/api';
-         sub_filter 'http://_/api' 'https://$OPENPETRA_URL/api';
+         sub_filter 'http://127.0.0.1:$OPENPETRA_PORT' '$OPENPETRA_HTTP_URL/api';
+         sub_filter 'http://localhost/api' '$OPENPETRA_HTTP_URL/api';
     }
 }
 FINISH
