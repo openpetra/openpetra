@@ -277,7 +277,7 @@ namespace Ict.Tools.NAntTasks
                     "Ict.Common.csproj,Ict.Common.IO,Ict.Tools");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.YmlGzImportExport.sln",
-                    "Ict.Petra.Tools.MSysMan.YmlGzImportExport.csproj");
+                    "Ict.Petra.Tools.YmlGzImportExport");
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Testing.sln",
                     "Ict.Common,Ict.Petra,Ict.Testing");
