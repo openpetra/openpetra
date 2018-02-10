@@ -307,7 +307,7 @@
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
-<property name="DBMS.Type" value="postgresql"
+<property name="DBMS.Type" value="mysql"
           overwrite="false" />
 <property name="DBMS.DBName" value="openpetra"
           overwrite="false"/>
@@ -315,7 +315,7 @@
           overwrite="false"/>
 <property name="DBMS.Password" value="petra"
           overwrite="false" />
-<property name="DBMS.DBPort" value="5432"
+<property name="DBMS.DBPort" value="3306"
           overwrite="false"/>
 <property name="DBMS.DBHostOrFile" value="127.0.0.1"
           overwrite="false"/>
