@@ -416,8 +416,8 @@
     <!-- Fedora has version 18 -->
     <property name="libsodium.so" value="/usr/lib64/libsodium.so.18" overwrite="false"/>
     <if test="${not file::exists(libsodium.so)}">
-        <!-- CentOS7 has version 13 -->
-        <property name="libsodium.so" value="/usr/lib64/libsodium.so.13" overwrite="true"/>
+        <!-- CentOS7 has version 23 -->
+        <property name="libsodium.so" value="/usr/lib64/libsodium.so.23" overwrite="true"/>
     </if>
 
     <!-- this is the location of NUnit on mono-openpetra rpm -->
