@@ -241,7 +241,14 @@ namespace Ict.Petra.Server.app.JSClient
         /// </summary>
         public static XmlNode BuildNavigationXml(bool ADontUseDefaultLedger = false)
         {
-            TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
+            string UINavigationFile = TAppSettingsManager.GetValue("UINavigation.File");
+
+            if (!File.Exists(UINavigationFile))
+            {
+                throw new Exception ("cannot find file " + UINavigationFile);
+            }
+
+            TYml2Xml parser = new TYml2Xml(UINavigationFile);
             XmlDocument UINavigation = parser.ParseYML2XML();
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
