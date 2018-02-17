@@ -28,30 +28,27 @@
 
 <!-- Linux -->
 <target name="prepareSetupDirForTarFile">
-<!-- for the moment, just create a tar.gz file, with sub directories manuals30 containing the release notes, 
-     bin30 with just the server binaries, db30 with the demo sqlite database, demo30 with some sample files,
-     reports30, sql30 with the sql scripts, etc30 with the 2 config files; start and maintain script in the root
+<!-- for the moment, just create a tar.gz file, with sub directories manuals containing the release notes, 
+     bin with just the server binaries, db with the scripts to setup the database,
+     reports, sql with the sql scripts, etc with the 2 config files; start and maintain script in the root
      LICENSE file in the root, INSTALL file with instructions, required packages, firewall etc? 
 -->
-  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
+  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}" overwrite="false"/>
   <delete dir="${dir.setup}"/>
   <mkdir dir="${dir.setup}"/>
   
-  <mkdir dir="${dir.setup}/db30"/>
-  <mkdir dir="${dir.setup}/demo30"/>
-  <mkdir dir="${dir.setup}/log30"/>
-  <mkdir dir="${dir.setup}/etc30"/>
-  <mkdir dir="${dir.setup}/reports30"/>
-  <mkdir dir="${dir.setup}/patches30"/>  
-  <mkdir dir="${dir.setup}/manuals30"/>
-  <mkdir dir="${dir.setup}/sql30"/>
-  <mkdir dir="${dir.setup}/formletters30"/>
-  <mkdir dir="${dir.setup}/resources30"/>
-  <mkdir dir="${dir.setup}/bin30"/>
-  <mkdir dir="${dir.setup}/js30"/>
+  <mkdir dir="${dir.setup}/db"/>
+  <mkdir dir="${dir.setup}/etc"/>
+  <mkdir dir="${dir.setup}/reports"/>
+  <mkdir dir="${dir.setup}/manuals"/>
+  <mkdir dir="${dir.setup}/sql"/>
+  <mkdir dir="${dir.setup}/formletters"/>
+  <mkdir dir="${dir.setup}/bin"/>
+  <mkdir dir="${dir.setup}/server"/>
+  <mkdir dir="${dir.setup}/client"/>
 
-  <echo file="${dir.setup}/bin30/version.txt">${ReleaseVersion}</echo>
-  <copy todir="${dir.setup}/bin30">
+  <echo file="${dir.setup}/bin/version.txt">${ReleaseVersion}</echo>
+  <copy todir="${dir.setup}/bin">
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
       <include name="*.exe" />
@@ -66,30 +63,18 @@
       <exclude name="WebDriver*" />
       <exclude name="NUnitForms*" />
       <exclude name="Mono.*" />
+      <exclude name="sqlite3.dll" />
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>
-  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/bin30" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/bin" overwrite="true"/>
 
-  <delete>
-    <fileset>
-      <include name="${dir.setup}/bin30/sqlite3.dll" />
-    </fileset>
-  </delete>
-
-  <copy todir="${dir.setup}/resources30">
-    <fileset basedir="${dir.root}/resources">
-      <include name="*.ico" />
-      <include name="*.png" />
-    </fileset>
-  </copy>       
-  
-  <copy todir="${dir.setup}/manuals30">
+  <copy todir="${dir.setup}/manuals">
     <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">
       <include name="*.html" />
     </fileset>
   </copy>
-  <copy todir="${dir.setup}/reports30">
+  <copy todir="${dir.setup}/reports">
     <fileset basedir="${dir.root}/XmlReports/">
       <include name="*.dtd" />
       <!-- TODO exclude the report xml files from client tar, only include report settings -->
@@ -98,19 +83,18 @@
   </copy>
   <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>
   
-  <mkdir dir="${dir.setup}/asmx"/>
-  <copy todir="${dir.setup}/asmx">
+  <copy todir="${dir.setup}/server">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
        <include name="*.asmx" />
     </fileset>
   </copy>
-  <copy todir="${dir.setup}/asmx" flatten="true">
+  <copy todir="${dir.setup}/server" flatten="true">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Plugins">
        <include name="**/*.asmx" />
     </fileset>
   </copy>
   <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/Default.aspx"
-      tofile="${dir.setup}/asmx/Default.aspx"/>
+      tofile="${dir.setup}/server/Default.aspx"/>
 
   <foreach item="String" property="LinuxTargetDistribution" delim="," in="${LinuxTargetDistribution-list}" >
    <if test="${string::contains(LinuxTargetDistribution, DBMS.Type)}">
@@ -128,14 +112,14 @@
   </if>
   <if test="${file::exists(Config.file)}">
       <copy file="${Config.file}"
-          tofile="${dir.setup}/etc30/web-sample.config" overwrite="true">
+          tofile="${dir.setup}/etc/web-sample.config" overwrite="true">
           <filterchain>
               <expandproperties />
           </filterchain>
       </copy>
   </if>
 
-  <copy todir="${dir.setup}/etc30">
+  <copy todir="${dir.setup}/etc">
     <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
         <include name="*.config" />
     </fileset>
@@ -143,13 +127,8 @@
         <expandproperties />
     </filterchain>
   </copy>
-  <copy todir="${dir.setup}/demo30">
-    <fileset basedir="${dir.bin}/demodata/">
-        <include name="**/*.*" />
-    </fileset>
-  </copy>
 
-  <copy todir="${dir.setup}/formletters30">
+  <copy todir="${dir.setup}/formletters">
     <fileset basedir="${dir.root}/demodata/formletters/">
         <include name="*.html" />
         <include name="*.png" />
@@ -158,29 +137,29 @@
 
   <if test="${string::contains(DBMS.Type, 'postgresql')}">
     <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
-              tofile="${dir.setup}/db30/createtables-PostgreSQL.sql"/>
+              tofile="${dir.setup}/db/createtables-PostgreSQL.sql"/>
     <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
-              tofile="${dir.setup}/db30/createconstraints-PostgreSQL.sql"/>
+              tofile="${dir.setup}/db/createconstraints-PostgreSQL.sql"/>
     <if test="${file::exists(dir.root + '/setup/petra' + PetraRelease + '/demodata-PostgreSQL.sql')}">
        <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
-              tofile="${dir.setup}/db30/demodata-PostgreSQL.sql"/>
+              tofile="${dir.setup}/db/demodata-PostgreSQL.sql"/>
     </if>
   </if>
   <if test="${string::contains(DBMS.Type, 'mysql')}">
     <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-MySQL.sql"
-              tofile="${dir.setup}/db30/createtables-MySQL.sql"/>
+              tofile="${dir.setup}/db/createtables-MySQL.sql"/>
     <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
-              tofile="${dir.setup}/db30/createconstraints-MySQL.sql"/>
+              tofile="${dir.setup}/db/createconstraints-MySQL.sql"/>
     <copy file="${dir.root}/setup/petra${PetraRelease}/petra.sql"
-              tofile="${dir.setup}/db30/createdb-MySQL.sql"/>
+              tofile="${dir.setup}/db/createdb-MySQL.sql"/>
     <if test="${file::exists(dir.root + '/setup/petra' + PetraRelease + '/demodata-MySQL.sql')}">
         <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
-              tofile="${dir.setup}/db30/demodata-MySQL.sql"/>
+              tofile="${dir.setup}/db/demodata-MySQL.sql"/>
     </if>
   </if>
   <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
               tofile="${dir.setup}/INSTALL"/>
-  <copy todir="${dir.setup}/sql30">
+  <copy todir="${dir.setup}/sql">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">
         <include name="*.sql" />
         <include name="*.yml" />
@@ -193,10 +172,10 @@
           </items>
       </in>
       <do>
-          <copy file="${filename}" tofile="${dir.setup}/sql30/${path::get-file-name(filename)}"/>
+          <copy file="${filename}" tofile="${dir.setup}/sql/${path::get-file-name(filename)}"/>
       </do>
   </foreach>
-  <copy todir="${dir.setup}/sql30">
+  <copy todir="${dir.setup}/sql">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/DBUpgrades/">
         <include name="*.sql" />
     </fileset>
