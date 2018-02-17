@@ -20,13 +20,14 @@
   <call target="createSQLStatements"/>
   <call target="translation"/>
 
+  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
   <call target="prepareSetupDirForTarFile"/>
 
   <!-- result is in dir.setup for building the rpm package -->
 </target>
 
 <target name="install">
-  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}" overwrite="false"/>
+  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
 
   <if test="${not directory::exists('/usr/local/openpetra/bin')}">
     <fail message="this only works if the openpetra rpm package has been installed already"/>
@@ -53,7 +54,6 @@
      reports, sql with the sql scripts, etc with the 2 config files; start and maintain script in the root
      LICENSE file in the root, INSTALL file with instructions, required packages, firewall etc? 
 -->
-  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}" overwrite="false"/>
   <delete dir="${dir.setup}"/>
   <mkdir dir="${dir.setup}"/>
   
