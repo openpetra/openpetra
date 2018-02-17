@@ -315,9 +315,9 @@ namespace GenerateGlue
                     }
 
                     returnCodeJSClient +=
-                        "THttpBinarySerializer.SerializeObject(" +
+                        " \"\\\"\" + THttpBinarySerializer.SerializeObject(" +
                         (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
-                        p.ParameterName + ")";
+                        p.ParameterName + ") + \"\\\"\"";
 
                     returnCounter++;
                 }
