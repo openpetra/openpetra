@@ -20,10 +20,30 @@
   <call target="createSQLStatements"/>
   <call target="translation"/>
 
-  <property name="BuildArchive" value="server" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
 
   <!-- result is in dir.setup for building the rpm package -->
+</target>
+
+<target name="install">
+  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}" overwrite="false"/>
+
+  <if test="${not directory::exists('/usr/local/openpetra/bin')}">
+    <fail message="this only works if the openpetra rpm package has been installed already"/>
+  </if>
+
+  <call target="prepareSetupDirForTarFile"/>
+  <copy todir="/usr/local/openpetra">
+    <fileset basedir="${dir.setup}">
+      <include name="**/*" />
+    </fileset>
+  </copy>
+
+  <copy todir="/usr/local/openpetra/client">
+    <fileset basedir="${dir.root}/../openpetra-client-js">
+      <include name="**/*" />
+    </fileset>
+  </copy>
 </target>
 
 <!-- Linux -->

@@ -22,9 +22,7 @@ list of available commands:
                                            other solutions are: Client, Server, Testing
   compileProject: compile a single project file
       nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Common.csproj
-  start: start both the local server and client
-  startServer: run a local OpenPetra Server
-  stopServer: stop the local OpenPetra Server
+  install: install the current development binaries to this machine (requires the rpm already to be installed)
   startAdmin: run the admin console
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for server and testing, and the version.txt
