@@ -277,6 +277,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                             VerificationResultColl.Add(new TVerificationResult("Password Verification",
                                     Catalog.GetString(
                                         "The current password was entered incorrectly! The password did not get changed."),
+                                    "ChangePassword.CurrentPwdWrong",
                                     TResultSeverity.Resv_Critical));
 
                             try
