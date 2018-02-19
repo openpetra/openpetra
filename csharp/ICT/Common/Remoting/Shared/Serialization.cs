@@ -112,7 +112,8 @@ namespace Ict.Common.Remoting.Shared
 
         static private string VerificationResultCollectionToJson(TVerificationResultCollection ACollection)
         {
-            return ACollection.BuildVerificationResultString();
+            // only return the error codes
+            return ACollection.GetErrorCodes();
         }
 
         /// <summary>

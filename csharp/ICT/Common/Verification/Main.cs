@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1028,6 +1028,37 @@ namespace Ict.Common.Verification
                                    new object[] { si.ResultContext, Status, si.ResultText, si.ResultCode })) +
                               Environment.NewLine + Environment.NewLine;
             }
+
+            return ReturnValue;
+        }
+
+        /// Return all errors with their codes, for the javascript client, formatted with json
+        public string GetErrorCodes()
+        {
+            TVerificationResult si;
+            string ReturnValue = "[";
+
+            for (int i = 0; i <= Count - 1; i += 1)
+            {
+                si = (TVerificationResult)(FList[i]);
+
+                if (i > 0)
+                {
+                    ReturnValue += ", ";
+                }
+
+                ReturnValue+="{ \"severity\": \"" + si.ResultSeverity.ToString() + "\"";
+
+                if (si.ResultCode == null)
+                {
+                    si.ResultCode = "";
+                }
+
+                ReturnValue+=", \"code\": \"" + si.ResultCode + "\"}";
+
+            }
+
+            ReturnValue += "]";
 
             return ReturnValue;
         }
