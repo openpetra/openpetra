@@ -304,20 +304,20 @@ namespace GenerateGlue
                         (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
                         p.ParameterName + ")";
 
-                    if (returnCounter == 1)
+                    if (returnCounter == 0)
                     {
-                        returnCodeJSClient = "\"{ \\\"0\\\": \" + " + returnCodeJSClient;
+                        returnCodeJSClient = "\"{\" + ";
+                    }
+                    else
+                    {
+                        returnCodeJSClient += " + \",\" + ";
                     }
 
-                    if (returnCounter > 0)
-                    {
-                        returnCodeJSClient += " + \", \\\"" + returnCounter.ToString() + "\\\": \" + ";
-                    }
-
+                    returnCodeJSClient += "\"\\\"" + p.ParameterName + "\\\": \" + ";
                     returnCodeJSClient +=
-                        " \"\\\"\" + THttpBinarySerializer.SerializeObject(" +
+                        "THttpBinarySerializer.SerializeObject(" +
                         (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
-                        p.ParameterName + ") + \"\\\"\"";
+                        p.ParameterName + ")";
 
                     returnCounter++;
                 }
@@ -355,12 +355,7 @@ namespace GenerateGlue
                         returnCodeFatClient +=
                             (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) + "THttpBinarySerializer.SerializeObjectWithType(Result)";
 
-                        if (returnCounter == 1)
-                        {
-                            returnCodeJSClient = "\"{ \\\"0\\\": \" + " + returnCodeJSClient;
-                        }
-
-                        returnCodeJSClient += "+\", \\\"result\\\": \"+" +
+                        returnCodeJSClient += "+ \",\" + \"\\\"result\\\": \"+" +
                                               "THttpBinarySerializer.SerializeObjectWithType(Result)";
 
                         returnCounter++;
