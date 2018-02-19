@@ -42,9 +42,11 @@ $("#btnSubmitPassword").click(function(e) {
 				var result = JSON.parse(response.data.d);
 				if (result.result == "false") {
 					if (result.AVerification[0].code == "SYS.00002V")
-						alert("Invalid password, must have at least one digit and one letter");
+						alert("The password must have at least 8 characters, and must contain at least one digit and one letter");
+					else if (result.AVerification[0].code == "ChangePassword.CurrentPwdWrong")
+						alert("The current password was not entered correctly");
 					else
-						alert("unknown code " + result.AVerification[0].code);
+						alert("unknown error code " + result.AVerification[0].code);
 				} else {
 					alert("Password has been changed successfully");
 					nav.OpenTab("frmHome", "home");
