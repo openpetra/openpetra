@@ -22,7 +22,7 @@
 //
 
 $("#btnSubmitPassword").click(function(e) {
-		e.preventDefault(); 
+		e.preventDefault();
 
 		if ($("#newpwd").val() != $("#newpwd2").val()) {
 			alert("The new passwords don't match!");
@@ -38,6 +38,16 @@ $("#btnSubmitPassword").click(function(e) {
 				AClientIPAddress: ""
 			})
 			.then(function(response) {
-				console.log("done");
+
+				var result = JSON.parse(response.data.d);
+				if (result.result == "false") {
+					if (result.AVerification[0].code == "SYS.00002V")
+						alert("Invalid password, must have at least one digit and one letter");
+					else
+						alert("unknown code " + result.AVerification[0].code);
+				} else {
+					alert("Password has been changed successfully");
+					nav.OpenTab("frmHome", "home");
+				}
 		});
 	});
