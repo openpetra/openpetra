@@ -155,7 +155,7 @@
     </fileset>
   </copy>
 
-  <if test="${string::contains(DBMS.Type, 'postgresql') and file::exists(dir.root + '/setup/petra'+PetraRelease+'/createtables-PostgreSQL.sql'}">
+  <if test="${string::contains(DBMS.Type, 'postgresql') and file::exists(dir.root + '/setup/petra'+PetraRelease+'/createtables-PostgreSQL.sql')}">
     <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
               tofile="${dir.setup}/db/createtables-PostgreSQL.sql"/>
     <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
