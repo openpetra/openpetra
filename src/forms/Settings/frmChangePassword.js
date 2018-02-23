@@ -25,7 +25,7 @@ $("#btnSubmitPassword").click(function(e) {
 		e.preventDefault();
 
 		if ($("#newpwd").val() != $("#newpwd2").val()) {
-			alert("The new passwords don't match!");
+			alert(i18next.t("frmChangePassword.dontmatch"));
 			return;
 		}
 
@@ -42,13 +42,13 @@ $("#btnSubmitPassword").click(function(e) {
 				var result = JSON.parse(response.data.d);
 				if (result.result == "false") {
 					if (result.AVerification[0].code == "SYS.00002V")
-						alert("The password must have at least 8 characters, and must contain at least one digit and one letter");
+						alert(i18next.t("frmChangePassword.criteria"));
 					else if (result.AVerification[0].code == "ChangePassword.CurrentPwdWrong")
-						alert("The current password was not entered correctly");
+						alert(i18next.t("frmChangePassword.wrong"));
 					else
-						alert("unknown error code " + result.AVerification[0].code);
+						alert(i18next.t("frmChangePassword.unknown") + " " + result.AVerification[0].code);
 				} else {
-					alert("Password has been changed successfully");
+					alert(i18next.t("frmChangePassword.success"));
 					nav.OpenTab("frmHome", "home");
 				}
 		});

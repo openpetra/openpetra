@@ -1,26 +1,26 @@
 OpenPetra:
     MainMenu:
         # Department
-        Partner: {Label=Pa&rtner, fa-icon=address-book, PermissionsRequired=PTNRUSER}
+        Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
             # Module
             Main: {SkipThisLevel=true}
                 # Sub Module
                 Partners: {DontShowNestedTasksAsLinks=true}
                     MaintainPartners:
-                        FindPartners: {Description=Search for and work with Partners, Singleton=true}
-                        WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
-                        MergePartners: {Label=Merge Partners, Description=Merge two partner records together, ActionOpenScreen=TFrmMergePartnersDialog}
-                        DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}
+                        FindPartners: {Singleton=true}
+                        WorkWithLastPartner: {ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
+                        MergePartners: {ActionOpenScreen=TFrmMergePartnersDialog}
+                        DeletePartner: {ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:
-                        AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family, Description=Create a new Partner of Class FAMILY}
-                        AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
-                        AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation, Description=Create a new Partner of Class ORGANISATION}
-                        AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church, Description=Create a new Partner of Class CHURCH}
-                    ImportExport: {Label=Import and Export}
-                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
-                    Subscriptions: {Label=Subscriptions}
-                        CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
+                        AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family}
+                        AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person}
+                        AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
+                        AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
+                    ImportExport:
+                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners}
+                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport}
+                    Subscriptions:
+                        CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PartnerReports:
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
@@ -28,86 +28,86 @@ OpenPetra:
 
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     Partner-related:
-                        ContactAttributes: {Label=Contact Attributes, Description=Maintain Contact Attributes, ActionOpenScreen=TFrmContactAttributeSetup}
-                        Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}
-                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}
-                        Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Frequencies, Description=Maintain Frequencies, ActionOpenScreen=TFrmFrequencySetup}
-                        PartnerStatus: {Label=Partner Statuses, Description=Maintain Partner Statuses, ActionOpenScreen=TFrmPartnerStatusSetup}
-                        Acquisition:   {Label=Acquisition Codes, Description=Maintain Acquisition Codes, ActionOpenScreen=TFrmAcquisitionCodeSetup}
-                        SpecialTypes:  {Label=Special Types, Description=Maintain Special Types, ActionOpenScreen=TFrmPartnerTypeSetup}
-                        Denomination:  {Label=Denomination Codes, Description=Maintain Denomination Codes, ActionOpenScreen=TFrmDenominationCodeSetup}
-                        Business:      {Label=Business Codes, Description=Maintain Business Codes, ActionOpenScreen=TFrmBusinessCodeSetup}
-                        Occupation:    {Label=Occupation Codes, Description=Maintain Occupation Codes, ActionOpenScreen=TFrmOccupationCodeSetup}
-                        MaritalStatus: {Label=Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}
-                        RelationshipCategory: {Label=Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}
-                        Relationship:  {Label=Relationships, Description=Maintain Relationships, ActionOpenScreen=TFrmRelationshipSetup}
-                        ContactMethod: {Label=Contact Methods, Description=Maintain Contact Methods, ActionOpenScreen=TFrmContactMethodSetup}
-                        InterestCategory: {Label=Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}
-                        Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}
+                        ContactAttributes: {ActionOpenScreen=TFrmContactAttributeSetup}
+                        Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCountrySetup}
+                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLanguageCodeSetup}
+                        Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmFrequencySetup}
+                        PartnerStatus: {ActionOpenScreen=TFrmPartnerStatusSetup}
+                        Acquisition:   {ActionOpenScreen=TFrmAcquisitionCodeSetup}
+                        SpecialTypes:  {ActionOpenScreen=TFrmPartnerTypeSetup}
+                        Denomination:  {ActionOpenScreen=TFrmDenominationCodeSetup}
+                        Business:      {ActionOpenScreen=TFrmBusinessCodeSetup}
+                        Occupation:    {ActionOpenScreen=TFrmOccupationCodeSetup}
+                        MaritalStatus: {ActionOpenScreen=TFrmMaritalStatusSetup}
+                        RelationshipCategory: {ActionOpenScreen=TFrmRelationCategorySetup}
+                        Relationship:  {ActionOpenScreen=TFrmRelationshipSetup}
+                        ContactMethod: {ActionOpenScreen=TFrmContactMethodSetup}
+                        InterestCategory: {ActionOpenScreen=TFrmInterestCategorySetup}
+                        Interest: {ActionOpenScreen=TFrmInterestSetup}
 
                     Subscription-related:
-                        Publications: {Label=Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
-                        PublicationCosts: {Label=Publication Costs, Description=Maintain Publication Costs, ActionOpenScreen=TFrmPublicationCostSetup}
-                        ReasonSubscriptionGiven: {Label=Reason Subscription Given List, Description=Maintain Reason Subscription Given List, ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}
-                        ReasonSubscriptionCancelled: {Label=Reason Subscription Cancelled List, Description=Maintain Reason Subscription Cancelled List, ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}
+                        Publications: {ActionOpenScreen=TFrmPublicationSetup}
+                        PublicationCosts: {ActionOpenScreen=TFrmPublicationCostSetup}
+                        ReasonSubscriptionGiven: {ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}
+                        ReasonSubscriptionCancelled: {ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}
 
                     Address-related:
-                        AddresseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
-                        LocationTypes: {Label=Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
-                        InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
-                        PostcodeRanges: {Label=Postcode Ranges, Description=Maintain Postcode Ranges, ActionOpenScreen=TFrmPostcodeRangeSetup}
-                        PostcodeRegions: {Label=Postcode Regions, Description=Maintain Postcode Regions, ActionOpenScreen=TFrmPostcodeRegionSetup}
+                        AddresseeTypes: {ActionOpenScreen=TFrmAddresseeTypeSetup}
+                        LocationTypes: {ActionOpenScreen=TFrmLocationTypeSetup}
+                        InternationalPostalTypes: {ActionOpenScreen=TFrmInternationalPostalTypeSetup}
+                        PostcodeRanges: {ActionOpenScreen=TFrmPostcodeRangeSetup}
+                        PostcodeRegions: {ActionOpenScreen=TFrmPostcodeRegionSetup}
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {fa-icon=money, Label=Finance, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
+        Finance: {fa-icon=money, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
             Main: {SkipThisLevel=true}
                 GeneralLedger:
                     Info:
-                        LedgerInfo: {Description: View general information about this ledger}
+                        LedgerInfo:
                     GLBatchMaintenance:
-                        GLBatches: {Description:Enter and post General Ledger batches}
-                        RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches}
-                        ImportBatches: {Description: Import batch data from CSV file}
-                        ImportBatchesFromBankStatement: {Description: Matching regular payments etc}
-                        ExportBatches: {Description:Export to CSV file for use with Excel}
+                        GLBatches:
+                        RecurringGLBatches:
+                        ImportBatches:
+                        ImportBatchesFromBankStatement:
+                        ExportBatches:
                     PeriodEnd:
-                        MonthEnd: {Description:Close a month}
-                        YearEnd: {Description:Close a year}
+                        MonthEnd:
+                        YearEnd:
                     Reports:
                         AccountDetailReport:
                         TrialBalance:
                         SurplusDeficit:
-                        BalanceSheetStandard: {Label=Standard Balance Sheet}
+                        BalanceSheetStandard:
                         IncomeExpenseStatement:
-                Gift: {Label="Donations", DontShowNestedTasksAsLinks=true}
+                Gift: {DontShowNestedTasksAsLinks=true}
                     GiftEntry:
-                        GiftBatches: {Description:Manually enter and post Gift batches}
-                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients}
-                        ExportGiftBatches: {Description:Export to CSV file for use with Excel}
-                        GiftDetailFind: {Description:Search for gifts across all batches}
+                        GiftBatches:
+                        ImportGiftsFromBankStatement:
+                        ExportGiftBatches:
+                        GiftDetailFind:
                     GiftReceipting:
-                        PrintAnnualReceipts: {Description:Print the annual gift receipts}
-                        DonorRecipientHistory: {Label=Donor / Recipient History, Description:Gift history for a Donor and/or Recipient}
+                        PrintAnnualReceipts:
+                        DonorRecipientHistory:
                 Setup:  {DontShowNestedTasksAsLinks=true}
-                    GL: {Label="General Ledger Setup"}
-                        LedgerSettings: {Description="Maintain General Ledger Settings"}
-                        ManageAccounts: {Description:Maintain Accounts and modify their hierarchy}
-                        ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy}
-                        DeleteLedger: {Description="Careful: Delete the ledger with all finance data"}
+                    GL:
+                        LedgerSettings:
+                        ManageAccounts:
+                        ManageCostCentres:
+                        DeleteLedger:
                     GiftReceipting:
-                        MotivationGroup: {Description=Maintain Motivation Groups}
-                        MotivationDetails: {Description: "Maintain Motivation Details towards which donations can be assigned"}
-        CrossLedgerSetup: {fa-icon=key, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
+                        MotivationGroup:
+                        MotivationDetails:
+        CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
                 Ledger: {DontShowNestedTasksAsLinks=true}
                     LedgerSetup:
-                        CreateLedger: {Description=Create a new Ledger, PermissionsRequired="FINANCE-3"}
+                        CreateLedger: {PermissionsRequired="FINANCE-3"}
 
         SystemManager: {fa-icon=sliders, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
             Users:
                 Users: {DontShowNestedTasksAsLinks=true}
                     Maintenance:
-                        MaintainUsers: {Description: Add new users and manage permissions}
+                        MaintainUsers:
             Database:
                 ImportExport: {DontShowNestedTasksAsLinks=true}
                     ExportAllData:
-                    RestoreDatabaseFromBackup: {Description=This will overwrite all your existing data}
+                    RestoreDatabaseFromBackup:

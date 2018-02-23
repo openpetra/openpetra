@@ -1,0 +1,2 @@
+downloaded from https://raw.githubusercontent.com/i18next/i18next-xhr-backend/master/i18nextXHRBackend.min.js
+see https://github.com/i18next/i18next-xhr-backend

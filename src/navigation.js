@@ -42,6 +42,7 @@ class Navigation {
 		{
 			axios.get("/src/forms/" + name + ".html")
 				.then(function(response) {
+					response.data = translate(response.data, name.substring(name.indexOf('/frm')+1));
 					$("#containerIFrames").html(response.data);
 			});
 		}
@@ -130,11 +131,14 @@ class Navigation {
 	displayNavigation(navigation) {
 		for (var folderid in navigation) {
 			var folder = navigation[folderid];
-			this.AddMenuGroup(folderid, folder.caption, folder.icon);
+			this.AddMenuGroup(folderid, i18next.t('navigation.'+folder.caption), folder.icon);
 			var items = folder.items;
 			for (var itemid in items) {
 				var item = items[itemid];
-				this.AddMenuItem(folderid, folderid + "_" + itemid, item.caption, folder.caption + ": "+ item.caption, folder.icon);
+				this.AddMenuItem(folderid, folderid + "_" + itemid, 
+					i18next.t('navigation.' + item.caption),
+					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+					folder.icon);
 			}
 		}
 
@@ -156,6 +160,7 @@ class Navigation {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
+					result.htmlpage = translate(result.htmlpage, "navigation");
 					$("#containerIFrames").html(result.htmlpage);
 				} else {
 					console.log(response.data.d);

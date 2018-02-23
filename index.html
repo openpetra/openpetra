@@ -53,15 +53,15 @@
 <!-- Begin of login screen -->
 <div id="login" class="container" style="display:none">
 	<form class="form-signin">
-		<input type="text" class="form-control" placeholder="Email address" id="txtEmail">
-		<input type="password" class="form-control" placeholder="Password" id="txtPassword">
-		<button id="btnLogin" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+		<input type="text" class="form-control" placeholder="{email}" id="txtEmail">
+		<input type="password" class="form-control" placeholder="{passwd}" id="txtPassword">
+		<button id="btnLogin" class="btn btn-lg btn-primary btn-block" type="submit">{signin}</button>
 	</form>
 
 	<div class="form-signin">
 		<div class="bs-callout bs-callout-info">
-			<h4>Support</h4>
-			<p>If you have any issues, please visit <a href="https://forum.openpetra.org">the public OpenPetra forum</a> and share your questions!</p>
+			<h4>{support_caption}</h4>
+			<p>{support_text}</p>
 		</div>
 	</div>
 </div> <!-- /container -->
@@ -71,26 +71,26 @@
 <div id="main" style="display:none">
 <!-- Fixed navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="topnavigation">
-<a class="navbar-brand" href="/">OpenPetra</a>
+<a class="navbar-brand" href="/">{openpetra}</a>
 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 	<span class="navbar-toggler-icon"></span>
 </button>
 
 <div class="collapse navbar-collapse" id="navbarNav">
 	<ul class="navbar-nav mr-auto">
-		<li class="nav-item"><a id='mnuHome' class="nav-link" href="#">Home</a></li>
-		<li class="nav-item"><a class="nav-link" href="https://www.openpetra.org" target="newwindow">About</a></li>
-		<li class="nav-item"><a class="nav-link" href="https://forum.openpetra.org" target="newwindow">Contact</a></li>
+		<li class="nav-item"><a id='mnuHome' class="nav-link" href="#">{home}</a></li>
+		<li class="nav-item"><a class="nav-link" href="https://www.openpetra.org" target="newwindow">{about}</a></li>
+		<li class="nav-item"><a class="nav-link" href="https://forum.openpetra.org" target="newwindow">{contact}</a></li>
 		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{settings}</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-				<a id='mnuChangePassword' class="dropdown-item">Change Password</a>
-				<a id='mnuChangeLanguage' class="dropdown-item">Change Language</a>
+				<a id='mnuChangePassword' class="dropdown-item">{change_password}</a>
+				<a id='mnuChangeLanguage' class="dropdown-item">{change_language}</a>
 			</div>
 		</li>
 	</ul>
 	<ul class="navbar-nav ml-auto">
-		<li class="nav-item"><a class="nav-link" id="logout" href="#">Logout</a></li>
+		<li class="nav-item"><a class="nav-link" id="logout" href="#">{logout}</a></li>
 	</ul>
   
 </div>
@@ -122,12 +122,16 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/i18next/i18next.min.js"></script>
+<script src="/ext/i18nextXHRBackend.min.js"></script>
+<script src="/ext/i18nextBrowserLanguageDetector.min.js"></script>
 
 <!-- for production, use https://unpkg.com/vue@2.4.4/dist/vue.min.js -->
 <!--<script src="https://unpkg.com/vue@2.4.4/dist/vue.js"></script>-->
 
 <script src="/src/lib/ajax.js"></script>
 <script src="/src/lib/auth.js"></script>
+<script src="/src/lib/i18n.js"></script>
 <script src="/src/navigation.js"></script>
 <script src="/src/index.js"></script>
 
