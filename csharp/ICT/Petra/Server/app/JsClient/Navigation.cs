@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -291,8 +291,7 @@ namespace Ict.Petra.Server.app.JSClient
 
         private static string GetCaption(XmlNode ANode)
         {
-            return Catalog.GetString(TYml2Xml.HasAttribute(ANode, "Label") ? TYml2Xml.GetAttribute(ANode,
-                    "Label") : StringHelper.ReverseUpperCamelCase(ANode.Name)).Replace("&", "");
+            return ANode.Name + "_label";
         }
 
         private static Dictionary<string, object> AddFolder(XmlNode AFolderNode, string AUserId)
@@ -377,10 +376,10 @@ namespace Ict.Petra.Server.app.JSClient
                 {
                     if (!TaskDisplayed)
                     {
-                        ScreenCode.Append("not implemented yet<br/>" + Environment.NewLine);
+                        ScreenCode.Append("{notimplementedyet}<br/>" + Environment.NewLine);
                     }
 
-                    ScreenCode.Append("<h3>" + GetCaption(child) + "</h3>" + Environment.NewLine);
+                    ScreenCode.Append("<h3>{" + GetCaption(child) + "}</h3>" + Environment.NewLine);
                     TaskDisplayed = false;
 
                     foreach (XmlNode task in child.ChildNodes)
@@ -402,7 +401,7 @@ namespace Ict.Petra.Server.app.JSClient
 
             if (!TaskDisplayed)
             {
-                ScreenCode.Append("not implemented yet<br/>" + Environment.NewLine);
+                ScreenCode.Append("{notimplementedyet}<br/>" + Environment.NewLine);
             }
 
             return ScreenCode;
