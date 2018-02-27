@@ -3,6 +3,7 @@
         "signin": "Sign in",
         "email": "Email address",
         "passwd": "Password",
+        "failedlogin": "Wrong username or password",
         "support_caption": "Support",
         "support_text": "If you have any issues, please visit <a href='https://forum.openpetra.org'>the public OpenPetra forum</a> and share your questions!"
     },
