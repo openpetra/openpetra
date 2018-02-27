@@ -16,8 +16,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "build-debug": "browserify src/index.js -d > dist/bundle.js",
-    "build-min": "browserify src/index.js | uglifyjs -c > dist/bundle.min.js",
+    "build-debug": "mkdir -p dist && browserify src/index.js -d > dist/bundle.js",
+    "build-min": "mkdir -p dist && browserify src/index.js | uglifyjs -c > dist/bundle.min.js",
     "build": "npm run build-debug && npm run build-min",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
