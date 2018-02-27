@@ -108,7 +108,7 @@ class Navigation {
 
 		if (currentPage == null) {
 			// load home page or Dashboard
-			this.OpenTab("frmHome", "home");
+			this.OpenTab("frmHome", i18next.t("navigation.home"));
 		}
 	}
 
@@ -143,9 +143,9 @@ class Navigation {
 		}
 
 		// link the items in the top menu
-		this.AddMenuItemHandler('mnuChangePassword', "Settings/frmChangePassword", "Change Password");
-		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/frmChangeLanguage", "Change Language");
-		this.AddMenuItemHandler('mnuHome', "frmHome", "Home");
+		this.AddMenuItemHandler('mnuChangePassword', "Settings/frmChangePassword", i18next.t("navigation.change_password"));
+		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/frmChangeLanguage", i18next.t("navigation.change_language"));
+		this.AddMenuItemHandler('mnuHome', "frmHome", i18next.t("navigation.home"));
 
 		this.UpdateLocation();
 	}
