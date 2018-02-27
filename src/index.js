@@ -22,6 +22,7 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+var css = require('../css/app.css');
 $ = require('jquery');
 require('bootstrap');
 i18next = require('i18next');
