@@ -40,11 +40,16 @@
     </fileset>
   </copy>
 
+  <exec program="bash"
+        workingdir="${dir.root}/../openpetra-client-js"
+        commandline="-c &quot;npm run build&quot;" />
+  
   <copy todir="/usr/local/openpetra/client">
     <fileset basedir="${dir.root}/../openpetra-client-js">
       <include name="**/*" />
     </fileset>
   </copy>
+
 </target>
 
 <!-- Linux -->
