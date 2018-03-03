@@ -128,6 +128,13 @@ class Navigation {
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
+        // eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
+	AddMenuItemForm(parent, name, form, title, tabtitle, icon)
+	{
+		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fa fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		this.AddMenuItemHandler(name, parent + "/frm" + form, tabtitle);
+	}
+
 	displayNavigation(navigation) {
 		for (var folderid in navigation) {
 			var folder = navigation[folderid];
@@ -135,10 +142,18 @@ class Navigation {
 			var items = folder.items;
 			for (var itemid in items) {
 				var item = items[itemid];
-				this.AddMenuItem(folderid, folderid + "_" + itemid, 
-					i18next.t('navigation.' + item.caption),
-					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
-					folder.icon);
+                                
+				if (item.form != null) {
+					this.AddMenuItemForm(folderid, folderid + "_" + itemid, item.form, 
+						i18next.t('navigation.' + item.caption),
+						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+						folder.icon);
+				} else {
+					this.AddMenuItem(folderid, folderid + "_" + itemid, 
+						i18next.t('navigation.' + item.caption),
+						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+						folder.icon);
+				}
 			}
 		}
 
