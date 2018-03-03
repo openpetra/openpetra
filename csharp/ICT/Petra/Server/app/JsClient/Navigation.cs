@@ -202,12 +202,6 @@ namespace Ict.Petra.Server.app.JSClient
                     }
                     else if (AAvailableLedgers.Rows.Count == 1)
                     {
-                        // Dynamically add Attribute 'SkipThisLevel' to the next child, which would be the child for the Collapsible Panel,
-                        // which we don't need/want for a 'Single Ledger' Site!
-                        XmlAttribute LabelSkipCollapsibleLevel = childNode.OwnerDocument.CreateAttribute("SkipThisLevel");
-                        childNode.ChildNodes[0].Attributes.Append(LabelSkipCollapsibleLevel);
-                        childNode.ChildNodes[0].Attributes["SkipThisLevel"].Value = "true";
-
                         // Check access permission for Ledger
                         if (UserInfo.GUserInfo.IsInModule(FormatLedgerNumberForModuleAccess(AAvailableLedgers[0].LedgerNumber)))
                         {
@@ -318,21 +312,13 @@ namespace Ict.Petra.Server.app.JSClient
 
             foreach (XmlNode child in AFolderNode.ChildNodes)
             {
-                if (TYml2Xml.GetAttribute(child, "SkipThisLevel") == "true")
+                Dictionary<string, object> item = new Dictionary<string, object>();
+                item.Add("caption", GetCaption(child));
+                if (child.ChildNodes.Count == 1 && child.ChildNodes[0].ChildNodes.Count == 0)
                 {
-                    foreach (XmlNode child2 in child.ChildNodes)
-                    {
-                        Dictionary<string, object> item = new Dictionary<string, object>();
-                        item.Add("caption", GetCaption(child2));
-                        items.Add(child2.Name, item);
-                    }
+                    item.Add("form", child.ChildNodes[0].Name);
                 }
-                else
-                {
-                    Dictionary<string, object> item = new Dictionary<string, object>();
-                    item.Add("caption", GetCaption(child));
-                    items.Add(child.Name, item);
-                }
+                items.Add(child.Name, item);
             }
 
             folder.Add("items", items);
@@ -421,11 +407,6 @@ namespace Ict.Petra.Server.app.JSClient
                     if (ADepth == ATaskName.Length-1)
                     {
                         return ACurrentNode;
-                    }
-
-                    if (TYml2Xml.GetAttribute(ACurrentNode.FirstChild, "SkipThisLevel") == "true")
-                    {
-                        ACurrentNode = ACurrentNode.FirstChild;
                     }
 
                     XmlNode SectionNode = FindSectionNode(ACurrentNode.FirstChild, ATaskName, ADepth+1);
