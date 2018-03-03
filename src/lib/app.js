@@ -36,6 +36,23 @@ function keepConnection() {
 	setTimeout(keepConnection, 30000);
 }
 
+function loadNavigation() {
+	// wait until translations have been loaded
+	if (i18next.t('navigation.Partner_label') == 'navigation.Partner_label') {
+		setTimeout(loadNavigation, 50);
+		return;
+	}
+
+	nav = new Navigation();
+	nav.loadNavigation();
+	$("#logout").click(function(e) {
+			var stateObj = { "logout": "done" };
+			history.pushState(stateObj, "OpenPetra", "/");
+			e.preventDefault();
+			auth.logout();
+		});
+}
+
 auth = new Auth();
 
 auth.checkAuth(function() {
@@ -58,13 +75,7 @@ auth.checkAuth(function() {
 	// we don't want the navigation bars displayed if the user is not logged in
 	$("#loading").hide();
 	$("#main").show();
-	nav = new Navigation();
-	nav.loadNavigation();
 
-	$("#logout").click(function(e) {
-			var stateObj = { "logout": "done" };
-			history.pushState(stateObj, "OpenPetra", "/");
-			e.preventDefault();
-			auth.logout();
-		});
+        setTimeout(loadNavigation, 50);
+
 });
