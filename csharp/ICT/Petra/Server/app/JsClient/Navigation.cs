@@ -292,22 +292,27 @@ namespace Ict.Petra.Server.app.JSClient
         {
             // TODO icon?
 
-            // TODO enabled/disabled based on permissions
-#if TODO
+            // enabled/disabled based on permissions
+            bool enabled = true;	
             if ((TYml2Xml.HasAttribute(AFolderNode, "Enabled"))
                 && (TYml2Xml.GetAttribute(AFolderNode, "Enabled").ToLower() == "false"))
             {
-                rbt.Enabled = false;
+                enabled = false;
             }
             else
             {
-                rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId, false);
+                enabled = HasAccessPermission(AFolderNode, AUserId, false);
             }
-#endif
 
             Dictionary<string, object> folder = new Dictionary<string, object>();
             folder.Add("caption", GetCaption(AFolderNode));
             folder.Add("icon", TYml2Xml.GetAttribute(AFolderNode, "fa-icon"));
+
+            if (!enabled)
+            {
+                folder.Add("enabled", "false");
+            }
+
             Dictionary<string, object> items = new Dictionary<string, object>();
 
             foreach (XmlNode child in AFolderNode.ChildNodes)
