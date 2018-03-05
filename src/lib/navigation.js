@@ -112,9 +112,13 @@ class Navigation {
 		}
 	}
 
-	AddMenuGroup(name, title, icon)
+	AddMenuGroup(name, title, icon, enabled)
 	{
-		$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div>");
+		if (!enabled) {
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
+		} else {
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
+		}
 	}
 
 	AddMenuItemHandler(mnuItem, frmName, title) {
@@ -138,7 +142,10 @@ class Navigation {
 	displayNavigation(navigation) {
 		for (var folderid in navigation) {
 			var folder = navigation[folderid];
-			this.AddMenuGroup(folderid, i18next.t('navigation.'+folder.caption), folder.icon);
+			this.AddMenuGroup(folderid, i18next.t('navigation.'+folder.caption), folder.icon, folder.enabled != "false");
+			if (folder.enabled == "false") {
+				continue;
+			}
 			var items = folder.items;
 			for (var itemid in items) {
 				var item = items[itemid];
