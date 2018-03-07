@@ -375,7 +375,9 @@ namespace GenerateGlue
                            || (returntype == "System.Boolean")) && (returntype != "void"))
                 {
                     returntype = "string";
-                    returnCodeFatClient = returnCodeJSClient = "THttpBinarySerializer.SerializeObject(Result)";
+                    returnCodeFatClient = "THttpBinarySerializer.SerializeObject(Result)";
+                    returnCodeJSClient = "\"{\\\"result\\\": \"+" +
+                                         "THttpBinarySerializer.SerializeObject(Result)" + " + \"}\"";
                 }
 
                 string localreturn = AutoGenerationTools.TypeToString(AReturnType, "");

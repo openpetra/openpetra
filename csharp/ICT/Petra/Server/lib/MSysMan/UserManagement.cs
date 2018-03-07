@@ -637,8 +637,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             // attacker manages to listen to network traffic). (#5502)!
             foreach (var UserRow in ReturnValue.SUser.Rows)
             {
-                ((SUserRow)UserRow).PasswordHash = "****************";
-                ((SUserRow)UserRow).PasswordSalt = "****************";
+                ((SUserRow)UserRow).PasswordHash = "***";
+                ((SUserRow)UserRow).PasswordSalt = "***";
             }
 
             ReturnValue.AcceptChanges();
