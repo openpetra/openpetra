@@ -70,6 +70,12 @@
         "success": "Password has been changed successfully"
     },
 
+    "frmMaintainUsers": {
+        "caption": "Maintain users",
+        "userid": "User ID",
+        "permissions": "Permissions"
+    },
+
     "frmChangeLanguage": {
         "caption": "Change the language"
     }

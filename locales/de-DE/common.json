@@ -71,6 +71,12 @@
         "success": "Das Passwort wurde erfolgreich geändert"
     },
 
+    "frmMaintainUsers": {
+        "caption": "Benutzer verwalten",
+        "userid": "Benutzername",
+        "permissions": "Berechtigungen"
+    },
+
     "frmChangeLanguage": {
         "caption": "Sprache wechseln"
     }

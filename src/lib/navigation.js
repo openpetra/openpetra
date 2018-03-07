@@ -43,6 +43,7 @@ class Navigation {
 			axios.get("/src/forms/" + name + ".html")
 				.then(function(response) {
 					response.data = translate(response.data, name.substring(name.indexOf('/frm')+1));
+					response.data = response.data.replace(' id="tpl_', ' style="display:none" id="tpl_');
 					$("#containerIFrames").html(response.data);
 			});
 		}
