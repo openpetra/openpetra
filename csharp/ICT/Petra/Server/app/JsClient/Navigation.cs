@@ -283,9 +283,16 @@ namespace Ict.Petra.Server.app.JSClient
             return result;
         }
 
-        private static string GetCaption(XmlNode ANode)
+        private static string GetCaption(XmlNode ANode, bool AWithoutBrackets=false)
         {
-            return ANode.Name + "_label";
+            if (AWithoutBrackets)
+            {
+                return ANode.Name + "_label";
+            }
+            else
+            {
+                return "{" + ANode.Name + "_label}";
+            }
         }
 
         private static Dictionary<string, object> AddFolder(XmlNode AFolderNode, string AUserId)
@@ -305,7 +312,7 @@ namespace Ict.Petra.Server.app.JSClient
             }
 
             Dictionary<string, object> folder = new Dictionary<string, object>();
-            folder.Add("caption", GetCaption(AFolderNode));
+            folder.Add("caption", GetCaption(AFolderNode, true));
             folder.Add("icon", TYml2Xml.GetAttribute(AFolderNode, "fa-icon"));
 
             if (!enabled)
@@ -318,7 +325,7 @@ namespace Ict.Petra.Server.app.JSClient
             foreach (XmlNode child in AFolderNode.ChildNodes)
             {
                 Dictionary<string, object> item = new Dictionary<string, object>();
-                item.Add("caption", GetCaption(child));
+                item.Add("caption", GetCaption(child, true));
                 if (child.ChildNodes.Count == 1 && child.ChildNodes[0].ChildNodes.Count == 0)
                 {
                     item.Add("form", child.ChildNodes[0].Name);
@@ -370,7 +377,7 @@ namespace Ict.Petra.Server.app.JSClient
                         ScreenCode.Append("{notimplementedyet}<br/>" + Environment.NewLine);
                     }
 
-                    ScreenCode.Append("<h3>{" + GetCaption(child) + "}</h3>" + Environment.NewLine);
+                    ScreenCode.Append("<h3>" + GetCaption(child) + "</h3>" + Environment.NewLine);
                     TaskDisplayed = false;
 
                     foreach (XmlNode task in child.ChildNodes)
