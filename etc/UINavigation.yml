@@ -3,8 +3,8 @@ OpenPetra:
         # Department
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
                 Partners:
-                    MaintainPartners:
-                        FindPartners: {Singleton=true}
+                    Maintain:
+                        MaintainPartners:
                         WorkWithLastPartner: {ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
                         MergePartners: {ActionOpenScreen=TFrmMergePartnersDialog}
                         DeletePartner: {ActionClick=TPartnerMain.DeletePartnerRecord}

@@ -20,6 +20,7 @@
 
         "Partner_label": "Partner",
         "Partners_label": "Partner",
+        "Maintain_label": "Verwalten",
         "MaintainPartners_label": "Partner verwalten",
         "CreatePartner_label": "Partner anlegen",
         "ImportExport_label": "Importieren/Exportieren",
@@ -49,6 +50,12 @@
         "ManageAccounts_label": "Konten verwalten",
         "FindPartners_label": "Partner suchen",
         "AccountDetail_label": "Bericht über die Konten"
+    },
+    "forms": {
+        "edit": "Bearbeiten",
+        "new": "Hinzufügen",
+        "filter": "Finden",
+        "delete": "Löschen"
     },
     "frmHome": {
         "welcome": "Willkommen bei OpenPetra, mit den besten Empfehlungen von <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",

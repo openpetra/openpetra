@@ -1,15 +1,24 @@
 <h2>{caption}</h2>
 
-<table class="table">
+<table class="table" id="toolbar">
+<tr>
+<td>
+<button id="new">{forms.new}</button>
+<button id="filter">{forms.filter}</button>
+</td>
+</tr>
+</table>
+
+<table class="table" id="browse">
 <tr>
 <th>{userid}</th>
 <th>{permissions}</th>
 <th></th>
 </tr>
 <tr id="tpl_row">
-<td>{val_userid}</td>
+<td>{val_s_user_id_c}</td>
 <td>{val_permissions}</td>
-<td>Edit</td>
+<td><button id="edit">{forms.edit}</button></td>
 </tr>
 </table>
 
