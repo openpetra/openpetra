@@ -4,8 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
-// Copyright 2013-2014 by SolidCharity
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,7 +51,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// Return all partners that match the given criteria. This is used for the partner import screen.
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerFindTDS FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, string APartnerClass)
+        public static PartnerFindTDSSearchResultTable FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, string APartnerClass, short AMaxRecords, out int ATotalRecords)
         {
             TPartnerFind PartnerFind = new TPartnerFind();
 
@@ -79,23 +78,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             Int32 TotalRecords;
             short TotalPages;
-            const short MaxRecords = 50;
 
-            PartnerFindTDS result = new PartnerFindTDS();
+            DataTable typedResult = PartnerFind.GetDataPagedResult(0, AMaxRecords, out TotalRecords, out TotalPages);
 
-            DataTable typedResult = PartnerFind.GetDataPagedResult(0, MaxRecords, out TotalRecords, out TotalPages);
+            // tell the web client how many records have been found
+            ATotalRecords = TotalRecords;
 
-            if (typedResult != null)
-            {
-                result.SearchResult.Merge(typedResult);
-
-                if (TotalRecords > MaxRecords)
-                {
-                    // TODO load all data into the datatable. the webconnector does not have paging yet?
-                }
-            }
-
-            return result;
+            return (PartnerFindTDSSearchResultTable)typedResult;
         }
 
         /// <summary>
