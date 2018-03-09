@@ -102,8 +102,7 @@ class Navigation {
 			// replace last / with /frm
 			var last = path.lastIndexOf('/');
 			var frmName = (path.substring(0,last) + "/frm" + path.substring(last+1)).substring(1);
-			// TODO: calculate title properly
-			this.OpenTab(frmName, path.substring(last+1));
+			this.OpenTab(frmName, i18next.t("navigation."+path.substring(last+1)+"_label"));
 			currentPage = frmName;
 		}
 
