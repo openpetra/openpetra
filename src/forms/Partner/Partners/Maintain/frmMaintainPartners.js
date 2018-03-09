@@ -22,47 +22,15 @@
 //
 
 $(function() {
-	var toolbar = $("#toolbar");
-	var html = toolbar.html();
-	html = html.replace(new RegExp('button id="filter"',"g"), 'button id="filter" class="btn btn-primary"');
-	html = html.replace(new RegExp('button id="new"',"g"), 'button id="new" class="btn btn-primary"');
-	toolbar.html(html);
+	form = new JSForm();
 
 	// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
-        api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
-		AFirstName: '',
-		AFamilyNameOrOrganisation: '',
-		ACity: '',
-		APartnerClass: '',
-		AMaxRecords: 25
-		})
-        .then(function(response) {
-                if (response.data == null) {
-                        console.log("error: " + response);
-                        return;
-                }
-                var result = JSON.parse(response.data.d);
-                if (result.result == "false") {
-                        console.log("problem loading users");
-                } else {
-                        var tplrow = $( "#tpl_row" );
-			parent = tplrow.parent();
-                        html = tplrow.html();
-                        html = html.replace(new RegExp('button id="edit"',"g"), 'button id="edit" class="btn btn-primary"');
-                        tplrow.html(html);
-                        result.result.forEach(function(element) {
-                                newrow = tplrow.clone().
-                                        prop('id', 'row' + element.p_partner_key_n).
-                                        appendTo( parent );
-                                html = newrow.html();
-                                for(var propertyName in element) {
-                                        html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
-                                }
-                                newrow.html(html);
-                                newrow.show();
-                        });
-
-			// TODO evaluate result.ATotalRecords, and tell the user if there are more records
-                }
-        })
+	form.search('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
+                AFirstName: '',
+                AFamilyNameOrOrganisation: '',
+                ACity: '',
+                APartnerClass: '',
+                AMaxRecords: 25
+                },
+		function (result) { return result.result; });
 });
