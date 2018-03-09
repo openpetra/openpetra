@@ -5,7 +5,6 @@ OpenPetra:
                 Partners:
                     Maintain:
                         MaintainPartners:
-                        WorkWithLastPartner: {ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
                         MergePartners: {ActionOpenScreen=TFrmMergePartnersDialog}
                         DeletePartner: {ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:

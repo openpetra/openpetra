@@ -1,1 +1,25 @@
-test
+<h2>{caption}</h2>
+
+<table class="table" id="toolbar">
+<tr>
+<td>
+<button id="new">{forms.new}</button>
+<button id="filter">{forms.filter}</button>
+</td>
+</tr>
+</table>
+
+<table class="table" id="browse">
+<tr>
+<th>{partnerkey}</th>
+<th>{partnername}</th>
+<th></th>
+</tr>
+<tr id="tpl_row">
+<td>{val_p_partner_key_n}</td>
+<td>{val_p_partner_short_name_c}</td>
+<td><button id="edit">{forms.edit}</button></td>
+</tr>
+</table>
+
+<script src="/src/forms/Partner/Partners/Maintain/frmMaintainPartners.js"></script>

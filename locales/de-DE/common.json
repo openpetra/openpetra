@@ -84,6 +84,12 @@
         "permissions": "Berechtigungen"
     },
 
+    "frmMaintainPartners": {
+        "caption": "Partner verwalten",
+        "partnerkey": "Partner Nummer",
+        "partnername": "Name"
+    },
+
     "frmChangeLanguage": {
         "caption": "Sprache wechseln"
     }

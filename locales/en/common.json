@@ -83,6 +83,12 @@
         "permissions": "Permissions"
     },
 
+    "frmMaintainPartners": {
+        "caption": "Maintain partners",
+        "partnerkey": "Partner key",
+        "partnername": "Name"
+    },
+
     "frmChangeLanguage": {
         "caption": "Change the language"
     }
