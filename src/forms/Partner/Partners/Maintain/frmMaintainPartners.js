@@ -24,13 +24,18 @@
 $(function() {
 	form = new JSForm();
 
-	// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
-	form.search('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
+	form.initEvents();
+
+	form.initSearch(
+		'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
                 AFirstName: '',
                 AFamilyNameOrOrganisation: '',
                 ACity: '',
-                APartnerClass: '',
+                APartnerClass: 'FAMILY',
                 AMaxRecords: 25
                 },
 		function (result) { return result.result; });
+
+	// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
+	form.search();
 });

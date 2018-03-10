@@ -9,6 +9,18 @@
 </tr>
 </table>
 
+<table class="table" id="tabfilter">
+<tr><td>{partnername}: </td><td><input type="text" name="AFamilyNameOrOrganisation"/></td></tr>
+<tr><td>{city}: </td><td><input type="text" name="ACity"/></td></tr>
+<!--<td>{partnerclass}: </td><td><input type="text" name="APartnerClass"/></td>-->
+<input type="hidden" name="APartnerClass" value=""/>
+<input type="hidden" name="AMaxRecords" value="25"/>
+<tr><td colspan="2">
+	<button id="cancelfilter">{forms.cancel}</button>
+	<button id="filter2">{forms.filter}</button>
+</td></tr>
+</table>
+
 <table class="table" id="browse">
 <tr>
 <th>{partnerkey}</th>
@@ -18,7 +30,7 @@
 <tr id="tpl_row">
 <td>{val_p_partner_key_n}</td>
 <td>{val_p_partner_short_name_c}</td>
-<td><button id="edit">{forms.edit}</button></td>
+<td><button id="view">{forms.view}</button></td>
 </tr>
 </table>
 

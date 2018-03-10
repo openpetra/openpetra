@@ -52,9 +52,11 @@
         "AccountDetail_label": "Bericht über die Konten"
     },
     "forms": {
+        "view": "Infos",
         "edit": "Bearbeiten",
         "new": "Hinzufügen",
         "filter": "Finden",
+        "cancel": "Abbrechen",
         "delete": "Löschen"
     },
     "frmHome": {
@@ -87,7 +89,8 @@
     "frmMaintainPartners": {
         "caption": "Partner verwalten",
         "partnerkey": "Partner Nummer",
-        "partnername": "Name"
+        "partnername": "Name",
+        "city": "Stadt"
     },
 
     "frmChangeLanguage": {

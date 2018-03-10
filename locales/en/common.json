@@ -52,9 +52,11 @@
         "AccountDetail_label": "Account Detail"
     },
     "forms": {
+        "view": "Details",
         "edit": "Edit",
         "new": "Add",
         "filter": "Filter",
+        "cancel": "Cancel",
         "delete": "Delete"
     },
     "frmHome": {
@@ -86,7 +88,8 @@
     "frmMaintainPartners": {
         "caption": "Maintain partners",
         "partnerkey": "Partner key",
-        "partnername": "Name"
+        "partnername": "Name",
+        "city": "City"
     },
 
     "frmChangeLanguage": {

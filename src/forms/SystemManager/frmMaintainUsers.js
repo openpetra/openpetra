@@ -24,8 +24,12 @@
 $(function() {
         form = new JSForm();
 
-	form.search(
+	form.initEvents();
+
+	form.initSearch(
 		'serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions',
 		{},
 		function(result) { return result.result.SUser; });
+
+	form.search();
 });
