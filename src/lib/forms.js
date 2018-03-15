@@ -59,8 +59,8 @@ class JSForm {
 		}
 	}
 
-	viewClose(event) {
-		$( "#view" + event.data.key ).hide();
+	viewClose() {
+		$(".view").not("#tpl_view").remove();
 	}
 
 	viewClick(event) {
@@ -84,7 +84,7 @@ class JSForm {
 		});
 
         	newview.html(html);
-		$('#view' + key + ' > td > #closeview').click({key: key}, self.viewClose);
+		$('#view' + key + ' > td > #closeview').click(self.viewClose);
 		newview.show();
 	}
 
@@ -124,6 +124,9 @@ class JSForm {
 					}
 					//console.log($(this).attr('id')); //remove();
 				});
+
+				// clear view
+				self.viewClose();
 
 				self.data = result;
                 	        self.getMainTableFromResult(result).forEach(function(element) {
