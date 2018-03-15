@@ -89,7 +89,9 @@
         "caption": "Maintain partners",
         "partnerkey": "Partner key",
         "partnername": "Name",
-        "city": "City"
+        "city": "City",
+        "partnerclass": "Partner class",
+        "streetname": "Street name"
     },
 
     "frmChangeLanguage": {

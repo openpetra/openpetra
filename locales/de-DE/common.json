@@ -90,7 +90,9 @@
         "caption": "Partner verwalten",
         "partnerkey": "Partner Nummer",
         "partnername": "Name",
-        "city": "Stadt"
+        "city": "Stadt",
+        "partnerclass": "Partner Klasse",
+        "streetname": "Straße und Hausnummer"
     },
 
     "frmChangeLanguage": {

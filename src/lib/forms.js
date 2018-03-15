@@ -66,9 +66,13 @@ class JSForm {
 	viewClick(event) {
 		self = event.data.self;
 		key = event.data.key;
+		if ($('#view' + key).length) {
+			$(".view").not("#tpl_view").remove();
+			return;
+		}
 		$(".view").not("#tpl_view").remove();
 		var tpl_view = $( "#tpl_view" );
-		var newview = tpl_view.clone().prop('id', 'view' + key).appendTo(tpl_view.parent());
+		var newview = tpl_view.clone().prop('id', 'view' + key).insertAfter('#row'+ key);
 		var html = newview.html();
 		self.getMainTableFromResult(self.data).forEach(function(element) {
 			if (key == self.getKeyFromRow(element)) {
@@ -80,7 +84,7 @@ class JSForm {
 		});
 
         	newview.html(html);
-		$('#view' + key + ' > #closeview').click({key: key}, self.viewClose);
+		$('#view' + key + ' > td > #closeview').click({key: key}, self.viewClose);
 		newview.show();
 	}
 
