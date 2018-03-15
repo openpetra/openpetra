@@ -52,11 +52,11 @@
         "AccountDetail_label": "Bericht über die Konten"
     },
     "forms": {
-        "view": "Infos",
         "edit": "Bearbeiten",
         "new": "Hinzufügen",
         "filter": "Finden",
         "cancel": "Abbrechen",
+        "close": "Schließen",
         "delete": "Löschen"
     },
     "frmHome": {

@@ -21,15 +21,25 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+class MaintainUsersForm extends JSForm {
+	constructor() {
+		super();
+		super.initEvents();
+		super.initSearch(
+			'serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions',
+			{});
+		super.search();
+	}
+
+	getMainTableFromResult(result) {
+		return result.result.SUser;
+	}
+	getKeyFromRow(row) {
+		return row['s_user_id_c'];
+	}
+}
+
 $(function() {
-        form = new JSForm();
-
-	form.initEvents();
-
-	form.initSearch(
-		'serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions',
-		{},
-		function(result) { return result.result.SUser; });
-
-	form.search();
+	var form = new MaintainUsersForm();
 });
+

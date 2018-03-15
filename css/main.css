@@ -63,3 +63,14 @@ body {
     margin-left: 12px;
   }
 }
+
+.view {
+  position: absolute;
+  width: 700px;
+  right: auto;
+  background-color: Gray;
+  height: auto;
+  top: 120px;
+  bottom: auto;
+}
+

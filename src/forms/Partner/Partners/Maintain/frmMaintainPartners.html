@@ -21,6 +21,18 @@
 </td></tr>
 </table>
 
+<div id="tpl_view" class="view">
+<table class="table">
+<tr><td>{partnerkey}</td><td>{val_p_partner_key_n}</td></tr>
+<tr><td>{partnername}</td><td>{val_p_partner_short_name_c}</td></tr>
+<tr><td>{partnerclass}</td><td>{val_p_partner_class_c}</td></tr>
+<tr><td>{streetname}</td><td>{val_p_street_name_c}</td></tr>
+<tr><td>{city}</td><td>{val_p_postal_code_c} {val_p_city_c}</td></tr>
+</table>
+<button id="closeview">{forms.close}</button>
+<button id="edit">{forms.edit}</button>
+</div>
+
 <table class="table" id="browse">
 <tr>
 <th>{partnerkey}</th>
@@ -30,7 +42,6 @@
 <tr id="tpl_row">
 <td>{val_p_partner_key_n}</td>
 <td>{val_p_partner_short_name_c}</td>
-<td><button id="view">{forms.view}</button></td>
 </tr>
 </table>
 

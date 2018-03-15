@@ -29,15 +29,16 @@ class JSForm {
 		content = content.replace(new RegExp('button id="new"',"g"), 'button id="new" class="btn btn-primary"');
 		content = content.replace(new RegExp('button id="edit"',"g"), 'button id="edit" class="btn btn-primary"');
 		content = content.replace(new RegExp('button id="view"',"g"), 'button id="view" class="btn btn-primary"');
-		content = content.replace(' id="tpl_', ' style="display:none" id="tpl_');
+		content = content.replace(new RegExp('button id="closeview"',"g"), 'button id="closeview" class="btn"');
+		content = content.replace(new RegExp(' id="tpl_', "g"), ' style="display:none" id="tpl_');
 		content = content.replace('id="tabfilter"', ' style="display:none" id="tabfilter"');
+		content = content.replace('id="tpl_view"', ' style="display:none" id="tpl_view"');
 		return content;
 	}
 
-	initSearch(apiUrl, parameters, fn_getTable) {
+	initSearch(apiUrl, parameters) {
 		this.searchApiUrl = apiUrl;
 		this.searchInitialParameters = parameters;
-		this.searchFnGetTable = fn_getTable;
 	}
 
 	initEvents() {
@@ -56,6 +57,31 @@ class JSForm {
 			self.search();
 			$('#tabfilter').hide();
 		}
+	}
+
+	viewClose(event) {
+		$( "#view" + event.data.key ).hide();
+	}
+
+	viewClick(event) {
+		self = event.data.self;
+		key = event.data.key;
+		$(".view").not("#tpl_view").remove();
+		var tpl_view = $( "#tpl_view" );
+		var newview = tpl_view.clone().prop('id', 'view' + key).appendTo(tpl_view.parent());
+		var html = newview.html();
+		self.getMainTableFromResult(self.data).forEach(function(element) {
+			if (key == self.getKeyFromRow(element)) {
+				for(var propertyName in element) {
+					html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
+				}
+				return true; // same as break
+			}
+		});
+
+        	newview.html(html);
+		$('#view' + key + ' > #closeview').click({key: key}, self.viewClose);
+		newview.show();
 	}
 
 	getSearchParams() {
@@ -84,8 +110,7 @@ class JSForm {
         	        if (result.result == "false") {
                 	        console.log("problem loading " + apiUrl);
 	                } else {
-
-        	                var tplrow = $( "#tpl_row" );
+				var tplrow = $( "#tpl_row" );
 				parent = tplrow.parent();
 
 				// clear previous result
@@ -96,9 +121,11 @@ class JSForm {
 					//console.log($(this).attr('id')); //remove();
 				});
 
-                	        self.searchFnGetTable(result).forEach(function(element) {
+				self.data = result;
+                	        self.getMainTableFromResult(result).forEach(function(element) {
+					var key = self.getKeyFromRow(element);
                         	        var newrow = tplrow.clone().
-                                	        prop('id', 'row' + element[0]).
+                                	        prop('id', 'row' + key).
                                         	appendTo( parent );
 	                                html = newrow.html();
         	                        for(var propertyName in element) {
@@ -106,6 +133,7 @@ class JSForm {
                         	        }
                                 	newrow.html(html);
 	                                newrow.show();
+					$('#row' + key).click({self: self, key: key}, self.viewClick);
         	                });
 
 				// TODO evaluate result.ATotalRecords, and tell the user if there are more records

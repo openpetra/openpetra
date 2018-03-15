@@ -52,11 +52,11 @@
         "AccountDetail_label": "Account Detail"
     },
     "forms": {
-        "view": "Details",
         "edit": "Edit",
         "new": "Add",
         "filter": "Filter",
         "cancel": "Cancel",
+        "close": "Close",
         "delete": "Delete"
     },
     "frmHome": {

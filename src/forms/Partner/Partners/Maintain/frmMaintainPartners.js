@@ -21,21 +21,32 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+class MaintainPartnersForm extends JSForm {
+	constructor() {
+		super();
+		super.initEvents();
+		super.initSearch(
+			'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
+        	        AFirstName: '',
+                	AFamilyNameOrOrganisation: '',
+	                ACity: '',
+        	        APartnerClass: 'FAMILY',
+                	AMaxRecords: 25
+	                });
+
+		// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
+		super.search();
+	}
+
+	getMainTableFromResult(result) {
+		return result.result;
+	}
+
+	getKeyFromRow(row) {
+		return row['p_partner_key_n'];
+	}
+}
+
 $(function() {
-	form = new JSForm();
-
-	form.initEvents();
-
-	form.initSearch(
-		'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
-                AFirstName: '',
-                AFamilyNameOrOrganisation: '',
-                ACity: '',
-                APartnerClass: 'FAMILY',
-                AMaxRecords: 25
-                },
-		function (result) { return result.result; });
-
-	// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
-	form.search();
+	var form = new MaintainPartnersForm();
 });
