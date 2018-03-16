@@ -57,7 +57,8 @@
         "filter": "Finden",
         "cancel": "Abbrechen",
         "close": "Schließen",
-        "delete": "Löschen"
+        "delete": "Löschen",
+        "any": "alle"
     },
     "frmHome": {
         "welcome": "Willkommen bei OpenPetra, mit den besten Empfehlungen von <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
@@ -92,7 +93,12 @@
         "partnername": "Name",
         "city": "Stadt",
         "partnerclass": "Partner Klasse",
-        "streetname": "Straße und Hausnummer"
+        "streetname": "Straße und Hausnummer",
+        "PERSON": "PERSON",
+        "FAMILY": "FAMILIE",
+        "ORGANISATION": "ORGANISATION",
+        "BANK": "BANK",
+        "UNIT": "EINHEIT"
     },
 
     "frmChangeLanguage": {

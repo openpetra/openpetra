@@ -77,7 +77,11 @@ class JSForm {
 		self.getMainTableFromResult(self.data).forEach(function(element) {
 			if (key == self.getKeyFromRow(element)) {
 				for(var propertyName in element) {
-					html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
+					if (element[propertyName] === null) {
+						html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
+					} else {
+						html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
+					}
 				}
 				return true; // same as break
 			}
@@ -91,6 +95,9 @@ class JSForm {
 	getSearchParams() {
 		var parameters = {};
 		$('#tabfilter input').each(function () {
+			parameters[$(this).attr('name')] = $(this).val();
+		});
+		$('#tabfilter select').each(function () {
 			parameters[$(this).attr('name')] = $(this).val();
 		});
 		return parameters;
@@ -136,7 +143,11 @@ class JSForm {
                                         	appendTo( parent );
 	                                html = newrow.html();
         	                        for(var propertyName in element) {
-                	                        html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
+						if (element[propertyName] === null) {
+	                	                        html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
+						} else {
+	                	                        html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
+						}
                         	        }
                                 	newrow.html(html);
 	                                newrow.show();

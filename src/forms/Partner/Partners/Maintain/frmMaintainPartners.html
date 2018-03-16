@@ -12,8 +12,14 @@
 <table class="table" id="tabfilter">
 <tr><td>{partnername}: </td><td><input type="text" name="AFamilyNameOrOrganisation"/></td></tr>
 <tr><td>{city}: </td><td><input type="text" name="ACity"/></td></tr>
-<!--<td>{partnerclass}: </td><td><input type="text" name="APartnerClass"/></td>-->
-<input type="hidden" name="APartnerClass" value=""/>
+<td>{partnerclass}: </td><td><select name="APartnerClass">
+	<option value="">{forms.any}</option>
+	<option value="FAMILY" selected>{FAMILY}</option>
+	<option value="PERSON">{PERSON}</option>
+	<option value="ORGANISATION">{ORGANISATION}</option>
+	<option value="UNIT">{UNIT}</option>
+	<option value="BANK">{BANK}</option>
+</select></td>
 <input type="hidden" name="AMaxRecords" value="25"/>
 <tr><td colspan="2">
 	<button id="cancelfilter">{forms.cancel}</button>
