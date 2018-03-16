@@ -43,9 +43,7 @@ class JSForm {
 
 	initEvents() {
 		self = this;
-		$('#cancelfilter').click(function(event) {
-			$('#tabfilter').hide();
-		});
+		$('#cancelfilter').click(this.filterCancel);
 		$('#filter').click(this.filterClick);
 		$('#filter2').click(this.filterClick);
 	}
@@ -53,10 +51,17 @@ class JSForm {
 	filterClick() {
 		if ($('#tabfilter').css('display') == "none") {
 			$('#tabfilter').show();
+			$('#filter').hide();
 		} else {
 			self.search();
+			$('#filter').show();
 			$('#tabfilter').hide();
 		}
+	}
+
+	filterCancel() {
+		$('#filter').show();
+		$('#tabfilter').hide();
 	}
 
 	viewClose() {
