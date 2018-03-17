@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -304,18 +304,18 @@ namespace GenerateGlue
                         (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
                         p.ParameterName + ")";
 
-                    if (returnCounter == 1)
+                    if (returnCounter == 0)
                     {
-                        returnCodeJSClient = "\"{ \\\"0\\\": \" + " + returnCodeJSClient;
+                        returnCodeJSClient = "\"{\" + ";
+                    }
+                    else
+                    {
+                        returnCodeJSClient += " + \",\" + ";
                     }
 
-                    if (returnCounter > 0)
-                    {
-                        returnCodeJSClient += " + \", \\\"" + returnCounter.ToString() + "\\\": \" + ";
-                    }
-
+                    returnCodeJSClient += "\"\\\"" + p.ParameterName + "\\\": \" + ";
                     returnCodeJSClient +=
-                        "THttpBinarySerializer.SerializeObjectWithType(" +
+                        "THttpBinarySerializer.SerializeObject(" +
                         (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
                         p.ParameterName + ")";
 
@@ -355,12 +355,7 @@ namespace GenerateGlue
                         returnCodeFatClient +=
                             (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) + "THttpBinarySerializer.SerializeObjectWithType(Result)";
 
-                        if (returnCounter == 1)
-                        {
-                            returnCodeJSClient = "\"{ \\\"0\\\": \" + " + returnCodeJSClient;
-                        }
-
-                        returnCodeJSClient += "+\", \\\"" + returnCounter.ToString() + "\\\": \"+" +
+                        returnCodeJSClient += "+ \",\" + \"\\\"result\\\": \"+" +
                                               "THttpBinarySerializer.SerializeObjectWithType(Result)";
 
                         returnCounter++;
@@ -380,7 +375,9 @@ namespace GenerateGlue
                            || (returntype == "System.Boolean")) && (returntype != "void"))
                 {
                     returntype = "string";
-                    returnCodeFatClient = returnCodeJSClient = "THttpBinarySerializer.SerializeObject(Result)";
+                    returnCodeFatClient = "THttpBinarySerializer.SerializeObject(Result)";
+                    returnCodeJSClient = "\"{\\\"result\\\": \"+" +
+                                         "THttpBinarySerializer.SerializeObject(Result)" + " + \"}\"";
                 }
 
                 string localreturn = AutoGenerationTools.TypeToString(AReturnType, "");
@@ -408,7 +405,7 @@ namespace GenerateGlue
                 if ((returnCodeFatClient.Length > 0) || (returnCodeJSClient.Length > 0))
                 {
                     snippet.SetCodelet("RETURN",
-                        returntype != "void" ? "return isJSClient()?" + returnCodeJSClient + ":" + returnCodeFatClient + ";" : string.Empty);
+                        returntype != "void" ? "return " + returnCodeJSClient + ";" : string.Empty);
                 }
 
                 snippet.SetCodelet("RETURNTYPE", returntype);

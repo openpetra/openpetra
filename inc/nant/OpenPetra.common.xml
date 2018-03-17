@@ -307,7 +307,7 @@
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->
-<property name="DBMS.Type" value="postgresql"
+<property name="DBMS.Type" value="mysql"
           overwrite="false" />
 <property name="DBMS.DBName" value="openpetra"
           overwrite="false"/>
@@ -315,7 +315,7 @@
           overwrite="false"/>
 <property name="DBMS.Password" value="petra"
           overwrite="false" />
-<property name="DBMS.DBPort" value="5432"
+<property name="DBMS.DBPort" value="3306"
           overwrite="false"/>
 <property name="DBMS.DBHostOrFile" value="127.0.0.1"
           overwrite="false"/>
@@ -416,8 +416,8 @@
     <!-- Fedora has version 18 -->
     <property name="libsodium.so" value="/usr/lib64/libsodium.so.18" overwrite="false"/>
     <if test="${not file::exists(libsodium.so)}">
-        <!-- CentOS7 has version 13 -->
-        <property name="libsodium.so" value="/usr/lib64/libsodium.so.13" overwrite="true"/>
+        <!-- CentOS7 has version 23 -->
+        <property name="libsodium.so" value="/usr/lib64/libsodium.so.23" overwrite="true"/>
     </if>
 
     <!-- this is the location of NUnit on mono-openpetra rpm -->

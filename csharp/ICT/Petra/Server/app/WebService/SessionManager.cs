@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -467,6 +467,12 @@ namespace Ict.Petra.Server.App.WebService
                 if (UserInfo.GUserInfo == null)
                 {
                     TLogging.Log("PollClientTasks: GUserInfo == null!");
+                    return THttpBinarySerializer.SerializeObject(false);
+                }
+                
+                if (DomainManager.CurrentClient == null)
+                {
+                    TLogging.Log("PollClientTasks: CurrentClient == null!");
                     return THttpBinarySerializer.SerializeObject(false);
                 }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -109,14 +109,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
         /// throws an exception if the current user does not have enough permission to access the method;
         /// this uses a custom attribute associated with the method of the connector
-        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes)
-        {
-            return CheckUserPermissionsForMethod(AConnectorType, AMethodName, AParameterTypes, -1);
-        }
-
-        /// throws an exception if the current user does not have enough permission to access the method;
-        /// this uses a custom attribute associated with the method of the connector
-        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes, Int32 ALedgerNumber)
+        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes, Int32 ALedgerNumber = -1)
         {
             MethodInfo[] methods = AConnectorType.GetMethods();
 
@@ -177,6 +170,15 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (moduleExpression == "NONE")
                     {
                         return true;
+                    }
+
+                    // authenticated user
+                    if (moduleExpression == "USER")
+                    {
+                        if (UserInfo.GUserInfo != null && UserInfo.GUserInfo.UserID != null)
+                        {
+                            return true;
+                        }
                     }
 
                     try

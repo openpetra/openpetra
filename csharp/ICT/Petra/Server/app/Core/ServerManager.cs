@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -139,18 +139,6 @@ namespace Ict.Petra.Server.App.Core
                 new TLoginLog(),
                 new TMaintenanceLogonMessage(),
                 ExceptionHandling_DBConnectionBrokenCallback);
-
-            // Set up the SYSADMIN user (#5650).
-            // (This is required for all SubmitChanges method calls in the server's main AppDomain because
-            // that Method references UserInfo.GUserInfo)
-            // When using this with the Web Services, this does not apply to the threads for each session.
-            TPetraIdentity PetraIdentity = new TPetraIdentity(
-                "SYSADMIN", "", "", "", "",
-                DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
-                0, -1, -1, false, false, false);
-
-            TPetraPrincipal Principal = new TPetraPrincipal(PetraIdentity, null);
-            UserInfo.GUserInfo = Principal;
 
             //
             // Set up 'Timed Processing'

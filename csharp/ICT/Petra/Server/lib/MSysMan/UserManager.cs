@@ -226,6 +226,13 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
             catch (EUserNotExistantException)
             {
+                TPetraIdentity PetraIdentity = new TPetraIdentity(
+                    "SYSADMIN", "", "", "", "",
+                    DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+                    0, -1, -1, false, false, false);
+
+                UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+
                 // Logging
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
                     String.Format(Catalog.GetString(

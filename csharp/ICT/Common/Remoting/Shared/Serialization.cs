@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Verification;
 
 namespace Ict.Common.Remoting.Shared
 {
@@ -107,6 +108,12 @@ namespace Ict.Common.Remoting.Shared
             }
 
             return serializer.Serialize(table);
+        }
+
+        static private string VerificationResultCollectionToJson(TVerificationResultCollection ACollection)
+        {
+            // only return the error codes
+            return ACollection.GetErrorCodes();
         }
 
         /// <summary>
@@ -192,6 +199,11 @@ namespace Ict.Common.Remoting.Shared
             if (o is DataTable)
             {
                 return DataTableToJson((DataTable)o);
+            }
+
+            if (o is TVerificationResultCollection)
+            {
+                return VerificationResultCollectionToJson((TVerificationResultCollection)o);
             }
 
             MemoryStream memoryStream = new MemoryStream();

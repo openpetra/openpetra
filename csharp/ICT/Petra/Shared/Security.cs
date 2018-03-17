@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, alanp
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -134,6 +134,11 @@ namespace Ict.Petra.Shared.Security
         /// <returns>True if the user has access permissions.  Otherwise the method throws a ESecurityModuleAccessDeniedException exception.</returns>
         public static bool CheckUserModulePermissions(string AModuleExpression, string AModuleAccessExceptionContext = "")
         {
+            if (UserInfo.GUserInfo == null && AModuleExpression != "NONE")
+            {
+                throw new Exception("Only authenticated users are allowed to use this function");
+            }
+
             if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
             {
                 // find the closing bracket

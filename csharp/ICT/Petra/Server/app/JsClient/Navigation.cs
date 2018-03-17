@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -202,12 +202,6 @@ namespace Ict.Petra.Server.app.JSClient
                     }
                     else if (AAvailableLedgers.Rows.Count == 1)
                     {
-                        // Dynamically add Attribute 'SkipThisLevel' to the next child, which would be the child for the Collapsible Panel,
-                        // which we don't need/want for a 'Single Ledger' Site!
-                        XmlAttribute LabelSkipCollapsibleLevel = childNode.OwnerDocument.CreateAttribute("SkipThisLevel");
-                        childNode.ChildNodes[0].Attributes.Append(LabelSkipCollapsibleLevel);
-                        childNode.ChildNodes[0].Attributes["SkipThisLevel"].Value = "true";
-
                         // Check access permission for Ledger
                         if (UserInfo.GUserInfo.IsInModule(FormatLedgerNumberForModuleAccess(AAvailableLedgers[0].LedgerNumber)))
                         {
@@ -241,7 +235,14 @@ namespace Ict.Petra.Server.app.JSClient
         /// </summary>
         public static XmlNode BuildNavigationXml(bool ADontUseDefaultLedger = false)
         {
-            TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
+            string UINavigationFile = TAppSettingsManager.GetValue("UINavigation.File");
+
+            if (!File.Exists(UINavigationFile))
+            {
+                throw new Exception ("cannot find file " + UINavigationFile);
+            }
+
+            TYml2Xml parser = new TYml2Xml(UINavigationFile);
             XmlDocument UINavigation = parser.ParseYML2XML();
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
@@ -282,51 +283,54 @@ namespace Ict.Petra.Server.app.JSClient
             return result;
         }
 
-        private static string GetCaption(XmlNode ANode)
+        private static string GetCaption(XmlNode ANode, bool AWithoutBrackets=false)
         {
-            return Catalog.GetString(TYml2Xml.HasAttribute(ANode, "Label") ? TYml2Xml.GetAttribute(ANode,
-                    "Label") : StringHelper.ReverseUpperCamelCase(ANode.Name)).Replace("&", "");
+            if (AWithoutBrackets)
+            {
+                return ANode.Name + "_label";
+            }
+            else
+            {
+                return "{" + ANode.Name + "_label}";
+            }
         }
 
         private static Dictionary<string, object> AddFolder(XmlNode AFolderNode, string AUserId)
         {
             // TODO icon?
 
-            // TODO enabled/disabled based on permissions
-#if TODO
+            // enabled/disabled based on permissions
+            bool enabled = true;	
             if ((TYml2Xml.HasAttribute(AFolderNode, "Enabled"))
                 && (TYml2Xml.GetAttribute(AFolderNode, "Enabled").ToLower() == "false"))
             {
-                rbt.Enabled = false;
+                enabled = false;
             }
             else
             {
-                rbt.Enabled = AHasAccessPermission(AFolderNode, AUserId, false);
+                enabled = HasAccessPermission(AFolderNode, AUserId, false);
             }
-#endif
 
             Dictionary<string, object> folder = new Dictionary<string, object>();
-            folder.Add("caption", GetCaption(AFolderNode));
+            folder.Add("caption", GetCaption(AFolderNode, true));
             folder.Add("icon", TYml2Xml.GetAttribute(AFolderNode, "fa-icon"));
+
+            if (!enabled)
+            {
+                folder.Add("enabled", "false");
+            }
+
             Dictionary<string, object> items = new Dictionary<string, object>();
 
             foreach (XmlNode child in AFolderNode.ChildNodes)
             {
-                if (TYml2Xml.GetAttribute(child, "SkipThisLevel") == "true")
+                Dictionary<string, object> item = new Dictionary<string, object>();
+                item.Add("caption", GetCaption(child, true));
+                if (child.ChildNodes.Count == 1 && child.ChildNodes[0].ChildNodes.Count == 0)
                 {
-                    foreach (XmlNode child2 in child.ChildNodes)
-                    {
-                        Dictionary<string, object> item = new Dictionary<string, object>();
-                        item.Add("caption", GetCaption(child2));
-                        items.Add(child2.Name, item);
-                    }
+                    item.Add("form", child.ChildNodes[0].Name);
                 }
-                else
-                {
-                    Dictionary<string, object> item = new Dictionary<string, object>();
-                    item.Add("caption", GetCaption(child));
-                    items.Add(child.Name, item);
-                }
+                items.Add(child.Name, item);
             }
 
             folder.Add("items", items);
@@ -370,7 +374,7 @@ namespace Ict.Petra.Server.app.JSClient
                 {
                     if (!TaskDisplayed)
                     {
-                        ScreenCode.Append("not implemented yet<br/>" + Environment.NewLine);
+                        ScreenCode.Append("{notimplementedyet}<br/>" + Environment.NewLine);
                     }
 
                     ScreenCode.Append("<h3>" + GetCaption(child) + "</h3>" + Environment.NewLine);
@@ -395,7 +399,7 @@ namespace Ict.Petra.Server.app.JSClient
 
             if (!TaskDisplayed)
             {
-                ScreenCode.Append("not implemented yet<br/>" + Environment.NewLine);
+                ScreenCode.Append("{notimplementedyet}<br/>" + Environment.NewLine);
             }
 
             return ScreenCode;
@@ -415,11 +419,6 @@ namespace Ict.Petra.Server.app.JSClient
                     if (ADepth == ATaskName.Length-1)
                     {
                         return ACurrentNode;
-                    }
-
-                    if (TYml2Xml.GetAttribute(ACurrentNode.FirstChild, "SkipThisLevel") == "true")
-                    {
-                        ACurrentNode = ACurrentNode.FirstChild;
                     }
 
                     XmlNode SectionNode = FindSectionNode(ACurrentNode.FirstChild, ATaskName, ADepth+1);
