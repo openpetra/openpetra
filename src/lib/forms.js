@@ -22,7 +22,8 @@
 //
 
 class JSForm {
-	initContent(content) {
+	// this function is static, because it is executed before the html of the form is loaded
+	static initContent(content) {
 		content = content.replace(new RegExp('button id="filter"',"g"), 'button id="filter" class="btn btn-primary"');
 		content = content.replace(new RegExp('button id="filter2"',"g"), 'button id="filter2" class="btn btn-primary"');
 		content = content.replace(new RegExp('button id="cancelfilter"',"g"), 'button id="cancelfilter" class="btn btn-secondary"');
@@ -36,7 +37,8 @@ class JSForm {
 		return content;
 	}
 
-	initSearch(apiUrl, parameters) {
+	constructor(name, apiUrl, parameters) {
+		this.name = name;
 		this.searchApiUrl = apiUrl;
 		this.searchInitialParameters = parameters;
 	}
@@ -46,6 +48,8 @@ class JSForm {
 		$('#cancelfilter').click(this.filterCancel);
 		$('#filter').click(this.filterClick);
 		$('#filter2').click(this.filterClick);
+		$('#new').click({self: self, key: key}, self.showAddDialog);
+		
 	}
 
 	filterClick() {
@@ -62,6 +66,38 @@ class JSForm {
 	filterCancel() {
 		$('#filter').show();
 		$('#tabfilter').hide();
+	}
+
+	showAddDialog(event) {
+		self = event.data.self;
+		if ($('#newDialog').length) {
+			// reuse existing dialog
+			$('#newDialog').modal('show');
+			return;
+		}
+
+		// create a copy of the template
+		var tpl_edit = $( "#tpl_edit" );
+		var newedit = tpl_edit.clone().prop('id', 'newDialog').insertAfter('#tpl_edit');
+		$('#newDialog > #modalTitle').html(i18next.t(self.name + '.' + 'addtitle'));
+		$('#newDialog').modal('show');
+	}
+
+	showEditDialog(event) {
+		self = event.data.self;
+		key = event.data.key;
+		var dialogname = 'editDialog' + key;
+		if ($('#' + dialogname).length) {
+			// reuse existing dialog
+			$('#' + dialogname).modal('show');
+			return;
+		}
+
+		// create a copy of the template
+		var tpl_edit = $( "#tpl_edit" );
+		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
+		$('#' + dialogname + ' > #modalTitle').html(i18next.t(self.name + '.' + 'edittitle'));
+		$('#' + dialogname).modal('show');
 	}
 
 	viewClose() {
@@ -94,6 +130,7 @@ class JSForm {
 
 		newview.html(html);
 		$('#view' + key + ' > td > #closeview').click(self.viewClose);
+		$('#view' + key + ' > td > #edit').click({self: self, key: key}, self.showEditDialog);
 		newview.show();
 	}
 
@@ -134,7 +171,6 @@ class JSForm {
 						if ($(this).attr('id') !== undefined && $(this).attr('id').startsWith('row')) {
 							$(this).remove();
 						}
-						//console.log($(this).attr('id')); //remove();
 					});
 
 					// clear view

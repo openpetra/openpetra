@@ -23,16 +23,15 @@
 
 class MaintainPartnersForm extends JSForm {
 	constructor() {
-		super();
-		super.initEvents();
-		super.initSearch(
+		super('frmMaintainPartners',
 			'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
-        	        AFirstName: '',
-                	AFamilyNameOrOrganisation: '',
-	                ACity: '',
-        	        APartnerClass: 'FAMILY',
-                	AMaxRecords: 25
-	                });
+				AFirstName: '',
+				AFamilyNameOrOrganisation: '',
+				ACity: '',
+				APartnerClass: 'FAMILY',
+				AMaxRecords: 25
+			});
+		super.initEvents();
 
 		// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
 		super.search();

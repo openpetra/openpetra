@@ -58,6 +58,7 @@
         "cancel": "Abbrechen",
         "close": "Schließen",
         "delete": "Löschen",
+        "save": "Übernehmen",
         "any": "alle"
     },
     "frmHome": {
@@ -84,14 +85,19 @@
     "frmMaintainUsers": {
         "caption": "Benutzer verwalten",
         "userid": "Benutzername",
-        "permissions": "Berechtigungen"
+        "permissions": "Berechtigungen",
+        "locked": "Gesperrt",
+        "retired": "Deaktiviert"
     },
 
     "frmMaintainPartners": {
         "caption": "Partner verwalten",
+        "edittitle": "Partner bearbeiten",
+        "addtitle": "Partner anlegen",
         "partnerkey": "Partner Nummer",
         "partnername": "Name",
         "city": "Stadt",
+        "postalcode": "Postleitzahl",
         "partnerclass": "Partner Klasse",
         "streetname": "Straße und Hausnummer",
         "PERSON": "PERSON",

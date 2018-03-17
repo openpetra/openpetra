@@ -64,3 +64,9 @@ body {
   }
 }
 
+.modal.modal-wide .modal-dialog {
+  max-width: 90% !important;
+}
+.modal-wide .modal-body {
+  overflow-y: auto;
+}

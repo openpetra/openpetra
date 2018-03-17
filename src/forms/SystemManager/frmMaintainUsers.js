@@ -23,11 +23,10 @@
 
 class MaintainUsersForm extends JSForm {
 	constructor() {
-		super();
-		super.initEvents();
-		super.initSearch(
+		super('frmMaintainUsers',
 			'serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions',
 			{});
+		super.initEvents();
 		super.search();
 	}
 

@@ -58,6 +58,7 @@
         "cancel": "Cancel",
         "close": "Close",
         "delete": "Delete",
+        "save": "Save",
         "any": "any"
     },
     "frmHome": {
@@ -83,14 +84,19 @@
     "frmMaintainUsers": {
         "caption": "Maintain users",
         "userid": "User ID",
-        "permissions": "Permissions"
+        "permissions": "Permissions",
+        "locked": "Gesperrt",
+        "retired": "Deaktiviert"
     },
 
     "frmMaintainPartners": {
         "caption": "Maintain partners",
+        "edittitle": "Edit partner",
+        "addtitle": "New partner",
         "partnerkey": "Partner key",
         "partnername": "Name",
         "city": "City",
+        "postalcode": "Postal code",
         "partnerclass": "Partner class",
         "streetname": "Street name",
         "PERSON": "PERSON",

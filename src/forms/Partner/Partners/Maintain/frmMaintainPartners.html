@@ -27,6 +27,31 @@
 </td></tr>
 </table>
 
+<div class="modal modal-wide fade" id="tpl_edit" tabindex="-1" role="dialog" aria-labelledby="{edittitle}" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="modalTitle">{edittitle}</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table class="table">
+				<tr><td>{partnerkey}</td><td><input type="text" name="p_partner_key_n" readonly value="{val_p_partner_key_n}"/></td></tr>
+				<tr><td>{streetname}</td><td><input type="text" name="p_street_name_c" value="{val_p_street_name_c}"/></td></tr>
+				<tr><td>{city}</td><td><input type="text" name="p_city_c" value="{val_p_city_c}"/></td></tr>
+				<tr><td>{postalcode}</td><td><input type="text" name="p_postal_code_c" value="{val_p_postal_code_c}"/></td></tr>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">{forms.cancel}</button>
+				<button type="button" class="btn btn-primary">{forms.save}</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <table class="table" id="browse">
 <tr>
 <th>{partnerkey}</th>
