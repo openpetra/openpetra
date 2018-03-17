@@ -25,11 +25,11 @@ class JSForm {
 	initContent(content) {
 		content = content.replace(new RegExp('button id="filter"',"g"), 'button id="filter" class="btn btn-primary"');
 		content = content.replace(new RegExp('button id="filter2"',"g"), 'button id="filter2" class="btn btn-primary"');
-		content = content.replace(new RegExp('button id="cancelfilter"',"g"), 'button id="cancelfilter" class="btn"');
+		content = content.replace(new RegExp('button id="cancelfilter"',"g"), 'button id="cancelfilter" class="btn btn-secondary"');
 		content = content.replace(new RegExp('button id="new"',"g"), 'button id="new" class="btn btn-primary"');
 		content = content.replace(new RegExp('button id="edit"',"g"), 'button id="edit" class="btn btn-primary"');
 		content = content.replace(new RegExp('button id="view"',"g"), 'button id="view" class="btn btn-primary"');
-		content = content.replace(new RegExp('button id="closeview"',"g"), 'button id="closeview" class="btn"');
+		content = content.replace(new RegExp('button id="closeview"',"g"), 'button id="closeview" class="btn btn-secondary"');
 		content = content.replace(new RegExp(' id="tpl_', "g"), ' style="display:none" id="tpl_');
 		content = content.replace('id="tabfilter"', ' style="display:none" id="tabfilter"');
 		content = content.replace('id="tpl_view"', ' style="display:none" id="tpl_view"');
@@ -92,7 +92,7 @@ class JSForm {
 			}
 		});
 
-        	newview.html(html);
+		newview.html(html);
 		$('#view' + key + ' > td > #closeview').click(self.viewClose);
 		newview.show();
 	}
@@ -109,7 +109,7 @@ class JSForm {
 	}
 
 	search() {
-                self = this;
+		self = this;
 		var parameters;
 		if ($('#tabfilter').css('display') != "none") {
 			parameters = self.getSearchParams();
@@ -117,50 +117,50 @@ class JSForm {
 			parameters = self.searchInitialParameters;
 		}
 		api.post(self.searchApiUrl, parameters)
-        	.then(function(response) {
-                	if (response.data == null) {
-	                        console.log("error: " + response);
-        	                return;
-                	}
-	                var result = JSON.parse(response.data.d);
-        	        if (result.result == "false") {
-                	        console.log("problem loading " + apiUrl);
-	                } else {
-				var tplrow = $( "#tpl_row" );
-				parent = tplrow.parent();
+			.then(function(response) {
+				if (response.data == null) {
+					console.log("error: " + response);
+					return;
+				}
+				var result = JSON.parse(response.data.d);
+				if (result.result == "false") {
+					console.log("problem loading " + apiUrl);
+				} else {
+					var tplrow = $( "#tpl_row" );
+					parent = tplrow.parent();
 
-				// clear previous result
-				$('#browse tr').each(function() {
-					if ($(this).attr('id') !== undefined && $(this).attr('id').startsWith('row')) {
-						$(this).remove();
-					}
-					//console.log($(this).attr('id')); //remove();
-				});
-
-				// clear view
-				self.viewClose();
-
-				self.data = result;
-                	        self.getMainTableFromResult(result).forEach(function(element) {
-					var key = self.getKeyFromRow(element);
-                        	        var newrow = tplrow.clone().
-                                	        prop('id', 'row' + key).
-                                        	appendTo( parent );
-	                                html = newrow.html();
-        	                        for(var propertyName in element) {
-						if (element[propertyName] === null) {
-	                	                        html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
-						} else {
-	                	                        html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
+					// clear previous result
+					$('#browse tr').each(function() {
+						if ($(this).attr('id') !== undefined && $(this).attr('id').startsWith('row')) {
+							$(this).remove();
 						}
-                        	        }
-                                	newrow.html(html);
-	                                newrow.show();
-					$('#row' + key).click({self: self, key: key}, self.viewClick);
-        	                });
+						//console.log($(this).attr('id')); //remove();
+					});
 
-				// TODO evaluate result.ATotalRecords, and tell the user if there are more records
-                	}
-        	});
+					// clear view
+					self.viewClose();
+
+					self.data = result;
+					self.getMainTableFromResult(result).forEach(function(element) {
+						var key = self.getKeyFromRow(element);
+						var newrow = tplrow.clone().
+								prop('id', 'row' + key).
+								appendTo( parent );
+						html = newrow.html();
+						for(var propertyName in element) {
+							if (element[propertyName] === null) {
+								html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
+							} else {
+								html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
+							}
+						}
+						newrow.html(html);
+						newrow.show();
+						$('#row' + key).click({self: self, key: key}, self.viewClick);
+					});
+
+					// TODO evaluate result.ATotalRecords, and tell the user if there are more records
+				}
+			});
 	}
 }
