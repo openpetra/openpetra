@@ -3,6 +3,7 @@
         "signin": "Anmelden",
         "email": "E-Mail Adresse",
 	"passwd": "Passwort",
+        "failedlogin": "Falscher Benutzername oder falsches Passwort",
 	"support_caption": "Unterstützung",
 	"support_text": "Falls Sie Fragen oder Anregungen haben, besuchen Sie uns doch im <a href='https://forum.openpetra.de'>öffentlichen OpenPetra Forum</a> und reden Sie dort mit uns!"
     },
@@ -19,6 +20,7 @@
 
         "Partner_label": "Partner",
         "Partners_label": "Partner",
+        "Maintain_label": "Verwalten",
         "MaintainPartners_label": "Partner verwalten",
         "CreatePartner_label": "Partner anlegen",
         "ImportExport_label": "Importieren/Exportieren",
@@ -49,6 +51,16 @@
         "FindPartners_label": "Partner suchen",
         "AccountDetail_label": "Bericht über die Konten"
     },
+    "forms": {
+        "edit": "Bearbeiten",
+        "new": "Hinzufügen",
+        "filter": "Finden",
+        "cancel": "Abbrechen",
+        "close": "Schließen",
+        "delete": "Löschen",
+        "save": "Übernehmen",
+        "any": "alle"
+    },
     "frmHome": {
         "welcome": "Willkommen bei OpenPetra, mit den besten Empfehlungen von <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> ist eine einfach zu benutzende Softwareanwendung für die Verwaltung von Vereinen, Missionen und Hilfswerken, und steht unter der GPL Lizenz.",
@@ -68,6 +80,31 @@
         "wrong": "Das alte Password wurde nicht korrekt eingegeben",
         "unknown": "Unbekannter Fehler ",
         "success": "Das Passwort wurde erfolgreich geändert"
+    },
+
+    "frmMaintainUsers": {
+        "caption": "Benutzer verwalten",
+        "userid": "Benutzername",
+        "permissions": "Berechtigungen",
+        "locked": "Gesperrt",
+        "retired": "Deaktiviert"
+    },
+
+    "frmMaintainPartners": {
+        "caption": "Partner verwalten",
+        "edittitle": "Partner bearbeiten",
+        "addtitle": "Partner anlegen",
+        "partnerkey": "Partner Nummer",
+        "partnername": "Name",
+        "city": "Stadt",
+        "postalcode": "Postleitzahl",
+        "partnerclass": "Partner Klasse",
+        "streetname": "Straße und Hausnummer",
+        "PERSON": "PERSON",
+        "FAMILY": "FAMILIE",
+        "ORGANISATION": "ORGANISATION",
+        "BANK": "BANK",
+        "UNIT": "EINHEIT"
     },
 
     "frmChangeLanguage": {

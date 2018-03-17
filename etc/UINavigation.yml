@@ -2,13 +2,9 @@ OpenPetra:
     MainMenu:
         # Department
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
-            # Module
-            Main: {SkipThisLevel=true}
-                # Sub Module
-                Partners: {DontShowNestedTasksAsLinks=true}
-                    MaintainPartners:
-                        FindPartners: {Singleton=true}
-                        WorkWithLastPartner: {ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
+                Partners:
+                    Maintain:
+                        MaintainPartners:
                         MergePartners: {ActionOpenScreen=TFrmMergePartnersDialog}
                         DeletePartner: {ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:
@@ -21,12 +17,12 @@ OpenPetra:
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport}
                     Subscriptions:
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
                         PartnerBySubscription: {ActionOpenScreen=TFrmPartnerBySubscription}
 
-                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
+                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
                     Partner-related:
                         ContactAttributes: {ActionOpenScreen=TFrmContactAttributeSetup}
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCountrySetup}
@@ -59,7 +55,6 @@ OpenPetra:
                         PostcodeRegions: {ActionOpenScreen=TFrmPostcodeRegionSetup}
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
         Finance: {fa-icon=money, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
-            Main: {SkipThisLevel=true}
                 GeneralLedger:
                     Info:
                         LedgerInfo:
@@ -78,7 +73,7 @@ OpenPetra:
                         SurplusDeficit:
                         BalanceSheetStandard:
                         IncomeExpenseStatement:
-                Gift: {DontShowNestedTasksAsLinks=true}
+                Gift:
                     GiftEntry:
                         GiftBatches:
                         ImportGiftsFromBankStatement:
@@ -87,7 +82,7 @@ OpenPetra:
                     GiftReceipting:
                         PrintAnnualReceipts:
                         DonorRecipientHistory:
-                Setup:  {DontShowNestedTasksAsLinks=true}
+                Setup:
                     GL:
                         LedgerSettings:
                         ManageAccounts:
@@ -97,17 +92,14 @@ OpenPetra:
                         MotivationGroup:
                         MotivationDetails:
         CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
-            General: {SkipThisLevel=true}
-                Ledger: {DontShowNestedTasksAsLinks=true}
+                Ledger:
                     LedgerSetup:
                         CreateLedger: {PermissionsRequired="FINANCE-3"}
 
-        SystemManager: {fa-icon=sliders, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
-            Users:
-                Users: {DontShowNestedTasksAsLinks=true}
-                    Maintenance:
+        SystemManager: {fa-icon=sliders, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+                Users:
                         MaintainUsers:
-            Database:
-                ImportExport: {DontShowNestedTasksAsLinks=true}
-                    ExportAllData:
-                    RestoreDatabaseFromBackup:
+                Database:
+                    ImportExport:
+                        ExportAllData:
+                        RestoreDatabaseFromBackup:

@@ -1,8 +1,7 @@
-//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//	   Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <tp@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
 //
@@ -22,15 +21,7 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-var css = require('../css/app.css');
-$ = require('jquery');
-require('bootstrap');
-i18next = require('i18next');
-axios = require('axios');
-i18nextXHRBackend = require('i18next-xhr-backend');
-i18nextBrowserLanguageDetector = require('i18next-browser-languagedetector');
-//require('./lib/ajax.js');
-//require('./lib/auth.js');
-//require('./lib/i18n.js');
-//require('./lib/navigation.js');
-//require('./lib/app.js');
+// useful function to replace all occurances, not just the first occurance of a search string
+function replaceAll(content, search, replace) {
+	return content.replace(new RegExp(search,"g"), replace);
+}

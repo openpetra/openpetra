@@ -3,6 +3,7 @@
         "signin": "Sign in",
         "email": "Email address",
         "passwd": "Password",
+        "failedlogin": "Wrong username or password",
         "support_caption": "Support",
         "support_text": "If you have any issues, please visit <a href='https://forum.openpetra.org'>the public OpenPetra forum</a> and share your questions!"
     },
@@ -19,6 +20,7 @@
 
         "Partner_label": "Partner",
         "Partners_label": "Partners",
+        "Maintain_label": "Maintain",
         "MaintainPartners_label": "Maintain Partners",
         "CreatePartner_label": "Create Partner",
         "ImportExport_label": "Import/Export",
@@ -49,6 +51,16 @@
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail"
     },
+    "forms": {
+        "edit": "Edit",
+        "new": "Add",
+        "filter": "Filter",
+        "cancel": "Cancel",
+        "close": "Close",
+        "delete": "Delete",
+        "save": "Save",
+        "any": "any"
+    },
     "frmHome": {
         "welcome": "Welcome to OpenPetra, brought to you by <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> is an easy to use software system for the administration of non-profit organisations, licensed under the GPL.",
@@ -67,6 +79,31 @@
         "wrong": "The current password was not entered correctly",
         "unknown": "unknown error code",
         "success": "Password has been changed successfully"
+    },
+
+    "frmMaintainUsers": {
+        "caption": "Maintain users",
+        "userid": "User ID",
+        "permissions": "Permissions",
+        "locked": "Gesperrt",
+        "retired": "Deaktiviert"
+    },
+
+    "frmMaintainPartners": {
+        "caption": "Maintain partners",
+        "edittitle": "Edit partner",
+        "addtitle": "New partner",
+        "partnerkey": "Partner key",
+        "partnername": "Name",
+        "city": "City",
+        "postalcode": "Postal code",
+        "partnerclass": "Partner class",
+        "streetname": "Street name",
+        "PERSON": "PERSON",
+        "FAMILY": "FAMILY",
+        "ORGANISATION": "ORGANISATION",
+        "BANK": "BANK",
+        "UNIT": "UNIT"
     },
 
     "frmChangeLanguage": {

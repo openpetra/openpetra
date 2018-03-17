@@ -31,9 +31,13 @@
     border-color: #2c2c2c;
 }
 
+#sidebar .list-group-item.disabled {
+    background-color: grey;
+}
+
 /* highlight active menu */
 /* sidebar-dark */
-#sidebar .list-group-item:not(.collapsed) {
+#sidebar .list-group-item:not(.collapsed):not(.disabled) {
     background-color: #222;
 }
 
@@ -139,4 +143,3 @@
 .icon-invisible {
     visibility: hidden;
 }
-

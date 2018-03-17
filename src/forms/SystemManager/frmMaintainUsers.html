@@ -1,0 +1,37 @@
+<h2>{caption}</h2>
+
+<table id="toolbar">
+<tr>
+<td>
+<button id="new">{forms.new}</button>
+</td>
+</tr>
+</table>
+
+<table id="browse">
+<tr>
+<th>{userid}</th>
+<th>{permissions}</th>
+<th></th>
+</tr>
+<tr id="tpl_row">
+<td>{val_s_user_id_c}</td>
+<td>{val_permissions}</td>
+</tr>
+
+<tr id="tpl_view">
+<td colspan='100'>
+<table class="table">
+<tr><td>{userid}</td><td>{val_s_user_id_c}</td></tr>
+<tr><td>{permissions}</td><td>{val_permissions}</td></tr>
+<tr><td>{retired}</td><td>{val_s_retired_l}</td></tr>
+<tr><td>{locked}</td><td>{val_s_account_locked_l}</td></tr>
+</table>
+<button id="closeview">{forms.close}</button>
+<button id="edit">{forms.edit}</button>
+</td>
+</tr>
+
+</table>
+
+<script src="/src/forms/SystemManager/frmMaintainUsers.js"></script>

@@ -39,7 +39,7 @@ class Auth {
 					localStorage.setItem('authenticated', new Date());
 					window.location.reload();
 				} else {
-					alert("wrong user name or password");
+					alert(i18next.t("login.failedlogin"));
 				}
 			})
 			.catch(function(error) {

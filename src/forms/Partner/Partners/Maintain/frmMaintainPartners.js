@@ -1,8 +1,7 @@
-//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//	   Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <tp@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
 //
@@ -22,15 +21,31 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-var css = require('../css/app.css');
-$ = require('jquery');
-require('bootstrap');
-i18next = require('i18next');
-axios = require('axios');
-i18nextXHRBackend = require('i18next-xhr-backend');
-i18nextBrowserLanguageDetector = require('i18next-browser-languagedetector');
-//require('./lib/ajax.js');
-//require('./lib/auth.js');
-//require('./lib/i18n.js');
-//require('./lib/navigation.js');
-//require('./lib/app.js');
+class MaintainPartnersForm extends JSForm {
+	constructor() {
+		super('frmMaintainPartners',
+			'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
+				AFirstName: '',
+				AFamilyNameOrOrganisation: '',
+				ACity: '',
+				APartnerClass: 'FAMILY',
+				AMaxRecords: 25
+			});
+		super.initEvents();
+
+		// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
+		super.search();
+	}
+
+	getMainTableFromResult(result) {
+		return result.result;
+	}
+
+	getKeyFromRow(row) {
+		return row['p_partner_key_n'];
+	}
+}
+
+$(function() {
+	var form = new MaintainPartnersForm();
+});

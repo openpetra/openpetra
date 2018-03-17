@@ -1,3 +1,0 @@
-downloaded from https://raw.githubusercontent.com/i18next/i18next-browser-languagedetector/master/i18nextBrowserLanguageDetector.min.js
-
-See https://github.com/i18next/i18next-browser-languageDetector

@@ -25,6 +25,7 @@
 class Navigation {
 	constructor() {
 		this.debug = 0;
+		this.develop = 1;
 	}
 
 	// TODO: something about parameters
@@ -40,10 +41,21 @@ class Navigation {
 		// fetch screen content from the server
 		if (name.substring(0, "frm".length) === "frm" || name.indexOf('/frm') > 0)
 		{
-			axios.get("/src/forms/" + name + ".html")
+			var refresh = "";
+			self = this;
+			if (self.develop) {
+				refresh = "?" + Date.now();
+			}
+			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
-					response.data = translate(response.data, name.substring(name.indexOf('/frm')+1));
-					$("#containerIFrames").html(response.data);
+					var content = response.data;
+					content = translate(content, name.substring(name.indexOf('/frm')+1));
+					// we want to modify the html before it is displayed
+					content = JSForm.initContent(content);
+					if (self.develop) {
+						content = content.replace(new RegExp('.js',"g"), '.js' + refresh);
+					}
+					$("#containerIFrames").html(content);
 			});
 		}
 		else // fetch navigation page
@@ -101,20 +113,23 @@ class Navigation {
 			// replace last / with /frm
 			var last = path.lastIndexOf('/');
 			var frmName = (path.substring(0,last) + "/frm" + path.substring(last+1)).substring(1);
-			// TODO: calculate title properly
-			this.OpenTab(frmName, path.substring(last+1));
+			this.OpenTab(frmName, i18next.t("navigation."+path.substring(last+1)+"_label"));
 			currentPage = frmName;
 		}
 
 		if (currentPage == null) {
 			// load home page or Dashboard
-			this.OpenTab("frmHome", "home");
+			this.OpenTab("frmHome", i18next.t("navigation.home"));
 		}
 	}
 
-	AddMenuGroup(name, title, icon)
+	AddMenuGroup(name, title, icon, enabled)
 	{
-		$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div>");
+		if (!enabled) {
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
+		} else {
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
+		}
 	}
 
 	AddMenuItemHandler(mnuItem, frmName, title) {
@@ -128,24 +143,42 @@ class Navigation {
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
+        // eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
+	AddMenuItemForm(parent, name, form, title, tabtitle, icon)
+	{
+		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fa fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		this.AddMenuItemHandler(name, parent + "/frm" + form, tabtitle);
+	}
+
 	displayNavigation(navigation) {
 		for (var folderid in navigation) {
 			var folder = navigation[folderid];
-			this.AddMenuGroup(folderid, i18next.t('navigation.'+folder.caption), folder.icon);
+			this.AddMenuGroup(folderid, i18next.t('navigation.'+folder.caption), folder.icon, folder.enabled != "false");
+			if (folder.enabled == "false") {
+				continue;
+			}
 			var items = folder.items;
 			for (var itemid in items) {
 				var item = items[itemid];
-				this.AddMenuItem(folderid, folderid + "_" + itemid, 
-					i18next.t('navigation.' + item.caption),
-					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
-					folder.icon);
+                                
+				if (item.form != null) {
+					this.AddMenuItemForm(folderid, folderid + "_" + itemid, item.form, 
+						i18next.t('navigation.' + item.caption),
+						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+						folder.icon);
+				} else {
+					this.AddMenuItem(folderid, folderid + "_" + itemid, 
+						i18next.t('navigation.' + item.caption),
+						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+						folder.icon);
+				}
 			}
 		}
 
 		// link the items in the top menu
-		this.AddMenuItemHandler('mnuChangePassword', "Settings/frmChangePassword", "Change Password");
-		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/frmChangeLanguage", "Change Language");
-		this.AddMenuItemHandler('mnuHome', "frmHome", "Home");
+		this.AddMenuItemHandler('mnuChangePassword', "Settings/frmChangePassword", i18next.t("navigation.change_password"));
+		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/frmChangeLanguage", i18next.t("navigation.change_language"));
+		this.AddMenuItemHandler('mnuHome', "frmHome", i18next.t("navigation.home"));
 
 		this.UpdateLocation();
 	}
