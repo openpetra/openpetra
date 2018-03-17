@@ -69,6 +69,30 @@ class JSForm {
 		$('#tabfilter').hide();
 	}
 
+	// the complex html is added here for modal edit/add dialog
+	createAddOrEditDialog(dialogname, title) {
+		// create a copy of the template
+		var tpl_edit = $( "#tpl_edit" );
+
+		var tpl_edit1 = '<div class="modal modal-wide fade" id="' + dialogname + '" ' +
+						'tabindex="-1" role="dialog" aria-labelledby="' + i18next.t(title) + '" ' +
+						'aria-hidden="true">' +
+						'<div class="modal-dialog" role="document">' +
+						'<div class="modal-content">' +
+						'<div class="modal-header">' +
+						'<h5 class="modal-title" id="modalTitle">' + i18next.t(title) + '</h5>' +
+						'<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+						'<span aria-hidden="true">&times;</span></button>' +
+						'</div>'	+
+						'<div class="modal-body">';
+		var tpl_edit2 = '</div><div class="modal-footer">' +
+						'<button type="button" class="btn btn-secondary" data-dismiss="modal">' + i18next.t('forms.cancel') + '</button>' +
+						'<button type="button" class="btn btn-primary">' + i18next.t('forms.save') + '</button>' +
+						'</div></div></div></div>';
+
+		return tpl_edit1 + tpl_edit.html() + tpl_edit2;
+	}
+
 	showAddDialog(event) {
 		self = event.data.self;
 		if ($('#newDialog').length) {
@@ -80,9 +104,9 @@ class JSForm {
 		// create a copy of the template
 		var tpl_edit = $( "#tpl_edit" );
 		var newedit = tpl_edit.clone().prop('id', 'newDialog').insertAfter('#tpl_edit');
+		var html = self.createAddOrEditDialog('newDialog', self.name + ".addtitle");
 
 		// clear all variables
-		html = newedit.html();
 		pos = -1;
 		while ((pos = html.indexOf('{', pos+1)) > -1) {
 			pos2 = html.indexOf('}', pos);
@@ -91,9 +115,8 @@ class JSForm {
 				html = replaceAll(html, '{'+key+'}', '');
 			}
 		}
-		newedit.html(html);
+		newedit.replaceWith(html);
 
-		$('#newDialog > div > div > div > #modalTitle').html(i18next.t(self.name + '.' + 'addtitle'));
 		$('#newDialog').modal('show');
 	}
 
@@ -110,8 +133,8 @@ class JSForm {
 		// create a copy of the template
 		var tpl_edit = $( "#tpl_edit" );
 		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
+		var html = self.createAddOrEditDialog(dialogname, self.name + ".edittitle");
 
-		var html = newedit.html();
 		self.getMainTableFromResult(self.data).forEach(function(row) {
 			if (key == self.getKeyFromRow(row)) {
 				html = self.insertRowValues(html, row);
@@ -119,9 +142,8 @@ class JSForm {
 			}
 		});
 
-		newedit.html(html);
+		newedit.replaceWith(html);
 
-		$('#' + dialogname + ' > div > div > div > #modalTitle').html(i18next.t(self.name + '.' + 'edittitle'));
 		$('#' + dialogname).modal('show');
 	}
 
@@ -223,9 +245,4 @@ class JSForm {
 				}
 			});
 	}
-}
-
-// useful function to replace all occurances, not just the first occurance of a search string
-function replaceAll(content, search, replace) {
-	return content.replace(new RegExp(search,"g"), replace);
 }

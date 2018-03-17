@@ -66,9 +66,9 @@ function translate(html, form) {
       continue;
     }
     if (key.indexOf('.') > -1) {
-      html = html.replace(new RegExp('{'+key+'}',"g"), i18next.t(key));
+      html = replaceAll(html, '{'+key+'}', i18next.t(key));
     } else {
-      html = html.replace(new RegExp('{'+key+'}',"g"), i18next.t(form + "." + key));
+      html = replaceAll(html, '{'+key+'}', i18next.t(form + "." + key));
     }
   }
 
