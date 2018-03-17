@@ -24,16 +24,17 @@
 class JSForm {
 	// this function is static, because it is executed before the html of the form is loaded
 	static initContent(content) {
-		content = content.replace(new RegExp('button id="filter"',"g"), 'button id="filter" class="btn btn-primary"');
-		content = content.replace(new RegExp('button id="filter2"',"g"), 'button id="filter2" class="btn btn-primary"');
-		content = content.replace(new RegExp('button id="cancelfilter"',"g"), 'button id="cancelfilter" class="btn btn-secondary"');
-		content = content.replace(new RegExp('button id="new"',"g"), 'button id="new" class="btn btn-primary"');
-		content = content.replace(new RegExp('button id="edit"',"g"), 'button id="edit" class="btn btn-primary"');
-		content = content.replace(new RegExp('button id="view"',"g"), 'button id="view" class="btn btn-primary"');
-		content = content.replace(new RegExp('button id="closeview"',"g"), 'button id="closeview" class="btn btn-secondary"');
-		content = content.replace(new RegExp(' id="tpl_', "g"), ' style="display:none" id="tpl_');
-		content = content.replace('id="tabfilter"', ' style="display:none" id="tabfilter"');
-		content = content.replace('id="tpl_view"', ' style="display:none" id="tpl_view"');
+		content = replaceAll(content, 'table id=', 'table class="table" id=');
+		content = replaceAll(content, 'button id="filter"', 'button id="filter" class="btn btn-primary"');
+		content = replaceAll(content, 'button id="filter2"', 'button id="filter2" class="btn btn-primary"');
+		content = replaceAll(content, 'button id="cancelfilter"', 'button id="cancelfilter" class="btn btn-secondary"');
+		content = replaceAll(content, 'button id="new"', 'button id="new" class="btn btn-primary"');
+		content = replaceAll(content, 'button id="edit"', 'button id="edit" class="btn btn-primary"');
+		content = replaceAll(content, 'button id="view"', 'button id="view" class="btn btn-primary"');
+		content = replaceAll(content, 'button id="closeview"', 'button id="closeview" class="btn btn-secondary"');
+		content = replaceAll(content, 'tr id="tpl_view"', 'tr class="view" id="tpl_view"');
+		content = replaceAll(content, ' id="tpl_', ' style="display:none" id="tpl_');
+		content = replaceAll(content, 'id="tabfilter"', ' style="display:none" id="tabfilter"');
 		return content;
 	}
 
@@ -79,7 +80,20 @@ class JSForm {
 		// create a copy of the template
 		var tpl_edit = $( "#tpl_edit" );
 		var newedit = tpl_edit.clone().prop('id', 'newDialog').insertAfter('#tpl_edit');
-		$('#newDialog > #modalTitle').html(i18next.t(self.name + '.' + 'addtitle'));
+
+		// clear all variables
+		html = newedit.html();
+		pos = -1;
+		while ((pos = html.indexOf('{', pos+1)) > -1) {
+			pos2 = html.indexOf('}', pos);
+			key = html.substring(pos+1, pos2);
+			if (key.indexOf('val_') !== false) {
+				html = replaceAll(html, '{'+key+'}', '');
+			}
+		}
+		newedit.html(html);
+
+		$('#newDialog > div > div > div > #modalTitle').html(i18next.t(self.name + '.' + 'addtitle'));
 		$('#newDialog').modal('show');
 	}
 
@@ -96,7 +110,18 @@ class JSForm {
 		// create a copy of the template
 		var tpl_edit = $( "#tpl_edit" );
 		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
-		$('#' + dialogname + ' > #modalTitle').html(i18next.t(self.name + '.' + 'edittitle'));
+
+		var html = newedit.html();
+		self.getMainTableFromResult(self.data).forEach(function(row) {
+			if (key == self.getKeyFromRow(row)) {
+				html = self.insertRowValues(html, row);
+				return true; // same as break
+			}
+		});
+
+		newedit.html(html);
+
+		$('#' + dialogname + ' > div > div > div > #modalTitle').html(i18next.t(self.name + '.' + 'edittitle'));
 		$('#' + dialogname).modal('show');
 	}
 
@@ -115,15 +140,9 @@ class JSForm {
 		var tpl_view = $( "#tpl_view" );
 		var newview = tpl_view.clone().prop('id', 'view' + key).insertAfter('#row'+ key);
 		var html = newview.html();
-		self.getMainTableFromResult(self.data).forEach(function(element) {
-			if (key == self.getKeyFromRow(element)) {
-				for(var propertyName in element) {
-					if (element[propertyName] === null) {
-						html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
-					} else {
-						html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
-					}
-				}
+		self.getMainTableFromResult(self.data).forEach(function(row) {
+			if (key == self.getKeyFromRow(row)) {
+				html = self.insertRowValues(html, row);
 				return true; // same as break
 			}
 		});
@@ -143,6 +162,17 @@ class JSForm {
 			parameters[$(this).attr('name')] = $(this).val();
 		});
 		return parameters;
+	}
+
+	insertRowValues(html, row) {
+		for(var propertyName in row) {
+			if (row[propertyName] === null) {
+				html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
+			} else {
+				html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), row[propertyName]);
+			}
+		}
+		return html;
 	}
 
 	search() {
@@ -177,19 +207,13 @@ class JSForm {
 					self.viewClose();
 
 					self.data = result;
-					self.getMainTableFromResult(result).forEach(function(element) {
-						var key = self.getKeyFromRow(element);
+					self.getMainTableFromResult(result).forEach(function(row) {
+						var key = self.getKeyFromRow(row);
 						var newrow = tplrow.clone().
 								prop('id', 'row' + key).
 								appendTo( parent );
 						html = newrow.html();
-						for(var propertyName in element) {
-							if (element[propertyName] === null) {
-								html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
-							} else {
-								html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), element[propertyName]);
-							}
-						}
+						html = self.insertRowValues(html, row);
 						newrow.html(html);
 						newrow.show();
 						$('#row' + key).click({self: self, key: key}, self.viewClick);
@@ -199,4 +223,9 @@ class JSForm {
 				}
 			});
 	}
+}
+
+// useful function to replace all occurances, not just the first occurance of a search string
+function replaceAll(content, search, replace) {
+	return content.replace(new RegExp(search,"g"), replace);
 }

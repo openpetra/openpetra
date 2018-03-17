@@ -1,6 +1,6 @@
 <h2>{caption}</h2>
 
-<table class="table" id="toolbar">
+<table id="toolbar">
 <tr>
 <td>
 <button id="new">{forms.new}</button>
@@ -9,7 +9,7 @@
 </tr>
 </table>
 
-<table class="table" id="tabfilter">
+<table id="tabfilter">
 <tr><td>{partnername}: </td><td><input type="text" name="AFamilyNameOrOrganisation"/></td></tr>
 <tr><td>{city}: </td><td><input type="text" name="ACity"/></td></tr>
 <td>{partnerclass}: </td><td><select name="APartnerClass">
@@ -52,7 +52,7 @@
 	</div>
 </div>
 
-<table class="table" id="browse">
+<table id="browse">
 <tr>
 <th>{partnerkey}</th>
 <th>{partnername}</th>
@@ -62,7 +62,8 @@
 <td>{val_p_partner_key_n}</td>
 <td>{val_p_partner_short_name_c}</td>
 </tr>
-<tr id="tpl_view" class="view">
+
+<tr id="tpl_view">
 <td colspan='100'>
 <table class="table">
 <tr><td>{partnerkey}</td><td>{val_p_partner_key_n}</td></tr>
