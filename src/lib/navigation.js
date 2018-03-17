@@ -25,6 +25,7 @@
 class Navigation {
 	constructor() {
 		this.debug = 0;
+		this.develop = 1;
 	}
 
 	// TODO: something about parameters
@@ -40,12 +41,20 @@ class Navigation {
 		// fetch screen content from the server
 		if (name.substring(0, "frm".length) === "frm" || name.indexOf('/frm') > 0)
 		{
-			axios.get("/src/forms/" + name + ".html")
+			var refresh = "";
+			self = this;
+			if (self.develop) {
+				refresh = "?" + Date.now();
+			}
+			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
 					var content = response.data;
-					var jsform = new JSForm();
 					content = translate(content, name.substring(name.indexOf('/frm')+1));
-					content = jsform.initContent(content);
+					// we want to modify the html before it is displayed
+					content = JSForm.initContent(content);
+					if (self.develop) {
+						content = content.replace(new RegExp('.js',"g"), '.js' + refresh);
+					}
 					$("#containerIFrames").html(content);
 			});
 		}
