@@ -30,9 +30,32 @@
 <div id="tpl_edit">
 	<table class="table">
 		<tr><td>{partnerkey}</td><td><input type="text" name="p_partner_key_n" readonly value="{val_p_partner_key_n}"/></td></tr>
-		<tr><td>{streetname}</td><td><input type="text" name="p_street_name_c" value="{val_p_street_name_c}"/></td></tr>
-		<tr><td>{city}</td><td><input type="text" name="p_city_c" value="{val_p_city_c}"/></td></tr>
-		<tr><td>{postalcode}</td><td><input type="text" name="p_postal_code_c" value="{val_p_postal_code_c}"/></td></tr>
+		<tr><td colspan="2">
+		<ul class="nav nav-tabs" id="detailTab" role="tablist">
+			<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#addresses">{addresses}</a></li>
+			<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#subscriptions">{subscriptions}</a></li>
+			<li class="nav-item"><a class="nav-link" href="#types" data-toggle="tab">{types}</a></li>
+			<li class="nav-item"><a class="nav-link" href="#comment" data-toggle="tab">{comment}</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="addresses">
+			<table class="table">
+				<tr><td>{streetname}</td><td><input type="text" name="p_street_name_c" value="{val_p_street_name_c}"/></td></tr>
+				<tr><td>{city}</td><td><input type="text" name="p_city_c" value="{val_p_city_c}"/></td></tr>
+				<tr><td>{postalcode}</td><td><input type="text" name="p_postal_code_c" value="{val_p_postal_code_c}"/></td></tr>
+			</table>
+			</div>
+			<div class="tab-pane" id="subscriptions">
+				TODO {subscriptions}
+			</div>
+			<div class="tab-pane" id="types" role="tabpanel">
+				TODO {types}
+			</div>
+			<div class="tab-pane" id="comment" role="tabpanel">
+				TODO {comment}
+			</div>
+		</div>
+		</td></tr>
 	</table>
 </div>
 

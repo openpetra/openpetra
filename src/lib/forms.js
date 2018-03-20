@@ -93,18 +93,39 @@ class JSForm {
 		return tpl_edit1 + tpl_edit.html() + tpl_edit2;
 	}
 
+	reuseDialog(dialogname) {
+		if ($('#' + dialogname).length) {
+			// reuse existing dialog
+			$('#' + dialogname).modal('show');
+			return true;
+		}
+
+		return false;
+	}
+
+	initEventForTab() {
+		// workaround because it seems the tab navigation does not work when the code is dynamically generated
+		$('#detailTab a').on('click', function (e) {
+			e.preventDefault();
+			var href=$(this).prop('href');
+			href=href.substring(href.indexOf('#')+1);
+			$('div.tab-pane').hide();
+			$('div.tab-pane[id="'+href+'"]').show();
+		});
+	}
+
 	showAddDialog(event) {
 		self = event.data.self;
-		if ($('#newDialog').length) {
-			// reuse existing dialog
-			$('#newDialog').modal('show');
+
+		var dialogname = 'newDialog';
+		if (self.reuseDialog(dialogname)) {
 			return;
 		}
 
 		// create a copy of the template
 		var tpl_edit = $( "#tpl_edit" );
-		var newedit = tpl_edit.clone().prop('id', 'newDialog').insertAfter('#tpl_edit');
-		var html = self.createAddOrEditDialog('newDialog', self.name + ".addtitle");
+		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
+		var html = self.createAddOrEditDialog(dialogname, self.name + ".addtitle");
 
 		// clear all variables
 		pos = -1;
@@ -117,16 +138,16 @@ class JSForm {
 		}
 		newedit.replaceWith(html);
 
-		$('#newDialog').modal('show');
+		$('#' + dialogname).modal('show');
+
+		self.initEventForTab();
 	}
 
 	showEditDialog(event) {
 		self = event.data.self;
 		key = event.data.key;
 		var dialogname = 'editDialog' + key;
-		if ($('#' + dialogname).length) {
-			// reuse existing dialog
-			$('#' + dialogname).modal('show');
+		if (self.reuseDialog(dialogname)) {
 			return;
 		}
 
@@ -145,6 +166,8 @@ class JSForm {
 		newedit.replaceWith(html);
 
 		$('#' + dialogname).modal('show');
+
+		self.initEventForTab();
 	}
 
 	viewClose() {

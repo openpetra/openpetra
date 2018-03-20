@@ -104,7 +104,11 @@
         "FAMILY": "FAMILIE",
         "ORGANISATION": "ORGANISATION",
         "BANK": "BANK",
-        "UNIT": "EINHEIT"
+        "UNIT": "EINHEIT",
+        "addresses": "Adressen",
+        "subscriptions": "Abonnements",
+        "types": "Kategorien",
+        "comment": "Anmerkungen"
     },
 
     "frmChangeLanguage": {
