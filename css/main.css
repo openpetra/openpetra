@@ -8,8 +8,13 @@ body {
 
 #main {
   position: absolute;
-  top: 0px;
+  top: 50px;
   width: 100%;
+}
+
+#tabControl {
+  margin-left: 250px;
+  margin-top: 10px;
 }
 
 /*
