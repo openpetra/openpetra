@@ -134,7 +134,17 @@ class Navigation {
 
 	AddMenuItemHandler(mnuItem, frmName, title) {
 		var self = this;
-		$('#' + mnuItem).click(function(event) {self.OpenTab(frmName, title);event.preventDefault();});
+		$('#' + mnuItem).click(function(event) {
+			event.preventDefault();
+
+			self.OpenTab(frmName, title); 
+
+			// hide the menu if we are on mobile screen (< 768 px width)
+			if ($(document).width() < 768) {
+				$(this).parent().collapse('toggle');
+			}
+
+		});
 	}
 
 	AddMenuItem(parent, name, title, tabtitle, icon)
