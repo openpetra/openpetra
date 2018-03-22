@@ -59,7 +59,10 @@
         "close": "Close",
         "delete": "Delete",
         "save": "Save",
-        "any": "any"
+        "any": "any",
+        "status": "Status",
+        "name": "Name",
+        "description": "Description"
     },
     "frmHome": {
         "welcome": "Welcome to OpenPetra, brought to you by <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
@@ -107,7 +110,11 @@
         "addresses": "Addresses",
         "subscriptions": "Subscriptions",
         "types": "Tags",
-        "comment": "Comments"
+        "comment": "Comments",
+        "gender": "Gender",
+        "dateofbirth": "Date of birth",
+        "firstname": "First name",
+        "familyname": "Family name"
     },
 
     "frmChangeLanguage": {

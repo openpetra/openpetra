@@ -44,6 +44,25 @@ class MaintainPartnersForm extends JSForm {
 	getKeyFromRow(row) {
 		return row['p_partner_key_n'];
 	}
+
+	showSpecificClass(self, html) {
+		var partner_classes = ["FAMILY", "PERSON", "ORGANISATION", "BANK", "UNIT"];
+			console.log(self.row['p_partner_class_c']);
+		for (var i in partner_classes) {
+			var cl = partner_classes[i];
+			console.log (partner_classes[cl]);
+			if (self.row['p_partner_class_c'] != cl) {
+				html = replaceAll(html, ' class="' + cl + '"', ' class="' + cl + ' hidden"');
+			}
+		}
+		return html;
+	}
+
+	insertEditDataIntoDialog(self, html) {
+		html = super.insertEditDataIntoDialog(self, html);
+		html = self.showSpecificClass(self, html);
+		return html;
+	}
 }
 
 $(function() {

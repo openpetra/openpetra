@@ -131,6 +131,7 @@ class JSForm {
 	insertEditDataIntoDialog(self, html) {
 		self.getMainTableFromResult(self.data).forEach(function(row) {
 			if (key == self.getKeyFromRow(row)) {
+				self.row = row;
 				html = self.insertRowValues(html, row);
 				return true; // same as break
 			}

@@ -59,7 +59,10 @@
         "close": "Schließen",
         "delete": "Löschen",
         "save": "Übernehmen",
-        "any": "alle"
+        "any": "alle",
+        "status": "Status",
+        "name": "Name",
+        "description": "Beschreibung"
     },
     "frmHome": {
         "welcome": "Willkommen bei OpenPetra, mit den besten Empfehlungen von <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
@@ -108,7 +111,11 @@
         "addresses": "Adressen",
         "subscriptions": "Abonnements",
         "types": "Kategorien",
-        "comment": "Anmerkungen"
+        "comment": "Anmerkungen",
+        "gender": "Geschlecht",
+        "dateofbirth": "Geburtsdatum",
+        "firstname": "Vorname",
+        "familyname": "Nachname"
     },
 
     "frmChangeLanguage": {

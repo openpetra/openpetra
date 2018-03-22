@@ -29,8 +29,39 @@
 
 <div id="tpl_edit">
 	<table class="table">
-		<tr><td>{partnerkey}</td><td><input type="text" name="p_partner_key_n" readonly value="{val_p_partner_key_n}"/></td></tr>
-		<tr><td colspan="2">
+		<tr>
+			<td>{partnerkey}</td><td><input type="text" name="p_partner_key_n" readonly value="{val_p_partner_key_n}"/></td>
+			<td>{partnerclass}</td><td><input type="text" name="p_partner_class_c" readonly value="{val_p_partner_class_c}"/></td>
+		</tr>
+		<tr>
+			<td>{forms.status}</td><td><input type="text" name="p_status_code_c" value="{val_p_status_code_c}"/></td>
+		</tr>
+
+		<tr class="FAMILY">
+			<td>{firstname}</td><td><input type="text" name="p_first_name_c" value="{val_p_first_name_c}"/></td>
+			<td>{familyname}</td><td><input type="text" name="p_family_name_c" value="{val_p_family_name_c}"/></td>
+		</tr>
+		<tr class="PERSON">
+			<td>{firstname}</td><td><input type="text" name="p_first_name_c" value="{val_p_first_name_c}"/></td>
+			<td>{familyname}</td><td><input type="text" name="p_family_name_c" value="{val_p_family_name_c}"/></td>
+		</tr>
+		<tr class="PERSON">
+			<td>{gender}</td><td><input type="text" name="p_gender_c" value="{val_p_gender_c}"/></td>
+			<td>{dateofbirth}</td><td><input type="text" name="p_date_of_birth_d" value="{val_p_date_of_birth_d}"/></td>
+		</tr>
+		<tr class="ORGANISATION">
+			<td>{forms.name}</td><td><input type="text" name="p_organisation_name_c" value="{val_p_organisation_name_c}"/></td>
+		</tr>
+		<tr class="UNIT">
+			<td>{forms.name}</td><td><input type="text" name="p_unit_name_c" value="{val_p_unit_name_c}"/></td>
+		</tr>
+		<tr class="UNIT">
+			<td>{forms.description}</td><td colspan="3"><input type="text" name="p_unit_description_c" value="{val_p_unit_description_c}"/></td>
+		</tr>
+		<tr class="BANK">
+			<td>{forms.name}</td><td><input type="text" name="p_branch_name_c" value="{val_p_branch_name_c}"/></td>
+		</tr>
+		<tr><td colspan="100">
 		<ul class="nav nav-tabs" id="detailTab" role="tablist">
 			<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#addresses">{addresses}</a></li>
 			<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#subscriptions">{subscriptions}</a></li>
