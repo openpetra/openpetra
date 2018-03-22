@@ -114,19 +114,7 @@ class JSForm {
 		});
 	}
 
-	showAddDialog(event) {
-		self = event.data.self;
-
-		var dialogname = 'newDialog';
-		if (self.reuseDialog(dialogname)) {
-			return;
-		}
-
-		// create a copy of the template
-		var tpl_edit = $( "#tpl_edit" );
-		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
-		var html = self.createAddOrEditDialog(dialogname, self.name + ".addtitle");
-
+	initDataInDialog(self, html) {
 		// clear all variables
 		pos = -1;
 		while ((pos = html.indexOf('{', pos+1)) > -1) {
@@ -136,17 +124,21 @@ class JSForm {
 				html = replaceAll(html, '{'+key+'}', '');
 			}
 		}
-		newedit.replaceWith(html);
 
-		$('#' + dialogname).modal('show');
-
-		self.initEventForTab();
+		return html;
 	}
 
-	showEditDialog(event) {
-		self = event.data.self;
-		key = event.data.key;
-		var dialogname = 'editDialog' + key;
+	insertEditDataIntoDialog(self, html) {
+		self.getMainTableFromResult(self.data).forEach(function(row) {
+			if (key == self.getKeyFromRow(row)) {
+				html = self.insertRowValues(html, row);
+				return true; // same as break
+			}
+		});
+		return html;
+	}
+
+	showDialog(self, dialogname, caption, fn_data) {
 		if (self.reuseDialog(dialogname)) {
 			return;
 		}
@@ -154,20 +146,27 @@ class JSForm {
 		// create a copy of the template
 		var tpl_edit = $( "#tpl_edit" );
 		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
-		var html = self.createAddOrEditDialog(dialogname, self.name + ".edittitle");
+		var html = self.createAddOrEditDialog(dialogname, caption);
 
-		self.getMainTableFromResult(self.data).forEach(function(row) {
-			if (key == self.getKeyFromRow(row)) {
-				html = self.insertRowValues(html, row);
-				return true; // same as break
-			}
-		});
+		html = fn_data(self, html);
 
 		newedit.replaceWith(html);
 
 		$('#' + dialogname).modal('show');
 
 		self.initEventForTab();
+	}
+
+	showAddDialog(event) {
+		self = event.data.self;
+		self.showDialog(self, 'newDialog', self.name + ".addtitle", self.initDataInDialog);
+	}
+
+
+	showEditDialog(event) {
+		self = event.data.self;
+		key = event.data.key;
+		self.showDialog(self, 'editDialog' + key, self.name + ".edittitle", self.insertEditDataIntoDialog);
 	}
 
 	viewClose() {
