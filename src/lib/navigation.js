@@ -26,6 +26,9 @@ class Navigation {
 	constructor() {
 		this.debug = 0;
 		this.develop = 1;
+		// will be replaced by the build script for the release
+		this.currentrelease = "CURRENTRELEASE";
+		this.classesLoaded = [];
 	}
 
 	// TODO: something about parameters
@@ -45,17 +48,29 @@ class Navigation {
 			self = this;
 			if (self.develop) {
 				refresh = "?" + Date.now();
+			} else {
+				refresh = "?" + self.currentrelease;
 			}
+
 			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
 					var content = response.data;
 					content = translate(content, name.substring(name.indexOf('/frm')+1));
 					// we want to modify the html before it is displayed
 					content = JSForm.initContent(content);
-					if (self.develop) {
-						content = content.replace(new RegExp('.js',"g"), '.js' + refresh);
+
+					// check if the javascript has been loaded already
+					// avoiding: SyntaxError: redeclaration of let MaintainPartnersForm
+					var className = name.substring(name.indexOf('/frm')+4) + "Form";
+					if (self.classesLoaded.indexOf(className) == -1) {
+						$("#containerIFrames").html(content);
+						$.getScript("/src/forms/" + name + '.js' + refresh, function() {
+							self.classesLoaded.push(className);
+						});
+					} else {
+						content += '<script type="text/javascript">var form=new ' + className + '()</script>';
+						$("#containerIFrames").html(content);
 					}
-					$("#containerIFrames").html(content);
 			});
 		}
 		else // fetch navigation page
