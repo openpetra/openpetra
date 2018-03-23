@@ -366,7 +366,7 @@ namespace Ict.Petra.Server.app.JSClient
                         continue;
                     }
 
-                    ScreenCode.Append("<a href='javascript:OpenTab(\"" + path.Replace('_', '/') + "/frm" + child.Name + "\", \"" +
+                    ScreenCode.Append("<a href='javascript:OpenForm(\"" + path.Replace('_', '/') + "/frm" + child.Name + "\", \"" +
                         GetCaption(child) + "\")'" + style + ">" + GetCaption(child) + "</a><br/>" + Environment.NewLine);
                     TaskDisplayed = true;
                 }
@@ -390,7 +390,7 @@ namespace Ict.Petra.Server.app.JSClient
                             continue;
                         }
 
-                        ScreenCode.Append("<a href='javascript:nav.OpenTab(\"" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + "\", \"" +
+                        ScreenCode.Append("<a href='javascript:nav.OpenForm(\"" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + "\", \"" +
                             GetCaption(task) + "\")'" + style + ">" + GetCaption(task) + "</a><br/>" + Environment.NewLine);
                         TaskDisplayed = true;
                     }
