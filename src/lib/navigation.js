@@ -32,13 +32,12 @@ class Navigation {
 	}
 
 	// TODO: something about parameters
-	// TODO: rename to OpenForm
-	OpenTab(name, title, pushState=true)
+	OpenForm(name, title, pushState=true)
 	{
 		var tabname = name.replace(/\//g, '_');
 
 		if (this.debug) {
-			console.log("OpenTab: " + tabname + " title: " + title);
+			console.log("OpenForm: " + tabname + " title: " + title);
 		}
 
 		// fetch screen content from the server
@@ -119,7 +118,7 @@ class Navigation {
 					if (path[1] in navigation[path[0]].items) {
 						var navPage = window.location.pathname.substring(1);
 						currentPage = navPage;
-						this.OpenTab(navPage, navigation[path[0]].caption + ": " + navigation[path[0]].items[path[1]].caption);
+						this.OpenForm(navPage, navigation[path[0]].caption + ": " + navigation[path[0]].items[path[1]].caption);
 					}
 				}
 			}
@@ -132,13 +131,13 @@ class Navigation {
 			// replace last / with /frm
 			var last = path.lastIndexOf('/');
 			var frmName = (path.substring(0,last) + "/frm" + path.substring(last+1)).substring(1);
-			this.OpenTab(frmName, i18next.t("navigation."+path.substring(last+1)+"_label"));
+			this.OpenForm(frmName, i18next.t("navigation."+path.substring(last+1)+"_label"));
 			currentPage = frmName;
 		}
 
 		if (currentPage == null) {
 			// load home page or Dashboard
-			this.OpenTab("frmHome", i18next.t("navigation.home"));
+			this.OpenForm("frmHome", i18next.t("navigation.home"));
 		}
 	}
 
@@ -156,7 +155,7 @@ class Navigation {
 		$('#' + mnuItem).click(function(event) {
 			event.preventDefault();
 
-			self.OpenTab(frmName, title); 
+			self.OpenForm(frmName, title); 
 
 			// hide the menu if we are on mobile screen (< 768 px width)
 			if ($(document).width() < 768) {
@@ -245,7 +244,7 @@ class Navigation {
 					self.displayNavigation(result.navigation);
 					window.onpopstate = function(e) {
 						if (e.state != null) {
-							nav.OpenTab(e.state.name, e.state.title, false);
+							nav.OpenForm(e.state.name, e.state.title, false);
 						}
 					};
 				} else {
