@@ -23,7 +23,7 @@
 
 class MaintainPartnersForm extends JSForm {
 	constructor() {
-		super('frmMaintainPartners',
+		super('MaintainPartners',
 			'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
 				AFirstName: '',
 				AFamilyNameOrOrganisation: '',

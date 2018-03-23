@@ -21,17 +21,24 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-$("#btnEnglish").click(function(e) {
-	e.preventDefault();
-	i18next.changeLanguage("en");
-	nav.OpenTab("frmHome", "home");
-        location.reload();
-});
+class MaintainUsersForm extends JSForm {
+	constructor() {
+		super('MaintainUsers',
+			'serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions',
+			{});
+		super.initEvents();
+		super.search();
+	}
 
-$("#btnGerman").click(function(e) {
-	e.preventDefault();
-	i18next.changeLanguage("de");
-	nav.OpenTab("frmHome", "home");
-        location.reload();
+	getMainTableFromResult(result) {
+		return result.result.SUser;
+	}
+	getKeyFromRow(row) {
+		return row['s_user_id_c'];
+	}
+}
+
+$(function() {
+	var form = new MaintainUsersForm();
 });
 

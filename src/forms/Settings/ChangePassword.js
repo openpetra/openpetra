@@ -25,7 +25,7 @@ $("#btnSubmitPassword").click(function(e) {
 		e.preventDefault();
 
 		if ($("#newpwd").val() != $("#newpwd2").val()) {
-			alert(i18next.t("frmChangePassword.dontmatch"));
+			alert(i18next.t("ChangePassword.dontmatch"));
 			return;
 		}
 
@@ -42,14 +42,14 @@ $("#btnSubmitPassword").click(function(e) {
 				var result = JSON.parse(response.data.d);
 				if (result.result == "false") {
 					if (result.AVerification[0].code == "SYS.00002V")
-						alert(i18next.t("frmChangePassword.criteria"));
+						alert(i18next.t("ChangePassword.criteria"));
 					else if (result.AVerification[0].code == "ChangePassword.CurrentPwdWrong")
-						alert(i18next.t("frmChangePassword.wrong"));
+						alert(i18next.t("ChangePassword.wrong"));
 					else
-						alert(i18next.t("frmChangePassword.unknown") + " " + result.AVerification[0].code);
+						alert(i18next.t("ChangePassword.unknown") + " " + result.AVerification[0].code);
 				} else {
-					alert(i18next.t("frmChangePassword.success"));
-					nav.OpenTab("frmHome", "home");
+					alert(i18next.t("ChangePassword.success"));
+					nav.OpenTab("Home", "home");
 				}
 		});
 	});
