@@ -51,6 +51,10 @@ class Navigation {
 			} else {
 				refresh = "?" + self.currentrelease;
 			}
+			$.ajaxSetup({
+				// $.getScript should not use its own timestamp
+				cache: true
+			});
 
 			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
