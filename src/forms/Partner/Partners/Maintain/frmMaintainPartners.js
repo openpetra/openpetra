@@ -59,7 +59,12 @@ class MaintainPartnersForm extends JSForm {
 	}
 
 	insertEditDataIntoDialog(self, html) {
-		html = super.insertEditDataIntoDialog(self, html);
+		// work around for Firefox 52 ESR
+                if (typeof this === "undefined") {
+			html = self.insertEditDataIntoDialog(self, html);
+		} else {
+			html = super.insertEditDataIntoDialog(self, html);
+		}	
 		html = self.showSpecificClass(self, html);
 		return html;
 	}
