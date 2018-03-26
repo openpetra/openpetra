@@ -45,28 +45,48 @@ class MaintainPartnersForm extends JSForm {
 		return row['p_partner_key_n'];
 	}
 
-	showSpecificClass(self, html) {
+	getDataForEdit(dialogname, key, html) {
+		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetails',
+			{APartnerKey: key,
+			AWithAddressDetails: true,
+			AWithSubscriptions: true,
+			AWithRelationships: true})
+			.then(function(response) {
+				if (response.data == null) {
+					console.log("error: " + response);
+					return;
+				}
+				var result = JSON.parse(response.data.d);
+				if (result.result == "false") {
+					console.log("problem loading " + apiUrl);
+				} else {
+					self.editData = result.result;
+					html = self.insertEditDataIntoDialog(self, key, html);
+					html = self.showSpecificClass(self, self.editData.PPartner[0], html);
+					self.displayDialog(self, dialogname, html);
+				}
+			});
+	}
+
+	showSpecificClass(self, row, html) {
 		var partner_classes = ["FAMILY", "PERSON", "ORGANISATION", "BANK", "UNIT"];
-			console.log(self.row['p_partner_class_c']);
 		for (var i in partner_classes) {
 			var cl = partner_classes[i];
-			console.log (partner_classes[cl]);
-			if (self.row['p_partner_class_c'] != cl) {
+			if (row['p_partner_class_c'] != cl) {
 				html = replaceAll(html, ' class="' + cl + '"', ' class="' + cl + ' hidden"');
 			}
 		}
 		return html;
 	}
 
-	insertEditDataIntoDialog(self, html) {
+	insertEditDataIntoDialogDerived(self, dialogname, key, html) {
 		// work around for Firefox 52 ESR
-                if (typeof this === "undefined") {
-			html = self.insertEditDataIntoDialog(self, html);
-		} else {
-			html = super.insertEditDataIntoDialog(self, html);
-		}	
-		html = self.showSpecificClass(self, html);
-		return html;
+		if (typeof this === "undefined") {
+			//return self.insertEditDataIntoDialogDerived(self, dialogname, key, html);
+		}
+		self.getDataForEdit(dialogname, key, html);
+		// we don't have the html yet
+		return null;
 	}
 }
 

@@ -114,7 +114,7 @@ class JSForm {
 		});
 	}
 
-	initDataInDialog(self, html) {
+	initDataInDialog(self, key, html) {
 		// clear all variables
 		pos = -1;
 		while ((pos = html.indexOf('{', pos+1)) > -1) {
@@ -128,18 +128,37 @@ class JSForm {
 		return html;
 	}
 
-	insertEditDataIntoDialog(self, html) {
-		self.getMainTableFromResult(self.data).forEach(function(row) {
-			if (key == self.getKeyFromRow(row)) {
-				self.row = row;
-				html = self.insertRowValues(html, row);
-				return true; // same as break
-			}
-		});
+	// use self.viewData or self.editData
+	insertEditDataIntoDialog(self, key, html) {
+		if (self.editData == null) {
+			self.getMainTableFromResult(self.viewData).forEach(function(row) {
+				if (key == self.getKeyFromRow(row)) {
+					self.row = row;
+					html = self.insertRowValues(html, null, row);
+					return true; // same as break
+				}
+			});
+		} else {
+			for (var tableName in self.editData) {
+				var table = self.editData[tableName];
+				table.forEach(function(row) {
+					html = self.insertRowValues(html, table, row);
+				});
+			};
+		}
 		return html;
 	}
 
-	showDialog(self, dialogname, caption, fn_data) {
+	displayDialog(self, dialogname, html) {
+		var newdialog = $('#' + dialogname);
+		newdialog.replaceWith(html);
+		// this is now a new DOM object:
+		newdialog = $('#' + dialogname);
+		newdialog.modal('show');
+		self.initEventForTab();
+	}
+
+	showDialog(self, dialogname, caption, key, fn_data) {
 		if (self.reuseDialog(dialogname)) {
 			return;
 		}
@@ -149,25 +168,23 @@ class JSForm {
 		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
 		var html = self.createAddOrEditDialog(dialogname, caption);
 
-		html = fn_data(self, html);
+		html = fn_data(self, dialogname, key, html);
 
-		newedit.replaceWith(html);
-
-		$('#' + dialogname).modal('show');
-
-		self.initEventForTab();
+		if (html != null) {
+			self.displayDialog(self, dialogname, html);
+		}
 	}
 
 	showAddDialog(event) {
 		self = event.data.self;
-		self.showDialog(self, 'newDialog', self.name + ".addtitle", self.initDataInDialog);
+		self.showDialog(self, 'newDialog', self.name + ".addtitle", null, self.initDataInDialog);
 	}
 
 
 	showEditDialog(event) {
 		self = event.data.self;
 		key = event.data.key;
-		self.showDialog(self, 'editDialog' + key, self.name + ".edittitle", self.insertEditDataIntoDialog);
+		self.showDialog(self, 'editDialog' + key, self.name + ".edittitle", key, self.insertEditDataIntoDialogDerived);
 	}
 
 	viewClose() {
@@ -185,9 +202,9 @@ class JSForm {
 		var tpl_view = $( "#tpl_view" );
 		var newview = tpl_view.clone().prop('id', 'view' + key).insertAfter('#row'+ key);
 		var html = newview.html();
-		self.getMainTableFromResult(self.data).forEach(function(row) {
+		self.getMainTableFromResult(self.viewData).forEach(function(row) {
 			if (key == self.getKeyFromRow(row)) {
-				html = self.insertRowValues(html, row);
+				html = self.insertRowValues(html, null, row);
 				return true; // same as break
 			}
 		});
@@ -209,12 +226,21 @@ class JSForm {
 		return parameters;
 	}
 
-	insertRowValues(html, row) {
+	insertRowValues(html, tablename, row) {
+		if (html == null) {
+			return null;
+		}
 		for(var propertyName in row) {
+			var tplPropertyName = propertyName;
+			if (tablename != null) {
+				if (html.indexOf('{val_' + tablename + "." + tplPropertyName + '}') > -1) {
+					tplPropertyName = tablename + "." + tplPropertyName;
+				}
+			}
 			if (row[propertyName] === null) {
-				html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
+				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), '');
 			} else {
-				html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), row[propertyName]);
+				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), row[propertyName]);
 			}
 		}
 		return html;
@@ -251,14 +277,14 @@ class JSForm {
 					// clear view
 					self.viewClose();
 
-					self.data = result;
+					self.viewData = result;
 					self.getMainTableFromResult(result).forEach(function(row) {
 						var key = self.getKeyFromRow(row);
 						var newrow = tplrow.clone().
 								prop('id', 'row' + key).
 								appendTo( parent );
 						html = newrow.html();
-						html = self.insertRowValues(html, row);
+						html = self.insertRowValues(html, null, row);
 						newrow.html(html);
 						newrow.show();
 						$('#row' + key).click({self: self, key: key}, self.viewClick);
