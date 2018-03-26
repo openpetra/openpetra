@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -96,6 +96,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                             case MPartnerConstants.PARTNERCLASS_ORGANISATION:
                                 POrganisationAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_BANK:
+                                PBankAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_UNIT:
+                                PUnitAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                                 break;
                         }
 
