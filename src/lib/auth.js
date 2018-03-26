@@ -74,9 +74,15 @@ class Auth {
 		if (lastAuthCheck != null && lastAuthCheck != 0 && ((new Date() - lastAuthCheck) / 1000 / 60 <= 5)) {
 			fnAuthenticatedUser();
 		} else {
-			api.post('serverSessionManager.asmx/IsUserLoggedIn', null, null)
+			api.post('serverSessionManager.asmx/IsUserLoggedIn', {})
 				.then(function(response) {
-					var result = JSON.parse(response.data.d);
+					var result = null;
+					// somehow we get already an object, if the session has timed out
+					if (typeof response.data === 'object' && typeof response.data.d === 'undefined') {
+						result = response.data;
+					} else {
+						result = JSON.parse(response.data.d);
+					}
 					if (result.resultcode == "success") {
 						localStorage.setItem('authenticated', new Date());
 						fnAuthenticatedUser();
