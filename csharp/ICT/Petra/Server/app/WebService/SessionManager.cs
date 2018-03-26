@@ -160,7 +160,12 @@ namespace Ict.Petra.Server.App.WebService
                 {
                     TLogging.Log("There is an attempt to reconnect to stopped session: " + DomainManager.CurrentClient.ClientName);
 
-                    HttpContext.Current.Response.Status = "404 " + THTTPUtils.SESSION_ALREADY_CLOSED;
+                    Dictionary<string, object> result = new Dictionary<string, object>();
+                    result.Add("resultcode", "error");
+                    result.Add("error", THTTPUtils.SESSION_ALREADY_CLOSED);
+                    HttpContext.Current.Response.Write(JsonConvert.SerializeObject(result));
+                    HttpContext.Current.Response.Flush();
+                    HttpContext.Current.Response.Close();
                     HttpContext.Current.Response.End();
                 }
 
