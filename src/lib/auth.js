@@ -76,19 +76,13 @@ class Auth {
 		} else {
 			api.post('serverSessionManager.asmx/IsUserLoggedIn', {})
 				.then(function(response) {
-					var result = null;
-					// somehow we get already an object, if the session has timed out
-					if (typeof response.data === 'object' && typeof response.data.d === 'undefined') {
-						result = response.data;
-					} else {
-						result = JSON.parse(response.data.d);
-					}
+					var result = JSON.parse(response.data.d);
 					if (result.resultcode == "success") {
 						localStorage.setItem('authenticated', new Date());
 						fnAuthenticatedUser();
 					} else {
 						if (lastAuthCheck != null && lastAuthCheck != 0) {
-							alert("session has expired");
+							console.log("session has expired");
 							localStorage.setItem('username', '');
 							localStorage.setItem('authenticated', 0);
 							window.location.reload();
