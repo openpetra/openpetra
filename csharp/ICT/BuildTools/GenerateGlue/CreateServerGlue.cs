@@ -203,6 +203,7 @@ namespace GenerateGlue
                     }
                 }
 
+                bool TypedDataSetParameter = parametertype.EndsWith("TDS");
                 bool EnumParameter = parametertype.EndsWith("Enum");
                 bool BinaryParameter =
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
@@ -253,6 +254,14 @@ namespace GenerateGlue
                         Environment.NewLine);
                 }
 
+                if (TypedDataSetParameter && (ParameterModifiers.Out & p.ParamModifier) == 0)
+                {
+                    snippet.AddToCodelet(
+                        "LOCALVARIABLES",
+                        parametertype + " Local" + p.ParameterName + " = JsonConvert.DeserializeObject<" + parametertype + ">(" + p.ParameterName + ");" +
+                        Environment.NewLine);
+                }
+
                 if ((ParameterModifiers.Out & p.ParamModifier) != 0)
                 {
                     snippet.AddToCodelet("LOCALVARIABLES", parametertype + " " + p.ParameterName + ";" + Environment.NewLine);
@@ -260,7 +269,11 @@ namespace GenerateGlue
                 }
                 else if ((ParameterModifiers.Ref & p.ParamModifier) != 0)
                 {
-                    if (BinaryParameter)
+                    if (TypedDataSetParameter)
+                    {
+                        ActualParameters += "ref Local" + p.ParameterName;
+                    }
+                    else if (BinaryParameter)
                     {
                         snippet.AddToCodelet("LOCALVARIABLES", parametertype + " Local" + p.ParameterName + " = " +
                             " (" + parametertype + ")THttpBinarySerializer.DeserializeObject(" + p.ParameterName + ",\"binary\");" +
@@ -281,7 +294,11 @@ namespace GenerateGlue
                 }
                 else
                 {
-                    if (BinaryParameter
+                    if (TypedDataSetParameter)
+                    {
+                        ActualParameters += "Local" + p.ParameterName;
+                    }
+                    else if (BinaryParameter
                         || ArrayParameter)
                     {
                         ActualParameters += "(" + parametertype + ")THttpBinarySerializer.DeserializeObject(" + p.ParameterName + ",\"binary\")";
