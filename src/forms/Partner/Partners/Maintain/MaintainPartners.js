@@ -72,7 +72,7 @@ class MaintainPartnersForm extends JSForm {
 		// console.log(self.editData);
 
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner',
-			{AJsonData: JSON.stringify(self.editData)})
+			{AMainDS: JSON.stringify(self.editData)})
 			.then(function(response) {
 				if (response.data == null) {
 					console.log("error: " + response);

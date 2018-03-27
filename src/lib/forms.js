@@ -123,6 +123,9 @@ class JSForm {
 
 	closeEditDialog(dialogname) {
 		$("#" + dialogname).modal('toggle');
+		// TODO in place update???
+		// current solution: execute the search again
+		self.search();
 	}
 
 	initDataInDialog(self, key, html) {
