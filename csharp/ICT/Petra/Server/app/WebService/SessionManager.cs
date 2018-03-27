@@ -160,13 +160,23 @@ namespace Ict.Petra.Server.App.WebService
                 {
                     TLogging.Log("There is an attempt to reconnect to stopped session: " + DomainManager.CurrentClient.ClientName);
 
+                    if (HttpContext.Current.Request.PathInfo == "/IsUserLoggedIn")
+                    {
+                        // we want a clean json response saying the user is not logged in
+                        TSession.Clear();
+                        return true;
+                    }
+
                     Dictionary<string, object> result = new Dictionary<string, object>();
                     result.Add("resultcode", "error");
                     result.Add("error", THTTPUtils.SESSION_ALREADY_CLOSED);
+                    HttpContext.Current.Response.Status = "403 " + THTTPUtils.SESSION_ALREADY_CLOSED;
                     HttpContext.Current.Response.Write(JsonConvert.SerializeObject(result));
                     HttpContext.Current.Response.Flush();
                     HttpContext.Current.Response.Close();
                     HttpContext.Current.Response.End();
+
+                    return false;
                 }
 
 //                TLogging.Log("Init(): WebService Method name that got called: " + HttpContext.Current.Request.PathInfo);
