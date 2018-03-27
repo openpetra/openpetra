@@ -28,11 +28,11 @@ using System.Data;
 using System.Data.Odbc;
 using System.Xml;
 using System.IO;
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -153,11 +153,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// store the currently edited partner
+        /// store the imported partner
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static void SavePartner(PartnerEditTDS AMainDS)
+        public static void ImportPartner(PartnerEditTDS AMainDS)
         {
             TDBTransaction ReadTransaction = null;
             TDBTransaction SubmitChangesTransaction = null;
@@ -189,6 +189,56 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             PartnerEditTDSAccess.SubmitChanges(AMainDS);
+        }
+
+        /// <summary>
+        /// store the currently edited partner
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool SavePartner(PartnerEditTDS AMainDS)
+        {
+            PartnerEditTDS SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, true, true, true);
+
+            DataUtilities.CopyDataSet(AMainDS, SaveDS);
+
+            // TODO: either reuse Partner Edit UIConnector
+            // or check for changed partner key, or changed Partner Class, etc.
+
+            // set Partner Short Name
+            if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                SaveDS.PPartner[0].PartnerShortName = 
+                    Calculations.DeterminePartnerShortName(
+                        SaveDS.PPerson[0].FamilyName,
+                        SaveDS.PPerson[0].Title,
+                        SaveDS.PPerson[0].FirstName,
+                        SaveDS.PPerson[0].MiddleName1);
+            }
+            else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            {
+                SaveDS.PPartner[0].PartnerShortName = 
+                    Calculations.DeterminePartnerShortName(
+                        SaveDS.PFamily[0].FamilyName,
+                        SaveDS.PFamily[0].Title,
+                        SaveDS.PFamily[0].FirstName);
+            }
+            else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
+            {
+                SaveDS.PPartner[0].PartnerShortName = SaveDS.PUnit[0].UnitName;
+            }
+            else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
+            {
+                SaveDS.PPartner[0].PartnerShortName = SaveDS.POrganisation[0].OrganisationName;
+            }
+            else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_BANK)
+            {
+                SaveDS.PPartner[0].PartnerShortName = SaveDS.PBank[0].BranchName;
+            }
+
+            PartnerEditTDSAccess.SubmitChanges(SaveDS);
+
+            return true;
         }
     }
 }

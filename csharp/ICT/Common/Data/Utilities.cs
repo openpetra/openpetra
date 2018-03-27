@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -625,6 +625,38 @@ namespace Ict.Common.Data
                     }
                 }
             }
+        }
+
+        /// Copy all values from the new dataset into the original dataset
+        /// this is used for the data that comes from the JS client
+        public static void CopyDataSet(DataSet ANewDS, DataSet AOrigDS)
+        {
+            foreach (DataTable table in ANewDS.Tables)
+            {
+                DataTable OrigTable = AOrigDS.Tables[table.TableName];
+                DataColumn[] PrimaryKeyColumns = OrigTable.PrimaryKey;
+                object[] PrimaryKeyObj = new object[PrimaryKeyColumns.Length];
+
+                foreach (DataRow row in table.Rows)
+                {
+                    for (int Counter = 0; Counter <= PrimaryKeyColumns.Length - 1; Counter++)
+                    {
+                        PrimaryKeyObj[Counter] = (object)row[PrimaryKeyColumns[Counter].ColumnName];
+                    }
+
+                    DataRow UpdateRow = OrigTable.Rows.Find(PrimaryKeyObj);
+
+                    if (UpdateRow != null)
+                    {
+                        CopyAllColumnValues(row, UpdateRow);
+                    }
+                    else
+                    {
+                        // TODO add new row
+                    }
+                }
+            }
+            // TODO delete rows that are missing in ANewDS
         }
 
         /// <summary>
