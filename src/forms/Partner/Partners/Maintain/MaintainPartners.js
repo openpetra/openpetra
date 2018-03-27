@@ -68,6 +68,27 @@ class MaintainPartnersForm extends JSForm {
 			});
 	}
 
+	saveData(self, dialogname) {
+		// console.log(self.editData);
+
+		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner',
+			{AJsonData: JSON.stringify(self.editData)})
+			.then(function(response) {
+				if (response.data == null) {
+					console.log("error: " + response);
+					return;
+				}
+				var result = JSON.parse(response.data.d);
+				if (result.result == "false") {
+					// TODO: show error message
+					console.log("problem loading " + apiUrl);
+				} else {
+					// TODO: show success message
+					self.closeEditDialog(dialogname);
+				}
+			});
+	}
+
 	showSpecificClass(self, row, html) {
 		var partner_classes = ["FAMILY", "PERSON", "ORGANISATION", "BANK", "UNIT"];
 		for (var i in partner_classes) {

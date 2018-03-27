@@ -87,7 +87,7 @@ class JSForm {
 						'<div class="modal-body">';
 		var tpl_edit2 = '</div><div class="modal-footer">' +
 						'<button type="button" class="btn btn-secondary" data-dismiss="modal">' + i18next.t('forms.cancel') + '</button>' +
-						'<button type="button" class="btn btn-primary">' + i18next.t('forms.save') + '</button>' +
+						'<button type="button" class="btn btn-primary" id="save">' + i18next.t('forms.save') + '</button>' +
 						'</div></div></div></div>';
 
 		return tpl_edit1 + tpl_edit.html() + tpl_edit2;
@@ -103,15 +103,26 @@ class JSForm {
 		return false;
 	}
 
-	initEventForTab() {
+	initEditEvents(self, dialogname) {
 		// workaround because it seems the tab navigation does not work when the code is dynamically generated
-		$('#detailTab a').on('click', function (e) {
+		$('#' + dialogname + ' #detailTab a').on('click', function (e) {
 			e.preventDefault();
 			var href=$(this).prop('href');
 			href=href.substring(href.indexOf('#')+1);
 			$('div.tab-pane').hide();
 			$('div.tab-pane[id="'+href+'"]').show();
 		});
+		$('#' + dialogname + ' #save').on('click', function (e) {
+			self.updateEditDataFromDialog(self, dialogname);
+			self.saveData(self, dialogname);
+		});
+	}
+
+	saveData(self, dialogname) {
+	}
+
+	closeEditDialog(dialogname) {
+		$("#" + dialogname).modal('toggle');
 	}
 
 	initDataInDialog(self, key, html) {
@@ -128,34 +139,13 @@ class JSForm {
 		return html;
 	}
 
-	// use self.viewData or self.editData
-	insertEditDataIntoDialog(self, key, html) {
-		if (self.editData == null) {
-			self.getMainTableFromResult(self.viewData).forEach(function(row) {
-				if (key == self.getKeyFromRow(row)) {
-					self.row = row;
-					html = self.insertRowValues(html, null, row);
-					return true; // same as break
-				}
-			});
-		} else {
-			for (var tableName in self.editData) {
-				var table = self.editData[tableName];
-				table.forEach(function(row) {
-					html = self.insertRowValues(html, table, row);
-				});
-			};
-		}
-		return html;
-	}
-
 	displayDialog(self, dialogname, html) {
 		var newdialog = $('#' + dialogname);
 		newdialog.replaceWith(html);
 		// this is now a new DOM object:
 		newdialog = $('#' + dialogname);
 		newdialog.modal('show');
-		self.initEventForTab();
+		self.initEditEvents(self, dialogname);
 	}
 
 	showDialog(self, dialogname, caption, key, fn_data) {
@@ -226,6 +216,48 @@ class JSForm {
 		return parameters;
 	}
 
+	// use self.viewData or self.editData
+	insertEditDataIntoDialog(self, key, html) {
+		if (self.editData == null) {
+			self.getMainTableFromResult(self.viewData).forEach(function(row) {
+				if (key == self.getKeyFromRow(row)) {
+					self.row = row;
+					html = self.insertRowValues(html, null, row);
+					return true; // same as break
+				}
+			});
+		} else {
+			for (var tableName in self.editData) {
+				var table = self.editData[tableName];
+				table.forEach(function(row) {
+					html = self.insertRowValues(html, tableName, row);
+				});
+			};
+		}
+		return html;
+	}
+
+	updateEditDataFromDialog(self, dialogname) {
+		if (self.editData != null) {
+			for (var tableName in self.editData) {
+				var table = self.editData[tableName];
+				table.forEach(function(row) {
+
+					for(var propertyName in row) {
+						var control = $('#' + dialogname + ' input[name=' + tableName + "_" + propertyName + ']')
+						if (!control.length) {
+							control = $('#' + dialogname + ' input[name=' + propertyName + ']');
+						}
+						if (control.length) {
+							row[propertyName] = control.val();
+						}
+					}
+
+				});
+			};
+		}
+	}
+
 	insertRowValues(html, tablename, row) {
 		if (html == null) {
 			return null;
@@ -233,14 +265,17 @@ class JSForm {
 		for(var propertyName in row) {
 			var tplPropertyName = propertyName;
 			if (tablename != null) {
-				if (html.indexOf('{val_' + tablename + "." + tplPropertyName + '}') > -1) {
-					tplPropertyName = tablename + "." + tplPropertyName;
+				if (html.indexOf('{val_' + tablename + "_" + tplPropertyName + '}') > -1 ||
+					html.indexOf('name="' + tablename + "_" + tplPropertyName + '"') > -1) {
+					tplPropertyName = tablename + "_" + tplPropertyName;
 				}
 			}
 			if (row[propertyName] === null) {
 				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), '');
 			} else {
 				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), row[propertyName]);
+				html = html.replace(new RegExp('name="' + tplPropertyName + '"',"g"), 
+					'name="' + tplPropertyName + '" value="' + row[propertyName] + '"');
 			}
 		}
 		return html;
