@@ -101,10 +101,6 @@ class MaintainPartnersForm extends JSForm {
 	}
 
 	insertEditDataIntoDialogDerived(self, dialogname, key, html) {
-		// work around for Firefox 52 ESR
-		if (typeof this === "undefined") {
-			//return self.insertEditDataIntoDialogDerived(self, dialogname, key, html);
-		}
 		self.getDataForEdit(dialogname, key, html);
 		// we don't have the html yet
 		return null;
