@@ -284,6 +284,23 @@ class JSForm {
 		return html;
 	}
 
+	displayViewTable() {
+		self = this;
+		var tplrow = $( "#tpl_row" );
+		var parent = tplrow.parent();
+		self.getMainTableFromResult(self.viewData).forEach(function(row) {
+			var key = self.getKeyFromRow(row);
+			var newrow = tplrow.clone().
+					prop('id', 'row' + key).
+					appendTo( parent );
+			html = newrow.html();
+			html = self.insertRowValues(html, null, row);
+			newrow.html(html);
+			newrow.show();
+			$('#row' + key).click({self: self, key: key}, self.viewClick);
+		});
+	}
+
 	search() {
 		self = this;
 		var parameters;
@@ -302,9 +319,6 @@ class JSForm {
 				if (result.result == "false") {
 					console.log("problem loading " + apiUrl);
 				} else {
-					var tplrow = $( "#tpl_row" );
-					parent = tplrow.parent();
-
 					// clear previous result
 					$('#browse tr').each(function() {
 						if ($(this).attr('id') !== undefined && $(this).attr('id').startsWith('row')) {
@@ -316,17 +330,8 @@ class JSForm {
 					self.viewClose();
 
 					self.viewData = result;
-					self.getMainTableFromResult(result).forEach(function(row) {
-						var key = self.getKeyFromRow(row);
-						var newrow = tplrow.clone().
-								prop('id', 'row' + key).
-								appendTo( parent );
-						html = newrow.html();
-						html = self.insertRowValues(html, null, row);
-						newrow.html(html);
-						newrow.show();
-						$('#row' + key).click({self: self, key: key}, self.viewClick);
-					});
+
+					self.displayViewTable();
 
 					// TODO evaluate result.ATotalRecords, and tell the user if there are more records
 				}

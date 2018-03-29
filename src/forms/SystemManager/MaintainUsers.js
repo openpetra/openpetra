@@ -36,6 +36,21 @@ class MaintainUsersForm extends JSForm {
 	getKeyFromRow(row) {
 		return row['s_user_id_c'];
 	}
+
+	insertRowValues(html, tablename, row) {
+		html = super.insertRowValues(html, tablename, row);
+		if (html.indexOf("{val_permissions}") > -1) {
+			// calculate permissions for this user
+			var permissions = "";
+			self.viewData.result.SUserModuleAccessPermission.forEach(function(permissionsRow) {
+				if (row['s_user_id_c'] == permissionsRow['s_user_id_c'] && permissionsRow['s_can_access_l'] == true) {
+					permissions += permissionsRow['s_module_id_c'] + " ";
+				}
+			});
+			html = html.replace(new RegExp('{val_permissions}',"g"), permissions);
+		}
+		return html;
+	}
 }
 
 $(function() {
