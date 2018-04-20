@@ -83,14 +83,20 @@ class JSForm {
 						'<h5 class="modal-title" id="modalTitle">' + i18next.t(title) + '</h5>' +
 						'<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
 						'<span aria-hidden="true">&times;</span></button>' +
-						'</div>'	+
+						'</div>' +
 						'<div class="modal-body">';
 		var tpl_edit2 = '</div><div class="modal-footer">' +
 						'<button type="button" class="btn btn-secondary" data-dismiss="modal">' + i18next.t('forms.cancel') + '</button>' +
 						'<button type="button" class="btn btn-primary" id="save">' + i18next.t('forms.save') + '</button>' +
 						'</div></div></div></div>';
 
-		return tpl_edit1 + tpl_edit.html() + tpl_edit2;
+		var html = tpl_edit.html();
+
+		// to avoid issues with unique id for label
+		html = replaceAll(html, ' id="chk', ' id="chk' + dialogname);
+		html = replaceAll(html, ' for="chk', ' for="chk' + dialogname);
+
+		return tpl_edit1 + html + tpl_edit2;
 	}
 
 	reuseDialog(dialogname) {
@@ -177,6 +183,7 @@ class JSForm {
 	showEditDialog(event) {
 		self = event.data.self;
 		key = event.data.key;
+		console.log("before showEditDialog");
 		self.showDialog(self, 'editDialog' + key, self.name + ".edittitle", key, self.insertEditDataIntoDialogDerived);
 	}
 
@@ -225,6 +232,7 @@ class JSForm {
 			self.getMainTableFromResult(self.viewData).forEach(function(row) {
 				if (key == self.getKeyFromRow(row)) {
 					self.row = row;
+					console.log(row);
 					html = self.insertRowValues(html, null, row);
 					return true; // same as break
 				}
@@ -269,16 +277,29 @@ class JSForm {
 			var tplPropertyName = propertyName;
 			if (tablename != null) {
 				if (html.indexOf('{val_' + tablename + "_" + tplPropertyName + '}') > -1 ||
+					html.indexOf('{chk_' + tablename + "_" + tplPropertyName + '}') > -1 ||
 					html.indexOf('name="' + tablename + "_" + tplPropertyName + '"') > -1) {
 					tplPropertyName = tablename + "_" + tplPropertyName;
 				}
 			}
 			if (row[propertyName] === null) {
 				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), '');
+				html = html.replace(new RegExp('{chk_'+tplPropertyName+'}',"g"), '');
 			} else {
 				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), row[propertyName]);
-				html = html.replace(new RegExp('name="' + tplPropertyName + '"',"g"), 
-					'name="' + tplPropertyName + '" value="' + row[propertyName] + '"');
+				if (!tplPropertyName.endsWith("_l")) {
+					html = html.replace(new RegExp('name="' + tplPropertyName + '"',"g"), 
+						'name="' + tplPropertyName + '" value="' + row[propertyName] + '"');
+				}
+				if (html.indexOf('{chk_'+tplPropertyName+'}') > -1) {
+					console.log(tplPropertyName);
+					if (row[propertyName] === true) {
+						html = html.replace(new RegExp('{chk_'+tplPropertyName+'}=""',"g"), 'checked');
+					} else if (row[propertyName] === false) {
+						html = html.replace(new RegExp('{chk_'+tplPropertyName+'}=""',"g"), '');
+						console.log(html);
+					}
+				}
 			}
 		}
 		return html;

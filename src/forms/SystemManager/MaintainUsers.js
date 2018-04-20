@@ -51,6 +51,10 @@ class MaintainUsersForm extends JSForm {
 		}
 		return html;
 	}
+
+	insertEditDataIntoDialogDerived(self, dialogname, key, html) {
+		return self.insertEditDataIntoDialog(self, key, html);
+	}
 }
 
 $(function() {

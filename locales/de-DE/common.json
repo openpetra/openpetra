@@ -87,6 +87,8 @@
 
     "MaintainUsers": {
         "caption": "Benutzer verwalten",
+        "edittitle": "Benutzer bearbeiten",
+        "addtitle": "Benutzer anlegen",
         "userid": "Benutzername",
         "permissions": "Berechtigungen",
         "locked": "Gesperrt",

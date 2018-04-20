@@ -62,7 +62,7 @@ function translate(html, form) {
   while ((pos = html.indexOf('{', pos+1)) > -1) {
     pos2 = html.indexOf('}', pos);
     key = html.substring(pos+1, pos2);
-    if (key.indexOf('val_') == 0) {
+    if (key.indexOf('val_') == 0 || key.indexOf('chk_') == 0) {
       continue;
     }
     if (key.indexOf('.') > -1) {
