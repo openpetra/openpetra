@@ -421,57 +421,7 @@ namespace Ict.Tools.NAntTasks
                                     ResourceXFile.Replace("\\", "/"));
                             }
 
-                            if (ResourceXFile.EndsWith(".resx"))
-                            {
-                                string NamespaceAndClass = Path.GetFileNameWithoutExtension(ResourceXFile);
-
-                                if (ItemNode.HasChildNodes && (ItemNode.FirstChild.Name == "DependentUpon"))
-                                {
-                                    string CSFile = ItemNode.FirstChild.InnerText;
-
-                                    if (CSFile.StartsWith(".."))
-                                    {
-                                        CSFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
-                                            CSFile.Replace("\\", "/"));
-                                    }
-                                    else if (!Path.IsPathRooted(CSFile))
-                                    {
-                                        CSFile = Path.GetFullPath(Path.GetDirectoryName(ResourceXFile) + "/" +
-                                            CSFile);
-                                    }
-
-                                    NamespaceAndClass = GetNamespaceAndClass(CSFile);
-                                }
-
-                                //"../../../../tmp/" +
-                                string ResourcesFile = NamespaceAndClass + ".resources";
-
-                                if (File.Exists(ResourceXFile))
-                                {
-                                    Environment.CurrentDirectory = Path.GetDirectoryName(ResourceXFile);
-
-                                    ResXResourceReader ResXReader = new ResXResourceReader(ResourceXFile);
-                                    FileStream fs = new FileStream(ResourcesFile, FileMode.OpenOrCreate, FileAccess.Write);
-                                    IResourceWriter writer = new ResourceWriter(fs);
-
-                                    foreach (DictionaryEntry d in ResXReader)
-                                    {
-                                        writer.AddResource(d.Key.ToString(), d.Value);
-                                    }
-
-                                    writer.Close();
-
-                                    parameters.EmbeddedResources.Add(ResourcesFile);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Warning: cannot find resource file " + ResourceXFile);
-                                }
-                            }
-                            else
-                            {
-                                parameters.EmbeddedResources.Add(ResourceXFile);
-                            }
+                            parameters.EmbeddedResources.Add(ResourceXFile);
                         }
                     }
                 }

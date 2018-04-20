@@ -11,7 +11,6 @@
         <references>
             <include name="System.dll" />
             <include name="System.Data.dll" />
-            <include name="System.Windows.Forms.dll" />
 
             <!-- Add NAnt.Core.dll -->
             <include name="${assembly::get-location(task::get-assembly('echo'))}" />

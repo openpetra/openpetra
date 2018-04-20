@@ -360,13 +360,13 @@ namespace Ict.Petra.Server.app.JSClient
                 {
                     string style = string.Empty;
 
-                    if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + path.Replace('_', '/') + "/" + child.Name + "/frm" + child.Name + ".html"))
+                    if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + path.Replace('_', '/') + "/" + child.Name + "/" + child.Name + ".html"))
                     {
                         style = " class = 'notimplemented' ";
                         continue;
                     }
 
-                    ScreenCode.Append("<a href='javascript:OpenTab(\"" + path.Replace('_', '/') + "/frm" + child.Name + "\", \"" +
+                    ScreenCode.Append("<a href='javascript:OpenForm(\"" + path.Replace('_', '/') + "/" + child.Name + "\", \"" +
                         GetCaption(child) + "\")'" + style + ">" + GetCaption(child) + "</a><br/>" + Environment.NewLine);
                     TaskDisplayed = true;
                 }
@@ -384,13 +384,13 @@ namespace Ict.Petra.Server.app.JSClient
                     {
                         string style = string.Empty;
 
-                        if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + ".html"))
+                        if (!File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + path.Replace('_', '/') + "/" + child.Name + "/" + task.Name + ".html"))
                         {
                             style = " class = 'notimplemented' ";
                             continue;
                         }
 
-                        ScreenCode.Append("<a href='javascript:nav.OpenTab(\"" + path.Replace('_', '/') + "/" + child.Name + "/frm" + task.Name + "\", \"" +
+                        ScreenCode.Append("<a href='javascript:nav.OpenForm(\"" + path.Replace('_', '/') + "/" + child.Name + "/" + task.Name + "\", \"" +
                             GetCaption(task) + "\")'" + style + ">" + GetCaption(task) + "</a><br/>" + Environment.NewLine);
                         TaskDisplayed = true;
                     }
