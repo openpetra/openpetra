@@ -87,25 +87,48 @@ class JSForm {
 						'<div class="modal-body">';
 		var tpl_edit2 = '</div><div class="modal-footer">' +
 						'<button type="button" class="btn btn-secondary" data-dismiss="modal">' + i18next.t('forms.cancel') + '</button>' +
-						'<button type="button" class="btn btn-primary">' + i18next.t('forms.save') + '</button>' +
+						'<button type="button" class="btn btn-primary" id="save">' + i18next.t('forms.save') + '</button>' +
 						'</div></div></div></div>';
 
 		return tpl_edit1 + tpl_edit.html() + tpl_edit2;
 	}
 
-	showAddDialog(event) {
-		self = event.data.self;
-		if ($('#newDialog').length) {
+	reuseDialog(dialogname) {
+		if ($('#' + dialogname).length) {
 			// reuse existing dialog
-			$('#newDialog').modal('show');
-			return;
+			$('#' + dialogname).modal('show');
+			return true;
 		}
 
-		// create a copy of the template
-		var tpl_edit = $( "#tpl_edit" );
-		var newedit = tpl_edit.clone().prop('id', 'newDialog').insertAfter('#tpl_edit');
-		var html = self.createAddOrEditDialog('newDialog', self.name + ".addtitle");
+		return false;
+	}
 
+	initEditEvents(self, dialogname) {
+		// workaround because it seems the tab navigation does not work when the code is dynamically generated
+		$('#' + dialogname + ' #detailTab a').on('click', function (e) {
+			e.preventDefault();
+			var href=$(this).prop('href');
+			href=href.substring(href.indexOf('#')+1);
+			$('div.tab-pane').hide();
+			$('div.tab-pane[id="'+href+'"]').show();
+		});
+		$('#' + dialogname + ' #save').on('click', function (e) {
+			self.updateEditDataFromDialog(self, dialogname);
+			self.saveData(self, dialogname);
+		});
+	}
+
+	saveData(self, dialogname) {
+	}
+
+	closeEditDialog(dialogname) {
+		$("#" + dialogname).modal('toggle');
+		// TODO in place update???
+		// current solution: execute the search again
+		self.search();
+	}
+
+	initDataInDialog(self, key, html) {
 		// clear all variables
 		pos = -1;
 		while ((pos = html.indexOf('{', pos+1)) > -1) {
@@ -115,36 +138,46 @@ class JSForm {
 				html = replaceAll(html, '{'+key+'}', '');
 			}
 		}
-		newedit.replaceWith(html);
 
-		$('#newDialog').modal('show');
+		return html;
 	}
 
-	showEditDialog(event) {
-		self = event.data.self;
-		key = event.data.key;
-		var dialogname = 'editDialog' + key;
-		if ($('#' + dialogname).length) {
-			// reuse existing dialog
-			$('#' + dialogname).modal('show');
+	displayDialog(self, dialogname, html) {
+		var newdialog = $('#' + dialogname);
+		newdialog.replaceWith(html);
+		// this is now a new DOM object:
+		newdialog = $('#' + dialogname);
+		newdialog.modal('show');
+		self.initEditEvents(self, dialogname);
+	}
+
+	showDialog(self, dialogname, caption, key, fn_data) {
+		if (self.reuseDialog(dialogname)) {
 			return;
 		}
 
 		// create a copy of the template
 		var tpl_edit = $( "#tpl_edit" );
 		var newedit = tpl_edit.clone().prop('id', dialogname).insertAfter('#tpl_edit');
-		var html = self.createAddOrEditDialog(dialogname, self.name + ".edittitle");
+		var html = self.createAddOrEditDialog(dialogname, caption);
 
-		self.getMainTableFromResult(self.data).forEach(function(row) {
-			if (key == self.getKeyFromRow(row)) {
-				html = self.insertRowValues(html, row);
-				return true; // same as break
-			}
-		});
+		html = fn_data(self, dialogname, key, html);
 
-		newedit.replaceWith(html);
+		if (html != null) {
+			self.displayDialog(self, dialogname, html);
+		}
+	}
 
-		$('#' + dialogname).modal('show');
+	showAddDialog(event) {
+		self = event.data.self;
+		self.showDialog(self, 'newDialog', self.name + ".addtitle", null, self.initDataInDialog);
+	}
+
+
+	showEditDialog(event) {
+		self = event.data.self;
+		key = event.data.key;
+		self.showDialog(self, 'editDialog' + key, self.name + ".edittitle", key, self.insertEditDataIntoDialogDerived);
 	}
 
 	viewClose() {
@@ -162,9 +195,9 @@ class JSForm {
 		var tpl_view = $( "#tpl_view" );
 		var newview = tpl_view.clone().prop('id', 'view' + key).insertAfter('#row'+ key);
 		var html = newview.html();
-		self.getMainTableFromResult(self.data).forEach(function(row) {
+		self.getMainTableFromResult(self.viewData).forEach(function(row) {
 			if (key == self.getKeyFromRow(row)) {
-				html = self.insertRowValues(html, row);
+				html = self.insertRowValues(html, null, row);
 				return true; // same as break
 			}
 		});
@@ -186,15 +219,86 @@ class JSForm {
 		return parameters;
 	}
 
-	insertRowValues(html, row) {
+	// use self.viewData or self.editData
+	insertEditDataIntoDialog(self, key, html) {
+		if (self.editData == null) {
+			self.getMainTableFromResult(self.viewData).forEach(function(row) {
+				if (key == self.getKeyFromRow(row)) {
+					self.row = row;
+					html = self.insertRowValues(html, null, row);
+					return true; // same as break
+				}
+			});
+		} else {
+			for (var tableName in self.editData) {
+				var table = self.editData[tableName];
+				table.forEach(function(row) {
+					html = self.insertRowValues(html, tableName, row);
+				});
+			};
+		}
+		return html;
+	}
+
+	updateEditDataFromDialog(self, dialogname) {
+		if (self.editData != null) {
+			for (var tableName in self.editData) {
+				var table = self.editData[tableName];
+				table.forEach(function(row) {
+
+					for(var propertyName in row) {
+						var control = $('#' + dialogname + ' input[name=' + tableName + "_" + propertyName + ']')
+						if (!control.length) {
+							control = $('#' + dialogname + ' input[name=' + propertyName + ']');
+						}
+						if (control.length) {
+							row[propertyName] = control.val();
+						}
+					}
+
+				});
+			};
+		}
+	}
+
+	insertRowValues(html, tablename, row) {
+		if (html == null) {
+			return null;
+		}
 		for(var propertyName in row) {
+			var tplPropertyName = propertyName;
+			if (tablename != null) {
+				if (html.indexOf('{val_' + tablename + "_" + tplPropertyName + '}') > -1 ||
+					html.indexOf('name="' + tablename + "_" + tplPropertyName + '"') > -1) {
+					tplPropertyName = tablename + "_" + tplPropertyName;
+				}
+			}
 			if (row[propertyName] === null) {
-				html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), '');
+				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), '');
 			} else {
-				html = html.replace(new RegExp('{val_'+propertyName+'}',"g"), row[propertyName]);
+				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), row[propertyName]);
+				html = html.replace(new RegExp('name="' + tplPropertyName + '"',"g"), 
+					'name="' + tplPropertyName + '" value="' + row[propertyName] + '"');
 			}
 		}
 		return html;
+	}
+
+	displayViewTable() {
+		self = this;
+		var tplrow = $( "#tpl_row" );
+		var parent = tplrow.parent();
+		self.getMainTableFromResult(self.viewData).forEach(function(row) {
+			var key = self.getKeyFromRow(row);
+			var newrow = tplrow.clone().
+					prop('id', 'row' + key).
+					appendTo( parent );
+			html = newrow.html();
+			html = self.insertRowValues(html, null, row);
+			newrow.html(html);
+			newrow.show();
+			$('#row' + key).click({self: self, key: key}, self.viewClick);
+		});
 	}
 
 	search() {
@@ -215,9 +319,6 @@ class JSForm {
 				if (result.result == "false") {
 					console.log("problem loading " + apiUrl);
 				} else {
-					var tplrow = $( "#tpl_row" );
-					parent = tplrow.parent();
-
 					// clear previous result
 					$('#browse tr').each(function() {
 						if ($(this).attr('id') !== undefined && $(this).attr('id').startsWith('row')) {
@@ -228,18 +329,9 @@ class JSForm {
 					// clear view
 					self.viewClose();
 
-					self.data = result;
-					self.getMainTableFromResult(result).forEach(function(row) {
-						var key = self.getKeyFromRow(row);
-						var newrow = tplrow.clone().
-								prop('id', 'row' + key).
-								appendTo( parent );
-						html = newrow.html();
-						html = self.insertRowValues(html, row);
-						newrow.html(html);
-						newrow.show();
-						$('#row' + key).click({self: self, key: key}, self.viewClick);
-					});
+					self.viewData = result;
+
+					self.displayViewTable();
 
 					// TODO evaluate result.ATotalRecords, and tell the user if there are more records
 				}

@@ -26,44 +26,60 @@ class Navigation {
 	constructor() {
 		this.debug = 0;
 		this.develop = 1;
+		// will be replaced by the build script for the release
+		this.currentrelease = "CURRENTRELEASE";
+		this.classesLoaded = [];
 	}
 
 	// TODO: something about parameters
-	// TODO: rename to OpenForm
-	OpenTab(name, title, pushState=true)
+	OpenForm(name, title, pushState=true)
 	{
-		var tabname = name.replace(/\//g, '_');
-
 		if (this.debug) {
-			console.log("OpenTab: " + tabname + " title: " + title);
+			console.log("OpenForm: " + name + " title: " + title);
 		}
 
 		// fetch screen content from the server
-		if (name.substring(0, "frm".length) === "frm" || name.indexOf('/frm') > 0)
-		{
+		var navPage = this.IsNavigationPage(name.replace(/_/g, '/'));
+		if (navPage == null) {
 			var refresh = "";
 			self = this;
 			if (self.develop) {
 				refresh = "?" + Date.now();
+			} else {
+				refresh = "?" + self.currentrelease;
 			}
+			$.ajaxSetup({
+				// $.getScript should not use its own timestamp
+				cache: true
+			});
+
 			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
 					var content = response.data;
-					content = translate(content, name.substring(name.indexOf('/frm')+1));
+					content = translate(content, name.substring(name.lastIndexOf('/')+1));
 					// we want to modify the html before it is displayed
 					content = JSForm.initContent(content);
-					if (self.develop) {
-						content = content.replace(new RegExp('.js',"g"), '.js' + refresh);
+
+					// check if the javascript has been loaded already
+					// avoiding: SyntaxError: redeclaration of let MaintainPartnersForm
+					var className = name.substring(name.lastIndexOf('/')+1) + "Form";
+					if (self.classesLoaded.indexOf(className) == -1) {
+						$("#containerIFrames").html(content);
+						$.getScript("/src/forms/" + name + '.js' + refresh, function() {
+							self.classesLoaded.push(className);
+						});
+					} else {
+						content += '<script type="text/javascript">var form=new ' + className + '()</script>';
+						$("#containerIFrames").html(content);
 					}
-					$("#containerIFrames").html(content);
 			});
 		}
 		else // fetch navigation page
 		{
-			this.loadNavigationPage(tabname);
+			this.loadNavigationPage(name);
 		}
 		var stateObj = { name: name, title: title };
-		var newUrl = name.replace(/frm/g, '').replace(/_/g, '/');
+		var newUrl = name.replace(/_/g, '/');
 		if (newUrl == "Home") { newUrl = ''; }
 		newUrl = "/" + newUrl;
 		if (window.location.pathname != newUrl && pushState) {
@@ -78,9 +94,34 @@ class Navigation {
 		}
 	};
 
+	IsNavigationPage(path) {
+		path = path.split('/')
+
+		var currentPage = null;
+		var caption = null;
+
+		if (path.length == 2) {
+			var navigation = JSON.parse(localStorage.getItem('navigation'));
+
+			if (path[0] in navigation) {
+				if (path[1] in navigation[path[0]].items) {
+					currentPage = window.location.pathname.substring(1);
+					caption = navigation[path[0]].caption + ": " + navigation[path[0]].items[path[1]].caption;
+				}
+			}
+		}
+
+		if (currentPage == null) {
+			return null;
+		}
+
+		return [currentPage, caption];
+	}
+
 	// this is called on a reload of the page, we want to jump to the right location, depending on the URL
 	UpdateLocation() {
 		var currentPage = null;
+		var caption = null;
 
 		if (this.debug) {
 			console.log("called UpdateLocation " + window.location.pathname);
@@ -88,38 +129,38 @@ class Navigation {
 
 		// check if this is a link to a navigation page
 		if (currentPage == null && window.location.pathname.length > 1) {
-			var path = window.location.pathname.substring(1).split('/');
+			var path = window.location.pathname.substring(1);
+
+			currentPage = this.IsNavigationPage(path);
+			if (currentPage != null) {
+				caption = currentPage[1];
+				currentPage = currentPage[0];
+			}
+
+			path = path.split('/')
 			if (path.length >= 2 && path[0] != "Settings") {
 				// open left navigation sidebar at the right position
 				$('a[href="#mnuLst' + path[0] + '"]').click();
 			}
-			if (path.length == 2) {
-				var navigation = JSON.parse(localStorage.getItem('navigation'));
 
-				if (path[0] in navigation) {
-					if (path[1] in navigation[path[0]].items) {
-						var navPage = window.location.pathname.substring(1);
-						currentPage = navPage;
-						this.OpenTab(navPage, navigation[path[0]].caption + ": " + navigation[path[0]].items[path[1]].caption);
-					}
-				}
+			if (currentPage != null) {
+				this.OpenForm(currentPage, caption);
 			}
+
 		}
 
 		// check if this is a form, add frm to path
 		if (currentPage == null && window.location.pathname.length > 1) {
 			// load specific frames by URL
 			var path = window.location.pathname;
-			// replace last / with /frm
-			var last = path.lastIndexOf('/');
-			var frmName = (path.substring(0,last) + "/frm" + path.substring(last+1)).substring(1);
-			this.OpenTab(frmName, i18next.t("navigation."+path.substring(last+1)+"_label"));
+			var frmName = path.substring(path.lastIndexOf('/')+1);
+			this.OpenForm(path, i18next.t("navigation."+frmName+"_label"));
 			currentPage = frmName;
 		}
 
 		if (currentPage == null) {
 			// load home page or Dashboard
-			this.OpenTab("frmHome", i18next.t("navigation.home"));
+			this.OpenForm("Home", i18next.t("navigation.home"));
 		}
 	}
 
@@ -134,7 +175,17 @@ class Navigation {
 
 	AddMenuItemHandler(mnuItem, frmName, title) {
 		var self = this;
-		$('#' + mnuItem).click(function(event) {self.OpenTab(frmName, title);event.preventDefault();});
+		$('#' + mnuItem).click(function(event) {
+			event.preventDefault();
+
+			self.OpenForm(frmName, title); 
+
+			// hide the menu if we are on mobile screen (< 768 px width)
+			if ($(document).width() < 768) {
+				$(this).parent().collapse('toggle');
+			}
+
+		});
 	}
 
 	AddMenuItem(parent, name, title, tabtitle, icon)
@@ -143,11 +194,11 @@ class Navigation {
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
-        // eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
+	// eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
 	AddMenuItemForm(parent, name, form, title, tabtitle, icon)
 	{
 		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fa fa-" + icon + " icon-invisible'></i> " + title +"</a>");
-		this.AddMenuItemHandler(name, parent + "/frm" + form, tabtitle);
+		this.AddMenuItemHandler(name, parent + "/" + form, tabtitle);
 	}
 
 	displayNavigation(navigation) {
@@ -176,9 +227,9 @@ class Navigation {
 		}
 
 		// link the items in the top menu
-		this.AddMenuItemHandler('mnuChangePassword', "Settings/frmChangePassword", i18next.t("navigation.change_password"));
-		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/frmChangeLanguage", i18next.t("navigation.change_language"));
-		this.AddMenuItemHandler('mnuHome', "frmHome", i18next.t("navigation.home"));
+		this.AddMenuItemHandler('mnuChangePassword', "Settings/ChangePassword", i18next.t("navigation.change_password"));
+		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/ChangeLanguage", i18next.t("navigation.change_language"));
+		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.home"));
 
 		this.UpdateLocation();
 	}
@@ -186,6 +237,7 @@ class Navigation {
 	loadNavigationPage(navpage) {
 		// TODO: store pages per user? see localStorage?
 		self = this;
+		navpage = navpage.replace(/\//g, '_')
 		// load navigation page from UINavigation.yml
 		api.post('serverSessionManager.asmx/LoadNavigationPage', {
 				ANavigationPage: navpage
@@ -216,7 +268,7 @@ class Navigation {
 					self.displayNavigation(result.navigation);
 					window.onpopstate = function(e) {
 						if (e.state != null) {
-							nav.OpenTab(e.state.name, e.state.title, false);
+							nav.OpenForm(e.state.name, e.state.title, false);
 						}
 					};
 				} else {

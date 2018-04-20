@@ -2,10 +2,10 @@
     "login": {
         "signin": "Anmelden",
         "email": "E-Mail Adresse",
-	"passwd": "Passwort",
+        "passwd": "Passwort",
         "failedlogin": "Falscher Benutzername oder falsches Passwort",
-	"support_caption": "Unterstützung",
-	"support_text": "Falls Sie Fragen oder Anregungen haben, besuchen Sie uns doch im <a href='https://forum.openpetra.de'>öffentlichen OpenPetra Forum</a> und reden Sie dort mit uns!"
+        "support_caption": "Unterstützung",
+        "support_text": "Falls Sie Fragen oder Anregungen haben, besuchen Sie uns doch im <a href='https://forum.openpetra.de'>öffentlichen OpenPetra Forum</a> und reden Sie dort mit uns!"
     },
     "navigation": {
         "openpetra": "OpenPetra",
@@ -59,9 +59,12 @@
         "close": "Schließen",
         "delete": "Löschen",
         "save": "Übernehmen",
-        "any": "alle"
+        "any": "alle",
+        "status": "Status",
+        "name": "Name",
+        "description": "Beschreibung"
     },
-    "frmHome": {
+    "Home": {
         "welcome": "Willkommen bei OpenPetra, mit den besten Empfehlungen von <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> ist eine einfach zu benutzende Softwareanwendung für die Verwaltung von Vereinen, Missionen und Hilfswerken, und steht unter der GPL Lizenz.",
         "target": "OpenPetra läuft in den gängigen Browsern, und es ist egal welches Betriebssystem oder welche Bildschirmgröße Sie benutzen.",
@@ -69,7 +72,7 @@
         "example": "zum Beispiel"
     },
 
-    "frmChangePassword": {
+    "ChangePassword": {
         "caption": "Passwort ändern",
         "current": "Aktuelles Passwort",
         "new": "Neues Passwort",
@@ -82,7 +85,7 @@
         "success": "Das Passwort wurde erfolgreich geändert"
     },
 
-    "frmMaintainUsers": {
+    "MaintainUsers": {
         "caption": "Benutzer verwalten",
         "userid": "Benutzername",
         "permissions": "Berechtigungen",
@@ -90,7 +93,7 @@
         "retired": "Deaktiviert"
     },
 
-    "frmMaintainPartners": {
+    "MaintainPartners": {
         "caption": "Partner verwalten",
         "edittitle": "Partner bearbeiten",
         "addtitle": "Partner anlegen",
@@ -104,10 +107,18 @@
         "FAMILY": "FAMILIE",
         "ORGANISATION": "ORGANISATION",
         "BANK": "BANK",
-        "UNIT": "EINHEIT"
+        "UNIT": "EINHEIT",
+        "addresses": "Adressen",
+        "subscriptions": "Abonnements",
+        "types": "Kategorien",
+        "comment": "Anmerkungen",
+        "gender": "Geschlecht",
+        "dateofbirth": "Geburtsdatum",
+        "firstname": "Vorname",
+        "familyname": "Nachname"
     },
 
-    "frmChangeLanguage": {
+    "ChangeLanguage": {
         "caption": "Sprache wechseln"
     }
 

@@ -21,31 +21,39 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-class MaintainPartnersForm extends JSForm {
+class MaintainUsersForm extends JSForm {
 	constructor() {
-		super('frmMaintainPartners',
-			'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
-				AFirstName: '',
-				AFamilyNameOrOrganisation: '',
-				ACity: '',
-				APartnerClass: 'FAMILY',
-				AMaxRecords: 25
-			});
+		super('MaintainUsers',
+			'serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions',
+			{});
 		super.initEvents();
-
-		// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
 		super.search();
 	}
 
 	getMainTableFromResult(result) {
-		return result.result;
+		return result.result.SUser;
+	}
+	getKeyFromRow(row) {
+		return row['s_user_id_c'];
 	}
 
-	getKeyFromRow(row) {
-		return row['p_partner_key_n'];
+	insertRowValues(html, tablename, row) {
+		html = super.insertRowValues(html, tablename, row);
+		if (html.indexOf("{val_permissions}") > -1) {
+			// calculate permissions for this user
+			var permissions = "";
+			self.viewData.result.SUserModuleAccessPermission.forEach(function(permissionsRow) {
+				if (row['s_user_id_c'] == permissionsRow['s_user_id_c'] && permissionsRow['s_can_access_l'] == true) {
+					permissions += permissionsRow['s_module_id_c'] + " ";
+				}
+			});
+			html = html.replace(new RegExp('{val_permissions}',"g"), permissions);
+		}
+		return html;
 	}
 }
 
 $(function() {
-	var form = new MaintainPartnersForm();
+	var form = new MaintainUsersForm();
 });
+

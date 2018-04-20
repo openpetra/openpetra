@@ -74,7 +74,7 @@ class Auth {
 		if (lastAuthCheck != null && lastAuthCheck != 0 && ((new Date() - lastAuthCheck) / 1000 / 60 <= 5)) {
 			fnAuthenticatedUser();
 		} else {
-			api.post('serverSessionManager.asmx/IsUserLoggedIn', null, null)
+			api.post('serverSessionManager.asmx/IsUserLoggedIn', {})
 				.then(function(response) {
 					var result = JSON.parse(response.data.d);
 					if (result.resultcode == "success") {
@@ -82,7 +82,7 @@ class Auth {
 						fnAuthenticatedUser();
 					} else {
 						if (lastAuthCheck != null && lastAuthCheck != 0) {
-							alert("session has expired");
+							console.log("session has expired");
 							localStorage.setItem('username', '');
 							localStorage.setItem('authenticated', 0);
 							window.location.reload();

@@ -1,0 +1,118 @@
+<h2>{caption}</h2>
+
+<table id="toolbar">
+<tr>
+<td>
+<button id="new">{forms.new}</button>
+<button id="filter">{forms.filter}</button>
+</td>
+</tr>
+</table>
+
+<table id="tabfilter">
+<tr><td>{partnername}: </td><td><input type="text" name="AFamilyNameOrOrganisation"/></td></tr>
+<tr><td>{city}: </td><td><input type="text" name="ACity"/></td></tr>
+<td>{partnerclass}: </td><td><select name="APartnerClass">
+	<option value="">{forms.any}</option>
+	<option value="FAMILY" selected>{FAMILY}</option>
+	<option value="PERSON">{PERSON}</option>
+	<option value="ORGANISATION">{ORGANISATION}</option>
+	<option value="UNIT">{UNIT}</option>
+	<option value="BANK">{BANK}</option>
+</select></td>
+<input type="hidden" name="AMaxRecords" value="25"/>
+<tr><td colspan="2">
+	<button id="cancelfilter">{forms.cancel}</button>
+	<button id="filter2">{forms.filter}</button>
+</td></tr>
+</table>
+
+<div id="tpl_edit">
+	<table class="table">
+		<tr>
+			<td>{partnerkey}</td><td><input type="text" name="p_partner_key_n" readonly/></td>
+			<td>{partnerclass}</td><td><input type="text" name="p_partner_class_c" readonly/></td>
+		</tr>
+		<tr>
+			<td>{forms.status}</td><td><input type="text" name="p_status_code_c"/></td>
+		</tr>
+
+		<tr class="FAMILY">
+			<td>{firstname}</td><td><input type="text" name="PFamily_p_first_name_c"/></td>
+			<td>{familyname}</td><td><input type="text" name="PFamily_p_family_name_c"/></td>
+		</tr>
+		<tr class="PERSON">
+			<td>{firstname}</td><td><input type="text" name="PPerson_p_first_name_c"/></td>
+			<td>{familyname}</td><td><input type="text" name="PPerson_p_family_name_c"/></td>
+		</tr>
+		<tr class="PERSON">
+			<td>{gender}</td><td><input type="text" name="p_gender_c"/></td>
+			<td>{dateofbirth}</td><td><input type="text" name="p_date_of_birth_d"/></td>
+		</tr>
+		<tr class="ORGANISATION">
+			<td>{forms.name}</td><td><input type="text" name="p_organisation_name_c"/></td>
+		</tr>
+		<tr class="UNIT">
+			<td>{forms.name}</td><td><input type="text" name="p_unit_name_c"/></td>
+		</tr>
+		<tr class="UNIT">
+			<td>{forms.description}</td><td colspan="3"><input type="text" name="PUnit_p_description_c"/></td>
+		</tr>
+		<tr class="BANK">
+			<td>{forms.name}</td><td><input type="text" name="p_branch_name_c"/></td>
+		</tr>
+		<tr><td colspan="100">
+		<ul class="nav nav-tabs" id="detailTab" role="tablist">
+			<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#addresses">{addresses}</a></li>
+			<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#subscriptions">{subscriptions}</a></li>
+			<li class="nav-item"><a class="nav-link" href="#types" data-toggle="tab">{types}</a></li>
+			<li class="nav-item"><a class="nav-link" href="#comment" data-toggle="tab">{comment}</a></li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="addresses">
+			<table class="table">
+				<tr><td>{streetname}</td><td><input type="text" name="p_street_name_c"/></td></tr>
+				<tr><td>{city}</td><td><input type="text" name="p_city_c"/></td></tr>
+				<tr><td>{postalcode}</td><td><input type="text" name="p_postal_code_c"/></td></tr>
+			</table>
+			</div>
+			<div class="tab-pane" id="subscriptions">
+				TODO {subscriptions}
+			</div>
+			<div class="tab-pane" id="types" role="tabpanel">
+				TODO {types}
+			</div>
+			<div class="tab-pane" id="comment" role="tabpanel">
+				TODO {comment}
+			</div>
+		</div>
+		</td></tr>
+	</table>
+</div>
+
+<table id="browse">
+<tr>
+<th>{partnerkey}</th>
+<th>{partnername}</th>
+<th></th>
+</tr>
+<tr id="tpl_row">
+<td>{val_p_partner_key_n}</td>
+<td>{val_p_partner_short_name_c}</td>
+</tr>
+
+<tr id="tpl_view">
+<td colspan='100'>
+<table class="table">
+<tr><td>{partnerkey}</td><td>{val_p_partner_key_n}</td></tr>
+<tr><td>{partnername}</td><td>{val_p_partner_short_name_c}</td></tr>
+<tr><td>{partnerclass}</td><td>{val_p_partner_class_c}</td></tr>
+<tr><td>{streetname}</td><td>{val_p_street_name_c}</td></tr>
+<tr><td>{city}</td><td>{val_p_postal_code_c} {val_p_city_c}</td></tr>
+</table>
+<button id="closeview">{forms.close}</button>
+<button id="edit">{forms.edit}</button>
+</td>
+</tr>
+
+</table>
