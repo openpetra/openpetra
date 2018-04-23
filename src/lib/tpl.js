@@ -15,3 +15,22 @@ function format_tpl(tpl, data) {
 
   return tpl;
 }
+
+function extract_data(object) {
+  var r = {};
+  object.find('[name]').each(function (i, obj) {
+    obj = $(obj);
+    r[obj.attr('name')] = obj.val();
+    if (obj.attr('type') == 'checkbox') {
+
+      if (obj.is(':checked')) {
+        r[obj.attr('name')] = true;
+      } else {
+        r[obj.attr('name')] = false;
+      }
+
+    }
+  })
+
+  return r;
+}

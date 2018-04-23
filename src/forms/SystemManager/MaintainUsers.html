@@ -3,7 +3,7 @@
 <!-- Phantom Storage -->
 <div hidden>
 	<div id="tpl_permission">
-		<div class="row">
+		<div class="row perm">
 			<div class="col-1">
 				<input type="checkbox" name="">
 			</div>
@@ -48,7 +48,7 @@
 					<div class="col">
 						<h2>{edittitle}</h2>
 					</div>
-					<button type="button" class="btn btn-success float-right">{save}</button>
+					<button type="button" class="btn btn-success float-right" onclick="save_entry('{val_s_user_id_c}', $(this).closest('.modal'))">{save}</button>
 					<button type="button" class="btn btn-danger float-right" onclick="$(this).closest('.modal').modal('hide')">{cancel}</button>
 				</div>
 

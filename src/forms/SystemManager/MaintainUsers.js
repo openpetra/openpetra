@@ -74,6 +74,22 @@ function edit_entry(s_user_id_c, api_data=false) {
 	});
 }
 
+function save_entry(s_user_id_c, entry_window) {
+	let x = extract_data(entry_window);
+
+	let perm = [];
+
+	entry_window.find('.permissions').find('.perm').each(function (i, obj) {
+		obj = $(obj);
+		if (obj.find('input').is(':checked')) {
+			perm.push(obj.find('data').attr('value'));
+		}
+	})
+
+	x['permissions'] = perm;
+	API_call('serverMSysMan.asmx/TMaintenanceWebConnector_SaveUserAndModulePermissions', x)
+}
+
 $('document').ready(function () {
 	display_users();
 });
