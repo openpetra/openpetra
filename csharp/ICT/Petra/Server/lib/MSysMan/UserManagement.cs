@@ -647,7 +647,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
-        /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
+        /// load one user from the database and the permissions of that user
         /// </summary>
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS LoadUserAndModulePermissions(string AUserId)
