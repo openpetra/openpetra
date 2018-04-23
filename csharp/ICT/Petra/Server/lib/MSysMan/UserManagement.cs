@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -678,6 +678,54 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             ReturnValue.AcceptChanges();
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// save the details and permissions of one user
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static TSubmitChangesResult SaveUser(string AUserId,
+            string AFirstName, string ALastName, string AEmailAddress,
+            bool AAccountLocked, bool ARetired,
+            List<string> AModulePermissions)
+        {
+            MaintainUsersTDS SubmitDS = LoadUserAndModulePermissions(AUserId);
+
+            SubmitDS.SUser[0].EmailAddress = AEmailAddress;
+            SubmitDS.SUser[0].FirstName = AFirstName;
+            SubmitDS.SUser[0].LastName = ALastName;
+            SubmitDS.SUser[0].AccountLocked = AAccountLocked;
+            SubmitDS.SUser[0].Retired = ARetired;
+
+            List<string> ExistingPermissions = new List<string>();
+            foreach (SUserModuleAccessPermissionRow permission in SubmitDS.SUserModuleAccessPermission.Rows)
+            {
+                if (AModulePermissions.Contains(permission.ModuleId))
+                {
+                    permission.CanAccess = true;
+                }
+                else
+                {
+                    permission.CanAccess = false;
+                }
+                ExistingPermissions.Add(permission.ModuleId);
+            }
+
+            // add new permissions
+            foreach (string module in AModulePermissions)
+            {
+                if (!ExistingPermissions.Contains(module))
+                {
+                    SUserModuleAccessPermissionRow moduleAccessPermissionRow = SubmitDS.SUserModuleAccessPermission.NewRowTyped();
+                    moduleAccessPermissionRow.UserId = AUserId;
+                    moduleAccessPermissionRow.ModuleId = module;
+                    moduleAccessPermissionRow.CanAccess = true;
+                    SubmitDS.SUserModuleAccessPermission.Rows.Add(moduleAccessPermissionRow);
+                }
+            }
+
+            return SaveSUser(ref SubmitDS, "Web", "0.0.0.0");
+
         }
 
         /// <summary>
