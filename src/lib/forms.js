@@ -50,7 +50,6 @@ class JSForm {
 		$('#filter').click(this.filterClick);
 		$('#filter2').click(this.filterClick);
 		$('#new').click({self: self, key: key}, self.showAddDialog);
-		
 	}
 
 	filterClick() {
@@ -288,7 +287,7 @@ class JSForm {
 			} else {
 				html = html.replace(new RegExp('{val_'+tplPropertyName+'}',"g"), row[propertyName]);
 				if (!tplPropertyName.endsWith("_l")) {
-					html = html.replace(new RegExp('name="' + tplPropertyName + '"',"g"), 
+					html = html.replace(new RegExp('name="' + tplPropertyName + '"',"g"),
 						'name="' + tplPropertyName + '" value="' + row[propertyName] + '"');
 				}
 				if (html.indexOf('{chk_'+tplPropertyName+'}') > -1) {
