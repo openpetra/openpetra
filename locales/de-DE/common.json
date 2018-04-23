@@ -86,10 +86,15 @@
     },
 
     "MaintainUsers": {
+        "save": "Speichern",
+        "cancel": "Abbrechen",
         "caption": "Benutzer verwalten",
         "edittitle": "Benutzer bearbeiten",
         "addtitle": "Benutzer anlegen",
         "userid": "Benutzername",
+        "firstname": "Vorname",
+        "lastname": "Nachname",
+        "email": "E-Mail",
         "permissions": "Berechtigungen",
         "locked": "Gesperrt",
         "retired": "Deaktiviert"
