@@ -650,6 +650,40 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
         [RequireModulePermission("SYSMAN")]
+        public static MaintainUsersTDS LoadUserAndModulePermissions(string AUserId)
+        {
+            TDBTransaction ReadTransaction = null;
+            MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    SUserAccess.LoadByPrimaryKey(ReturnValue, AUserId, ReadTransaction);
+                    SUserModuleAccessPermissionAccess.LoadViaSUser(ReturnValue,AUserId, ReadTransaction);
+                    SModuleAccess.LoadAll(ReturnValue, ReadTransaction);
+                });
+
+            // Remove Password Hash and Password 'Salt' before passing it out to the caller - these aren't needed
+            // and it is better to not hand them out needlessly to prevent possible 'eavesdropping' by an attacker
+            // (who could otherwise gather the Password Hashes and Password 'Salts' of all users in one go if the
+            // attacker manages to listen to network traffic). (#5502)!
+            foreach (var UserRow in ReturnValue.SUser.Rows)
+            {
+                ((SUserRow)UserRow).PasswordHash = "***";
+                ((SUserRow)UserRow).PasswordSalt = "***";
+            }
+
+            ReturnValue.AcceptChanges();
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
         public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
             string AClientComputerName, string AClientIPAddress)
         {
