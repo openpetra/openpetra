@@ -48,8 +48,6 @@
 					<div class="col">
 						<h2>{edittitle}</h2>
 					</div>
-					<button type="button" class="btn btn-success float-right btn-window" onclick="save_entry('{val_s_user_id_c}', $(this).closest('.modal'))">{forms.save}</button>
-					<button type="button" class="btn btn-danger float-right btn-window" onclick="$(this).closest('.modal').modal('hide')">{forms.cancel}</button>
 				</div>
 
 				<div class="row">
@@ -116,6 +114,8 @@
 						<div class="col permissions" style="border: black; border-style: double; height: 100px;padding: 0;margin: 0; overflow-x: hidden; overflow-y: scroll;"></div>
 					</div>
 				</div>
+				<button type="button" class="btn btn-primary float-right btn-window" onclick="save_entry('{val_s_user_id_c}', $(this).closest('.modal'))">{forms.save}</button>
+				<button type="button" class="btn float-right btn-window" onclick="$(this).closest('.modal').modal('hide')">{forms.cancel}</button>
 
 			</div>
 

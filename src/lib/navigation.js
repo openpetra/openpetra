@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
+//       CJ <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
 //
@@ -57,21 +58,8 @@ class Navigation {
 				.then(function(response) {
 					var content = response.data;
 					content = translate(content, name.substring(name.lastIndexOf('/')+1));
-					// we want to modify the html before it is displayed
-					//-> content = JSForm.initContent(content);
-
-					// check if the javascript has been loaded already
-					// avoiding: SyntaxError: redeclaration of let MaintainPartnersForm
-					var className = name.substring(name.lastIndexOf('/')+1) + "Form";
-					if (self.classesLoaded.indexOf(className) == -1) {
-						$("#containerIFrames").html(content);
-						$.getScript("/src/forms/" + name + '.js' + refresh, function() {
-							self.classesLoaded.push(className);
-						});
-					} else {
-						content += '<script type="text/javascript">var form=new ' + className + '()</script>';
-						$("#containerIFrames").html(content);
-					}
+					$("#containerIFrames").html(content);
+					$.getScript("/src/forms/" + name + '.js' + refresh);
 			});
 		}
 		else // fetch navigation page

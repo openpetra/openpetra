@@ -51,3 +51,29 @@ function display_message(content, style_arguments) {
   }, 30000);
 
 }
+
+function translate_to_server(array) {
+  let new_a = {};
+  for (var key in array) {
+    if (key == "") {
+      continue;
+    }
+    let n_key = key.match(/.+?_(.*)_.+/);
+    if (n_key == null) {
+      new_a[key] = array[key];
+    } else {
+      let x = n_key[1].split('_');
+      n_key = "A";
+      for (word of x) {
+        n_key += capitalizeFirstLetter(word);
+      }
+
+      new_a[n_key] = array[key];
+    }
+  }
+  return new_a;
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
