@@ -26,6 +26,8 @@ using System.Data;
 using System.Collections.Generic;
 using System.Globalization;
 
+using Newtonsoft.Json;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
