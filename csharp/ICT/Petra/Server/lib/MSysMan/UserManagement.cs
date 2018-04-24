@@ -684,7 +684,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// save the details and permissions of one user
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static TSubmitChangesResult SaveUser(string AUserId,
+        public static string SaveUserAndModulePermissions(string AUserId,
             string AFirstName, string ALastName, string AEmailAddress,
             bool AAccountLocked, bool ARetired,
             List<string> AModulePermissions)
@@ -724,8 +724,20 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 }
             }
 
-            return SaveSUser(ref SubmitDS, "Web", "0.0.0.0");
+            TSubmitChangesResult submitresult = SaveSUser(ref SubmitDS, "Web", "0.0.0.0");
 
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (submitresult == TSubmitChangesResult.scrOK)
+            {
+                result.Add("resultcode", "success");
+            }
+            else
+            {
+                result.Add("resultcode", "error");
+            }
+
+            return JsonConvert.SerializeObject(result); 
         }
 
         /// <summary>
