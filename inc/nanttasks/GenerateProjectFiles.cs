@@ -237,6 +237,8 @@ namespace Ict.Tools.NAntTasks
                     Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
                 }
 
+                bool OnlyTools = true;
+
                 foreach (string projectName in FProjectDependencies.Keys)
                 {
                     string srcPath = FCodeRootDir + Path.DirectorySeparatorChar +
@@ -250,6 +252,11 @@ namespace Ict.Tools.NAntTasks
                     string ProjectGUID = GetProjectGUID(projectName);
 
                     string exeProjectName = projectName;
+
+                    if (projectName.Contains("Ict.Petra.Server.app."))
+                    {
+                        OnlyTools = false;
+                    }
 
                     if (FProjectDependencies[projectName].OutputName.Length > 0)
                     {
@@ -267,20 +274,24 @@ namespace Ict.Tools.NAntTasks
                 }
 
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
-                    "OpenPetra.sln",
-                    "Ict.Common,Ict.Petra,Ict.Tools,Ict.Testing");
-                WriteSolutionFile(FTemplateDir, ide.Trim(),
-                    "OpenPetra.Server.sln",
-                    "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.PetraServerConsole,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Server");
-                WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Tools.sln",
                     "Ict.Common.csproj,Ict.Common.IO,Ict.Tools");
-                WriteSolutionFile(FTemplateDir, ide.Trim(),
-                    "OpenPetra.YmlGzImportExport.sln",
-                    "Ict.Petra.Tools.YmlGzImportExport");
-                WriteSolutionFile(FTemplateDir, ide.Trim(),
-                    "OpenPetra.Testing.sln",
-                    "Ict.Common,Ict.Petra,Ict.Testing");
+
+                if (!OnlyTools)
+                {
+                    WriteSolutionFile(FTemplateDir, ide.Trim(),
+                        "OpenPetra.sln",
+                        "Ict.Common,Ict.Petra,Ict.Tools,Ict.Testing");
+                    WriteSolutionFile(FTemplateDir, ide.Trim(),
+                        "OpenPetra.Server.sln",
+                        "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.PetraServerConsole,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Server");
+                    WriteSolutionFile(FTemplateDir, ide.Trim(),
+                        "OpenPetra.YmlGzImportExport.sln",
+                        "Ict.Petra.Tools.YmlGzImportExport");
+                    WriteSolutionFile(FTemplateDir, ide.Trim(),
+                        "OpenPetra.Testing.sln",
+                        "Ict.Common,Ict.Petra,Ict.Testing");
+                }
             }
 
             WriteProjectGUIDs(FGUIDMapFilename, FProjectGUIDs);

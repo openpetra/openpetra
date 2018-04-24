@@ -270,6 +270,7 @@ useful parameters
   
   <call target="nanttasks"/>
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <property name="solution" value="Tools" overwrite="true"/>
   <GenerateNamespaceMap
     CodeRootDir="${dir.csharp}"
     NamespaceMapFilename="${namespaceFile}"
@@ -281,6 +282,7 @@ useful parameters
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <call target="generateProjectFilesInternal"/>
   <call target="quickCompile"/>
+  <property name="solution" value="OpenPetra" overwrite="true"/>
   
   <echo message="Target generateTools finished at: ${datetime::now()}" />         
 </target>
