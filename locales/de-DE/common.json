@@ -59,6 +59,7 @@
         "close": "Schließen",
         "delete": "Löschen",
         "save": "Übernehmen",
+        "saved": "Änderungen wurden übernommen",
         "any": "alle",
         "status": "Status",
         "name": "Name",
@@ -86,8 +87,6 @@
     },
 
     "MaintainUsers": {
-        "save": "Speichern",
-        "cancel": "Abbrechen",
         "caption": "Benutzer verwalten",
         "edittitle": "Benutzer bearbeiten",
         "addtitle": "Benutzer anlegen",
