@@ -87,7 +87,20 @@ function save_entry(s_user_id_c, entry_window) {
 	})
 
 	x['permissions'] = perm;
-	API_call('serverMSysMan.asmx/TMaintenanceWebConnector_SaveUserAndModulePermissions', x)
+	let arguments = {
+		"AUserId": x['s_user_id_c'],
+		"AEmailAddress": x['s_email_address_c'],
+		"AFirstName": x['s_first_name_c'],
+		"ALastName": x['s_last_name_c'],
+		"AAccountLocked": x['s_account_locked_l'],
+		"ARetired": x['s_retired_l'],
+		"AModulePermissions": x['permissions'],
+	}
+
+	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_SaveUserAndModulePermissions', arguments).then(function (data) {
+		$('.modal').modal('hide');
+		display_message(i18next.t('forms.saved'), "success");
+	})
 }
 
 $('document').ready(function () {
