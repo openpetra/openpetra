@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -275,7 +275,7 @@ namespace Ict.Tools.NAntTasks
 
                 WriteSolutionFile(FTemplateDir, ide.Trim(),
                     "OpenPetra.Tools.sln",
-                    "Ict.Common.csproj,Ict.Common.IO,Ict.Tools");
+                    "Ict.Common.csproj,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools");
 
                 if (!OnlyTools)
                 {
