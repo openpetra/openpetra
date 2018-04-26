@@ -120,8 +120,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         if (AWithSubscriptions)
                         {
+                            PPublicationAccess.LoadAll(MainDS, Transaction);
                             PSubscriptionAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
                         }
+
+                        PTypeAccess.LoadAll(MainDS, Transaction);
+                        PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     }
                 });
 
