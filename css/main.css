@@ -82,13 +82,15 @@ body {
 
 .openpetra_modal {
   margin: 10%;
+  max-height: 70vh;
   background: white;
   border-radius: 10px;
   bottom: unset!important;
   padding:15px;
+  overflow-y: auto;
 }
 
-.row .col {
+.row {
   margin-bottom: 10px;
 }
 

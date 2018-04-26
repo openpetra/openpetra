@@ -1,6 +1,6 @@
 function format_tpl(tpl, data) {
   for (variable in data) {
-    let f = tpl.find("[name='"+variable+"']")
+    let f = tpl.find("[name="+variable+"]");
     if (f.attr('type') == "checkbox") {
       f.attr('checked', data[variable]);
       f.prop('checked', data[variable]);
@@ -9,6 +9,9 @@ function format_tpl(tpl, data) {
       f.val(data[variable]);
     }
     let g = tpl[0].outerHTML;
+    if (data[variable] == null) {
+      data[variable] = "";
+    }
     g = g.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
     tpl = $(g);
   }

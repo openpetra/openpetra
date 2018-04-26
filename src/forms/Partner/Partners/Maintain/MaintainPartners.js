@@ -21,16 +21,108 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+var last_opend_entry_data = {};
+
+$('document').ready(function () {
+	diplay_partners();
+});
+
+function diplay_partners() {
+	let x = extract_data($('#tabfilter'));
+	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		$('#browse_container').html('');
+		for (user of data.result) {
+			format_user(user);
+		}
+	})
+}
+
+function format_user(user) {
+	let n = format_tpl($("[phantom] .tpl_row").clone(),user);
+	let c = format_tpl($("[phantom] .tpl_view").clone(),user);
+	n.find('.collapse_col').append(c);
+	$('#browse_container').append(n);
+}
+
+function open_detail(obj) {
+	obj = $(obj);
+	if (obj.find('.collapse').is(':visible') ) {return}
+	$('.tpl_row .collapse').collapse('hide');
+	obj.find('.collapse').collapse('show')
+}
+
+function open_edit(partner_id) {
+	var r = {
+				APartnerKey: partner_id,
+				AWithAddressDetails: true,
+				AWithSubscriptions: true,
+				AWithRelationships: true
+			};
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetails', r).then(function (data) {
+		actuall_data_str = data.data.d;
+
+		parsed = JSON.parse(actuall_data_str);
+
+		last_opend_entry_data = $.extend(true, {}, parsed);
+		let m = $('[phantom] .tpl_edit').clone();
+		m = format_tpl(m ,parsed.result.PLocation[0]);
+		m = format_tpl(m ,parsed.result.PPartner[0]);
+		m = format_tpl(m ,parsed.result.PUnit[0]);
+
+		m.find('.select_case').hide();
+		m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
+		$('#modal_space').html(m);
+		$('#modal_space .modal').modal('show');
+	})
+}
+
+function save_entry(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+	let x = extract_data(obj);
+	x = replace_data(last_opend_entry_data.result, x);
+	let r = {'AMainDS': JSON.stringify(last_opend_entry_data.result)};
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
+		$('#modal_space .modal').modal('hide');
+		diplay_partners();
+	})
+}
+
+function show_tab(tab_id) {
+	let tab = $(tab_id);
+	let target = tab.attr('aria-controls');
+	tab.closest('.nav-tabs').find('.nav-link').removeClass('active');
+	tab.addClass('active');
+
+	tgr = tab.closest('.container').find('.tab-content');
+	tgr.find('.tab-pane').removeClass('active');
+	tgr.find('#'+target).addClass('active');
+
+}
+
+function replace_data(replace_obj, update_data) {
+	for (var variable in replace_obj) {
+		// update_date has a var with same name as replace_obj, so we replace it
+		if (typeof update_data[variable] !== 'undefined') {
+			replace_obj[variable] = update_data[variable];
+		}
+		// maybe a update name is in a object
+		if (replace_obj[variable] instanceof Object) {
+			replace_obj[variable] = replace_data(replace_obj[variable], update_data);
+		}
+		if (replace_obj[variable] instanceof Array) {
+			for (list_item of replace_obj[variable]) {
+				list_item = replace_data(list_item, update_data);
+			}
+		}
+	}
+	return replace_obj;
+}
+/*
 class MaintainPartnersForm extends JSForm {
 	constructor() {
 		super('MaintainPartners',
-			'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', {
-				AFirstName: '',
-				AFamilyNameOrOrganisation: '',
-				ACity: '',
-				APartnerClass: 'FAMILY',
-				AMaxRecords: 25
-			});
+			'serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', );
 		super.initEvents();
 
 		// TODO: if no search criteria are defined, then show the 10 last viewed or edited partners
@@ -106,7 +198,4 @@ class MaintainPartnersForm extends JSForm {
 		return null;
 	}
 }
-
-$(function() {
-	var form = new MaintainPartnersForm();
-});
+*/
