@@ -109,7 +109,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         if (AWithAddressDetails)
                         {
-                            PPartnerLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                            // don't load p_partner_location for the moment, because we have custom fields duplicating p_location.
+                            // those custom fields need to be set, then we don't need to deliver p_location
+                            // PPartnerLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                             PLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                         }
 
@@ -238,6 +240,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_BANK)
             {
                 SaveDS.PPartner[0].PartnerShortName = SaveDS.PBank[0].BranchName;
+            }
+
+            // TODO: check if location 0 (no address) was changed. we don't want to overwrite that
+            // alternative: check if somebody else uses that location, and split the locations. or ask if others should be updated???
+            if (SaveDS.PPLocation[0].RowState == DataRowState.Modified && SaveDS.PPLocation[0].PLocationKey == 0)
+            {
+                TLogging.Log("we cannot update addresses of people with location 0");
+                return false;
             }
 
             PartnerEditTDSAccess.SubmitChanges(SaveDS);
