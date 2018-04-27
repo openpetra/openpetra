@@ -81,6 +81,15 @@
 				</div>
 			</div>
 
+			<div class="row FAMILY select_case">
+				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_title_c"/>
+				</div>
+			</div>
+
 			<div class="row PERSON select_case">
 				<div class="col-3">
 					<span>{firstname}</span>
@@ -108,6 +117,15 @@
 				</div>
 				<div class="col-3">
 					<input type="text" name="p_date_of_birth_d"/>
+				</div>
+			</div>
+
+			<div class="row PERSON select_case">
+				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PPerson_p_title_c"/>
 				</div>
 			</div>
 
@@ -201,12 +219,12 @@
 				<div class="tab-pane" id="types">
 					TODO {types}
 				</div>
-				<div class="tab-pane" id="comment">
-					TODO {comment}
+				<div class="tab-pane text-center" id="comment">
+					<textarea name="PPartner_p_comment_c" style="width:90%;height:7em;" placeholder="{comment}"></textarea>
 				</div>
 			</div>
 
-			<button class="float-right btn btn-primary" onclick="save_entry(this)">{forms.edit}</button>
+			<button class="float-right btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
 			<button class="float-right btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 
 		</div>

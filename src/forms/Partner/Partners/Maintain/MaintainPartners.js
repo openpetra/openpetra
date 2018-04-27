@@ -63,12 +63,15 @@ function open_edit(partner_id) {
 		actuall_data_str = data.data.d;
 
 		parsed = JSON.parse(actuall_data_str);
+		console.log(parsed);
 
 		last_opend_entry_data = $.extend(true, {}, parsed);
 		let m = $('[phantom] .tpl_edit').clone();
-		m = format_tpl(m ,parsed.result.PLocation[0]);
-		m = format_tpl(m ,parsed.result.PPartner[0]);
-		m = format_tpl(m ,parsed.result.PUnit[0]);
+		// normal info input
+		m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
+		m = format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
+		m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
+		m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
 
 		m.find('.select_case').hide();
 		m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
@@ -80,7 +83,9 @@ function open_edit(partner_id) {
 function save_entry(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let x = extract_data(obj);
+	console.log(x);
 	x = replace_data(last_opend_entry_data.result, x);
+	console.log(last_opend_entry_data.result);
 	let r = {'AMainDS': JSON.stringify(last_opend_entry_data.result)};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
 		$('#modal_space .modal').modal('hide');
@@ -100,24 +105,6 @@ function show_tab(tab_id) {
 
 }
 
-function replace_data(replace_obj, update_data) {
-	for (var variable in replace_obj) {
-		// update_date has a var with same name as replace_obj, so we replace it
-		if (typeof update_data[variable] !== 'undefined') {
-			replace_obj[variable] = update_data[variable];
-		}
-		// maybe a update name is in a object
-		if (replace_obj[variable] instanceof Object) {
-			replace_obj[variable] = replace_data(replace_obj[variable], update_data);
-		}
-		if (replace_obj[variable] instanceof Array) {
-			for (list_item of replace_obj[variable]) {
-				list_item = replace_data(list_item, update_data);
-			}
-		}
-	}
-	return replace_obj;
-}
 /*
 class MaintainPartnersForm extends JSForm {
 	constructor() {
