@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             // TODO: check if location 0 (no address) was changed. we don't want to overwrite that
             // alternative: check if somebody else uses that location, and split the locations. or ask if others should be updated???
-            if (SaveDS.PPLocation[0].RowState == DataRowState.Modified && SaveDS.PPLocation[0].PLocationKey == 0)
+            if (SaveDS.PLocation[0].RowState == DataRowState.Modified && SaveDS.PLocation[0].LocationKey == 0)
             {
                 TLogging.Log("we cannot update addresses of people with location 0");
                 return false;
