@@ -1,3 +1,6 @@
+// this will fill all possible elements with data, if there name=
+// attribute is the same as the given object key
+// it also replaces all {something} in this object, by converting it to a string and back
 function format_tpl(tpl, data, limit_to_table) {
   if (limit_to_table == null) {
     limit_to_table = "";
@@ -28,6 +31,8 @@ function format_tpl(tpl, data, limit_to_table) {
   return tpl;
 }
 
+// this is the oposite the format one, it will extract all name= objects
+// and will return a object in key, values where key is the name and value... well the value
 function extract_data(object) {
   var r = {};
   object.find('[name]').each(function (i, obj) {
