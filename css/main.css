@@ -79,3 +79,35 @@ body {
 .hidden {
   display: none;
 }
+
+.openpetra_modal {
+  margin: 10%;
+  max-height: 70vh;
+  background: white;
+  border-radius: 10px;
+  bottom: unset!important;
+  padding:15px;
+  overflow-y: auto;
+}
+
+.row {
+  margin-bottom: 10px;
+}
+
+.btn-window {
+  margin: 5px;
+  padding: 5px 10px;
+}
+
+.display_message {
+  background:white;
+  border-radius:5px;
+  border:2px solid black;
+}
+.display_message_success {
+  background:#88ee44!important;
+}
+
+.display_message_fail {
+  background:#ee8844!important;
+}

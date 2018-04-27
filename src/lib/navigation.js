@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
+//       CJ <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
 //
@@ -57,21 +58,8 @@ class Navigation {
 				.then(function(response) {
 					var content = response.data;
 					content = translate(content, name.substring(name.lastIndexOf('/')+1));
-					// we want to modify the html before it is displayed
-					content = JSForm.initContent(content);
-
-					// check if the javascript has been loaded already
-					// avoiding: SyntaxError: redeclaration of let MaintainPartnersForm
-					var className = name.substring(name.lastIndexOf('/')+1) + "Form";
-					if (self.classesLoaded.indexOf(className) == -1) {
-						$("#containerIFrames").html(content);
-						$.getScript("/src/forms/" + name + '.js' + refresh, function() {
-							self.classesLoaded.push(className);
-						});
-					} else {
-						content += '<script type="text/javascript">var form=new ' + className + '()</script>';
-						$("#containerIFrames").html(content);
-					}
+					$("#containerIFrames").html(content);
+					$.getScript("/src/forms/" + name + '.js' + refresh);
 			});
 		}
 		else // fetch navigation page
@@ -178,7 +166,7 @@ class Navigation {
 		$('#' + mnuItem).click(function(event) {
 			event.preventDefault();
 
-			self.OpenForm(frmName, title); 
+			self.OpenForm(frmName, title);
 
 			// hide the menu if we are on mobile screen (< 768 px width)
 			if ($(document).width() < 768) {
@@ -211,14 +199,14 @@ class Navigation {
 			var items = folder.items;
 			for (var itemid in items) {
 				var item = items[itemid];
-                                
+
 				if (item.form != null) {
-					this.AddMenuItemForm(folderid, folderid + "_" + itemid, item.form, 
+					this.AddMenuItemForm(folderid, folderid + "_" + itemid, item.form,
 						i18next.t('navigation.' + item.caption),
 						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
 						folder.icon);
 				} else {
-					this.AddMenuItem(folderid, folderid + "_" + itemid, 
+					this.AddMenuItem(folderid, folderid + "_" + itemid,
 						i18next.t('navigation.' + item.caption),
 						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
 						folder.icon);

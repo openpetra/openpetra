@@ -1,118 +1,309 @@
 <h2>{caption}</h2>
 
-<table id="toolbar">
-<tr>
-<td>
-<button id="new">{forms.new}</button>
-<button id="filter">{forms.filter}</button>
-</td>
-</tr>
-</table>
+<!-- Phantom Storage -->
+<div phantom hidden>
 
-<table id="tabfilter">
-<tr><td>{partnername}: </td><td><input type="text" name="AFamilyNameOrOrganisation"/></td></tr>
-<tr><td>{city}: </td><td><input type="text" name="ACity"/></td></tr>
-<td>{partnerclass}: </td><td><select name="APartnerClass">
-	<option value="">{forms.any}</option>
-	<option value="FAMILY" selected>{FAMILY}</option>
-	<option value="PERSON">{PERSON}</option>
-	<option value="ORGANISATION">{ORGANISATION}</option>
-	<option value="UNIT">{UNIT}</option>
-	<option value="BANK">{BANK}</option>
-</select></td>
-<input type="hidden" name="AMaxRecords" value="25"/>
-<tr><td colspan="2">
-	<button id="cancelfilter">{forms.cancel}</button>
-	<button id="filter2">{forms.filter}</button>
-</td></tr>
-</table>
-
-<div id="tpl_edit">
-	<table class="table">
-		<tr>
-			<td>{partnerkey}</td><td><input type="text" name="p_partner_key_n" readonly/></td>
-			<td>{partnerclass}</td><td><input type="text" name="p_partner_class_c" readonly/></td>
-		</tr>
-		<tr>
-			<td>{forms.status}</td><td><input type="text" name="p_status_code_c"/></td>
-		</tr>
-
-		<tr class="FAMILY">
-			<td>{firstname}</td><td><input type="text" name="PFamily_p_first_name_c"/></td>
-			<td>{familyname}</td><td><input type="text" name="PFamily_p_family_name_c"/></td>
-		</tr>
-		<tr class="PERSON">
-			<td>{firstname}</td><td><input type="text" name="PPerson_p_first_name_c"/></td>
-			<td>{familyname}</td><td><input type="text" name="PPerson_p_family_name_c"/></td>
-		</tr>
-		<tr class="PERSON">
-			<td>{gender}</td><td><input type="text" name="p_gender_c"/></td>
-			<td>{dateofbirth}</td><td><input type="text" name="p_date_of_birth_d"/></td>
-		</tr>
-		<tr class="ORGANISATION">
-			<td>{forms.name}</td><td><input type="text" name="p_organisation_name_c"/></td>
-		</tr>
-		<tr class="UNIT">
-			<td>{forms.name}</td><td><input type="text" name="p_unit_name_c"/></td>
-		</tr>
-		<tr class="UNIT">
-			<td>{forms.description}</td><td colspan="3"><input type="text" name="PUnit_p_description_c"/></td>
-		</tr>
-		<tr class="BANK">
-			<td>{forms.name}</td><td><input type="text" name="p_branch_name_c"/></td>
-		</tr>
-		<tr><td colspan="100">
-		<ul class="nav nav-tabs" id="detailTab" role="tablist">
-			<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#addresses">{addresses}</a></li>
-			<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#subscriptions">{subscriptions}</a></li>
-			<li class="nav-item"><a class="nav-link" href="#types" data-toggle="tab">{types}</a></li>
-			<li class="nav-item"><a class="nav-link" href="#comment" data-toggle="tab">{comment}</a></li>
-		</ul>
-		<div class="tab-content">
-			<div class="tab-pane active" id="addresses">
-			<table class="table">
-				<tr><td>{streetname}</td><td><input type="text" name="p_street_name_c"/></td></tr>
-				<tr><td>{city}</td><td><input type="text" name="p_city_c"/></td></tr>
-				<tr><td>{postalcode}</td><td><input type="text" name="p_postal_code_c"/></td></tr>
-			</table>
-			</div>
-			<div class="tab-pane" id="subscriptions">
-				TODO {subscriptions}
-			</div>
-			<div class="tab-pane" id="types" role="tabpanel">
-				TODO {types}
-			</div>
-			<div class="tab-pane" id="comment" role="tabpanel">
-				TODO {comment}
+	<div class="tpl_row" onclick="open_detail(this)">
+		<div class="row">
+			<div class="col">{val_p_partner_key_n}</div>
+			<div class="col">{val_p_partner_short_name_c}</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="collapse_col"></div>
 			</div>
 		</div>
-		</td></tr>
-	</table>
+	</div>
+
+	<div class="collapse tpl_view">
+		<div class="container" style="background:#e0e0e0;">
+			<div class="row">
+				<div class="col">{partnerkey}</div><div class="col">{val_p_partner_key_n}</div>
+			</div>
+			<div class="row">
+				<div class="col">{partnername}</div><div class="col">{val_p_partner_short_name_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{partnerclass}</div><div class="col">{val_p_partner_class_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{streetname}</div><div class="col">{val_p_street_name_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{city}</div><div class="col">{val_p_postal_code_c} {val_p_city_c}</div>
+			</div>
+		</div>
+		<button class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
+		<button class="btn btn-primary" onclick="open_edit('{val_p_partner_key_n}')">{forms.edit}</button>
+	</div>
+
+	<div class="tpl_tag">
+		<div class="row perm">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+	<div class="modal tpl_edit openpetra_modal">
+		<h3>{edittitle}</h3>
+		<div class="container">
+
+			<div class="row">
+				<div class="col-3">
+					<span>{partnerkey}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_partner_key_n" readonly/>
+				</div>
+				<div class="col-3">
+					<span>{partnerclass}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_partner_class_c" readonly/>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{forms.status}</span>
+				</div>
+				<div class="col-3">
+					<select name="p_status_code_c">
+						<option value="ACTIVE">ACTIVE</option>
+						<option value="ACTIVE">NOT ACTIVE</option>
+					</select>
+				</div>
+			</div>
+			<hr>
+
+			<div class="row FAMILY select_case">
+				<div class="col-3">
+					<span>{firstname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_first_name_c"/>
+				</div>
+				<div class="col-3">
+					<span>{familyname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_family_name_c"/>
+				</div>
+			</div>
+
+			<div class="row FAMILY select_case">
+				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_title_c"/>
+				</div>
+			</div>
+
+			<div class="row PERSON select_case">
+				<div class="col-3">
+					<span>{firstname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PPerson_p_first_name_c"/>
+				</div>
+				<div class="col-3">
+					<span>{familyname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PPerson_p_family_name_c"/>
+				</div>
+			</div>
+
+			<div class="row PERSON select_case">
+				<div class="col-3">
+					<span>{gender}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_gender_c"/>
+				</div>
+				<div class="col-3">
+					<span>{dateofbirth}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_date_of_birth_d"/>
+				</div>
+			</div>
+
+			<div class="row PERSON select_case">
+				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PPerson_p_title_c"/>
+				</div>
+			</div>
+
+			<div class="row ORGANISATION select_case">
+				<div class="col-3">
+					<span>{forms.name}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_organisation_name_c"/>
+				</div>
+			</div>
+
+			<div class="row UNIT select_case">
+				<div class="col-3">
+					<span>{forms.name}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_unit_name_c"/>
+				</div>
+			</div>
+
+			<div class="row UNIT select_case">
+				<div class="col-3">
+					<span>{forms.description}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PUnit_p_description_c"/>
+				</div>
+			</div>
+
+			<div class="row BANK select_case">
+				<div class="col-3">
+					<span>{forms.name}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_branch_name_c"/>
+				</div>
+			</div>
+
+			<ul class="nav nav-tabs" id="detailTab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{addresses}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#types" aria-controls="types" onclick="show_tab(this)">{types}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</a>
+				</li>
+			</ul>
+
+			<div class="tab-content" id="edit_modal_tabs">
+				<div class="tab-pane active" id="addresses">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{streetname}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_street_name_c" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{city}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_city_c"/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{postalcode}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_postal_code_c"/>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="tab-pane" id="subscriptions" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+				<div class="tab-pane" id="types" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+				<div class="tab-pane text-center" id="comment">
+					<textarea name="PPartner_p_comment_c" style="width:90%;height:7em;" placeholder="{comment}"></textarea>
+				</div>
+			</div>
+
+			<button class="float-right btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+			<button class="float-right btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+
+		</div>
+	</div>
+
 </div>
 
-<table id="browse">
-<tr>
-<th>{partnerkey}</th>
-<th>{partnername}</th>
-<th></th>
-</tr>
-<tr id="tpl_row">
-<td>{val_p_partner_key_n}</td>
-<td>{val_p_partner_short_name_c}</td>
-</tr>
-
-<tr id="tpl_view">
-<td colspan='100'>
-<table class="table">
-<tr><td>{partnerkey}</td><td>{val_p_partner_key_n}</td></tr>
-<tr><td>{partnername}</td><td>{val_p_partner_short_name_c}</td></tr>
-<tr><td>{partnerclass}</td><td>{val_p_partner_class_c}</td></tr>
-<tr><td>{streetname}</td><td>{val_p_street_name_c}</td></tr>
-<tr><td>{city}</td><td>{val_p_postal_code_c} {val_p_city_c}</td></tr>
+<table id="toolbar">
+	<tr>
+		<td>
+			<button class="btn btn-primary">{forms.new}</button>
+			<button class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
+		</td>
+	</tr>
 </table>
-<button id="closeview">{forms.close}</button>
-<button id="edit">{forms.edit}</button>
-</td>
-</tr>
 
-</table>
+<div id="modal_space"></div>
+
+<div class="container collapse" id="tabfilter">
+	<div class="row">
+		<div class="col">
+			<span>{partnername}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="AFamilyNameOrOrganisation"/>
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col">
+			<span>{city}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="ACity"/>
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col">
+			<span>{partnerclass}:</span>
+		</div>
+		<div class="col">
+			<select name="APartnerClass">
+				<option value="" selected>{forms.any}</option>
+				<option value="PERSON">{PERSON}</option>
+				<option value="FAMILY">{FAMILY}</option>
+				<option value="ORGANISATION">{ORGANISATION}</option>
+				<option value="UNIT">{UNIT}</option>
+				<option value="BANK">{BANK}</option>
+			</select>
+		</div>
+	</div>
+
+	<button type="button" class="btn btn-primary"onclick="diplay_partners()">{forms.search}</button>
+	<input type="hidden" name="AMaxRecords" value="25"/>
+</div>
+
+<div class="container" id="browse">
+	<div class="row">
+		<div class="col"><b>{partnerkey}</b></div>
+		<div class="col"><b>{partnername}</b></div>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>
