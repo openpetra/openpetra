@@ -121,7 +121,8 @@
         "gender": "Geschlecht",
         "dateofbirth": "Geburtsdatum",
         "firstname": "Vorname",
-        "familyname": "Nachname"
+        "familyname": "Nachname",
+        "title":"Titel"
     },
 
     "ChangeLanguage": {

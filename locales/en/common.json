@@ -120,7 +120,8 @@
         "gender": "Gender",
         "dateofbirth": "Date of birth",
         "firstname": "First name",
-        "familyname": "Family name"
+        "familyname": "Family name",
+        "title":"Title"
     },
 
     "ChangeLanguage": {
