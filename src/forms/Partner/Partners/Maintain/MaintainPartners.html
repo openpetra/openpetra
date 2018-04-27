@@ -49,8 +49,13 @@
 		</div>
 	</div>
 
-	<div class="modal tpl_edit openpetra_modal">
+	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
 		<h3>{edittitle}</h3>
+		</div>
+		<div class="modal-body">
 		<div class="container">
 
 			<div class="row">
@@ -75,7 +80,7 @@
 				<div class="col-3">
 					<select name="p_status_code_c">
 						<option value="ACTIVE">ACTIVE</option>
-						<option value="ACTIVE">NOT ACTIVE</option>
+						<option value="INACTIVE">NOT ACTIVE</option>
 					</select>
 				</div>
 			</div>
@@ -234,10 +239,13 @@
 					<textarea name="PPartner_p_comment_c" style="width:90%;height:7em;" placeholder="{comment}"></textarea>
 				</div>
 			</div>
-
-			<button class="float-right btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
-			<button class="float-right btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
-
+		</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+			<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+		</div>
+		</div>
 		</div>
 	</div>
 

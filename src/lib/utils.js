@@ -49,6 +49,10 @@ function display_message(content, style_arguments) {
   var message = $('<div class="text-center msg" style="width:50%;margin:5px auto;cursor:pointer;" onclick="$(this).closest(\'.msg\').remove()">');
   message.addClass('display_message');
 
+  if (style_arguments == null) {
+    style_arguments = {};
+  }
+
   // if 3rd arg is a pre definded option we add a class
   if (typeof style_arguments == "string") {
     if (style_arguments == "success") {
@@ -57,15 +61,11 @@ function display_message(content, style_arguments) {
     if (style_arguments == "fail") {
       message.addClass('display_message_fail');
     }
-  }
-
-  if (style_arguments == null) {
-    style_arguments = {};
-  }
-
-  // if 3rd arg is object we add each thing to style
-  for (var arg in style_arguments) {
-    message.css(arg, style_arguments[arg]);
+  } else {
+    // if 2nd arg is object we add each thing to style
+    for (var arg in style_arguments) {
+      message.css(arg, style_arguments[arg]);
+    }
   }
 
   message.text(content);
@@ -78,7 +78,7 @@ function display_message(content, style_arguments) {
 
   setTimeout(function () {
     $('[message-id='+m_id+']').remove();
-  }, 30000);
+  }, 5000);
 
 }
 
