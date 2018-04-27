@@ -52,6 +52,7 @@
         "AccountDetail_label": "Account Detail"
     },
     "forms": {
+        "search":"Search",
         "edit": "Edit",
         "new": "Add",
         "filter": "Filter",

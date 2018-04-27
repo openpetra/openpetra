@@ -110,6 +110,7 @@ function save_entry(obj_modal) {
 	let r = {'AMainDS': JSON.stringify(updated_data.result)};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
 		$('#modal_space .modal').modal('hide');
+		display_message(i18next.t('forms.saved'), "success");
 		diplay_partners();
 	})
 }

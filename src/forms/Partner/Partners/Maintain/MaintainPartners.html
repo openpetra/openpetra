@@ -73,7 +73,10 @@
 					<span>{forms.status}</span>
 				</div>
 				<div class="col-3">
-					<input type="text" name="p_status_code_c"/>
+					<select name="p_status_code_c">
+						<option value="ACTIVE">ACTIVE</option>
+						<option value="ACTIVE">NOT ACTIVE</option>
+					</select>
 				</div>
 			</div>
 			<hr>
@@ -260,7 +263,7 @@
 			<input type="text" name="AFamilyNameOrOrganisation"/>
 		</div>
 	</div>
-
+	<hr>
 	<div class="row">
 		<div class="col">
 			<span>{city}:</span>
@@ -269,7 +272,7 @@
 			<input type="text" name="ACity"/>
 		</div>
 	</div>
-
+	<hr>
 	<div class="row">
 		<div class="col">
 			<span>{partnerclass}:</span>
@@ -286,6 +289,7 @@
 		</div>
 	</div>
 
+	<button type="button" class="btn btn-primary"onclick="diplay_partners()">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
 </div>
 

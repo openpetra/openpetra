@@ -52,6 +52,7 @@
         "AccountDetail_label": "Bericht über die Konten"
     },
     "forms": {
+        "search":"Suchen",
         "edit": "Bearbeiten",
         "new": "Hinzufügen",
         "filter": "Finden",
