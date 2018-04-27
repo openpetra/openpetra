@@ -191,6 +191,12 @@ namespace Ict.Common.Remoting.Shared
                 return o.ToString();
             }
 
+            if (o is IList && o.GetType().IsGenericType)
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                return serializer.Serialize(o);
+            }
+
             if (o is DataSet)
             {
                 return DataSetToJson((DataSet)o);

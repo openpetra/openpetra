@@ -133,8 +133,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             {
                                 Subscriptions.Add(subscription.PublicationCode);
                             }
-
-                            MainDS.PSubscription.Clear();
                         }
 
                         PPartnerStatusAccess.LoadAll(MainDS, Transaction);
@@ -145,8 +143,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             PartnerTypes.Add(partnertype.TypeCode);
                         }
-
-                        MainDS.PPartnerType.Clear();
                     }
                 });
 
@@ -280,6 +276,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     PSubscriptionRow subscriptionRow = SaveDS.PSubscription.NewRowTyped();
                     subscriptionRow.PartnerKey = AMainDS.PPartner[0].PartnerKey;
                     subscriptionRow.PublicationCode = subscription;
+                    subscriptionRow.ReasonSubsGivenCode = "FREE";
                     SaveDS.PSubscription.Rows.Add(subscriptionRow);
                 }
             }
