@@ -1,6 +1,15 @@
-function format_tpl(tpl, data) {
+function format_tpl(tpl, data, limit_to_table) {
+  if (limit_to_table == null) {
+    limit_to_table = "";
+  }
   for (variable in data) {
     let f = tpl.find("[name="+variable+"]");
+    if (f.length == 0) {
+      f = tpl.find("[name="+limit_to_table+variable+"]");
+    }
+    if (f.is('textarea')) {
+      f.text(data[variable]);
+    }
     if (f.attr('type') == "checkbox") {
       f.attr('checked', data[variable]);
       f.prop('checked', data[variable]);

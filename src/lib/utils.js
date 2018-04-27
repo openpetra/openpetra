@@ -77,3 +77,28 @@ function translate_to_server(array) {
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+function replace_data(replace_obj, update_data, prev_table) {
+  if (prev_table == null) {
+    prev_table = "";
+  }
+	for (var variable in replace_obj) {
+		// update_date has a var with same name as replace_obj, so we replace it
+    if (typeof update_data[variable] !== 'undefined') {
+			replace_obj[variable] = update_data[variable];
+		}
+    if (typeof update_data[prev_table+variable] !== 'undefined') {
+			replace_obj[variable] = update_data[prev_table+variable];
+		}
+		// maybe a update name is in a object
+    if (replace_obj[variable] instanceof Object) {
+			replace_obj[variable] = replace_data(replace_obj[variable], update_data, variable+"_");
+		}
+		if (replace_obj[variable] instanceof Array) {
+			for (list_item of replace_obj[variable]) {
+				list_item = replace_data(list_item, update_data, variable+"_");
+			}
+		}
+	}
+	return replace_obj;
+}
