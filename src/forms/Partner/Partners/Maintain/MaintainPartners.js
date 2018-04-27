@@ -63,7 +63,6 @@ function open_edit(partner_id) {
 		actuall_data_str = data.data.d;
 
 		parsed = JSON.parse(actuall_data_str);
-		console.log(parsed);
 
 		last_opend_entry_data = $.extend(true, {}, parsed);
 		let m = $('[phantom] .tpl_edit').clone();
@@ -72,6 +71,10 @@ function open_edit(partner_id) {
 		m = format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
 		m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
 		m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
+
+		// generated fields
+		m = load_tags(parsed.result.PType, parsed.result.PPartnerType, m);
+		m = load_subs(parsed.result.PPublication, parsed.result.PSubscription, m);
 
 		m.find('.select_case').hide();
 		m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
@@ -83,10 +86,28 @@ function open_edit(partner_id) {
 function save_entry(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let x = extract_data(obj);
-	console.log(x);
-	x = replace_data(last_opend_entry_data.result, x);
-	console.log(last_opend_entry_data.result);
-	let r = {'AMainDS': JSON.stringify(last_opend_entry_data.result)};
+	let updated_data = replace_data(last_opend_entry_data, x);
+
+	applyed_tags = []
+	obj.find('#types').find('.tpl_tag').each(function (i, o) {
+		o = $(o);
+		if (o.find('input').is(':checked')) {
+			applyed_tags.push(o.find('data').attr('value'));
+		}
+	});
+
+	applyed_subs = []
+	obj.find('#subscriptions').find('.tpl_tag').each(function (i, o) {
+		o = $(o);
+		if (o.find('input').is(':checked')) {
+			applyed_subs.push(o.find('data').attr('value'));
+		}
+	});
+
+	updated_data.result.PPartnerType = applyed_tags;
+	updated_data.result.PSubscription = applyed_subs;
+
+	let r = {'AMainDS': JSON.stringify(updated_data.result)};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
 		$('#modal_space .modal').modal('hide');
 		diplay_partners();
@@ -103,6 +124,38 @@ function show_tab(tab_id) {
 	tgr.find('.tab-pane').removeClass('active');
 	tgr.find('#'+target).addClass('active');
 
+}
+
+function load_tags(all_tags, selected_tags, obj) {
+	let p = $('<div class="container">');
+	for (tag of all_tags) {
+		let pe = $('[phantom] .tpl_tag').clone();
+		pe.find('data').attr('value', tag['p_type_code_c']);
+		pe.find('span').text(tag['p_type_description_c']);
+
+		if ($.inArray(tag['p_type_code_c'], selected_tags) > -1) {
+			pe.find('input').attr('checked', true);
+		}
+		p.append(pe);
+	}
+	obj.find('#types').html(p);
+	return obj;
+}
+
+function load_subs(all_subs, selected_subs, obj) {
+	let p = $('<div class="container">');
+	for (tag of all_subs) {
+		let pe = $('[phantom] .tpl_tag').clone();
+		pe.find('data').attr('value', tag['p_publication_code_c']);
+		pe.find('span').text(tag['p_publication_code_c']);
+
+		if ($.inArray(tag['p_publication_code_c'], selected_subs) > -1) {
+			pe.find('input').attr('checked', true);
+		}
+		p.append(pe);
+	}
+	obj.find('#subscriptions').html(p);
+	return obj;
 }
 
 /*

@@ -37,6 +37,18 @@
 		<button class="btn btn-primary" onclick="open_edit('{val_p_partner_key_n}')">{forms.edit}</button>
 	</div>
 
+	<div class="tpl_tag">
+		<div class="row perm">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
 	<div class="modal tpl_edit openpetra_modal">
 		<h3>{edittitle}</h3>
 		<div class="container">
@@ -213,12 +225,8 @@
 
 					</div>
 				</div>
-				<div class="tab-pane" id="subscriptions">
-					TODO {subscriptions}
-				</div>
-				<div class="tab-pane" id="types">
-					TODO {types}
-				</div>
+				<div class="tab-pane" id="subscriptions" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+				<div class="tab-pane" id="types" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
 				<div class="tab-pane text-center" id="comment">
 					<textarea name="PPartner_p_comment_c" style="width:90%;height:7em;" placeholder="{comment}"></textarea>
 				</div>
