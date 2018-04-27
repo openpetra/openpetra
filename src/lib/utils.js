@@ -1,3 +1,28 @@
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       Timotheus Pokorra <tp@tbits.net>
+//       Christopher Jäkel <cj@tbits.net>
+//
+// Copyright 2017-2018 by TBits.net
+//
+// This file is part of OpenPetra.
+//
+// OpenPetra is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+
 // Used to communicat with Server.
 function API_call(url, args, next_function) {
 
@@ -99,23 +124,23 @@ function replace_data(replace_obj, update_data, prev_table) {
   if (prev_table == null) {
     prev_table = "";
   }
-	for (var variable in replace_obj) {
-		// update_date has a var with same name as replace_obj, so we replace it
+  for (var variable in replace_obj) {
+    // update_date has a var with same name as replace_obj, so we replace it
     if (typeof update_data[variable] !== 'undefined') {
-			replace_obj[variable] = update_data[variable];
-		}
+      replace_obj[variable] = update_data[variable];
+    }
     if (typeof update_data[prev_table+variable] !== 'undefined') {
-			replace_obj[variable] = update_data[prev_table+variable];
-		}
-		// maybe a update name is in a object
+      replace_obj[variable] = update_data[prev_table+variable];
+    }
+    // maybe a update name is in a object
     if (replace_obj[variable] instanceof Object) {
-			replace_obj[variable] = replace_data(replace_obj[variable], update_data, variable+"_");
-		}
-		if (replace_obj[variable] instanceof Array) {
-			for (list_item of replace_obj[variable]) {
-				list_item = replace_data(list_item, update_data, variable+"_");
-			}
-		}
-	}
-	return replace_obj;
+      replace_obj[variable] = replace_data(replace_obj[variable], update_data, variable+"_");
+    }
+    if (replace_obj[variable] instanceof Array) {
+      for (list_item of replace_obj[variable]) {
+        list_item = replace_data(list_item, update_data, variable+"_");
+      }
+    }
+  }
+  return replace_obj;
 }

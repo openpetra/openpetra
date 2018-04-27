@@ -2,6 +2,7 @@
 //
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
+//       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
 //
