@@ -67,9 +67,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerEditTDS GetPartnerDetails(Int64 APartnerKey, bool AWithAddressDetails, bool AWithSubscriptions, bool AWithRelationships)
+        public static PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
+            out List<string> ASubscriptions,
+            out List<string> APartnerTypes)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            List<string> Subscriptions = new List<string>();
+            List<string> PartnerTypes = new List<string>();
 
             TDBTransaction Transaction = null;
 
@@ -107,7 +111,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 break;
                         }
 
-                        if (AWithAddressDetails)
+                        if (true)
                         {
                             // don't load p_partner_location for the moment, because we have custom fields duplicating p_location.
                             // those custom fields need to be set, then we don't need to deliver p_location
@@ -115,21 +119,39 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             PLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                         }
 
-                        if (AWithRelationships)
+                        if (true)
                         {
                             PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
                         }
 
-                        if (AWithSubscriptions)
+                        if (true)
                         {
                             PPublicationAccess.LoadAll(MainDS, Transaction);
                             PSubscriptionAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
+
+                            foreach(PSubscriptionRow subscription in MainDS.PSubscription.Rows)
+                            {
+                                Subscriptions.Add(subscription.PublicationCode);
+                            }
+
+                            MainDS.PSubscription.Clear();
                         }
 
+                        PPartnerStatusAccess.LoadAll(MainDS, Transaction);
                         PTypeAccess.LoadAll(MainDS, Transaction);
                         PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+
+                        foreach(PPartnerTypeRow partnertype in MainDS.PPartnerType.Rows)
+                        {
+                            PartnerTypes.Add(partnertype.TypeCode);
+                        }
+
+                        MainDS.PPartnerType.Clear();
                     }
                 });
+
+            APartnerTypes = PartnerTypes;
+            ASubscriptions = Subscriptions;
 
             return MainDS;
         }
@@ -148,7 +170,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             out string APrimaryPhoneNumber, out string APrimaryEmailAddress)
         {
             // Call the standard method including address details
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, true, AWithSubscriptions, AWithRelationships);
+            List<string> Dummy1, Dummy2;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2);
 
             // Now get the primary email and phone
             PPartnerAttributeTable attributeTable = TContactDetailsAggregate.GetPartnersContactDetailAttributes(APartnerKey);
@@ -202,11 +225,64 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool SavePartner(PartnerEditTDS AMainDS)
+        public static bool SavePartner(PartnerEditTDS AMainDS,
+            List<string> ASubscriptions,
+            List<string> APartnerTypes)
         {
-            PartnerEditTDS SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, true, true, true);
+            List<string> Dummy1, Dummy2;
+            PartnerEditTDS SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2);
 
             DataUtilities.CopyDataSet(AMainDS, SaveDS);
+
+            List<string> ExistingPartnerTypes = new List<string>();
+            foreach (PPartnerTypeRow partnertype in SaveDS.PPartnerType.Rows)
+            {
+                if (!APartnerTypes.Contains(partnertype.TypeCode))
+                {
+                    partnertype.Delete();
+                }
+                else
+                {
+                    ExistingPartnerTypes.Add(partnertype.TypeCode);
+                }
+            }
+
+            // add new partner types
+            foreach (string partnertype in APartnerTypes)
+            {
+                if (!ExistingPartnerTypes.Contains(partnertype))
+                {
+                    PPartnerTypeRow partnertypeRow = SaveDS.PPartnerType.NewRowTyped();
+                    partnertypeRow.PartnerKey = AMainDS.PPartner[0].PartnerKey;
+                    partnertypeRow.TypeCode = partnertype;
+                    SaveDS.PPartnerType.Rows.Add(partnertypeRow);
+                }
+            }
+
+            List<string> ExistingSubscriptions = new List<string>();
+            foreach (PSubscriptionRow subscription in SaveDS.PSubscription.Rows)
+            {
+                if (!ASubscriptions.Contains(subscription.PublicationCode))
+                {
+                    subscription.Delete();
+                }
+                else
+                {
+                    ExistingSubscriptions.Add(subscription.PublicationCode);
+                }
+            }
+
+            // add new subscriptions
+            foreach (string subscription in ASubscriptions)
+            {
+                if (!ExistingSubscriptions.Contains(subscription))
+                {
+                    PSubscriptionRow subscriptionRow = SaveDS.PSubscription.NewRowTyped();
+                    subscriptionRow.PartnerKey = AMainDS.PPartner[0].PartnerKey;
+                    subscriptionRow.PublicationCode = subscription;
+                    SaveDS.PSubscription.Rows.Add(subscriptionRow);
+                }
+            }
 
             // TODO: either reuse Partner Edit UIConnector
             // or check for changed partner key, or changed Partner Class, etc.
