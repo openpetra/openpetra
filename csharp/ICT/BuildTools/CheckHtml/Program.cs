@@ -26,7 +26,7 @@ using System.IO;
 
 using Ict.Common;
 
-namespace Ict.Tools.CheckHTML
+namespace Ict.Tools.CheckHtml
 {
     class Program
     {
