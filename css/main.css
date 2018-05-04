@@ -76,6 +76,10 @@ body {
   background: #e0e0e0;
 }
 
+.tab-pane {
+  margin-top: 10px;
+}
+
 .btn-window {
   margin: 5px;
   padding: 5px 10px;
