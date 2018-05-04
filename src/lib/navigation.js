@@ -57,6 +57,7 @@ class Navigation {
 			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
 					var content = response.data;
+					content = replaceAll(content, ".js", ".js" + refresh);
 					content = translate(content, name.substring(name.lastIndexOf('/')+1));
 					$("#containerIFrames").html(content);
 					$.getScript("/src/forms/" + name + '.js' + refresh);
