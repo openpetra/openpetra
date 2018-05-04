@@ -55,7 +55,10 @@ function format_item(item, api_result) {
 
 function open_detail(obj) {
 	obj = $(obj);
-	if (obj.find('.collapse').is(':visible') ) {return}
+	if (obj.find('.collapse').is(':visible') ) {
+		$('.tpl_row .collapse').collapse('hide');
+		return;
+	}
 	$('.tpl_row .collapse').collapse('hide');
 	obj.find('.collapse').collapse('show')
 }
