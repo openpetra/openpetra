@@ -128,9 +128,15 @@ function save_entry(obj_modal) {
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
-		$('#modal_space .modal').modal('hide');
-		display_message(i18next.t('forms.saved'), "success");
-		display_partners();
+		if (data.d) {
+			$('#modal_space .modal').modal('hide');
+			display_message(i18next.t('forms.saved'), "success");
+			display_list();
+		} else {
+			// TODO we need an error code from the server, to display a meaningful error message here
+			message = "We cannot yet change the address if there is none.";
+			display_message(message, "fail");
+		}
 	})
 }
 
