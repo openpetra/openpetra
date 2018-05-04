@@ -16,7 +16,7 @@
 	</div>
 
 	<div class="collapse tpl_view">
-		<div class="container" style="background:#e0e0e0;">
+		<div class="container group-container">
 			<div class="row">
 				<div class="col">{partnerkey}</div><div class="col">{val_p_partner_key_n}</div>
 			</div>
@@ -255,7 +255,7 @@
 	<tr>
 		<td>
 			<button class="btn btn-primary">{forms.new}</button>
-			<button class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
+			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>
 </table>
@@ -263,6 +263,7 @@
 <div id="modal_space"></div>
 
 <div class="container collapse" id="tabfilter">
+	<div class="container group-container">
 	<div class="row">
 		<div class="col">
 			<span>{partnername}:</span>
@@ -271,7 +272,6 @@
 			<input type="text" name="AFamilyNameOrOrganisation"/>
 		</div>
 	</div>
-	<hr>
 	<div class="row">
 		<div class="col">
 			<span>{city}:</span>
@@ -280,7 +280,6 @@
 			<input type="text" name="ACity"/>
 		</div>
 	</div>
-	<hr>
 	<div class="row">
 		<div class="col">
 			<span>{partnerclass}:</span>
@@ -296,8 +295,10 @@
 			</select>
 		</div>
 	</div>
+	</div>
 
-	<button type="button" class="btn btn-primary"onclick="display_partners()">{forms.search}</button>
+	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
+	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
 </div>
 
