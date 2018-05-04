@@ -128,7 +128,8 @@ function save_entry(obj_modal) {
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
-		if (data.d) {
+		parsed_data = JSON.parse(data.data.d);
+		if (parsed_data) {
 			$('#modal_space .modal').modal('hide');
 			display_message(i18next.t('forms.saved'), "success");
 			display_list();
