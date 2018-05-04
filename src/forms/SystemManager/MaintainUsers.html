@@ -1,11 +1,46 @@
 <h2>{caption}</h2>
 
 <!-- Phantom Storage -->
-<div hidden>
-	<div id="tpl_permission">
-		<div class="row perm">
+<div phantom hidden>
+
+	<div class="tpl_row" onclick="open_detail(this)">
+
+		<div class="row">
+			<div class="col">{val_s_user_id_c}</div>
+			<div class="col">{val_permissions}</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="collapse_col"></div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="collapse tpl_view">
+		<div class="container" style="background:#e0e0e0;">
+			<div class="row">
+				<div class="col">{userid}</div><div class="col">{val_s_user_id_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{permissions}</div><div class="col">{val_permissions}</div>
+			</div>
+			<div class="row">
+				<div class="col">{retired}</div><div class="col">{val_s_retired_l}</div>
+			</div>
+			<div class="row">
+				<div class="col">{locked}</div><div class="col">{val_s_account_locked_l}</div>
+			</div>
+		</div>
+		<button class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
+		<button class="btn btn-primary" onclick="open_edit('{val_s_user_id_c}')">{forms.edit}</button>
+
+	</div>
+
+	<div class="tpl_check">
+		<div class="row">
 			<div class="col-1">
-				<input type="checkbox" name="">
+				<input type="checkbox">
 			</div>
 			<div class="col">
 				<span></span>
@@ -14,45 +49,18 @@
 		</div>
 	</div>
 
-	<div id="tpl_row">
-
-		<div class="row" onclick="$(this).closest('.user').find('.collapse').collapse('show')">
-			<div class="col-3">{val_s_user_id_c}</div>
-			<div class="col-3">{val_permissions}</div>
+	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+		<h3>{edittitle}</h3>
 		</div>
-
-	</div>
-
-	<div id="tpl_view">
-
-		<div class="collapse">
-
-			<table class="table">
-				<tr><td>{userid}</td><td>{val_s_user_id_c}</td></tr>
-				<tr><td>{permissions}</td><td>{val_permissions}</td></tr>
-				<tr><td>{retired}</td><td>{val_s_retired_l}</td></tr>
-				<tr><td>{locked}</td><td>{val_s_account_locked_l}</td></tr>
-			</table>
-			<button id="closeview" class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
-			<button id="edit" class="btn btn-primary" onclick="edit_entry('{val_s_user_id_c}')">{forms.edit}</button>
-		</div>
-
-	</div>
-
-	<div id="tpl_edit">
-		<div class="modal openpetra_modal">
-
-			<div class="container">
+		<div class="modal-body">
+		<div class="container">
 
 				<div class="row">
 					<div class="col">
-						<h2>{edittitle}</h2>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="col">
-						{userid}
+						<span>{userid}</span>
 					</div>
 					<div class="col">
 						<input type="text" name="s_user_id_c" readonly/>
@@ -111,19 +119,21 @@
 						{permissions}
 					</div>
 					<div class="col">
-						<div class="col permissions" style="border: black; border-style: double; height: 100px;padding: 0;margin: 0; overflow-x: hidden; overflow-y: scroll;"></div>
+						<div class="col permissions" style="border: black; border-style: double; height: 200px;padding: 0;margin: 0; overflow-x: hidden; overflow-y: scroll;"></div>
 					</div>
 				</div>
-				<button type="button" class="btn btn-primary float-right btn-window" onclick="save_entry('{val_s_user_id_c}', $(this).closest('.modal'))">{forms.save}</button>
-				<button type="button" class="btn float-right btn-window" onclick="$(this).closest('.modal').modal('hide')">{forms.cancel}</button>
-
-			</div>
 
 		</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+			<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+		</div>
+		</div>
+		</div>
 	</div>
-</div>
 
-<div id="modal_space"></div>
+</div>
 
 <table id="toolbar">
 	<tr>
@@ -132,13 +142,19 @@
 		</td>
 	</tr>
 </table>
-<hr>
+
+<div id="modal_space"></div>
+
 <div class="container" id="browse">
 
 	<div class="row">
 		<div class="col-3"><b>{userid}</b></div>
 		<div class="col-3"><b>{permissions}</b></div>
 		<hr>
+	</div>
+
+	<div id="browse_container">
+
 	</div>
 
 </div>

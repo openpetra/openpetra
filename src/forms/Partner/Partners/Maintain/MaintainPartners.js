@@ -25,27 +25,27 @@
 var last_opened_entry_data = {};
 
 $('document').ready(function () {
-	display_partners();
+	display_list();
 });
 
-function display_partners() {
+function display_list() {
 	let x = extract_data($('#tabfilter'));
 	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
-		for (user of data.result) {
-			// format a user for every entry
-			format_user(user);
+		for (item of data.result) {
+			// format a partner for every entry
+			format_item(item);
 		}
 	})
 }
 
-function format_user(user) {
-	let n = format_tpl($("[phantom] .tpl_row").clone(),user);
-	let c = format_tpl($("[phantom] .tpl_view").clone(),user);
-	n.find('.collapse_col').append(c);
-	$('#browse_container').append(n);
+function format_item(item) {
+	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
+	row.find('.collapse_col').append(view);
+	$('#browse_container').append(row);
 }
 
 function open_detail(obj) {
@@ -91,7 +91,7 @@ function open_edit(partner_id) {
 function save_entry(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 
-	// extract informations from a jquery object
+	// extract information from a jquery object
 	let x = extract_data(obj);
 
 	// replace all new information in the original data
@@ -99,7 +99,7 @@ function save_entry(obj_modal) {
 
 	// get all tags for the partner
 	applied_tags = []
-	obj.find('#types').find('.tpl_tag').each(function (i, o) {
+	obj.find('#types').find('.tpl_check').each(function (i, o) {
 		o = $(o);
 		if (o.find('input').is(':checked')) {
 			applied_tags.push(o.find('data').attr('value'));
@@ -108,7 +108,7 @@ function save_entry(obj_modal) {
 
 	// get all subscribed options
 	applied_subs = []
-	obj.find('#subscriptions').find('.tpl_tag').each(function (i, o) {
+	obj.find('#subscriptions').find('.tpl_check').each(function (i, o) {
 		o = $(o);
 		if (o.find('input').is(':checked')) {
 			applied_subs.push(o.find('data').attr('value'));
@@ -149,7 +149,7 @@ function show_tab(tab_id) {
 function load_tags(all_tags, selected_tags, obj) {
 	let p = $('<div class="container">');
 	for (tag of all_tags) {
-		let pe = $('[phantom] .tpl_tag').clone();
+		let pe = $('[phantom] .tpl_check').clone();
 		pe.find('data').attr('value', tag['p_type_code_c']);
 		pe.find('span').text(tag['p_type_description_c']);
 
@@ -166,7 +166,7 @@ function load_tags(all_tags, selected_tags, obj) {
 function load_subs(all_subs, selected_subs, obj) {
 	let p = $('<div class="container">');
 	for (tag of all_subs) {
-		let pe = $('[phantom] .tpl_tag').clone();
+		let pe = $('[phantom] .tpl_check').clone();
 		pe.find('data').attr('value', tag['p_publication_code_c']);
 		pe.find('span').text(tag['p_publication_code_c']);
 

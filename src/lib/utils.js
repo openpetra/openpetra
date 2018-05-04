@@ -22,23 +22,6 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
-// Used to communicat with Server.
-function API_call(url, args, next_function) {
-
-    var r = api.post(url, args).then(
-      function (data) {
-        data = data.data.d
-        data = JSON.parse(data);
-
-        next_function( data );
-      }
-    );
-
-  return r;
-
-}
-
 // a global message that generates messages in the upper middle of the screen, duh.
 function display_message(content, style_arguments) {
   var display_space = $('#global_message_space');

@@ -21,72 +21,85 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-function display_users() {
-	API_call('serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions', null, format_user);
+$('document').ready(function () {
+	display_list();
+});
+
+function display_list() {
+	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_LoadUsersAndModulePermissions', null).then(function (data) {
+		data = JSON.parse(data.data.d);
+		// on reload, clear content
+		$('#browse_container').html('');
+		for (item of data.result.SUser) {
+			// format a user for every entry
+			format_item(item, data.result);
+		}
+	})
 }
 
-function format_user(api_result) {
-	for (user of api_result.result.SUser) {
-		var permissions = "";
-		api_result.result.SUserModuleAccessPermission.forEach(function(permissionsRow) {
-			if (user['s_user_id_c'] == permissionsRow['s_user_id_c'] && permissionsRow['s_can_access_l'] == true) {
-				permissions += permissionsRow['s_module_id_c'] + " ";
-			}
-		});
+function format_item(item, api_result) {
+	var permissions = "";
+	api_result.SUserModuleAccessPermission.forEach(function(permissionsRow) {
+		if (item['s_user_id_c'] == permissionsRow['s_user_id_c'] && permissionsRow['s_can_access_l'] == true) {
+			permissions += permissionsRow['s_module_id_c'] + " ";
+		}
+	});
 
-		user['permissions'] = permissions;
+	item['permissions'] = permissions;
 
-		let user_html = format_tpl($('#tpl_row').clone(), user);
-		let user_info = format_tpl($('#tpl_view').clone(), user);
-		let r = "<div class='user'>"+user_html.html()+user_info.html()+"</div>"
-		$('#browse').append(r);
-	}
+	let row = format_tpl($('[phantom] .tpl_row').clone(), item);
+	let view = format_tpl($('[phantom] .tpl_view').clone(), item);
+	row.find('.collapse_col').append(view);
+	$('#browse_container').append(row);
 }
 
-function edit_entry(s_user_id_c, api_data=false) {
+function open_detail(obj) {
+	obj = $(obj);
+	if (obj.find('.collapse').is(':visible') ) {return}
+	$('.tpl_row .collapse').collapse('hide');
+	obj.find('.collapse').collapse('show')
+}
+
+function open_edit(s_user_id_c) {
 	r = {'AUserId': s_user_id_c};
 	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_LoadUserAndModulePermissions', r ).then(function (data) {
-		data = JSON.parse(data.data.d).result;
-		let m = format_tpl($('#tpl_edit').clone(), data.SUser[0]);
+
+		parsed = JSON.parse(data.data.d);
+		data = parsed.result;
+
+		let m = format_tpl($('[phantom] .tpl_edit').clone(), data.SUser[0]);
 
 		let user_permissions = [];
 		for (let p of data.SUserModuleAccessPermission) {
-			user_permissions.push(p.s_module_id_c);
-		}
-
-		let p = $('<div class="container">');
-		for (perm of data.SModule) {
-			let pe = $('#tpl_permission').clone();
-			pe.find('data').attr('value', perm['s_module_id_c']);
-			pe.find('span').text(perm['s_module_name_c']);
-
-			if ($.inArray(perm['s_module_id_c'], user_permissions) > -1) {
-				pe.find('input').attr('checked', true);
+			if (p.s_can_access_l) {
+				user_permissions.push(p.s_module_id_c);
 			}
-
-			p.append(pe);
 		}
 
-		m.find('.permissions').html(p)
+		// generated fields
+		m = load_modules(parsed.result.SModule, user_permissions, m);
 
-		$('#modal_space').html(m.html())
-		$('#modal_space > .modal').modal('show')
+		$('#modal_space').html(m);
+		$('#modal_space .modal').modal('show');
 	});
 }
 
-function save_entry(s_user_id_c, entry_window) {
-	let x = extract_data(entry_window);
+function save_entry(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
 
-	let perm = [];
+	// extract information from a jquery object
+	let x = extract_data(obj);
 
-	entry_window.find('.permissions').find('.perm').each(function (i, obj) {
+	let applied_perm = [];
+
+	obj.find('.permissions').find('.tpl_check').each(function (i, obj) {
 		obj = $(obj);
 		if (obj.find('input').is(':checked')) {
-			perm.push(obj.find('data').attr('value'));
+			applied_perm.push(obj.find('data').attr('value'));
 		}
 	})
 
-	x['AModulePermissions'] = perm;
+	x['AModulePermissions'] = applied_perm;
 	let arguments = translate_to_server(x);
 
 	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_SaveUserAndModulePermissions', arguments).then(function (data) {
@@ -95,6 +108,19 @@ function save_entry(s_user_id_c, entry_window) {
 	})
 }
 
-$('document').ready(function () {
-	display_users();
-});
+// used to load all available modules and set checkbox if needed
+function load_modules(all_modules, selected_modules, obj) {
+	let p = $('<div class="container">');
+	for (module of all_modules) {
+		let pe = $('[phantom] .tpl_check').clone();
+		pe.find('data').attr('value', module['s_module_id_c']);
+		pe.find('span').text(module['s_module_name_c']);
+
+		if ($.inArray(module['s_module_id_c'], selected_modules) > -1) {
+			pe.find('input').attr('checked', true);
+		}
+		p.append(pe);
+	}
+	obj.find('.permissions').html(p);
+	return obj;
+}

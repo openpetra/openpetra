@@ -27,6 +27,11 @@
 // attribute is the same as the given object key
 // it also replaces all {something} in this object, by converting it to a string and back
 function format_tpl(tpl, data, limit_to_table) {
+  if (tpl[0] === undefined) {
+    console.log("missing tpl for format_tpl");
+    return "";
+  }
+
   if (limit_to_table == null) {
     limit_to_table = "";
   }
