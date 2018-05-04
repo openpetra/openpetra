@@ -1,64 +1,163 @@
 <h2>{caption}</h2>
 
-<table id="toolbar">
-<tr>
-<td>
-<button id="new">{forms.new}</button>
-</td>
-</tr>
-</table>
+<!-- Phantom Storage -->
+<div phantom hidden>
 
-<div id="tpl_edit">
-	<table class="table">
-		<tr>
-			<td>{userid}</td><td><input type="text" name="s_user_id_c" readonly/></td>
-		</tr>
-		<tr>
-			<td>{retired}</td><td>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="checkbox" value="1" id="chkRetired" name="s_retired_l" {chk_s_retired_l}>
-					<label class="form-check-label" for="chkRetired">{retired}</label>
+	<div class="tpl_row" onclick="open_detail(this)">
+
+		<div class="row">
+			<div class="col">{val_s_user_id_c}</div>
+			<div class="col">{val_permissions}</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="collapse_col"></div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="collapse tpl_view">
+		<div class="container group-container">
+			<div class="row">
+				<div class="col">{userid}</div><div class="col">{val_s_user_id_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{permissions}</div><div class="col">{val_permissions}</div>
+			</div>
+			<div class="row">
+				<div class="col">{retired}</div><div class="col">{val_s_retired_l}</div>
+			</div>
+			<div class="row">
+				<div class="col">{locked}</div><div class="col">{val_s_account_locked_l}</div>
+			</div>
+		</div>
+		<button class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
+		<button class="btn btn-primary" onclick="open_edit('{val_s_user_id_c}')">{forms.edit}</button>
+
+	</div>
+
+	<div class="tpl_check">
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+		<h3>{edittitle}</h3>
+		</div>
+		<div class="modal-body">
+		<div class="container">
+
+				<div class="row">
+					<div class="col">
+						<span>{userid}</span>
+					</div>
+					<div class="col">
+						<input type="text" name="s_user_id_c" readonly/>
+					</div>
 				</div>
-			</td>
-		</tr>
-		<tr>
-			<td>{locked}</td><td>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="checkbox" value="1" id="chkAccountLocked" name="s_account_locked_l" {chk_s_account_locked_l}>
-					<label class="form-check-label" for="chkAccountLocked">{locked}</label>
+
+				<div class="row">
+					<div class="col">
+						{firstname}
+					</div>
+					<div class="col">
+						<input type="text" name="s_first_name_c"/>
+					</div>
 				</div>
-			</td>
-		</tr>
-		<tr>
-			<td>{permissions}</td>
-			<td><div id="permissions"></div>
-			</td>
-		</tr>
-	</table>
+
+				<div class="row">
+					<div class="col">
+						{lastname}
+					</div>
+					<div class="col">
+						<input type="text" name="s_last_name_c"/>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col">
+						{email}
+					</div>
+					<div class="col">
+						<input type="text" name="s_email_address_c"/>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col">
+						{retired}
+					</div>
+					<div class="col">
+						<input class="form-check-input" type="checkbox" value="1" id="chkRetired" name="s_retired_l">
+						<label class="form-check-label" for="s_retired_l">{retired}</label>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col">
+						{locked}
+					</div>
+					<div class="col">
+						<input class="form-check-input" type="checkbox" value="1" id="chkLocked" name="s_account_locked_l">
+						<label class="form-check-label" for="s_account_locked_l">{locked}</label>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col">
+						{permissions}
+					</div>
+					<div class="col">
+						<div class="col permissions" style="border: black; border-style: double; height: 200px;padding: 0;margin: 0; overflow-x: hidden; overflow-y: scroll;"></div>
+					</div>
+				</div>
+
+		</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+			<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+		</div>
+		</div>
+		</div>
+	</div>
+
 </div>
 
-<table id="browse">
-<tr>
-<th>{userid}</th>
-<th>{permissions}</th>
-<th></th>
-</tr>
-<tr id="tpl_row">
-<td>{val_s_user_id_c}</td>
-<td>{val_permissions}</td>
-</tr>
-
-<tr id="tpl_view">
-<td colspan='100'>
-<table class="table">
-<tr><td>{userid}</td><td>{val_s_user_id_c}</td></tr>
-<tr><td>{permissions}</td><td>{val_permissions}</td></tr>
-<tr><td>{retired}</td><td>{val_s_retired_l}</td></tr>
-<tr><td>{locked}</td><td>{val_s_account_locked_l}</td></tr>
+<table id="toolbar">
+	<tr>
+		<td>
+			<button id="new" class="btn btn-primary">{forms.new}</button>
+		</td>
+	</tr>
 </table>
-<button id="closeview">{forms.close}</button>
-<button id="edit">{forms.edit}</button>
-</td>
-</tr>
 
-</table>
+<div id="modal_space"></div>
+
+<div class="container" id="browse">
+
+	<div class="row">
+		<div class="col-3"><b>{userid}</b></div>
+		<div class="col-3"><b>{permissions}</b></div>
+		<hr>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

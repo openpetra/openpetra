@@ -52,6 +52,7 @@
         "AccountDetail_label": "Account Detail"
     },
     "forms": {
+        "search":"Search",
         "edit": "Edit",
         "new": "Add",
         "filter": "Filter",
@@ -59,6 +60,7 @@
         "close": "Close",
         "delete": "Delete",
         "save": "Save",
+        "saved": "Successfully saved",
         "any": "any",
         "status": "Status",
         "name": "Name",
@@ -86,10 +88,15 @@
 
     "MaintainUsers": {
         "caption": "Maintain users",
+        "edittitle": "Edit user",
+        "addtitle": "Add user",
         "userid": "User ID",
+        "firstname": "Forename",
+        "lastname": "Surname",
+        "email": "E-Mail",
         "permissions": "Permissions",
-        "locked": "Gesperrt",
-        "retired": "Deaktiviert"
+        "locked": "Locked",
+        "retired": "Disabled"
     },
 
     "MaintainPartners": {
@@ -114,7 +121,8 @@
         "gender": "Gender",
         "dateofbirth": "Date of birth",
         "firstname": "First name",
-        "familyname": "Family name"
+        "familyname": "Family name",
+        "title":"Title"
     },
 
     "ChangeLanguage": {

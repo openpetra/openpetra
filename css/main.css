@@ -17,25 +17,6 @@ body {
   margin-top: 10px;
 }
 
-/*
-#TabbedWindows {
-  margin-left: 10px;
-}
-
-.closeTab {
-  margin-left: 10px;
-  margin-right: 0px;
-}
-*/
-/*
-.OpenPetraWindow {
-  padding-top: 10px;
-  padding-left: 10px;
-  width: 100%;
-  height: 100%;
-}
-*/
-
 .dropdown-menu, .dropdown-item {
     z-index: 1000;
 }
@@ -78,4 +59,41 @@ body {
 
 .hidden {
   display: none;
+}
+
+.row {
+  margin-bottom: 10px;
+}
+
+#toolbar {
+  margin-bottom: 10px;
+}
+
+.group-container {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-bottom: 8px;
+  background: #e0e0e0;
+}
+
+.tab-pane {
+  margin-top: 10px;
+}
+
+.btn-window {
+  margin: 5px;
+  padding: 5px 10px;
+}
+
+.display_message {
+  background:white;
+  border-radius:5px;
+  border:2px solid black;
+}
+.display_message_success {
+  background:#88ee44!important;
+}
+
+.display_message_fail {
+  background:#ee8844!important;
 }

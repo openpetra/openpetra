@@ -52,6 +52,7 @@
         "AccountDetail_label": "Bericht über die Konten"
     },
     "forms": {
+        "search":"Suchen",
         "edit": "Bearbeiten",
         "new": "Hinzufügen",
         "filter": "Finden",
@@ -59,6 +60,7 @@
         "close": "Schließen",
         "delete": "Löschen",
         "save": "Übernehmen",
+        "saved": "Änderungen wurden übernommen",
         "any": "alle",
         "status": "Status",
         "name": "Name",
@@ -90,6 +92,9 @@
         "edittitle": "Benutzer bearbeiten",
         "addtitle": "Benutzer anlegen",
         "userid": "Benutzername",
+        "firstname": "Vorname",
+        "lastname": "Nachname",
+        "email": "E-Mail",
         "permissions": "Berechtigungen",
         "locked": "Gesperrt",
         "retired": "Deaktiviert"
@@ -117,7 +122,8 @@
         "gender": "Geschlecht",
         "dateofbirth": "Geburtsdatum",
         "firstname": "Vorname",
-        "familyname": "Nachname"
+        "familyname": "Nachname",
+        "title":"Titel"
     },
 
     "ChangeLanguage": {
