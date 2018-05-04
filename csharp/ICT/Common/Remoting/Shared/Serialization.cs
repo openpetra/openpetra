@@ -191,6 +191,12 @@ namespace Ict.Common.Remoting.Shared
                 return o.ToString();
             }
 
+            if (o is IList && o.GetType().IsGenericType)
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                return serializer.Serialize(o);
+            }
+
             if (o is DataSet)
             {
                 return DataSetToJson((DataSet)o);
@@ -321,7 +327,7 @@ namespace Ict.Common.Remoting.Shared
 
             if ((type == "System.String") && s.EndsWith(":base64"))
             {
-                return System.Text.UTF8Encoding.ASCII.GetString(Convert.FromBase64String(s.Substring(0, s.Length - ":base65".Length)));
+                return System.Text.UTF8Encoding.ASCII.GetString(Convert.FromBase64String(s.Substring(0, s.Length - ":base64".Length)));
             }
 
             if (s.EndsWith(":binary"))
@@ -406,6 +412,32 @@ namespace Ict.Common.Remoting.Shared
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Deserialize List of String, that might be base64 encoded
+        /// </summary>
+        static public List<string> DeserializeObject(List<string> l)
+        {
+            if (l == null)
+            {
+                return null;
+            }
+
+            List<string> result = new List<string>();
+
+            foreach (string s in l) {
+                if (s.EndsWith(":base64"))
+                {
+                    result.Add(System.Text.UTF8Encoding.ASCII.GetString(Convert.FromBase64String(s.Substring(0, s.Length - ":base64".Length))));
+                }
+                else
+                {
+                    result.Add(s);
+                }
+            }
+
+            return result;
         }
     }
 }

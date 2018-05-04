@@ -56,8 +56,7 @@ compat:
   translation: download new language files, and create the dlls required to be delivered with a new release
   buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
   generateGuidedTranslations: Simplifies the translation of the .po files
-  createI18NYamlFiles: create localised yaml files
-    createI18NYamlFiles -language=de-DE -path=...
+  checkHtml: check the HTML files if certain rules are put into practise
 
 releases:
   buildRPM: will build the linux files that can be used for RPM. creates tar files for local server
@@ -270,17 +269,19 @@ useful parameters
   
   <call target="nanttasks"/>
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <property name="solution" value="Tools" overwrite="true"/>
   <GenerateNamespaceMap
     CodeRootDir="${dir.csharp}"
     NamespaceMapFilename="${namespaceFile}"
     NamespaceMap3rdParty="${namespaceFile3rdParty}"
     DependencyMapFilename="${projectDependenciesFile}"
     ShowWarnings="false"
-    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools.DBXML,Ict.Tools.CodeGeneration,Ict.Tools.GenerateGlue,Ict.Tools.GenerateI18N,Ict.Tools.GenerateORM,Ict.Tools.GenerateSQL,Ict.Tools.PackageReports"/>
+    LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Common.Session,Ict.Tools.DBXML,Ict.Tools.CodeGeneration,Ict.Tools.GenerateGlue,Ict.Tools.GenerateI18N,Ict.Tools.GenerateORM,Ict.Tools.GenerateSQL,Ict.Tools.PackageReports,Ict.Tools.CheckHtml"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <call target="generateProjectFilesInternal"/>
   <call target="quickCompile"/>
+  <property name="solution" value="OpenPetra" overwrite="true"/>
   
   <echo message="Target generateTools finished at: ${datetime::now()}" />         
 </target>
@@ -424,6 +425,13 @@ useful parameters
   <nant inheritall="false" target="test-main-navigation-screens" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
   
   <echo message="Target test-main-navigation-screens (outer) finished at: ${datetime::now()}" />
+</target>
+
+<target name="checkHtml">
+      <exec program="Ict.Tools.CheckHtml.exe" 
+            basedir="${dir.bin}" 
+            workingdir="${dir.bin}"
+            commandline="-formsdir:../../../openpetra-client-js/src/forms/"/>
 </target>
 
 <target name="enable-sqlite-config-for-jenkins">

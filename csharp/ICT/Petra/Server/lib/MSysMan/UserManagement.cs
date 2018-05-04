@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,8 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using System.Globalization;
+
+using Newtonsoft.Json;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -644,6 +646,100 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             ReturnValue.AcceptChanges();
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// load one user from the database and the permissions of that user
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static MaintainUsersTDS LoadUserAndModulePermissions(string AUserId)
+        {
+            TDBTransaction ReadTransaction = null;
+            MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    SUserAccess.LoadByPrimaryKey(ReturnValue, AUserId, ReadTransaction);
+                    SUserModuleAccessPermissionAccess.LoadViaSUser(ReturnValue,AUserId, ReadTransaction);
+                    SModuleAccess.LoadAll(ReturnValue, ReadTransaction);
+                });
+
+            // Remove Password Hash and Password 'Salt' before passing it out to the caller - these aren't needed
+            // and it is better to not hand them out needlessly to prevent possible 'eavesdropping' by an attacker
+            // (who could otherwise gather the Password Hashes and Password 'Salts' of all users in one go if the
+            // attacker manages to listen to network traffic). (#5502)!
+            foreach (var UserRow in ReturnValue.SUser.Rows)
+            {
+                ((SUserRow)UserRow).PasswordHash = "***";
+                ((SUserRow)UserRow).PasswordSalt = "***";
+            }
+
+            ReturnValue.AcceptChanges();
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// save the details and permissions of one user
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static string SaveUserAndModulePermissions(string AUserId,
+            string AFirstName, string ALastName, string AEmailAddress,
+            bool AAccountLocked, bool ARetired,
+            List<string> AModulePermissions)
+        {
+            MaintainUsersTDS SubmitDS = LoadUserAndModulePermissions(AUserId);
+
+            SubmitDS.SUser[0].EmailAddress = AEmailAddress;
+            SubmitDS.SUser[0].FirstName = AFirstName;
+            SubmitDS.SUser[0].LastName = ALastName;
+            SubmitDS.SUser[0].AccountLocked = AAccountLocked;
+            SubmitDS.SUser[0].Retired = ARetired;
+
+            List<string> ExistingPermissions = new List<string>();
+            foreach (SUserModuleAccessPermissionRow permission in SubmitDS.SUserModuleAccessPermission.Rows)
+            {
+                if (AModulePermissions.Contains(permission.ModuleId))
+                {
+                    permission.CanAccess = true;
+                }
+                else
+                {
+                    permission.CanAccess = false;
+                }
+                ExistingPermissions.Add(permission.ModuleId);
+            }
+
+            // add new permissions
+            foreach (string module in AModulePermissions)
+            {
+                if (!ExistingPermissions.Contains(module))
+                {
+                    SUserModuleAccessPermissionRow moduleAccessPermissionRow = SubmitDS.SUserModuleAccessPermission.NewRowTyped();
+                    moduleAccessPermissionRow.UserId = AUserId;
+                    moduleAccessPermissionRow.ModuleId = module;
+                    moduleAccessPermissionRow.CanAccess = true;
+                    SubmitDS.SUserModuleAccessPermission.Rows.Add(moduleAccessPermissionRow);
+                }
+            }
+
+            TSubmitChangesResult submitresult = SaveSUser(ref SubmitDS, "Web", "0.0.0.0");
+
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            if (submitresult == TSubmitChangesResult.scrOK)
+            {
+                result.Add("resultcode", "success");
+            }
+            else
+            {
+                result.Add("resultcode", "error");
+            }
+
+            return JsonConvert.SerializeObject(result); 
         }
 
         /// <summary>
