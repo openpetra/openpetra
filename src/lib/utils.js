@@ -102,8 +102,8 @@ function replace_data(replace_obj, update_data, prev_table) {
   //   PPartner_s_comment_c
   //   PUnit_comment_c
   // both will be handled so that s_comment_c is set but only,
-  // if a parent object is name like the thin before _
-  // does this makes sense? probly not, but its needed, so don't ask
+  // if a parent object is name like the thing before _
+  // does this makes sense? probably not, but its needed, so don't ask
   if (prev_table == null) {
     prev_table = "";
   }

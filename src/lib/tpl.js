@@ -47,8 +47,16 @@ function format_tpl(tpl, data, limit_to_table) {
       f.attr('checked', data[variable]);
       f.prop('checked', data[variable]);
     } else {
-      f.attr('value', data[variable]);
-      f.val(data[variable]);
+      value = data[variable];
+      if (typeof value === 'string' || value instanceof String) {
+        // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
+        if (value.substring(0, 6) == "/Date(") {
+          d = new Date(parseInt(value.substring(6, value.indexOf(')'))));
+          value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+        }
+      }
+      f.attr('value', value);
+      f.val(value);
     }
     let g = tpl[0].outerHTML;
     if (data[variable] == null) {
