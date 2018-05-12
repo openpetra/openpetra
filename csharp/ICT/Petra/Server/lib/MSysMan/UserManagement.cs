@@ -30,6 +30,7 @@ using Newtonsoft.Json;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
@@ -62,9 +63,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
         private static readonly string StrUserChangedOtherUsersRetiredState = Catalog.GetString(
             "User {0} changed the 'Retired' state of the user account of user {1}: the latter user is now {2}. ");
-
-        private static readonly string StrPasswordHashingVersionGotUpgraded = Catalog.GetString(
-            "The Password Scheme of User {0} got upgraded to {1}; previously it was {2}.");
 
         /// <summary>
         /// Sets the password of any existing user. This Method takes into consideration how users are authenticated in
@@ -649,6 +647,46 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// create new user
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static MaintainUsersTDS CreateUserWithInitialPermissions()
+        {
+            TDBTransaction ReadTransaction = null;
+            MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    SUserRow newUser = ReturnValue.SUser.NewRowTyped();
+                    newUser.UserId = "NEWUSER";
+                    ReturnValue.SUser.Rows.Add(newUser);
+                    SUserModuleAccessPermissionRow newPermission = ReturnValue.SUserModuleAccessPermission.NewRowTyped();
+                    newPermission.UserId = "NEWUSER";
+                    newPermission.ModuleId = SharedConstants.PETRAMODULE_PTNRUSER;
+                    newPermission.CanAccess = true;
+                    ReturnValue.SUserModuleAccessPermission.Rows.Add(newPermission);
+                    newPermission = ReturnValue.SUserModuleAccessPermission.NewRowTyped();
+                    newPermission.UserId = "NEWUSER";
+                    newPermission.ModuleId = SharedConstants.PETRAMODULE_FINANCE1;
+                    newPermission.CanAccess = true;
+                    ReturnValue.SUserModuleAccessPermission.Rows.Add(newPermission);
+                    newPermission = ReturnValue.SUserModuleAccessPermission.NewRowTyped();
+                    newPermission.UserId = "NEWUSER";
+                    newPermission.ModuleId = SharedConstants.PETRAMODULE_FINANCERPT;
+                    newPermission.CanAccess = true;
+                    ReturnValue.SUserModuleAccessPermission.Rows.Add(newPermission);
+                    SModuleAccess.LoadAll(ReturnValue, ReadTransaction);
+                });
+
+            ReturnValue.AcceptChanges();
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// load one user from the database and the permissions of that user
         /// </summary>
         [RequireModulePermission("SYSMAN")]
@@ -687,15 +725,85 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// </summary>
         [RequireModulePermission("SYSMAN")]
         public static string SaveUserAndModulePermissions(string AUserId,
-            string AFirstName, string ALastName, string AEmailAddress,
+            string AFirstName, string ALastName, string AEmailAddress, string ALanguageCode,
             bool AAccountLocked, bool ARetired,
-            List<string> AModulePermissions)
+            List<string> AModulePermissions, Int64 AModificationId)
         {
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            AUserId = AUserId.ToUpper().Trim();
+            AEmailAddress = AEmailAddress.Trim();
+
+            if (AUserId == String.Empty)
+            {
+                result.Add("resultcode", "error");
+                result.Add("errormsg", "EMPTYUSERID");
+
+                return JsonConvert.SerializeObject(result);
+            }
+
             MaintainUsersTDS SubmitDS = LoadUserAndModulePermissions(AUserId);
+
+            bool NewUser = false;
+            string NewPassword = String.Empty;
+
+            // we don't want to overwrite existing records with a new record
+            // we don't want to save changes if someone else already modified the user since we got the data
+            if (SubmitDS.SUser.Count == 0 && AModificationId == 0)
+            {
+                if (AEmailAddress == String.Empty)
+                {
+                    result.Add("resultcode", "error");
+                    result.Add("errormsg", "EMPTYEMAILADDRESS");
+
+                    return JsonConvert.SerializeObject(result);
+                }
+
+                if (null != TStringChecks.ValidateEmail(AEmailAddress))
+                {
+                    result.Add("resultcode", "error");
+                    result.Add("errormsg", "INVALIDEMAILADDRESS");
+
+                    return JsonConvert.SerializeObject(result);
+                }
+
+                if (ALanguageCode == String.Empty)
+                {
+                    ALanguageCode = "99";
+                }
+
+                SUserRow newUser = SubmitDS.SUser.NewRowTyped();
+                newUser.UserId = AUserId;
+                // user must change password on first login
+                newUser.PasswordNeedsChange = true;
+                // set random password
+                NewPassword = TPasswordHelper.GetRandomSecurePassword();
+                SetNewPasswordHashAndSaltForNewUser(newUser, NewPassword);
+                SubmitDS.SUser.Rows.Add(newUser);
+                NewUser = true;
+            }
+            else
+            {
+                DateTimeOffset offset = new DateTimeOffset(SubmitDS.SUser[0].ModificationId);
+                if (offset.ToUnixTimeMilliseconds() != AModificationId) {
+                    result.Add("resultcode", "error");
+                    if (AModificationId == 0)
+                    {
+                        result.Add("errormsg", "USERIDALREADYEXISTS");
+                    }
+                    else
+                    {
+                        result.Add("errormsg", "MIDAIRCOLLISION");
+                    }
+
+                    return JsonConvert.SerializeObject(result);
+                }
+            }
 
             SubmitDS.SUser[0].EmailAddress = AEmailAddress;
             SubmitDS.SUser[0].FirstName = AFirstName;
             SubmitDS.SUser[0].LastName = ALastName;
+            SubmitDS.SUser[0].LanguageCode = ALanguageCode;
             SubmitDS.SUser[0].AccountLocked = AAccountLocked;
             SubmitDS.SUser[0].Retired = ARetired;
 
@@ -728,11 +836,33 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             TSubmitChangesResult submitresult = SaveSUser(ref SubmitDS, "Web", "0.0.0.0");
 
-            Dictionary<string, object> result = new Dictionary<string, object>();
-
             if (submitresult == TSubmitChangesResult.scrOK)
             {
                 result.Add("resultcode", "success");
+
+                if (NewUser && TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
+                {
+                    TLogging.Log("There is no configuration for SmtpHost. The new password for " + AUserId + " is " + NewPassword);
+                }
+                else if (NewUser)
+                {
+                    // send E-Mail with temporary password
+                    // TODO: use the language of the user to send a translated message
+                    string Domain = TAppSettingsManager.GetValue("Public.Url.Domain");
+                    new TSmtpSender().SendEmail(
+                        "<no-reply@" + Domain + ">",
+                        "OpenPetra Admin",
+                        SubmitDS.SUser[0].EmailAddress,
+                        "New password for " + AUserId,
+                        "Dear " + SubmitDS.SUser[0].FirstName + " " + SubmitDS.SUser[0].LastName + Environment.NewLine +
+                        "Your initial password for your account " + AUserId +
+                        " at https://" + Domain + " is: " + Environment.NewLine +
+                        NewPassword + Environment.NewLine +
+                        "You will be asked to change it on the first login." + Environment.NewLine + Environment.NewLine +
+                        "This is an automated e-mail." + Environment.NewLine +
+                        "If you did not register yourself at https://" + Domain +
+                        " then please ignore this e-mail!");                    
+                }
             }
             else
             {
@@ -797,9 +927,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                             // for new users: create users on the alternative authentication method
                             if (user.RowState == DataRowState.Added)
                             {
-                                CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty,
-                                    AClientComputerName, AClientIPAddress, SubmitChangesTransaction);
-                                user.AcceptChanges();
+                                if (user.PwdSchemeVersion == 0)
+                                {
+                                    // in fact, PasswordHash is expected to be the password in clear text
+                                    CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty,
+                                        AClientComputerName, AClientIPAddress, SubmitChangesTransaction);
+                                    // this is a hack: the user is not stored here, but in CreateUser
+                                    user.AcceptChanges();
+                                }
                             }
                             else
                             {
@@ -936,6 +1071,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                     ATransaction);
             }
+        }
+
+        internal static void SetNewPasswordHashAndSaltForNewUser(SUserRow AUserDR, string ANewPassword)
+        {
+            // We always assign a new 'Salt' with every password change (best practice)!
+            byte[] Salt = TPasswordHelper.CurrentPasswordScheme.GetNewPasswordSalt();
+
+            AUserDR.PwdSchemeVersion = TPasswordHelper.CurrentPasswordSchemeNumber;
+            AUserDR.PasswordSalt = Convert.ToBase64String(Salt);
+            AUserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(ANewPassword,
+                AUserDR.PasswordSalt, AUserDR.PwdSchemeVersion);
         }
 
         private static void EnsurePasswordHashingSchemeChangeIsAllowed(string AUserId, int APwdSchemeVersionUpTillNow)
