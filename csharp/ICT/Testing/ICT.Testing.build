@@ -108,4 +108,12 @@
     <echo message="Target test-all finished at: ${datetime::now()}" /> 
 </target>
 
+<target name="test">
+    <echo message="Target test started at: ${datetime::now()}" /> 
+
+    <NUnitConsole assemblyname="${dir.bin}/${file}" testcase="${testcase}"/>
+
+    <echo message="Target test finished at: ${datetime::now()}" /> 
+</target>
+
 </project>

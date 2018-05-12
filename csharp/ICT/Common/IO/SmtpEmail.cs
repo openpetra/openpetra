@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,16 +23,20 @@
 //
 using System;
 using System.IO;
-using System.Net;
-using System.Net.Mail;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Net.Security;
-using Ict.Common;
 using System.Security;
-using Ict.Common.Exceptions;
 using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations;
+
+using MailKit.Net.Smtp;
+using MailKit;
+using MimeKit;
+
+using Ict.Common;
+using Ict.Common.Exceptions;
 
 #region changelog
 
@@ -209,9 +213,9 @@ namespace Ict.Common.IO
         static TGetSmtpSettings FGetSmtpSettings;
 
         private SmtpClient FSmtpClient;
-        private MailAddress FSender;
-        private MailAddressCollection FReplyTo;
-        private MailAddressCollection FCcEverythingTo;
+        private MailboxAddress FSender;
+        private InternetAddressList FReplyTo;
+        private InternetAddressList FCcEverythingTo;
 
         /// <summary>
         /// After SendMessage, this list should be empty.
@@ -237,10 +241,22 @@ namespace Ict.Common.IO
             }
         }
 
+        /// Method to obtain the SMTP email server configuration settings from the configuration file
+        public static TSmtpServerSettings GetSmtpSettingsFromAppSettings()
+        {
+            return new TSmtpServerSettings(
+                TAppSettingsManager.GetValue("SmtpHost"),
+                TAppSettingsManager.GetInt16("SmtpPort"),
+                TAppSettingsManager.GetBoolean("SmtpEnableSsl", true),
+                TAppSettingsManager.GetValue("SmtpUser"),
+                TAppSettingsManager.GetValue("SmtpPassword"),
+                TAppSettingsManager.GetBoolean("IgnoreServerCertificateValidation", false));
+        }
+
         /// <summary>
-        /// Returns the sender address for use if constructing a MailMessage outside this class.
+        /// Returns the sender address for use if constructing a MimeMessage outside this class.
         /// </summary>
-        public MailAddress Sender
+        public MailboxAddress Sender
         {
             get
             {
@@ -255,16 +271,7 @@ namespace Ict.Common.IO
         /// <returns>True if the string forms a valid email address; false otherwise.</returns>
         public static bool ValidateEmailAddress(string field)
         {
-            // In .NET 4.5: return new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(field.Text);
-            try
-            {
-                var TestAddress = new System.Net.Mail.MailAddress(field);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(field);
         }
 
         /// <summary>
@@ -272,13 +279,13 @@ namespace Ict.Common.IO
         /// </summary>
         /// <remarks>
         /// Where OpenPetra has multiple addresses stored in one database field, most are separated by semicolons because by
-        /// default Microsoft Outlook requiers semicolons to separate addresses (https://blogs.msdn.microsoft.com/oldnewthing/20150119-00/?p=44883).
-        /// But the Internet, including .NET's <see cref="MailMessage.To"/>.Add(string) method, requires commas (https://tools.ietf.org/html/rfc5322#section-3.4).
+        /// default Microsoft Outlook requires semicolons to separate addresses (https://blogs.msdn.microsoft.com/oldnewthing/20150119-00/?p=44883).
+        /// But the Internet, including .NET's MailMessage.To.Add(string) method, requires commas (https://tools.ietf.org/html/rfc5322#section-3.4).
         /// So when pulling "To" addresses from the database we must parse them for unquoted semicolons and convert them to commas.
         /// </remarks>
         /// <param name="AList"></param>
         /// <returns></returns>
-        public static string ConvertAddressList(string AList)
+        public static MailboxAddress ConvertAddressList(string AList)
         {
             var InQuote = false;
             var chars = AList.ToCharArray();
@@ -316,7 +323,7 @@ namespace Ict.Common.IO
                 }
             }
 
-            return new string(chars);
+            return new MailboxAddress(new string(chars));
         }
 
         /// <summary>
@@ -364,22 +371,15 @@ namespace Ict.Common.IO
 
                 FSmtpClient = new SmtpClient();
 
-                FSmtpClient.Host = SmtpSettings.SmtpHost;
-                FSmtpClient.Port = SmtpSettings.SmtpPort;
-                FSmtpClient.EnableSsl = SmtpSettings.SmtpEnableSsl;
-                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                FSmtpClient.Credentials = new NetworkCredential(SmtpSettings.SmtpUsername, SmtpSettings.SmtpPassword);
-
                 if (SmtpSettings.SmtpIgnoreServerCertificateValidation)
                 {
                     // When checking the validity of a SSL certificate, always pass.
                     // This is needed for smtp.outlook365.com, since I cannot find a place to get the public key for the ssl certificate.
-                    ServicePointManager.ServerCertificateValidationCallback =
-                        new RemoteCertificateValidationCallback(
-                            delegate
-                            { return true; }
-                            );
+                    FSmtpClient.ServerCertificateValidationCallback = (s,c,h,e) => true;
                 }
+
+                FSmtpClient.Connect(SmtpSettings.SmtpHost, SmtpSettings.SmtpPort, SmtpSettings.SmtpEnableSsl);
+                FSmtpClient.Authenticate(SmtpSettings.SmtpUsername, SmtpSettings.SmtpPassword);
 
                 FFailedRecipients = new List <TsmtpFailedRecipient>();
             } // try
@@ -406,7 +406,7 @@ namespace Ict.Common.IO
         {
             try
             {
-                FSender = new MailAddress(AAddress, ADisplayName);
+                FSender = new MailboxAddress(ADisplayName, AAddress);
             }
             catch (Exception e)
             {
@@ -431,7 +431,7 @@ namespace Ict.Common.IO
                 {
                     try
                     {
-                        FCcEverythingTo = new MailAddressCollection();
+                        FCcEverythingTo = new InternetAddressList();
                         FCcEverythingTo.Add(ConvertAddressList(value));
                     }
                     catch (Exception e)
@@ -457,7 +457,7 @@ namespace Ict.Common.IO
                 {
                     try
                     {
-                        FReplyTo = new MailAddressCollection();
+                        FReplyTo = new InternetAddressList();
                         FReplyTo.Add(ConvertAddressList(value));
                     }
                     catch (Exception e)
@@ -470,28 +470,27 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// Returns a new MailMessage with From, Reply-To and CC addresses set from the values in User Defaults.
+        /// Returns a new MimeMessage with From, Reply-To and CC addresses set from the values in User Defaults.
         /// </summary>
-        /// <returns>A MailMessage</returns>
+        /// <returns>A MimeMessage</returns>
         /// <exception cref="ESmtpSenderInitializeException">Thrown if the sender address has not been set.</exception>
-        public MailMessage GetNewMailMessage()
+        public MimeMessage GetNewMimeMessage()
         {
             if (FSender == null)
             {
                 throw new ESmtpSenderInitializeException("Sender address has not been set.", TSmtpErrorClassEnum.secClient);
             }
 
-            var NewMessage = new MailMessage();
+            var NewMessage = new MimeMessage();
 
             //Settings from User Defaults: From, Copy and Reply
-            NewMessage.Sender = FSender;
-            NewMessage.From = FSender;
+            NewMessage.From.Add(FSender);
 
             if (FCcEverythingTo != null)
             {
                 foreach (var addr in FCcEverythingTo)
                 {
-                    NewMessage.CC.Add(addr);
+                    NewMessage.Cc.Add(addr);
                 }
             }
 
@@ -499,23 +498,11 @@ namespace Ict.Common.IO
             {
                 foreach (var addr in FReplyTo)
                 {
-                    NewMessage.ReplyToList.Add(addr);
+                    NewMessage.ReplyTo.Add(addr);
                 }
             }
 
             return NewMessage;
-        }
-
-        private Attachment FAttachedObject = null;
-
-        /// <summary>
-        /// If the attachment is not in a file, don't save it into one, use this instead:
-        /// </summary>
-        /// <param name="AReportText"></param>
-        /// <param name="AReportName"></param>
-        public void AttachFromStream(Stream AReportText, String AReportName)
-        {
-            FAttachedObject = new Attachment(AReportText, AReportName);
         }
 
         /// <summary>
@@ -541,60 +528,40 @@ namespace Ict.Common.IO
         {
             try
             {
-                // Initialize a new MailMessage with settings from User Defaults
-                using (MailMessage email = GetNewMailMessage())
+                // Initialize a new MimeMessage with settings from User Defaults
+                MimeMessage email = GetNewMimeMessage();
+
+                //To
+                email.To.Add(ConvertAddressList(recipients));
+
+                //Subject and Body
+                email.Subject = subject;
+                
+                var builder = new BodyBuilder ();
+                builder.TextBody = body;
+
+                //Attachment files if any:
+                if (attachfiles != null)
                 {
-                    //To
-                    email.To.Add(ConvertAddressList(recipients));
-
-                    //Subject and Body
-                    email.Subject = subject;
-                    email.Body = body;
-                    email.IsBodyHtml = false;
-
-                    // at least for Mono, we need to keep the attachments separately in memory
-                    // to avoid Exception: Object reference not set to an instance of an object
-                    List <Attachment>attachments = new List <Attachment>();
-
-                    // A single attachment may have been specified using the AttachFromStream method, above.
-                    if (FAttachedObject != null)
+                    foreach (string attachfile in attachfiles)
                     {
-                        email.Attachments.Add(FAttachedObject);
-                        attachments.Add(FAttachedObject);
-                    }
-
-                    //Attachment files if any:
-                    if (attachfiles != null)
-                    {
-                        foreach (string attachfile in attachfiles)
+                        if (System.IO.File.Exists(attachfile) == true)
                         {
-                            if (System.IO.File.Exists(attachfile) == true)
-                            {
-                                Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
-                                email.Attachments.Add(data);
-                                attachments.Add(data);
-                            }
-                            else
-                            {
-                                FErrorStatus = "File to attach '" + attachfile + "' does not exist!";
-                                TLogging.Log("Could not send email");
-                                TLogging.Log(FErrorStatus);
-                                return false;
-                            }
+                            builder.Attachments.Add(attachfile);
+                        }
+                        else
+                        {
+                            FErrorStatus = "File to attach '" + attachfile + "' does not exist!";
+                            TLogging.Log("Could not send email");
+                            TLogging.Log(FErrorStatus);
+                            return false;
                         }
                     }
+                }
 
-                    bool Result = SendMessage(email);
+                email.Body = builder.ToMessageBody ();
 
-                    foreach (Attachment data in attachments)
-                    {
-                        // make sure that the file is not locked any longer
-                        data.Dispose();
-                    }
-
-                    FAttachedObject = null;
-                    return Result;
-                } // End of using block. This will Dispose email and clean up any attachments.
+                return SendMessage(email);
             }
             catch (Exception ex)
             {
@@ -610,9 +577,9 @@ namespace Ict.Common.IO
         /// </summary>
         /// <param name="AEmail">On successful sending, the header is modified with the sent date.</param>
         /// <returns>True if email was sent successfully.</returns>
-        public bool SendMessage(MailMessage AEmail)
+        public bool SendMessage(MimeMessage AEmail)
         {
-            if (AEmail.Headers.Get("Date-Sent") != null)
+            if (AEmail.Headers["Date-Sent"] != null)
             {
                 // don't send emails several times
                 return false;
@@ -629,8 +596,8 @@ namespace Ict.Common.IO
             // You can catch the SmtpClient exceptions and check the StatusCode enum to get a better idea of the problem. The numeric values of
             // the enum match SMTP error codes as shown below. Codes in the 400 range are generally 'temporary' failures while codes in the 500
             // range are usually'permanent'. It's more complicated than it should be because:
-            //    i) If a MailMessage has one To: address, failure is returned in a SmtpFailedRecipientException.
-            //       If a MailMessage has one To: address and one CC: address, failure is returned in a SmtpFailedRecipientsException (note the plural).
+            //    i) If a MimeMessage has one To: address, failure is returned in a SmtpFailedRecipientException.
+            //       If a MimeMessage has one To: address and one CC: address, failure is returned in a SmtpFailedRecipientsException (note the plural).
             //       This contains an InnerExceptions property containing the individual SmtpFailedRecipientExceptions which Microsoft say is "not
             //       intended to be used directly from your code".
             //   ii) There are different kinds of "permanent" errors and SMTP servers aren't consistent about how they report things. For example,
@@ -667,8 +634,6 @@ namespace Ict.Common.IO
 
             try
             {
-                AEmail.IsBodyHtml = AEmail.Body.ToLower().Contains("<html>");
-
                 int AttemptCount = 3;
 
                 while (AttemptCount > 0)
@@ -697,19 +662,18 @@ namespace Ict.Common.IO
                     }
                 }
             }
-            catch (SmtpFailedRecipientsException frEx)  // If the SMTP server knows that the send failed because of failed recipients,
+            catch (SmtpCommandException frEx)  // If the SMTP server knows that the send failed because of failed recipients,
             {                                           // I can produce a list of failed recipient addresses, and return false.
                                                         // The caller can then retrieve the list and inform the user.
                 TLogging.Log("SmtpEmail: Email to the following addresses did not succeed:");
-                SmtpFailedRecipientException[] failureList = frEx.InnerExceptions;
 
-                foreach (SmtpFailedRecipientException problem in failureList)
+                if (frEx.ErrorCode == SmtpErrorCode.RecipientNotAccepted)
                 {
                     TsmtpFailedRecipient FailureDetails = new TsmtpFailedRecipient();
-                    FailureDetails.FailedAddress = problem.FailedRecipient;
-                    FailureDetails.FailedMessage = problem.Message;
+                    FailureDetails.FailedAddress = frEx.Mailbox.ToString();
+                    FailureDetails.FailedMessage = "Recipient not accepted";
                     FFailedRecipients.Add(FailureDetails);
-                    TLogging.Log(problem.FailedRecipient + " : " + problem.Message);
+                    TLogging.Log(FailureDetails.FailedAddress + " : " + FailureDetails.FailedMessage);
                 }
 
                 return false;
@@ -725,7 +689,6 @@ namespace Ict.Common.IO
                 //    certmgr -ssl smtps://tim00.hostsharing.net:443
 
                 TLogging.Log("There has been a problem sending the email");
-                TLogging.Log("server: " + FSmtpClient.Host + ":" + FSmtpClient.Port.ToString());
                 TLogging.Log(ex.ToString() + " " + ex.Message);
                 TLogging.Log(ex.StackTrace);
 
@@ -743,11 +706,6 @@ namespace Ict.Common.IO
             if (FSmtpClient != null)
             {
                 FSmtpClient.Dispose();
-            }
-
-            if (FAttachedObject != null)
-            {
-                FAttachedObject.Dispose();
             }
         }
     }

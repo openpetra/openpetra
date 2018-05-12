@@ -131,7 +131,7 @@ namespace Ict.Petra.Server.App.Delegates
 
             TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
 
-            TSmtpSender.GetSmtpSettings = @TSysManServerLookups.GetServerSmtpSettings;
+            TSmtpSender.GetSmtpSettings = @TSmtpSender.GetSmtpSettingsFromAppSettings;
         }
     }
 }

@@ -14,6 +14,8 @@ System.Data.SQLite*=${dir.3rdParty}/SQLite/System.Data.SQLite.DLL
 OpenQA.Selenium*=${dir.3rdParty}/Selenium/WebDriver.dll
 PasswordUtilities*=${dir.3rdParty}/PasswordUtilities/PasswordUtilities.dll
 Sodium*=${dir.3rdParty}/libsodium-net/Sodium.dll
+MailKit*=${dir.3rdParty}/MailKit/MailKit.dll
+MimeKit*=${dir.3rdParty}/MailKit/MimeKit.dll
 Accessibility=${csharpStdLibs}/Accessibility.dll
 System.Collections.Generic=${csharpStdLibs}/System.Core.dll
 System.Configuration=${csharpStdLibs}/System.Configuration.dll
@@ -33,6 +35,7 @@ System.Web.Script*=${csharpStdLibs}/System.Web.Extensions.dll
 System.Web*=${csharpStdLibs}/System.Web.dll
 System.Xml=${csharpStdLibs}/System.Xml.dll
 System.Runtime.Caching=${csharpStdLibs}/System.Runtime.Caching.dll
+System.ComponentModel.DataAnnotations*=${csharpStdLibs}/System.ComponentModel.DataAnnotations.dll
 Microsoft.Win32=${csharpStdLibs}/System.dll
 Microsoft.CSharp=${csharpStdLibs}/Microsoft.CSharp.dll
 # System* must always be last

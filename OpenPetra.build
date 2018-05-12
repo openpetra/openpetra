@@ -27,8 +27,10 @@ list of available commands:
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for server and testing, and the version.txt
   initPlugins: install some default plugins
-  test: will run the NUnit tests (smaller tests: test-without-display, test-main-navigation-screens)
+  test-all: will run the NUnit tests (smaller tests: test-without-display, test-main-navigation-screens)
       nant test-without-display             runs all basic tests
+  test: will test a specific DLL
+      nant test -D:file=Ict.Testing.lib.Common.IO.dll -D:testcase=Ict.Common.IO.Testing.TTestSmtpSender.TestSendMail
   devzip: build a zip file for developers for easy start
 
 compat:
@@ -382,11 +384,20 @@ useful parameters
   <echo message="Target generateORMAccess finished at: ${datetime::now()}" />         
 </target>
 
-<target name="test" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">
-  <echo message="Target test started at: ${datetime::now()}" />
+<target name="test-all" depends="initConfigFiles, set-server-port-for-jenkins, copySQLFiles">
+  <echo message="Target test-all started at: ${datetime::now()}" />
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <nant inheritall="false" target="test-all" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target test-all finished at: ${datetime::now()}" />
+</target>
+
+<target name="test" depends="initConfigFiles">
+  <echo message="Target test started at: ${datetime::now()}" />
+  
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="true" target="test" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
   
   <echo message="Target test finished at: ${datetime::now()}" />
 </target>
