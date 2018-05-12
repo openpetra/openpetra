@@ -52,7 +52,14 @@ function format_tpl(tpl, data, limit_to_table) {
         // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
         if (value.substring(0, 6) == "/Date(") {
           d = new Date(parseInt(value.substring(6, value.indexOf(')'))));
-          value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+          if (variable == "s_modification_id_t") {
+            value = d.getTime();
+          } else {
+            value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+            if (d.getHours() != 0 || d.getMinutes() != 0 && d.getSeconds() != 0) {
+              value += " " + ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2) + ":" + ("0"+d.getSeconds()).slice(-2);
+            }
+          }
         }
       }
       f.attr('value', value);

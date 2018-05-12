@@ -126,6 +126,7 @@
 		</div>
 		</div>
 		<div class="modal-footer">
+			<input type="hidden" value="{SUser.s_modification_id_t}" name="s_modification_id_t">
 			<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
 			<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 		</div>
@@ -138,7 +139,7 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary">{forms.new}</button>
+			<button id="new" class="btn btn-primary" onclick="open_new()">{forms.new}</button>
 		</td>
 	</tr>
 </table>
