@@ -406,6 +406,11 @@ namespace Ict.Common.IO
         {
             try
             {
+                // there seems to be an issue with older Mono (tested with 4.6).
+                // MimeKit.Utils.CharsetUtils.AddAliases crashes.
+                // See: https://github.com/jstedfast/MailKit/issues/617
+                // and https://github.com/jstedfast/MimeKit/issues/388
+                // Upgrading to Mono >= 5.10 solves the issue
                 FSender = new MailboxAddress(ADisplayName, AAddress);
             }
             catch (Exception e)
