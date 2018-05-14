@@ -26,7 +26,9 @@
   <!-- result is in dir.setup for building the rpm package -->
 </target>
 
-<target name="install">
+<target name="install" depends="install.dotnet, install.js"/>
+
+<target name="install.dotnet">
   <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
 
   <if test="${not directory::exists('/usr/local/openpetra/bin')}">
@@ -39,7 +41,9 @@
       <include name="**/*" />
     </fileset>
   </copy>
+</target>
 
+<target name="install.js">
   <exec program="bash"
         workingdir="${dir.root}/../openpetra-client-js"
         commandline="-c &quot;npm run build&quot;" />
@@ -49,7 +53,6 @@
       <include name="**/*" />
     </fileset>
   </copy>
-
 </target>
 
 <!-- Linux -->
