@@ -64,8 +64,9 @@ namespace Ict.Common.IO.Testing
             TSmtpSender.GetSmtpSettings = @TSmtpSender.GetSmtpSettingsFromAppSettings;
 
             TSmtpSender sender = new TSmtpSender();
+
             Assert.AreEqual(true, sender.SendEmail(
-                "<no-reply@test.openpetra.org>",
+                "no-reply@test.openpetra.org",
                 "OpenPetra Test",
                 "test.dummy@openpetra.org",
                 "This is a test subject",

@@ -848,13 +848,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     // send E-Mail with temporary password
                     // TODO: use the language of the user to send a translated message
-                    string Domain = TAppSettingsManager.GetValue("Public.Url.Domain");
+                    // TODO: use double opt-in before sending the actual information???
+                    string Domain = TAppSettingsManager.GetValue("Server.Url");
                     new TSmtpSender().SendEmail(
-                        "<no-reply@" + Domain + ">",
+                        "no-reply@" + Domain,
                         "OpenPetra Admin",
                         SubmitDS.SUser[0].EmailAddress,
                         "New password for " + AUserId,
-                        "Dear " + SubmitDS.SUser[0].FirstName + " " + SubmitDS.SUser[0].LastName + Environment.NewLine +
+                        "Dear " + SubmitDS.SUser[0].FirstName + " " + SubmitDS.SUser[0].LastName + "," + Environment.NewLine +
                         "Your initial password for your account " + AUserId +
                         " at https://" + Domain + " is: " + Environment.NewLine +
                         NewPassword + Environment.NewLine +
