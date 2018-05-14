@@ -48,7 +48,6 @@ using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Server.MPersonnel.Unit.Cacheable;
 using Ict.Petra.Server.MSysMan.Cacheable;
-using Ict.Petra.Server.MPartner;
 
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MFinance.GL;
