@@ -96,87 +96,6 @@
     </fileset>
   </copy>
 
-  <if test="${'win32'==platform::get-name()}" >
-    <!-- make sure that the Mono files for sqlite are in the bin directory; needed for devzip -->
-    <if test="${(DBMS.Type=='sqlite') and (not file::exists(dir.bin + '/Mono.Data.Sqlite.dll'))}">
-        <copy file="${dir.3rdParty}/SQLite/Mono.Data.Sqlite.dll" todir="${dir.bin}"/>
-    </if>
-    <if test="${(DBMS.Type=='sqlite') and (not file::exists(dir.bin + '/sqlite3.dll'))}">
-        <copy file="${dir.3rdParty}/SQLite/sqlite3.dll" todir="${dir.bin}"/>
-    </if>
-    <if test="${not file::exists(dir.bin + '/libsodium.dll')}">
-        <copy file="${dir.3rdParty}/libsodium-net/libsodium.dll" todir="${dir.bin}"/>
-    </if>
-    <if test="${not file::exists(dir.bin + '/libsodium-64.dll')}">
-        <copy file="${dir.3rdParty}/libsodium-net/libsodium-64.dll" todir="${dir.bin}"/>
-    </if>
-    <if test="${file::exists(MonoBinPath+'/xsp4.bat')}">
-      <delete file="${dir.bin}/Mono.Security.dll"/>
-      <delete file="${dir.bin}/sqlite3.dll"/>
-      <delete file="${dir.bin}/libsodium.dll"/>
-      <delete file="${dir.bin}/libsodium-64.dll"/>
-      <exec program="cmd.exe" 
-              workingdir="${dir.delivery}"
-              commandline="/C start xsp4.bat --verbose --root . --port ${Server.Port} --applications /:."
-              spawn="true">
-        <environment>
-          <variable name="PATH" path="${MonoBinPath};${environment::get-variable('PATH')}"/>
-          <variable name="MONO_PATH" path="${MonoBinPath}\.."/>
-          <variable name="MONO_OPTIONS" value="--debug"/>
-          <!-- see http://www.mono-project.com/IOMap -->
-          <!-- <variable name="MONO_IOMAP" value="all"/> -->
-        </environment>
-      </exec>
-    </if>
-    <if test="${not file::exists(MonoBinPath+'/xsp4.bat')}">
-      <!-- copy Mono.Security.dll for pgsql driver -->
-      <copy file="${path::combine(dir.3rdParty, 'Npgsql/Mono.Security.dll')}"
-          tofile="${path::combine(dir.bin, 'Mono.Security.dll')}"
-          overwrite="false"/>
-
-      <!-- Copy the two web server files but do not overwrite because they may be running; also don't fail on error -->
-      <copy file="${path::combine(dir.delivery, 'bin/Ict.Tools.OpenPetraWebServer.exe')}"
-          tofile="${path::combine(dir.delivery, 'Ict.Tools.OpenPetraWebServer.exe')}" 
-          overwrite="false" failonerror="false"/>
-
-      <copy file="${path::combine(dir.delivery, 'bin/Ict.Tools.OpenPetraRuntimeHost.dll')}"
-          tofile="${path::combine(dir.delivery, 'Ict.Tools.OpenPetraRuntimeHost.dll')}" 
-          overwrite="false" failonerror="false"/>
-
-      <copy file="${path::combine(dir.delivery, 'bin/Ict.Common.dll')}"
-          tofile="${path::combine(dir.delivery, 'Ict.Common.dll')}" 
-          overwrite="false" failonerror="false"/>
-
-      <!-- Copy the web server help.  These files can be overwritten -->
-      <copy todir="${path::combine(dir.delivery, 'ServerHelp')}" overwrite="true">
-        <fileset basedir="${dir.csharp}/ICT/BuildTools/OpenPetraWebServer/ServerHelp/">
-          <include name="*.*" />
-        </fileset>
-      </copy>
-
-      <!-- Create a config file if it does not exist.  The user may add app settings to this file -->
-      <property name="opwsConfig" value="${dir.delivery}/Ict.Tools.OpenPetraWebServer.exe.config"/>
-      <if test="${not file::exists(opwsConfig)}" >
-        <echo file="${opwsConfig}">&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;configuration>
-    &lt;startup>
-        &lt;supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0" />
-    &lt;/startup>
-&lt;/configuration>
-        </echo>
-      </if>
-      <!-- maximum runtime of server, eg. on Jenkins, so that the workspace is not blocked forever if the server cannot be stopped -->
-      <property name="WebServer.MaximumRuntime.InMinutes" value="120" overwrite="false"/>
-      <property name="WebServer.StartCommandLine" value="Ict.Tools.OpenPetraWebServer.exe -physicalPath:&quot;${dir.delivery}&quot; -port:${Server.Port} -quiet:true -maxRuntimeInMinutes:${WebServer.MaximumRuntime.InMinutes}" overwrite="false"/>
-      <echo message="starting: ${WebServer.StartCommandLine}"/>
-      <exec program="cmd.exe" 
-              workingdir="${dir.delivery}"
-              spawn="true">
-           <arg value="/c" />
-           <arg value="start ${WebServer.StartCommandLine}" />
-      </exec>
-    </if>
-  </if>
   <if test="${'unix'==platform::get-name()}" >
       <!-- create symbolic link for api page -->
       <if test="${not file::exists(dir.delivery + '/api/Default.aspx')}">
@@ -245,13 +164,7 @@
 </target>
 
 <target name="stopServer" depends="initConfigFiles-admin" description="stop the local OpenPetra Server">
-  <if test="${platform::is-windows()}" >
-      <exec program="PetraServerAdminConsole.exe" 
-            basedir="${dir.bin}" 
-            workingdir="${dir.bin}"
-            commandline="-Command:Stop -C:${ServerAdminConfigFile}"/>
-  </if>
-  <if test="${not platform::is-windows()}">
+  <if test="${'unix'==platform::get-name()}" >
       <exec program="${MonoExecutable.file}" 
               workingdir="${dir.bin}"
               commandline="PetraServerAdminConsole.exe -Command:Stop -C:${ServerAdminConfigFile}"
@@ -267,20 +180,7 @@
   <call target="startAdmin"/>
 </target>
 <target name="startAdmin" depends="initConfigFiles-admin" description="start the OpenPetra Server Admin Console"> 
-  <if test="${platform::is-windows()}" >
-      <exec program="cmd.exe" 
-            workingdir="${dir.bin}"
-            spawn="true">
-       <arg value="/c" />
-       <arg value="start" />
-       <arg value="cmd" /> <!-- This window stays open after the process finishes -->
-       <arg value="/k" />
-       <arg value="PetraServerAdminConsole.exe" />
-       <arg value="-Command:Menu" />
-       <arg value="-C:${ServerAdminConfigFile}" />
-     </exec>
-  </if>
-  <if test="${not platform::is-windows()}">
+  <if test="${'unix'==platform::get-name()}">
       <echo message="run this directly from the command line:"/>
       <echo message="cd ${dir.bin} &amp;&amp; mono PetraServerAdminConsole.exe -Command:Menu -C:${ServerAdminConfigFile} &amp;&amp; cd -"/>
       <!-- exec does not really work within nant, Console.Write does not print -->
