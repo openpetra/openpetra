@@ -178,6 +178,11 @@ namespace Ict.Common.Remoting.Shared
                     return o.ToString().ToLower();
                 }
 
+                if (o.GetType() == typeof(string))
+                {
+                    return '"' + o.ToString().Replace('"', '\'') + '"';
+                }
+
                 return o.ToString();
             }
 

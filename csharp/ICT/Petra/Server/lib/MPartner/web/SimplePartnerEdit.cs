@@ -69,11 +69,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
             out List<string> ASubscriptions,
-            out List<string> APartnerTypes)
+            out List<string> APartnerTypes,
+            out string ADefaultEmailAddress,
+            out string ADefaultPhoneMobile,
+            out string ADefaultPhoneLandline)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
             List<string> Subscriptions = new List<string>();
             List<string> PartnerTypes = new List<string>();
+            string DefaultEmailAddress = String.Empty;
+            string DefaultPhoneMobile = String.Empty;
+            string DefaultPhoneLandline = String.Empty;
 
             TDBTransaction Transaction = null;
 
@@ -143,11 +149,32 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             PartnerTypes.Add(partnertype.TypeCode);
                         }
+
+                        PPartnerAttributeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+
+                        foreach(PPartnerAttributeRow partnerattr in MainDS.PPartnerAttribute.Rows)
+                        {
+                            if (partnerattr.AttributeType == MPartnerConstants.ATTR_TYPE_EMAIL)
+                            {
+                                DefaultEmailAddress = partnerattr.Value;
+                            }
+                            else if (partnerattr.AttributeType == MPartnerConstants.ATTR_TYPE_PHONE)
+                            {
+                                DefaultPhoneLandline = partnerattr.Value;
+                            }
+                            else if (partnerattr.AttributeType == MPartnerConstants.ATTR_TYPE_MOBILE_PHONE)
+                            {
+                                DefaultPhoneMobile = partnerattr.Value;
+                            }
+                        }
                     }
                 });
 
             APartnerTypes = PartnerTypes;
             ASubscriptions = Subscriptions;
+            ADefaultEmailAddress = DefaultEmailAddress;
+            ADefaultPhoneMobile = DefaultPhoneMobile;
+            ADefaultPhoneLandline = DefaultPhoneLandline;
 
             return MainDS;
         }
@@ -167,7 +194,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             // Call the standard method including address details
             List<string> Dummy1, Dummy2;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2);
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
 
             // Now get the primary email and phone
             PPartnerAttributeTable attributeTable = TContactDetailsAggregate.GetPartnersContactDetailAttributes(APartnerKey);
@@ -226,7 +254,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             List<string> APartnerTypes)
         {
             List<string> Dummy1, Dummy2;
-            PartnerEditTDS SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2);
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
 
             DataUtilities.CopyDataSet(AMainDS, SaveDS);
 
