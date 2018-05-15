@@ -83,6 +83,11 @@ function open_edit(partner_id) {
 		// generated fields
 		m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);
 		m = load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
+		m = format_tpl(m,
+			{'p_default_email_address_c': parsed.ADefaultEmailAddress,
+			'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
+			'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile},
+			null);
 
 		m.find('.select_case').hide();
 		m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();

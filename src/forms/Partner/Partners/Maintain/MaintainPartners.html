@@ -190,6 +190,9 @@
 					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{addresses}</a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</a>
 				</li>
 				<li class="nav-item">
@@ -231,6 +234,38 @@
 							</div>
 							<div class="col">
 								<input type="text" name="p_postal_code_c"/>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="tab-pane" id="contactdetails">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{email address}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_email_address_c" size="25"/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{phone landline}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_phone_landline_c" size="25" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{phone mobile}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_phone_mobile_c" size="25"/>
 							</div>
 						</div>
 
