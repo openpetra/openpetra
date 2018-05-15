@@ -88,6 +88,15 @@
 
 			<div class="row FAMILY select_case">
 				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_title_c"/>
+				</div>
+			</div>
+
+			<div class="row FAMILY select_case">
+				<div class="col-3">
 					<span>{firstname}</span>
 				</div>
 				<div class="col-3">
@@ -101,12 +110,12 @@
 				</div>
 			</div>
 
-			<div class="row FAMILY select_case">
+			<div class="row PERSON select_case">
 				<div class="col-3">
 					<span>{title}</span>
 				</div>
 				<div class="col-3">
-					<input type="text" name="PFamily_p_title_c"/>
+					<input type="text" name="PPerson_p_title_c"/>
 				</div>
 			</div>
 
@@ -137,15 +146,6 @@
 				</div>
 				<div class="col-3">
 					<input type="text" name="p_date_of_birth_d"/>
-				</div>
-			</div>
-
-			<div class="row PERSON select_case">
-				<div class="col-3">
-					<span>{title}</span>
-				</div>
-				<div class="col-3">
-					<input type="text" name="PPerson_p_title_c"/>
 				</div>
 			</div>
 
@@ -333,7 +333,7 @@
 		<div class="col">
 			<select name="APartnerClass">
 				<option value="">{forms.any}</option>
-				<option value="PERSON">{PERSON}</option>
+				<!--<option value="PERSON">{PERSON}</option>-->
 				<option value="FAMILY" selected>{FAMILY}</option>
 				<option value="ORGANISATION">{ORGANISATION}</option>
 				<option value="UNIT">{UNIT}</option>
