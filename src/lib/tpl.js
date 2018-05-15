@@ -40,10 +40,12 @@ function format_tpl(tpl, data, limit_to_table) {
     if (f.length == 0) {
       f = tpl.find("[name="+limit_to_table+variable+"]");
     }
-    if (f.is('textarea')) {
+    if (f.is('select')) {
+      value = data[variable];
+      $(f).find("option[value='" + value + "']").attr("selected", true);
+    } else if (f.is('textarea')) {
       f.text(data[variable]);
-    }
-    if (f.attr('type') == "checkbox") {
+    } else if (f.attr('type') == "checkbox") {
       f.attr('checked', data[variable]);
       f.prop('checked', data[variable]);
     } else {
