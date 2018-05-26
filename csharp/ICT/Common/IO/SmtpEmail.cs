@@ -274,8 +274,28 @@ namespace Ict.Common.IO
             return new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(field);
         }
 
+        /// seems that MimeKit MailboxAddress is not able to parse the name and the address
+        private static MailboxAddress StringToMailboxAddress(string AAddressWithName)
+        {
+            if (AAddressWithName.IndexOf('<') != -1)
+            {
+                string address = AAddressWithName.Substring(
+                    AAddressWithName.IndexOf('<') + 1,
+                    AAddressWithName.IndexOf('>') - AAddressWithName.IndexOf('<') - 1).Trim();
+                string name = AAddressWithName.Substring(0, AAddressWithName.IndexOf('<')).Trim().Trim(new char[]{'"'});
+
+                //TLogging.Log(name + "     " + address);
+
+                return new MailboxAddress(name, address);
+            }
+            else
+            {
+                return new MailboxAddress(AAddressWithName.Trim());
+            }
+        }
+
         /// <summary>
-        /// Convert a semicolon-separated list of email addresses to a comma-separated list of email addresses.
+        /// Convert a semicolon-separated list of email addresses to a list of email address objects.
         /// </summary>
         /// <remarks>
         /// Where OpenPetra has multiple addresses stored in one database field, most are separated by semicolons because by
@@ -285,10 +305,14 @@ namespace Ict.Common.IO
         /// </remarks>
         /// <param name="AList"></param>
         /// <returns></returns>
-        public static MailboxAddress ConvertAddressList(string AList)
+        public static List<MailboxAddress> ConvertAddressList(string AList)
         {
             var InQuote = false;
             var chars = AList.ToCharArray();
+
+            List<MailboxAddress> result = new List<MailboxAddress>();
+
+            string nextAddress = String.Empty;
 
             for (int i = 0; i < chars.Length; i++)
             {
@@ -297,33 +321,44 @@ namespace Ict.Common.IO
                 switch (ch)
                 {
                     case '\\':
-                        // The next character is escaped, so skip it.
+                        // The next character is escaped, so don't treat it as a control character.
                         i++;
+                        nextAddress += chars[i];
                         break;
 
                     case '"':
                         // A quoted-string is delimited by DQUOTE, ASCII 34, only.
                         InQuote = !InQuote;
+                        nextAddress += ch;
                         break;
 
                     case ';':
+                    case ',':
 
                         // An unquoted semicolon must be a mailbox-list separator; .NET does not support the
                         // group syntax of https://tools.ietf.org/html/rfc5322#section-3.2.4 which is the
                         // only valid use of an unquoted semicolon in an address specification.
                         if (!InQuote)
                         {
-                            chars[i] = ',';
+                            result.Add(StringToMailboxAddress(nextAddress));
+                            nextAddress = String.Empty;
+                        }
+                        else
+                        {
+                            nextAddress += ch;
                         }
 
                         break;
 
                     default:
+                        nextAddress += ch;
                         break;
                 }
             }
 
-            return new MailboxAddress(new string(chars));
+            result.Add(StringToMailboxAddress(nextAddress));
+
+            return result;
         }
 
         /// <summary>
@@ -437,7 +472,11 @@ namespace Ict.Common.IO
                     try
                     {
                         FCcEverythingTo = new InternetAddressList();
-                        FCcEverythingTo.Add(ConvertAddressList(value));
+                        List<MailboxAddress> list = ConvertAddressList(value);
+                        foreach (MailboxAddress addr in list)
+                        {
+                            FCcEverythingTo.Add(addr);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -463,7 +502,11 @@ namespace Ict.Common.IO
                     try
                     {
                         FReplyTo = new InternetAddressList();
-                        FReplyTo.Add(ConvertAddressList(value));
+                        List<MailboxAddress> list = ConvertAddressList(value);
+                        foreach (MailboxAddress addr in list)
+                        {
+                            FReplyTo.Add(addr);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -537,7 +580,11 @@ namespace Ict.Common.IO
                 MimeMessage email = GetNewMimeMessage();
 
                 //To
-                email.To.Add(ConvertAddressList(recipients));
+                List<MailboxAddress> list = ConvertAddressList(recipients);
+                foreach (MailboxAddress addr in list)
+                {
+                    email.To.Add(addr);
+                }
 
                 //Subject and Body
                 email.Subject = subject;
