@@ -108,7 +108,7 @@
     <echo message="Target test-all finished at: ${datetime::now()}" /> 
 </target>
 
-<target name="test">
+<target name="test" depends="remove_dlls">
     <echo message="Target test started at: ${datetime::now()}" /> 
 
     <if test="${property::exists('testcase')}">
