@@ -8,7 +8,6 @@
     <!-- CreateDBForPublicInstaller Property gets set to true when the standalone Windows Installer is built! -->
     <property name="CreateDBForPublicInstaller" value="false"/>
 
-    <property name="DeliveryDB.dir" value="${OpenPetraRoot.dir}/delivery/db"/>
     <mkdir dir="${DeliveryDB.dir}" failonerror="false"/>
     <property name="CleanDatabaseScript" value="${DeliveryDB.dir}/petra_clean.sql"/>
 

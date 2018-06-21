@@ -208,6 +208,7 @@
  <!-- delivery -->
 <property name="dir.delivery" value="${path::combine(dir.root, 'delivery')}"
           overwrite="false" />
+<property name="DeliveryDB.dir" value="${dir.delivery}/db"/>
 <property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
           overwrite="false" />
 <property name="dir.obj" value="${path::combine(dir.delivery, 'obj')}"
