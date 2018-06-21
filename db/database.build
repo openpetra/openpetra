@@ -7,6 +7,7 @@
     <property name="psqlversion" value="9" overwrite="false"/>
     <!-- CreateDBForPublicInstaller Property gets set to true when the standalone Windows Installer is built! -->
     <property name="CreateDBForPublicInstaller" value="false"/>
+    <property name="CleanDatabaseScript" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_clean.sql"/>
     
     <target name="patchDatabase" depends="init, startServer" description="Update the development database to the latest database version">
         <property name="Command" value="UpgradeDatabase"/>
@@ -345,14 +346,14 @@
                  <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
                  <echo message='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
              </if>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${CleanDatabaseScript}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
              <if test="${WithDemoDataGermany=='true'}">
                  <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
              </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${CleanDatabaseScript}" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
              <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -host:${DBMS.DBHostOrFile} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}" failonerror="true"/>
              <if test="${WithDemoDataGermany=='true'}">
                  <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -host:${DBMS.DBHostOrFile} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}" failonerror="true"/>
@@ -430,7 +431,7 @@
             </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-            <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
+            <mysql exe="${MySQL.exe}" sqlfile="${CleanDatabaseScript}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
             <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
         </if>
     </target>
@@ -475,7 +476,7 @@
             </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-            <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
+            <mysql exe="${MySQL.exe}" sqlfile="${CleanDatabaseScript}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
             <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
         </if>
     </target>
@@ -519,7 +520,7 @@
             </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-            <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
+            <mysql exe="${MySQL.exe}" sqlfile="${CleanDatabaseScript}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
             <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
         </if>
     </target>

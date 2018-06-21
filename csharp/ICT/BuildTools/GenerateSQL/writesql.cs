@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -215,6 +215,9 @@ namespace GenerateSQL
             sw.Close();
             System.Console.WriteLine("Success: file written: {0}", removeAllTablesFile);
 
+            WriteDBClean(AStore, Path.GetDirectoryName(AOutputFile) + Path.DirectorySeparatorChar +
+                Path.GetFileNameWithoutExtension(AOutputFile) + "_clean.sql");
+
             string LoadDataFile = System.IO.Path.GetDirectoryName(AOutputFile) +
                                   System.IO.Path.DirectorySeparatorChar +
                                   "loaddata.sh";
@@ -295,6 +298,31 @@ namespace GenerateSQL
             sw.Close();
             outPutFileStream.Close();
             System.Console.WriteLine("Success: file written: {0}", CreateConstraintsAndIndexesFile);
+        }
+
+        /// <summary>
+        /// write the file clean.sql that removes all data from the database, for easy resetting of the database with clean test data
+        /// </summary>
+        /// <param name="AStore"></param>
+        /// <param name="AFilename"></param>
+        private static void WriteDBClean(TDataDefinitionStore AStore, string AFilename)
+        {
+            StreamWriter sw = new StreamWriter(AFilename + ".new");
+
+            sw.WriteLine("-- Generated with nant createSQLStatements");
+            List <TTable>tables = AStore.GetTables();
+            tables = TTableSort.TopologicalSort(AStore, tables);
+            tables.Reverse();
+
+            foreach (TTable t in tables)
+            {
+                sw.WriteLine("DELETE FROM " + t.strName + ";");
+            }
+
+            sw.Close();
+
+            TTextFile.UpdateFile(AFilename);
+            System.Console.WriteLine("Success: file written: {0}", AFilename);
         }
 
         private static Boolean WriteSequences(StreamWriter ASw,

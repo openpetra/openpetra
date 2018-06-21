@@ -11,7 +11,6 @@ setup/petra0300/Output
 setup/petra0300/*.sql
 setup/petra0300/*.db
 db/basedb_progress
-db/basedata/clean.sql
 *.ico.gif
 *.local
 *.local.ben.xml
