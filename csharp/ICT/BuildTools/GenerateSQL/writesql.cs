@@ -665,6 +665,16 @@ namespace GenerateSQL
                                 }
 
                                 fields += indfield.strName;
+
+                                foreach (TTableField field in ATable.grpTableField)
+                                {
+                                    if (field.strName == indfield.strName && field.iLength >= 1000)
+                                    {
+                                        // avoid keys that are too long (Mysql on 32 bit)
+                                        // ERROR 1071 (42000): Specified key was too long; max key length is 3072 bytes
+                                        fields += "(50)";
+                                    }
+                                }
                             }
 
                             if (includeIndexes == eInclude.eInCreateTable)
