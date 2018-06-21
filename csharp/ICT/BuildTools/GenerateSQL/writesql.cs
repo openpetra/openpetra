@@ -452,13 +452,10 @@ namespace GenerateSQL
                 }
             }
 
-#if IMPORTFROMLEGACYDB
-            // this is useful when converting from legacy database, with columns that contain too long strings
-            if ((field.strType == "varchar") && (field.iLength >= 20) && (!field.strName.Contains("_code_")))
+            if ((field.strType == "varchar") && (field.iLength >= 10000))
             {
                 field.strType = "text";
             }
-#endif
 
             if (field.strType == "bit")
             {
