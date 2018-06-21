@@ -7,18 +7,20 @@
     <property name="psqlversion" value="9" overwrite="false"/>
     <!-- CreateDBForPublicInstaller Property gets set to true when the standalone Windows Installer is built! -->
     <property name="CreateDBForPublicInstaller" value="false"/>
-    <property name="CleanDatabaseScript" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_clean.sql"/>
-    
+
+    <property name="DeliveryDB.dir" value="${OpenPetraRoot.dir}/delivery/db"/>
+    <mkdir dir="${DeliveryDB.dir}" failonerror="false"/>
+    <property name="CleanDatabaseScript" value="${DeliveryDB.dir}/petra_clean.sql"/>
+
     <target name="patchDatabase" depends="init, startServer" description="Update the development database to the latest database version">
         <property name="Command" value="UpgradeDatabase"/>
         <call target="startAdmin"/>
     </target>
     
     <target name="createSQLStatements" depends="init" description="Create the SQL files.">
-        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
         <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
         <if test="${DBMS.Type!='sqlite'}">
-            <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+            <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:sql -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${DeliveryDB.dir}/petra.sql" failonerror="true"/>
         </if>
     </target>
 
@@ -136,8 +138,7 @@
         <mkdir dir="${DBDoc.Output.dir}/tables" failonerror="false"/>    
         <mkdir dir="${DBDoc.Output.dir}/img" failonerror="false"/>    
 
-        <mkdir dir="${OpenPetraRoot.dir}/setup/petra${PetraRelease}" failonerror="false"/>
-        <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" failonerror="true"/>
+        <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:sql -dbms:postgresql -petraxml:${PetraXML.file} -outputFile:${DeliveryDB.dir}/petra.sql" failonerror="true"/>
         
         <copy todir="${DBDoc.Output.dir}" overwrite="true">
             <fileset basedir="${OpenPetraRoot.dir}/db/html/">
@@ -150,16 +151,16 @@
         <!-- create project files -->
         <exec program="${external.sql2dia}" workingdir="${DBDoc.Output.dir}" 
             output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
-            <arg value="-d &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;"/>
+            <arg value="-d &quot;${DeliveryDB.dir}/petra.sql&quot;"/>
         </exec>
         <exec program="${external.sql2dia}" workingdir="${DBDoc.Output.dir}" 
             output="${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj">
-            <arg value="-g -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;"/>
+            <arg value="-g -f &quot;${DeliveryDB.dir}/petra.sql&quot;"/>
         </exec>
     
         <!-- create or update diagrams -->
         <exec program="${external.sql2dia}" workingdir="${DBDoc.Output.dir}">
-            <arg value="-f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;"/>
+            <arg value="-f &quot;${DeliveryDB.dir}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;"/>
         </exec>
 
         <!-- create png files from diagrams -->
@@ -218,10 +219,10 @@
                <mysql exe="${MySQL.exe}" sqlcommand="GRANT ALL ON ${DBMS.DBName}.* TO ${DBMS.UserName}@localhost IDENTIFIED BY '${DBMS.Password}';" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
              </if>
              <if test="${not property::exists('DBMS.RootPassword')}">
-               <mysql exe="${MySQL.exe}"  sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
+               <mysql exe="${MySQL.exe}"  sqlfile="${DeliveryDB.dir}/petra_remove.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
              </if>
 
-             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${DeliveryDB.dir}/petra.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
     </target>
 
@@ -394,7 +395,7 @@
             <copy file="${file}" tofile="${SQLitedbWork.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${DeliveryDB.dir}/petra_remove.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <!-- drop all tables that are not part of the current revision anymore. they are missed by petra_remove.sql -->
             <property name="tempfile" value="${path::get-temp-path()}/delAllTables.sql"/>
             <psql exe="${PostgreSQL.exe}" 
@@ -414,10 +415,10 @@
             <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
 
             <if test="${file=='nothing'}">
-                <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <psql exe="${PostgreSQL.exe}" sqlfile="${DeliveryDB.dir}/petra.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             </if>
             <if test="${file!='nothing'}">
-                <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <psql exe="${PostgreSQL.exe}" sqlfile="${DeliveryDB.dir}/petra_withoutConstraints.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
                 <if test="${string::ends-with(file, '.gz')}">
                     <gunzip src="${file}" dest="${tempdir + '/load.sql'}" />
                     <psql exe="${PostgreSQL.exe}" sqlfile="${tempdir + '/load.sql'}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
@@ -426,8 +427,8 @@
                 <if test="${not string::ends-with(file, '.gz')}">
                     <psql exe="${PostgreSQL.exe}" sqlfile="${file}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}" />
                 </if>
-				<ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.DataMigrateStatistics.exe" commandline="-petraxml:${PetraXML.file} -type:${DBMS.Type} -host:${DBMS.DBHostOrFile} -port:${DBMS.DBPort} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}"/>
-                <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.DataMigrateStatistics.exe" commandline="-petraxml:${PetraXML.file} -type:${DBMS.Type} -host:${DBMS.DBHostOrFile} -port:${DBMS.DBPort} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}"/>
+                <psql exe="${PostgreSQL.exe}" sqlfile="${DeliveryDB.dir}/createconstraints-PostgreSQL.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
@@ -435,8 +436,8 @@
             <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
         </if>
     </target>
-	
-	<target name="loadTestDatabase" depends="init" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:file=testmysql.sql">
+
+    <target name="loadTestDatabase" depends="init" description="load the database from a DBMS specific file, eg. nant loadDatabase -D:file=testmysql.sql">
         <call target="createSQLStatements" unless="${target::has-executed('createSQLStatements')}"/>
         <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
     
@@ -444,7 +445,7 @@
             <copy file="${file}" tofile="${SQLitedbWork.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${DeliveryDB.dir}/petra_remove.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <!-- drop all tables that are not part of the current revision anymore. they are missed by petra_remove.sql -->
             <property name="tempfile" value="${path::get-temp-path()}/delAllTables.sql"/>
             <psql exe="${PostgreSQL.exe}" 
@@ -463,7 +464,7 @@
             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
 
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${DeliveryDB.dir}/petra_withoutConstraints.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <if test="${file!='nothing'}">
                 <if test="${string::ends-with(file, '.gz')}">
                     <gunzip src="${file}" dest="${tempdir + '/load.sql'}" />
@@ -489,7 +490,7 @@
             <copy file="${file}" tofile="${SQLitedbWork.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${DeliveryDB.dir}/petra_remove.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <!-- drop all tables that are not part of the current revision anymore. they are missed by petra_remove.sql -->
             <property name="tempfile" value="${path::get-temp-path()}/delAllTables.sql"/>
             <psql exe="${PostgreSQL.exe}" 
@@ -571,7 +572,7 @@
         <property name="DBMS.DBName" value="${DBMS.Setup.DBName}"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-        <property name="file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"/>
+        <property name="file" value="${DeliveryDB.dir}/demodata-PostgreSQL.sql"/>
         <call target="dumpDatabase"/>
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
         <property name="DBMS.DBName" value="${DBMS.DBName.Orig}"/>
@@ -586,7 +587,7 @@
         <property name="DBMS.DBName" value="openpetra_basedb"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
-        <property name="file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-MySQL.sql"/>
+        <property name="file" value="${DeliveryDB.dir}/demodata-MySQL.sql"/>
         <call target="dumpDatabase"/>
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
     </target>

@@ -8,8 +8,6 @@ setup/petra0300/dbdoc
 setup/petra0300/i18n
 setup/petra0300/ndoc
 setup/petra0300/Output
-setup/petra0300/*.sql
-setup/petra0300/*.db
 db/basedb_progress
 *.ico.gif
 *.local
