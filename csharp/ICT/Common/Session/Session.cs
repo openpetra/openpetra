@@ -221,6 +221,42 @@ namespace Ict.Common.Session
         }
 
         /// <summary>
+        /// get a session variable with default boolean
+        /// if the variable does not exist, the default is returned
+        /// </summary>
+        /// <returns></returns>
+        public static object GetVariable(string name, bool ADefault)
+        {
+            // return HttpContext.Current.Session[name];
+            SortedList <string, object>session = GetSession();
+
+            if (session.Keys.Contains(name))
+            {
+                return session[name];
+            }
+
+            return ADefault;
+        }
+
+        /// <summary>
+        /// get a session variable with default string
+        /// if the variable does not exist, the default is returned
+        /// </summary>
+        /// <returns></returns>
+        public static object GetVariable(string name, string ADefault)
+        {
+            // return HttpContext.Current.Session[name];
+            SortedList <string, object>session = GetSession();
+
+            if (session.Keys.Contains(name))
+            {
+                return session[name];
+            }
+
+            return ADefault;
+        }
+
+        /// <summary>
         /// clear the current session
         /// </summary>
         static public void Clear()

@@ -117,7 +117,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             }
             get
             {
-                return (Boolean)TSession.GetVariable("UTableCached");
+                return (Boolean) TSession.GetVariable("UTableCached", false);
             }
         }
 
