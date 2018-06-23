@@ -82,7 +82,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string TmpSiteCountryCode;
 
             PartnerEditTDS MainDS = partneredit.GetDataNewPartner(
-                -1,
+                DomainManager.GSiteKey,
                 NewPartnerKey(),
                 SharedTypes.PartnerClassStringToEnum(APartnerClass),
                 String.Empty,
