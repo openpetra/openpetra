@@ -58,9 +58,19 @@ function open_detail(obj) {
 	obj.find('.collapse').collapse('show')
 }
 
-function open_new() {
+function open_new_family() {
 	r = {
 			APartnerClass: "FAMILY"
+		};
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		display_partner(parsed);
+	});
+}
+
+function open_new_organisation() {
+	r = {
+			APartnerClass: "ORGANISATION"
 		};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
 		parsed = JSON.parse(data.data.d);
@@ -87,11 +97,21 @@ function display_partner(parsed) {
 	// normal info input
 	m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
 	m = format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
-	m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
-	m = format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
-	m = format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
-	m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
-	m = format_tpl(m ,parsed.result.PBank[0],"PBank_");
+	if (parsed.result.PFamily != undefined) {
+		m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
+	}
+	if (parsed.result.PPerson != undefined) {
+		m = format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
+	}
+	if (parsed.result.POrganisation != undefined) {
+		m = format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
+	}
+	if (parsed.result.PUnit != undefined) {
+		m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
+	}
+	if (parsed.result.PBank != undefined) {
+		m = format_tpl(m ,parsed.result.PBank[0],"PBank_");
+	}
 
 	// generated fields
 	m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);

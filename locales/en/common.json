@@ -103,6 +103,8 @@
         "caption": "Maintain partners",
         "edittitle": "Edit partner",
         "addtitle": "New partner",
+        "newfamily": "Add family",
+        "neworganisation": "Add organisation",
         "partnerkey": "Partner key",
         "partnername": "Name",
         "city": "City",

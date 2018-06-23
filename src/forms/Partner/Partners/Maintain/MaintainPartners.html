@@ -335,7 +335,16 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button class="btn btn-primary" onclick="open_new()">{forms.new}</button>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary" onclick="open_new_family()">{forms.new}</button>
+				<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<span class="sr-only">Toggle Dropdown</span>
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" onclick="open_new_family()">{newfamily}</a>
+					<a class="dropdown-item" onclick="open_new_organisation()">{neworganisation}</a>
+				</div>
+			</div>
 			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>

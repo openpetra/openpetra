@@ -104,6 +104,8 @@
         "caption": "Partner verwalten",
         "edittitle": "Partner bearbeiten",
         "addtitle": "Partner anlegen",
+        "newfamily": "Familie hinzufügen",
+        "neworganisation": "Organisation hinzufügen",
         "partnerkey": "Partner Nummer",
         "partnername": "Name",
         "city": "Stadt",
