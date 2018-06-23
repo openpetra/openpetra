@@ -40,15 +40,32 @@ function format_tpl(tpl, data, limit_to_table) {
     if (f.length == 0) {
       f = tpl.find("[name="+limit_to_table+variable+"]");
     }
-    if (f.is('textarea')) {
+    if (f.is('select')) {
+      value = data[variable];
+      $(f).find("option[value='" + value + "']").attr("selected", true);
+    } else if (f.is('textarea')) {
       f.text(data[variable]);
-    }
-    if (f.attr('type') == "checkbox") {
+    } else if (f.attr('type') == "checkbox") {
       f.attr('checked', data[variable]);
       f.prop('checked', data[variable]);
     } else {
-      f.attr('value', data[variable]);
-      f.val(data[variable]);
+      value = data[variable];
+      if (typeof value === 'string' || value instanceof String) {
+        // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
+        if (value.substring(0, 6) == "/Date(") {
+          d = new Date(parseInt(value.substring(6, value.indexOf(')'))));
+          if (variable == "s_modification_id_t") {
+            value = d.getTime();
+          } else {
+            value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+            if (d.getHours() != 0 || d.getMinutes() != 0 && d.getSeconds() != 0) {
+              value += " " + ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2) + ":" + ("0"+d.getSeconds()).slice(-2);
+            }
+          }
+        }
+      }
+      f.attr('value', value);
+      f.val(value);
     }
     let g = tpl[0].outerHTML;
     if (data[variable] == null) {

@@ -99,8 +99,7 @@
 						{retired}
 					</div>
 					<div class="col">
-						<input class="form-check-input" type="checkbox" value="1" id="chkRetired" name="s_retired_l">
-						<label class="form-check-label" for="s_retired_l">{retired}</label>
+						<label class="form-check-label">{retired} <input class="form-check-input" type="checkbox" value="1" id="chkRetired" name="s_retired_l"></label>
 					</div>
 				</div>
 
@@ -109,8 +108,7 @@
 						{locked}
 					</div>
 					<div class="col">
-						<input class="form-check-input" type="checkbox" value="1" id="chkLocked" name="s_account_locked_l">
-						<label class="form-check-label" for="s_account_locked_l">{locked}</label>
+						<label class="form-check-label">{locked} <input class="form-check-input" type="checkbox" value="1" id="chkLocked" name="s_account_locked_l"></label>
 					</div>
 				</div>
 
@@ -126,6 +124,7 @@
 		</div>
 		</div>
 		<div class="modal-footer">
+			<input type="hidden" value="{SUser.s_modification_id_t}" name="s_modification_id_t">
 			<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
 			<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 		</div>
@@ -138,7 +137,7 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary">{forms.new}</button>
+			<button id="new" class="btn btn-primary" onclick="open_new()">{forms.new}</button>
 		</td>
 	</tr>
 </table>

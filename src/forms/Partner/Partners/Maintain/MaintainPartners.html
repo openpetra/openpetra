@@ -88,6 +88,15 @@
 
 			<div class="row FAMILY select_case">
 				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_title_c"/>
+				</div>
+			</div>
+
+			<div class="row FAMILY select_case">
+				<div class="col-3">
 					<span>{firstname}</span>
 				</div>
 				<div class="col-3">
@@ -101,12 +110,12 @@
 				</div>
 			</div>
 
-			<div class="row FAMILY select_case">
+			<div class="row PERSON select_case">
 				<div class="col-3">
 					<span>{title}</span>
 				</div>
 				<div class="col-3">
-					<input type="text" name="PFamily_p_title_c"/>
+					<input type="text" name="PPerson_p_title_c"/>
 				</div>
 			</div>
 
@@ -137,15 +146,6 @@
 				</div>
 				<div class="col-3">
 					<input type="text" name="p_date_of_birth_d"/>
-				</div>
-			</div>
-
-			<div class="row PERSON select_case">
-				<div class="col-3">
-					<span>{title}</span>
-				</div>
-				<div class="col-3">
-					<input type="text" name="PPerson_p_title_c"/>
 				</div>
 			</div>
 
@@ -190,10 +190,16 @@
 					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{addresses}</a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#types" aria-controls="types" onclick="show_tab(this)">{types}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#financial" aria-controls="financial" onclick="show_tab(this)">{financedetails}</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</a>
@@ -233,8 +239,83 @@
 
 					</div>
 				</div>
+				<div class="tab-pane" id="contactdetails">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{email address}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_email_address_c" size="25"/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{phone landline}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_phone_landline_c" size="25" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{phone mobile}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_phone_mobile_c" size="25"/>
+							</div>
+						</div>
+
+					</div>
+				</div>
 				<div class="tab-pane" id="subscriptions" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
 				<div class="tab-pane" id="types" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+				<div class="tab-pane" id="financial">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{receiptletterfrequency}</span>
+							</div>
+							<div class="col">
+								<select name="p_receipt_letter_frequency_c">
+									<option value=""></option>
+									<option value="ANNUAL">ANNUAL</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{receiptforeachgift}</span>
+							</div>
+							<div class="col">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkReceiptEachGift" name="p_receipt_each_gift_l"> {eachgift}</label>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{anonymousdonor}</span>
+							</div>
+							<div class="col">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkAnonymousDonor" name="p_anonymous_donor_l"> {anonymous}</label>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{financecomment}</span>
+							</div>
+							<div class="col">
+								<textarea name="p_finance_comment_c" style="width:90%;height:7em;"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div class="tab-pane text-center" id="comment">
 					<textarea name="PPartner_p_comment_c" style="width:90%;height:7em;" placeholder="{comment}"></textarea>
 				</div>
@@ -254,7 +335,16 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button class="btn btn-primary">{forms.new}</button>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary" onclick="open_new_family()">{forms.new}</button>
+				<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<span class="sr-only">Toggle Dropdown</span>
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" onclick="open_new_family()">{newfamily}</a>
+					<a class="dropdown-item" onclick="open_new_organisation()">{neworganisation}</a>
+				</div>
+			</div>
 			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>
@@ -286,12 +376,12 @@
 		</div>
 		<div class="col">
 			<select name="APartnerClass">
-				<option value="" selected>{forms.any}</option>
-				<option value="PERSON">{PERSON}</option>
-				<option value="FAMILY">{FAMILY}</option>
+				<option value="">{forms.any}</option>
+				<!--<option value="PERSON">{PERSON}</option>-->
+				<option value="FAMILY" selected>{FAMILY}</option>
 				<option value="ORGANISATION">{ORGANISATION}</option>
-				<option value="UNIT">{UNIT}</option>
-				<option value="BANK">{BANK}</option>
+				<!--<option value="UNIT">{UNIT}</option>-->
+				<!--<option value="BANK">{BANK}</option>-->
 			</select>
 		</div>
 	</div>

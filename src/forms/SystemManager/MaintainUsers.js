@@ -63,6 +63,33 @@ function open_detail(obj) {
 	obj.find('.collapse').collapse('show')
 }
 
+function open_new() {
+	r = {};
+	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_CreateUserWithInitialPermissions', r ).then(function (data) {
+
+		parsed = JSON.parse(data.data.d);
+		data = parsed.result;
+
+		let m = format_tpl($('[phantom] .tpl_edit').clone(), data.SUser[0]);
+		let g = m[0].outerHTML;
+		g = replaceAll(g, 'name="s_user_id_c" readonly', 'name="s_user_id_c"');
+		m = $(g);
+
+		let user_permissions = [];
+		for (let p of data.SUserModuleAccessPermission) {
+			if (p.s_can_access_l) {
+				user_permissions.push(p.s_module_id_c);
+			}
+		}
+
+		// generated fields
+		m = load_modules(parsed.result.SModule, user_permissions, m);
+
+		$('#modal_space').html(m);
+		$('#modal_space .modal').modal('show');
+	});
+}
+
 function open_edit(s_user_id_c) {
 	r = {'AUserId': s_user_id_c};
 	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_LoadUserAndModulePermissions', r ).then(function (data) {
@@ -105,9 +132,25 @@ function save_entry(obj_modal) {
 	x['AModulePermissions'] = applied_perm;
 	let arguments = translate_to_server(x);
 
+	let NewUser = false;
+	if (arguments['AModificationId'] == '') {
+		arguments['AModificationId'] = 0;
+		NewUser = true;
+	}
+
 	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_SaveUserAndModulePermissions', arguments).then(function (data) {
-		$('.modal').modal('hide');
-		display_message(i18next.t('forms.saved'), "success");
+		parsed_data = JSON.parse(data.data.d);
+		if (parsed_data.resultcode == "success") {
+			$('.modal').modal('hide');
+			display_message(i18next.t('forms.saved'), "success");
+			if (NewUser) {
+				display_list();
+			}
+		} else {
+			// TODO we need an error code from the server, to display a meaningful error message here
+			message = "We cannot save the user. " + parsed_data.errormsg;
+			display_message(message, "fail");
+		}
 	})
 }
 
