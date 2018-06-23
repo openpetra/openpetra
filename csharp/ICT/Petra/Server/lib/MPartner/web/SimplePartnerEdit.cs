@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -56,7 +57,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AFieldPartnerKey">can be -1, then the default site key is used</param>
         [RequireModulePermission("PTNRUSER")]
-        public static Int64 NewPartnerKey(Int64 AFieldPartnerKey)
+        public static Int64 NewPartnerKey(Int64 AFieldPartnerKey = -1)
         {
             Int64 NewPartnerKey = TNewPartnerKey.GetNewPartnerKey(AFieldPartnerKey);
 
@@ -82,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             PartnerEditTDS MainDS = partneredit.GetDataNewPartner(
                 -1,
-                -1,
+                NewPartnerKey(),
                 SharedTypes.PartnerClassStringToEnum(APartnerClass),
                 String.Empty,
                 String.Empty,
@@ -91,6 +92,23 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 -1,
                 -1,
                 out TmpSiteCountryCode);
+
+            MainDS.PPartner[0].ReceiptLetterFrequency = "ANNUAL";
+
+            PLocationRow location = MainDS.PLocation.NewRowTyped();
+            location.SiteKey = DomainManager.GSiteKey;
+            location.LocationKey = -1;
+            MainDS.PLocation.Rows.Add(location);
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    PPublicationAccess.LoadAll(MainDS, Transaction);
+                    PPartnerStatusAccess.LoadAll(MainDS, Transaction);
+                    PTypeAccess.LoadAll(MainDS, Transaction);
+                });
 
             APartnerTypes = new List<string>();
             ASubscriptions = new List<string>();
@@ -294,9 +312,46 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS SaveDS;
 
-            DataUtilities.CopyDataSet(AMainDS, SaveDS);
+            if (AMainDS.PPartner[0].ModificationId == DateTime.MinValue)
+            {
+                // this is a new partner
+                SaveDS = AMainDS;
+
+                if (SaveDS.PPartner[0].PartnerKey == -1)
+                {
+                    SaveDS.PPartner[0].PartnerKey = NewPartnerKey();
+                }
+
+                if (SaveDS.PFamily.Count > 0)
+                {
+                    SaveDS.PFamily[0].PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                }
+                else if (SaveDS.PPerson.Count > 0)
+                {
+                    SaveDS.PPerson[0].PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                }
+                else if (SaveDS.PChurch.Count > 0)
+                {
+                    SaveDS.PChurch[0].PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                }
+                else if (SaveDS.POrganisation.Count > 0)
+                {
+                    SaveDS.POrganisation[0].PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                }
+
+                PPartnerLocationRow partnerlocation = SaveDS.PPartnerLocation.NewRowTyped();
+                partnerlocation.PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                partnerlocation.LocationKey = SaveDS.PLocation[0].LocationKey;
+                partnerlocation.SiteKey = SaveDS.PLocation[0].SiteKey;
+                SaveDS.PPartnerLocation.Rows.Add(partnerlocation);
+            }
+            else
+            {
+                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+                DataUtilities.CopyDataSet(AMainDS, SaveDS);
+            }
 
             List<string> ExistingPartnerTypes = new List<string>();
             foreach (PPartnerTypeRow partnertype in SaveDS.PPartnerType.Rows)
