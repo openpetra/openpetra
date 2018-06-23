@@ -58,6 +58,16 @@ function open_detail(obj) {
 	obj.find('.collapse').collapse('show')
 }
 
+function open_new() {
+	r = {
+			APartnerClass: "FAMILY"
+		};
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		display_partner(parsed);
+	});
+}
+
 function open_edit(partner_id) {
 	var r = {
 				APartnerKey: partner_id,
@@ -65,35 +75,37 @@ function open_edit(partner_id) {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetails', r).then(function (data) {
-
 		parsed = JSON.parse(data.data.d);
-
-		// make a deep copy of the server data and set it as a global var.
-		last_opened_entry_data = $.extend(true, {}, parsed);
-		let m = $('[phantom] .tpl_edit').clone();
-		// normal info input
-		m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
-		m = format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
-		m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
-		m = format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
-		m = format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
-		m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
-		m = format_tpl(m ,parsed.result.PBank[0],"PBank_");
-
-		// generated fields
-		m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);
-		m = load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
-		m = format_tpl(m,
-			{'p_default_email_address_c': parsed.ADefaultEmailAddress,
-			'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
-			'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile},
-			null);
-
-		m.find('.select_case').hide();
-		m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
-		$('#modal_space').html(m);
-		$('#modal_space .modal').modal('show');
+		display_partner(parsed);
 	})
+}
+
+function display_partner(parsed) {
+	// make a deep copy of the server data and set it as a global var.
+	last_opened_entry_data = $.extend(true, {}, parsed);
+	let m = $('[phantom] .tpl_edit').clone();
+	// normal info input
+	m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
+	m = format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
+	m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
+	m = format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
+	m = format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
+	m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
+	m = format_tpl(m ,parsed.result.PBank[0],"PBank_");
+
+	// generated fields
+	m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);
+	m = load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
+	m = format_tpl(m,
+		{'p_default_email_address_c': parsed.ADefaultEmailAddress,
+		'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
+		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile},
+		null);
+
+	m.find('.select_case').hide();
+	m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
+	$('#modal_space').html(m);
+	$('#modal_space .modal').modal('show');
 }
 
 function save_entry(obj_modal) {
