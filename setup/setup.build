@@ -26,9 +26,9 @@
   <!-- result is in dir.setup for building the rpm package -->
 </target>
 
-<target name="install" depends="install.dotnet, install.js"/>
+<target name="install" depends="install.net, install.js"/>
 
-<target name="install.dotnet">
+<target name="install.net">
   <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
 
   <if test="${not directory::exists('/usr/local/openpetra/bin')}">
