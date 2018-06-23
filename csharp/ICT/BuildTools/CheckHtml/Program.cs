@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 using Ict.Common;
 
@@ -81,9 +82,20 @@ namespace Ict.Tools.CheckHtml
                         || !contents.Contains("modal-body")
                         || !contents.Contains("modal-footer"))
                     {
-                        Errors += file.Replace(AFormsDir, "") + 
+                        Errors += file.Replace(AFormsDir, "") +
                             ": missing modal-header, modal-body or modal-footer for the tpl_edit window" +
                             Environment.NewLine;
+                    }
+
+                    Regex rgx = new Regex("<label.*?for=.*?>");
+
+                    if (rgx.IsMatch(contents))
+                    {
+                        Errors += file.Replace(AFormsDir, "") +
+                            ": don't use label with for because we have the phantom object for the template which would cause multiple ids." +
+                            Environment.NewLine;
+                        Match m = rgx.Match(contents);
+                        Errors += " eg. " + m.Value + Environment.NewLine;
                     }
                 }
             }

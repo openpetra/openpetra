@@ -671,7 +671,6 @@ namespace Ict.Common
         private Stopwatch FStopwatch = new Stopwatch();
         private Action <TimeSpan>FCallback = null;
         private String FLog = string.Empty;
-        private Guid FGUID = Guid.Empty;
         private int FMyTicketNum = -1;
         private int FDebugLevel = 0;
         private bool FWriteClosingLog = false;
@@ -687,7 +686,6 @@ namespace Ict.Common
         public TPerformanceTester()
         {
             FStopwatch.Start();
-            FGUID = Guid.NewGuid();
         }
 
         /// <summary>
@@ -704,20 +702,6 @@ namespace Ict.Common
                 FMyTicketNum = TPerformanceTester.TicketNum++;
                 TLogging.LogAtLevel(FDebugLevel, string.Format("Tkt {0} S - {1}", FMyTicketNum, FLog));
                 FWriteClosingLog = true;
-            }
-        }
-
-        /// <summary>
-        /// Start the stopwatch and specify a GUID and a string to enter in the log on completion
-        /// </summary>
-        /// <param name="AGUID"></param>
-        /// <param name="ALog">A message identifier</param>
-        /// <param name="ADebugLevel">Log level</param>
-        public TPerformanceTester(Guid AGUID, String ALog, int ADebugLevel = 0) : this(ALog, ADebugLevel)
-        {
-            if (AGUID != Guid.Empty)
-            {
-                FGUID = AGUID;
             }
         }
 
@@ -750,37 +734,14 @@ namespace Ict.Common
         /// <param name="ALog"></param>
         /// <param name="ALogAtLevel"></param>
         /// <returns></returns>
-        public static TPerformanceTester Start(String ALog, int ALogAtLevel)
+        public static TPerformanceTester Start(String ALog, int ALogAtLevel = 0)
         {
-            if (ALogAtLevel >= TLogging.DebugLevel)
+            if ((ALogAtLevel == 0) || (ALogAtLevel >= TLogging.DebugLevel))
             {
                 return new TPerformanceTester(ALog, ALogAtLevel);
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Start the stopwatch and specify a string to enter in the log on completion
-        /// </summary>
-        /// <param name="AGUID"></param>
-        /// <param name="ALog"></param>
-        /// <returns></returns>
-        public static TPerformanceTester Start(Guid AGUID, String ALog)
-        {
-            return new TPerformanceTester(AGUID, ALog);
-        }
-
-        /// <summary>
-        /// Start the stopwatch and specify a string to enter in the log on completion
-        /// </summary>
-        /// <param name="AGUID"></param>
-        /// <param name="ALog"></param>
-        /// <param name="ALogAtLevel"></param>
-        /// <returns></returns>
-        public static TPerformanceTester Start(Guid AGUID, String ALog, int ALogAtLevel)
-        {
-            return new TPerformanceTester(AGUID, ALog, ALogAtLevel);
         }
 
         /// <summary>

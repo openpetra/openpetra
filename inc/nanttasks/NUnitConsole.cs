@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,6 +95,11 @@ namespace Ict.Tools.NAntTasks
                 throw new Exception("You need to define a valid location for nunit-console.exe in the variable external.NUnitConsole");
             }
 
+            if (!File.Exists(FAssemblyName))
+            {
+                throw new Exception("File " + FAssemblyName + " does not exist");
+            }
+
             if (!PlatformHelper.IsWindows)
             {
                 process.StartInfo.FileName = "mono";
@@ -149,6 +154,8 @@ namespace Ict.Tools.NAntTasks
 
             if (FailOnError && (process.ExitCode != 0))
             {
+                System.Console.WriteLine(" cd " + process.StartInfo.WorkingDirectory);
+                System.Console.WriteLine(" " + process.StartInfo.FileName + " " + process.StartInfo.Arguments);
                 throw new Exception("Exit Code " + process.ExitCode.ToString() + " shows that something went wrong");
             }
 

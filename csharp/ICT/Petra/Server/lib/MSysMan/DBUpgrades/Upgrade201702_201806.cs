@@ -1,10 +1,10 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanp
+//       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -21,8 +21,24 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System;
+using System.Data;
+using Ict.Common.DB;
+using Ict.Common;
+using Ict.Common.Data;
 
-[assembly: AssemblyFileVersion("4.0.0.0")]
+namespace Ict.Petra.Server.MSysMan.DBUpgrades
+{
+    /// <summary>
+    /// Upgrade the database
+    /// </summary>
+    public static partial class TDBUpgrade
+    {
+        /// Upgrade to version 2018-06
+        public static bool UpgradeDatabase201702_201806()
+        {
+            // there are no changes to the database structure
+            return true;
+        }
+    }
+}

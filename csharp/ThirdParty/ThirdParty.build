@@ -39,6 +39,8 @@
   <include name="Sodium.dll"/>
   <include name="libsodium.dll"/>
   <include name="libsodium-64.dll"/>
+  <include name="MailKit.dll"/>
+  <include name="MimeKit.dll"/>
 </patternset>
 
 <patternset id="NunitPattern">

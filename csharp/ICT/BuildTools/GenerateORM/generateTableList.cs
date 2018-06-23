@@ -84,29 +84,5 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             Template.FinishWriting(AFilename, ".cs", true);
         }
-
-        /// <summary>
-        /// write the file clean.sql that removes all data from the database, for easy resetting of the database with clean test data
-        /// </summary>
-        /// <param name="AStore"></param>
-        /// <param name="AFilename"></param>
-        public static void WriteDBClean(TDataDefinitionStore AStore, string AFilename)
-        {
-            StreamWriter sw = new StreamWriter(AFilename + ".new");
-
-            sw.WriteLine("-- Generated with nant generateORMTables");
-            List <TTable>tables = AStore.GetTables();
-            tables = TTableSort.TopologicalSort(AStore, tables);
-            tables.Reverse();
-
-            foreach (TTable t in tables)
-            {
-                sw.WriteLine("DELETE FROM " + t.strName + ";");
-            }
-
-            sw.Close();
-
-            TTextFile.UpdateFile(AFilename);
-        }
     }
 }

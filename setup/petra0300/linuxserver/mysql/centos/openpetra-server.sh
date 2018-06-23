@@ -182,6 +182,7 @@ fastcgi_param  SCRIPT_FILENAME    \$document_root\$fastcgi_script_name;
 FINISH
     fi
 
+    mkdir -p /etc/nginx/conf.d
     cat > /etc/nginx/conf.d/$userName.conf <<FINISH
 server {
     listen $OPENPETRA_HTTP_PORT;

@@ -26,7 +26,9 @@
   <!-- result is in dir.setup for building the rpm package -->
 </target>
 
-<target name="install">
+<target name="install" depends="install.net, install.js"/>
+
+<target name="install.net">
   <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
 
   <if test="${not directory::exists('/usr/local/openpetra/bin')}">
@@ -39,7 +41,9 @@
       <include name="**/*" />
     </fileset>
   </copy>
+</target>
 
+<target name="install.js">
   <exec program="bash"
         workingdir="${dir.root}/../openpetra-client-js"
         commandline="-c &quot;npm run build&quot;" />
@@ -49,7 +53,6 @@
       <include name="**/*" />
     </fileset>
   </copy>
-
 </target>
 
 <!-- Linux -->
@@ -160,25 +163,25 @@
     </fileset>
   </copy>
 
-  <if test="${string::contains(DBMS.Type, 'postgresql') and file::exists(dir.root + '/setup/petra'+PetraRelease+'/createtables-PostgreSQL.sql')}">
-    <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-PostgreSQL.sql"
+  <if test="${string::contains(DBMS.Type, 'postgresql') and file::exists(DeliveryDB.dir+'/createtables-PostgreSQL.sql')}">
+    <copy file="${DeliveryDB.dir}/createtables-PostgreSQL.sql"
               tofile="${dir.setup}/db/createtables-PostgreSQL.sql"/>
-    <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
+    <copy file="${DeliveryDB.dir}/createconstraints-PostgreSQL.sql"
               tofile="${dir.setup}/db/createconstraints-PostgreSQL.sql"/>
-    <if test="${file::exists(dir.root + '/setup/petra' + PetraRelease + '/demodata-PostgreSQL.sql')}">
-       <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
+    <if test="${file::exists(DeliveryDB.dir + '/demodata-PostgreSQL.sql')}">
+       <copy file="${DeliveryDB.dir}/demodata-PostgreSQL.sql"
               tofile="${dir.setup}/db/demodata-PostgreSQL.sql"/>
     </if>
   </if>
-  <if test="${string::contains(DBMS.Type, 'mysql') and file::exists(dir.root + '/setup/petra'+PetraRelease+'/createtables-MySQL.sql')}">
-    <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-MySQL.sql"
+  <if test="${string::contains(DBMS.Type, 'mysql') and file::exists(DeliveryDB.dir+'/createtables-MySQL.sql')}">
+    <copy file="${DeliveryDB.dir}/createtables-MySQL.sql"
               tofile="${dir.setup}/db/createtables-MySQL.sql"/>
-    <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
+    <copy file="${DeliveryDB.dir}/createconstraints-MySQL.sql"
               tofile="${dir.setup}/db/createconstraints-MySQL.sql"/>
-    <copy file="${dir.root}/setup/petra${PetraRelease}/petra.sql"
+    <copy file="${DeliveryDB.dir}/petra.sql"
               tofile="${dir.setup}/db/createdb-MySQL.sql"/>
-    <if test="${file::exists(dir.root + '/setup/petra' + PetraRelease + '/demodata-MySQL.sql')}">
-        <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
+    <if test="${file::exists(DeliveryDB.dir + '/demodata-MySQL.sql')}">
+        <copy file="${DeliveryDB.dir}/demodata-MySQL.sql"
               tofile="${dir.setup}/db/demodata-MySQL.sql"/>
     </if>
   </if>

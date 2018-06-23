@@ -108,4 +108,17 @@
     <echo message="Target test-all finished at: ${datetime::now()}" /> 
 </target>
 
+<target name="test" depends="remove_dlls">
+    <echo message="Target test started at: ${datetime::now()}" /> 
+
+    <if test="${property::exists('testcase')}">
+        <NUnitConsole assemblyname="${dir.bin}/${file}" testcase="${testcase}"/>
+    </if>
+    <if test="${not property::exists('testcase')}">
+        <NUnitConsole assemblyname="${dir.bin}/${file}"/>
+    </if>
+
+    <echo message="Target test finished at: ${datetime::now()}" /> 
+</target>
+
 </project>
