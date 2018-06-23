@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -40,6 +41,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
+using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
@@ -60,6 +62,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TNewPartnerKey.SubmitNewPartnerKey(NewPartnerKey - NewPartnerKey % 1000000, NewPartnerKey, ref NewPartnerKey);
             return NewPartnerKey;
+        }
+
+        /// <summary>
+        /// return the dataset for a new partner
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerEditTDS CreateNewPartner(
+            string APartnerClass,
+            out List<string> ASubscriptions,
+            out List<string> APartnerTypes,
+            out string ADefaultEmailAddress,
+            out string ADefaultPhoneMobile,
+            out string ADefaultPhoneLandline)
+        {
+            TPartnerEditUIConnector partneredit = new TPartnerEditUIConnector();
+            string TmpSiteCountryCode;
+
+            PartnerEditTDS MainDS = partneredit.GetDataNewPartner(
+                -1,
+                -1,
+                SharedTypes.PartnerClassStringToEnum(APartnerClass),
+                String.Empty,
+                String.Empty,
+                false,
+                -1,
+                -1,
+                -1,
+                out TmpSiteCountryCode);
+
+            APartnerTypes = new List<string>();
+            ASubscriptions = new List<string>();
+            ADefaultEmailAddress = String.Empty;
+            ADefaultPhoneMobile = String.Empty;
+            ADefaultPhoneLandline = String.Empty;
+
+            return MainDS;
         }
 
         /// <summary>

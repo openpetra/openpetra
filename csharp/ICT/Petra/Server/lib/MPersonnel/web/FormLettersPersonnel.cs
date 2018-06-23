@@ -54,7 +54,7 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
-using Ict.Petra.Server.MPartner.Partner.WebConnectors;
+//using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 
 namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 {
@@ -179,12 +179,15 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             if (MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, AReadTransaction))
             {
                 // first retrieve all partner information
+// we cannot reference MPartner connect because of SimplePartnerEdit, cyclic dependencies
+#if DISABLED_TP_20180623
                 TFormLettersWebConnector.FillFormDataFromPerson(APartnerKey,
                     AFormDataPerson,
                     AFormLetterInfo,
                     AReadTransaction,
                     ASiteKey,
                     ALocationKey);
+#endif
 
                 // retrieve Special Needs information
                 if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSpecialNeeds))
