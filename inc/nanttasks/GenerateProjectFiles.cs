@@ -595,6 +595,8 @@ namespace Ict.Tools.NAntTasks
         {
             absolutePath = Path.GetFullPath(absolutePath).Replace("\\", "/");
             workingDirectory = workingDirectory.Replace("\\", "/");
+//Console.WriteLine(absolutePath);
+//Console.WriteLine(workingDirectory);
 
             int countSame = 0;
 
@@ -623,6 +625,8 @@ namespace Ict.Tools.NAntTasks
                 }
             }
 
+//Console.WriteLine(Result);
+//Console.WriteLine();
             return Result.Replace('/', Path.DirectorySeparatorChar);
         }
 
@@ -736,8 +740,8 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${reference-name}", Path.GetFileNameWithoutExtension(referencedProject));
                     temp.Replace("${reference-path}", referencedProject.Replace('/', Path.DirectorySeparatorChar));
                     temp.Replace("${relative-reference-path}",
-                        GetRelativePath(CalculateSrcPathForProject(referencedProject), ASrcPath) +
-                        Path.DirectorySeparatorChar + referencedProject + ".csproj");
+                        GetRelativePath(CalculateSrcPathForProject(referencedProject) + Path.DirectorySeparatorChar, ASrcPath) +
+                        referencedProject + ".csproj");
                     OtherReferences.Append(temp.ToString());
                 }
                 else
@@ -746,8 +750,8 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${reference-project-file-name}", referencedProject + ".csproj");
                     temp.Replace("${relative-reference-project-file}", referencedProject + ".csproj");
                     temp.Replace("${relative-reference-path}",
-                        GetRelativePath(CalculateSrcPathForProject(referencedProject), ASrcPath) +
-                        Path.DirectorySeparatorChar + referencedProject + ".csproj");
+                        GetRelativePath(CalculateSrcPathForProject(referencedProject) + Path.DirectorySeparatorChar, ASrcPath) +
+                        referencedProject + ".csproj");
                     //temp.Replace(
                     //    "${reference-project-file}",
                     //    "FDirProjectFiles" + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + referencedProject + ".csproj");
