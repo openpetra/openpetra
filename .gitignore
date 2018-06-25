@@ -33,6 +33,9 @@ obj
 /log
 ./delivery
 ./delivery/**
+csharp/*.sln
+csharp/ICT/**/*.csproj
+csharp/ICT/**/AssemblyInfo.cs
 ./projectfiles/**
 csharp/ICT/Petra/Server/lib/data/*.cs
 csharp/ICT/Petra/Shared/lib/data/*.cs

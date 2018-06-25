@@ -153,22 +153,6 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
-        private string FDirProjectFiles = null;
-        /// <summary>
-        /// where to put the generated project files
-        /// </summary>
-        [TaskAttribute("DirProjectFiles", Required = true)]
-        public string DirProjectFiles {
-            get
-            {
-                return FDirProjectFiles;
-            }
-            set
-            {
-                FDirProjectFiles = value;
-            }
-        }
-
         private string FProjectVersion = null;
         /// <summary>
         /// the version number (4 numbers separated by dots) for the AssemblyInfo.cs file
@@ -201,6 +185,14 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string CalculateSrcPathForProject(string AProjectName)
+        {
+            return FCodeRootDir + Path.DirectorySeparatorChar +
+                AProjectName.
+                Replace("Ict.Tools.", "ICT.BuildTools.").
+                Replace("Ict.", "ICT.").
+                Replace('.', Path.DirectorySeparatorChar);
+        }
 
         private Dictionary <string, string>FProjectGUIDs;
         private Dictionary <string, TDetailsOfDll>FProjectDependencies;
@@ -232,20 +224,11 @@ namespace Ict.Tools.NAntTasks
 
                 IDEsDone.Add(ide);
 
-                if (!Directory.Exists(FDirProjectFiles + Path.DirectorySeparatorChar + ide))
-                {
-                    Directory.CreateDirectory(FDirProjectFiles + Path.DirectorySeparatorChar + ide);
-                }
-
                 bool OnlyTools = true;
 
                 foreach (string projectName in FProjectDependencies.Keys)
                 {
-                    string srcPath = FCodeRootDir + Path.DirectorySeparatorChar +
-                                     projectName.
-                                     Replace("Ict.Tools.", "ICT.BuildTools.").
-                                     Replace("Ict.", "ICT.").
-                                     Replace('.', Path.DirectorySeparatorChar);
+                    string srcPath = CalculateSrcPathForProject(projectName);
 
                     string ProjectType = FProjectDependencies[projectName].OutputType;
 
@@ -453,7 +436,7 @@ namespace Ict.Tools.NAntTasks
 
             string Projects = string.Empty;
             string ProjectConfiguration = string.Empty;
-            string SolutionFilename = FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + ASolutionFilename;
+            string SolutionFilename = FCodeRootDir + Path.DirectorySeparatorChar + ASolutionFilename;
 
             List <string>sortedProjects = SortProjectsByDependencies(FProjectDependencies);
 
@@ -485,7 +468,7 @@ namespace Ict.Tools.NAntTasks
                     }
 
                     temp.Replace("${ProjectName}", OutputName);
-                    temp.Replace("${ProjectFile}", OutputName + ".csproj");
+                    temp.Replace("${ProjectFile}", CalculateSrcPathForProject(OutputName) + Path.DirectorySeparatorChar + OutputName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
                     Projects += temp.ToString();
 
@@ -525,8 +508,8 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${FolderName}", solutionFolderName);
                     temp.Replace("${ProjectGuid}", GetProjectGUID(solutionFolderName));
 
-                    string DatasetFilesPath = FDirProjectFiles;         // will be <branch>/delivery/projects
-                    DatasetFilesPath += "/../../csharp/ICT/Petra/Shared/lib";
+                    string DatasetFilesPath = FCodeRootDir;         // will be <branch>/delivery/projects
+                    DatasetFilesPath += "/ICT/Petra/Shared/lib";
                     DatasetFilesPath = DatasetFilesPath.Replace('/', Path.DirectorySeparatorChar);
 
                     if (Directory.Exists(DatasetFilesPath))
@@ -559,8 +542,8 @@ namespace Ict.Tools.NAntTasks
                         temp.Replace("${FolderName}", solutionFolderName);
                         temp.Replace("${ProjectGuid}", GetProjectGUID(solutionFolderName));
 
-                        string SQLFilesPath = FDirProjectFiles;         // will be <branch>/delivery/projects
-                        SQLFilesPath += "/../../csharp/ICT/Petra/Server/sql";
+                        string SQLFilesPath = FCodeRootDir;         // will be <branch>/delivery/projects
+                        SQLFilesPath += "/ICT/Petra/Server/sql";
                         SQLFilesPath = SQLFilesPath.Replace('/', Path.DirectorySeparatorChar);
 
                         if (Directory.Exists(SQLFilesPath))
@@ -610,7 +593,7 @@ namespace Ict.Tools.NAntTasks
         /// get the relative path, that leads from the workingDirectory to the absolutePath
         public static string GetRelativePath(string absolutePath, string workingDirectory)
         {
-            absolutePath = absolutePath.Replace("\\", "/");
+            absolutePath = Path.GetFullPath(absolutePath).Replace("\\", "/");
             workingDirectory = workingDirectory.Replace("\\", "/");
 
             int countSame = 0;
@@ -622,9 +605,9 @@ namespace Ict.Tools.NAntTasks
                 countSame++;
             }
 
-            // go back to the last directory seperator
-            countSame = absolutePath.Substring(0, countSame).LastIndexOf("/") + 1;
-            string Result = absolutePath.Substring(countSame);
+            // go back to the last directory separator
+            countSame = absolutePath.Substring(0, countSame).LastIndexOf("/");
+            string Result = absolutePath.Substring(countSame + 1);
 
             if (countSame > 0)
             {
@@ -644,27 +627,24 @@ namespace Ict.Tools.NAntTasks
         }
 
         /// add AssemblyInfo file
-        private string AddAssemblyInfoFile(string AProjectName,
+        private string AddAssemblyInfoFile(
+            string ASrcPath,
+            string AProjectName,
             string ATemplateDir)
         {
-            string AssemblyInfoPath = Path.GetFullPath(FDirProjectFiles + "/../obj/" +
-                AProjectName + "/AssemblyInfo.cs");
+            string AssemblyInfoPath = Path.GetFullPath(
+                ASrcPath + "/AssemblyInfo.cs");
 
             StringBuilder temp = GetTemplateFile(ATemplateDir + "/../src/AssemblyInfo.cs");
 
             temp.Replace("${projectname}", AProjectName);
             temp.Replace("${projectversion}", FProjectVersion);
 
-            if (!Directory.Exists(Path.GetDirectoryName(AssemblyInfoPath)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(AssemblyInfoPath));
-            }
-
             StreamWriter swAssemblyInfo = new StreamWriter(AssemblyInfoPath);
             swAssemblyInfo.WriteLine(temp.ToString());
             swAssemblyInfo.Close();
 
-            string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
+            string relativeFilename = "AssemblyInfo.cs";
             string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
             temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
@@ -693,10 +673,11 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${OutputType}", AProjectType);
             template.Replace("${Namespace}", AProjectName);
             template.Replace("${NETframework-version}", FNetFrameworkVersion);
-            template.Replace("${dir.bin}", "../../bin");
-            template.Replace("${dir.bin.backslash}", "..\\..\\bin");
-            template.Replace("${dir.obj}", "../../obj");
-            template.Replace("${dir.obj.backslash}", "..\\..\\obj");
+            string deliveryPath = GetRelativePath(FCodeRootDir+"/../delivery", ASrcPath);
+            template.Replace("${dir.bin}", deliveryPath + "/bin");
+            template.Replace("${dir.bin.backslash}", (deliveryPath + "/bin").Replace("/", "\\"));
+            template.Replace("${dir.obj}", deliveryPath + "/obj");
+            template.Replace("${dir.obj.backslash}",  (deliveryPath + "/obj").Replace("/", "\\"));
 
             if (FDebugParameters.ContainsKey(AProjectName))
             {
@@ -707,56 +688,18 @@ namespace Ict.Tools.NAntTasks
                 template.Replace("${DebugStartArguments}", "");
             }
 
-            StringBuilder temp;
-
-            // Set the application icon for WinExe projects, if an icon file exists
+            // Set the ApplicationIcon (not used anymore)
             string replaceWith = String.Empty;
-
-            if (String.Compare(AProjectType, "WinExe", true) == 0)
-            {
-                string[] iconFiles = Directory.GetFiles(ASrcPath, "*.ico", SearchOption.TopDirectoryOnly);
-
-                if (iconFiles.Length > 0)
-                {
-                    temp = GetTemplateFile(ATemplateDir + "template.csproj.appicon");
-                    string iconPath = GetRelativePath(iconFiles[0], FDirProjectFiles + "/dummy/");
-                    temp.Replace("${application-Icon}", iconPath.Replace('/', Path.DirectorySeparatorChar));
-                    temp.Replace("${application-Icon-backslash}", iconPath.Replace('/', '\\'));
-                    replaceWith = temp.ToString();
-                }
-            }
 
             template.Replace("${ApplicationIcon}", replaceWith);
 
-            // set the application manifest if a file app.manifest exists (needed for patch tool)
+            // Set the ApplicationManifest (was used for PatchTool)
             replaceWith = String.Empty;
-
-            if (File.Exists(ASrcPath + Path.DirectorySeparatorChar + "app.manifest"))
-            {
-                temp = GetTemplateFile(ATemplateDir + "template.csproj.appmanifest");
-                string manifestPath = GetRelativePath(ASrcPath + Path.DirectorySeparatorChar + "app.manifest", FDirProjectFiles + "/dummy/");
-                temp.Replace("${application-Manifest}", manifestPath.Replace('/', Path.DirectorySeparatorChar));
-                temp.Replace("${application-Manifest-backslash}", manifestPath.Replace('/', '\\'));
-                replaceWith = temp.ToString();
-            }
 
             template.Replace("${ApplicationManifest}", replaceWith);
 
-            // Set the Pre-build event if required by the environment and if the project is Ict.Common
+            // Set the Pre-build event (was used for OPDA)
             replaceWith = String.Empty;
-
-            if ((AProjectName == "Ict.Common") && (Environment.GetEnvironmentVariable("OPDA_StopServer") != null))
-            {
-                string path = Environment.GetEnvironmentVariable("OPDA_PATH");
-
-                if (path != null)
-                {
-                    Uri u = new Uri(path);
-                    temp = GetTemplateFile(ATemplateDir + "template.csproj.preBuildEvent");
-                    temp = temp.Replace("${opda-path}", String.Format("\"{0}\"", u.LocalPath));
-                    replaceWith = temp.ToString();
-                }
-            }
 
             template.Replace("${PreBuildEvent}", replaceWith);
 
@@ -768,6 +711,7 @@ namespace Ict.Tools.NAntTasks
             // replace references
             StringBuilder ProjectReferences = new StringBuilder();
             StringBuilder OtherReferences = new StringBuilder();
+            StringBuilder temp;
 
             foreach (string referencedProject in AProjectDependencies)
             {
@@ -802,7 +746,7 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${relative-reference-path}", referencedProject + ".csproj");
                     temp.Replace(
                         "${reference-project-file}",
-                        FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + referencedProject + ".csproj");
+                        "FDirProjectFiles" + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + referencedProject + ".csproj");
                     temp.Replace("${reference-project-guid}", GetProjectGUID(referencedProject));
                     temp.Replace("${reference-name}", referencedProject);
                     ProjectReferences.Append(temp.ToString());
@@ -815,12 +759,21 @@ namespace Ict.Tools.NAntTasks
 
             StringBuilder CompileFile = new StringBuilder();
 
+            // add AssemblyInfo file
+            CompileFile.Append(AddAssemblyInfoFile(ASrcPath, AProjectName, ATemplateDir));
+
             List <string>ContainsFiles = new List <string>(Directory.GetFiles(ASrcPath, "*.cs", SearchOption.TopDirectoryOnly));
 
             foreach (string ContainedFile in ContainsFiles)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
+                string relativeFilename = Path.GetFileName(ContainedFile);
                 string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
+
+                if (ContainedFile.Contains("AssemblyInfo.cs"))
+                {
+                    // has been added automatically
+                    continue;
+                }
 
                 if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
                     || (ContainedFile.EndsWith(".Designer.cs") && File.Exists(ContainedFile.Replace(".Designer.cs", ".cs"))))
@@ -884,7 +837,7 @@ namespace Ict.Tools.NAntTasks
 
                         // Add the YAML file as a dependent non-compile file
                         OtherFile = ContainedFile.Replace("-generated.cs", ".yaml");
-                        string OtherFileRelativeFilename = GetRelativePath(OtherFile, FDirProjectFiles + "/dummy/");
+                        string OtherFileRelativeFilename = OtherFile;
 
                         if (File.Exists(OtherFile) && File.Exists(ATemplateDir + "template.csproj.none.DependentUpon"))
                         {
@@ -899,9 +852,6 @@ namespace Ict.Tools.NAntTasks
                 }
             }
 
-            // add AssemblyInfo file
-            CompileFile.Append(AddAssemblyInfoFile(AProjectName, ATemplateDir));
-
             // finish Compile file section
             template.Replace("${TemplateCompile}", CompileFile.ToString());
 
@@ -911,7 +861,7 @@ namespace Ict.Tools.NAntTasks
 
             foreach (string ContainedFile in ContainsResources)
             {
-                string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/");
+                string relativeFilename = ContainedFile;
 
                 string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
@@ -954,7 +904,7 @@ namespace Ict.Tools.NAntTasks
                     {
                         replaceWith += temp;
                         replaceWith = replaceWith.Replace("${filename}", dataXmlFiles[i]);
-                        string OtherFileRelativeFilename = GetRelativePath(dataXmlFiles[i], FDirProjectFiles + "/dummy/");
+                        string OtherFileRelativeFilename = dataXmlFiles[i];
                         replaceWith = replaceWith.Replace("${relative-filename}", OtherFileRelativeFilename);
                         replaceWith = replaceWith.Replace("${relative-filename-backslash}", OtherFileRelativeFilename.Replace('/', '\\'));
                     }
@@ -970,12 +920,12 @@ namespace Ict.Tools.NAntTasks
             }
 
             template.Replace("${dir.3rdParty}",
-                GetRelativePath(FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty", FDirProjectFiles + "\\devenv\\").Replace("/", "\\"));
+                GetRelativePath(FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty", ASrcPath).Replace("\\", "/"));
             template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();
 
-            string filename = FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + AProjectName + ".csproj";
+            string filename = ASrcPath + Path.DirectorySeparatorChar + AProjectName + ".csproj";
             StreamWriter sw = new StreamWriter(filename);
             sw.WriteLine(completedFile);
             sw.Close();
