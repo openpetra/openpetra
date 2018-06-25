@@ -735,7 +735,9 @@ namespace Ict.Tools.NAntTasks
 
                     temp.Replace("${reference-name}", Path.GetFileNameWithoutExtension(referencedProject));
                     temp.Replace("${reference-path}", referencedProject.Replace('/', Path.DirectorySeparatorChar));
-                    temp.Replace("${relative-reference-path}", referencedProject);
+                    temp.Replace("${relative-reference-path}",
+                        GetRelativePath(CalculateSrcPathForProject(referencedProject), ASrcPath) +
+                        Path.DirectorySeparatorChar + referencedProject + ".csproj");
                     OtherReferences.Append(temp.ToString());
                 }
                 else
@@ -743,10 +745,12 @@ namespace Ict.Tools.NAntTasks
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.projectreference");
                     temp.Replace("${reference-project-file-name}", referencedProject + ".csproj");
                     temp.Replace("${relative-reference-project-file}", referencedProject + ".csproj");
-                    temp.Replace("${relative-reference-path}", referencedProject + ".csproj");
-                    temp.Replace(
-                        "${reference-project-file}",
-                        "FDirProjectFiles" + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + referencedProject + ".csproj");
+                    temp.Replace("${relative-reference-path}",
+                        GetRelativePath(CalculateSrcPathForProject(referencedProject), ASrcPath) +
+                        Path.DirectorySeparatorChar + referencedProject + ".csproj");
+                    //temp.Replace(
+                    //    "${reference-project-file}",
+                    //    "FDirProjectFiles" + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + referencedProject + ".csproj");
                     temp.Replace("${reference-project-guid}", GetProjectGUID(referencedProject));
                     temp.Replace("${reference-name}", referencedProject);
                     ProjectReferences.Append(temp.ToString());
