@@ -1,2 +1,0 @@
-﻿Project("${SolutionGuid}") = "${ProjectName}", "${ProjectName}.csproj", "${ProjectGuid}"
-EndProject
