@@ -31,7 +31,7 @@ ${ApplicationManifest}
     <DebugType>None</DebugType>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 ${ApplicationIcon}${PreBuildEvent}${PostBuildEvent}  <ItemGroup>
 ${TemplateReferences}  </ItemGroup>
   <ItemGroup>
