@@ -468,7 +468,7 @@ namespace Ict.Tools.NAntTasks
                     }
 
                     temp.Replace("${ProjectName}", OutputName);
-                    temp.Replace("${ProjectFile}", CalculateSrcPathForProject(OutputName) + Path.DirectorySeparatorChar + OutputName + ".csproj");
+                    temp.Replace("${ProjectFile}", GetRelativePath(CalculateSrcPathForProject(OutputName) + "/", FCodeRootDir + "/") + Path.DirectorySeparatorChar + OutputName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
                     Projects += temp.ToString();
 
@@ -594,7 +594,7 @@ namespace Ict.Tools.NAntTasks
         public static string GetRelativePath(string absolutePath, string workingDirectory)
         {
             absolutePath = Path.GetFullPath(absolutePath).Replace("\\", "/");
-            workingDirectory = workingDirectory.Replace("\\", "/");
+            workingDirectory = Path.GetFullPath(workingDirectory).Replace("\\", "/");
 //Console.WriteLine(absolutePath);
 //Console.WriteLine(workingDirectory);
 
@@ -614,7 +614,8 @@ namespace Ict.Tools.NAntTasks
             if (countSame > 0)
             {
                 // how many directories do we need to go up from the working Directory
-                while (countSame < workingDirectory.Length)
+                // ignore trailing slash
+                while (countSame < workingDirectory.Length - 1)
                 {
                     if (workingDirectory[countSame] == '/')
                     {
@@ -680,8 +681,8 @@ namespace Ict.Tools.NAntTasks
             string deliveryPath = GetRelativePath(FCodeRootDir+"/../delivery", ASrcPath);
             template.Replace("${dir.bin}", deliveryPath + "/bin");
             template.Replace("${dir.bin.backslash}", (deliveryPath + "/bin").Replace("/", "\\"));
-            template.Replace("${dir.obj}", deliveryPath + "/obj");
-            template.Replace("${dir.obj.backslash}",  (deliveryPath + "/obj").Replace("/", "\\"));
+            template.Replace("${dir.obj}", deliveryPath + "/obj/");
+            template.Replace("${dir.obj.backslash}",  (deliveryPath + "/obj/").Replace("/", "\\"));
 
             if (FDebugParameters.ContainsKey(AProjectName))
             {

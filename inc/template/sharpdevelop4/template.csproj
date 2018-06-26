@@ -9,11 +9,11 @@
     <AssemblyName>${Namespace}</AssemblyName>
     <TargetFrameworkVersion>v${NETframework-version}</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <BaseIntermediateOutputPath>${dir.obj.backslash}\</BaseIntermediateOutputPath>
-    <NoStdLib>False</NoStdLib>    
-    <OutputPath>${dir.bin.backslash}</OutputPath>
+    <BaseIntermediateOutputPath>${dir.obj}</BaseIntermediateOutputPath>
+    <NoStdLib>False</NoStdLib>
+    <OutputPath>${dir.bin}</OutputPath>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DocumentationFile>${dir.bin.backslash}\${Namespace}.xml</DocumentationFile>
+    <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
     <Optimize>False</Optimize>
     <StartArguments>${DebugStartArguments}</StartArguments>
 ${ApplicationManifest}
@@ -31,7 +31,7 @@ ${ApplicationManifest}
     <DebugType>None</DebugType>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)/Microsoft.CSharp.targets" />
 ${ApplicationIcon}${PreBuildEvent}${PostBuildEvent}  <ItemGroup>
 ${TemplateReferences}  </ItemGroup>
   <ItemGroup>
