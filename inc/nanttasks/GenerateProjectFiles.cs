@@ -190,6 +190,7 @@ namespace Ict.Tools.NAntTasks
             return FCodeRootDir + Path.DirectorySeparatorChar +
                 AProjectName.
                 Replace("Ict.Tools.", "ICT.BuildTools.").
+                Replace("Ict.PetraServerAdminConsole", "Ict.Petra.ServerAdmin.PetraServerAdminConsole").
                 Replace("Ict.", "ICT.").
                 Replace('.', Path.DirectorySeparatorChar);
         }

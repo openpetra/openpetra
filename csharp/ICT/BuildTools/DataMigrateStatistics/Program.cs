@@ -15,7 +15,7 @@ using Ict.Common.IO;
 using Ict.Tools.DBXML;
 using System.Collections.Generic;
 
-namespace ICT.Tools.DataMigrateStatistics
+namespace Ict.Tools.DataMigrateStatistics
 {
     class Program
     {
