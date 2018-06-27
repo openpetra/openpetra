@@ -218,7 +218,7 @@ namespace Ict.Tools.NAntTasks
             {
                 if (IDEsDone.Contains(ide))
                 {
-                    // we force to run sharpdevelop4 (devenv-msbuild), but don't want to run it twice if it is part of the user's projectfiles.templates-list
+                    // we force to run vscode (devenv-msbuild), but don't want to run it twice if it is part of the user's projectfiles.templates-list
                     continue;
                 }
 

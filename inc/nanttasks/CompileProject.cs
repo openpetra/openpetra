@@ -42,7 +42,7 @@ using NAnt.DotNet.Types;
 namespace Ict.Tools.NAntTasks
 {
     /// <summary>
-    /// compile a project from a csproj file (in SharpDevelop4 format)
+    /// compile a project from a csproj file (in vscode format)
     /// </summary>
     [TaskName("CompileProject")]
     public class CompileProject : NAnt.Core.Task

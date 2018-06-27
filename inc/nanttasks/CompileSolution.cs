@@ -36,7 +36,7 @@ using NAnt.DotNet.Tasks;
 namespace Ict.Tools.NAntTasks
 {
     /// <summary>
-    /// compile a solution file (in SharpDevelop4 format). the projects have already been put into the right order
+    /// compile a solution file (in vscode format). the projects have already been put into the right order
     /// </summary>
     [TaskName("CompileSolution")]
     public class CompileSolution : NAnt.Core.Task
