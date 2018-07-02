@@ -476,7 +476,7 @@ namespace Ict.Tools.NAntTasks
                     }
 
                     temp.Replace("${ProjectName}", OutputName);
-                    temp.Replace("${ProjectFile}", GetRelativePath(CalculateSrcPathForProject(OutputName) + "/", FCodeRootDir + "/") + Path.DirectorySeparatorChar + OutputName + ".csproj");
+                    temp.Replace("${ProjectFile}", GetRelativePath(CalculateSrcPathForProject(OutputName) + "/", FCodeRootDir + "/") + OutputName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
                     Projects += temp.ToString();
 
