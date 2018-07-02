@@ -189,8 +189,15 @@ namespace Ict.Tools.NAntTasks
         {
             return FCodeRootDir + Path.DirectorySeparatorChar +
                 AProjectName.
+                Replace("Ict.Tools.SQLiteConsole", "Ict.Petra.Tools.SQLiteConsole").
+                Replace("Ict.Petra.Tools.MSysMan.YmlGzImportExport", "Ict.Petra.Tools.YmlGzImportExport").
+                Replace("Ict.Petra.Tools.MFinance.Server.GDPdUExport", "Ict.Petra.Tools.FinanceGDPdUExport").
                 Replace("Ict.Tools.", "ICT.BuildTools.").
                 Replace("Ict.PetraServerAdminConsole", "Ict.Petra.ServerAdmin.PetraServerAdminConsole").
+                Replace("Ict.Testing.I18N_GNU.Gettext", "Ict.Testing.exe.I18N_GNU_Gettext").
+                Replace("Ict.Testing.I18N", "Ict.Testing.exe.I18N").
+                Replace("Ict.Testing.BrowserTests.OnlineRegistration", "Ict.Testing.exe.BrowserTests.OnlineRegistration").
+                Replace("Ict.", "ICT.").
                 Replace("Ict.", "ICT.").
                 Replace('.', Path.DirectorySeparatorChar);
         }
