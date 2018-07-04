@@ -305,7 +305,7 @@ useful parameters
     TemplateDir="${dir.incdir.template}"
     DevEnvironments="${devenv-msbuild},${projectfiles.templates-list}"
     DirBin="${dir.bin}"
-    NetFrameworkVersion="${NETframework-version}"
+    NetFrameworkVersion="4.5.1"
     ProjectVersion="${ReleaseID}"
     DebugParameters="PetraClient,-C:${ClientConfigFile},PetraServerConsole,-C:${ServerConfigFile}"
     />
