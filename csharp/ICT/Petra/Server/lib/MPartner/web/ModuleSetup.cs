@@ -160,5 +160,103 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
 
             return true;
         }
+
+        /// <summary>
+        /// Loads all available Publications.
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerSetupTDS LoadPublications()
+        {
+            TDBTransaction ReadTransaction = null;
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    PPublicationAccess.LoadAll(MainDS, ReadTransaction);
+                });
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// maintain publications
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool MaintainPublications(string action, Dictionary<string, string> data)
+        {
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+
+            if (action == "create")
+            {
+                PPublicationRow row = MainDS.PPublication.NewRowTyped();
+                row.PublicationCode = data["p_publication_code_c"].ToUpper();
+                row.PublicationDescription = data["p_publication_description_c"];
+                row.FrequencyCode = "Annual";
+                MainDS.PPublication.Rows.Add(row);
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "update")
+            {
+                MainDS = LoadPublications();
+
+                foreach (PPublicationRow row in MainDS.PPublication.Rows)
+                {
+                    if (row.PublicationCode == data["p_publication_code_c"])
+                    {
+                        row.PublicationDescription = data["p_publication_description_c"];
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadPublications();
+
+                foreach (PPublicationRow row in MainDS.PPublication.Rows)
+                {
+                    if (row.PublicationCode == data["p_publication_code_c"])
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
