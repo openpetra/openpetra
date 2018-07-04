@@ -20,9 +20,11 @@
 
         "Partner_label": "Partner",
         "Partners_label": "Partner",
+        "Types_label": "Kategorien",
         "Maintain_label": "Verwalten",
         "MaintainPartners_label": "Partner verwalten",
         "MaintainPublications_label": "Bearbeiten von Abonnements",
+        "MaintainTypes_label": "Bearbeiten von Kategorien",
         "CreatePartner_label": "Partner anlegen",
         "ImportExport_label": "Importieren/Exportieren",
         "Subscription_label": "Abonnements",
@@ -145,7 +147,7 @@
     },
 
     "MaintainPublications": {
-      "caption":"Abbonents bearbeiten",
+      "caption":"Abo bearbeiten",
       "addtitle":"Abo hinzufügen",
       "edittitle":"Abo bearbeiten",
       "name":"Abo Name",
@@ -156,6 +158,18 @@
       "ask_delete":"Sind sie sicher das die dieses Abo löschen möchten?",
       "confirm_edit":"",
       "confirm_delete":"Das Abo wurde erfolgreich gelöscht"
+    },
+
+    "MaintainTypes":{
+      "caption":"Kategorien verwalten",
+      "name":"Kategorie Name",
+      "edittitle":"Kategorie bearbeiten",
+      "addtitle":"Kategorie hinzufügen",
+      "ask_delete":"Sind sie sicher das die dieses Kategorie löschen möchten?",
+      "entry_name":"Kategoriename",
+      "entry_status":"Active",
+      "entry_dis":"Kategorie Beschreibung"
+
     }
 
 }

@@ -29,14 +29,12 @@ $('document').ready(function () {
 });
 
 function display_list() {
-  let r = {'ACacheableTable':'PublicationList', 'AHashCode':''};
-	api.post('serverMPartner.asmx/TSubscriptionsCacheableWebConnector_GetCacheableTable',r).then(function (data) {
-    data.data.d = data.data.d.replace('"AType": Ict.Petra.Shared.MPartner.Mailroom.Data.PPublicationTable,', '');
-    data = JSON.parse(data.data.d);
+	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPartnerTypes', {}).then(function (data) {
+	  data = JSON.parse(data.data.d);
 		// on reload, clear content
-    last_requested_data = data.result;
 		$('#browse_container').html('');
-		for (item of data.result) {
+		last_requested_data = data.result.PType;
+		for (item of data.result.PType) {
 			// format a abo for every entry
 			format_item(item);
 		}
@@ -63,7 +61,7 @@ function open_detail(obj) {
 function open_edit(sub_id) {
   let z = null;
   for (sub of last_requested_data) {
-    if (sub.p_publication_code_c == sub_id) {
+    if (sub.p_type_code_c == sub_id) {
       z = sub;
       break;
     }
@@ -72,10 +70,6 @@ function open_edit(sub_id) {
   var f = format_tpl( $('[phantom] .tpl_edit').clone(), z);
   $('#modal_space').html(f);
 	$('#modal_space .modal').modal('show');
-
-
-
-
 }
 
 function open_new() {
@@ -120,7 +114,7 @@ function delete_entry(d) {
   let raw = $(d).closest('.modal');
   let e = extract_data(raw);
 
-  let s = confirm( i18next.t('MaintainPublications.ask_delete') );
+  let s = confirm( i18next.t('MaintainTypes.ask_delete') );
   if (!s) {return}
 
   let request = {

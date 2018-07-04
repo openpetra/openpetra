@@ -23,7 +23,8 @@ OpenPetra:
                         PartnerBySubscription: {ActionOpenScreen=TFrmPartnerBySubscription}
 
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
-                    Partner-related:
+                    Types:
+                        MaintainTypes:
                         ContactAttributes: {ActionOpenScreen=TFrmContactAttributeSetup}
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCountrySetup}
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLanguageCodeSetup}
