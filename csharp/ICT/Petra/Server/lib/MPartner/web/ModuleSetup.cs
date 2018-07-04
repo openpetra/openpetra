@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Xml;
 using System.IO;
+using System.Collections.Generic;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
@@ -85,6 +86,79 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
             }
 
             return TSubmitChangesResult.scrError;
+        }
+
+        /// <summary>
+        /// save partner types
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool MaintainTypes(string action, Dictionary<string, string> data)
+        {
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+
+            if (action == "create")
+            {
+                PTypeRow row = MainDS.PType.NewRowTyped();
+                row.TypeCode = data["p_type_code_c"].ToUpper();
+                row.TypeDescription = data["p_type_description_c"];
+                MainDS.PType.Rows.Add(row);
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "update")
+            {
+                MainDS = LoadPartnerTypes();
+
+                foreach (PTypeRow row in MainDS.PType.Rows)
+                {
+                    if (row.TypeCode == data["p_type_code_c"])
+                    {
+                        row.TypeDescription = data["p_type_description_c"];
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadPartnerTypes();
+
+                foreach (PTypeRow row in MainDS.PType.Rows)
+                {
+                    if (row.TypeCode == data["p_type_code_c"])
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
