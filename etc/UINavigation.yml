@@ -41,8 +41,8 @@ OpenPetra:
                         InterestCategory: {ActionOpenScreen=TFrmInterestCategorySetup}
                         Interest: {ActionOpenScreen=TFrmInterestSetup}
 
-                    Subscription-related:
-                        Publications: {ActionOpenScreen=TFrmPublicationSetup}
+                    Subscription:
+                        MaintainPublications:
                         PublicationCosts: {ActionOpenScreen=TFrmPublicationCostSetup}
                         ReasonSubscriptionGiven: {ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}
                         ReasonSubscriptionCancelled: {ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}

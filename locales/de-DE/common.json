@@ -22,9 +22,10 @@
         "Partners_label": "Partner",
         "Maintain_label": "Verwalten",
         "MaintainPartners_label": "Partner verwalten",
+        "MaintainPublications_label": "Bearbeiten von Abonnements",
         "CreatePartner_label": "Partner anlegen",
         "ImportExport_label": "Importieren/Exportieren",
-        "Subscriptions_label": "Abonnements",
+        "Subscription_label": "Abonnements",
         "Reports_label": "Berichte",
         "PartnerReports_label": "Berichte",
         "Setup_label": "Konfiguration",
@@ -141,6 +142,20 @@
 
     "ChangeLanguage": {
         "caption": "Sprache wechseln"
+    },
+
+    "MaintainPublications": {
+      "caption":"Abbonents bearbeiten",
+      "addtitle":"Abo hinzufügen",
+      "edittitle":"Abo bearbeiten",
+      "name":"Abo Name",
+      "entry_name":"Abo Benennung",
+      "entry_status":"Active",
+      "entry_dis":"Abo Beschreibung",
+      "entry_freq":"Frequenz",
+      "ask_delete":"Sind sie sicher das die dieses Abo löschen möchten?",
+      "confirm_edit":"",
+      "confirm_delete":"Das Abo wurde erfolgreich gelöscht"
     }
 
 }
