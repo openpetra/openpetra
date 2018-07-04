@@ -1059,13 +1059,13 @@ namespace Ict.Tools.NAntTasks
         {
             if (SolutionFolderName == "Definitions")
             {
-                string work = String.Format("\t\t../../../csharp/ICT/Petra/Definitions/{0} = ../../../csharp/ICT/Petra/Definitions/{0}{1}",
+                string work = String.Format("\t\tICT/Petra/Definitions/{0} = ICT/Petra/Definitions/{0}{1}",
                     FileName, Environment.NewLine);
 
                 if (FileName == "InterfacesUsingNamespaces.yml")
                 {
                     work = String.Format(
-                        "\t\t../../../csharp/ICT/Petra/Shared/lib/Interfaces/{0} = ../../../csharp/ICT/Petra/Shared/lib/Interfaces/{0}{1}",
+                        "\t\tICT/Petra/Shared/lib/Interfaces/{0} = ICT/Petra/Shared/lib/Interfaces/{0}{1}",
                         FileName,
                         Environment.NewLine);
                 }
@@ -1074,21 +1074,21 @@ namespace Ict.Tools.NAntTasks
             }
             else if (SolutionFolderName == "Database")
             {
-                string work = String.Format("\t\t../../../db/{0} = ../../../db/{0}{1}",
+                string work = String.Format("\t\t../db/{0} = ../db/{0}{1}",
                     FileName, Environment.NewLine);
 
                 return work.Replace('/', Path.DirectorySeparatorChar);
             }
             else if (SolutionFolderName == "SQL")
             {
-                string work = String.Format("\t\t../../../csharp/ICT/Petra/Server/sql/{0} = ../../../csharp/ICT/Petra/Server/sql/{0}{1}",
+                string work = String.Format("\t\tcsharp/ICT/Petra/Server/sql/{0} = csharp/ICT/Petra/Server/sql/{0}{1}",
                     FileName, Environment.NewLine);
 
                 return work.Replace('/', Path.DirectorySeparatorChar);
             }
             else if (SolutionFolderName == "Datasets")
             {
-                string work = String.Format("\t\t../../../csharp/ICT/Petra/Shared/{0} = ../../../csharp/ICT/Petra/Shared/{0}{1}",
+                string work = String.Format("\t\tICT/Petra/Shared/{0} = csharp/ICT/Petra/Shared/{0}{1}",
                     FileName, Environment.NewLine);
 
                 return work.Replace('/', Path.DirectorySeparatorChar);
