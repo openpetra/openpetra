@@ -206,12 +206,14 @@ namespace GenerateGlue
                 bool TypedDataSetParameter = parametertype.EndsWith("TDS");
                 bool EnumParameter = parametertype.EndsWith("Enum");
                 bool ListParameter = parametertype.StartsWith("List<");
+                bool DictParameter = parametertype.StartsWith("Dictionary<");
                 bool BinaryParameter =
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
                       || (parametertype.StartsWith("System.Int16"))
                       || (parametertype.StartsWith("System.String")) || (parametertype.StartsWith("System.Boolean"))
                       || EnumParameter
-                      || ListParameter);
+                      || ListParameter
+                      || DictParameter);
 
                 if (ActualParameters.Length > 0)
                 {
@@ -246,6 +248,16 @@ namespace GenerateGlue
                         Environment.NewLine);
                 }
                 else if (ListParameter && parametertype.Contains("System.String") && ((ParameterModifiers.Out & p.ParamModifier) == 0))
+                {
+                    if (!parametertype.Contains("[]"))
+                    {
+                        snippet.AddToCodelet(
+                            "LOCALVARIABLES",
+                            p.ParameterName + " = THttpBinarySerializer.DeserializeObject(" + p.ParameterName + ");" +
+                            Environment.NewLine);
+                    }
+                }
+                else if (DictParameter && parametertype.Contains("System.String>") && ((ParameterModifiers.Out & p.ParamModifier) == 0))
                 {
                     if (!parametertype.Contains("[]"))
                     {

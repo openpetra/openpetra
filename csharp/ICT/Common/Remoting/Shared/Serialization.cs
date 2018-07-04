@@ -444,5 +444,32 @@ namespace Ict.Common.Remoting.Shared
 
             return result;
         }
+
+        /// <summary>
+        /// Deserialize Dictionary of String, that might be base64 encoded
+        /// </summary>
+        static public Dictionary<string,string> DeserializeObject(Dictionary<string,string> d)
+        {
+            if (d == null)
+            {
+                return null;
+            }
+
+            Dictionary<string,string> result = new Dictionary<string,string>();
+
+            foreach (KeyValuePair<string, string> entry in d) {
+                string key = entry.Key;
+                string value = entry.Value;
+
+                if (value.EndsWith(":base64"))
+                {
+                    value = System.Text.UTF8Encoding.ASCII.GetString(Convert.FromBase64String(value.Substring(0, value.Length - ":base64".Length)));
+                }
+
+                result.Add(key, value);
+            }
+
+            return result;
+        }
     }
 }
