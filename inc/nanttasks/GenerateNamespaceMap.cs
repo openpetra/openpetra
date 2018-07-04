@@ -291,10 +291,17 @@ namespace Ict.Tools.NAntTasks
                             }
                         }
                     }
-                    else if (line.Trim().StartsWith("using "))
+                    else if (line.Trim().StartsWith("using ") ||
+                        line.Trim().StartsWith("// generateNamespaceMap-Link-Extra-DLL "))
                     {
                         string Namespace = line.Substring("using".Length);
                         int indexComment = Namespace.IndexOf("//");
+
+                        if (line.Trim().StartsWith("// generateNamespaceMap-Link-Extra-DLL "))
+                        {
+                            Namespace = line.Substring("// generateNamespaceMap-Link-Extra-DLL ".Length);
+                            indexComment = Namespace.IndexOf("//");
+                        }
 
                         if (indexComment != -1)
                         {
@@ -333,34 +340,6 @@ namespace Ict.Tools.NAntTasks
                                 {
                                     DetailsOfDll.UsedNamespaces.Add(Namespace);
                                 }
-                            }
-                        }
-                    }
-                    else if (line.Trim().StartsWith("// generateNamespaceMap-Link-Extra-DLL "))
-                    {
-                        string Namespace = line.Substring("// generateNamespaceMap-Link-Extra-DLL ".Length);
-                        int indexComment = Namespace.IndexOf("//");
-
-                        if (indexComment != -1)
-                        {
-                            // eg. // Implicit reference
-                            Namespace = Namespace.Substring(0, indexComment);
-                        }
-
-                        Namespace = Namespace.Trim(new char[] { ' ', '\t', '\n', '\r', ';' });
-
-//Console.WriteLine("Encountered 'generateNamespaceMap-Link-Extra-DLL ': Namespace = " +Namespace);
-                        if ((Namespace != string.Empty) && !Namespace.Contains(" "))
-                        {
-                            if (!NamespaceMap.ContainsKey(Namespace))
-                            {
-                                NamespaceMap.Add(Namespace, Namespace + ".dll");
-                            }
-
-                            if (!DetailsOfDll.UsedNamespaces.Contains(Namespace))
-                            {
-//Console.WriteLine("Added 'Extra DLL': " + Namespace);
-                                DetailsOfDll.UsedNamespaces.Add(Namespace);
                             }
                         }
                     }

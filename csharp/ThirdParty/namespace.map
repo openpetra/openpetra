@@ -20,6 +20,7 @@ Accessibility=${csharpStdLibs}/Accessibility.dll
 System.Collections.Generic=${csharpStdLibs}/System.Core.dll
 System.Configuration=${csharpStdLibs}/System.Configuration.dll
 System.Configuration.Install=${csharpStdLibs}/System.Configuration.Install.dll
+System.Data.DataSetExtensions=${csharpStdLibs}/System.Data.DataSetExtensions.dll
 System.Data*=${csharpStdLibs}/System.Data.dll
 System.Design*=${csharpStdLibs}/System.Design.dll
 System.Drawing.Design*=${csharpStdLibs}/System.Drawing.Design.dll

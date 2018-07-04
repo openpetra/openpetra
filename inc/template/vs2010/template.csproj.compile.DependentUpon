@@ -1,3 +1,0 @@
-    <Compile Include="${relative-filename-backslash}">
-      <DependentUpon>${relative-DependentUpon}</DependentUpon>
-    </Compile>

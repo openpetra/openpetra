@@ -21,7 +21,8 @@ list of available commands:
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
   compileProject: compile a single project file
-      nant compileProject -D:file=delivery/projects/sharpdevelop4/Ict.Common.csproj
+      nant compileProject -D:file=csharp/ICT/Common/Ict.Common.csproj
+      nant compileProject -D:name=Ict.Common
   install: install the current development binaries to this machine (requires the rpm already to be installed)
   startAdmin: run the admin console
   deleteBakFiles: delete all backup files
@@ -187,6 +188,9 @@ useful parameters
       <include name="**/*.generated.refs" />
       <include name="**/*.dll.xml" />
       <include name="tmp/**/AssemblyInfo.cs" />
+      <include name="csharp/*.sln" />
+      <include name="csharp/ICT/**/AssemblyInfo.cs" />
+      <include name="csharp/ICT/**/*.csproj" />
       <exclude name="**/test*-generated.*cs" />
     </fileset>
   </delete>
@@ -301,8 +305,7 @@ useful parameters
     TemplateDir="${dir.incdir.template}"
     DevEnvironments="${devenv-msbuild},${projectfiles.templates-list}"
     DirBin="${dir.bin}"
-    DirProjectFiles="${dir.projectfiles}"
-    NetFrameworkVersion="${NETframework-version}"
+    NetFrameworkVersion="4.5.1"
     ProjectVersion="${ReleaseID}"
     DebugParameters="PetraClient,-C:${ClientConfigFile},PetraServerConsole,-C:${ServerConfigFile}"
     />
@@ -343,8 +346,8 @@ useful parameters
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CompileSolution')}"/>
   <property name="solution" value="OpenPetra" overwrite="false"/>
   <property name="onlyonce" value="false" overwrite="false"/>
-  <property name="solution.file" value="${path::combine(dir.projectfiles,
-                              path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+  <property name="solution.file" value="${path::combine(dir.csharp,
+                              'OpenPetra.'+solution+'.sln')}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
 
   <CompileSolution SolutionFile="${solution.file}" OnlyOnce="${onlyonce == 'true'}"/>
@@ -354,7 +357,12 @@ useful parameters
 
 <target name="compileProject">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
-  <CompileProject CSProjFile="${path::get-full-path(file)}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
+  <if test="${not property::exists('name')}">
+    <CompileProject CSProjFile="${path::get-full-path(file)}" CodeRootDir="${dir.csharp}"/>
+  </if>
+  <if test="${property::exists('name')}">
+    <CompileProject ProjectName="${name}" CodeRootDir="${dir.csharp}"/>
+  </if>
 </target>
 
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">

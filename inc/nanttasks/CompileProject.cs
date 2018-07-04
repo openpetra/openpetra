@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,7 @@ using NAnt.DotNet.Types;
 namespace Ict.Tools.NAntTasks
 {
     /// <summary>
-    /// compile a project from a csproj file (in SharpDevelop4 format)
+    /// compile a project from a csproj file (in vscode format)
     /// </summary>
     [TaskName("CompileProject")]
     public class CompileProject : NAnt.Core.Task
@@ -80,6 +80,22 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FProjectName = null;
+        /// <summary>
+        /// the project name that should be compiled.
+        /// </summary>
+        [TaskAttribute("ProjectName", Required = false)]
+        public string ProjectName {
+            set
+            {
+                FProjectName = value;
+            }
+            get
+            {
+                return FProjectName;
+            }
+        }
+
         private string FCodeRootDir = null;
         /// <summary>
         /// should point to csharp directory
@@ -93,22 +109,6 @@ namespace Ict.Tools.NAntTasks
             get
             {
                 return FCodeRootDir;
-            }
-        }
-
-        private string FProjectFilesDir = null;
-        /// <summary>
-        /// should point to the directory that contains the sharpdevelop project files
-        /// </summary>
-        [TaskAttribute("ProjectFilesDir", Required = false)]
-        public string ProjectFilesDir {
-            set
-            {
-                FProjectFilesDir = value;
-            }
-            get
-            {
-                return FProjectFilesDir;
             }
         }
 
@@ -223,7 +223,8 @@ namespace Ict.Tools.NAntTasks
                         }
                         else if (ItemNode.Name == "Compile")
                         {
-                            csc.Sources.AsIs.Add(ItemNode.Attributes["Include"].Value);
+                            csc.Sources.AsIs.Add(Path.GetDirectoryName(FCSProjFile) + Path.DirectorySeparatorChar +
+                                ItemNode.Attributes["Include"].Value);
                         }
                         else if (ItemNode.Name == "EmbeddedResource")
                         {
@@ -374,15 +375,8 @@ namespace Ict.Tools.NAntTasks
                         {
                             if (ItemNode.HasChildNodes && (ItemNode.ChildNodes[0].Name == "HintPath"))
                             {
-                                if (ItemNode.ChildNodes[0].InnerText.Contains(".."))
-                                {
-                                    parameters.ReferencedAssemblies.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
-                                            ItemNode.ChildNodes[0].InnerText.Replace("\\", "/")));
-                                }
-                                else
-                                {
-                                    parameters.ReferencedAssemblies.Add(ItemNode.ChildNodes[0].InnerText);
-                                }
+                                parameters.ReferencedAssemblies.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                        ItemNode.ChildNodes[0].InnerText.Replace("\\", "/")));
                             }
                             else
                             {
@@ -401,15 +395,8 @@ namespace Ict.Tools.NAntTasks
                         }
                         else if (ItemNode.Name == "Compile")
                         {
-                            if (ItemNode.Attributes["Include"].Value.Contains(".."))
-                            {
-                                src.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
-                                        ItemNode.Attributes["Include"].Value.Replace("\\", "/")));
-                            }
-                            else
-                            {
-                                src.Add(ItemNode.Attributes["Include"].Value);
-                            }
+                            src.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                    ItemNode.Attributes["Include"].Value.Replace("\\", "/")));
                         }
                         else if (ItemNode.Name == "EmbeddedResource")
                         {
@@ -452,51 +439,13 @@ namespace Ict.Tools.NAntTasks
             return result;
         }
 
-        protected void RunSolutionTask()
+        private string CalculateSrcPathForProject(string AProjectName)
         {
-            // create a copy of OpenPetra.sln, and remove all projects but FCSProjFile
-            StreamReader sr = new StreamReader(FProjectFilesDir + Path.DirectorySeparatorChar + "OpenPetra.sln");
-            StreamWriter sw = new StreamWriter(FProjectFilesDir + Path.DirectorySeparatorChar + "OpenPetra.Mini.sln");
-
-            string projFile = Path.GetFileName(FCSProjFile).ToLower();
-            bool foundProject = false;
-
-            while (!sr.EndOfStream)
-            {
-                string line = sr.ReadLine();
-
-                if (line.StartsWith("Project("))
-                {
-                    if (line.ToLower().Contains(projFile))
-                    {
-                        sw.WriteLine(line);
-                        sw.WriteLine("EndProject");
-                        foundProject = true;
-                    }
-                }
-                else if (!line.StartsWith("EndProject"))
-                {
-                    sw.WriteLine(line);
-                }
-            }
-
-            sr.Close();
-            sw.Close();
-
-            if (!foundProject)
-            {
-                throw new Exception(
-                    "cannot compile " + projFile + " because it cannot be found in " + FProjectFilesDir + Path.DirectorySeparatorChar +
-                    "OpenPetra.sln");
-            }
-
-            // compile solution OpenPetra.Mini.sln
-            CompileSolution sln = new CompileSolution();
-            this.CopyTo(sln);
-
-            sln.SolutionFile = FProjectFilesDir + Path.DirectorySeparatorChar + "OpenPetra.Mini.sln";
-
-            sln.Execute();
+            return FCodeRootDir + Path.DirectorySeparatorChar +
+                AProjectName.
+                Replace("Ict.Tools.", "ICT.BuildTools.").
+                Replace("Ict.", "ICT.").
+                Replace('.', Path.DirectorySeparatorChar);
         }
 
         /// <summary>
@@ -504,12 +453,18 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         protected override void ExecuteTask()
         {
-            if ((FCSFile != null) && (FCodeRootDir != null) && (FProjectFilesDir != null))
+            if ((FCSFile != null) && (FCodeRootDir != null))
             {
                 // find the correct project file
-                FCSProjFile = FProjectFilesDir + "/" +
+                FCSProjFile = FCodeRootDir + "/" +
                               GenerateNamespaceMap.GetProjectNameFromCSFile(FCSFile, FCodeRootDir) +
                               ".csproj";
+            }
+
+            if ((FProjectName != null) && (FCodeRootDir != null))
+            {
+                // calculate project file from the project name
+                FCSProjFile = CalculateSrcPathForProject(FProjectName) + "/" + FProjectName + ".csproj";
             }
 
             if (FCSProjFile != null)
@@ -521,15 +476,6 @@ namespace Ict.Tools.NAntTasks
 
                 // this is the fastest option. resources are compiled quickly, and only the required dll is compiled
                 CompileHere();
-
-                // if (FUseCSC)
-                // {
-                //     RunCscTask();
-                // }
-                // else
-                // {
-                //     RunSolutionTask();
-                // }
             }
             else
             {

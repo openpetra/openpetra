@@ -9,36 +9,33 @@
     <AssemblyName>${Namespace}</AssemblyName>
     <TargetFrameworkVersion>v${NETframework-version}</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <FileAlignment>512</FileAlignment>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
+    <BaseIntermediateOutputPath>${dir.obj}</BaseIntermediateOutputPath>
+    <NoStdLib>False</NoStdLib>
+    <OutputPath>${dir.bin}</OutputPath>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <Optimize>False</Optimize>
+    <StartArguments>${DebugStartArguments}</StartArguments>
+${ApplicationManifest}
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <DefineConstants>DEBUG;TRACE;CODE_ANALYSIS</DefineConstants>
-    <BaseIntermediateOutputPath>${dir.obj.backslash}\${Namespace}\</BaseIntermediateOutputPath>
-    <OutputPath>${dir.bin.backslash}</OutputPath>
-    <StartArguments>${DebugStartArguments}</StartArguments>
-    <DocumentationFile>${dir.bin.backslash}\${Namespace}.xml</DocumentationFile>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <DefineConstants>TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>${dir.obj.backslash}\${Namespace}\</BaseIntermediateOutputPath>
-    <OutputPath>${dir.bin.backslash}</OutputPath>
-    <DocumentationFile>${dir.bin.backslash}\${Namespace}.xml</DocumentationFile>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)/Microsoft.CSharp.targets" />
 ${ApplicationIcon}${PreBuildEvent}${PostBuildEvent}  <ItemGroup>
 ${TemplateReferences}  </ItemGroup>
   <ItemGroup>
 ${TemplateCompile}${TemplateResource}  </ItemGroup>
   <ItemGroup>
 ${TemplateProjectReferences}  </ItemGroup>
-${MiscellaneousFiles}  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-</Project>
+${MiscellaneousFiles}</Project>

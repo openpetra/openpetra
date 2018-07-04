@@ -1,3 +1,0 @@
-  <PropertyGroup>
-    <PreBuildEvent>${opda-path} /x</PreBuildEvent>
-  </PropertyGroup>

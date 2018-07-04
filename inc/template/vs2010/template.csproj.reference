@@ -1,3 +1,0 @@
-    <Reference Include="${reference-name}">
-      <HintPath>${reference-path}</HintPath>
-    </Reference>
