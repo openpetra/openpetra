@@ -85,11 +85,11 @@ function save_new() {
 
     let request = {
       "action": "create",
-      "data": [d],
+      "data": d,
     };
     api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
       function () {
-        display_message(i18next.t('MaintainPublications.confirm_create'), 'success');
+        display_message(i18next.t('MaintainTypes.confirm_create'), 'success');
       }
     )
 
@@ -101,11 +101,11 @@ function save_entry(update) {
 
   let request = {
     "action": "update",
-    "data": [e],
+    "data": e,
   };
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
-      display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
+      display_message(i18next.t('MaintainTypes.confirm_edit'), 'success');
     }
   )
 }
@@ -119,11 +119,11 @@ function delete_entry(d) {
 
   let request = {
     "action": "delete",
-    "data": [e],
+    "data": e,
   };
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
-      display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
+      display_message(i18next.t('MaintainTypes.confirm_delete'), 'success');
     }
   );
 

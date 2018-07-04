@@ -30,13 +30,12 @@ $('document').ready(function () {
 
 function display_list() {
   let r = {'ACacheableTable':'PublicationList', 'AHashCode':''};
-	api.post('serverMPartner.asmx/TSubscriptionsCacheableWebConnector_GetCacheableTable',r).then(function (data) {
-    data.data.d = data.data.d.replace('"AType": Ict.Petra.Shared.MPartner.Mailroom.Data.PPublicationTable,', '');
-    data = JSON.parse(data.data.d);
+	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPublications',r).then(function (data) {
+		data = JSON.parse(data.data.d);
 		// on reload, clear content
-    last_requested_data = data.result;
+		last_requested_data = data.result.PPublication;
 		$('#browse_container').html('');
-		for (item of data.result) {
+		for (item of data.result.PPublication) {
 			// format a abo for every entry
 			format_item(item);
 		}
@@ -91,9 +90,9 @@ function save_new() {
 
     let request = {
       "action": "create",
-      "data": [d],
+      "data": d,
     };
-    api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
+    api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
       function () {
         display_message(i18next.t('MaintainPublications.confirm_create'), 'success');
       }
@@ -107,9 +106,9 @@ function save_entry(update) {
 
   let request = {
     "action": "update",
-    "data": [e],
+    "data": e,
   };
-  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
+  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
     }
@@ -125,9 +124,9 @@ function delete_entry(d) {
 
   let request = {
     "action": "delete",
-    "data": [e],
+    "data": e,
   };
-  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
+  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
     }
