@@ -18,9 +18,13 @@
         "logout": "Logout",
         "notimplementedyet": "not implemented yet",
 
+        "Subscription_label":"Subscriptions",
+        "MaintainPublications_label":"Configuration of Subscriptions",
         "Partner_label": "Partner",
         "Partners_label": "Partners",
         "Maintain_label": "Maintain",
+        "Types_label":"Categories",
+        "MaintainTypes_label":"Configuration of Categories",
         "MaintainPartners_label": "Maintain Partners",
         "CreatePartner_label": "Create Partner",
         "ImportExport_label": "Import/Export",
@@ -136,6 +140,31 @@
         "firstname": "First name",
         "familyname": "Family name",
         "title":"Title"
+    },
+
+    "MaintainPublications": {
+      "caption":"Edit subscriptions",
+      "addtitle":"Add subscription",
+      "edittitle":"Edit subscription",
+      "name":"Subscription Name",
+      "entry_name":"Subscription name",
+      "entry_status":"Active",
+      "entry_dis":"Subscription description",
+      "entry_freq":"Frequenz",
+      "ask_delete":"Sure you wanna delete this subscription?",
+      "confirm_edit":"The subscription has been successfully edited.",
+      "confirm_delete":"The subscription has been deleted."
+    },
+
+    "MaintainTypes":{
+      "caption":"Edit Categories",
+      "name":"Categorie name",
+      "edittitle":"Edit categorie",
+      "addtitle":"Add categorie",
+      "ask_delete":"Sure you wanna delete this categorie?",
+      "entry_name":"Categorie name",
+      "entry_status":"Active",
+      "entry_dis":"Categorie description"
     },
 
     "ChangeLanguage": {
