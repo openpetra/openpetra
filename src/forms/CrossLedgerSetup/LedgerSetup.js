@@ -26,15 +26,29 @@ var last_requested_data = {};
 
 $('document').ready(function () {
 	display_list();
+
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+
+	var yyyy = today.getFullYear();
+	if(dd<10){
+	    dd='0'+dd;
+	}
+	if(mm<10){
+	    mm='0'+mm;
+	}
+	var today = dd+'-'+mm+'-'+yyyy;
+	$('.date').val(today);
 });
 
 function display_list() {
-	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPartnerTypes', {}).then(function (data) {
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
 	  data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
-		last_requested_data = data.result.PType;
-		for (item of data.result.PType) {
+		last_requested_data = data.result;
+		for (item of data.result) {
 			// format a abo for every entry
 			format_item(item);
 		}
@@ -61,12 +75,11 @@ function open_detail(obj) {
 function open_edit(sub_id) {
   let z = null;
   for (sub of last_requested_data) {
-    if (sub.p_type_code_c == sub_id) {
+    if (sub.a_ledger_number_i == sub_id) {
       z = sub;
       break;
     }
   }
-
   var f = format_tpl( $('[phantom] .tpl_edit').clone(), z);
   $('#modal_space').html(f);
 	$('#modal_space .modal').modal('show');
@@ -83,32 +96,28 @@ function save_new() {
     let se = $('#modal_space .modal').modal('show');
     let d = extract_data(se);
 
-    let request = {
-      "action": "create",
-      "data": d,
-    };
-    api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
+    let request = translate_to_server(d);
+    api.post("serverMFinance.asmx/TGLSetupWebConnector_CreateNewLedger", request).then(
       function () {
-        display_message(i18next.t('MaintainTypes.confirm_create'), 'success');
+        display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
 				se.modal('hide');
 				display_list();
-		  }
+      }
     )
 
 }
 
 function save_entry(update) {
-  let modalspace = $(update).closest('.modal');
-  let e = extract_data(modalspace);
+  let raw = $(update).closest('.modal');
+  let e = extract_data(raw);
 
   let request = {
     "action": "update",
-    "data": e,
+    "data": [e],
   };
-  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
+  api.post("serverMFinance.asmx/TGLSetupWebConnector_MaintainLedger", request).then(
     function () {
-      display_message(i18next.t('MaintainTypes.confirm_edit'), 'success');
-			modalspace.modal('hide');
+      display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
     }
   )
 }
@@ -122,13 +131,11 @@ function delete_entry(d) {
 
   let request = {
     "action": "delete",
-    "data": e,
+    "data": [e],
   };
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
-      display_message(i18next.t('MaintainTypes.confirm_delete'), 'success');
-			raw.modal('hide');
-			display_list();
+      display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
     }
   );
 

@@ -95,7 +95,9 @@ function save_new() {
     api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
       function () {
         display_message(i18next.t('MaintainPublications.confirm_create'), 'success');
-      }
+				se.modal('hide');
+				display_list();
+			}
     )
 
 }
@@ -111,7 +113,9 @@ function save_entry(update) {
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
-    }
+			raw.modal('hide');
+			display_list();
+		}
   )
 }
 
@@ -129,7 +133,9 @@ function delete_entry(d) {
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
-    }
+			raw.modal('hide');
+			display_list();
+		}
   );
 
 }

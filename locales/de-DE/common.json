@@ -156,7 +156,8 @@
       "entry_dis":"Abo Beschreibung",
       "entry_freq":"Frequenz",
       "ask_delete":"Sind sie sicher das die dieses Abo löschen möchten?",
-      "confirm_edit":"",
+      "confirm_create":"Das Abo wurde erstellt",
+      "confirm_edit":"Das Abo wurde erfolgreich bearbeitet",
       "confirm_delete":"Das Abo wurde erfolgreich gelöscht"
     },
 
@@ -165,11 +166,30 @@
       "name":"Kategorie Name",
       "edittitle":"Kategorie bearbeiten",
       "addtitle":"Kategorie hinzufügen",
+      "confirm_create":"Kategorie erfolgreich hinzugefügt",
+      "confirm_edit":"Kategorie erfolgreich bearbeitet",
+      "confirm_delete":"Kategorie erfolgreich gelöscht",
       "ask_delete":"Sind sie sicher das die dieses Kategorie löschen möchten?",
       "entry_name":"Kategoriename",
       "entry_status":"Active",
       "entry_dis":"Kategorie Beschreibung"
+    },
 
+    "LedgerSetup":{
+      "addtitle":"Ledger hinzufügen",
+      "edittitle":"Ledger bearbeiten",
+      "caption":"Ledger",
+      "name":"Ledgername",
+      "number":"Ledgernummer",
+      "entry_name":"Ledgername",
+      "entry_country":"Länderzeichnung",
+      "entry_date":"Finanzjahranfang",
+      "entry_base_currency":"Währung",
+      "entry_intl_currency":"Internationale Währung",
+      "entry_account_periods_first":"Erster Berechenbare Monat",
+      "entry_account_periods":"Berechenbare Monate",
+      "entry_posting_periods":"FWD_POSTING_PERIODS",
+      "confirm_create":"Der Ledger wurde erstellt"
     }
 
 }
