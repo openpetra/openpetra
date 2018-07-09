@@ -83,10 +83,12 @@ namespace GenerateGlue
 
                                 if (ParameterType == "Dictionary")
                                 {
-                                    ParameterType = ParameterType.Replace("Dictionary", "Dictionary[" +
-                                        p.TypeReference.GenericTypes[0].ToString() + "," +
-                                        p.TypeReference.GenericTypes[1].ToString() + "]");
-                                    ParameterType = ParameterType.Replace("System.", String.Empty);
+                                    // this does not seem to work with Mono 5.12 api browser
+                                    // ParameterType = ParameterType.Replace("Dictionary", "Dictionary[" +
+                                    //    p.TypeReference.GenericTypes[0].ToString() + "," +
+                                    //    p.TypeReference.GenericTypes[1].ToString() + "]");
+                                    // ParameterType = ParameterType.Replace("System.", String.Empty);
+                                    ParameterType = "String";
                                 }
 
                                 if (ParameterType.Contains("."))
@@ -206,7 +208,7 @@ namespace GenerateGlue
                 bool TypedDataSetParameter = parametertype.EndsWith("TDS");
                 bool EnumParameter = parametertype.EndsWith("Enum");
                 bool ListParameter = parametertype.StartsWith("List<");
-                bool DictParameter = parametertype.StartsWith("Dictionary<");
+                bool DictParameter = false && parametertype.StartsWith("Dictionary<");
                 bool BinaryParameter =
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
                       || (parametertype.StartsWith("System.Int16"))
