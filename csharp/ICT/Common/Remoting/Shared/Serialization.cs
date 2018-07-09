@@ -382,6 +382,10 @@ namespace Ict.Common.Remoting.Shared
             {
                 return s;
             }
+            else if (type == "System.Data.DataTable")
+            {
+                return DeserializeDataTable(s);
+            }
             else if (type.EndsWith("Enum"))
             {
                 Type t = Type.GetType(type);
@@ -467,6 +471,36 @@ namespace Ict.Common.Remoting.Shared
                 }
 
                 result.Add(key, value);
+            }
+
+            return result;
+        }
+
+        /// Deserialize a DataTable
+        static public DataTable DeserializeDataTable(string s)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            Object[] list = (Object[])serializer.DeserializeObject(s);
+            DataTable result = new DataTable();
+                      
+            foreach (Dictionary<string,object> obj in list)
+            {
+                foreach (KeyValuePair<string, object> entry in obj)
+                {
+                    if (!result.Columns.Contains(entry.Key))
+                    {
+                        result.Columns.Add(entry.Key);
+                    }
+                }
+
+                DataRow row = result.NewRow();
+
+                foreach (KeyValuePair<string, object> entry in obj)
+                {
+                    row[entry.Key] = entry.Value;
+                }
+
+                result.Rows.Add(row);
             }
 
             return result;

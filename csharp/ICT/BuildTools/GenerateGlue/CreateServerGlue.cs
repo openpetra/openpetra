@@ -206,6 +206,7 @@ namespace GenerateGlue
                 }
 
                 bool TypedDataSetParameter = parametertype.EndsWith("TDS");
+                bool DataTableParameter = parametertype.EndsWith("DataTable");
                 bool EnumParameter = parametertype.EndsWith("Enum");
                 bool ListParameter = parametertype.StartsWith("List<");
                 bool DictParameter = false && parametertype.StartsWith("Dictionary<");
@@ -323,6 +324,10 @@ namespace GenerateGlue
                     if (TypedDataSetParameter)
                     {
                         ActualParameters += "Local" + p.ParameterName;
+                    }
+                    else if (DataTableParameter)
+                    {
+                        ActualParameters += "(" + parametertype + ")THttpBinarySerializer.DeserializeObject(" + p.ParameterName + ",\"System.Data.DataTable\")";
                     }
                     else if (BinaryParameter
                         || ArrayParameter)
