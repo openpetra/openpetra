@@ -193,7 +193,7 @@ namespace Ict.Tools.NAntTasks
                 Replace("Ict.Petra.Tools.MSysMan.YmlGzImportExport", "Ict.Petra.Tools.YmlGzImportExport").
                 Replace("Ict.Petra.Tools.MFinance.Server.GDPdUExport", "Ict.Petra.Tools.FinanceGDPdUExport").
                 Replace("Ict.Tools.", "ICT.BuildTools.").
-                Replace("Ict.PetraServerAdminConsole", "Ict.Petra.ServerAdmin.PetraServerAdminConsole").
+                Replace("PetraServerAdminConsole", "Ict.Petra.ServerAdmin.PetraServerAdminConsole").
                 Replace("Ict.Testing.I18N_GNU.Gettext", "Ict.Testing.exe.I18N_GNU_Gettext").
                 Replace("Ict.Testing.I18N", "Ict.Testing.exe.I18N").
                 Replace("Ict.Testing.BrowserTests.OnlineRegistration", "Ict.Testing.exe.BrowserTests.OnlineRegistration").
