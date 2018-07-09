@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, morayh, christophert
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2823,7 +2823,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction = true)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean AWithGLJournal = false, Boolean ACommitTransaction = true)
         {
             #region Validate Arguments
 
@@ -2870,6 +2870,21 @@ namespace Ict.Petra.Server.MFinance.Common
                         NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
                         NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
                         NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
+
+                        if (AWithGLJournal)
+                        {
+                            AJournalRow NewJournal = MainDS.AJournal.NewRowTyped(true);
+                            NewJournal.LedgerNumber = ALedgerNumber;
+                            NewJournal.BatchNumber = NewRow.BatchNumber;
+                            NewJournal.JournalNumber = 1;
+                            NewRow.LastJournal = 1;
+                            NewJournal.JournalDescription = "Journal 1";
+                            NewJournal.SubSystemCode = "GL";
+                            NewJournal.TransactionCurrency = MainDS.ALedger[0].BaseCurrency;
+                            NewJournal.BaseCurrency = MainDS.ALedger[0].BaseCurrency;
+                            MainDS.AJournal.Rows.Add(NewJournal);
+                        }
+
                         MainDS.ABatch.Rows.Add(NewRow);
 
                         GLBatchTDSAccess.SubmitChanges(MainDS);
