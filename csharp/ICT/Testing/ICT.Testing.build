@@ -56,6 +56,7 @@
     <echo message="Target test-server-reports started at: ${datetime::now()}" /> 
 
     <call target="load-reports-test-db"/>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />
 
