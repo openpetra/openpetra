@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, ChristianK
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -324,7 +324,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
             eOrientation Orientation;
 
-            if (pdfPrinter.Document.DefaultPageSettings.Landscape)
+            if (false && pdfPrinter.Document.DefaultPageSettings.Landscape)
             {
                 Orientation = eOrientation.eLandscape;
             }
@@ -340,6 +340,15 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return true;
         }
 
+        private String PrintToText(bool AWrapColumn)
+        {
+            TTxtPrinter txtPrinter = new TTxtPrinter();
+            TReportPrinterLayout ReportTxtPrinter = new TReportPrinterLayout(FResultList, FParameterList, txtPrinter, AWrapColumn);
+            ReportTxtPrinter.PrintReport();
+
+            return txtPrinter.GetString();
+        }
+
         private bool ExportToCSVFile(string AFilename)
         {
             bool ExportOnlyLowestLevel = false;
@@ -353,6 +362,30 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             }
 
             return FResultList.WriteCSV(FParameterList, AFilename, ExportOnlyLowestLevel);
+        }
+
+        /// Download the result of the report as Text in utf8 encoding
+        public string DownloadText(bool AWrapColumn)
+        {
+            return PrintToText(AWrapColumn);
+        }
+
+        /// Download the result of the report as PDF File in base64 encoding
+        public string DownloadPDF(bool AWrapColumn)
+        {
+            string PDFFile = TFileHelper.GetTempFileName(
+                FParameterList.Get("currentReport").ToString(),
+                ".pdf");
+
+            if (PrintToPDF(PDFFile, AWrapColumn))
+            {
+                byte[] data = System.IO.File.ReadAllBytes(PDFFile);
+                string result = Convert.ToBase64String(data);
+                System.IO.File.Delete(PDFFile);
+                return result;
+            }
+
+            return String.Empty;
         }
 
         /// <summary>

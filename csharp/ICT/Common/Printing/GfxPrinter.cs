@@ -140,17 +140,19 @@ namespace Ict.Common.Printing
 
             if (AOrientation == eOrientation.ePortrait)
             {
-                FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(1) * 100);
+                FDocument.DefaultPageSettings.Margins = new Margins(
+					Convert.ToInt32(Cm2Inch(0.5f) * 100),
+					Convert.ToInt32(Cm2Inch(0.5f) * 100),
+					Convert.ToInt32(Cm2Inch(0.5f) * 100),
+					Convert.ToInt32(Cm2Inch(1) * 100));
             }
             else if (AOrientation == eOrientation.eLandscape)
             {
-                FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(1) * 100);
-                FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                FDocument.DefaultPageSettings.Margins = new Margins(
+					Convert.ToInt32(Cm2Inch(0.5f) * 100),
+					Convert.ToInt32(Cm2Inch(1) * 100),
+					Convert.ToInt32(Cm2Inch(0.5f) * 100),
+					Convert.ToInt32(Cm2Inch(0.5f) * 100));
             }
 
             // Associate the eventhandling method with the
