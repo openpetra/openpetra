@@ -41,6 +41,7 @@
         "GeneralLedger_label": "General Ledger",
         "Info_label": "Info",
         "GLBatchMaintenance_label": "Maintain GL Batches",
+        "GLBatches_label": "Maintain GL Batches and Transaction",
         "PeriodEnd_label": "Month and Year - Ends",
         "Gift_label": "Donations",
         "GiftEntry_label": "Donation Entry",
@@ -176,6 +177,10 @@
       "activePartnersOnly":"Active Partners Only",
       "onlyValidAddresses":"Only valid mailing addresses",
       "excludeNoSolicitations":"Exclude people who don't want any solicitations",
+    },
+
+    "GLBatches": {
+        "caption": "Maintain GL Batches and Transactions"
     },
 
     "ChangeLanguage": {

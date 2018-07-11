@@ -95,7 +95,6 @@ OpenPetra:
         CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
                 Ledger:
                     LedgerSetup:
-                        CreateLedger: {PermissionsRequired="FINANCE-3"}
 
         SystemManager: {fa-icon=sliders, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
                 Users:

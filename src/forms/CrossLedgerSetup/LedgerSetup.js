@@ -26,16 +26,29 @@ var last_requested_data = {};
 
 $('document').ready(function () {
 	display_list();
+
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1; //January is 0!
+
+	var yyyy = today.getFullYear();
+	if(dd<10){
+	    dd='0'+dd;
+	}
+	if(mm<10){
+	    mm='0'+mm;
+	}
+	var today = dd+'-'+mm+'-'+yyyy;
+	$('.date').val(today);
 });
 
 function display_list() {
-  let r = {'ACacheableTable':'PublicationList', 'AHashCode':''};
-	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPublications',r).then(function (data) {
-		data = JSON.parse(data.data.d);
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+	  data = JSON.parse(data.data.d);
 		// on reload, clear content
-		last_requested_data = data.result.PPublication;
 		$('#browse_container').html('');
-		for (item of data.result.PPublication) {
+		last_requested_data = data.result;
+		for (item of data.result) {
 			// format a abo for every entry
 			format_item(item);
 		}
@@ -62,19 +75,14 @@ function open_detail(obj) {
 function open_edit(sub_id) {
   let z = null;
   for (sub of last_requested_data) {
-    if (sub.p_publication_code_c == sub_id) {
+    if (sub.a_ledger_number_i == sub_id) {
       z = sub;
       break;
     }
   }
-
   var f = format_tpl( $('[phantom] .tpl_edit').clone(), z);
   $('#modal_space').html(f);
 	$('#modal_space .modal').modal('show');
-
-
-
-
 }
 
 function open_new() {
@@ -86,50 +94,49 @@ function open_new() {
 function save_new() {
 
     let se = $('#modal_space .modal').modal('show');
-    let request = translate_to_server(extract_data(raw));
+    let d = extract_data(se);
 
-    request['action'] = 'create';
-
-    api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
+    let request = translate_to_server(d);
+    api.post("serverMFinance.asmx/TGLSetupWebConnector_CreateNewLedger", request).then(
       function () {
-        display_message(i18next.t('MaintainPublications.confirm_create'), 'success');
+        display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
 				se.modal('hide');
 				display_list();
-			}
+      }
     )
 
 }
 
 function save_entry(update) {
   let raw = $(update).closest('.modal');
-  let request = translate_to_server(extract_data(raw));
+  let e = extract_data(raw);
 
-  request['action'] = 'update';
-
-  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
+  let request = {
+    "action": "update",
+    "data": [e],
+  };
+  api.post("serverMFinance.asmx/TGLSetupWebConnector_MaintainLedger", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
-			raw.modal('hide');
-			display_list();
-		}
+    }
   )
 }
 
 function delete_entry(d) {
   let raw = $(d).closest('.modal');
-  let request = translate_to_server(extract_data(raw));
+  let e = extract_data(raw);
 
-  request['action'] = 'delete';
-
-  let s = confirm( i18next.t('MaintainPublications.ask_delete') );
+  let s = confirm( i18next.t('MaintainTypes.ask_delete') );
   if (!s) {return}
 
-  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
+  let request = {
+    "action": "delete",
+    "data": [e],
+  };
+  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
-			raw.modal('hide');
-			display_list();
-		}
+    }
   );
 
 }
