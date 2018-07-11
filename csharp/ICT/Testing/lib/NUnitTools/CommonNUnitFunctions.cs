@@ -273,14 +273,10 @@ namespace Ict.Testing.NUnitTools
                 "99",
                 "EUR",
                 "USD",
-                AStartDate.Value,
+                "2018-01-01", // TODO AStartDate.Value,
                 12,
                 1,
                 8,
-                false,
-                true,
-                1,
-                true,
                 out VerificationResult);
 
             return newLedgerNumber;

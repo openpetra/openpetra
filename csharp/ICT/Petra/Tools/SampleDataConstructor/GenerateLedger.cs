@@ -67,9 +67,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 throw new Exception("could not delete ledger");
             }
 
-            TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR", new DateTime(DateTime.Now.Year - 1,
-                    4,
-                    1), 12, 1, 8, false, true, 1, true, out VerificationResult);
+            TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR",
+                    "2017-04-01", // TODO new DateTime(DateTime.Now.Year - 1, 4, 1),
+                    12, 1, 8, out VerificationResult);
         }
 
         /// <summary>

@@ -3824,23 +3824,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// create a new ledger and do the initial setup
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
-        public static bool CreateNewLedger(Int32 ANewLedgerNumber,
+        public static bool CreateNewLedger(
+            Int32 ANewLedgerNumber,
             String ALedgerName,
             String ACountryCode,
             String ABaseCurrency,
             String AIntlCurrency,
-            DateTime ACalendarStartDate,
-            Int32 ANumberOfPeriods,
+            String ACalendarStartDate,
+            Int32 ANumberOfAccountingPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
-            bool IchIsAsset,
-            bool AActivateGiftProcessing,
-            Int32 AStartingReceiptNumber,
-            bool AActivateAccountsPayable,
             out TVerificationResultCollection AVerificationResult)
         {
+            bool AActivateAccountsPayable = false;
+            Int32 AStartingReceiptNumber = 1;
+            bool AActivateGiftProcessing = true;
+            bool IchIsAsset = false;
             AVerificationResult = null;
             bool AllOK = false;
+
+            TLogging.Log(ANumberOfAccountingPeriods.ToString());
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -3877,7 +3880,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ledgerRow.LedgerNumber = ANewLedgerNumber;
                 ledgerRow.LedgerName = ALedgerName;
                 ledgerRow.CurrentPeriod = ACurrentPeriod;
-                ledgerRow.NumberOfAccountingPeriods = ANumberOfPeriods;
+                ledgerRow.NumberOfAccountingPeriods = ANumberOfAccountingPeriods;
                 ledgerRow.NumberFwdPostingPeriods = ANumberOfFwdPostingPeriods;
                 ledgerRow.BaseCurrency = ABaseCurrency;
                 ledgerRow.IntlCurrency = AIntlCurrency;
@@ -3888,7 +3891,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ledgerRow.ForexGainsLossesAccount = "5003";
                 ledgerRow.PartnerKey = PartnerKey;
 
-                if (ANumberOfPeriods == 12)
+                if (ANumberOfAccountingPeriods == 12)
                 {
                     ledgerRow.CalendarMode = true;
                 }
@@ -4007,22 +4010,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // create calendar
                 // at the moment we only support financial years that start on the first day of a month
                 // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods
-                DateTime periodStartDate = ACalendarStartDate;
+                DateTime periodStartDate = DateTime.Today;
 
-                for (Int32 periodNumber = 1; periodNumber <= ANumberOfPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
+                for (Int32 periodNumber = 1; periodNumber <= ANumberOfAccountingPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
                 {
                     AAccountingPeriodRow accountingPeriodRow = MainDS.AAccountingPeriod.NewRowTyped();
                     accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
                     accountingPeriodRow.AccountingPeriodNumber = periodNumber;
                     accountingPeriodRow.PeriodStartDate = periodStartDate;
 
-                    if ((ANumberOfPeriods == 13)
+                    if ((ANumberOfAccountingPeriods == 13)
                         && (periodNumber == 12))
                     {
                         // in case of 12 periods the second last period represents the last month except for the very last day
                         accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-2);
                     }
-                    else if ((ANumberOfPeriods == 13)
+                    else if ((ANumberOfAccountingPeriods == 13)
                              && (periodNumber == 13))
                     {
                         // in case of 13 periods the last period just represents the very last day of the financial year
@@ -4453,6 +4456,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Fields.Add(ALedgerTable.GetIntlCurrencyDBName());
             Fields.Add(ALedgerTable.GetLedgerStatusDBName());
             Fields.Add(ALedgerTable.GetCurrentPeriodDBName());
+            Fields.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
             Fields.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
 
             TDBTransaction Transaction = null;
