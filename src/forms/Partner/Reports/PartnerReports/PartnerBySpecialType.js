@@ -73,9 +73,10 @@ function calculate_report() {
 		api.post('serverMReporting.asmx/TReportGeneratorUIConnector_Start', r).then(function (data) {
 			// TODO: use TReportGeneratorUIConnector_GetProgress and sleep to check if report was finished
 			setTimeout(function() {
-				let r = {'UIConnectorObjectID': UIConnectorUID};
-				api.post('serverMReporting.asmx/TReportGeneratorUIConnector_GetResult', r).then(function (data) {
-					console.log(data.data.d);
+				let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
+				api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadText', r).then(function (data) {
+					report = data.data.d;
+					$('#reporttxt').html("<pre>"+report+"</pre>");
 				});
 				}, 3000);
 		});

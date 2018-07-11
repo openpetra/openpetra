@@ -31,7 +31,7 @@
 		</div>
 		<div class="row">
 			<div class="col-1">
-				<input type="checkbox" name="param_active" checked>
+				<input type="checkbox" name="param_active">
 			</div>
 			<div class="col">
 				<span>{activePartnersOnly}</span>
@@ -40,7 +40,7 @@
 		</div>
 		<div class="row">
 			<div class="col-1">
-				<input type="checkbox" name="param_only_addresses_valid_on" checked>
+				<input type="checkbox" name="param_only_addresses_valid_on">
 			</div>
 			<div class="col">
 				<span>{onlyValidAddresses}</span>
@@ -49,7 +49,7 @@
 		</div>
 		<div class="row">
 			<div class="col-1">
-				<input type="checkbox" name="param_excludeNoSolicitations" checked>
+				<input type="checkbox" name="param_excludeNoSolicitations">
 			</div>
 			<div class="col">
 				<span>{excludeNoSolicitations}</span>
@@ -62,7 +62,11 @@
 </div>
 
 <div class="container" id="report">
-
+	<div class="container group-container">
+		<div class="row">
+			<div id="reporttxt"></div>
+		</div>
+	</div>
 </div>
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
