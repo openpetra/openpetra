@@ -30,6 +30,8 @@
         "Subscription_label": "Abonnements",
         "Reports_label": "Berichte",
         "PartnerReports_label": "Berichte",
+        "PartnerBySpecialType_label": "Partner mit Kategorien",
+        "PartnerBySubscription_label": "Partner mit Abonnements",
         "Setup_label": "Konfiguration",
         "Partner-related_label": "Konfiguration von Partnerdaten",
         "Subscription-related_label": "Konfiguration von Abonnements",
@@ -65,6 +67,7 @@
         "delete": "Löschen",
         "save": "Übernehmen",
         "saved": "Änderungen wurden übernommen",
+        "report": "Bericht anzeigen",
         "any": "alle",
         "status": "Status",
         "name": "Name",
@@ -163,10 +166,6 @@
         "trans_narrative_code": "Bemerkung"
     },
 
-    "ChangeLanguage": {
-        "caption": "Sprache wechseln"
-    },
-
     "MaintainPublications": {
       "caption":"Abo bearbeiten",
       "addtitle":"Abo hinzufügen",
@@ -211,6 +210,17 @@
       "entry_account_periods":"Berechenbare Monate",
       "entry_posting_periods":"FWD_POSTING_PERIODS",
       "confirm_create":"Der Ledger wurde erstellt"
-    }
+    },
 
+    "PartnerBySpecialType":{
+      "caption":"Partner mit Kategorien",
+      "partnertypes":"Kategorien",
+      "activePartnersOnly":"Nur aktive Partner",
+      "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
+      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+    },
+
+    "ChangeLanguage": {
+        "caption": "Sprache wechseln"
+    }
 }

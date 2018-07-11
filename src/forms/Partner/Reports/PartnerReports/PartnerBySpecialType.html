@@ -1,0 +1,69 @@
+<h2>{caption}</h2>
+
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_check">
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+</div>
+
+
+<div class="container" id="reportfilter">
+	<div class="container group-container">
+		<div class="row">
+			<div class="col">
+				<span>{partnertypes}:</span>
+			</div>
+			<div class="col">
+				<div class="tab-pane" id="types" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox" name="param_active" checked>
+			</div>
+			<div class="col">
+				<span>{activePartnersOnly}</span>
+			</div>
+			<data value="param_active"></data>
+		</div>
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox" name="param_only_addresses_valid_on" checked>
+			</div>
+			<div class="col">
+				<span>{onlyValidAddresses}</span>
+			</div>
+			<data value="param_only_addresses_valid_on"></data>
+		</div>
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox" name="param_excludeNoSolicitations" checked>
+			</div>
+			<div class="col">
+				<span>{excludeNoSolicitations}</span>
+			</div>
+			<data value="param_excludeNoSolicitations"></data>
+		</div>
+	</div>
+
+	<button type="button" class="btn btn-primary" onclick="calculate_report()">{forms.report}</button>
+</div>
+
+<div class="container" id="report">
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

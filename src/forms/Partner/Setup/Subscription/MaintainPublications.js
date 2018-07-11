@@ -86,12 +86,10 @@ function open_new() {
 function save_new() {
 
     let se = $('#modal_space .modal').modal('show');
-    let d = extract_data(se);
+    let request = translate_to_server(extract_data(raw));
 
-    let request = {
-      "action": "create",
-      "data": d,
-    };
+    request['action'] = 'create';
+
     api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
       function () {
         display_message(i18next.t('MaintainPublications.confirm_create'), 'success');
@@ -104,12 +102,10 @@ function save_new() {
 
 function save_entry(update) {
   let raw = $(update).closest('.modal');
-  let e = extract_data(raw);
+  let request = translate_to_server(extract_data(raw));
 
-  let request = {
-    "action": "update",
-    "data": e,
-  };
+  request['action'] = 'update';
+
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
@@ -121,15 +117,13 @@ function save_entry(update) {
 
 function delete_entry(d) {
   let raw = $(d).closest('.modal');
-  let e = extract_data(raw);
+  let request = translate_to_server(extract_data(raw));
+
+  request['action'] = 'delete';
 
   let s = confirm( i18next.t('MaintainPublications.ask_delete') );
   if (!s) {return}
 
-  let request = {
-    "action": "delete",
-    "data": e,
-  };
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
     function () {
       display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
