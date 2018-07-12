@@ -70,6 +70,11 @@ function calculate_report() {
 			'AParameters': JSON.stringify(param_table)
 		};
 
+		// TODO: somehow there is a problem with SQL parameter order
+		delete r['param_active'];
+		delete r['param_only_addresses_valid_on'];
+		delete r['param_excludeNoSolicitations'];
+
 		api.post('serverMReporting.asmx/TReportGeneratorUIConnector_Start', r).then(function (data) {
 			// TODO: use TReportGeneratorUIConnector_GetProgress and sleep to check if report was finished
 			setTimeout(function() {
