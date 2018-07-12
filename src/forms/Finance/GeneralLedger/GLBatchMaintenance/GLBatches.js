@@ -187,8 +187,19 @@ function save_edit_batch(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	console.log(payload);
-	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload);
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == "true") {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			display_list();
+		}
+		if (parsed.result == "false") {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+		}
+	});
 }
 
 function save_edit_trans(obj_modal) {
@@ -199,7 +210,20 @@ function save_edit_trans(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	console.log(payload);
-	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload);
+	// console.log(payload);
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == "true") {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			display_list();
+		}
+		if (parsed.result == "false") {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+		}
+
+	});
 
 }
