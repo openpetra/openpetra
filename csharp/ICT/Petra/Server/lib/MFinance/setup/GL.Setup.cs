@@ -174,6 +174,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
+            // TODO use DateTime and Parameter
             ACalendarStartDate = DateTime.MinValue;
             ACurrencyChangeAllowed = false;
             ACalendarChangeAllowed = false;

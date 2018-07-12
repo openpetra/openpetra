@@ -3086,6 +3086,204 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// this will save and delete a batch
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainBatches(
+            string action,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            string ABatchDescription,
+            string ADateEffective,
+            string ABatchStatus,
+            string ABatchCreditTotal,
+            string ABatchDebitTotal,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            GLBatchTDS MainDS;
+
+            AVerificationResult = new TVerificationResultCollection();
+
+            if ((action == "create") || (action == "edit"))
+            {
+                MainDS = LoadABatch(ALedgerNumber, ABatchNumber);
+
+                if (MainDS.ABatch.Rows.Count != 1)
+                {
+                    return false;
+                }
+
+                ABatchRow row = MainDS.ABatch[0];
+
+                row.BatchDescription = ABatchDescription;
+                // TODO: use DateTime: row.DateEffective = ADateEffective;
+                row.DateEffective = DateTime.Today;
+                row.BatchStatus = ABatchStatus;
+                // TODO use Decimal parameters
+                row.BatchCreditTotal = Decimal.Parse(ABatchCreditTotal);
+                row.BatchDebitTotal = Decimal.Parse(ABatchDebitTotal);
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadABatch(ALedgerNumber, ABatchNumber);
+
+                if (MainDS.ABatch.Rows.Count != 1)
+                {
+                    return false;
+                }
+
+                MainDS.ABatch[0].Delete();
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            return true;
+        }
+
+
+        /// <summary>
+        /// this will create, save and delete a transaction
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainTransactions(
+            string action,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            Int32 ATransactionNumber,
+            string ANarrative,
+            string AReference,
+            string ATransactionDate,
+            string AAmountInBaseCurrency,
+            string AAmountInIntlCurrency,
+            string AAccountCode,
+            string ACostCentreCode,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            GLBatchTDS MainDS;
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+                ATransactionRow row = MainDS.ATransaction.NewRowTyped();
+                row.LedgerNumber = ALedgerNumber;
+                row.BatchNumber = ABatchNumber;
+                row.JournalNumber = AJournalNumber;
+                row.TransactionNumber = ATransactionNumber;
+                row.Narrative = ANarrative;
+                row.Reference = AReference;
+                // TODO use DateTime: row.TransactionDate = ATransactionDate;
+                row.TransactionDate = DateTime.Today;
+                // TODO use Decimal parameters
+                row.AmountInBaseCurrency = Decimal.Parse(AAmountInBaseCurrency);
+                row.AmountInIntlCurrency = Decimal.Parse(AAmountInIntlCurrency);
+                row.AccountCode = AAccountCode.ToUpper();
+                row.CostCentreCode = ACostCentreCode.ToUpper();
+                MainDS.ATransaction.Rows.Add(row);
+
+                // TODO update journal last transaction number???
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "edit")
+            {
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+
+                foreach (ATransactionRow row in MainDS.ATransaction.Rows)
+                {
+                    if ((row.JournalNumber == AJournalNumber) && (row.TransactionNumber == ATransactionNumber))
+                    {
+                        row.Narrative = ANarrative;
+                        row.Reference = AReference;
+                        // TODO use DateTime: row.TransactionDate = ATransactionDate;
+                        row.TransactionDate = DateTime.Today;
+                        // TODO use Decimal
+                        row.AmountInBaseCurrency = Decimal.Parse(AAmountInBaseCurrency);
+                        row.AmountInIntlCurrency = Decimal.Parse(AAmountInIntlCurrency);
+                        row.AccountCode = AAccountCode.ToUpper();
+                        row.CostCentreCode = ACostCentreCode.ToUpper();
+                    }
+                }
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+
+                foreach (ATransactionRow row in MainDS.ATransaction.Rows)
+                {
+                    if ((row.JournalNumber == AJournalNumber) && (row.TransactionNumber == ATransactionNumber))
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Delete transactions and attributes and renumber accordingly
         /// </summary>
         /// <param name="AMainDS"></param>
