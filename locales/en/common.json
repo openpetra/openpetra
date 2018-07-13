@@ -186,7 +186,10 @@
       "entry_account_periods":"number of accounting periods",
       "entry_posting_periods":"number of forward posting periods",
       "error_create":"Creation of the ledger failed",
-      "confirm_create":"The ledger has been created successfully"
+      "ask_delete":"Sure you wanna delete this ledger?",
+      "confirm_edit":"The Ledger has been updated",
+      "confirm_create":"The ledger has been created successfully",
+      "confirm_delete":"The Ledger has been deleted"
     },
 
     "PartnerBySpecialType":{

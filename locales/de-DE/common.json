@@ -218,7 +218,9 @@
       "entry_posting_periods":"Maximale Anzahl offener Monate",
       "error_create":"Fehler beim Erstellen des Ledgers",
       "ask_delete":"Sind Sie sicher, dass Sie diesen Ledger löschen möchten?",
-      "confirm_create":"Der Ledger wurde erstellt"
+      "confirm_edit":"Der Ledger wurde gespeichert",
+      "confirm_create":"Der Ledger wurde erstellt",
+      "confirm_delete":"Der Ledger wurde gelöscht"
     },
 
     "PartnerBySpecialType":{

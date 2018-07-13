@@ -90,7 +90,6 @@ function save_new() {
     api.post("serverMFinance.asmx/TGLSetupWebConnector_CreateNewLedger", request).then(
       function (result) {
         parsed = JSON.parse(result.data.d);
-        console.log(parsed);
         if (parsed.result == true) {
           display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
           se.modal('hide');
@@ -114,7 +113,7 @@ function save_entry(update) {
       parsed = JSON.parse(result.data.d);
       if (parsed.result == true) {
         $('#modal_space .modal').modal('hide');
-        display_message(i18next.t('MaintainLedger.confirm_edit'), 'success');
+        display_message(i18next.t('LedgerSetup.confirm_edit'), 'success');
         display_list();
       }
     }
@@ -127,12 +126,17 @@ function delete_entry(d) {
 
   request['action'] = 'delete';
 
-  let s = confirm( i18next.t('MaintainLedger.ask_delete') );
+  let s = confirm( i18next.t('LedgerSetup.ask_delete') );
   if (!s) {return}
 
   api.post("serverMFinance.asmx/TGLSetupWebConnector_MaintainLedger", request).then(
-    function () {
-      display_message(i18next.t('MaintainLedger.confirm_delete'), 'success');
+    function (result) {
+      parsed = JSON.parse(result.data.d);
+      if (parsed.result == true) {
+        $('#modal_space .modal').modal('hide');
+        display_message(i18next.t('LedgerSetup.confirm_delete'), 'success');
+        display_list();
+      }
     }
   );
 
