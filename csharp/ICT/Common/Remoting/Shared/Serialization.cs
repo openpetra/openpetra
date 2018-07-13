@@ -296,7 +296,7 @@ namespace Ict.Common.Remoting.Shared
 
             if (THttpBinarySerializer.isJSClient())
             {
-                if ((result.Length > 0) && (result[0] != '{') && (result[0] != '['))
+                if (!(o is Boolean) && (result.Length > 0) && (result[0] != '{') && (result[0] != '['))
                 {
                     result = "\"" + result + "\"";
                 }
