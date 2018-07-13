@@ -106,18 +106,21 @@ function new_batch(ledger_number) {
 };
 
 function new_trans(ledger_number, batch_number) {
-	let x = {ALedgerNumber :ledger_number};
-	api.post('serverMFinance.asmx/TGLTransactionWebConnector_CreateABatch', x).then(
-		function (data) {
-			parsed = JSON.parse(data.data.d);
-			new_entry_data = parsed.result;
-			let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed['result']['ATransaction'][0] );
-			$('#modal_space').html(p);
-			p.find('input').attr('readonly', false);
-			p.find('[action]').val('create');
-			p.modal('show');
-		}
-	)
+	new_entry_data = [];
+	new_entry_data['a_ledger_number_i'] = ledger_number;
+	new_entry_data['a_batch_number_i'] = batch_number;
+	// new_entry_data['a_transaction_number_i'] = TODO;
+	new_entry_data['a_account_code_c'] = "0100";
+	new_entry_data['a_cost_centre_code_c'] = ledger_number * 100;
+	var today = new Date();
+	today.setUTCHours(0, 0, 0, 0);
+	var strToday = today.toISOString();
+	new_entry_data['a_transaction_date_d'] = strToday.replace('T00:00:00.000Z', '');
+	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), new_entry_data );
+	$('#modal_space').html(p);
+	p.find('input').attr('readonly', false);
+	p.find('[action]').val('create');
+	p.modal('show');
 };
 
 /////
@@ -185,7 +188,7 @@ function save_edit_batch(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
+	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
@@ -210,6 +213,7 @@ function save_edit_trans(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
  	payload['AJournalNumber'] = 1;
+	payload['AAmountInIntlCurrency'] = 0.0;
 
 	// console.log(payload);
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {

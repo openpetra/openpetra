@@ -146,6 +146,28 @@
         "title":"Title"
     },
 
+    "GLBatches": {
+        "caption": "Maintain GL Batches and Transactions"
+        "edittitle":"Maintain GL Batches",
+        "ladgernumber":"Ledger Number",
+        "batchnumber":"Batch Number",
+        "batchname":"Batch Description",
+        "batch_status":"Status",
+        "batchcredit":"Total Credit",
+        "batchdebit":"Total Debit",
+        "batch_date": "Dae effective",
+        "trans_number": "Transaction number",
+        "trans_date": "Transaction Date",
+        "trans_ref": "Reference",
+        "trans_amount_in_base": "Amount",
+        "trans_amount_in_intl": "Amount in international currency",
+        "trans_account_code": "Account Code",
+        "trans_ccenter_code": "Cost Centre Code",
+        "trans_narrative_code": "Description",
+
+        "isPosted": "We cannot edit batches that have been posted already"
+    },
+
     "MaintainPublications": {
       "caption":"Edit subscriptions",
       "addtitle":"Add subscription",
@@ -198,10 +220,6 @@
       "activePartnersOnly":"Active Partners Only",
       "onlyValidAddresses":"Only valid mailing addresses",
       "excludeNoSolicitations":"Exclude people who don't want any solicitations",
-    },
-
-    "GLBatches": {
-        "caption": "Maintain GL Batches and Transactions"
     },
 
     "ChangeLanguage": {

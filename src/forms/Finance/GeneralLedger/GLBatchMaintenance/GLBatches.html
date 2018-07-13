@@ -30,7 +30,6 @@
 							<div class="col">{trans_number}</div>
 							<div class="col">{trans_date}</div>
 							<div class="col">{trans_amount_in_base}</div>
-							<div class="col">{trans_amount_in_intl}</div>
 							<div class="col">{trans_account_code}</div>
 							<div class="col">{trans_ccenter_code}</div>
 							<div class="col">{trans_narrative_code}</div>
@@ -54,7 +53,6 @@
 			<div class="col">{val_a_transaction_number_i}</div>
 			<div class="col format_date">{val_a_transaction_date_d}</div>
 			<div class="col format_curr">{val_a_amount_in_base_currency_n}</div>
-			<div class="col format_curr">{val_a_amount_in_intl_currency_n}</div>
 			<div class="col">{val_a_account_code_c}</div>
 			<div class="col">{val_a_cost_centre_code_c}</div>
 			<div class="col">{val_a_narrative_c}</div>
@@ -219,15 +217,6 @@
 								</div>
 								<div class="col">
 									<input type="number" step="0.01" name="a_amount_in_base_currency_n" value="" readonly>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="col">
-									<span>{trans_amount_in_intl}</span>
-								</div>
-								<div class="col">
-									<input type="number" step="0.01" name="a_amount_in_intl_currency_n" value="" readonly>
 								</div>
 							</div>
 
