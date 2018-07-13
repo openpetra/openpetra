@@ -4440,6 +4440,52 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// maintain ledger settings
+        /// </summary>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool MaintainLedger(string action, Int32 ALedgerNumber, String ALedgerName,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "update")
+            {
+                TDBTransaction Transaction = null;
+                bool SubmissionOK = false;
+
+                try
+                {
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                        TEnforceIsolationLevel.eilMinimum, ref Transaction, ref SubmissionOK,
+                        delegate
+                        {
+                            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+                            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                            LedgerRow.LedgerName = ALedgerName;
+
+                            ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+
+                            SubmissionOK = true;
+                        });
+                }
+                catch (Exception ex)
+                {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    return false;
+                }
+                
+                return true;
+            }
+            else if (action == "delete")
+            {
+                return DeleteLedger(ALedgerNumber, out AVerificationResult);
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// get the ledger numbers that are available for the current user
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
