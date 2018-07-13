@@ -171,6 +171,24 @@
       "entry_dis":"Category description"
     },
 
+    "LedgerSetup":{
+      "addtitle":"Create Ledger",
+      "edittitle":"Maintain Ledger",
+      "caption":"Ledger",
+      "name":"Ledger name",
+      "number":"Ledger number",
+      "entry_name":"ledger name",
+      "entry_country":"country code",
+      "entry_date":"first day of financial year",
+      "entry_base_currency":"base currency",
+      "entry_intl_currency":"international currency",
+      "entry_account_periods_first":"start with current period",
+      "entry_account_periods":"number of accounting periods",
+      "entry_posting_periods":"number of forward posting periods",
+      "error_create":"Creation of the ledger failed",
+      "confirm_create":"The ledger has been created successfully"
+    },
+
     "PartnerBySpecialType":{
       "caption":"Partner with Categories",
       "partnertypes":"Categories",

@@ -189,7 +189,7 @@ function save_edit_batch(obj_modal) {
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
-		if (parsed.result == "true") {
+		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
 			display_list();
@@ -214,7 +214,7 @@ function save_edit_trans(obj_modal) {
 	// console.log(payload);
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
-		if (parsed.result == "true") {
+		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
 			display_list();

@@ -153,7 +153,7 @@
 
     "GLBatches": {
         "caption": "Buchungen verwalten",
-        "edittitle":"Buchungen Bearbeiten",
+        "edittitle":"Buchungen bearbeiten",
         "ladgernumber":"Ledger Nummer",
         "batchnumber":"Stapel Nummer",
         "batchname":"Stapel Name",
@@ -161,13 +161,13 @@
         "batchcredit":"Stapel Credit",
         "batchdebit":"Stapel Debit",
         "batch_date": "Buchungs Datum",
-        "trans_number": "Tansaktions Nummer",
+        "trans_number": "Tansaktions-Nummer",
         "trans_date": "Datum",
-        "trans_ref": "Referrenz",
-        "trans_amount_in_base": "Wärung",
-        "trans_amount_in_intl": "Internationale Wärung",
-        "trans_account_code": "Account Code",
-        "trans_ccenter_code": "C-Center Code",
+        "trans_ref": "Referenz",
+        "trans_amount_in_base": "Währung",
+        "trans_amount_in_intl": "Internationale Währung",
+        "trans_account_code": "Konto",
+        "trans_ccenter_code": "Kostenstelle",
         "trans_narrative_code": "Bemerkung",
 
         "isPosted": "Gepostete Batches können nicht bearbeitet werden"
@@ -179,10 +179,10 @@
       "edittitle":"Abo bearbeiten",
       "name":"Abo Name",
       "entry_name":"Abo Benennung",
-      "entry_status":"Active",
+      "entry_status":"Aktiv",
       "entry_dis":"Abo Beschreibung",
       "entry_freq":"Frequenz",
-      "ask_delete":"Sind sie sicher das die dieses Abo löschen möchten?",
+      "ask_delete":"Sind Sie sicher, dass Sie dieses Abo löschen möchten?",
       "confirm_create":"Das Abo wurde erstellt",
       "confirm_edit":"Das Abo wurde erfolgreich bearbeitet",
       "confirm_delete":"Das Abo wurde erfolgreich gelöscht"
@@ -196,9 +196,9 @@
       "confirm_create":"Kategorie erfolgreich hinzugefügt",
       "confirm_edit":"Kategorie erfolgreich bearbeitet",
       "confirm_delete":"Kategorie erfolgreich gelöscht",
-      "ask_delete":"Sind sie sicher das die dieses Kategorie löschen möchten?",
+      "ask_delete":"Sind Sie sicher, dass Sie diese Kategorie löschen möchten?",
       "entry_name":"Kategoriename",
-      "entry_status":"Active",
+      "entry_status":"Aktiv",
       "entry_dis":"Kategorie Beschreibung"
     },
 
@@ -209,13 +209,15 @@
       "name":"Ledgername",
       "number":"Ledgernummer",
       "entry_name":"Ledgername",
-      "entry_country":"Länderzeichnung",
+      "entry_country":"Ländercode",
       "entry_date":"Finanzjahranfang",
       "entry_base_currency":"Währung",
       "entry_intl_currency":"Internationale Währung",
-      "entry_account_periods_first":"Erster Berechenbare Monat",
+      "entry_account_periods_first":"Erster berechenbarer Monat",
       "entry_account_periods":"Berechenbare Monate",
-      "entry_posting_periods":"FWD_POSTING_PERIODS",
+      "entry_posting_periods":"Maximale Anzahl offener Monate",
+      "error_create":"Fehler beim Erstellen des Ledgers",
+      "ask_delete":"Sind Sie sicher, dass Sie diesen Ledger löschen möchten?",
       "confirm_create":"Der Ledger wurde erstellt"
     },
 

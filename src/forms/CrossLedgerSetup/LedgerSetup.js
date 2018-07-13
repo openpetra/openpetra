@@ -88,10 +88,16 @@ function save_new() {
 
     let request = translate_to_server(d);
     api.post("serverMFinance.asmx/TGLSetupWebConnector_CreateNewLedger", request).then(
-      function () {
-        display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
-				se.modal('hide');
-				display_list();
+      function (result) {
+        parsed = JSON.parse(result.data.d);
+        console.log(parsed);
+        if (parsed.result == true) {
+          display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
+          se.modal('hide');
+          display_list();
+        } else {
+          display_message(i18next.t('LedgerSetup.error_create'), 'error');
+        }
       }
     )
 
@@ -99,33 +105,34 @@ function save_new() {
 
 function save_entry(update) {
   let raw = $(update).closest('.modal');
-  let e = extract_data(raw);
+  let request = translate_to_server(extract_data(raw));
 
-  let request = {
-    "action": "update",
-    "data": [e],
-  };
+  request['action'] = 'update';
+
   api.post("serverMFinance.asmx/TGLSetupWebConnector_MaintainLedger", request).then(
-    function () {
-      display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
+    function (result) {
+      parsed = JSON.parse(result.data.d);
+      if (parsed.result == true) {
+        $('#modal_space .modal').modal('hide');
+        display_message(i18next.t('MaintainLedger.confirm_edit'), 'success');
+        display_list();
+      }
     }
   )
 }
 
 function delete_entry(d) {
   let raw = $(d).closest('.modal');
-  let e = extract_data(raw);
+  let request = translate_to_server(extract_data(raw));
 
-  let s = confirm( i18next.t('MaintainTypes.ask_delete') );
+  request['action'] = 'delete';
+
+  let s = confirm( i18next.t('MaintainLedger.ask_delete') );
   if (!s) {return}
 
-  let request = {
-    "action": "delete",
-    "data": [e],
-  };
-  api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
+  api.post("serverMFinance.asmx/TGLSetupWebConnector_MaintainLedger", request).then(
     function () {
-      display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
+      display_message(i18next.t('MaintainLedger.confirm_delete'), 'success');
     }
   );
 
