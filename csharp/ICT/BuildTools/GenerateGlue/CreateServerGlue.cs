@@ -208,6 +208,7 @@ namespace GenerateGlue
                 bool TypedDataSetParameter = parametertype.EndsWith("TDS");
                 bool DataTableParameter = parametertype.EndsWith("DataTable");
                 bool EnumParameter = parametertype.EndsWith("Enum");
+                bool DecimalParameter = parametertype.StartsWith("System.Decimal") && !ArrayParameter;
                 bool DateTimeParameter = parametertype.EndsWith("DateTime");
                 bool ListParameter = parametertype.StartsWith("List<");
                 bool DictParameter = false && parametertype.StartsWith("Dictionary<");
@@ -215,6 +216,7 @@ namespace GenerateGlue
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
                       || (parametertype.StartsWith("System.Int16"))
                       || (parametertype.StartsWith("System.String")) || (parametertype.StartsWith("System.Boolean"))
+                      || DecimalParameter
                       || DateTimeParameter
                       || EnumParameter
                       || ListParameter
@@ -233,7 +235,7 @@ namespace GenerateGlue
                         ParameterDefinition += ", ";
                     }
 
-                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter) && (!DateTimeParameter))
+                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter) && (!DateTimeParameter) && (!DecimalParameter))
                     {
                         ParameterDefinition += parametertype + " " + p.ParameterName;
                     }
@@ -291,6 +293,14 @@ namespace GenerateGlue
                         Environment.NewLine);
                 }
 
+                if (DecimalParameter && ((ParameterModifiers.Out & p.ParamModifier) == 0))
+                {
+                    snippet.AddToCodelet(
+                        "LOCALVARIABLES",
+                        parametertype + " Local" + p.ParameterName + " = Decimal.Parse(" + p.ParameterName + ", System.Globalization.CultureInfo.InvariantCulture);" +
+                        Environment.NewLine);
+                }
+
                 if (TypedDataSetParameter && (ParameterModifiers.Out & p.ParamModifier) == 0)
                 {
                     snippet.AddToCodelet(
@@ -306,7 +316,7 @@ namespace GenerateGlue
                 }
                 else if ((ParameterModifiers.Ref & p.ParamModifier) != 0)
                 {
-                    if (TypedDataSetParameter || DateTimeParameter)
+                    if (TypedDataSetParameter || DateTimeParameter || DecimalParameter)
                     {
                         ActualParameters += "ref Local" + p.ParameterName;
                     }
@@ -331,7 +341,7 @@ namespace GenerateGlue
                 }
                 else
                 {
-                    if (TypedDataSetParameter || DateTimeParameter)
+                    if (TypedDataSetParameter || DateTimeParameter || DecimalParameter)
                     {
                         ActualParameters += "Local" + p.ParameterName;
                     }

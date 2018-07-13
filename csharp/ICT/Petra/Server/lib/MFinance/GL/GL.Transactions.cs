@@ -3096,8 +3096,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ABatchDescription,
             DateTime ADateEffective,
             string ABatchStatus,
-            string ABatchCreditTotal,
-            string ABatchDebitTotal,
+            Decimal ABatchCreditTotal,
+            Decimal ABatchDebitTotal,
             out TVerificationResultCollection AVerificationResult)
         {
             GLBatchTDS MainDS;
@@ -3118,9 +3118,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 row.BatchDescription = ABatchDescription;
                 row.DateEffective = ADateEffective;
                 row.BatchStatus = ABatchStatus;
-                // TODO use Decimal parameters
-                row.BatchCreditTotal = Decimal.Parse(ABatchCreditTotal);
-                row.BatchDebitTotal = Decimal.Parse(ABatchDebitTotal);
+                row.BatchCreditTotal = ABatchCreditTotal;
+                row.BatchDebitTotal = ABatchDebitTotal;
 
                 try
                 {
@@ -3179,8 +3178,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ANarrative,
             string AReference,
             DateTime ATransactionDate,
-            string AAmountInBaseCurrency,
-            string AAmountInIntlCurrency,
+            Decimal AAmountInBaseCurrency,
+            Decimal AAmountInIntlCurrency,
             string AAccountCode,
             string ACostCentreCode,
             out TVerificationResultCollection AVerificationResult)
@@ -3199,9 +3198,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 row.Narrative = ANarrative;
                 row.Reference = AReference;
                 row.TransactionDate = ATransactionDate;
-                // TODO use Decimal parameters
-                row.AmountInBaseCurrency = Decimal.Parse(AAmountInBaseCurrency);
-                row.AmountInIntlCurrency = Decimal.Parse(AAmountInIntlCurrency);
+                row.AmountInBaseCurrency = AAmountInBaseCurrency;
+                row.AmountInIntlCurrency = AAmountInIntlCurrency;
                 row.AccountCode = AAccountCode.ToUpper();
                 row.CostCentreCode = ACostCentreCode.ToUpper();
                 MainDS.ATransaction.Rows.Add(row);
@@ -3228,9 +3226,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         row.Narrative = ANarrative;
                         row.Reference = AReference;
                         row.TransactionDate = ATransactionDate;
-                        // TODO use Decimal
-                        row.AmountInBaseCurrency = Decimal.Parse(AAmountInBaseCurrency);
-                        row.AmountInIntlCurrency = Decimal.Parse(AAmountInIntlCurrency);
+                        row.AmountInBaseCurrency = AAmountInBaseCurrency;
+                        row.AmountInIntlCurrency = AAmountInIntlCurrency;
                         row.AccountCode = AAccountCode.ToUpper();
                         row.CostCentreCode = ACostCentreCode.ToUpper();
                     }
