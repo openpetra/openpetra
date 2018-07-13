@@ -26,20 +26,6 @@ var last_requested_data = {};
 
 $('document').ready(function () {
 	display_list();
-
-	var today = new Date();
-	var dd = today.getDate();
-	var mm = today.getMonth()+1; //January is 0!
-
-	var yyyy = today.getFullYear();
-	if(dd<10){
-	    dd='0'+dd;
-	}
-	if(mm<10){
-	    mm='0'+mm;
-	}
-	var today = dd+'-'+mm+'-'+yyyy;
-	$('.date').val(today);
 });
 
 function display_list() {
@@ -88,7 +74,11 @@ function open_edit(sub_id) {
 function open_new() {
   let n_ = $('[phantom] .tpl_new').clone();
   $('#modal_space').html(n_);
+	var today = new Date();
+	var yyyy = today.getFullYear();
+	var today = yyyy+"-01-01";
 	$('#modal_space .modal').modal('show');
+	$('#modal_space .modal #ACalendarStartDate').val(today);
 }
 
 function save_new() {
