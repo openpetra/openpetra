@@ -3094,7 +3094,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             string ABatchDescription,
-            string ADateEffective,
+            DateTime ADateEffective,
             string ABatchStatus,
             string ABatchCreditTotal,
             string ABatchDebitTotal,
@@ -3116,8 +3116,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 ABatchRow row = MainDS.ABatch[0];
 
                 row.BatchDescription = ABatchDescription;
-                // TODO: use DateTime: row.DateEffective = ADateEffective;
-                row.DateEffective = DateTime.Today;
+                row.DateEffective = ADateEffective;
                 row.BatchStatus = ABatchStatus;
                 // TODO use Decimal parameters
                 row.BatchCreditTotal = Decimal.Parse(ABatchCreditTotal);
@@ -3179,7 +3178,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ATransactionNumber,
             string ANarrative,
             string AReference,
-            string ATransactionDate,
+            DateTime ATransactionDate,
             string AAmountInBaseCurrency,
             string AAmountInIntlCurrency,
             string AAccountCode,
@@ -3199,8 +3198,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 row.TransactionNumber = ATransactionNumber;
                 row.Narrative = ANarrative;
                 row.Reference = AReference;
-                // TODO use DateTime: row.TransactionDate = ATransactionDate;
-                row.TransactionDate = DateTime.Today;
+                row.TransactionDate = ATransactionDate;
                 // TODO use Decimal parameters
                 row.AmountInBaseCurrency = Decimal.Parse(AAmountInBaseCurrency);
                 row.AmountInIntlCurrency = Decimal.Parse(AAmountInIntlCurrency);
@@ -3229,8 +3227,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     {
                         row.Narrative = ANarrative;
                         row.Reference = AReference;
-                        // TODO use DateTime: row.TransactionDate = ATransactionDate;
-                        row.TransactionDate = DateTime.Today;
+                        row.TransactionDate = ATransactionDate;
                         // TODO use Decimal
                         row.AmountInBaseCurrency = Decimal.Parse(AAmountInBaseCurrency);
                         row.AmountInIntlCurrency = Decimal.Parse(AAmountInIntlCurrency);

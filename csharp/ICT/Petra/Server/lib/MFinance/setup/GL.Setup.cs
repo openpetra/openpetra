@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -174,7 +174,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            // TODO use DateTime and Parameter
             ACalendarStartDate = DateTime.MinValue;
             ACurrencyChangeAllowed = false;
             ACalendarChangeAllowed = false;
@@ -3831,7 +3830,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String ACountryCode,
             String ABaseCurrency,
             String AIntlCurrency,
-            String ACalendarStartDate,
+            DateTime ACalendarStartDate,
             Int32 ANumberOfAccountingPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
@@ -4011,7 +4010,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // create calendar
                 // at the moment we only support financial years that start on the first day of a month
                 // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods
-                DateTime periodStartDate = DateTime.Today;
+                DateTime periodStartDate = ACalendarStartDate;
 
                 for (Int32 periodNumber = 1; periodNumber <= ANumberOfAccountingPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
                 {

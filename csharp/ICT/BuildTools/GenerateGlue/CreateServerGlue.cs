@@ -208,12 +208,14 @@ namespace GenerateGlue
                 bool TypedDataSetParameter = parametertype.EndsWith("TDS");
                 bool DataTableParameter = parametertype.EndsWith("DataTable");
                 bool EnumParameter = parametertype.EndsWith("Enum");
+                bool DateTimeParameter = parametertype.EndsWith("DateTime");
                 bool ListParameter = parametertype.StartsWith("List<");
                 bool DictParameter = false && parametertype.StartsWith("Dictionary<");
                 bool BinaryParameter =
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
                       || (parametertype.StartsWith("System.Int16"))
                       || (parametertype.StartsWith("System.String")) || (parametertype.StartsWith("System.Boolean"))
+                      || DateTimeParameter
                       || EnumParameter
                       || ListParameter
                       || DictParameter);
@@ -231,7 +233,7 @@ namespace GenerateGlue
                         ParameterDefinition += ", ";
                     }
 
-                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter))
+                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter) && (!DateTimeParameter))
                     {
                         ParameterDefinition += parametertype + " " + p.ParameterName;
                     }
@@ -281,6 +283,14 @@ namespace GenerateGlue
                         Environment.NewLine);
                 }
 
+                if (DateTimeParameter && ((ParameterModifiers.Out & p.ParamModifier) == 0))
+                {
+                    snippet.AddToCodelet(
+                        "LOCALVARIABLES",
+                        parametertype + " Local" + p.ParameterName + " = DateTime.Parse(" + p.ParameterName + ", null, System.Globalization.DateTimeStyles.RoundtripKind);" +
+                        Environment.NewLine);
+                }
+
                 if (TypedDataSetParameter && (ParameterModifiers.Out & p.ParamModifier) == 0)
                 {
                     snippet.AddToCodelet(
@@ -296,7 +306,7 @@ namespace GenerateGlue
                 }
                 else if ((ParameterModifiers.Ref & p.ParamModifier) != 0)
                 {
-                    if (TypedDataSetParameter)
+                    if (TypedDataSetParameter || DateTimeParameter)
                     {
                         ActualParameters += "ref Local" + p.ParameterName;
                     }
@@ -321,7 +331,7 @@ namespace GenerateGlue
                 }
                 else
                 {
-                    if (TypedDataSetParameter)
+                    if (TypedDataSetParameter || DateTimeParameter)
                     {
                         ActualParameters += "Local" + p.ParameterName;
                     }
