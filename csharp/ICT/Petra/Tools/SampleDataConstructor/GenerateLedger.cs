@@ -68,7 +68,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
 
             TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR",
-                    "2017-04-01", // TODO new DateTime(DateTime.Now.Year - 1, 4, 1),
+                    new DateTime(DateTime.Now.Year - 1, 4, 1),
                     12, 1, 8, out VerificationResult);
         }
 
