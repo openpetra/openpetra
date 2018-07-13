@@ -273,7 +273,7 @@ namespace Ict.Testing.NUnitTools
                 "99",
                 "EUR",
                 "USD",
-                "2018-01-01", // TODO AStartDate.Value,
+                AStartDate.Value,
                 12,
                 1,
                 8,
