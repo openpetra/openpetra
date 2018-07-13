@@ -149,7 +149,7 @@
     "GLBatches": {
         "caption": "Maintain GL Batches and Transactions"
         "edittitle":"Maintain GL Batches",
-        "ladgernumber":"Ledger Number",
+        "ledgernumber":"Ledger Number",
         "batchnumber":"Batch Number",
         "batchname":"Batch Description",
         "batch_status":"Status",

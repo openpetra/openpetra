@@ -154,7 +154,7 @@
     "GLBatches": {
         "caption": "Buchungen verwalten",
         "edittitle":"Buchungen bearbeiten",
-        "ladgernumber":"Ledger Nummer",
+        "ledgernumber":"Ledger Nummer",
         "batchnumber":"Stapel Nummer",
         "batchname":"Stapel Name",
         "batch_status":"Stapel Status",

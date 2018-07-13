@@ -98,7 +98,8 @@ function new_batch(ledger_number) {
 			new_entry_data = parsed.result;
 			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), parsed['result']['ABatch'][0] );
 			$('#modal_space').html(p);
-			p.find('input').attr('readonly', false);
+			p.find('input[name=a_batch_credit_total_n]').attr('readonly', false);
+			p.find('input[name=a_batch_debit_total_n]').attr('readonly', false);
 			p.find('[action]').val('create');
 			p.modal('show');
 		}
@@ -109,7 +110,7 @@ function new_trans(ledger_number, batch_number) {
 	new_entry_data = [];
 	new_entry_data['a_ledger_number_i'] = ledger_number;
 	new_entry_data['a_batch_number_i'] = batch_number;
-	// new_entry_data['a_transaction_number_i'] = TODO;
+	new_entry_data['a_transaction_number_i'] = $("#Batch" + batch_number + " .tpl_transaction").length + 1;
 	new_entry_data['a_account_code_c'] = "0100";
 	new_entry_data['a_cost_centre_code_c'] = ledger_number * 100;
 	var today = new Date();
@@ -118,7 +119,6 @@ function new_trans(ledger_number, batch_number) {
 	new_entry_data['a_transaction_date_d'] = strToday.replace('T00:00:00.000Z', '');
 	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), new_entry_data );
 	$('#modal_space').html(p);
-	p.find('input').attr('readonly', false);
 	p.find('[action]').val('create');
 	p.modal('show');
 };
