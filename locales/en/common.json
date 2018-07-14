@@ -72,6 +72,8 @@
         "any": "any",
         "status": "Status",
         "name": "Name",
+        "PleaseWait": "Please wait",
+        "WaitInfo": "This might take a couple of seconds...",
         "description": "Description"
     },
     "Home": {
@@ -105,6 +107,12 @@
         "permissions": "Permissions",
         "locked": "Locked",
         "retired": "Disabled"
+    },
+
+    "ImportAndExportDatabase": {
+        "caption": "Backup and Restore the database",
+        "exportalldata": "Download all data",
+        "restoredatabase": "Restore all data from a backup"
     },
 
     "MaintainPartners": {

@@ -71,6 +71,8 @@
         "any": "alle",
         "status": "Status",
         "name": "Name",
+        "PleaseWait": "Bitte warten",
+        "WaitInfo": "Diese Aktion kann ein paar Sekunden dauern...",
         "description": "Beschreibung"
     },
     "errors": {
@@ -110,6 +112,12 @@
         "permissions": "Berechtigungen",
         "locked": "Gesperrt",
         "retired": "Deaktiviert"
+    },
+
+    "ImportAndExportDatabase": {
+        "caption": "Datenbank sichern und wiederherstellen",
+        "exportalldata": "Alle Daten herunterladen",
+        "restoredatabase": "Alle Daten aus Sicherung wiederherstellen"
     },
 
     "MaintainPartners": {
