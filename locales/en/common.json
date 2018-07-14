@@ -155,7 +155,7 @@
     },
 
     "GLBatches": {
-        "caption": "Maintain GL Batches and Transactions"
+        "caption": "Maintain GL Batches and Transactions",
         "edittitle":"Maintain GL Batches",
         "ledgernumber":"Ledger Number",
         "batchnumber":"Batch Number",
@@ -227,7 +227,7 @@
       "partnertypes":"Categories",
       "activePartnersOnly":"Active Partners Only",
       "onlyValidAddresses":"Only valid mailing addresses",
-      "excludeNoSolicitations":"Exclude people who don't want any solicitations",
+      "excludeNoSolicitations":"Exclude people who don't want any solicitations"
     },
 
     "ChangeLanguage": {
