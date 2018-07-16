@@ -71,12 +71,12 @@ function open_gift_transactions(obj, number) {
 		return;
 	}
 	let x = {"ALedgerNumber":43, "ABatchNumber":number};
-	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
-		for (item of data.result.ATransaction) {
-			let transaction_row = $('[phantom] .tpl_transaction').clone();
+		for (item of data.result.AGift) {
+			let transaction_row = $('[phantom] .tpl_gift').clone();
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
@@ -132,7 +132,6 @@ function edit_batch(batch_id) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle', r).then(function (data) {
 		parsed = JSON.parse(data.data.d)
 		let batch = parsed.result.AGiftBatch[0];
-		console.log(batch);
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 
 		$('#modal_space').html(tpl_m);
@@ -142,11 +141,11 @@ function edit_batch(batch_id) {
 	})
 }
 
-function edit_trans(batch_id, trans_id) {
-	let x = {"ALedgerNumber":43, "ABatchNumber":batch_id};
+function edit_gift_trans(ledger_id, batch_id, trans_id) {
+	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
-	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
 		new_entry_data = parsed.result;
