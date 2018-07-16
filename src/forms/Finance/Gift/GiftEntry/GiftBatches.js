@@ -145,12 +145,13 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
+
+	// serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
-		new_entry_data = parsed.result;
-		for (trans of parsed.result.ATransaction) {
-			if (trans.a_transaction_number_i == trans_id) {
+		for (trans of parsed.result.AGift) {
+			if (trans.a_gift_transaction_number_i == trans_id) {
 				searched = trans;
 				break;
 			}
@@ -158,15 +159,52 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		if (searched == null) {
 			return alert('ERROR');
 		}
-		let tpl_m = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
-		$('#modal_space').html(tpl_m);
-		tpl_m.find('[action]').val('edit');
-		tpl_m.modal('show');
+
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
+
+		for (detail of parsed.result.AGiftDetail) {
+			if (detail.a_gift_transaction_number_i == trans_id) {
+
+				let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
+				tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
+
+			}
+		}
+
+
+		$('#modal_space').html(tpl_edit_raw);
+		tpl_edit_raw.find('[action]').val('edit');
+		tpl_edit_raw.modal('show');
 
 	})
 }
 
-/////
+function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
+
+	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		let searched = null;
+		for (trans of parsed.result.AGiftDetail) {
+			if (trans.a_gift_transaction_number_i == trans_id) {
+				searched = trans;
+				break;
+			}
+		}
+		if (searched == null) {
+			return alert('ERROR');
+		}
+
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
+
+		$('#modal_space').append(tpl_edit_raw);
+		$('.modal').modal('hide');
+		tpl_edit_raw.find('[action]').val('edit');
+		tpl_edit_raw.modal('show');
+
+	})
+}
+
 
 function save_edit_batch(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
@@ -189,6 +227,19 @@ function save_edit_trans(obj_modal) {
  	payload['action'] = mode;
 
 	console.log(payload);
-	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload);
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainGifts', payload);
+
+}
+
+function save_edit_trans_detail(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+	let mode = obj.find('[action]').val();
+
+	// extract information from a jquery object
+	let payload = translate_to_server( extract_data(obj) );
+ 	payload['action'] = mode;
+
+	console.log(payload);
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainGiftsDetails', payload);
 
 }

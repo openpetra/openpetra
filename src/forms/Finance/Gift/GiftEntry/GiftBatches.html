@@ -52,7 +52,21 @@
 			<div class="col format_date">{val_a_date_entered_d}</div>
 			<div class="col">{val_p_donor_key_n}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_batch_number_i}, {val_a_gift_transaction_number_i})">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans({val_a_ledger_number_i}, {val_a_batch_number_i}, {val_a_gift_transaction_number_i})">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_trans_detail">
+		<div class="row">
+			<div class="col format_curr">{val_a_gift_amount_n}</div>
+			<div class="col format_curr">{val_a_gift_amount_intl_n}</div>
+			<div class="col">{val_DonorName}</div>
+			<div class="col">{val_RecipientDescription}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
 					<i class="fa fa-wrench"></i>
 				</button>
 			</div>
@@ -149,107 +163,185 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h3>{edittitle}</h3>
+					<h3>{edittitle_trans}</h3>
 				</div>
 				<div class="modal-body">
 
 					<div class="container">
 
-							<div class="row">
-								<div class="col">
-									<span>{ladgernumber}</span>
-								</div>
-								<div class="col">
-									<input type="text" name="a_ledger_number_i" value="" readonly>
-								</div>
+						<div class="row">
+							<div class="col">
+								<span>{ladgernumber}</span>
 							</div>
-
-							<div class="row">
-								<div class="col">
-									<span>{batchnumber}</span>
-								</div>
-								<div class="col">
-									<input type="text" name="a_batch_number_i" value="" readonly>
-								</div>
+							<div class="col">
+								<input type="text" name="a_ledger_number_i" value="" readonly>
 							</div>
+						</div>
 
-							<div class="row">
-								<div class="col">
-									<span>{trans_number}</span>
-								</div>
-								<div class="col">
-									<input type="text" name="a_transaction_number_i" value="" readonly>
-								</div>
+						<div class="row">
+							<div class="col">
+								<span>{batchnumber}</span>
 							</div>
-
-							<div class="row">
-								<div class="col">
-									<span>{trans_narrative_code}</span>
-								</div>
-								<div class="col">
-									<input type="text" name="a_narrative_c" value="">
-								</div>
+							<div class="col">
+								<input type="text" name="a_batch_number_i" value="" readonly>
 							</div>
+						</div>
 
-							<div class="row">
-								<div class="col">
-									<span>{trans_amount_in_base}</span>
-								</div>
-								<div class="col">
-									<input type="number" name="a_amount_in_base_currency_n" value="" readonly>
-								</div>
+						<div class="row">
+							<div class="col">
+								<span>{trans_number}</span>
 							</div>
-
-							<div class="row">
-								<div class="col">
-									<span>{trans_amount_in_intl}</span>
-								</div>
-								<div class="col">
-									<input type="number" name="a_amount_in_intl_currency_n" value="" readonly>
-								</div>
+							<div class="col">
+								<input type="text" name="a_gift_transaction_number_i" value="" readonly>
 							</div>
+						</div>
 
-							<div class="row">
-								<div class="col">
-									<span>{trans_date}</span>
-								</div>
-								<div class="col">
-									<input class="" type="date" name="a_transaction_date_d" value="">
-								</div>
+						<div class="row">
+							<div class="col">
+								<span>{trans_date}</span>
 							</div>
-
-							<div class="row">
-								<div class="col">
-									<span>{trans_ref}</span>
-								</div>
-								<div class="col">
-									<input class="" type="text" name="a_reference_c" value="" readonly>
-								</div>
+							<div class="col">
+								<input class="" type="date" name="a_date_entered_d" value="">
 							</div>
+						</div>
 
-							<div class="row">
-								<div class="col">
-									<span>{trans_account_code}</span>
-								</div>
-								<div class="col">
-									<input class="" type="text" name="a_account_code_c" value="">
-								</div>
-							</div>
+						<!-- details -->
 
-							<div class="row">
-								<div class="col">
-									<span>{trans_ccenter_code}</span>
+						<div class="row">
+
+							<div class="col">
+								<h4>Detail</h4>
+								<div class="row">
+									<div class="col">{trans_amount_in_base}</div>
+									<div class="col">{trans_amount_in_intl}</div>
+									<div class="col">{trans_doner}</div>
+									<div class="col">{trans_description}</div>
+									<div class="col-1"></div>
 								</div>
-								<div class="col">
-									<input class="" type="text" name="a_cost_centre_code_c" value="">
-								</div>
+								<div class="detail_col"></div>
 							</div>
 
 						</div>
 
+						<!-- /details -->
+
+					</div>
+
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-primary" onclick="save_edit_trans(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_trans_detail" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_trans_detail}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{ledgernumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{batchnumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_batch_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_number}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_gift_transaction_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_date}</span>
+							</div>
+							<div class="col">
+								<input class="" type="date" name="DateEntered" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_amount_in_base}</span>
+							</div>
+							<div class="col">
+								<input class="" type="number" name="a_gift_amount_n" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_amount_in_intl}</span>
+							</div>
+							<div class="col">
+								<input class="" type="number" name="a_gift_amount_intl_n" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_doner}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="DonorName" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_description}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="RecipientDescription" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_account_code}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_account_code_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_ccenter_code}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_cost_centre_code_c" value="">
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" onclick="save_edit_trans_detail(this)">{forms.save}</button>
 					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
 			</div>

@@ -193,6 +193,7 @@
     },
 
     "GiftBatches": {
+      "edittitle":"Spendenstapel bearbeiten",
       "caption":"Spenden bearbeiten",
       "batchnumber":"Stapelnummer",
       "batchdate":"Stabeldatum",
@@ -207,10 +208,11 @@
       "trans_account_code": "Account Code",
       "trans_ccenter_code": "C-Center Code",
       "trans_narrative_code": "Bemerkung",
-      "trans_doner_key":"Spenden Schlüssel",
-      "":"",
-      "":"",
-      "":"",
+      "trans_doner_key":"Spender Schlüssel",
+      "trans_doner":"Spendername",
+      "edittitle_trans":"Spende bearbeiten",
+      "trans_description":"Spenden beschreibung",
+      "edittitle_trans_detail":"Spendendetails bearbeiten",
       "":"",
       "":"",
       "":""
