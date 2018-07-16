@@ -112,7 +112,10 @@
     "ImportAndExportDatabase": {
         "caption": "Backup and Restore the database",
         "exportalldata": "Download all data",
-        "restoredatabase": "Restore all data from a backup"
+        "restoredatabase": "Restore all data from a backup",
+        "ask_reset": "Do you really want to loose your current data and reset it with your backup?",
+        "uploadsuccess": "Database has been uploaded",
+        "uploaderror": "There has been a problem uploading the database"
     },
 
     "MaintainPartners": {

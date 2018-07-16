@@ -3,12 +3,12 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button type="button" class="btn btn-default" id="btnExportData" onclick="ExportAllData()">{exportalldata}</button>
+			<button type="button" class="btn btn-primary" id="btnExportData" onclick="ExportAllData()">{exportalldata}</button>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<button type="button" class="btn btn-default" id="btnImportData" onclick="restore_database()">{restoredatabase}</button>
+			<button type="button" class="btn btn-danger" id="btnImportData" onclick="ResetAllData()">{restoredatabase}</button>
 		</td>
 	</tr>
 </table>
@@ -26,6 +26,8 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<input type="file" id="fileResetDatabase" name="file" size="10" onchange="ResetDatabase($(this))" style="visibility:hidden"/>
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

@@ -59,6 +59,57 @@ function ExportAllData() {
 	});
 }
 
+function ResetAllData() {
+	let s = confirm( i18next.t('ImportAndExportDatabase.ask_reset') );
+	if (!s) {return}
+
+	$('#fileResetDatabase').click();
+}
+
+function ResetDatabase(self) {
+
+	var filename = self.val();
+
+	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		//alert("Great success! All the File APIs are supported.");
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
+	var reader = new FileReader();
+
+	reader.onload = (function(theFile) {
+		return function(e) {
+			s=e.target.result;
+			showPleaseWait();
+			base64EncodedFileContent = s.substring(s.indexOf("base64,") + "base64,".length);
+
+			p = {'AZippedNewDatabaseData': base64EncodedFileContent};
+			api.post('serverMSysMan.asmx/TImportExportWebConnector_ResetDatabase', p)
+			.then(function (result) {
+				result = result.data;
+				if (result != '') {
+					hidePleaseWait();
+					if (result.d == true) {
+						display_message(i18next.t('ImportAndExportDatabase.uploadsuccess'), "success");
+					} else {
+						display_message(i18next.t('ImportAndExportDatabase.uploaderror'), "fail");
+					}
+				}
+			})
+			.catch(error => {
+				//console.log(error.response)
+				hidePleaseWait();
+				display_message(i18next.t('ImportAndExportDatabase.uploaderror'), "fail");
+			});
+		};
+	})(self[0].files[0]);
+
+	// Read in the file as a data URL.
+	reader.readAsDataURL(self[0].files[0]);
+};
+
 function showPleaseWait() {
 	$('#myModal').modal();
 }
