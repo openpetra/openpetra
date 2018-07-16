@@ -204,6 +204,7 @@
       "entry_dis":"Category description"
     },
 
+<<<<<<< Updated upstream
     "LedgerSetup":{
       "addtitle":"Create Ledger",
       "edittitle":"Maintain Ledger",
@@ -225,12 +226,22 @@
       "confirm_delete":"The Ledger has been deleted"
     },
 
+=======
+>>>>>>> Stashed changes
     "PartnerBySpecialType":{
       "caption":"Partner with Categories",
       "partnertypes":"Categories",
       "activePartnersOnly":"Active Partners Only",
       "onlyValidAddresses":"Only valid mailing addresses",
+<<<<<<< Updated upstream
       "excludeNoSolicitations":"Exclude people who don't want any solicitations"
+=======
+      "excludeNoSolicitations":"Exclude people who don't want any solicitations",
+    },
+
+    "GLBatches": {
+        "caption": "Maintain GL Batches and Transactions"
+>>>>>>> Stashed changes
     },
 
     "ChangeLanguage": {

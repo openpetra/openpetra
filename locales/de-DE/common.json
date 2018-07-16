@@ -17,7 +17,6 @@
         "change_language": "Sprache wechseln",
         "logout": "Abmelden",
         "notimplementedyet": "Noch nicht verfügbar",
-
         "Partner_label": "Partner",
         "Partners_label": "Partner",
         "Types_label": "Kategorien",
@@ -180,8 +179,29 @@
         "trans_account_code": "Konto",
         "trans_ccenter_code": "Kostenstelle",
         "trans_narrative_code": "Beschreibung",
-
+        "isPosted": "Gepostete Batches können nicht bearbeitet werden",
+        "batch_date": "Buchungs Datum",
+        "trans_number": "Tansaktions Nummer",
+        "trans_date": "Datum",
+        "trans_ref": "Referrenz",
+        "trans_amount_in_base": "Wärung",
+        "trans_amount_in_intl": "Internationale Wärung",
+        "trans_account_code": "Account Code",
+        "trans_ccenter_code": "C-Center Code",
+        "trans_narrative_code": "Bemerkung",
         "isPosted": "Gepostete Batches können nicht bearbeitet werden"
+    },
+
+    "GiftBatches": {
+      "caption":"Spenden bearbeiten",
+      "batchnumber":"Stapelnummer",
+      "batchdate":"Stabeldatum",
+      "batchname":"Stapelname",
+      "batchstatus":"Stapelstatus",
+      "batchdate_trans":"Eingang's Datum",
+      "trans_account_code": "Account Code",
+      "trans_ccenter_code": "C-Center Code",
+      "":""
     },
 
     "MaintainPublications": {
@@ -220,7 +240,6 @@
       "name":"Ledgername",
       "number":"Ledgernummer",
       "entry_name":"Ledgername",
-      "entry_country":"Ländercode",
       "entry_date":"Finanzjahranfang",
       "entry_base_currency":"Währung",
       "entry_intl_currency":"Internationale Währung",
@@ -231,7 +250,8 @@
       "ask_delete":"Sind Sie sicher, dass Sie diesen Ledger löschen möchten?",
       "confirm_edit":"Der Ledger wurde gespeichert",
       "confirm_create":"Der Ledger wurde erstellt",
-      "confirm_delete":"Der Ledger wurde gelöscht"
+      "confirm_delete":"Der Ledger wurde gelöscht",
+      "entry_country":"Länderzeichnung"
     },
 
     "PartnerBySpecialType":{
