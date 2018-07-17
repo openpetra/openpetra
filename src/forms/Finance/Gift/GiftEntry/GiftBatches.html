@@ -3,11 +3,11 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})">
+	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
 			<div class="col format_date">{val_a_gl_effective_date_d}</div>
-      <div class="col">{val_a_batch_description_c}</div>
+			<div class="col">{val_a_batch_description_c}</div>
 			<div class="col">{val_a_batch_status_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
@@ -30,7 +30,7 @@
 						<div class ="row">
 							<div class="col">{trans_number}</div>
 							<div class="col">{trans_date}</div>
-							<div class="col">{trans_doner_key}</div>
+							<div class="col">{trans_donor}</div>
 							<div class="col-1">
 								<button type="button" class="btn" onclick="$('.tpl_row .collapse').collapse('hide');">
 									<i class="fa fa-close"></i>
@@ -50,7 +50,7 @@
 		<div class="row">
 			<div class="col">{val_a_gift_transaction_number_i}</div>
 			<div class="col format_date">{val_a_date_entered_d}</div>
-			<div class="col">{val_p_donor_key_n}</div>
+			<div class="col">{val_DonorName}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans({val_a_ledger_number_i}, {val_a_batch_number_i}, {val_a_gift_transaction_number_i})">
 					<i class="fa fa-wrench"></i>
@@ -62,8 +62,6 @@
 	<div class="tpl_trans_detail">
 		<div class="row">
 			<div class="col format_curr">{val_a_gift_amount_n}</div>
-			<div class="col format_curr">{val_a_gift_amount_intl_n}</div>
-			<div class="col">{val_DonorName}</div>
 			<div class="col">{val_RecipientDescription}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
@@ -113,7 +111,7 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{batchdate_trans}</span>
+								<span>{batchdate}</span>
 							</div>
 							<div class="col">
 								<input class="" type="date" name="a_gl_effective_date_d" value="">
@@ -134,7 +132,7 @@
 								<span>{trans_account_code}</span>
 							</div>
 							<div class="col">
-								<input type="number" name="a_bank_account_code_c" value="" readonly>
+								<input type="text" name="a_bank_account_code_c" value="" readonly>
 							</div>
 						</div>
 
@@ -143,7 +141,7 @@
 								<span>{trans_ccenter_code}</span>
 							</div>
 							<div class="col">
-								<input type="number" name="a_bank_cost_centre_c" value="" readonly>
+								<input type="text" name="a_bank_cost_centre_c" value="" readonly>
 							</div>
 						</div>
 
@@ -206,6 +204,15 @@
 							</div>
 						</div>
 
+						<div class="row">
+							<div class="col">
+								<span>{trans_donor_key}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="p_donor_key_n" value="">
+							</div>
+						</div>
+
 						<!-- details -->
 
 						<div class="row" edit-only>
@@ -217,8 +224,6 @@
 								</button>
 								<div class="row">
 									<div class="col">{trans_amount_in_base}</div>
-									<div class="col">{trans_amount_in_intl}</div>
-									<div class="col">{trans_doner}</div>
 									<div class="col">{trans_description}</div>
 									<div class="col-1"></div>
 								</div>
@@ -293,25 +298,7 @@
 								<span>{trans_amount_in_base}</span>
 							</div>
 							<div class="col">
-								<input class="" type="number" name="a_gift_amount_n" value="">
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{trans_amount_in_intl}</span>
-							</div>
-							<div class="col">
-								<input class="" type="number" name="a_gift_amount_intl_n" value="">
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{trans_doner}</span>
-							</div>
-							<div class="col">
-								<input class="" type="text" name="DonorName" value="">
+								<input class="" type="number" step="0.01" name="a_gift_amount_n" value="">
 							</div>
 						</div>
 
@@ -411,9 +398,9 @@
 	<div class="row">
 		<div class="col"><b>{batchnumber}</b></div>
 		<div class="col"><b>{batchdate}</b></div>
-    <div class="col"><b>{batchname}</b></div>
+		<div class="col"><b>{batchname}</b></div>
 		<div class="col"><b>{batchstatus}</b></div>
-    <div class="col-1"></div>
+	<div class="col-1"></div>
 	</div>
 
 	<div id="browse_container">

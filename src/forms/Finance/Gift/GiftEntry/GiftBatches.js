@@ -30,7 +30,7 @@ function display_list() {
 	let x = {
 		ALedgerNumber: 43,
 		AYear: 0,
-		APeriod: 1
+		APeriod: 19
 	};
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
@@ -99,7 +99,8 @@ function new_batch(ledger_number) {
 			// new_entry_data = parsed.result;
 			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), parsed['result']['AGiftBatch'][0] );
 			$('#modal_space').html(p);
-			p.find('input').attr('readonly', false);
+			p.find('input[name=a_bank_account_code_c]').attr('readonly', false);
+			p.find('input[name=a_bank_cost_centre_c]').attr('readonly', false);
 			p.find('[edit-only]').hide();
 			p.find('[action]').val('create');
 			p.modal('show');
@@ -110,8 +111,14 @@ function new_batch(ledger_number) {
 function new_trans(ledger_number, batch_number) {
 	let x = {
 		a_ledger_number_i: ledger_number,
-		a_batch_number_i: batch_number
+		a_batch_number_i: batch_number,
+		a_gift_transaction_number_i: $("#Batch" + batch_number + " .tpl_gift").length + 1
 	};
+	var today = new Date();
+	today.setUTCHours(0, 0, 0, 0);
+	var strToday = today.toISOString();
+	x['a_date_entered_d'] = strToday.replace('T00:00:00.000Z', '');
+	x['p_donor_key_n'] = 43013125;
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
 	$('#modal_space').html(p);
@@ -125,7 +132,8 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 	let x = {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
-		a_gift_transaction_number_i: trans_id
+		a_gift_transaction_number_i: trans_id,
+		// a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1
 	};
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
