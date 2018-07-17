@@ -29,7 +29,8 @@
 						<div class ="row">
 							<div class="col">{trans_number}</div>
 							<div class="col">{trans_date}</div>
-							<div class="col">{trans_amount_in_base}</div>
+							<div class="col">{CREDIT}</div>
+							<div class="col">{DEBIT}</div>
 							<div class="col">{trans_account_code}</div>
 							<div class="col">{trans_ccenter_code}</div>
 							<div class="col">{trans_narrative_code}</div>
@@ -52,7 +53,8 @@
 		<div class="row">
 			<div class="col">{val_a_transaction_number_i}</div>
 			<div class="col format_date">{val_a_transaction_date_d}</div>
-			<div class="col format_curr">{val_a_amount_in_base_currency_n}</div>
+			<div class="col format_curr">{val_creditamountbase}</div>
+			<div class="col format_curr">{val_debitamountbase}</div>
 			<div class="col">{val_a_account_code_c}</div>
 			<div class="col">{val_a_cost_centre_code_c}</div>
 			<div class="col">{val_a_narrative_c}</div>
@@ -213,10 +215,19 @@
 
 							<div class="row">
 								<div class="col">
-									<span>{trans_amount_in_base}</span>
+									<span>{trans_credit_in_base}</span>
 								</div>
 								<div class="col">
-									<input type="number" step="0.01" name="a_amount_in_base_currency_n" value="">
+									<input type="number" step="0.01" name="a_credit_amount_base_n" value="">
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col">
+									<span>{trans_debit_in_base}</span>
+								</div>
+								<div class="col">
+									<input type="number" step="0.01" name="a_debit_amount_base_n" value="">
 								</div>
 							</div>
 
@@ -285,32 +296,30 @@
 	<div class="container group-container">
 	<div class="row">
 		<div class="col">
-			<span>{partnername}:</span>
+			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<input type="text" name="AFamilyNameOrOrganisation"/>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col">
-			<span>{city}:</span>
-		</div>
-		<div class="col">
-			<input type="text" name="ACity"/>
+			<input type="text" name="ABatchYear"/>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col">
-			<span>{partnerclass}:</span>
+			<span>{period}:</span>
 		</div>
 		<div class="col">
-			<select name="APartnerClass">
-				<option value="">{forms.any}</option>
-				<!--<option value="PERSON">{PERSON}</option>-->
-				<option value="FAMILY" selected>{FAMILY}</option>
-				<option value="ORGANISATION">{ORGANISATION}</option>
-				<!--<option value="UNIT">{UNIT}</option>-->
-				<!--<option value="BANK">{BANK}</option>-->
+			<input type="text" name="ABatchPeriod"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{batch_status}:</span>
+		</div>
+		<div class="col">
+			<select name="ABatchStatus">
+				<option value="" selected>{forms.any}</option>
+				<option value="Unposted">{UNPOSTED}</option>
+				<option value="Posted">{POSTED}</option>
+				<option value="Cancelled">{CANCELLED}</option>
 			</select>
 		</div>
 	</div>

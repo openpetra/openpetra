@@ -22,16 +22,16 @@
 //
 
 $('document').ready(function () {
+	// TODO set proper default values for the filter
+	$('#tabfilter input[name="ABatchPeriod"]').val(12);
+	$('#tabfilter input[name="ABatchYear"]').val(0);
 	display_list();
 });
 
 function display_list() {
 	// x is search
-	let x = {
-		ALedgerNumber: 43,
-		AYear: 0,
-		APeriod: 1
-	};
+	let x = extract_data($('#tabfilter'));
+	x['ALedgerNumber'] = 43;
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -76,6 +76,16 @@ function open_transactions(obj, number) {
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
 		for (item of data.result.ATransaction) {
+			if (item['a_debit_credit_indicator_l']) {
+				item['debitcredit'] = i18next.t('GLBatches.DEBIT');
+				item['creditamountbase'] = '';
+				item['debitamountbase'] = item['a_amount_in_base_currency_n'];
+			} else {
+				item['debitcredit'] = i18next.t('GLBatches.CREDIT');
+				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
+				item['debitamountbase'] = '';
+			}
+			// console.log(item);
 			let transaction_row = $('[phantom] .tpl_transaction').clone();
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
@@ -128,8 +138,7 @@ function new_trans(ledger_number, batch_number) {
 function edit_batch(batch_id) {
 	var r = {
 				ALedgerNumber: 43,
-				AYear: 0,
-				APeriod: 1
+				ABatchNumber: batch_id
 			};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
@@ -171,6 +180,13 @@ function edit_trans(batch_id, trans_id) {
 		}
 		if (searched == null) {
 			return alert('ERROR');
+		}
+		if (searched['a_debit_credit_indicator_l']) {
+			searched['a_debit_amount_base_n'] = searched['a_amount_in_base_currency_n'];
+			searched['a_credit_amount_base_n'] = 0.0;
+		} else {
+			searched['a_debit_amount_base_n'] = 0.0;
+			searched['a_credit_amount_base_n'] = searched['a_amount_in_base_currency_n'];
 		}
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 		$('#modal_space').html(tpl_m);
@@ -214,8 +230,15 @@ function save_edit_trans(obj_modal) {
  	payload['action'] = mode;
  	payload['AJournalNumber'] = 1;
 	payload['AAmountInIntlCurrency'] = 0.0;
-
-	// console.log(payload);
+	let amount = payload['ACreditAmountBase'] - payload['ADebitAmountBase'];
+	if (amount < 0) {
+		payload['AAmountInBaseCurrency'] = -1 * amount;
+		payload['ADebitCreditIndicator'] = true;
+	} else {
+		payload['AAmountInBaseCurrency'] = amount;
+		payload['ADebitCreditIndicator'] = false;
+	}
+	console.log(payload);
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
