@@ -100,6 +100,7 @@ function new_batch(ledger_number) {
 			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), parsed['result']['AGiftBatch'][0] );
 			$('#modal_space').html(p);
 			p.find('input').attr('readonly', false);
+			p.find('[edit-only]').hide();
 			p.find('[action]').val('create');
 			p.modal('show');
 		}
@@ -115,7 +116,7 @@ function new_trans(ledger_number, batch_number) {
 	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
 	$('#modal_space').html(p);
 	p.find('input').attr('readonly', false);
-	p.find('[detail]').hide();
+	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
 };
@@ -128,9 +129,10 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 	};
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
-	$('#modal_space').html(p);
+	$('#modal_space').append(p);
+	$('.modal').modal('hide');
 	p.find('input').attr('readonly', false);
-	p.find('[detail]').hide();
+	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
 };
@@ -268,4 +270,25 @@ function save_edit_trans_detail(obj_modal) {
 	console.log(payload);
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
 
+}
+
+
+function delete_batch(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+	let payload = translate_to_server( extract_data(obj) );
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainBatches', payload);
+}
+
+
+function delete_trans(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+	let payload = translate_to_server( extract_data(obj) );
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload);
+}
+
+
+function delete_trans_detail(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+	let payload = translate_to_server( extract_data(obj) );
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
 }
