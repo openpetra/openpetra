@@ -86,7 +86,7 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{ladgernumber}</span>
+								<span>{ledgernumber}</span>
 							</div>
 							<div class="col">
 								<input type="text" name="a_ledger_number_i" value="" readonly>
@@ -171,7 +171,7 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{ladgernumber}</span>
+								<span>{ledgernumber}</span>
 							</div>
 							<div class="col">
 								<input type="text" name="a_ledger_number_i" value="" readonly>
@@ -207,10 +207,14 @@
 
 						<!-- details -->
 
-						<div class="row">
+						<div class="row" detail>
 
 							<div class="col">
 								<h4>Detail</h4>
+								<button type="button" class="btn btn-primary" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
+									<span>{forms.new}</span>
+									<i class="fa fa-plus"></i>
+								</button>
 								<div class="row">
 									<div class="col">{trans_amount_in_base}</div>
 									<div class="col">{trans_amount_in_intl}</div>
