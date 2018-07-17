@@ -91,11 +91,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// also get the ledger for the base currency etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AYear">if -1, the year will be ignored</param>
-        /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
-        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
+        /// <param name="ABatchYear">if -1, the year will be ignored</param>
+        /// <param name="ABatchPeriod">if ABatchYear is -1 or period is -1, the period will be ignored.
+        /// if ABatchPeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
+        /// <param name="ABatchStatus">if empty all batches will be returned, otherwise only POSTED, CANCELLED or UNPOSTED</param>
+        /// <param name="AMaxRecords"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int AYear, int APeriod)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int ABatchYear, int ABatchPeriod, string ABatchStatus, int AMaxRecords)
         {
             #region Validate Arguments
 
@@ -135,14 +137,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                         string FilterByPeriod = string.Empty;
 
-                        if (AYear > -1)
+                        if (ABatchYear > -1)
                         {
                             FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
                                 ABatchTable.GetTableDBName(),
                                 ABatchTable.GetBatchYearDBName(),
-                                AYear);
+                                ABatchYear);
 
-                            if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+                            if ((ABatchPeriod == 0) && (ABatchYear == MainDS.ALedger[0].CurrentFinancialYear))
                             {
                                 //Return current and forwarding periods
                                 FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
@@ -150,13 +152,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     ABatchTable.GetBatchPeriodDBName(),
                                     MainDS.ALedger[0].CurrentPeriod);
                             }
-                            else if (APeriod > 0)
+                            else if (ABatchPeriod > 0)
                             {
                                 //Return only specified period
                                 FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
                                     ABatchTable.GetTableDBName(),
                                     ABatchTable.GetBatchPeriodDBName(),
-                                    APeriod);
+                                    ABatchPeriod);
                             }
 
                             //else
@@ -165,13 +167,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             //}
                         }
 
+                        string FilterByBatchStatus = string.Empty;
+
+                        if (ABatchStatus == MFinanceConstants.BATCH_CANCELLED ||
+                            ABatchStatus == MFinanceConstants.BATCH_POSTED ||
+                            ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                        {
+                            FilterByBatchStatus += String.Format(" AND PUB_{0}.{1} = '{2}'",
+                                ABatchTable.GetTableDBName(),
+                                ABatchTable.GetBatchStatusDBName(),
+                                ABatchStatus);
+                        }
+
+                        // TODO: limit by AMaxRecords
+
                         string SelectClause =
                             String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
                                 ABatchTable.GetTableDBName(),
                                 ABatchTable.GetLedgerNumberDBName(),
                                 ALedgerNumber);
-
-                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
+                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
                             MainDS.ABatch.TableName, Transaction);
                     });
 
@@ -3180,6 +3195,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DateTime ATransactionDate,
             Decimal AAmountInBaseCurrency,
             Decimal AAmountInIntlCurrency,
+            bool ADebitCreditIndicator,
             string AAccountCode,
             string ACostCentreCode,
             out TVerificationResultCollection AVerificationResult)
@@ -3200,6 +3216,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 row.TransactionDate = ATransactionDate;
                 row.AmountInBaseCurrency = AAmountInBaseCurrency;
                 row.AmountInIntlCurrency = AAmountInIntlCurrency;
+                row.DebitCreditIndicator = ADebitCreditIndicator;
                 row.AccountCode = AAccountCode.ToUpper();
                 row.CostCentreCode = ACostCentreCode.ToUpper();
                 MainDS.ATransaction.Rows.Add(row);
@@ -3228,6 +3245,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         row.TransactionDate = ATransactionDate;
                         row.AmountInBaseCurrency = AAmountInBaseCurrency;
                         row.AmountInIntlCurrency = AAmountInIntlCurrency;
+                        row.DebitCreditIndicator = ADebitCreditIndicator;
                         row.AccountCode = AAccountCode.ToUpper();
                         row.CostCentreCode = ACostCentreCode.ToUpper();
                     }
