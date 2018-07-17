@@ -6,7 +6,9 @@
     <DataSet name="GiftBatchTDS">
         <Table sqltable="a_ledger"/>
         <Table sqltable="a_gift_batch"/>
-        <Table sqltable="a_gift"/>
+        <Table sqltable="a_gift">
+            <CustomField name="DonorName" type="String"/>
+        </Table>
         <Table sqltable="a_gift_detail">
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorName" type="String"/>
