@@ -289,7 +289,7 @@ function change_standard_ledger(ledger_id) {
 		data = JSON.parse(data.data.d);
 		for (ledger of data.result) {
 			if (ledger.a_ledger_number_i == ledger_id) {
-				display_message(i18next.t("{switchledger} "+ledger.a_ledger_name_c), "success");
+				display_message(i18next.t("{navigation.switchledger} "+ledger.a_ledger_name_c), "success");
 			}
 		}
 	})

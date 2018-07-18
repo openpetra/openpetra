@@ -55,7 +55,8 @@
         "Database_label": "Datenbank",
         "ManageAccounts_label": "Konten verwalten",
         "FindPartners_label": "Partner suchen",
-        "AccountDetail_label": "Bericht über die Konten"
+        "AccountDetail_label": "Bericht über die Konten",
+        "switchledger":"Aktiver Ledger wurde geändert auf:"
     },
     "forms": {
         "search":"Suchen",
