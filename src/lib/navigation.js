@@ -269,3 +269,28 @@ class Navigation {
 			});
 	}
 }
+
+$('document').ready(function () {
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+		data = JSON.parse(data.data.d);
+		let dump = $('#ledger_select_dropdown').html('');
+		for (ledger of data.result) {
+			let z = $('<a class="dropdown-item"></a>');
+			z.text(ledger.a_ledger_name_c);
+			z.attr("onclick", "change_standard_ledger("+ledger.a_ledger_number_i+")");
+			dump.append(z);
+		}
+	})
+});
+
+function change_standard_ledger(ledger_id) {
+	localStorage.setItem('current_ledger', ledger_id);
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+		data = JSON.parse(data.data.d);
+		for (ledger of data.result) {
+			if (ledger.a_ledger_number_i == ledger_id) {
+				display_message(i18next.t("{switchledger} "+ledger.a_ledger_name_c), "success");
+			}
+		}
+	})
+}

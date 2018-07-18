@@ -85,6 +85,13 @@
 				<a id='mnuChangeLanguage' class="dropdown-item">{change_language}</a>
 			</div>
 		</li>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{ledgerselect}</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ledger_select_dropdown">
+				<!-- <a class="dropdown-item"></a> -->
+				<!-- Gets filled on site load with all avariable Ledgers -->
+			</div>
+		</li>
 	</ul>
 	<ul class="navbar-nav ml-auto">
 		<li class="nav-item"><a class="nav-link" id="logout" href="#">{logout}</a></li>
@@ -121,6 +128,7 @@
 <script src="/src/lib/i18n.js"></script>
 <script src="/src/lib/navigation.js"></script>
 <script src="/src/lib/app.js"></script>
+<script src="/src/lib/utils.js"></script>
 
 </body>
 </html>

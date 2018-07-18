@@ -70,7 +70,7 @@ function open_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
-	let x = {"ALedgerNumber":43, "ABatchNumber":number};
+	let x = {"ALedgerNumber":localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
