@@ -272,10 +272,25 @@
       "partnertypes":"Kategorien",
       "activePartnersOnly":"Nur aktive Partner",
       "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
-      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen",
+      "":"",
+      "":""
+
     },
 
     "ChangeLanguage": {
         "caption": "Sprache wechseln"
+    },
+
+    "MotivationGroup":{
+      "caption":"Verwendungszweck bearbeiten",
+      "edittitle":"Zweck bearbeiten",
+      "edittitle_moti":"Zweck details bearbeiten",
+      "ledgernumber":"Ledgernummer",
+      "motivation_code":"Verwendungs Code",
+      "motivation_desc":"Verwendungs Beschreibung",
+      "motivation_account_c":"Account Code",
+      "motivation_center_c":"Center Code",
+      "motivation_detail_desc":"Detail Beschreibung"
     }
 }
