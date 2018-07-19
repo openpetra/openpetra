@@ -5299,22 +5299,30 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately
         /// </summary>
-        /// <param name="requestParams">Hashtable containing the given params </param>
-        /// <param name="importString">Big parts of the import file as a simple String</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AImportString">the import file as a simple String</param>
+        /// <param name="ADelimiter"></param>
+        /// <param name="ADateFormatString">dmy or mdy</param>
+        /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ANewLine"></param>
         /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLBatches(
-            Hashtable requestParams,
-            String importString,
+            Int32 ALedgerNumber,
+            String AImportString,
+            string ADelimiter,
+            string ADateFormatString,
+            string ANumberFormat,
+            string ANewLine,
             out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting Importing = new TGLImporting();
 
-            return Importing.ImportGLBatches(requestParams, importString, out AClientRefreshRequired, out AMessages);
+            return Importing.ImportGLBatches(ALedgerNumber, AImportString, ADelimiter, ADateFormatString, ANumberFormat, ANewLine, out AClientRefreshRequired, out AMessages);
         }
 
         /// <summary>
@@ -5322,32 +5330,39 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately
         /// </summary>
-        /// <param name="ARequestParams"></param>
-        /// <param name="AImportString"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="ADelimiter"></param>
+        /// <param name="ADateFormatString">dmy or mdy</param>
+        /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ANewLine"></param>
         /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages"></param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLTransactions(
-            Hashtable ARequestParams,
-            String AImportString,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
+            String AImportString,
+            string ADelimiter,
+            string ADateFormatString,
+            string ANumberFormat,
+            string ANewLine,
             out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting Importing = new TGLImporting();
 
-            return Importing.ImportGLTransactions(ARequestParams,
-                AImportString,
+            return Importing.ImportGLTransactions(
                 ALedgerNumber,
                 ABatchNumber,
                 AJournalNumber,
+                AImportString,
+                ADelimiter, ADateFormatString, ANumberFormat, ANewLine,
                 out AClientRefreshRequired,
                 out AMessages);
         }

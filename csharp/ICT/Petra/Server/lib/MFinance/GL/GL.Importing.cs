@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, alanP
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -113,14 +113,22 @@ namespace Ict.Petra.Server.MFinance.GL
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately
         /// </summary>
-        /// <param name="ARequestParams">Hashtable containing the given params </param>
-        /// <param name="AImportString">Big parts of the export file as a simple String</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AImportString">the import file as a simple String</param>
+        /// <param name="ADelimiter"></param>
+        /// <param name="ADateFormatString">dmy or mdy</param>
+        /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ANewLine"></param>
         /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         public bool ImportGLBatches(
-            Hashtable ARequestParams,
+            Int32 ALedgerNumber,
             String AImportString,
+            string ADelimiter,
+            string ADateFormatString,
+            string ANumberFormat,
+            string ANewLine,
             out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
@@ -141,18 +149,15 @@ namespace Ict.Petra.Server.MFinance.GL
             StringReader sr = new StringReader(AImportString);
 
             // Parse the supplied parameters
-            FDelimiter = (String)ARequestParams["Delimiter"];
-            Int32 LedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-            String DateFormat = (String)ARequestParams["DateFormatString"];
-            String NumberFormat = (String)ARequestParams["NumberFormat"];
-            FNewLine = (String)ARequestParams["NewLine"];
-            bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
+            FDelimiter = ADelimiter;
+            FNewLine = ANewLine;
+            bool datesMayBeIntegers = false;
             bool clientRefreshRequired = false;
             bool StartedSaving = false;
 
             // Set culture from parameters
-            FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
+            FCultureInfoNumberFormat = new CultureInfo(ANumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(ADateFormatString);
 
             // Initialise our working variables
             Int32 InitialTextLength = AImportString.Length;
@@ -181,16 +186,16 @@ namespace Ict.Petra.Server.MFinance.GL
                     try
                     {
                         // Load supplementary tables that we are going to need for validation
-                        ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, transaction);
+                        ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
                         ACurrencyTable CurrencyTable = ACurrencyAccess.LoadAll(transaction);
 
-                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
-                        AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
-                        AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
-                        ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
-                        AAccountAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
-                        ALedgerInitFlagAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
-                        ATransactionTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, ALedgerNumber, transaction);
+                        AFreeformAnalysisAccess.LoadViaALedger(SetupDS, ALedgerNumber, transaction);
+                        AAnalysisAttributeAccess.LoadViaALedger(SetupDS, ALedgerNumber, transaction);
+                        ACostCentreAccess.LoadViaALedger(SetupDS, ALedgerNumber, transaction);
+                        AAccountAccess.LoadViaALedger(SetupDS, ALedgerNumber, transaction);
+                        ALedgerInitFlagAccess.LoadViaALedger(SetupDS, ALedgerNumber, transaction);
+                        ATransactionTypeAccess.LoadViaALedger(SetupDS, ALedgerNumber, transaction);
 
                         if (LedgerTable.Rows.Count == 0)
                         {
@@ -280,7 +285,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     ImportMessage = Catalog.GetString("Starting new batch");
                                     gotFirstBatch = true;
                                     NewBatch = MainDS.ABatch.NewRowTyped(true);
-                                    NewBatch.LedgerNumber = LedgerNumber;
+                                    NewBatch.LedgerNumber = ALedgerNumber;
                                     LedgerTable[0].LastBatchNumber++;
                                     NewBatch.BatchNumber = LedgerTable[0].LastBatchNumber;
                                     NewBatch.BatchPeriod = LedgerTable[0].CurrentPeriod;
@@ -303,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     if (Messages.Count == preParseMessageCount)
                                     {
-                                        if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                                        if (TFinancialYear.IsValidPostingPeriod(ALedgerNumber,
                                                 NewBatch.DateEffective,
                                                 out BatchPeriodNumber,
                                                 out BatchYearNr,
@@ -384,7 +389,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                         // in order to carry on we will make a dummy batch and force the date to fit
                                         NewBatch = MainDS.ABatch.NewRowTyped(true);
-                                        NewBatch.LedgerNumber = LedgerNumber;
+                                        NewBatch.LedgerNumber = ALedgerNumber;
                                         LedgerTable[0].LastBatchNumber++;
                                         NewBatch.BatchNumber = LedgerTable[0].LastBatchNumber;
                                         NewBatch.BatchPeriod = LedgerTable[0].CurrentPeriod;
@@ -474,7 +479,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                         Int32 journalPeriod;
                                         DateTime journalDate = NewJournal.DateEffective;
 
-                                        TFinancialYear.GetLedgerDatePostingPeriod(LedgerNumber, ref journalDate,
+                                        TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref journalDate,
                                             out journalYear, out journalPeriod, transaction, false);
 
                                         if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
@@ -495,7 +500,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                             // (There may possibly be others between then and the effective date)
                                             DateTime firstDayOfMonth;
 
-                                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournal.DateEffective,
+                                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournal.DateEffective,
                                                     out firstDayOfMonth))
                                             {
                                                 intlRateFromBase =
@@ -585,7 +590,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                         continue;
                                     }
 
-                                    ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
+                                    ImportGLTransactionsInner(ALedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
                                         intlRateFromBase, datesMayBeIntegers, ref transaction, ref ImportMessage, ref Messages);
                                 }
                                 else
@@ -816,20 +821,26 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// Wrapper for importing GL Transactions. Called from client side
         /// </summary>
-        /// <param name="ARequestParams"></param>
-        /// <param name="AImportString"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
-        /// <param name="AClientRefreshRequired"></param>
-        /// <param name="AMessages"></param>
-        /// <returns></returns>
+        /// <param name="AImportString">the import file as a simple String</param>
+        /// <param name="ADelimiter"></param>
+        /// <param name="ADateFormatString">dmy or mdy</param>
+        /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ANewLine"></param>
+        /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>false if error</returns>
         public bool ImportGLTransactions(
-            Hashtable ARequestParams,
-            String AImportString,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
+            String AImportString,
+            string ADelimiter,
+            string ADateFormatString,
+            string ANumberFormat,
+            string ANewLine,
             out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages)
         {
@@ -849,18 +860,14 @@ namespace Ict.Petra.Server.MFinance.GL
             SetupDS.CaseSensitive = true;
             StringReader sr = new StringReader(AImportString);
 
-            FDelimiter = (String)ARequestParams["Delimiter"];
-            Int32 LedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-            String DateFormat = (String)ARequestParams["DateFormatString"];
-            String NumberFormat = (String)ARequestParams["NumberFormat"];
-            FNewLine = (String)ARequestParams["NewLine"];
-            bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
-            int lastTransactionNumberOnClient = (int)ARequestParams["LastTransactionNumber"];
+            FDelimiter = ADelimiter;
+            FNewLine = ANewLine;
+            bool datesMayBeIntegers = false;
             bool clientRefreshRequired = false;
             bool StartedSaving = false;
 
-            FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
+            FCultureInfoNumberFormat = new CultureInfo(ANumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(ADateFormatString);
 
             TDBTransaction Transaction = null;
             Int32 RowNumber = 0;
@@ -901,25 +908,14 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         // Load supplementary tables that we are going to need for validation
                         ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
-                        AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
-                        AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
-                        ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
-                        AAccountAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
-                        ALedgerInitFlagAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+                        AAnalysisTypeAccess.LoadViaALedger(SetupDS, ALedgerNumber, Transaction);
+                        AFreeformAnalysisAccess.LoadViaALedger(SetupDS, ALedgerNumber, Transaction);
+                        AAnalysisAttributeAccess.LoadViaALedger(SetupDS, ALedgerNumber, Transaction);
+                        ACostCentreAccess.LoadViaALedger(SetupDS, ALedgerNumber, Transaction);
+                        AAccountAccess.LoadViaALedger(SetupDS, ALedgerNumber, Transaction);
+                        ALedgerInitFlagAccess.LoadViaALedger(SetupDS, ALedgerNumber, Transaction);
 
                         int startTransactionCount = ATransactionAccess.CountViaAJournal(ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
-
-                        if (startTransactionCount != lastTransactionNumberOnClient)
-                        {
-                            // This indicates that another client has already started adding transactions to this journal on a parallel database transaction
-                            Messages.Add(new TVerificationResult(MCommonConstants.StrErrorAddingTransactions,
-                                    Catalog.GetString("Another user has already started adding transactions to this journal") +
-                                    MCommonConstants.StrHintReviewJournalContent,
-                                    TResultSeverity.Resv_Critical));
-                            clientRefreshRequired = true;
-                            return;
-                        }
 
                         DateTime firstDayOfMonth;
                         decimal intlRateFromBase = -1.0m;
@@ -929,7 +925,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             string intlCurrency = LedgerTable[0].IntlCurrency;
                             string baseCurrency = LedgerTable[0].BaseCurrency;
 
-                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(LedgerNumber, NewJournalRow.DateEffective,
+                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournalRow.DateEffective,
                                     out firstDayOfMonth))
                             {
                                 intlRateFromBase =
@@ -983,7 +979,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     continue;
                                 }
 
-                                ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
+                                ImportGLTransactionsInner(ALedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
                                     intlRateFromBase, datesMayBeIntegers, ref Transaction, ref ImportMessage, ref Messages);
 
                                 transactionsAdded++;
