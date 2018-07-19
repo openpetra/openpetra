@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,10 +75,15 @@ namespace Tests.MPartner.Server.PartnerExports
         [Test]
         public void TestImportCSV()
         {
-            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplePartnerImport.csv", ";");
             TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "DMY", out VerificationResult);
+            using (StreamReader sr = new StreamReader("../../demodata/partners/samplePartnerImport.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "DMY", ";", out VerificationResult);
 
             if (VerificationResult != null)
             {
@@ -95,10 +100,15 @@ namespace Tests.MPartner.Server.PartnerExports
         [Test]
         public void TestImportCSV_Dates_DMY()
         {
-            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplePartnerImport_dates_dmy.csv", ";");
             TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "dmy", out VerificationResult);
+            using (StreamReader sr = new StreamReader("../../demodata/partners/samplePartnerImport_dates_dmy.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "dmy", ";", out VerificationResult);
 
             if (VerificationResult != null)
             {
@@ -115,7 +125,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             // Now try with the wrong date format
             VerificationResult = null;
-            MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "mdy", out VerificationResult);
+            MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "mdy", ";", out VerificationResult);
 
             Assert.IsNotNull(VerificationResult, "Expected to get errors");
             int numErrors = 0;
@@ -137,10 +147,15 @@ namespace Tests.MPartner.Server.PartnerExports
         [Test]
         public void TestImportCSV_Dates_MDY()
         {
-            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplePartnerImport_dates_mdy.csv", ";");
             TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "mdy", out VerificationResult);
+            using (StreamReader sr = new StreamReader("../../demodata/partners/samplePartnerImport_dates_mdy.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "mdy", ";", out VerificationResult);
 
             if (VerificationResult != null)
             {
@@ -157,7 +172,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             // Now try with the wrong date format
             VerificationResult = null;
-            MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "dmy", out VerificationResult);
+            MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "dmy", ";", out VerificationResult);
 
             Assert.IsNotNull(VerificationResult, "Expected to get errors");
             int numErrors = 0;
@@ -180,11 +195,15 @@ namespace Tests.MPartner.Server.PartnerExports
         [Ignore("this does not work at all")]
         public void TestImportCSV2()
         {
-            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplefilepartnerimport2.csv", ",");
             TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
 
-            Console.WriteLine(TXMLParser.XmlToString(doc));
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "dMy", out VerificationResult);
+            using (StreamReader sr = new StreamReader("../../demodata/partners/samplefilepartnerimport2.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "dMy", ",", out VerificationResult);
 
             if (VerificationResult != null)
             {

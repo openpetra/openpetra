@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -218,20 +218,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <summary>
         /// This imports partners from a CSV file
         /// </summary>
-        /// <param name="AXmlPartnerData">The data to import</param>
+        /// <param name="ACSVPartnerData">The data to import</param>
         /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
         /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AVerificationResult">A collection of import errors</param>
+        /// <param name="ASeparator">Comma or Semicolon</param>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerImportExportTDS ImportFromCSVFile(string AXmlPartnerData,
+        public static PartnerImportExportTDS ImportFromCSVFile(string ACSVPartnerData,
             string ADateFormat,
+            string ASeparator,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
 
-            XmlDocument doc = new XmlDocument();
+            List<string> Lines = new List<string>(ACSVPartnerData.Split('\n'));
 
-            doc.LoadXml(AXmlPartnerData);
+            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(Lines, ASeparator);
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
