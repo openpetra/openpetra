@@ -28,7 +28,7 @@ $('document').ready(function () {
 function display_list() {
 	// x is search
 	let x = {
-		ALedgerNumber: localStorage.getItem('current_ledger')
+		ALedgerNumber: window.localStorage.getItem('current_ledger')
 	};
 
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
@@ -70,7 +70,7 @@ function open_motivations(obj, code) {
 		return;
 	}
 	let x = {
-		ALedgerNumber:localStorage.getItem('current_ledger'),
+		ALedgerNumber:window.localStorage.getItem('current_ledger'),
 	};
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -91,7 +91,7 @@ function open_motivations(obj, code) {
 
 var new_entry_data = {};
 function new_batch() {
-	let x = {a_ledger_number_i :localStorage.getItem('current_ledger')};
+	let x = {a_ledger_number_i :window.localStorage.getItem('current_ledger')};
 	// console.log(parsed);
 	let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), x );
 	$('#modal_space').html(p);
@@ -101,7 +101,7 @@ function new_batch() {
 };
 
 function new_motivation(group_code) {
-	let x = {a_ledger_number_i:localStorage.getItem('current_ledger'), a_motivation_group_code_c:group_code};
+	let x = {a_ledger_number_i:window.localStorage.getItem('current_ledger'), a_motivation_group_code_c:group_code};
 	let p = format_tpl( $('[phantom] .tpl_edit_motivation').clone(), x);
 	$('#modal_space').html(p);
 	p.find('input').attr('readonly', false);
@@ -131,7 +131,7 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 
 function edit_batch(batch_code) {
 	var r = {
-				ALedgerNumber: localStorage.getItem('current_ledger')
+				ALedgerNumber: window.localStorage.getItem('current_ledger')
 			};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
@@ -152,7 +152,7 @@ function edit_batch(batch_code) {
 }
 
 function edit_motivation(batch_id, motivation_id, motivation_detail_id) {
-	let x = {"ALedgerNumber":localStorage.getItem('current_ledger'), "ABatchNumber":batch_id};
+	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":batch_id};
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;

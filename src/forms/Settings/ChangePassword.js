@@ -30,7 +30,7 @@ $("#btnSubmitPassword").click(function(e) {
 		}
 
 		api.post('serverMSysMan.asmx/TMaintenanceWebConnector_SetUserPassword2', {
-				AUserID: localStorage.getItem('username'),
+				AUserID: window.localStorage.getItem('username'),
 				ANewPassword: $("#newpwd").val(),
 				ACurrentPassword: $("#curpwd").val(),
 				APasswordNeedsChanged: true,

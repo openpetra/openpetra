@@ -31,7 +31,7 @@ $('document').ready(function () {
 function display_list() {
 	// x is search
 	let x = extract_data($('#tabfilter'));
-	x['ALedgerNumber'] = localeStorage.getItem('current_ledger');
+	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -70,7 +70,7 @@ function open_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
-	let x = {"ALedgerNumber":localStorage.getItem('current_ledger'), "ABatchNumber":number};
+	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
@@ -101,7 +101,7 @@ function open_transactions(obj, number) {
 
 var new_entry_data = {};
 function new_batch() {
-	let x = {ALedgerNumber :localeStorage.getItem('current_ledger')};
+	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_CreateABatch', x).then(
 		function (data) {
 			parsed = JSON.parse(data.data.d);
@@ -117,7 +117,7 @@ function new_batch() {
 };
 
 function new_trans(batch_number) {
-	ledger_number = localeStorage.getItem('current_ledger');
+	ledger_number = window.localStorage.getItem('current_ledger');
 	new_entry_data = [];
 	new_entry_data['a_ledger_number_i'] = ledger_number;
 	new_entry_data['a_batch_number_i'] = batch_number;
@@ -138,7 +138,7 @@ function new_trans(batch_number) {
 
 function edit_batch(batch_id) {
 	var r = {
-				ALedgerNumber: localeStorage.getItem('current_ledger'),
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ABatchNumber: batch_id
 			};
 	// on open of a edit modal, we get new data,
@@ -166,7 +166,7 @@ function edit_batch(batch_id) {
 }
 
 function edit_trans(batch_id, trans_id) {
-	let x = {"ALedgerNumber":localeStorage.getItem('current_ledger'), "ABatchNumber":batch_id};
+	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":batch_id};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
