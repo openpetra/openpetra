@@ -75,7 +75,8 @@
         "name": "Name",
         "PleaseWait": "Bitte warten",
         "WaitInfo": "Diese Aktion kann ein paar Sekunden dauern...",
-        "description": "Beschreibung"
+        "description": "Beschreibung",
+        "import": "Import"
     },
     "errors": {
       "general": "Der Vorgang ist Fehlgeschlagen",
@@ -194,7 +195,7 @@
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
-
+        "import": "Transaktionen Importien",
         "isPosted": "Gepostete Batches können nicht bearbeitet werden"
     },
 

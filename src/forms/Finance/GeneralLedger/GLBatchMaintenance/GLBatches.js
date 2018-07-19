@@ -256,3 +256,33 @@ function save_edit_trans(obj_modal) {
 	});
 
 }
+
+
+function importTransactions(batch_id, csv_file) {
+	if (csv_file == undefined) {
+		$('#Batch'+batch_id).find('.import_space').css('display', 'block');
+		return;
+	}
+
+	let x = {
+		AImportString: csv_file,
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumber: batch_id,
+		AJournalNumber: 1,
+		NumberFormat: "European",
+		DateFormatString: "dmy"
+	};
+
+	api.post('TGLTransactionWebConnector_ImportGLTransactions', x).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			display_list();
+		}
+		if (parsed.result == "false") {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+		}
+	})
+}

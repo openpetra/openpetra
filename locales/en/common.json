@@ -75,7 +75,8 @@
         "name": "Name",
         "PleaseWait": "Please wait",
         "WaitInfo": "This might take a couple of seconds...",
-        "description": "Description"
+        "description": "Description",
+        "import": "Import"
     },
     "errors": {
       "general": "An error as occurred",
@@ -177,7 +178,7 @@
         "year": "Year",
         "batchcredit":"Total Credit",
         "batchdebit":"Total Debit",
-        "batch_date": "Dae effective",
+        "batch_date": "Effective date",
         "trans_number": "Transaction number",
         "trans_date": "Transaction Date",
         "trans_ref": "Reference",
@@ -194,7 +195,7 @@
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
-
+        "import": "Import transactions",
         "isPosted": "We cannot edit batches that have been posted already"
     },
 
