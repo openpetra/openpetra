@@ -293,6 +293,8 @@
       "motivation_account_c":"Account Code",
       "motivation_center_c":"Cost Center",
       "motivation_detail_desc":"Motivation detail description"
+    },
+    "ExportPartners":{
+      "importUser":"Import partner from cvs file"
     }
-
 }

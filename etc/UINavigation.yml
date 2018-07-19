@@ -13,8 +13,7 @@ OpenPetra:
                         AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
                         AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
                     ImportExport:
-                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport}
+                        ExportPartners:
                     Subscriptions:
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}

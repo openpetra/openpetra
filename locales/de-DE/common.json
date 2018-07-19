@@ -293,5 +293,8 @@
       "motivation_account_c":"Account Code",
       "motivation_center_c":"Center Code",
       "motivation_detail_desc":"Detail Beschreibung"
+    },
+    "ExportPartners":{
+      "importUser":"Partner importieren von cvs Datei"
     }
 }
