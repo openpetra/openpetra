@@ -13,6 +13,7 @@
         "about": "Über",
         "contact": "Kontakt",
         "settings": "Einstellungen",
+        "ledgerselect":"Ledger auswählen",
         "change_password": "Passwort ändern",
         "change_language": "Sprache wechseln",
         "logout": "Abmelden",
@@ -54,7 +55,8 @@
         "Database_label": "Datenbank",
         "ManageAccounts_label": "Konten verwalten",
         "FindPartners_label": "Partner suchen",
-        "AccountDetail_label": "Bericht über die Konten"
+        "AccountDetail_label": "Bericht über die Konten",
+        "switchledger":"Aktiver Ledger wurde geändert auf:"
     },
     "forms": {
         "search":"Suchen",
@@ -270,10 +272,25 @@
       "partnertypes":"Kategorien",
       "activePartnersOnly":"Nur aktive Partner",
       "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
-      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen",
+      "":"",
+      "":""
+
     },
 
     "ChangeLanguage": {
         "caption": "Sprache wechseln"
+    },
+
+    "MotivationGroup":{
+      "caption":"Verwendungszweck bearbeiten",
+      "edittitle":"Zweck bearbeiten",
+      "edittitle_moti":"Zweck details bearbeiten",
+      "ledgernumber":"Ledgernummer",
+      "motivation_code":"Verwendungs Code",
+      "motivation_desc":"Verwendungs Beschreibung",
+      "motivation_account_c":"Account Code",
+      "motivation_center_c":"Center Code",
+      "motivation_detail_desc":"Detail Beschreibung"
     }
 }

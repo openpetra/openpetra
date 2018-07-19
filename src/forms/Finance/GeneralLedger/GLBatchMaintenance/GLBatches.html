@@ -18,7 +18,7 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row">
 					<div class="col">
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans(43 ,{val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans({val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
 						</button>
 					</div>
@@ -284,7 +284,7 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="new_batch(43)">{forms.new}</button>
+			<button id="new" class="btn btn-primary" onclick="new_batch()">{forms.new}</button>
 			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>
