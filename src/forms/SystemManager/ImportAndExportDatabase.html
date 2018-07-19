@@ -11,6 +11,11 @@
 			<button type="button" class="btn btn-danger" id="btnImportData" onclick="ResetAllData()">{restoredatabase}</button>
 		</td>
 	</tr>
+	<tr>
+		<td>
+			<button type="button" class="btn btn-primary" id="btnImportData" onclick="$('#fileUploadUserCSV').click()">{importUser}</button>
+		</td>
+	</tr>
 </table>
 
 <!-- Modal -->
@@ -27,6 +32,7 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<input type="file" id="fileUploadUserCSV" name="file" size="10" onchange="UploadUserCSV($(this))" style="visibility:hidden"/>
 <input type="file" id="fileResetDatabase" name="file" size="10" onchange="ResetDatabase($(this))" style="visibility:hidden"/>
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>

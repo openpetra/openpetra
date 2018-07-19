@@ -121,7 +121,10 @@
         "restoredatabase": "Alle Daten aus Sicherung wiederherstellen",
         "ask_reset": "Wollen Sie wirklich alle Daten verwerfen, und durch die Daten aus dem Backup ersetzen?",
         "uploadsuccess": "Daten wurden wiederhergestellt",
-        "uploaderror": "Es gab ein Problem mit dem Wiederherstellen der Daten"
+        "uploaderror": "Es gab ein Problem mit dem Wiederherstellen der Daten",
+        "upload_partner_success":"Partner erfolgreich importiert",
+        "upload_partner_fail":"Partner import ist fehlgeschlagen",
+        "importUser":"Partner Importieren"
     },
 
     "MaintainPartners": {

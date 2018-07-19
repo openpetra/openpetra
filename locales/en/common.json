@@ -121,8 +121,11 @@
         "restoredatabase": "Restore all data from a backup",
         "ask_reset": "Do you really want to loose your current data and reset it with your backup?",
         "uploadsuccess": "Database has been uploaded",
-        "uploaderror": "There has been a problem uploading the database"
-    },
+        "uploaderror": "There has been a problem uploading the database",
+        "upload_partner_success":"Partner successfull imported",
+        "upload_partner_fail":"Partner import failed",
+        "importUser":"Import partner"
+},
 
     "MaintainPartners": {
         "caption": "Maintain partners",
