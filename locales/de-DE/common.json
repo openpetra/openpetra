@@ -89,7 +89,6 @@
         "favourites": "TODO: hier sollen Sie Ihre wichtigsten Formulare hinterlegen können, die Sie jeden Tag benutzen.",
         "example": "zum Beispiel"
     },
-
     "ChangePassword": {
         "caption": "Passwort ändern",
         "current": "Aktuelles Passwort",
@@ -207,7 +206,7 @@
       "trans_date": "Eingangsdatum",
       "trans_ref": "Referenz",
       "trans_amount_in_base": "Betrag",
-      "trans_account_code": "Konto",
+      "trans_account_code": "Account",
       "trans_ccenter_code": "Kostenstelle",
       "trans_narrative_code": "Bemerkung",
       "trans_donor_key":"Spender Schlüssel",
@@ -273,10 +272,7 @@
       "partnertypes":"Kategorien",
       "activePartnersOnly":"Nur aktive Partner",
       "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
-      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen",
-      "":"",
-      "":""
-
+      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
     },
 
     "ChangeLanguage": {
