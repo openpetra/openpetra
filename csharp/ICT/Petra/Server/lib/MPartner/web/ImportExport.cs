@@ -224,7 +224,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="AVerificationResult">A collection of import errors</param>
         /// <param name="ASeparator">Comma or Semicolon</param>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerImportExportTDS ImportFromCSVFile(string ACSVPartnerData,
+        public static bool ImportFromCSVFile(string ACSVPartnerData,
             string ADateFormat,
             string ASeparator,
             out TVerificationResultCollection AVerificationResult)
@@ -239,7 +239,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             PartnerImportExportTDS MainDS = TPartnerImportCSV.ImportData(root, ADateFormat, ref AVerificationResult);
 
-            return MainDS;
+            return MainDS.PPartner.Rows.Count > 0;
         }
 
         /// <summary>
