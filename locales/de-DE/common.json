@@ -13,7 +13,7 @@
         "about": "Über",
         "contact": "Kontakt",
         "settings": "Einstellungen",
-        "ledgerselect":"Ledger auswählen",
+        "ledgerselect":"gewählter Ledger:",
         "ledgerselect_none":"Kein Ledger ausgewählt!",
         "change_password": "Passwort ändern",
         "change_language": "Sprache wechseln",
