@@ -2766,8 +2766,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <returns></returns>
         private static GLBatchTDS CreateGLBatchAndTransactionsForPostingGifts(Int32 ALedgerNumber, ref GiftBatchTDS AGiftDataset)
         {
-            // create one GL batch
-            GLBatchTDS GLDataset = TGLTransactionWebConnector.CreateABatch(ALedgerNumber);
+            // create one GL batch without a journal
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, false, true);
 
             ABatchRow batch = GLDataset.ABatch[0];
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
@@ -2781,8 +2781,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             batch.GiftBatchNumber = giftBatch.BatchNumber;
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
-            // one gift batch only has one currency, use the first journal that was already created
-            AJournalRow journal = GLDataset.AJournal[0];
+            // one gift batch only has one currency, create only one journal
+            AJournalRow journal = GLDataset.AJournal.NewRowTyped();
+            journal.LedgerNumber = batch.LedgerNumber;
+            journal.BatchNumber = batch.BatchNumber;
+            journal.JournalNumber = 1;
             journal.DateEffective = batch.DateEffective;
             journal.JournalPeriod = giftBatch.BatchPeriod;
             journal.TransactionCurrency = giftBatch.CurrencyCode;
@@ -2793,6 +2796,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
+
+            GLDataset.AJournal.Rows.Add(journal);
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
