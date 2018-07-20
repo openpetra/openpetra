@@ -1,5 +1,5 @@
 <h2>{caption}</h2>
-
+<link rel="stylesheet" href="/css/autocomplete.css">
 <!-- Phantom Storage -->
 <div phantom hidden>
 
@@ -263,7 +263,9 @@
 									<span>{trans_account_code}</span>
 								</div>
 								<div class="col">
-									<input class="" type="text" name="a_account_code_c" value="">
+									<div class="autocomplete">
+										<input class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
+									</div>
 								</div>
 							</div>
 
@@ -272,7 +274,9 @@
 									<span>{trans_ccenter_code}</span>
 								</div>
 								<div class="col">
-									<input class="" type="text" name="a_cost_centre_code_c" value="">
+									<div class="autocomplete">
+										<input class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+									</div>
 								</div>
 							</div>
 
@@ -352,5 +356,6 @@
 
 </div>
 
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

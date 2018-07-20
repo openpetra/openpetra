@@ -301,7 +301,7 @@ function delete_trans_detail(obj_modal) {
 
 /////
 
-function doner_autocomplete(input_field) {
+function donor_autocomplete(input_field) {
 	let x = {AInputSearch: $(input_field).val()}
 
 	// TODO: process api from server into a usable form for the autocomplete

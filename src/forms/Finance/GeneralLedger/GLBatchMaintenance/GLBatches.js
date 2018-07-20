@@ -286,3 +286,11 @@ function importTransactions(batch_id, csv_file) {
 		}
 	})
 }
+
+function autocomplete_a(input_field) {
+	autocomplete( $(input_field),  ["Test","noch einer","reeee","LUUL","Meeem","HOI","Nope"] );
+}
+
+function autocomplete_cc(input_field) {
+	autocomplete( $(input_field),  ["Test","noch einer","reeee","LUUL","Meeem","HOI","Nope"] );
+}
