@@ -73,14 +73,16 @@ function autocomplete(input_field_object, auto_list) {
   }
 
   list_field.html("");
-  for (value in auto_list) {
-    guess = auto_list[value];
+  for (pair in auto_list) {
+    guess = auto_list[pair];
     guess_field = $("<div>");
-    let content = "<span>" + guess + "</span>";
-    content = content + "<input type='hidden' value='" + value + "'>"
+    let content = "<span>" + guess.display + "</span>";
+    content = content + "<input type='hidden' value='" + guess.key + "'>"
     guess_field.html(content);
+    guess_field.attr('label', guess.label);
+    guess_field.attr('key', guess.key);
     guess_field.click(function () {
-      input_field_object.val( $(this).text() );
+      input_field_object.val( $(this).attr('key') + ' ' + $(this).attr('label'));
       input_field_object.attr('key-value', $(this).find('input[type=hidden]').val());
       delete_all_guesses();
     });
