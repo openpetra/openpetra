@@ -216,7 +216,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         }
 
         /// <summary>
-        /// This imports partners from a CSV file
+        /// This imports partners from a CSV file and returns the imported data as a dataset
         /// </summary>
         /// <param name="ACSVPartnerData">The data to import</param>
         /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
@@ -224,7 +224,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="AVerificationResult">A collection of import errors</param>
         /// <param name="ASeparator">Comma or Semicolon</param>
         [RequireModulePermission("PTNRUSER")]
-        public static bool ImportFromCSVFile(string ACSVPartnerData,
+        public static PartnerImportExportTDS ImportFromCSVFileReturnDataSet(string ACSVPartnerData,
             string ADateFormat,
             string ASeparator,
             out TVerificationResultCollection AVerificationResult)
@@ -239,6 +239,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             PartnerImportExportTDS MainDS = TPartnerImportCSV.ImportData(root, ADateFormat, ref AVerificationResult);
 
+            return MainDS;
+        }
+
+        /// <summary>
+        /// This imports partners from a CSV file
+        /// </summary>
+        /// <param name="ACSVPartnerData">The data to import</param>
+        /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
+        /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
+        /// <param name="AVerificationResult">A collection of import errors</param>
+        /// <param name="ASeparator">Comma or Semicolon</param>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool ImportFromCSVFile(string ACSVPartnerData,
+            string ADateFormat,
+            string ASeparator,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            PartnerImportExportTDS MainDS =
+                ImportFromCSVFileReturnDataSet(ACSVPartnerData, ADateFormat, ASeparator, out AVerificationResult);
             return MainDS.PPartner.Rows.Count > 0;
         }
 

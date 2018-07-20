@@ -83,7 +83,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 doc = sr.ReadToEnd();
             }
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "DMY", ";", out VerificationResult);
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "DMY", ";", out VerificationResult);
 
             if (VerificationResult != null)
             {
@@ -108,7 +108,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 doc = sr.ReadToEnd();
             }
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "dmy", ";", out VerificationResult);
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "dmy", ";", out VerificationResult);
 
             if (VerificationResult != null)
             {
@@ -125,7 +125,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             // Now try with the wrong date format
             VerificationResult = null;
-            MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "mdy", ";", out VerificationResult);
+            MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "mdy", ";", out VerificationResult);
 
             Assert.IsNotNull(VerificationResult, "Expected to get errors");
             int numErrors = 0;
@@ -155,7 +155,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 doc = sr.ReadToEnd();
             }
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "mdy", ";", out VerificationResult);
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "mdy", ";", out VerificationResult);
 
             if (VerificationResult != null)
             {
@@ -172,7 +172,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             // Now try with the wrong date format
             VerificationResult = null;
-            MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "dmy", ";", out VerificationResult);
+            MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "dmy", ";", out VerificationResult);
 
             Assert.IsNotNull(VerificationResult, "Expected to get errors");
             int numErrors = 0;
@@ -203,7 +203,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 doc = sr.ReadToEnd();
             }
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(doc, "dMy", ",", out VerificationResult);
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "dMy", ",", out VerificationResult);
 
             if (VerificationResult != null)
             {
