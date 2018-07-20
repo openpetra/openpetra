@@ -1,0 +1,270 @@
+<h2>{caption}</h2>
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_row" onclick="open_motivations(this, '{val_a_motivation_group_code_c}')" id="Batch{val_a_batch_number_i}">
+		<div class="row">
+			<div class="col">{val_a_motivation_group_code_c}</div>
+			<div class="col">{val_a_motivation_group_description_c}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" onclick="edit_batch('{val_a_motivation_group_code_c}')">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
+				<div class="row">
+					<div class="col">
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_motivation('{val_a_motivation_group_code_c}')">
+							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
+						</button>
+					</div>
+					<div class="col"></div>
+				</div>
+				<div class="row">
+					<div class="col"><b>
+						<div class ="row">
+							<div class="col">{motivation_code}</div>
+							<div class="col">{motivation_account_c}</div>
+							<div class="col">{motivation_center_c}</div>
+							<div class="col">{motivation_desc}</div>
+							<div class="col">{motivation_detail_desc}</div>
+							<div class="col-1">
+								<button type="button" class="btn" onclick="$('.tpl_row .collapse').collapse('hide');">
+									<i class="fa fa-close"></i>
+								</button>
+							</div>
+						</div>
+					</div></b>
+				</div>
+				<div class="row">
+					<div class="col content_col"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_motivation">
+		<div class="row">
+			<div class="col">{val_a_motivation_group_code_c}</div>
+			<div class="col">{val_a_account_code_c}</div>
+			<div class="col">{val_a_cost_centre_code_c}</div>
+			<div class="col">{val_a_motivation_detail_desc_c}</div>
+			<div class="col">{val_a_motivation_detail_code_c}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_motivation({val_a_ledger_number_i}, '{val_a_motivation_group_code_c}', '{val_a_motivation_detail_code_c}')">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_trans_detail">
+		<div class="row">
+			<div class="col format_curr">{val_a_gift_amount_n}</div>
+			<div class="col">{val_RecipientDescription}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_batch" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{ledgernumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_code}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_group_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_desc}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_group_desc_local_c" value="">
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger" onclick="delete_batch(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_edit_batch(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_motivation" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_moti}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{ledgernumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_code}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_group_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_detail_desc}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_detail_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_desc}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_motivation_detail_desc_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_account_c}</span>
+							</div>
+							<div class="col">
+								<input class="" type="number" name="a_account_code_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_center_c}</span>
+							</div>
+							<div class="col">
+								<input class="" type="number" name="a_cost_centre_code_c" value="">
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger" onclick="delete_motivation(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_edit_moti_detail(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<button id="new" class="btn btn-primary" onclick="new_batch()">{forms.new}</button>
+			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
+		</td>
+	</tr>
+</table>
+
+<div id="modal_space"></div>
+
+<div class="container collapse" id="tabfilter">
+	<div class="container group-container">
+	<div class="row">
+		<div class="col">
+			<span>{partnername}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="AFamilyNameOrOrganisation"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{city}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="ACity"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{partnerclass}:</span>
+		</div>
+		<div class="col">
+			<select name="APartnerClass">
+				<option value="">{forms.any}</option>
+				<!--<option value="PERSON">{PERSON}</option>-->
+				<option value="FAMILY" selected>{FAMILY}</option>
+				<option value="ORGANISATION">{ORGANISATION}</option>
+				<!--<option value="UNIT">{UNIT}</option>-->
+				<!--<option value="BANK">{BANK}</option>-->
+			</select>
+		</div>
+	</div>
+	</div>
+
+	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
+	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
+	<input type="hidden" name="AMaxRecords" value="25"/>
+</div>
+
+<div class="container" id="browse">
+	<div class="row">
+		<div class="col"><b>{motivation_code}</b></div>
+		<div class="col"><b>{motivation_desc}</b></div>
+	<div class="col-1"></div>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

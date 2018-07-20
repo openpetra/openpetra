@@ -31,24 +31,32 @@ function format_tpl(tpl, data, limit_to_table) {
     console.log("missing tpl for format_tpl");
     return "";
   }
-
   if (limit_to_table == null) {
     limit_to_table = "";
   }
   for (variable in data) {
+    let key = false;
     let f = tpl.find("[name="+variable+"]");
     if (f.length == 0) {
       f = tpl.find("[name="+limit_to_table+variable+"]");
     }
-    if (f.is('select')) {
+    if (f.length == 0) {
+      f = tpl.find("[key-name="+variable+"]");
+      key = true;
+    }
+
+    if (f.is('select') && key==false) {
       value = data[variable];
       $(f).find("option[value='" + value + "']").attr("selected", true);
-    } else if (f.is('textarea')) {
+    }
+    else if (f.is('textarea') && key==false) {
       f.text(data[variable]);
-    } else if (f.attr('type') == "checkbox") {
+    }
+    else if (f.attr('type') == "checkbox" && key==false) {
       f.attr('checked', data[variable]);
       f.prop('checked', data[variable]);
-    } else {
+    }
+    else if ( key==false ) {
       value = data[variable];
       if (typeof value === 'string' || value instanceof String) {
         // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
@@ -67,6 +75,12 @@ function format_tpl(tpl, data, limit_to_table) {
       f.attr('value', value);
       f.val(value);
     }
+    else {
+      //hidden key case
+      value = data[variable];
+      f.attr('key-value', value);
+    }
+
     let g = tpl[0].outerHTML;
     if (data[variable] == null) {
       data[variable] = "";
@@ -94,7 +108,12 @@ function extract_data(object) {
       }
 
     }
-  })
+  });
+
+  object.find('[key-name]').each(function (i, obj) {
+    obj = $(obj);
+    r[obj.attr('key-name')] = obj.attr('key-value');
+  });
 
   return r;
 }

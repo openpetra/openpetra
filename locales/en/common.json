@@ -13,22 +13,22 @@
         "about": "About",
         "contact": "Contact",
         "settings": "Settings",
+        "ledgerselect":"Select Ledger",
+        "ledgerselect_none":"No Ledger selected!",
         "change_password": "Change Password",
         "change_language": "Change Language",
         "logout": "Logout",
         "notimplementedyet": "not implemented yet",
-
-        "Subscription_label":"Subscriptions",
-        "MaintainPublications_label":"Configuration of Subscriptions",
         "Partner_label": "Partner",
         "Partners_label": "Partners",
-        "Maintain_label": "Maintain",
         "Types_label":"Categories",
-        "MaintainTypes_label":"Configuration of Categories",
+        "Maintain_label": "Maintain",
         "MaintainPartners_label": "Maintain Partners",
+        "MaintainPublications_label":"Configuration of Subscriptions",
+        "MaintainTypes_label":"Configuration of Categories",
         "CreatePartner_label": "Create Partner",
         "ImportExport_label": "Import/Export",
-        "Subscriptions_label": "Subscriptions",
+        "Subscription_label":"Subscriptions",
         "Reports_label": "Reports",
         "PartnerReports_label": "Reports",
         "PartnerBySpecialType_label": "Partner with Categories",
@@ -44,8 +44,8 @@
         "GLBatches_label": "Maintain GL Batches and Transaction",
         "PeriodEnd_label": "Month and Year - Ends",
         "Gift_label": "Donations",
-        "GiftEntry_label": "Donation Entry",
         "GiftBatches_label": "Donation Batches",
+        "GiftEntry_label": "Donation Entry",
         "GiftReceipting_label": "Donation Receipting",
         "GL_label": "General Ledger",
         "CrossLedgerSetup_label": "Finance Setup",
@@ -56,7 +56,8 @@
         "Database_label": "Database",
         "ManageAccounts_label": "Manage Accounts",
         "FindPartners_label": "Find Partners",
-        "AccountDetail_label": "Account Detail"
+        "AccountDetail_label": "Account Detail",
+        "switchledger":"Active Ledger is now:"
     },
     "forms": {
         "search":"Search",
@@ -74,7 +75,13 @@
         "name": "Name",
         "PleaseWait": "Please wait",
         "WaitInfo": "This might take a couple of seconds...",
-        "description": "Description"
+        "description": "Description",
+        "import": "Import"
+    },
+    "errors": {
+      "general": "An error as occurred",
+      "save": "Save failed",
+      "edit": "Changess could not be saved"
     },
     "Home": {
         "welcome": "Welcome to OpenPetra, brought to you by <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
@@ -115,8 +122,11 @@
         "restoredatabase": "Restore all data from a backup",
         "ask_reset": "Do you really want to loose your current data and reset it with your backup?",
         "uploadsuccess": "Database has been uploaded",
-        "uploaderror": "There has been a problem uploading the database"
-    },
+        "uploaderror": "There has been a problem uploading the database",
+        "upload_partner_success":"Partner successfull imported",
+        "upload_partner_fail":"Partner import failed",
+        "importUser":"Import partner"
+},
 
     "MaintainPartners": {
         "caption": "Maintain partners",
@@ -168,7 +178,7 @@
         "year": "Year",
         "batchcredit":"Total Credit",
         "batchdebit":"Total Debit",
-        "batch_date": "Dae effective",
+        "batch_date": "Effective date",
         "trans_number": "Transaction number",
         "trans_date": "Transaction Date",
         "trans_ref": "Reference",
@@ -185,12 +195,35 @@
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
-
+        "import": "Import transactions",
         "isPosted": "We cannot edit batches that have been posted already"
     },
 
+    "GiftBatches": {
+      "edittitle":"Edit batch",
+      "caption":"Maintain donations",
+      "batchnumber":"Batchnumber",
+      "batchdate":"Batch booking date",
+      "batchname":"Batch description",
+      "batchstatus":"Batch status",
+      "trans_number": "Transaction nummer",
+      "trans_date": "Entrydate",
+      "trans_ref": "Reference",
+      "trans_amount_in_base": "Amount",
+      "trans_account_code": "Account",
+      "trans_ccenter_code": "Cost centre",
+      "trans_narrative_code": "Comment",
+      "trans_donor_key":"Doner Key",
+      "trans_donor":"Doner Name",
+      "edittitle_trans":"Edit transaction",
+      "trans_description":"Transaction Comment",
+      "edittitle_trans_detail":"Edit transaction details",
+      "ledgernumber":"Ledgernumber"
+    },
+
     "MaintainPublications": {
-      "caption":"Edit subscriptions",
+      "edittitle":"Edit subscription",
+      "caption":"Maintain subscriptions",
       "addtitle":"Add subscription",
       "edittitle":"Edit subscription",
       "name":"Subscription Name",
@@ -208,6 +241,9 @@
       "name":"Category name",
       "edittitle":"Edit category",
       "addtitle":"Add category",
+      "confirm_create":"Categorie successfull created",
+      "confirm_edit":"Categorie successfull updated",
+      "confirm_delete":"Categorie successfull deleted",
       "ask_delete":"Sure you wanna delete this category?",
       "entry_name":"Category name",
       "entry_status":"Active",
@@ -221,7 +257,6 @@
       "name":"Ledger name",
       "number":"Ledger number",
       "entry_name":"ledger name",
-      "entry_country":"country code",
       "entry_date":"first day of financial year",
       "entry_base_currency":"base currency",
       "entry_intl_currency":"international currency",
@@ -232,7 +267,8 @@
       "ask_delete":"Sure you wanna delete this ledger?",
       "confirm_edit":"The Ledger has been updated",
       "confirm_create":"The ledger has been created successfully",
-      "confirm_delete":"The Ledger has been deleted"
+      "confirm_delete":"The Ledger has been deleted",
+      "entry_country":"country code"
     },
 
     "PartnerBySpecialType":{
@@ -245,5 +281,20 @@
 
     "ChangeLanguage": {
         "caption": "Change the language"
+    },
+
+    "MotivationGroup":{
+      "caption":"Edit motivations",
+      "edittitle":"Edit motivation",
+      "edittitle_moti":"Edit motivation detail",
+      "ledgernumber":"Ledgernumber",
+      "motivation_code":"Edit motivation code",
+      "motivation_desc":"Edit motivation description",
+      "motivation_account_c":"Account Code",
+      "motivation_center_c":"Cost Center",
+      "motivation_detail_desc":"Motivation detail description"
+    },
+    "ExportPartners":{
+      "importUser":"Import partner from cvs file"
     }
 }
