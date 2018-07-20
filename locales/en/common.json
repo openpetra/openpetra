@@ -79,9 +79,9 @@
         "import": "Import"
     },
     "errors": {
-      "general": "An error as occurred",
+      "general": "An error has occurred",
       "save": "Save failed",
-      "edit": "Changess could not be saved"
+      "edit": "Changes could not be saved"
     },
     "Home": {
         "welcome": "Welcome to OpenPetra, brought to you by <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
@@ -122,10 +122,7 @@
         "restoredatabase": "Restore all data from a backup",
         "ask_reset": "Do you really want to loose your current data and reset it with your backup?",
         "uploadsuccess": "Database has been uploaded",
-        "uploaderror": "There has been a problem uploading the database",
-        "upload_partner_success":"Partner successfull imported",
-        "upload_partner_fail":"Partner import failed",
-        "importUser":"Import partner"
+        "uploaderror": "There has been a problem uploading the database"
 },
 
     "MaintainPartners": {
@@ -213,8 +210,8 @@
       "trans_account_code": "Account",
       "trans_ccenter_code": "Cost centre",
       "trans_narrative_code": "Comment",
-      "trans_donor_key":"Doner Key",
-      "trans_donor":"Doner Name",
+      "trans_donor_key":"Donor Key",
+      "trans_donor":"Donor Name",
       "edittitle_trans":"Edit transaction",
       "trans_description":"Transaction Comment",
       "edittitle_trans_detail":"Edit transaction details",
@@ -241,9 +238,9 @@
       "name":"Category name",
       "edittitle":"Edit category",
       "addtitle":"Add category",
-      "confirm_create":"Categorie successfull created",
-      "confirm_edit":"Categorie successfull updated",
-      "confirm_delete":"Categorie successfull deleted",
+      "confirm_create":"Category has been created successfully",
+      "confirm_edit":"Category has been updated successfully",
+      "confirm_delete":"Category has been deleted successfully",
       "ask_delete":"Sure you wanna delete this category?",
       "entry_name":"Category name",
       "entry_status":"Active",
@@ -283,7 +280,7 @@
         "caption": "Change the language"
     },
 
-    "MotivationGroup":{
+    "Motivations":{
       "caption":"Edit motivations",
       "edittitle":"Edit motivation",
       "edittitle_moti":"Edit motivation detail",
@@ -294,7 +291,7 @@
       "motivation_center_c":"Cost Center",
       "motivation_detail_desc":"Motivation detail description"
     },
-    "ExportPartners":{
-      "importUser":"Import partner from cvs file"
+    "ImportPartners":{
+      "importUser":"Import partner from CSV file"
     }
 }

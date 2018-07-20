@@ -122,10 +122,7 @@
         "restoredatabase": "Alle Daten aus Sicherung wiederherstellen",
         "ask_reset": "Wollen Sie wirklich alle Daten verwerfen, und durch die Daten aus dem Backup ersetzen?",
         "uploadsuccess": "Daten wurden wiederhergestellt",
-        "uploaderror": "Es gab ein Problem mit dem Wiederherstellen der Daten",
-        "upload_partner_success":"Partner erfolgreich importiert",
-        "upload_partner_fail":"Partner import ist fehlgeschlagen",
-        "importUser":"Partner Importieren"
+        "uploaderror": "Es gab ein Problem mit dem Wiederherstellen der Daten"
     },
 
     "MaintainPartners": {
@@ -195,7 +192,7 @@
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
-        "import": "Transaktionen Importien",
+        "import": "Transaktionen importieren",
         "isPosted": "Gepostete Batches können nicht bearbeitet werden"
     },
 
@@ -210,7 +207,7 @@
       "trans_date": "Eingangsdatum",
       "trans_ref": "Referenz",
       "trans_amount_in_base": "Betrag",
-      "trans_account_code": "Account",
+      "trans_account_code": "Konto",
       "trans_ccenter_code": "Kostenstelle",
       "trans_narrative_code": "Bemerkung",
       "trans_donor_key":"Spender Schlüssel",
@@ -283,18 +280,18 @@
         "caption": "Sprache wechseln"
     },
 
-    "MotivationGroup":{
+    "Motivations":{
       "caption":"Verwendungszweck bearbeiten",
       "edittitle":"Zweck bearbeiten",
-      "edittitle_moti":"Zweck details bearbeiten",
+      "edittitle_moti":"Zweck Details bearbeiten",
       "ledgernumber":"Ledgernummer",
       "motivation_code":"Verwendungs Code",
       "motivation_desc":"Verwendungs Beschreibung",
-      "motivation_account_c":"Account Code",
-      "motivation_center_c":"Center Code",
+      "motivation_account_c":"Konto",
+      "motivation_center_c":"Kostenstelle",
       "motivation_detail_desc":"Detail Beschreibung"
     },
-    "ExportPartners":{
-      "importUser":"Partner importieren von cvs Datei"
+    "ImportPartners":{
+      "importUser":"Partner aus CSV Datei importieren"
     }
 }

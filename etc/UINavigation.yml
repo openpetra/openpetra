@@ -13,7 +13,7 @@ OpenPetra:
                         AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
                         AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
                     ImportExport:
-                        ExportPartners:
+                        ImportPartners:
                     Subscriptions:
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
@@ -88,9 +88,8 @@ OpenPetra:
                         ManageAccounts:
                         ManageCostCentres:
                         DeleteLedger:
-                    GiftReceipting:
-                        MotivationGroup:
-                        MotivationDetails:
+                    Gift:
+                        Motivations:
         CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
                 Ledger:
                     LedgerSetup:
