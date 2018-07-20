@@ -157,6 +157,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(ANumberFormat.Equals("American") ? "en-US" : "de-DE");
+
+            if (ADateFormatString.ToLower() == "dmy")
+            {
+                ADateFormatString = "dd/MM/yyyy";
+            }
+            else if (ADateFormatString.ToLower() == "mdy")
+            {
+                ADateFormatString = "MM/dd/yyyy";
+            }
+
             FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(ADateFormatString);
 
             // Initialise our working variables
