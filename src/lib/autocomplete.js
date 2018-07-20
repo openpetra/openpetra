@@ -32,7 +32,9 @@ function autocomplete(input_field_object, auto_list) {
       else if (event.which == 13) {
         let sub = input_field_object.siblings('.autocomplete-items').find('.autocomplete-active');
         input_field_object.val( sub.text() );
-        input_field_object.attr('second-attr-value', sub.find('input[type=hidden]').val());
+        input_field_object.attr('key-value', sub.find('input[type=hidden]').val());
+
+        delete_all_guesses();
       }
     })
     input_field_object.attr('init-autocomplete', true);
@@ -54,7 +56,15 @@ function autocomplete(input_field_object, auto_list) {
     let content = "<span>" + guess + "</span>";
     content = content + "<input type='hidden' value='" + value + "'>"
     guess_field.html(content);
+    guess_field.click(function () {
+      input_field_object.val( $(this).text() );
+      input_field_object.attr('key-value', $(this).find('input[type=hidden]').val());
+      delete_all_guesses();
+    });
     list_field.append(guess_field);
   }
+}
 
+function delete_all_guesses() {
+  $('.autocomplete-items').remove();
 }
