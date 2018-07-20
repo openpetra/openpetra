@@ -201,7 +201,7 @@
 
     "GiftBatches": {
       "edittitle":"Edit batch",
-      "caption":"Maintain batch",
+      "caption":"Maintain donations",
       "batchnumber":"Batchnumber",
       "batchdate":"Batch booking date",
       "batchname":"Batch description",

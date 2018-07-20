@@ -287,7 +287,7 @@ $('document').ready(function () {
 		if (current_selected_ledger == null) {
 			$('#current_ledger_field').html('<b style="color:#f88;">'+i18next.t('navigation.ledgerselect_none')+'</b>');
 		} else {
-			$('#current_ledger_field').text(ledger.a_ledger_name_c);
+			$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
 		}
 	})
 });

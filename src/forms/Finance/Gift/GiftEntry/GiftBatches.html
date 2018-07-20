@@ -1,5 +1,5 @@
 <h2>{caption}</h2>
-
+<link rel="stylesheet" href="/css/autocomplete.css">
 <!-- Phantom Storage -->
 <div phantom hidden>
 
@@ -209,7 +209,9 @@
 								<span>{trans_donor_key}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="p_donor_key_n" value="">
+								<div class="autocomplete">
+									<input class="" type="text" name="p_donor_key_n" value="" oninput="doner_autocomplete(this)">
+								</div>
 							</div>
 						</div>
 
@@ -409,5 +411,6 @@
 
 </div>
 
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

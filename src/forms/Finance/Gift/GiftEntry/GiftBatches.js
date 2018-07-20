@@ -28,9 +28,9 @@ $('document').ready(function () {
 function display_list() {
 	// x is search
 	let x = {
-		ALedgerNumber: 43,
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		AYear: 0,
-		APeriod: 19
+		APeriod: 7
 	};
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
@@ -287,16 +287,34 @@ function delete_batch(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainBatches', payload);
 }
 
-
 function delete_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload);
 }
 
-
 function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
+}
+
+/////
+
+function doner_autocomplete(input_field) {
+	let x = {AInputSearch: $(input_field).val()}
+
+	// TODO: process api from server into a usable form for the autocomplete
+
+	api.post('serverIrgentwas.asmx/autocompletDonerKey', x).then(function (result) {
+		data = JSON.parse(result.data.d);
+
+		console.log(data);
+
+	}).catch(function () {
+		autocomplete( $(input_field),  ["Test","noch einer","reeee","LUUL","Meeem","HOI","Nope"] );
+
+
+	})
+
 }
