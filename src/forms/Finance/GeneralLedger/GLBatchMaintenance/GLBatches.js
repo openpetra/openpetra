@@ -189,6 +189,8 @@ function edit_trans(batch_id, trans_id) {
 			searched['a_debit_amount_base_n'] = 0.0;
 			searched['a_credit_amount_base_n'] = searched['a_amount_in_base_currency_n'];
 		}
+		searched['a_account_name_c'] = searched['a_account_code_c'];
+		searched['a_cost_center_name_c'] = searched['a_cost_centre_code_c'];
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
