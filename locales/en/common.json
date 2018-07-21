@@ -57,6 +57,7 @@
         "ManageAccounts_label": "Manage Accounts",
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
+        "Motivations_label": "Maintain Motivation groups and details",
         "switchledger":"Active Ledger is now:"
     },
     "forms": {
@@ -69,6 +70,9 @@
         "delete": "Delete",
         "save": "Save",
         "saved": "Successfully saved",
+        "notsaved": "Saving failed",
+        "deleted": "Successfully deleted",
+        "notdeleted": "Deletion failed",
         "report": "Show Report",
         "any": "any",
         "status": "Status",
@@ -284,12 +288,15 @@
       "caption":"Edit motivations",
       "edittitle":"Edit motivation",
       "edittitle_moti":"Edit motivation detail",
+      "ask_delete_group": "Do you really want to delete this group with all its details?",
+      "ask_delete_detail": "Do you really want to delete this detail?",
       "ledgernumber":"Ledgernumber",
-      "motivation_code":"Edit motivation code",
-      "motivation_desc":"Edit motivation description",
+      "motivation_group_code":"Group Code",
+      "motivation_detail_code":"Detail Code",
+      "motivation_desc":"Description",
       "motivation_account_c":"Account Code",
       "motivation_center_c":"Cost Center",
-      "motivation_detail_desc":"Motivation detail description"
+      "motivation_detail_code":"Detail Code"
     },
     "ImportPartners":{
       "importUser":"Import partner from CSV file"

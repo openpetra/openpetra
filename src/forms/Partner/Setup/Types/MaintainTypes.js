@@ -115,6 +115,7 @@ function delete_entry(d) {
 
   request['action'] = 'delete';
 
+  let s = confirm( i18next.t('MaintainTypes.ask_delete') );
   if (!s) {return}
 
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(

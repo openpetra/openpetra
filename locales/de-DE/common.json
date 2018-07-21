@@ -57,6 +57,7 @@
         "ManageAccounts_label": "Konten verwalten",
         "FindPartners_label": "Partner suchen",
         "AccountDetail_label": "Bericht über die Konten",
+        "Motivations_label": "Verwendungszwecke verwalten",
         "switchledger":"Aktiver Ledger wurde geändert auf:"
     },
     "forms": {
@@ -69,6 +70,9 @@
         "delete": "Löschen",
         "save": "Übernehmen",
         "saved": "Änderungen wurden übernommen",
+        "notsaved": "Fehler beim Speichern",
+        "deleted": "Erfolgreich gelöscht",
+        "notdeleted": "Fehler beim Löschen",
         "report": "Bericht anzeigen",
         "any": "alle",
         "status": "Status",
@@ -284,12 +288,15 @@
       "caption":"Verwendungszweck bearbeiten",
       "edittitle":"Zweck bearbeiten",
       "edittitle_moti":"Zweck Details bearbeiten",
+      "ask_delete_group": "Sind Sie sicher, dass Sie diese Gruppe mit allen Details löschen möchten?",
+      "ask_delete_detail": "Sind Sie sicher, dass Sie dieses Detail löschen möchten?",
       "ledgernumber":"Ledgernummer",
-      "motivation_code":"Verwendungs Code",
-      "motivation_desc":"Verwendungs Beschreibung",
+      "motivation_group_code":"Gruppen-Code",
+      "motivation_detail_code":"Detail-Code",
+      "motivation_desc":"Beschreibung",
       "motivation_account_c":"Konto",
       "motivation_center_c":"Kostenstelle",
-      "motivation_detail_desc":"Detail Beschreibung"
+      "motivation_detail_code":"Detail-Code"
     },
     "ImportPartners":{
       "importUser":"Partner aus CSV Datei importieren"
