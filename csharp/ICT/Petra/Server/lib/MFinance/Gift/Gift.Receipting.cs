@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -569,7 +569,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ref string AMinorUnitSingular,
             ref string AMinorUnitPlural)
         {
-            ACurrencyLanguageRow CurrencyLanguage = TFinanceServerLookups.GetCurrencyLanguage(ACurrency);
+            ACurrencyLanguageRow CurrencyLanguage = TFinanceServerLookupWebConnector.GetCurrencyLanguage(ACurrency);
 
             if (CurrencyLanguage != null)
             {

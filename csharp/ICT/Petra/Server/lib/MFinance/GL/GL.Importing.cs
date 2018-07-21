@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.MFinance.GL
             Boolean CancelledByUser = false;
 
             // This needs to be initialised because we will be calling the method
-            TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
+            TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
 
             // Get a new transaction
@@ -892,7 +892,7 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 // This needs to be initialised because we will be calling the method
-                TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
+                TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
                 TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
 
                 DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref submissionOK,
