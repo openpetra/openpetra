@@ -360,37 +360,34 @@
 	<div class="container group-container">
 	<div class="row">
 		<div class="col">
-			<span>{partnername}:</span>
+			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<input type="text" name="AFamilyNameOrOrganisation"/>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col">
-			<span>{city}:</span>
-		</div>
-		<div class="col">
-			<input type="text" name="ACity"/>
+			<input type="text" name="AYear"/>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col">
-			<span>{partnerclass}:</span>
+			<span>{period}:</span>
 		</div>
 		<div class="col">
-			<select name="APartnerClass">
-				<option value="">{forms.any}</option>
-				<!--<option value="PERSON">{PERSON}</option>-->
-				<option value="FAMILY" selected>{FAMILY}</option>
-				<option value="ORGANISATION">{ORGANISATION}</option>
-				<!--<option value="UNIT">{UNIT}</option>-->
-				<!--<option value="BANK">{BANK}</option>-->
+			<input type="text" name="APeriod"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{batch_status}:</span>
+		</div>
+		<div class="col">
+			<select name="ABatchStatus">
+				<option value="" selected>{forms.any}</option>
+				<option value="Unposted">{UNPOSTED}</option>
+				<option value="Posted">{POSTED}</option>
+				<option value="Cancelled">{CANCELLED}</option>
 			</select>
 		</div>
 	</div>
 	</div>
-
 	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
 	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>

@@ -22,16 +22,16 @@
 //
 
 $('document').ready(function () {
+	// TODO set proper default values for the filter
+	$('#tabfilter input[name="APeriod"]').val(0);
+	$('#tabfilter input[name="AYear"]').val(0);
 	display_list();
 });
 
 function display_list() {
 	// x is search
-	let x = {
-		ALedgerNumber: window.localStorage.getItem('current_ledger'),
-		AYear: 0,
-		APeriod: 7
-	};
+	let x = extract_data($('#tabfilter'));
+	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
 		data = JSON.parse(data.data.d);
