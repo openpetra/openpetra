@@ -387,11 +387,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 decimal nonDeductibleAmount = 0;
                 string currency = rowGifts["Currency"].ToString();
                 string commentOne = rowGifts["CommentOne"].ToString();
-                string commentOneType = rowGifts["CommentOneType"].ToString();
                 string commentTwo = rowGifts["CommentTwo"].ToString();
-                string commentTwoType = rowGifts["CommentTwoType"].ToString();
                 string commentThree = rowGifts["CommentThree"].ToString();
-                string commentThreeType = rowGifts["CommentThreeType"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
                 string fieldName = rowGifts["FieldName"].ToString();
