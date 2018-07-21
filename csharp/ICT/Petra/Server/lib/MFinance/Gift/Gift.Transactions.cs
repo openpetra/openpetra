@@ -677,9 +677,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
         /// Period = -2 means all periods in current year</param>
+        /// <param name="ABatchStatus"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatchForYearPeriod(Int32 ALedgerNumber, Int32 AYear, Int32 APeriod)
+        public static GiftBatchTDS LoadAGiftBatchForYearPeriod(
+            Int32 ALedgerNumber, Int32 AYear, Int32 APeriod,
+            String ABatchStatus)
         {
             #region Validate Arguments
 
@@ -747,13 +750,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
                         }
 
+                        string FilterByBatchStatus = string.Empty;
+
+                        if (ABatchStatus == MFinanceConstants.BATCH_CANCELLED ||
+                            ABatchStatus == MFinanceConstants.BATCH_POSTED ||
+                            ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                        {
+                            FilterByBatchStatus += String.Format(" AND PUB_{0}.{1} = '{2}'",
+                                AGiftBatchTable.GetTableDBName(),
+                                AGiftBatchTable.GetBatchStatusDBName(),
+                                ABatchStatus);
+                        }
+
                         string SelectClause =
                             String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
                                 AGiftBatchTable.GetTableDBName(),
                                 AGiftBatchTable.GetLedgerNumberDBName(),
                                 ALedgerNumber);
 
-                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
+                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
                             MainDS.AGiftBatch.TableName, Transaction);
                     });
 
