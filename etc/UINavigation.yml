@@ -76,9 +76,7 @@ OpenPetra:
                 Gift:
                     GiftEntry:
                         GiftBatches:
-                        ImportGiftsFromBankStatement:
-                        ExportGiftBatches:
-                        GiftDetailFind:
+                        BankImport:
                     GiftReceipting:
                         PrintAnnualReceipts:
                         DonorRecipientHistory:

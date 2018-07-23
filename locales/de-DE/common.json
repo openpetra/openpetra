@@ -59,7 +59,8 @@
         "AccountDetail_label": "Bericht über die Konten",
         "Motivations_label": "Verwendungszwecke verwalten",
         "switchledger":"Aktiver Ledger wurde geändert auf:",
-        "ImportPartners_label":"Import partner"
+        "BankImport_label":"Spenden von Bank importieren",
+        "ImportPartners_label":"Partner importieren"
     },
     "forms": {
         "search":"Suchen",
