@@ -35,8 +35,8 @@ class Auth {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "eLoginSucceeded") {
-					localStorage.setItem('username', username);
-					localStorage.setItem('authenticated', new Date());
+					window.localStorage.setItem('username', username);
+					window.localStorage.setItem('authenticated', new Date());
 					window.location.reload();
 				} else {
 					alert(i18next.t("login.failedlogin"));
@@ -52,22 +52,22 @@ class Auth {
 			.then(function(response) {
 				if (true) {
 					// we assume we logged off, not depending on the result
-					localStorage.setItem('username', '');
-					localStorage.setItem('authenticated', 0);
+					window.localStorage.setItem('username', '');
+					window.localStorage.setItem('authenticated', 0);
 					window.location.reload();
 				}
 			})
 			.catch(function(error) {
 				console.log(error);
 				// we assume we logged off, not depending on the result
-				localStorage.setItem('username', '');
-				localStorage.setItem('authenticated', 0);
+				window.localStorage.setItem('username', '');
+				window.localStorage.setItem('authenticated', 0);
 				window.location.reload();
 			});
 	}
 
 	checkAuth(fnNonUser, fnAuthenticatedUser) {
-		var lastAuthCheck = localStorage.getItem('authenticated');
+		var lastAuthCheck = window.localStorage.getItem('authenticated');
 
 		// what if the session timed out on the server?
 		// how long ago was the last auth check? check every 5 minutes
@@ -78,13 +78,13 @@ class Auth {
 				.then(function(response) {
 					var result = JSON.parse(response.data.d);
 					if (result.resultcode == "success") {
-						localStorage.setItem('authenticated', new Date());
+						window.localStorage.setItem('authenticated', new Date());
 						fnAuthenticatedUser();
 					} else {
 						if (lastAuthCheck != null && lastAuthCheck != 0) {
 							console.log("session has expired");
-							localStorage.setItem('username', '');
-							localStorage.setItem('authenticated', 0);
+							window.localStorage.setItem('username', '');
+							window.localStorage.setItem('authenticated', 0);
 							window.location.reload();
 						}
 						fnNonUser();

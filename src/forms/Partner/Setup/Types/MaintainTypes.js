@@ -81,49 +81,48 @@ function open_new() {
 function save_new() {
 
     let se = $('#modal_space .modal').modal('show');
-    let d = extract_data(se);
+    let request = translate_to_server(extract_data(raw));
+    
+    request['action'] = 'create';
 
-    let request = {
-      "action": "create",
-      "data": d,
-    };
     api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
       function () {
         display_message(i18next.t('MaintainTypes.confirm_create'), 'success');
-      }
+				se.modal('hide');
+				display_list();
+		  }
     )
 
 }
 
 function save_entry(update) {
-  let raw = $(update).closest('.modal');
-  let e = extract_data(raw);
+  let modalspace = $(update).closest('.modal');
+  let request = translate_to_server(extract_data(modalspace));
 
-  let request = {
-    "action": "update",
-    "data": e,
-  };
+  request['action'] = 'update';
+  
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
       display_message(i18next.t('MaintainTypes.confirm_edit'), 'success');
+			modalspace.modal('hide');
     }
   )
 }
 
 function delete_entry(d) {
   let raw = $(d).closest('.modal');
-  let e = extract_data(raw);
+  let request = translate_to_server(extract_data(raw));
+
+  request['action'] = 'delete';
 
   let s = confirm( i18next.t('MaintainTypes.ask_delete') );
   if (!s) {return}
 
-  let request = {
-    "action": "delete",
-    "data": e,
-  };
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
       display_message(i18next.t('MaintainTypes.confirm_delete'), 'success');
+			raw.modal('hide');
+			display_list();
     }
   );
 

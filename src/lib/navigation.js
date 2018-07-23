@@ -90,7 +90,7 @@ class Navigation {
 		var caption = null;
 
 		if (path.length == 2) {
-			var navigation = JSON.parse(localStorage.getItem('navigation'));
+			var navigation = JSON.parse(window.localStorage.getItem('navigation'));
 
 			if (path[0] in navigation) {
 				if (path[1] in navigation[path[0]].items) {
@@ -224,7 +224,7 @@ class Navigation {
 	}
 
 	loadNavigationPage(navpage) {
-		// TODO: store pages per user? see localStorage?
+		// TODO: store pages per user? see window.localStorage?
 		self = this;
 		navpage = navpage.replace(/\//g, '_')
 		// load navigation page from UINavigation.yml
@@ -246,14 +246,14 @@ class Navigation {
 	}
 
 	loadNavigation() {
-		// TODO: caching for this user??? see localStorage below
+		// TODO: caching for this user??? see window.localStorage below
 		self = this;
 		// load sidebar navigation from UINavigation.yml
 		api.post('serverSessionManager.asmx/GetNavigationMenu', null, null)
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
-					localStorage.setItem('navigation', JSON.stringify(result.navigation));
+					window.localStorage.setItem('navigation', JSON.stringify(result.navigation));
 					self.displayNavigation(result.navigation);
 					window.onpopstate = function(e) {
 						if (e.state != null) {
@@ -268,4 +268,39 @@ class Navigation {
 				console.log(error);
 			});
 	}
+}
+
+$('document').ready(function () {
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+		data = JSON.parse(data.data.d);
+		let dump = $('#ledger_select_dropdown').html('');
+		current_selected_ledger = null;
+		for (ledger of data.result) {
+			if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') ) {
+				current_selected_ledger = ledger;
+			}
+			let z = $('<a class="dropdown-item"></a>');
+			z.text(ledger.a_ledger_name_c);
+			z.attr("onclick", "change_standard_ledger("+ledger.a_ledger_number_i+")");
+			dump.append(z);
+		}
+		if (current_selected_ledger == null) {
+			$('#current_ledger_field').html('<b style="color:#f88;">'+i18next.t('navigation.ledgerselect_none')+'</b>');
+		} else {
+			$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
+		}
+	})
+});
+
+function change_standard_ledger(ledger_id) {
+	window.localStorage.setItem('current_ledger', ledger_id);
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+		data = JSON.parse(data.data.d);
+		for (ledger of data.result) {
+			if (ledger.a_ledger_number_i == ledger_id) {
+				display_message(i18next.t("navigation.switchledger")+" "+ledger.a_ledger_name_c, "success");
+				$('#current_ledger_field').text(ledger.a_ledger_name_c);
+			}
+		}
+	})
 }

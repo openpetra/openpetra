@@ -13,14 +13,13 @@ OpenPetra:
                         AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
                         AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
                     ImportExport:
-                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport}
+                        ImportPartners:
                     Subscriptions:
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
-                        PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
-                        PartnerBySubscription: {ActionOpenScreen=TFrmPartnerBySubscription}
+                        PartnerBySpecialType:
+                        PartnerBySubscription:
 
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
                     Types:
@@ -89,18 +88,14 @@ OpenPetra:
                         ManageAccounts:
                         ManageCostCentres:
                         DeleteLedger:
-                    GiftReceipting:
-                        MotivationGroup:
-                        MotivationDetails:
+                    Gift:
+                        Motivations:
         CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
                 Ledger:
                     LedgerSetup:
-                        CreateLedger: {PermissionsRequired="FINANCE-3"}
 
         SystemManager: {fa-icon=sliders, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
                 Users:
                         MaintainUsers:
                 Database:
-                    ImportExport:
-                        ExportAllData:
-                        RestoreDatabaseFromBackup:
+                        ImportAndExportDatabase:

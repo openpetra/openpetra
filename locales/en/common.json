@@ -13,24 +13,26 @@
         "about": "About",
         "contact": "Contact",
         "settings": "Settings",
+        "ledgerselect":"Selected Ledger:",
+        "ledgerselect_none":"No Ledger selected!",
         "change_password": "Change Password",
         "change_language": "Change Language",
         "logout": "Logout",
         "notimplementedyet": "not implemented yet",
-
-        "Subscription_label":"Subscriptions",
-        "MaintainPublications_label":"Configuration of Subscriptions",
         "Partner_label": "Partner",
         "Partners_label": "Partners",
-        "Maintain_label": "Maintain",
         "Types_label":"Categories",
-        "MaintainTypes_label":"Configuration of Categories",
+        "Maintain_label": "Maintain",
         "MaintainPartners_label": "Maintain Partners",
+        "MaintainPublications_label":"Configuration of Subscriptions",
+        "MaintainTypes_label":"Configuration of Categories",
         "CreatePartner_label": "Create Partner",
         "ImportExport_label": "Import/Export",
-        "Subscriptions_label": "Subscriptions",
+        "Subscription_label":"Subscriptions",
         "Reports_label": "Reports",
         "PartnerReports_label": "Reports",
+        "PartnerBySpecialType_label": "Partner with Categories",
+        "PartnerBySubscription_label": "Partner with Subscriptions",
         "Setup_label": "Setup",
         "Partner-related_label": "Configuration of Partner related data",
         "Subscription-related_label": "Configuration of Subscriptions",
@@ -39,10 +41,11 @@
         "GeneralLedger_label": "General Ledger",
         "Info_label": "Info",
         "GLBatchMaintenance_label": "Maintain GL Batches",
+        "GLBatches_label": "Maintain GL Batches and Transaction",
         "PeriodEnd_label": "Month and Year - Ends",
         "Gift_label": "Donations",
-        "GiftEntry_label": "Donation Entry",
         "GiftBatches_label": "Donation Batches",
+        "GiftEntry_label": "Donation Entry",
         "GiftReceipting_label": "Donation Receipting",
         "GL_label": "General Ledger",
         "CrossLedgerSetup_label": "Finance Setup",
@@ -53,7 +56,9 @@
         "Database_label": "Database",
         "ManageAccounts_label": "Manage Accounts",
         "FindPartners_label": "Find Partners",
-        "AccountDetail_label": "Account Detail"
+        "AccountDetail_label": "Account Detail",
+        "Motivations_label": "Maintain Motivation groups and details",
+        "switchledger":"Active Ledger is now:"
     },
     "forms": {
         "search":"Search",
@@ -65,10 +70,22 @@
         "delete": "Delete",
         "save": "Save",
         "saved": "Successfully saved",
+        "notsaved": "Saving failed",
+        "deleted": "Successfully deleted",
+        "notdeleted": "Deletion failed",
+        "report": "Show Report",
         "any": "any",
         "status": "Status",
         "name": "Name",
-        "description": "Description"
+        "PleaseWait": "Please wait",
+        "WaitInfo": "This might take a couple of seconds...",
+        "description": "Description",
+        "import": "Import"
+    },
+    "errors": {
+      "general": "An error has occurred",
+      "save": "Save failed",
+      "edit": "Changes could not be saved"
     },
     "Home": {
         "welcome": "Welcome to OpenPetra, brought to you by <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
@@ -102,6 +119,15 @@
         "locked": "Locked",
         "retired": "Disabled"
     },
+
+    "ImportAndExportDatabase": {
+        "caption": "Backup and Restore the database",
+        "exportalldata": "Download all data",
+        "restoredatabase": "Restore all data from a backup",
+        "ask_reset": "Do you really want to loose your current data and reset it with your backup?",
+        "uploadsuccess": "Database has been uploaded",
+        "uploaderror": "There has been a problem uploading the database"
+},
 
     "MaintainPartners": {
         "caption": "Maintain partners",
@@ -142,8 +168,71 @@
         "title":"Title"
     },
 
+    "GLBatches": {
+        "caption": "Maintain GL Batches and Transactions",
+        "edittitle":"Maintain GL Batches",
+        "ledgernumber":"Ledger Number",
+        "batchnumber":"Batch Number",
+        "batchname":"Batch Description",
+        "batch_status":"Status",
+        "period": "Period",
+        "year": "Year",
+        "batchcredit":"Total Credit",
+        "batchdebit":"Total Debit",
+        "batch_date": "Effective date",
+        "trans_number": "Transaction number",
+        "trans_date": "Transaction Date",
+        "trans_ref": "Reference",
+        "trans_debit_credit": "Debit or Credit",
+        "trans_amount_in_base": "Amount",
+        "trans_credit_in_base": "Credit amount",
+        "trans_debit_in_base": "Debit amount",
+        "trans_amount_in_intl": "Amount in international currency",
+        "trans_account_code": "Account Code",
+        "trans_ccenter_code": "Cost Centre Code",
+        "trans_narrative_code": "Description",
+        "DEBIT": "Debit",
+        "CREDIT": "Credit",
+        "POSTED": "Posted",
+        "UNPOSTED": "Unposted",
+        "CANCELLED": "Cancelled",
+        "import": "Import transactions",
+        "isPosted": "We cannot edit batches that have been posted already"
+    },
+
+    "GiftBatches": {
+      "edittitle":"Edit batch",
+      "caption":"Maintain donations",
+      "year": "Year",
+      "period": "Month",
+      "batch_status": "Batch Status",
+      "POSTED": "Posted",
+      "UNPOSTED": "Unposted",
+      "CANCELLED": "Cancelled",
+      "batchnumber":"Batchnumber",
+      "batchdate":"Batch booking date",
+      "batchname":"Batch description",
+      "batchstatus":"Batch status",
+      "bank_account_code": "Bank Account",
+      "bank_ccenter_code": "Bank Cost Centre",
+      "trans_number": "Transaction nummer",
+      "trans_date": "Entrydate",
+      "trans_ref": "Reference",
+      "trans_amount_in_base": "Amount",
+      "trans_account_code": "Account",
+      "trans_ccenter_code": "Cost centre",
+      "trans_narrative_code": "Comment",
+      "trans_donor_key":"Donor Key",
+      "trans_donor":"Donor Name",
+      "edittitle_trans":"Edit transaction",
+      "trans_description":"Transaction Comment",
+      "edittitle_trans_detail":"Edit transaction details",
+      "ledgernumber":"Ledgernumber"
+    },
+
     "MaintainPublications": {
-      "caption":"Edit subscriptions",
+      "edittitle":"Edit subscription",
+      "caption":"Maintain subscriptions",
       "addtitle":"Add subscription",
       "edittitle":"Edit subscription",
       "name":"Subscription Name",
@@ -158,16 +247,66 @@
 
     "MaintainTypes":{
       "caption":"Edit Categories",
-      "name":"Categorie name",
-      "edittitle":"Edit categorie",
-      "addtitle":"Add categorie",
-      "ask_delete":"Sure you wanna delete this categorie?",
-      "entry_name":"Categorie name",
+      "name":"Category name",
+      "edittitle":"Edit category",
+      "addtitle":"Add category",
+      "confirm_create":"Category has been created successfully",
+      "confirm_edit":"Category has been updated successfully",
+      "confirm_delete":"Category has been deleted successfully",
+      "ask_delete":"Sure you wanna delete this category?",
+      "entry_name":"Category name",
       "entry_status":"Active",
-      "entry_dis":"Categorie description"
+      "entry_dis":"Category description"
+    },
+
+    "LedgerSetup":{
+      "addtitle":"Create Ledger",
+      "edittitle":"Maintain Ledger",
+      "caption":"Ledger",
+      "name":"Ledger name",
+      "number":"Ledger number",
+      "entry_name":"ledger name",
+      "entry_date":"first day of financial year",
+      "entry_base_currency":"base currency",
+      "entry_intl_currency":"international currency",
+      "entry_account_periods_first":"start with current period",
+      "entry_account_periods":"number of accounting periods",
+      "entry_posting_periods":"number of forward posting periods",
+      "error_create":"Creation of the ledger failed",
+      "ask_delete":"Sure you wanna delete this ledger?",
+      "confirm_edit":"The Ledger has been updated",
+      "confirm_create":"The ledger has been created successfully",
+      "confirm_delete":"The Ledger has been deleted",
+      "entry_country":"country code"
+    },
+
+    "PartnerBySpecialType":{
+      "caption":"Partner with Categories",
+      "partnertypes":"Categories",
+      "activePartnersOnly":"Active Partners Only",
+      "onlyValidAddresses":"Only valid mailing addresses",
+      "excludeNoSolicitations":"Exclude people who don't want any solicitations"
     },
 
     "ChangeLanguage": {
         "caption": "Change the language"
+    },
+
+    "Motivations":{
+      "caption":"Edit motivations",
+      "edittitle":"Edit motivation",
+      "edittitle_moti":"Edit motivation detail",
+      "ask_delete_group": "Do you really want to delete this group with all its details?",
+      "ask_delete_detail": "Do you really want to delete this detail?",
+      "ledgernumber":"Ledgernumber",
+      "motivation_group_code":"Group Code",
+      "motivation_detail_code":"Detail Code",
+      "motivation_desc":"Description",
+      "motivation_account_c":"Account Code",
+      "motivation_center_c":"Cost Center",
+      "motivation_detail_code":"Detail Code"
+    },
+    "ImportPartners":{
+      "importUser":"Import partner from CSV file"
     }
 }

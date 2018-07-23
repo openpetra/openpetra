@@ -1,0 +1,223 @@
+<h2>{caption}</h2>
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_row" onclick="open_motivations(this, '{val_a_motivation_group_code_c}')" id="group{val_a_group_number_i}">
+		<div class="row">
+			<div class="col">{val_a_motivation_group_code_c}</div>
+			<div class="col">{val_a_motivation_group_description_c}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" onclick="edit_group('{val_a_motivation_group_code_c}')">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
+				<div class="row">
+					<div class="col">
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_motivation('{val_a_motivation_group_code_c}')">
+							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
+						</button>
+					</div>
+					<div class="col"></div>
+				</div>
+				<div class="row">
+					<div class="col"><b>
+						<div class ="row">
+							<div class="col">{motivation_group_code}</div>
+							<div class="col">{motivation_detail_code}</div>
+							<div class="col">{motivation_account_c}</div>
+							<div class="col">{motivation_center_c}</div>
+							<div class="col">{motivation_desc}</div>
+							<div class="col-1">
+								<button type="button" class="btn" onclick="$('.tpl_row .collapse').collapse('hide');">
+									<i class="fa fa-close"></i>
+								</button>
+							</div>
+						</div>
+					</div></b>
+				</div>
+				<div class="row">
+					<div class="col content_col"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_motivation">
+		<div class="row">
+			<div class="col">{val_a_motivation_group_code_c}</div>
+			<div class="col">{val_a_motivation_detail_code_c}</div>
+			<div class="col">{val_a_account_code_c}</div>
+			<div class="col">{val_a_cost_centre_code_c}</div>
+			<div class="col">{val_a_motivation_detail_desc_c}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_motivation('{val_a_motivation_group_code_c}', '{val_a_motivation_detail_code_c}')">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_group" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{ledgernumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_group_code}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_group_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_desc}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_group_description_c" value="">
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger" onclick="delete_group(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_edit_group(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_motivation" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_moti}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{ledgernumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_group_code}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_group_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_detail_code}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_motivation_detail_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_desc}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_motivation_detail_desc_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_account_c}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_center_c}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger" onclick="delete_motivation(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_edit_detail(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<button id="new" class="btn btn-primary" onclick="new_group()">{forms.new}</button>
+		</td>
+	</tr>
+</table>
+
+<div id="modal_space"></div>
+
+<div class="container" id="browse">
+	<div class="row">
+		<div class="col"><b>{motivation_group_code}</b></div>
+		<div class="col"><b>{motivation_desc}</b></div>
+	<div class="col-1"></div>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>
