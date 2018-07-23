@@ -1,0 +1,313 @@
+<h2>{caption}</h2>
+<link rel="stylesheet" href="/css/autocomplete.css">
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_row">
+		<div class="row">
+			<div class="col">{val_a_order_i}</div>
+			<div class="col">{val_a_transaction_amount_n}</div>
+			<div class="col">{val_a_description_c}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" onclick="edit_gift_trans({val_a_order_i})">
+					<i class="fa fa-eye"></i>
+				</button>
+			</div>
+		</div>
+		<div class="row" hidden>
+			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
+				<div class="row">
+					<div class="col"><b>
+						<div class ="row">
+							<div class="col">{trans_number}</div>
+							<div class="col">{trans_date}</div>
+							<div class="col">{trans_donor}</div>
+							<div class="col-1">
+								<button type="button" class="btn" onclick="$('.tpl_row .collapse').collapse('hide');">
+									<i class="fa fa-close"></i>
+								</button>
+							</div>
+						</div>
+					</div></b>
+				</div>
+				<div class="row">
+					<div class="col content_col"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_trans_detail_row">
+		<div class="row">
+			<div class="col">
+					<span>{val_a_detail_i}</span>
+			</div>
+			<div class="col">
+					<span>{val_a_transaction_amount_n}</span>
+			</div>
+			<div class="col">
+					<span>{val_a_motivation_group_code_c}</span>
+			</div>
+			<div class="col">
+					<span>{val_a_motivation_detail_code_c}</span>
+			</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" onclick="edit_gift_trans_detail({val_a_order_i}, {val_a_detail_i})">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_trans" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_trans}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{order_id}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_order_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{description}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_description_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{transaction_amount}</span>
+							</div>
+							<div class="col">
+								<input class="" type="number" name="a_transaction_amount_n" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{action}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_action_c" value="" >
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{donor_key}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="p_donor_key_n" value="" >
+							</div>
+						</div>
+
+						<!-- details -->
+
+						<div class="row">
+							<div class="col">
+								<h4>Detail</h4>
+								<button type="button" class="btn btn-primary" onclick="new_trans_detail()">
+									<span>{forms.new}</span>
+									<i class="fa fa-plus"></i>
+								</button>
+								<div class="row">
+									<div class="col">{detail_id}</div>
+									<div class="col">{transaction_amount}</div>
+									<div class="col">{motivation_group_code}</div>
+									<div class="col">{motivation_detail_code}</div>
+									<div class="col-1">
+									</div>
+								</div>
+								<div class="row">
+									<div class="col detail_col">
+
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+						<!-- /details -->
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger" onclick="delete_trans(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_edit_trans(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_trans_detail" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<input type="hidden" action value="create">
+				<div class="modal-header">
+					<h3>{edittitle_trans_detail}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{order_id}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_order_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{detail_id}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_detail_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{transaction_amount}</span>
+							</div>
+							<div class="col">
+								<input type="number" name="a_transaction_amount_n" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_group_code}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_motivation_group_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{motivation_detail_code}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_motivation_detail_code_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{description}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_narrative_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{account_code}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_account_code_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{cost_center}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_cost_centre_code_c" value="">
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger" onclick="delete_trans_detail(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_edit_trans_detail(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<button id="new" class="btn btn-primary" onclick="$('#import_file').click()">{forms.import}</button>
+			<input type="file" hidden id="import_file" onchange="import_file(self)">
+			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
+		</td>
+	</tr>
+</table>
+
+<div id="modal_space"></div>
+
+<div class="container collapse show" id="tabfilter">
+	<div class="container group-container">
+    <div class="row">
+      <div class="col">
+        <span>{bankimport_name}</span>
+      </div>
+      <div class="col">
+        <select class="dropdown" name="ABankNumber" id="bank_number_id">
+
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <span>{bankimport_status}</span>
+      </div>
+      <div class="col">
+        <select class="dropdown" name="AStatus">
+          <option value="matched">{matched}</option>
+          <option value="unmatched">{unmatched}</option>
+          <option value="gift">{gift}</option>
+          <option value="ignored">{ignored}</option>
+        </select>
+      </div>
+    </div>
+	</div>
+	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
+	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
+	<input type="hidden" name="AMaxRecords" value="25"/>
+</div>
+
+<div class="container" id="browse">
+	<div class="row">
+		<div class="col"><b>{order_id}</b></div>
+		<div class="col"><b>{transaction_amount}</b></div>
+		<div class="col"><b>{description}</b></div>
+	<div class="col-1"></div>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

@@ -59,7 +59,8 @@
         "AccountDetail_label": "Account Detail",
         "Motivations_label": "Maintain Motivation groups and details",
         "switchledger":"Active Ledger is now:",
-        "ImportPartners_label":"Partner importieren"
+        "BankImport_label":"Import donations from bank",
+        "ImportPartners_label":"Import partner"
     },
     "forms": {
         "search":"Search",
@@ -128,7 +129,7 @@
         "ask_reset": "Do you really want to loose your current data and reset it with your backup?",
         "uploadsuccess": "Database has been uploaded",
         "uploaderror": "There has been a problem uploading the database"
-},
+    },
 
     "MaintainPartners": {
         "caption": "Maintain partners",
@@ -307,6 +308,26 @@
       "motivation_center_c":"Cost Center",
       "motivation_detail_code":"Detail Code"
     },
+
+    "BankImport":{
+      "caption":"Bank Import",
+      "bankimport_name":"Name",
+      "bankimport_status":"status",
+      "matched":"Matched",
+      "unmatched":"Unmatched",
+      "gift":"Gift",
+      "ignored":"Ignored",
+      "edittitle_trans":"Edit transaction",
+      "order_id":"Order number",
+      "description":"Description",
+      "transaction_amount":"Transaction amount",
+      "action":"Action",
+      "donor_key":"Donor number",
+      "detail_id":"Detail number",
+      "motivation_group_code":"Motivation Group Code",
+      "motivation_detail_code":"Motivation Detail Code"
+    },
+
     "ImportPartners":{
       "importUser":"Import partner from CSV file"
     }
