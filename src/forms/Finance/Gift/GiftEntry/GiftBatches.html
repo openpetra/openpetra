@@ -102,10 +102,19 @@
 
 						<div class="row">
 							<div class="col">
+								<span>{batchstatus}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_batch_status_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
 								<span>{batchname}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_batch_description_c" value="">
+								<input type="text" name="a_batch_description_c" value="" size="30">
 							</div>
 						</div>
 
@@ -120,28 +129,23 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{batchstatus}</span>
+								<span>{bank_account_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_batch_status_c" value="" readonly>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{trans_account_code}</span>
-							</div>
-							<div class="col">
-								<input type="text" name="a_bank_account_code_c" value="" readonly>
+								<div class="autocomplete">
+									<input class="" type="text" name="a_account_name_c" key-name="a_bank_account_code_c" value="" oninput="autocomplete_a(this)">
+								</div>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col">
-								<span>{trans_ccenter_code}</span>
+								<span>{bank_ccenter_code}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_bank_cost_centre_c" value="" readonly>
+								<div class="autocomplete">
+									<input class="" type="text" name="a_cost_center_name_c" key-name="a_bank_cost_centre_c" value="" oninput="autocomplete_cc(this)">
+								</div>
 							</div>
 						</div>
 
@@ -149,7 +153,6 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_batch(this)">{forms.delete}</button>
 					<button class="btn btn-primary" onclick="save_edit_batch(this)">{forms.save}</button>
 					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
@@ -210,7 +213,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="donor_autocomplete(this)">
+									<input class="" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
 								</div>
 							</div>
 						</div>
@@ -318,7 +321,9 @@
 								<span>{trans_account_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_account_code_c" value="">
+									<div class="autocomplete">
+										<input class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
+									</div>
 							</div>
 						</div>
 
@@ -327,7 +332,9 @@
 								<span>{trans_ccenter_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_cost_centre_code_c" value="">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+								</div>
 							</div>
 						</div>
 
@@ -409,5 +416,7 @@
 </div>
 
 <script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

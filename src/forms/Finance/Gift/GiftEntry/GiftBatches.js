@@ -95,9 +95,8 @@ function new_batch(ledger_number) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateAGiftBatch', x).then(
 		function (data) {
 			parsed = JSON.parse(data.data.d);
-			// console.log(parsed);
-			// new_entry_data = parsed.result;
-			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), parsed['result']['AGiftBatch'][0] );
+			batch = parsed['result']['AGiftBatch'][0];
+			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 			$('#modal_space').html(p);
 			p.find('input[name=a_bank_account_code_c]').attr('readonly', false);
 			p.find('input[name=a_bank_cost_centre_c]').attr('readonly', false);
@@ -122,7 +121,6 @@ function new_trans(ledger_number, batch_number) {
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
 	$('#modal_space').html(p);
-	p.find('input').attr('readonly', false);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
@@ -139,7 +137,6 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
 	$('#modal_space').append(p);
 	$('.modal').modal('hide');
-	p.find('input').attr('readonly', false);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
@@ -157,6 +154,10 @@ function edit_batch(batch_id) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle', r).then(function (data) {
 		parsed = JSON.parse(data.data.d)
 		let batch = parsed.result.AGiftBatch[0];
+
+		batch['a_account_name_c'] = batch['a_bank_account_code_c'];
+		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
+
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 
 		$('#modal_space').html(tpl_m);
@@ -184,6 +185,8 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		if (searched == null) {
 			return alert('ERROR');
 		}
+
+		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 
@@ -263,8 +266,19 @@ function save_edit_trans(obj_modal) {
  	payload['action'] = mode;
 
 	console.log(payload);
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload);
-
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			display_list();
+		}
+		if (parsed.result == "false") {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+		}
+	});
 }
 
 function save_edit_trans_detail(obj_modal) {
@@ -275,16 +289,8 @@ function save_edit_trans_detail(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	console.log(payload);
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
 
-}
-
-
-function delete_batch(obj_modal) {
-	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainBatches', payload);
 }
 
 function delete_trans(obj_modal) {
@@ -297,24 +303,4 @@ function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
-}
-
-/////
-
-function donor_autocomplete(input_field) {
-	let x = {AInputSearch: $(input_field).val()}
-
-	// TODO: process api from server into a usable form for the autocomplete
-
-	api.post('serverIrgentwas.asmx/autocompletDonerKey', x).then(function (result) {
-		data = JSON.parse(result.data.d);
-
-		console.log(data);
-
-	}).catch(function () {
-		autocomplete( $(input_field),  ["Test","noch einer","reeee","LUUL","Meeem","HOI","Nope"] );
-
-
-	})
-
 }
