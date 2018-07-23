@@ -92,15 +92,15 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// save partner types
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
-        public static bool MaintainTypes(string action, Dictionary<string, string> data)
+        public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
 
             if (action == "create")
             {
                 PTypeRow row = MainDS.PType.NewRowTyped();
-                row.TypeCode = data["p_type_code_c"].ToUpper();
-                row.TypeDescription = data["p_type_description_c"];
+                row.TypeCode = ATypeCode.ToUpper();
+                row.TypeDescription = ATypeDescription;
                 MainDS.PType.Rows.Add(row);
                 try
                 {
@@ -117,9 +117,9 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
 
                 foreach (PTypeRow row in MainDS.PType.Rows)
                 {
-                    if (row.TypeCode == data["p_type_code_c"])
+                    if (row.TypeCode == ATypeCode)
                     {
-                        row.TypeDescription = data["p_type_description_c"];
+                        row.TypeDescription = ATypeDescription;
                     }
                 }
 
@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
 
                 foreach (PTypeRow row in MainDS.PType.Rows)
                 {
-                    if (row.TypeCode == data["p_type_code_c"])
+                    if (row.TypeCode == ATypeCode)
                     {
                         row.Delete();
                     }
@@ -189,15 +189,15 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// maintain publications
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
-        public static bool MaintainPublications(string action, Dictionary<string, string> data)
+        public static bool MaintainPublications(string action, string APublicationCode, string APublicationDescription)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
 
             if (action == "create")
             {
                 PPublicationRow row = MainDS.PPublication.NewRowTyped();
-                row.PublicationCode = data["p_publication_code_c"].ToUpper();
-                row.PublicationDescription = data["p_publication_description_c"];
+                row.PublicationCode = APublicationCode.ToUpper();
+                row.PublicationDescription = APublicationDescription;
                 row.FrequencyCode = "Annual";
                 MainDS.PPublication.Rows.Add(row);
                 try
@@ -215,9 +215,9 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
 
                 foreach (PPublicationRow row in MainDS.PPublication.Rows)
                 {
-                    if (row.PublicationCode == data["p_publication_code_c"])
+                    if (row.PublicationCode == APublicationCode)
                     {
-                        row.PublicationDescription = data["p_publication_description_c"];
+                        row.PublicationDescription = APublicationDescription;
                     }
                 }
 
@@ -236,7 +236,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
 
                 foreach (PPublicationRow row in MainDS.PPublication.Rows)
                 {
-                    if (row.PublicationCode == data["p_publication_code_c"])
+                    if (row.PublicationCode == APublicationCode)
                     {
                         row.Delete();
                     }

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -83,7 +83,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TVerificationResultCollection verificationResult;
             bool refreshRequired;
 
-            bool importSuccess = TGLTransactionWebConnector.ImportGLBatches(requestParams, strContent, out refreshRequired, out verificationResult);
+            bool importSuccess = TGLTransactionWebConnector.ImportGLBatches(
+                FLedgerNumber,
+                strContent,
+                ";",
+                "dd/MM/yyyy",
+                "European",
+                Environment.NewLine,
+                out refreshRequired, out verificationResult);
 
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(verificationResult))
             {

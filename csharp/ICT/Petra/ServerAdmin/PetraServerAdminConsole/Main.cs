@@ -32,7 +32,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.ServerAdmin.App.Core.RemoteObjects;
 
-namespace Ict.PetraServerAdminConsole
+namespace PetraServerAdminConsole
 {
     /// <summary>
     ///  Petra Server Admin Command Line Application

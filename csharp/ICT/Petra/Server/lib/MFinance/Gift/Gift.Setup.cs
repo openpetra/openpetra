@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,9 +51,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// returns all motivation groups and details for this ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="AMotivationGroupCode">if this is set, only the details of the specified motivation group will be returned</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
+        public static GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber, string AMotivationGroupCode)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -66,7 +67,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
                     AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                    AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+
+                    if (AMotivationGroupCode.Length > 0)
+                    {
+                        AMotivationDetailAccess.LoadViaAMotivationGroup(MainDS, ALedgerNumber, AMotivationGroupCode, Transaction);
+                    }
+                    else
+                    {
+                        AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    }
+
                     AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                 });
 
@@ -80,22 +90,180 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// save modified motivation groups and cost centres
+        /// maintain motivation group
         /// </summary>
-        /// <param name="AInspectDS"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS)
+        public static bool MaintainMotivationGroups(string action, Int32 ALedgerNumber,
+            String AMotivationGroupCode, String AMotivationGroupDescription, bool AGroupStatus,
+            out TVerificationResultCollection AVerificationResult)
         {
-            if (AInspectDS != null)
-            {
-                // TODO make sure new motivation groups are created. at the moment only 1 existing motivation group is supported
-                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+            AVerificationResult = new TVerificationResultCollection();
+            GiftBatchTDS MainDS = new GiftBatchTDS();
 
-                return TSubmitChangesResult.scrOK;
+            if (action == "create")
+            {
+                AMotivationGroupRow row = MainDS.AMotivationGroup.NewRowTyped();
+                row.LedgerNumber = ALedgerNumber;
+                row.MotivationGroupCode = AMotivationGroupCode.ToUpper();
+                row.MotivationGroupDescription = AMotivationGroupDescription;
+                row.GroupStatus = AGroupStatus;
+                MainDS.AMotivationGroup.Rows.Add(row);
+
+                try
+                {
+                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "update")
+            {
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+
+                foreach (AMotivationGroupRow row in MainDS.AMotivationGroup.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode)
+                    {
+                        row.MotivationGroupDescription = AMotivationGroupDescription;
+                        row.GroupStatus = AGroupStatus;
+                    }
+                }
+
+                try
+                {
+                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+
+                foreach (AMotivationGroupRow row in MainDS.AMotivationGroup.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                foreach (AMotivationDetailRow row in MainDS.AMotivationDetail.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
 
-            return TSubmitChangesResult.scrError;
+            return true;
+        }
+
+        /// <summary>
+        /// maintain motivation detail
+        /// </summary>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool MaintainMotivationDetails(string action, Int32 ALedgerNumber,
+            String AMotivationGroupCode, String AMotivationDetailCode,
+            String AMotivationDetailDesc,
+            String AAccountCode, String ACostCentreCode, bool AMotivationStatus,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            if (action == "create")
+            {
+                AMotivationDetailRow row = MainDS.AMotivationDetail.NewRowTyped();
+                row.LedgerNumber = ALedgerNumber;
+                row.MotivationGroupCode = AMotivationGroupCode.ToUpper();
+                row.MotivationDetailCode = AMotivationDetailCode.ToUpper();
+                row.MotivationDetailDesc = AMotivationDetailDesc;
+                row.AccountCode = AAccountCode;
+                row.CostCentreCode = ACostCentreCode;
+                row.MotivationStatus = AMotivationStatus;
+                MainDS.AMotivationDetail.Rows.Add(row);
+
+                try
+                {
+                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "update")
+            {
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+
+                foreach (AMotivationDetailRow row in MainDS.AMotivationDetail.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode
+                        && row.MotivationDetailCode == AMotivationDetailCode)
+                    {
+                        row.MotivationDetailDesc = AMotivationDetailDesc;
+                        row.AccountCode = AAccountCode;
+                        row.CostCentreCode = ACostCentreCode;
+                        row.MotivationStatus = AMotivationStatus;
+                    }
+                }
+
+                try
+                {
+                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+
+                foreach (AMotivationDetailRow row in MainDS.AMotivationDetail.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode
+                        && row.MotivationDetailCode == AMotivationDetailCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

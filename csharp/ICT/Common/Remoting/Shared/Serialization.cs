@@ -296,7 +296,7 @@ namespace Ict.Common.Remoting.Shared
 
             if (THttpBinarySerializer.isJSClient())
             {
-                if ((result.Length > 0) && (result[0] != '{') && (result[0] != '['))
+                if (!(o is Boolean) && (result.Length > 0) && (result[0] != '{') && (result[0] != '['))
                 {
                     result = "\"" + result + "\"";
                 }
@@ -381,6 +381,10 @@ namespace Ict.Common.Remoting.Shared
             else if (type == "System.String")
             {
                 return s;
+            }
+            else if (type == "System.Data.DataTable")
+            {
+                return DeserializeDataTable(s);
             }
             else if (type.EndsWith("Enum"))
             {
@@ -467,6 +471,36 @@ namespace Ict.Common.Remoting.Shared
                 }
 
                 result.Add(key, value);
+            }
+
+            return result;
+        }
+
+        /// Deserialize a DataTable
+        static public DataTable DeserializeDataTable(string s)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            Object[] list = (Object[])serializer.DeserializeObject(s);
+            DataTable result = new DataTable();
+                      
+            foreach (Dictionary<string,object> obj in list)
+            {
+                foreach (KeyValuePair<string, object> entry in obj)
+                {
+                    if (!result.Columns.Contains(entry.Key))
+                    {
+                        result.Columns.Add(entry.Key);
+                    }
+                }
+
+                DataRow row = result.NewRow();
+
+                foreach (KeyValuePair<string, object> entry in obj)
+                {
+                    row[entry.Key] = entry.Value;
+                }
+
+                result.Rows.Add(row);
             }
 
             return result;

@@ -40,7 +40,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Ict.PetraServerAdminConsole
+namespace PetraServerAdminConsole
 {
     class PetraServerAdminConsole
     {

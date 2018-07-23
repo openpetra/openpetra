@@ -132,5 +132,31 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return result;
         }
+
+        /// <summary>
+        /// Return all partners that match the given criteria. This is used for the partner find type ahead feature.
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool TypeAheadPartnerFind(
+            string ASearch, string APartnerClass, bool AActiveOnly,
+            short ALimit,
+            out DataTable AResult)
+        {
+            Int64 PartnerKey;
+            if (Int64.TryParse(ASearch, out PartnerKey))
+            {
+                PartnerFindTDS MainDS = FindPartners(PartnerKey, false);
+                if (MainDS.SearchResult.Rows.Count > 0)
+                {
+                    AResult = MainDS.SearchResult;
+                    return true;
+                }
+            }
+
+            int TotalRecords;
+            AResult = FindPartners(String.Empty, ASearch, String.Empty, APartnerClass, ALimit, out TotalRecords);
+
+            return AResult.Rows.Count > 0;
+        }
     }
 }

@@ -83,10 +83,12 @@ namespace GenerateGlue
 
                                 if (ParameterType == "Dictionary")
                                 {
-                                    ParameterType = ParameterType.Replace("Dictionary", "Dictionary[" +
-                                        p.TypeReference.GenericTypes[0].ToString() + "," +
-                                        p.TypeReference.GenericTypes[1].ToString() + "]");
-                                    ParameterType = ParameterType.Replace("System.", String.Empty);
+                                    // this does not seem to work with Mono 5.12 api browser
+                                    // ParameterType = ParameterType.Replace("Dictionary", "Dictionary[" +
+                                    //    p.TypeReference.GenericTypes[0].ToString() + "," +
+                                    //    p.TypeReference.GenericTypes[1].ToString() + "]");
+                                    // ParameterType = ParameterType.Replace("System.", String.Empty);
+                                    ParameterType = "String";
                                 }
 
                                 if (ParameterType.Contains("."))
@@ -204,13 +206,18 @@ namespace GenerateGlue
                 }
 
                 bool TypedDataSetParameter = parametertype.EndsWith("TDS");
+                bool DataTableParameter = parametertype.EndsWith("DataTable");
                 bool EnumParameter = parametertype.EndsWith("Enum");
+                bool DecimalParameter = parametertype.StartsWith("System.Decimal") && !ArrayParameter;
+                bool DateTimeParameter = parametertype.EndsWith("DateTime");
                 bool ListParameter = parametertype.StartsWith("List<");
-                bool DictParameter = parametertype.StartsWith("Dictionary<");
+                bool DictParameter = false && parametertype.StartsWith("Dictionary<");
                 bool BinaryParameter =
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
                       || (parametertype.StartsWith("System.Int16"))
                       || (parametertype.StartsWith("System.String")) || (parametertype.StartsWith("System.Boolean"))
+                      || DecimalParameter
+                      || DateTimeParameter
                       || EnumParameter
                       || ListParameter
                       || DictParameter);
@@ -228,7 +235,7 @@ namespace GenerateGlue
                         ParameterDefinition += ", ";
                     }
 
-                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter))
+                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter) && (!DateTimeParameter) && (!DecimalParameter))
                     {
                         ParameterDefinition += parametertype + " " + p.ParameterName;
                     }
@@ -278,6 +285,22 @@ namespace GenerateGlue
                         Environment.NewLine);
                 }
 
+                if (DateTimeParameter && ((ParameterModifiers.Out & p.ParamModifier) == 0))
+                {
+                    snippet.AddToCodelet(
+                        "LOCALVARIABLES",
+                        parametertype + " Local" + p.ParameterName + " = DateTime.Parse(" + p.ParameterName + ", null, System.Globalization.DateTimeStyles.RoundtripKind);" +
+                        Environment.NewLine);
+                }
+
+                if (DecimalParameter && ((ParameterModifiers.Out & p.ParamModifier) == 0))
+                {
+                    snippet.AddToCodelet(
+                        "LOCALVARIABLES",
+                        parametertype + " Local" + p.ParameterName + " = Decimal.Parse(" + p.ParameterName + ", System.Globalization.CultureInfo.InvariantCulture);" +
+                        Environment.NewLine);
+                }
+
                 if (TypedDataSetParameter && (ParameterModifiers.Out & p.ParamModifier) == 0)
                 {
                     snippet.AddToCodelet(
@@ -293,7 +316,7 @@ namespace GenerateGlue
                 }
                 else if ((ParameterModifiers.Ref & p.ParamModifier) != 0)
                 {
-                    if (TypedDataSetParameter)
+                    if (TypedDataSetParameter || DateTimeParameter || DecimalParameter)
                     {
                         ActualParameters += "ref Local" + p.ParameterName;
                     }
@@ -318,9 +341,13 @@ namespace GenerateGlue
                 }
                 else
                 {
-                    if (TypedDataSetParameter)
+                    if (TypedDataSetParameter || DateTimeParameter || DecimalParameter)
                     {
                         ActualParameters += "Local" + p.ParameterName;
+                    }
+                    else if (DataTableParameter)
+                    {
+                        ActualParameters += "(" + parametertype + ")THttpBinarySerializer.DeserializeObject(" + p.ParameterName + ",\"System.Data.DataTable\")";
                     }
                     else if (BinaryParameter
                         || ArrayParameter)

@@ -1457,7 +1457,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
             // The following guard assert at present can only work out results when connected to PostgreSQL as at present the required Method
             // TDataBase.GetNumberOfDBConnections() only is able to work with PostgreSQL...
-            if (FDBType == TDBType.PostgreSQL)
+            if (false && FDBType == TDBType.PostgreSQL)
             {
                 // Guard Assert: PostgreSQL must report no more open DB Connections than before we started opening and closing DB
                 // Connections in this Method!

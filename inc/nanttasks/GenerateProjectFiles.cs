@@ -187,19 +187,23 @@ namespace Ict.Tools.NAntTasks
 
         private string CalculateSrcPathForProject(string AProjectName)
         {
-            return FCodeRootDir + Path.DirectorySeparatorChar +
+            String ProjectPath = FCodeRootDir + Path.DirectorySeparatorChar +
                 AProjectName.
                 Replace("Ict.Tools.SQLiteConsole", "Ict.Petra.Tools.SQLiteConsole").
                 Replace("Ict.Petra.Tools.MSysMan.YmlGzImportExport", "Ict.Petra.Tools.YmlGzImportExport").
                 Replace("Ict.Petra.Tools.MFinance.Server.GDPdUExport", "Ict.Petra.Tools.FinanceGDPdUExport").
                 Replace("Ict.Tools.", "ICT.BuildTools.").
-                Replace("Ict.PetraServerAdminConsole", "Ict.Petra.ServerAdmin.PetraServerAdminConsole").
+                // we need to replace PetraServerAdminConsole properly, with and without trailing Ict.Petra.ServerAdmin
+                Replace("Ict.Petra.ServerAdmin.PetraServerAdminConsole", "PetraServerAdminConsole").
+                Replace("PetraServerAdminConsole", "Ict.Petra.ServerAdmin.PetraServerAdminConsole").
                 Replace("Ict.Testing.I18N_GNU.Gettext", "Ict.Testing.exe.I18N_GNU_Gettext").
                 Replace("Ict.Testing.I18N", "Ict.Testing.exe.I18N").
                 Replace("Ict.Testing.BrowserTests.OnlineRegistration", "Ict.Testing.exe.BrowserTests.OnlineRegistration").
                 Replace("Ict.", "ICT.").
                 Replace("Ict.", "ICT.").
                 Replace('.', Path.DirectorySeparatorChar);
+            // Console.WriteLine (AProjectName + " " + ProjectPath);
+            return ProjectPath;
         }
 
         private Dictionary <string, string>FProjectGUIDs;
@@ -272,10 +276,10 @@ namespace Ict.Tools.NAntTasks
                 {
                     WriteSolutionFile(FTemplateDir, ide.Trim(),
                         "OpenPetra.sln",
-                        "Ict.Common,Ict.Petra,Ict.Tools,Ict.Testing");
+                        "Ict.Common,Ict.Petra,Ict.Tools,Ict.Testing,PetraServerAdminConsole");
                     WriteSolutionFile(FTemplateDir, ide.Trim(),
                         "OpenPetra.Server.sln",
-                        "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.PetraServerConsole,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Server");
+                        "Ict.Common,Ict.Petra.Shared,Ict.Petra.Server,Ict.Petra.Plugins.*.data,Ict.Petra.Plugins.*.Server");
                     WriteSolutionFile(FTemplateDir, ide.Trim(),
                         "OpenPetra.YmlGzImportExport.sln",
                         "Ict.Petra.Tools.YmlGzImportExport");

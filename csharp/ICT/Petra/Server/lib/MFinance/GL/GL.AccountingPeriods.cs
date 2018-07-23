@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out DateTime AEndDateLastForwardingPeriod)
         {
             //Call this rather than duplicate code
-            return TFinanceServerLookups.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
+            return TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
         }
 
         /// <summary>

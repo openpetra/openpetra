@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            return TGLPosting.CreateABatch(ALedgerNumber, true);
+            return TGLPosting.CreateABatch(ALedgerNumber, true, true);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction)
         {
-            return TGLPosting.CreateABatch(ALedgerNumber, ACommitTransaction);
+            return TGLPosting.CreateABatch(ALedgerNumber, true, ACommitTransaction);
         }
 
         /// <summary>
@@ -91,11 +91,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// also get the ledger for the base currency etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AYear">if -1, the year will be ignored</param>
-        /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
-        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
+        /// <param name="ABatchYear">if -1, the year will be ignored</param>
+        /// <param name="ABatchPeriod">if ABatchYear is -1 or period is -1, the period will be ignored.
+        /// if ABatchPeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
+        /// <param name="ABatchStatus">if empty all batches will be returned, otherwise only POSTED, CANCELLED or UNPOSTED</param>
+        /// <param name="AMaxRecords"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int AYear, int APeriod)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int ABatchYear, int ABatchPeriod, string ABatchStatus, int AMaxRecords)
         {
             #region Validate Arguments
 
@@ -135,14 +137,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                         string FilterByPeriod = string.Empty;
 
-                        if (AYear > -1)
+                        if (ABatchYear > -1)
                         {
                             FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
                                 ABatchTable.GetTableDBName(),
                                 ABatchTable.GetBatchYearDBName(),
-                                AYear);
+                                ABatchYear);
 
-                            if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+                            if ((ABatchPeriod == 0) && (ABatchYear == MainDS.ALedger[0].CurrentFinancialYear))
                             {
                                 //Return current and forwarding periods
                                 FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
@@ -150,13 +152,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     ABatchTable.GetBatchPeriodDBName(),
                                     MainDS.ALedger[0].CurrentPeriod);
                             }
-                            else if (APeriod > 0)
+                            else if (ABatchPeriod > 0)
                             {
                                 //Return only specified period
                                 FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
                                     ABatchTable.GetTableDBName(),
                                     ABatchTable.GetBatchPeriodDBName(),
-                                    APeriod);
+                                    ABatchPeriod);
                             }
 
                             //else
@@ -165,13 +167,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             //}
                         }
 
+                        string FilterByBatchStatus = string.Empty;
+
+                        if (ABatchStatus == MFinanceConstants.BATCH_CANCELLED ||
+                            ABatchStatus == MFinanceConstants.BATCH_POSTED ||
+                            ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                        {
+                            FilterByBatchStatus += String.Format(" AND PUB_{0}.{1} = '{2}'",
+                                ABatchTable.GetTableDBName(),
+                                ABatchTable.GetBatchStatusDBName(),
+                                ABatchStatus);
+                        }
+
+                        // TODO: limit by AMaxRecords
+
                         string SelectClause =
                             String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
                                 ABatchTable.GetTableDBName(),
                                 ABatchTable.GetLedgerNumberDBName(),
                                 ALedgerNumber);
-
-                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
+                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
                             MainDS.ABatch.TableName, Transaction);
                     });
 
@@ -3086,6 +3101,201 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// this will save and delete a batch
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainBatches(
+            string action,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            string ABatchDescription,
+            DateTime ADateEffective,
+            string ABatchStatus,
+            Decimal ABatchCreditTotal,
+            Decimal ABatchDebitTotal,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            GLBatchTDS MainDS;
+
+            AVerificationResult = new TVerificationResultCollection();
+
+            if ((action == "create") || (action == "edit"))
+            {
+                MainDS = LoadABatch(ALedgerNumber, ABatchNumber);
+
+                if (MainDS.ABatch.Rows.Count != 1)
+                {
+                    return false;
+                }
+
+                ABatchRow row = MainDS.ABatch[0];
+
+                row.BatchDescription = ABatchDescription;
+                row.DateEffective = ADateEffective;
+                row.BatchStatus = ABatchStatus;
+                row.BatchCreditTotal = ABatchCreditTotal;
+                row.BatchDebitTotal = ABatchDebitTotal;
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadABatch(ALedgerNumber, ABatchNumber);
+
+                if (MainDS.ABatch.Rows.Count != 1)
+                {
+                    return false;
+                }
+
+                MainDS.ABatch[0].Delete();
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            return true;
+        }
+
+
+        /// <summary>
+        /// this will create, save and delete a transaction
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainTransactions(
+            string action,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            Int32 ATransactionNumber,
+            string ANarrative,
+            string AReference,
+            DateTime ATransactionDate,
+            Decimal AAmountInBaseCurrency,
+            Decimal AAmountInIntlCurrency,
+            bool ADebitCreditIndicator,
+            string AAccountCode,
+            string ACostCentreCode,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            GLBatchTDS MainDS;
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+                ATransactionRow row = MainDS.ATransaction.NewRowTyped();
+                row.LedgerNumber = ALedgerNumber;
+                row.BatchNumber = ABatchNumber;
+                row.JournalNumber = AJournalNumber;
+                row.TransactionNumber = ATransactionNumber;
+                row.Narrative = ANarrative;
+                row.Reference = AReference;
+                row.TransactionDate = ATransactionDate;
+                row.AmountInBaseCurrency = AAmountInBaseCurrency;
+                row.AmountInIntlCurrency = AAmountInIntlCurrency;
+                row.DebitCreditIndicator = ADebitCreditIndicator;
+                row.AccountCode = AAccountCode.ToUpper();
+                row.CostCentreCode = ACostCentreCode.ToUpper();
+                MainDS.ATransaction.Rows.Add(row);
+
+                // TODO update journal last transaction number???
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "edit")
+            {
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+
+                foreach (ATransactionRow row in MainDS.ATransaction.Rows)
+                {
+                    if ((row.JournalNumber == AJournalNumber) && (row.TransactionNumber == ATransactionNumber))
+                    {
+                        row.Narrative = ANarrative;
+                        row.Reference = AReference;
+                        row.TransactionDate = ATransactionDate;
+                        row.AmountInBaseCurrency = AAmountInBaseCurrency;
+                        row.AmountInIntlCurrency = AAmountInIntlCurrency;
+                        row.DebitCreditIndicator = ADebitCreditIndicator;
+                        row.AccountCode = AAccountCode.ToUpper();
+                        row.CostCentreCode = ACostCentreCode.ToUpper();
+                    }
+                }
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+
+                foreach (ATransactionRow row in MainDS.ATransaction.Rows)
+                {
+                    if ((row.JournalNumber == AJournalNumber) && (row.TransactionNumber == ATransactionNumber))
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Delete transactions and attributes and renumber accordingly
         /// </summary>
         /// <param name="AMainDS"></param>
@@ -5089,22 +5299,30 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately
         /// </summary>
-        /// <param name="requestParams">Hashtable containing the given params </param>
-        /// <param name="importString">Big parts of the import file as a simple String</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AImportString">the import file as a simple String</param>
+        /// <param name="ADelimiter"></param>
+        /// <param name="ADateFormatString">dmy or mdy</param>
+        /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ANewLine"></param>
         /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLBatches(
-            Hashtable requestParams,
-            String importString,
+            Int32 ALedgerNumber,
+            String AImportString,
+            string ADelimiter,
+            string ADateFormatString,
+            string ANumberFormat,
+            string ANewLine,
             out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting Importing = new TGLImporting();
 
-            return Importing.ImportGLBatches(requestParams, importString, out AClientRefreshRequired, out AMessages);
+            return Importing.ImportGLBatches(ALedgerNumber, AImportString, ADelimiter, ADateFormatString, ANumberFormat, ANewLine, out AClientRefreshRequired, out AMessages);
         }
 
         /// <summary>
@@ -5112,32 +5330,39 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately
         /// </summary>
-        /// <param name="ARequestParams"></param>
-        /// <param name="AImportString"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="ADelimiter"></param>
+        /// <param name="ADateFormatString">dmy or mdy</param>
+        /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ANewLine"></param>
         /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages"></param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLTransactions(
-            Hashtable ARequestParams,
-            String AImportString,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
+            String AImportString,
+            string ADelimiter,
+            string ADateFormatString,
+            string ANumberFormat,
+            string ANewLine,
             out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting Importing = new TGLImporting();
 
-            return Importing.ImportGLTransactions(ARequestParams,
-                AImportString,
+            return Importing.ImportGLTransactions(
                 ALedgerNumber,
                 ABatchNumber,
                 AJournalNumber,
+                AImportString,
+                ADelimiter, ADateFormatString, ANumberFormat, ANewLine,
                 out AClientRefreshRequired,
                 out AMessages);
         }

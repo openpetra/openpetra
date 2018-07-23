@@ -870,6 +870,25 @@ namespace Ict.Common.Printing
             return ReturnValue;
         }
 
+        /// <summary>
+        /// copies the generated report into a single string seperated with line breaks.
+        /// </summary>
+        public String GetString()
+        {
+            String rightTrim;
+
+            FinishText();
+            String ReturnValue = String.Empty;
+
+            foreach (String line in FText)
+            {
+                rightTrim = line.Substring(0, line.Trim().Length + line.IndexOf(line.Trim()));
+                ReturnValue += rightTrim + "\n";
+            }
+
+            return ReturnValue;
+        }
+
         #endregion
     }
 }

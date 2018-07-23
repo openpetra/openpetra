@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -387,11 +387,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 decimal nonDeductibleAmount = 0;
                 string currency = rowGifts["Currency"].ToString();
                 string commentOne = rowGifts["CommentOne"].ToString();
-                string commentOneType = rowGifts["CommentOneType"].ToString();
                 string commentTwo = rowGifts["CommentTwo"].ToString();
-                string commentTwoType = rowGifts["CommentTwoType"].ToString();
                 string commentThree = rowGifts["CommentThree"].ToString();
-                string commentThreeType = rowGifts["CommentThreeType"].ToString();
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
                 string fieldName = rowGifts["FieldName"].ToString();
@@ -569,7 +566,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ref string AMinorUnitSingular,
             ref string AMinorUnitPlural)
         {
-            ACurrencyLanguageRow CurrencyLanguage = TFinanceServerLookups.GetCurrencyLanguage(ACurrency);
+            ACurrencyLanguageRow CurrencyLanguage = TFinanceServerLookupWebConnector.GetCurrencyLanguage(ACurrency);
 
             if (CurrencyLanguage != null)
             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -47,7 +48,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
     /// sub-namespace.
     ///
     /// </summary>
-    public class TFinanceServerLookups
+    public class TFinanceServerLookupWebConnector
     {
         /// <summary>
         ///
@@ -370,5 +371,90 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return ReturnValue;
         }
-    }
+ 
+        /// <summary>
+        /// Returns a list of possible candidates for the account code
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool TypeAheadAccountCode(Int32 ALedgerNumber, string ASearch,
+                bool APostingOnly,
+                bool AExcludePosting,
+                bool AActiveOnly,
+                bool ABankAccountOnly,
+                Int32 ALimit,
+                out DataTable AResult)
+        {
+            TDBTransaction Transaction = null;
+            DataTable result = new DataTable();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string SqlStmt = TDataBase.ReadSqlFile("Finance.TypeAheadAccountCode.sql");
+
+                    OdbcParameter[] parameters = new OdbcParameter[5];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("AccountCode", OdbcType.VarChar);
+                    parameters[1].Value = "%" + ASearch + "%";
+                    parameters[2] = new OdbcParameter("ShortDesc", OdbcType.VarChar);
+                    parameters[2].Value = "%" + ASearch + "%";
+                    parameters[3] = new OdbcParameter("LongDesc", OdbcType.VarChar);
+                    parameters[3].Value = "%" + ASearch + "%";
+                    parameters[4] = new OdbcParameter("PostingOnly", OdbcType.TinyInt);
+                    parameters[4].Value = APostingOnly;
+
+                    SqlStmt += " LIMIT " + ALimit.ToString();
+
+                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                });
+
+            AResult = result;
+            return result.Rows.Count > 0;
+        }
+
+        /// <summary>
+        /// Returns a list of possible candidates for the cost centre code
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool TypeAheadCostCentreCode(Int32 ALedgerNumber, string ASearch,
+                bool APostingOnly,
+                bool AExcludePosting,
+                bool AActiveOnly,
+                bool ALocalOnly,
+                bool AIndicateInactive,
+                Int32 ALimit,
+                out DataTable AResult)
+        {
+            TDBTransaction Transaction = null;
+            DataTable result = new DataTable();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string SqlStmt = TDataBase.ReadSqlFile("Finance.TypeAheadCostCentreCode.sql");
+
+                    OdbcParameter[] parameters = new OdbcParameter[4];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("CostCentreCode", OdbcType.VarChar);
+                    parameters[1].Value = "%" + ASearch + "%";
+                    parameters[2] = new OdbcParameter("CostCentreName", OdbcType.VarChar);
+                    parameters[2].Value = "%" + ASearch + "%";
+                    parameters[3] = new OdbcParameter("PostingOnly", OdbcType.TinyInt);
+                    parameters[3].Value = APostingOnly;
+
+                    SqlStmt += " LIMIT " + ALimit.ToString();
+
+                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                });
+
+            AResult = result;
+            return result.Rows.Count > 0;
+        }
+   }
 }

@@ -326,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void InitBatchAndJournal(decimal AExchangeRate, string ACurrencyCode)
         {
-            F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum);
+            F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum, false, true);
             F_batch = F_GLDataset.ABatch[0];
             F_batch.BatchDescription = Catalog.GetString("Period end revaluations");
 
