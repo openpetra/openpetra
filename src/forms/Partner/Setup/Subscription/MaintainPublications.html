@@ -7,12 +7,16 @@
 
 		<div class="row">
 			<div class="col">{val_p_publication_code_c}</div>
+			<div class="col-1">
+				<button class="btn btn-primary" onclick="open_edit('{val_p_publication_code_c}')"><i class="fa fa-wrench"></i></button>
+			</div>
 		</div>
 		<div class="row">
 			<div class="col">
 				<div class="collapse_col"></div>
 			</div>
 		</div>
+
 
 	</div>
 
@@ -28,9 +32,6 @@
 				<div class="col">{entry_status}</div><div class="col">{val_p_valid_publication_l}</div>
 			</div>
 		</div>
-		<button class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
-		<button class="btn btn-primary" onclick="open_edit('{val_p_publication_code_c}')">{forms.edit}</button>
-
 	</div>
 
 	<div class="tpl_check">

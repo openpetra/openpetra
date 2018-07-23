@@ -58,7 +58,8 @@
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
         "Motivations_label": "Maintain Motivation groups and details",
-        "switchledger":"Active Ledger is now:"
+        "switchledger":"Active Ledger is now:",
+        "ImportPartners_label":"Partner importieren"
     },
     "forms": {
         "search":"Search",

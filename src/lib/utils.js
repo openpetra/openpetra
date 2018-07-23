@@ -26,7 +26,7 @@
 function display_message(content, style_arguments) {
   var display_space = $('#global_message_space');
   if (display_space.length == 0) {
-    let x = $('<div id ="global_message_space" class="text-center" style="position:fixed;top:10vh;width:100%;padding:20px;z-index:5000;">');
+    let x = $('<div id ="global_message_space" class="text-center" style="position:fixed;top:10vh;width:100%;z-index:5000;">');
     $('body').append(x);
   }
   var message = $('<div class="text-center msg" style="width:50%;margin:5px auto;cursor:pointer;" onclick="$(this).closest(\'.msg\').remove()">');

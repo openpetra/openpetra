@@ -82,7 +82,7 @@ function save_new() {
 
     let se = $('#modal_space .modal').modal('show');
     let request = translate_to_server(extract_data(raw));
-    
+
     request['action'] = 'create';
 
     api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
@@ -100,7 +100,7 @@ function save_entry(update) {
   let request = translate_to_server(extract_data(modalspace));
 
   request['action'] = 'update';
-  
+
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
       display_message(i18next.t('MaintainTypes.confirm_edit'), 'success');

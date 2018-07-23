@@ -58,7 +58,8 @@
         "FindPartners_label": "Partner suchen",
         "AccountDetail_label": "Bericht über die Konten",
         "Motivations_label": "Verwendungszwecke verwalten",
-        "switchledger":"Aktiver Ledger wurde geändert auf:"
+        "switchledger":"Aktiver Ledger wurde geändert auf:",
+        "ImportPartners_label":"Import partner"
     },
     "forms": {
         "search":"Suchen",
