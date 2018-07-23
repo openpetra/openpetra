@@ -3476,6 +3476,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool IsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
+            // get the donor name
+            foreach (GiftBatchTDSAGiftRow giftRow in MainDS.AGift.Rows)
+            {
+                PPartnerRow donorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
+                giftRow.DonorName = donorRow.PartnerShortName;
+            }
+
             // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
@@ -3510,7 +3517,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 #endregion Validate Data 3
 
-                giftRow.DonorName = donorRow.PartnerShortName;
                 giftDetail.DonorKey = giftRow.DonorKey;
                 giftDetail.DonorName = donorRow.PartnerShortName;
                 giftDetail.DonorClass = donorRow.PartnerClass;
