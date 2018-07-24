@@ -271,7 +271,7 @@ class Navigation {
 }
 
 $('document').ready(function () {
-	if (window.localStorage.getItem('username') == null) {
+	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
 		return; // User is not logged in
 	}
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
