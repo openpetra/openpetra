@@ -82,7 +82,9 @@
         "PleaseWait": "Please wait",
         "WaitInfo": "This might take a couple of seconds...",
         "description": "Description",
-        "import": "Import"
+        "import": "Import",
+        "save_preset": "Save preset",
+        "preset": "Preset"
     },
     "errors": {
       "general": "An error has occurred",

@@ -127,3 +127,14 @@ function replace_data(replace_obj, update_data, prev_table) {
   }
   return replace_obj;
 }
+
+// used to save presets in localStorage
+function save_preset(field_name, field_values) {
+
+  if (field_values == null) {
+    field_values = extract_data( $('#tabfilter') );
+  }
+
+  window.localStorage.setItem(field_name, JSON.stringify(field_values) );
+
+}

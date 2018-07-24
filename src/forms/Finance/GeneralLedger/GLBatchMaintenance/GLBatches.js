@@ -23,14 +23,23 @@
 
 $('document').ready(function () {
 	// TODO set proper default values for the filter
-	$('#tabfilter input[name="ABatchPeriod"]').val(0);
-	$('#tabfilter input[name="ABatchYear"]').val(0);
-	display_list();
+	// $('#tabfilter input[name="ABatchPeriod"]').val(44);
+	// $('#tabfilter input[name="ABatchYear"]').val(0);
+	display_list('preset');
 });
 
-function display_list() {
+function display_list(source) {
+	if (source == null) {
+		source = "filter";
+	}
 	// x is search
-	let x = extract_data($('#tabfilter'));
+	if (source == "filter") {
+		var x = extract_data( $('#tabfilter') );
+	} else if (source == "preset") {
+		var x = window.localStorage.getItem('GLBatches');
+		x = JSON.parse(x);
+		format_tpl( $('#tabfilter'), x );
+	}
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch', x).then(function (data) {

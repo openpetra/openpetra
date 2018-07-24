@@ -23,14 +23,28 @@
 
 $('document').ready(function () {
 	// TODO set proper default values for the filter
-	$('#tabfilter input[name="APeriod"]').val(0);
-	$('#tabfilter input[name="AYear"]').val(0);
+	// $('#tabfilter input[name="APeriod"]').val(0);
+	// $('#tabfilter input[name="AYear"]').val(0);
 	display_list();
 });
 
-function display_list() {
+function display_list(source) {
+	if (source == null) {
+		source = "preset";
+	}
+	if (source == 'preset') {
+		var x = window.localStorage.getItem('GiftBatches');
+		if (x == null) {
+			source = "filter";
+		} else {
+			x = JSON.parse(x);
+			format_tpl($('#tabfilter'), x);
+		}
+	}
 	// x is search
-	let x = extract_data($('#tabfilter'));
+	if (source == 'filter') {
+		var x = extract_data($('#tabfilter'));
+	}
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {

@@ -338,8 +338,9 @@
 	</div>
 	</div>
 
+	<button type="button" class="btn" onclick="save_preset('GLBatches')">{forms.save_preset}</button>
 	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
-	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
+	<button type="button" class="btn btn-primary" onclick="display_list('filter');$('#tabfilter').collapse('toggle')">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
 </div>
 
