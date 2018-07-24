@@ -25,7 +25,9 @@ $('document').ready(function () {
 	// TODO set proper default values for the filter
 	// $('#tabfilter input[name="ABatchPeriod"]').val(44);
 	// $('#tabfilter input[name="ABatchYear"]').val(0);
+	get_avariable_years();
 	display_list('preset');
+
 });
 
 function display_list(source) {
@@ -294,6 +296,20 @@ function importTransactions(batch_id, csv_file) {
 			for (msg of parsed.AVerificationResult) {
 				display_message(i18next.t(msg.code), "fail");
 			}
+		}
+	})
+}
+
+function get_avariable_years() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+	};
+	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailableGLYears', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		r = data.result;
+		for (year of r) {
+			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
+			$('#tabfilter [name=ABatchYear]').append(y);
 		}
 	})
 }
