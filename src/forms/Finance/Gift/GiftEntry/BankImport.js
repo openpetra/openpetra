@@ -31,8 +31,9 @@ function display_dropdownlist() {
 	let x = {};
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
-	api.post('serverMFinance.asmx/TransactionWebConnector_GetBankStatements', x).catch(function (data) {
-		// data = JSON.parse(data.data.d);
+	api.post('serverMFinance.asmx/TBankImportWebConnector_GetImportedBankStatements', x).catch(function (data) {
+		data = JSON.parse(data.data.d);
+console.log(data);
 		data = [
 			{a_statement_key_i: "3", a_statement_name_c: "März"},
 			{a_statement_key_i: "4", a_statement_name_c: "April"},
@@ -41,9 +42,9 @@ function display_dropdownlist() {
 			{a_statement_key_i: "7", a_statement_name_c: "Juli"}
 		]
 		// on reload, clear content
-    let field = $('#bank_number_id');
+		let field = $('#bank_number_id');
 		for (item of data) {
-      field.append( $('<option value="'+item.a_statement_key_i+'">'+item.a_statement_name_c+'</option>') );
+			field.append( $('<option value="'+item.a_statement_key_i+'">'+item.a_statement_name_c+'</option>') );
 		}
 	})
 }
@@ -53,7 +54,7 @@ function display_list() {
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	x['AStatementKey'] = $('#bank_number_id').val();
 
-	api.post('serverMFinance.asmx/TransactionWebConnector_LoadStatementTransactions', x).catch(function (data) {
+	api.post('serverMFinance.asmx/TBankImportWebConnector_GetBankStatementTransactionsAndMatches', x).catch(function (data) {
 		// data = JSON.parse(data.data.d);
 		data = [
 						{'a_statement_key_i': 1, 'a_order_i' : 0, 'a_description_c': 'Spende von TP für Projekt Rettet die Pinguine', 'a_transaction_amount_n': 50},
@@ -257,12 +258,19 @@ function import_file(self) {
 	var reader = new FileReader();
 
 	reader.onload = function (event) {
-		p = {
-			'ACSVPartnerData': event.target.result,
-			'ADateFormat': "dmy",
-			"ASeparator": ";"};
 
-		api.post('serverMFinance.asmx/TImportExportWebConnector_ImportFromCSVFile', p)
+		p = {
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'ABankAccountCode': '6200', // TODO
+			'ABankStatementFilename': filename,
+			'ACSVContent': event.target.result,
+			'ASeparator': ';',
+			'ADateFormat': "dmy",
+			"ANumberFormat": "European",
+			"AColumnMeaning": "unused,DateEffective,Description,Amount,Currency" // TODO
+			};
+
+		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCSVFile', p)
 		.then(function (result) {
 			result = JSON.parse(result.data.d);
 			result = result.result;
