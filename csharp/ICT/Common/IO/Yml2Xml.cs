@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -314,6 +314,18 @@ namespace Ict.Common.IO
             WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement, new SortedList <string, string>());
 
             return PackTools.ZipString(sb.ToString());
+        }
+
+        /// <summary>
+        /// format the XML into YML and return as string
+        /// </summary>
+        public static string Xml2Yml(XmlDocument ADoc)
+        {
+            StringBuilder sb = new StringBuilder(1024 * 1024 * 5);
+
+            WriteXmlNode2Yml(sb, 0, ADoc.DocumentElement, new SortedList <string, string>());
+
+            return sb.ToString();
         }
 
         /// <summary>

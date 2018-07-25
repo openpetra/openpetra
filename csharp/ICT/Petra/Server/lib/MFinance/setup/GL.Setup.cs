@@ -2740,11 +2740,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// return a simple XMLDocument (encoded into a string) with the account hierarchy and account details;
         /// root account can be calculated (find which account is reporting nowhere)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AAccountHierarchyName"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName)
+        public static bool ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName, out string AHierarchyXml)
         {
             #region Validate Arguments
 
@@ -2801,18 +2799,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             // XmlDocument is not serializable, therefore print it to string and return the string
-            return TXMLParser.XmlToString(xmlDoc);
+            AHierarchyXml = TXMLParser.XmlToString(xmlDoc);
+
+            return true;
         }
 
-        /// export account hierarchy as base64 encoded yml.gz file
+        /// export account hierarchy as yml string
         [RequireModulePermission("FINANCE-1")]
-        public static string ExportAccountHierarchyYmlGz(Int32 ALedgerNumber, string AAccountHierarchyName)
+        public static bool ExportAccountHierarchyYml(Int32 ALedgerNumber, string AAccountHierarchyName, out string AHierarchyYml)
         {
             XmlDocument doc = new XmlDocument();
 
-            doc.LoadXml(ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName));
+            string docstr;
 
-            return TYml2Xml.Xml2YmlGz(doc);
+            ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName, out docstr);
+
+            doc.LoadXml(docstr);
+
+            AHierarchyYml = TYml2Xml.Xml2Yml(doc);
+
+            return true;
         }
 
         /// <summary>
@@ -2922,6 +2928,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // XmlDocument is not serializable, therefore print it to string and return the string
             return TXMLParser.XmlToString(doc);
+        }
+
+        /// export cost centre hierarchy as yml string
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ExportCostCentreHierarchyYml(Int32 ALedgerNumber, out string AHierarchyYml)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            string docstr = ExportCostCentreHierarchy(ALedgerNumber);
+
+            doc.LoadXml(docstr);
+
+            AHierarchyYml = TYml2Xml.Xml2Yml(doc);
+
+            return true;
         }
 
         private static void CreateAccountHierarchyRecursively(ref GLSetupTDS AMainDS,
