@@ -49,7 +49,6 @@ using Ict.Petra.Shared.Security;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
-using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
 
@@ -264,41 +263,6 @@ namespace Ict.Petra.Server.App.WebService
             return JsonConvert.SerializeObject(result);
         }
 
-        /// <summary>Login a user</summary>
-        [WebMethod(EnableSession = true)]
-        public string LoginClient(string username, string password, string version)
-        {
-            Version ClientVersion;
-
-            try
-            {
-                ClientVersion = Version.Parse(version);
-            }
-            catch (Exception)
-            {
-                TLogging.Log("LoginClient: invalid version, cannot be parsed: " + version);
-                return THttpBinarySerializer.SerializeObjectWithType(eLoginEnum.eLoginVersionMismatch);
-            }
-
-            string WelcomeMessage;
-            bool SystemEnabled;
-            IPrincipal UserInfo;
-            Int32 ClientID;
-            eLoginEnum Result = LoginInternal(username, password, ClientVersion,
-                out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo);
-
-            if (Result != eLoginEnum.eLoginSucceeded)
-            {
-                return THttpBinarySerializer.SerializeObjectWithType(Result);
-            }
-
-            return THttpBinarySerializer.SerializeObjectWithType(Result) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(ClientID) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(WelcomeMessage) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(SystemEnabled) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(UserInfo);
-        }
-
         /// <summary>
         /// TODO: we should only use one database object per request, and not have global variables for database connections
         /// </summary>
@@ -491,7 +455,7 @@ namespace Ict.Petra.Server.App.WebService
                     return THttpBinarySerializer.SerializeObject(false);
                 }
 
-                return THttpBinarySerializer.SerializeObject(DomainManager.CurrentClient.FPollClientTasks.PollClientTasks(), true);
+                return THttpBinarySerializer.SerializeObject(DomainManager.CurrentClient.FPollClientTasks.PollClientTasks());
             }
             catch (Exception e)
             {

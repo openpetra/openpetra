@@ -120,26 +120,16 @@ namespace Ict.Common.Remoting.Shared
         /// <summary>
         /// serialize any object. if it is a complex type, use JSON or Base64 (fat client)
         /// </summary>
-        static public string SerializeObject(object o, bool binary)
+        static public string SerializeObject(object o)
         {
-            return THttpBinarySerializer.isJSClient() ? SerializeObjectJSON(o, binary) : SerializeObjectBase64(o, binary);
+            return THttpBinarySerializer.isJSClient() ? SerializeObjectJSON(o) : SerializeToBase64(o);
         }
 
         /// <summary>
-        /// serialize any object. if it is a complex type, use Base64
+        /// serialize the object to Base64
         /// </summary>
-        static public string SerializeObjectBase64(object o, bool binary)
+        static public string SerializeToBase64(object o)
         {
-            if (!binary)
-            {
-                if (o.GetType() == typeof(bool))
-                {
-                    return o.ToString().ToLower();
-                }
-
-                return o.ToString();
-            }
-
             if (o == null)
             {
                 return "null";
@@ -157,44 +147,33 @@ namespace Ict.Common.Remoting.Shared
 
                 TLogging.Log(e.ToString());
             }
-            string encoded = Convert.ToBase64String(memoryStream.ToArray()) + ":binary";
 
-            if (encoded.Length > 1024 * 1024 * 4)
-            {
-                TLogging.Log("Warning: THttpBinarySerializer.SerializeObject: Binary parameter is too long: " + encoded.Length.ToString());
-            }
-
-            return encoded;
+            return Convert.ToBase64String(memoryStream.ToArray());
         }
 
         /// <summary>
         /// serialize any object. if it is a complex type, use JSON
         /// </summary>
-        static public string SerializeObjectJSON(object o, bool binary)
+        static public string SerializeObjectJSON(object o)
         {
-            if (!binary)
-            {
-                if (o.GetType() == typeof(bool))
-                {
-                    return o.ToString().ToLower();
-                }
-
-                if (o.GetType() == typeof(string))
-                {
-                    return '"' + o.ToString().Replace('"', '\'') + '"';
-                }
-
-                if (o.GetType() == typeof(DateTime))
-                {
-                    return JsonConvert.SerializeObject(o);
-                }
-
-                return o.ToString();
-            }
-
             if (o == null)
             {
                 return "null";
+            }
+
+            if (o.GetType() == typeof(bool))
+            {
+                return o.ToString().ToLower();
+            }
+
+            if (o.GetType() == typeof(string))
+            {
+                return '"' + o.ToString().Replace('"', '\'') + '"';
+            }
+
+            if (o.GetType() == typeof(DateTime))
+            {
+                return JsonConvert.SerializeObject(o);
             }
 
             if (o is Type)
@@ -223,103 +202,7 @@ namespace Ict.Common.Remoting.Shared
                 return VerificationResultCollectionToJson((TVerificationResultCollection)o);
             }
 
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            try
-            {
-                binaryFormatter.Serialize(memoryStream, o);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("cannot serialize object of type " + o.GetType().ToString());
-
-                TLogging.Log(e.ToString());
-            }
-            string encoded = Convert.ToBase64String(memoryStream.ToArray()) + ":binary";
-
-            if (encoded.Length > 1024 * 1024 * 4)
-            {
-                TLogging.Log("Warning: THttpBinarySerializer.SerializeObject: Binary parameter is too long: " + encoded.Length.ToString());
-            }
-
-            return encoded;
-        }
-
-        static private bool ShouldParameterEncodeBinary(object o)
-        {
-            if (o.GetType() == typeof(string))
-            {
-                // need to make sure that yml.gz will always be encoded in binary
-                if (((string)o).Length > 500 || ((string)o).IndexOfAny(new char[] { ',', ':', '<', '>' }) > -1)
-                {
-                    // Avoid System.Web.HttpRequestValidationException: A potentially dangerous Request.Form value was detected from the client
-                    // when sending for example an html template.
-                    // see also http://stackoverflow.com/questions/81991/a-potentially-dangerous-request-form-value-was-detected-from-the-client
-                    return true;
-                }
-
-                return false;
-            }
-
-            return !(
-                       o.GetType() == typeof(Int16)
-//                       || o.GetType() == typeof(Int32[])
-                       || o.GetType() == typeof(Int32)
-//                       || o.GetType() == typeof(Int32[])
-                       || o.GetType() == typeof(Int64)
-//                       || o.GetType() == typeof(Int64[])
-                       || o.GetType() == typeof(bool)
-//                       || o.GetType() == typeof(bool[])
-                       || o.GetType() == typeof(UInt16)
-                       || o.GetType() == typeof(UInt32)
-                       || o.GetType() == typeof(UInt64)
-                       || o.GetType() == typeof(Decimal)
-                       || o.GetType() == typeof(DateTime)
-                       );
-        }
-
-        /// serialize any object. depending on the type of the object, it will be serialized in binary format
-        static public string SerializeObject(object o)
-        {
-            if (o == null)
-            {
-                return "null";
-            }
-
-            return SerializeObject(o, ShouldParameterEncodeBinary(o));
-        }
-
-        /// serialize any object. depending on the type of the object, it will be serialized in binary format
-        static public string SerializeObjectWithType(object o)
-        {
-            if (o == null)
-            {
-                return "null:void";
-            }
-
-            bool binary = ShouldParameterEncodeBinary(o);
-
-            string result = SerializeObject(o, binary);
-
-            if (THttpBinarySerializer.isJSClient())
-            {
-                if (!(o is Boolean) && (result.Length > 0) && (result[0] != '{') && (result[0] != '['))
-                {
-                    result = "\"" + result + "\"";
-                }
-
-                return result;
-            }
-
-            // fat client
-            if (result.EndsWith(":binary"))
-            {
-                return result;
-            }
-            else
-            {
-                return result + ":" + (binary ? "binary" : o.GetType().ToString());
-            }
+            throw new Exception("cannot deserialize object to JSON");
         }
 
         /// <summary>
@@ -335,17 +218,6 @@ namespace Ict.Common.Remoting.Shared
             if (s == null)
             {
                 return null;
-            }
-
-            if ((type == "System.String") && s.EndsWith(":base64"))
-            {
-                return System.Text.UTF8Encoding.ASCII.GetString(Convert.FromBase64String(s.Substring(0, s.Length - ":base64".Length)));
-            }
-
-            if (s.EndsWith(":binary"))
-            {
-                type = "binary";
-                s = s.Substring(0, s.Length - ":binary".Length);
             }
 
             if (s.EndsWith(":System.String"))
@@ -431,7 +303,7 @@ namespace Ict.Common.Remoting.Shared
         }
 
         /// <summary>
-        /// Deserialize List of String, that might be base64 encoded
+        /// Deserialize List of String
         /// </summary>
         static public List<string> DeserializeObject(List<string> l)
         {
@@ -443,21 +315,14 @@ namespace Ict.Common.Remoting.Shared
             List<string> result = new List<string>();
 
             foreach (string s in l) {
-                if (s.EndsWith(":base64"))
-                {
-                    result.Add(System.Text.UTF8Encoding.ASCII.GetString(Convert.FromBase64String(s.Substring(0, s.Length - ":base64".Length))));
-                }
-                else
-                {
-                    result.Add(s);
-                }
+                result.Add(s);
             }
 
             return result;
         }
 
         /// <summary>
-        /// Deserialize Dictionary of String, that might be base64 encoded
+        /// Deserialize Dictionary of String
         /// </summary>
         static public Dictionary<string,string> DeserializeObject(Dictionary<string,string> d)
         {
@@ -471,11 +336,6 @@ namespace Ict.Common.Remoting.Shared
             foreach (KeyValuePair<string, string> entry in d) {
                 string key = entry.Key;
                 string value = entry.Value;
-
-                if (value.EndsWith(":base64"))
-                {
-                    value = System.Text.UTF8Encoding.ASCII.GetString(Convert.FromBase64String(value.Substring(0, value.Length - ":base64".Length)));
-                }
 
                 result.Add(key, value);
             }
