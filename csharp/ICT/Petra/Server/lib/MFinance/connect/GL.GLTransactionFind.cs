@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,6 @@ using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MFinance.GL;
-using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
@@ -55,7 +54,7 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     /// </summary>
-    public class TGLTransactionFindUIConnector : IFinanceUIConnectorsGLTransactionFind
+    public class TGLTransactionFindUIConnector
     {
         private TGLTransactionFind FGLTransactionFind = new TGLTransactionFind();
 

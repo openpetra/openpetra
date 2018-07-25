@@ -4,7 +4,7 @@
 // @Authors:
 //       thomass, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,6 @@ using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Server.App.Core;
 using Ict.Common.Remoting.Server;

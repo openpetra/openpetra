@@ -31,7 +31,6 @@ using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MReporting;
@@ -55,7 +54,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
     /// <summary>
     /// the connector for the report generation
     /// </summary>
-    public class TReportGeneratorUIConnector : IReportingUIConnectorsReportGenerator
+    public class TReportGeneratorUIConnector
     {
         private TRptDataCalculator FDatacalculator;
         private TResultList FResultList;

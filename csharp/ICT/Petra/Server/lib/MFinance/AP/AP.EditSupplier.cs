@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,6 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
-using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 {
@@ -59,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     ///</summary>
-    public class TSupplierEditUIConnector : IAPUIConnectorsSupplierEdit
+    public class TSupplierEditUIConnector
     {
         /// <summary>
         /// constructor
