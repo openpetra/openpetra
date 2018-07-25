@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,12 +37,12 @@ using Ict.Tools.CodeGeneration;
 namespace GenerateSharedCode
 {
     /// <summary>
-    /// parse the code and collect all connector classes that we want to have interfaces for
+    /// parse the code and collect all connector classes that we want to publish in the API
     /// </summary>
     public class TCollectConnectorInterfaces
     {
         /// <summary>
-        /// this will return a SortedList, the key is the interface name,
+        /// this will return a SortedList, the key is the class name,
         /// and the value is the type definition of the class that implements that interface;
         /// connectors are identified namespace ending with Connectors
         /// </summary>
@@ -56,13 +56,11 @@ namespace GenerateSharedCode
                 {
                     if (t.UserData.ToString().EndsWith("Connectors"))
                     {
-                        string Interface = CSParser.GetImplementedInterface(t);
-
-                        if (Interface.Length > 0)
+                        if (t.Name.EndsWith("UIConnector"))
                         {
                             string ServerNamespace = t.UserData.ToString();
                             string ServerNamespaceWithClassName = ServerNamespace + "." + t.Name;
-                            string key = ServerNamespaceWithClassName + ":" + Interface;
+                            string key = ServerNamespaceWithClassName;
 
                             if (Result.ContainsKey(ServerNamespaceWithClassName))
                             {
@@ -109,7 +107,7 @@ namespace GenerateSharedCode
 
                                 foreach (string k in Result.Keys)
                                 {
-                                    if (k.StartsWith(key + ":"))
+                                    if (k == key)
                                     {
                                         foundType = true;
 
