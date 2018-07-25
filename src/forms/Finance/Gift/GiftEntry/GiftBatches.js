@@ -30,7 +30,6 @@ $('document').ready(function () {
 });
 
 function display_list(source) {
-	console.log('source: '+source);
 	if (source == null) {
 		source = "preset";
 	}
@@ -47,7 +46,6 @@ function display_list(source) {
 		var x = extract_data($('#tabfilter'));
 	}
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
-	console.log(x);
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
@@ -347,5 +345,16 @@ function get_avariable_years() {
 			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
 			$('#tabfilter [name=AYear]').append(y);
 		}
+	})
+}
+
+function post_batch(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AGiftBatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_PostGiftBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
 	})
 }

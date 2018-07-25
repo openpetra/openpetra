@@ -24,6 +24,9 @@
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="importTransactions({val_a_batch_number_i})">
 							<span>{import}&nbsp;</span><i class="fa fa-file"></i>
 						</button>
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="test_post({val_a_batch_number_i})">
+							<span>{test_post}&nbsp;</span><i class="fa fa-lock"></i>
+						</button>
 						<div class="import_space" style="display:none;">
 							<span style="margin-top:1em;">{message_import_howto}</span>
 							<button type="button" class="btn" onclick="$(this).closest('.import_space').css('display', 'none')"><i class="fa fa-close"></i></button>
@@ -31,7 +34,6 @@
 							<button type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).siblings('textarea').val() )">{forms.import}</button>
 						</div>
 					</div>
-					<div class="col"></div>
 				</div>
 				<div class="row">
 					<div class="col"><b>

@@ -313,3 +313,14 @@ function get_avariable_years() {
 		}
 	})
 }
+
+function test_post(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
+	})
+}
