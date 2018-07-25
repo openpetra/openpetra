@@ -37,6 +37,7 @@ using System.Web.Script.Serialization;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Newtonsoft.Json;
 
 namespace Ict.Common.Remoting.Shared
 {
@@ -183,6 +184,11 @@ namespace Ict.Common.Remoting.Shared
                     return '"' + o.ToString().Replace('"', '\'') + '"';
                 }
 
+                if (o.GetType() == typeof(DateTime))
+                {
+                    return JsonConvert.SerializeObject(o);
+                }
+
                 return o.ToString();
             }
 
@@ -268,6 +274,7 @@ namespace Ict.Common.Remoting.Shared
                        || o.GetType() == typeof(UInt32)
                        || o.GetType() == typeof(UInt64)
                        || o.GetType() == typeof(Decimal)
+                       || o.GetType() == typeof(DateTime)
                        );
         }
 
