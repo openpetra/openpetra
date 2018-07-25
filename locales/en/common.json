@@ -332,5 +332,33 @@
 
     "ImportPartners":{
       "importUser":"Import partner from CSV file"
+    },
+
+    "LedgerInfo":{
+      "caption":"Ledger Info",
+      "ledgername":"Ledgername",
+      "1_month":"January",
+      "2_month":"Febuary",
+      "3_month":"March",
+      "4_month":"April",
+      "5_month":"Mai",
+      "6_month":"June",
+      "7_month":"July",
+      "8_month":"August",
+      "9_month":"September",
+      "10_month":"Oktober",
+      "11_month":"November",
+      "12_month":"December",
+      "years":"years",
+      "ledgernumber":"Ledgernumber",
+      "ledger_base":"Base currency",
+      "ledger_intl":"international currency",
+      "ledger_accounting_periods":"Number of accounting periods",
+      "ledger_fwd_posting_periods":"Number of forward posting periods",
+      "ledger_current_period":"Current period",
+      "ledger_retention_gl":"Retention time for GL",
+      "ledger_retention_gift":"Retention time for Gifts",
+      "fwd_posting":"Forward posting range",
+      "period":"Gift posting range"
     }
 }

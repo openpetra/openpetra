@@ -60,10 +60,6 @@ OpenPetra:
                         LedgerInfo:
                     GLBatchMaintenance:
                         GLBatches:
-                        RecurringGLBatches:
-                        ImportBatches:
-                        ImportBatchesFromBankStatement:
-                        ExportBatches:
                     PeriodEnd:
                         MonthEnd:
                         YearEnd:
