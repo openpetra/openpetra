@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,11 +42,12 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
     {
         private static bool DumpYmlGz(string YmlFile)
         {
-            string YmlGZData = TImportExportWebConnector.ExportAllTables();
+            string YmlGZDataBase64;
+            TImportExportWebConnector.ExportAllTables(out YmlGZDataBase64);
             YmlFile = Path.GetFullPath(YmlFile);
 
             FileStream fs = new FileStream(YmlFile, FileMode.Create);
-            byte[] buffer = Convert.FromBase64String(YmlGZData);
+            byte[] buffer = Convert.FromBase64String(YmlGZDataBase64);
             fs.Write(buffer, 0, buffer.Length);
             fs.Close();
             TLogging.Log("backup has been written to " + YmlFile);
