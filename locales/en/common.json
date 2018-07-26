@@ -60,7 +60,10 @@
         "Motivations_label": "Maintain Motivation groups and details",
         "switchledger":"Active Ledger is now:",
         "BankImport_label":"Import donations from bank",
-        "ImportPartners_label":"Import partner"
+        "ImportPartners_label":"Import partner",
+        "Trees_label":"Hierarchies",
+        "AccountTree_label":"Account hierarchi",
+        "CostCenterTree_label":"Cost center hierarchi"
     },
     "forms": {
         "search":"Search",

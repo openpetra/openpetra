@@ -83,7 +83,10 @@ OpenPetra:
                         ManageCostCentres:
                         DeleteLedger:
                     Gift:
-                        Motivations:
+                      Motivations:
+                    Trees:
+                      AccountTree:
+                      CostCenterTree:
         CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
                 Ledger:
                     LedgerSetup:
