@@ -2816,7 +2816,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             doc.LoadXml(docstr);
 
-            AHierarchyYml = TYml2Xml.Xml2Yml(doc);
+            AHierarchyYml = THttpBinarySerializer.SerializeToBase64(TYml2Xml.Xml2Yml(doc));
 
             return true;
         }
@@ -4495,7 +4495,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     TLogging.LogException(ex, Utilities.GetMethodSignature());
                     return false;
                 }
-                
+
                 return true;
             }
             else if (action == "delete")

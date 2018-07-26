@@ -126,29 +126,17 @@ namespace Ict.Common.Remoting.Shared
         }
 
         /// <summary>
-        /// serialize the object to Base64
+        /// serialize string to Base64
         /// </summary>
-        static public string SerializeToBase64(object o)
+        static public string SerializeToBase64(string s)
         {
-            if (o == null)
+            if (s == null)
             {
                 return "null";
             }
 
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            try
-            {
-                binaryFormatter.Serialize(memoryStream, o);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("cannot serialize object of type " + o.GetType().ToString());
-
-                TLogging.Log(e.ToString());
-            }
-
-            return Convert.ToBase64String(memoryStream.ToArray());
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(s);
+            return System.Convert.ToBase64String(plainTextBytes);
         }
 
         /// <summary>
@@ -354,7 +342,7 @@ namespace Ict.Common.Remoting.Shared
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             Object[] list = (Object[])serializer.DeserializeObject(s);
             DataTable result = new DataTable();
-                      
+
             foreach (Dictionary<string,object> obj in list)
             {
                 foreach (KeyValuePair<string, object> entry in obj)
