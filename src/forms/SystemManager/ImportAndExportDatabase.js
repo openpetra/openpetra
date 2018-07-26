@@ -46,7 +46,7 @@ function ExportAllData() {
 
 			// For Mozilla we need to add the link, otherwise the click won't work
 			// see https://support.mozilla.org/de/questions/968992
-			document.body.appendChild(a);
+			document.getElementById('modal_space').appendChild(a);
 
 			a.click();
 			URL.revokeObjectURL(url);

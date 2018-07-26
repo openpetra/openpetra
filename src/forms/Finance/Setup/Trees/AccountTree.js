@@ -58,10 +58,16 @@ function export_file() {
     AAccountHierarchyName: 'STANDARD'
   };
   api.post('serverMFinance.asmx/TGLSetupWebConnector_ExportAccountHierarchyYml', x).then(function (data) {
-    console.log(data.data.d);
-    parsed = JSON.parse(data.data.d);
-    console.log(atob(parsed));
-    $('<a>')
+    var parsed = JSON.parse(data.data.d);
+    var _file_ = window.atob(parsed.AHierarchyYml);
+
+    var link = document.createElement("a");
+    link.style = "display: none";
+    link.href = 'data:text/plain;charset=utf-8,'+_file_;
+    link.download = 'AccountTree.csv';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   })
 
 }
