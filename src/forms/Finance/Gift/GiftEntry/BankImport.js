@@ -54,8 +54,9 @@ function display_list() {
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	x['AStatementKey'] = $('#bank_number_id').val();
 
-	api.post('serverMFinance.asmx/TBankImportWebConnector_GetBankStatementTransactionsAndMatches', x).then(function (data) {
-		// data = JSON.parse(data.data.d);
+	api.post('serverMFinance.asmx/TBankImportWebConnector_GetTransactions', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
 		data = [
 						{'a_statement_key_i': 1, 'a_order_i' : 0, 'a_description_c': 'Spende von TP für Projekt Rettet die Pinguine', 'a_transaction_amount_n': 50},
 						{'a_statement_key_i': 1, 'a_order_i' : 1, 'a_description_c': 'Spende von CJ für Projekt Rettet die Delfine und Rettet die Heringe', 'a_transaction_amount_n': 50},
