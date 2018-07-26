@@ -28,8 +28,24 @@ $('document').ready(function () {
 	display_list();
 });
 
-function display_list() {
-	let x = extract_data($('#tabfilter'));
+function display_list(source) {
+	if (source == null) {
+		source = "preset";
+	}
+	if (source == 'preset') {
+		var x = window.localStorage.getItem('MaintainPartners');
+		if (x == null) {
+			source = "filter";
+		} else {
+			x = JSON.parse(x);
+			format_tpl($('#tabfilter'), x);
+		}
+	}
+	// x is search
+	if (source == 'filter') {
+		var x = extract_data($('#tabfilter'));
+	}
+	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content

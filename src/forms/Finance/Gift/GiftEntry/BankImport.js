@@ -31,9 +31,9 @@ function display_dropdownlist() {
 	let x = {};
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
-	api.post('serverMFinance.asmx/TBankImportWebConnector_GetImportedBankStatements', x).catch(function (data) {
+	api.post('serverMFinance.asmx/TBankImportWebConnector_GetImportedBankStatements', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-console.log(data);
+		console.log(data);
 		data = [
 			{a_statement_key_i: "3", a_statement_name_c: "März"},
 			{a_statement_key_i: "4", a_statement_name_c: "April"},
@@ -54,7 +54,7 @@ function display_list() {
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	x['AStatementKey'] = $('#bank_number_id').val();
 
-	api.post('serverMFinance.asmx/TBankImportWebConnector_GetBankStatementTransactionsAndMatches', x).catch(function (data) {
+	api.post('serverMFinance.asmx/TBankImportWebConnector_GetBankStatementTransactionsAndMatches', x).then(function (data) {
 		// data = JSON.parse(data.data.d);
 		data = [
 						{'a_statement_key_i': 1, 'a_order_i' : 0, 'a_description_c': 'Spende von TP für Projekt Rettet die Pinguine', 'a_transaction_amount_n': 50},
@@ -113,7 +113,7 @@ function edit_gift_trans(trans_order) {
 	// so everything is up to date and we don't have to load it, if we only search
 
 	// serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
-	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).catch(function (data) {
+	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		// parsed = JSON.parse(data.data.d);
 		parsed = {
 			'transaction': {
@@ -151,7 +151,7 @@ function edit_gift_trans_detail(trans_id, order_id) {
 		"AStatementKey":trans_id,
 		"ADetailKey": order_id
 	};
-	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).catch(function (data) {
+	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		// parsed = JSON.parse(data.data.d);
 		parsed = {
 			'transaction': {
@@ -194,7 +194,7 @@ function save_edit_trans(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
-	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactions', payload).catch(function (result) {
+	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactions', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
@@ -245,7 +245,7 @@ function delete_trans_detail(obj_modal) {
 /////
 
 function import_file(self) {
-
+	self = $(self);
 	var filename = self.val();
 
 	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/

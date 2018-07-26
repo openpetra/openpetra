@@ -23,16 +23,29 @@
 
 $('document').ready(function () {
 	// TODO set proper default values for the filter
-	$('#tabfilter input[name="APeriod"]').val(0);
-	$('#tabfilter input[name="AYear"]').val(0);
+	// $('#tabfilter input[name="APeriod"]').val(0);
+	// $('#tabfilter input[name="AYear"]').val(0);
+	get_avariable_years();
 	display_list();
 });
 
-function display_list() {
-	// x is search
-	let x = extract_data($('#tabfilter'));
+function display_list(source) {
+	if (source == null) {
+		source = "preset";
+	}
+	if (source == 'preset') {
+		var x = window.localStorage.getItem('GiftBatches');
+		if (x == null) {
+			source = "filter";
+		} else {
+			x = JSON.parse(x);
+			format_tpl($('#tabfilter'), x);
+		}
+	}
+	if (source == 'filter') {
+		var x = extract_data($('#tabfilter'));
+	}
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
-
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
@@ -316,4 +329,32 @@ function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
+}
+
+
+/////
+
+function get_avariable_years() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+	};
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_GetAvailableGiftYears', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		r = data.result;
+		for (year of r) {
+			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
+			$('#tabfilter [name=AYear]').append(y);
+		}
+	})
+}
+
+function post_batch(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AGiftBatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_PostGiftBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
+	})
 }

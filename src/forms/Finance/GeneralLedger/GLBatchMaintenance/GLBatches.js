@@ -23,14 +23,25 @@
 
 $('document').ready(function () {
 	// TODO set proper default values for the filter
-	$('#tabfilter input[name="ABatchPeriod"]').val(0);
-	$('#tabfilter input[name="ABatchYear"]').val(0);
-	display_list();
+	// $('#tabfilter input[name="ABatchPeriod"]').val(44);
+	// $('#tabfilter input[name="ABatchYear"]').val(0);
+	get_avariable_years();
+	display_list('preset');
+
 });
 
-function display_list() {
+function display_list(source) {
+	if (source == null) {
+		source = "filter";
+	}
 	// x is search
-	let x = extract_data($('#tabfilter'));
+	if (source == "filter") {
+		var x = extract_data( $('#tabfilter') );
+	} else if (source == "preset") {
+		var x = window.localStorage.getItem('GLBatches');
+		x = JSON.parse(x);
+		format_tpl( $('#tabfilter'), x );
+	}
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch', x).then(function (data) {
@@ -286,5 +297,30 @@ function importTransactions(batch_id, csv_file) {
 				display_message(i18next.t(msg.code), "fail");
 			}
 		}
+	})
+}
+
+function get_avariable_years() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+	};
+	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailableGLYears', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		r = data.result;
+		for (year of r) {
+			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
+			$('#tabfilter [name=ABatchYear]').append(y);
+		}
+	})
+}
+
+function test_post(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
 	})
 }
