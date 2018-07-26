@@ -122,7 +122,7 @@ namespace Ict.Common.Remoting.Shared
         /// </summary>
         static public string SerializeObject(object o)
         {
-            return THttpBinarySerializer.isJSClient() ? SerializeObjectJSON(o) : SerializeToBase64(o);
+            return THttpBinarySerializer.isJSClient() ? SerializeObjectJSON(o) : SerializeObjectJSON(o).Trim('"');
         }
 
         /// <summary>

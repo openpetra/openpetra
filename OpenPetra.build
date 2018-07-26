@@ -24,7 +24,7 @@ list of available commands:
       nant compileProject -D:file=csharp/ICT/Common/Ict.Common.csproj
       nant compileProject -D:name=Ict.Common
   install: install the current development binaries to this machine (requires the rpm already to be installed)
-  startAdmin: run the admin console
+  startAdmin: not possible via nant, run this: /usr/bin/openpetra-server menu
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for server and testing, and the version.txt
   initPlugins: install some default plugins

@@ -182,7 +182,7 @@
 <target name="startAdmin" depends="initConfigFiles-admin" description="start the OpenPetra Server Admin Console"> 
   <if test="${'unix'==platform::get-name()}">
       <echo message="run this directly from the command line:"/>
-      <echo message="cd ${dir.bin} &amp;&amp; mono PetraServerAdminConsole.exe -Command:Menu -C:${ServerAdminConfigFile} &amp;&amp; cd -"/>
+      <echo message="/usr/bin/openpetra-server menu"/>
       <!-- exec does not really work within nant, Console.Write does not print -->
   </if>
 </target> 
