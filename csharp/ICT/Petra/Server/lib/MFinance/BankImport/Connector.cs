@@ -224,9 +224,13 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             string SqlStmt = "SELECT * FROM PUB.a_ep_statement " +
                 "WHERE a_ledger_number_i = " + ALedgerNumber.ToString() + " " +
-                "ORDER BY a_statement_key_i DESC " +
-                "LIMIT " + ALimit.ToString();
-                
+                "ORDER BY a_statement_key_i DESC ";
+
+            if (ALimit > 0)
+            {
+                SqlStmt += "LIMIT " + ALimit.ToString();
+            }
+
             AEpStatementTable result = new AEpStatementTable();
             DBAccess.GDBAccessObj.SelectDT(result, SqlStmt, ReadTransaction);
 
@@ -670,6 +674,18 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             TProgressTracker.FinishJob(MyClientID);
 
             return ResultDataset;
+        }
+
+        /// <summary>
+        /// returns the transactions of the bank statement, and the matches if they exist;
+        /// tries to find matches too.
+        /// returns them in a flat format, in a single table
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static AEpTransactionTable GetTransactions(Int32 AStatementKey, Int32 ALedgerNumber)
+        {
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            return MainDS.AEpTransaction;
         }
 
         /// <summary>
