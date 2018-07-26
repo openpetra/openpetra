@@ -171,6 +171,11 @@ namespace Ict.Common.Remoting.Shared
                 return '"' + o.ToString().Replace('"', '\'') + '"';
             }
 
+            if (o.GetType().ToString().StartsWith("System.Int") || o.GetType().ToString().StartsWith("System.Decimal"))
+            {
+                return o.ToString();
+            }
+
             if (o.GetType() == typeof(DateTime))
             {
                 return JsonConvert.SerializeObject(o);
@@ -202,7 +207,7 @@ namespace Ict.Common.Remoting.Shared
                 return VerificationResultCollectionToJson((TVerificationResultCollection)o);
             }
 
-            throw new Exception("cannot deserialize object to JSON");
+            throw new Exception("cannot deserialize object to JSON of Type " + o.GetType().ToString());
         }
 
         /// <summary>
