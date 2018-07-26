@@ -148,13 +148,16 @@ function new_trans(batch_number) {
 /////
 
 function edit_batch(batch_id) {
-	var r = {
-				ALedgerNumber: window.localStorage.getItem('current_ledger'),
-				ABatchNumber: batch_id
-			};
+	var x = window.localStorage.getItem('GLBatches');
+	if (x == null) {
+		x = extract_data( $('#tabfilter') );
+	} else {
+		x = JSON.parse(x);
+	}
+	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
-	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch', r).then(function (data) {
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
 		new_entry_data = parsed.result;
@@ -167,7 +170,6 @@ function edit_batch(batch_id) {
 		if (searched == null) {
 			return alert('ERROR');
 		}
-
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), searched );
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
@@ -314,12 +316,41 @@ function get_avariable_years() {
 	})
 }
 
+/////
+
 function test_post(batch_id) {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ABatchNumber: batch_id
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
+	})
+}
+
+function batch_post(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_PostGLBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
+	})
+}
+
+function batch_unpost(batch_id, date) {
+	var date_extractor = new RegExp(/Date\((.+)\)/g);
+	var date = new Date( parseInt( date_extractor.exec(date)[1] ) );
+	var date_str = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumberToReverse: batch_id,
+		ADateForReversal: "2018-07-01",//date_str,
+		AAutoPostReverseBatch: false
+	};
+	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_ReverseBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		console.log(data);
 	})
