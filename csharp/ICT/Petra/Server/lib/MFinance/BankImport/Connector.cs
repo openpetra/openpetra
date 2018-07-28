@@ -679,12 +679,60 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// <summary>
         /// returns the transactions of the bank statement, and the matches if they exist;
         /// tries to find matches too.
-        /// returns them in a flat format, in a single table
+        /// returns only the transactions, not the details.
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static AEpTransactionTable GetTransactions(Int32 AStatementKey, Int32 ALedgerNumber)
+        public static AEpTransactionTable GetTransactions(Int32 AStatementKey, Int32 ALedgerNumber, String AMatchAction)
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+
+            foreach (BankImportTDSAEpTransactionRow row in MainDS.AEpTransaction.Rows)
+            {
+                if (row.DetailKey != -1)
+                {
+                    row.Delete();
+                }
+                else if (AMatchAction != String.Empty)
+                {
+                    TLogging.Log(AMatchAction + " " + row.MatchAction);
+                    if (AMatchAction == MFinanceConstants.BANK_STMT_STATUS_UNMATCHED)
+                    {
+                        if (row.MatchAction != AMatchAction && row.MatchAction != MFinanceConstants.BANK_STMT_POTENTIAL_GIFT)
+                        {
+                            row.Delete();
+                        }
+                    }
+                    else if (row.MatchAction != AMatchAction)
+                    {
+                        row.Delete();
+                    }
+                }
+            }
+
+            MainDS.AcceptChanges();
+
+            return MainDS.AEpTransaction;
+        }
+
+        /// <summary>
+        /// returns the transaction details of a transaction of the bank statement, and the matches if they exist;
+        /// tries to find matches too.
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static AEpTransactionTable LoadTransactionAndDetails(Int32 AStatementKey, Int32 ALedgerNumber, Int32 AOrderNumber)
+        {
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            
+            foreach (AEpTransactionRow row in MainDS.AEpTransaction.Rows)
+            {
+                if (row.Order != AOrderNumber)
+                {
+                    row.Delete();
+                }
+            }
+
+            MainDS.AcceptChanges();
+
             return MainDS.AEpTransaction;
         }
 

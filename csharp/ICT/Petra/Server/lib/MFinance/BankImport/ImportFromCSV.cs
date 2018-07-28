@@ -131,7 +131,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
             // TODO: BankAccountKey should be NOT NULL. for the moment not time to implement
             // stmt.BankAccountKey = Convert.ToInt64(TXMLParser.GetAttribute(RootNode, "BankAccountKey"));
-            stmt.Filename = ABankStatementFilename;
+            stmt.Filename = Path.GetFileName(ABankStatementFilename.Replace('\\', Path.DirectorySeparatorChar));
 
             // depending on the path of BankStatementFilename you could determine between several bank accounts
             // search all config parameters starting with "BankNameFor", 
