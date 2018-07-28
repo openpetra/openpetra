@@ -33,18 +33,11 @@ function display_dropdownlist() {
 
 	api.post('serverMFinance.asmx/TBankImportWebConnector_GetImportedBankStatements', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
-		data = [
-			{a_statement_key_i: "3", a_statement_name_c: "März"},
-			{a_statement_key_i: "4", a_statement_name_c: "April"},
-			{a_statement_key_i: "5", a_statement_name_c: "Mai"},
-			{a_statement_key_i: "6", a_statement_name_c: "Juni"},
-			{a_statement_key_i: "7", a_statement_name_c: "Juli"}
-		]
 		// on reload, clear content
-		let field = $('#bank_number_id');
-		for (item of data) {
-			field.append( $('<option value="'+item.a_statement_key_i+'">'+item.a_statement_name_c+'</option>') );
+		let field = $('#bank_number_id').html('');
+		for (item of data.result) {
+			field.append( $('<option value="'+item.a_statement_key_i+'">'+
+				item.a_filename_c + ' ' + printJSONDate(item.a_date_d) + '</option>') );
 		}
 	})
 }
@@ -53,18 +46,12 @@ function display_list() {
 	let x = {};
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	x['AStatementKey'] = $('#bank_number_id').val();
-
+	x['AMatchAction'] = $('#match_status_id').val();
 	api.post('serverMFinance.asmx/TBankImportWebConnector_GetTransactions', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
-		data = [
-						{'a_statement_key_i': 1, 'a_order_i' : 0, 'a_description_c': 'Spende von TP für Projekt Rettet die Pinguine', 'a_transaction_amount_n': 50},
-						{'a_statement_key_i': 1, 'a_order_i' : 1, 'a_description_c': 'Spende von CJ für Projekt Rettet die Delfine und Rettet die Heringe', 'a_transaction_amount_n': 50},
-						{'a_statement_key_i': 1, 'a_order_i' : 2, 'a_description_c': 'Mieteinnahme für Untermieter', 'a_transaction_amount_n': 500}
-					];
 		// on reload, clear content
 		let field = $('#browse_container').html('');
-		for (item of data) {
+		for (item of data.result) {
 			format_item(item);
 		}
 	})
@@ -112,27 +99,12 @@ function edit_gift_trans(trans_order) {
 	};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
-
-	// serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
-		// parsed = JSON.parse(data.data.d);
-		parsed = {
-			'transaction': {
-				'a_statement_key_i': 1, 'a_order_i' : 0, 'a_description_c': 'Spende von TP für Projekt Rettet die Pinguine', 'a_transaction_amount_n': 50, 'a_action_c':'unmatched', 'p_donor_key_n': null
-			},
-			'details': [
-				{
-					'a_statement_key_i': 1, 'a_order_i' : 0, 'a_detail_i': 1, 'a_transaction_amount_n': 50, 'a_motivation_group_code_c': null, 'a_motivation_detail_code_c': null
-				},
-				{
-					'a_statement_key_i': 1, 'a_order_i' : 0, 'a_detail_i': 2, 'a_transaction_amount_n': 500, 'a_motivation_group_code_c': null, 'a_motivation_detail_code_c': null, 'a_narrative_c': 'Mieteinnahme', 'a_account_code_c': '4211', 'a_cost_centre_code_c': '4300'
-				}
-			]
-		}
+		parsed = JSON.parse(data.data.d);
 
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed.transaction );
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed.result[0] );
 
-		for (detail of parsed.details) {
+		for (detail of parsed.result) {
 			let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
 			tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 		}
@@ -277,6 +249,7 @@ function import_file(self) {
 			result = result.result;
 			if (result == true) {
 				display_message(i18next.t('BankImport.upload_success'), "success");
+				display_dropdownlist();
 			} else {
 				display_message(i18next.t('BankImport.upload_fail'), "fail");
 			}

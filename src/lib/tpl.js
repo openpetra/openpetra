@@ -59,18 +59,7 @@ function format_tpl(tpl, data, limit_to_table) {
     else if ( key==false ) {
       value = data[variable];
       if (typeof value === 'string' || value instanceof String) {
-        // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
-        if (value.substring(0, 6) == "/Date(") {
-          d = new Date(parseInt(value.substring(6, value.indexOf(')'))));
-          if (variable == "s_modification_id_t") {
-            value = d.getTime();
-          } else {
-            value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-            if (d.getHours() != 0 || d.getMinutes() != 0 && d.getSeconds() != 0) {
-              value += " " + ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2) + ":" + ("0"+d.getSeconds()).slice(-2);
-            }
-          }
-        }
+        value = parseJSONDate(variable, value);
       }
       f.attr('value', value);
       f.val(value);
@@ -90,6 +79,34 @@ function format_tpl(tpl, data, limit_to_table) {
   }
 
   return tpl;
+}
+
+function parseJSONDate(variable, value) {
+  // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
+  if (value.substring(0, 6) == "/Date(") {
+    d = new Date(parseInt(value.substring(6, value.indexOf(')'))));
+    if (variable == "s_modification_id_t") {
+      value = d.getTime();
+    } else {
+      value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+      if (d.getHours() != 0 || d.getMinutes() != 0 && d.getSeconds() != 0) {
+        value += " " + ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2) + ":" + ("0"+d.getSeconds()).slice(-2);
+      }
+    }
+  }
+  return value;
+}
+
+function printJSONDate(value) {
+  // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
+  if (value.substring(0, 6) == "/Date(") {
+    let t = /\((.+)\)/g.exec(value);
+    if (t == null || t.length <=1) {return}
+
+    time = new Date(parseInt(t[1])).toLocaleDateString();
+    return time;
+  }
+  return value;
 }
 
 // this is the oposite the format one, it will extract all name= objects

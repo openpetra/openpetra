@@ -102,7 +102,16 @@
 								<span>{action}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_action_c" value="" >
+								<fieldset>
+									<label><input type="radio" id="unmatched" name="a_action_c" value="UNMATCHED">
+									{unmatched}</label><br/>
+									<label><input type="radio" id="matchedgift" name="a_action_c" value="MATCHED-GIFT">
+									{matchedgift}</label><br/>
+									<label><input type="radio" id="matchedgl" name="a_action_c" value="MATCHED-GL">
+									{matchedgl}</label><br/>
+									<label><input type="radio" id="ignored" name="a_action_c" value="DONT-MATCH">
+									{ignored}</label><br/>
+								</fieldset>
 							</div>
 						</div>
 
@@ -257,7 +266,6 @@
 		<td>
 			<button id="new" class="btn btn-primary" onclick="$('#import_file').click()">{forms.import}</button>
 			<input type="file" hidden id="import_file" onchange="import_file(this)">
-			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>
 </table>
@@ -281,18 +289,17 @@
         <span>{bankimport_status}</span>
       </div>
       <div class="col">
-        <select class="dropdown" name="AStatus">
-          <option value="matched">{matched}</option>
-          <option value="unmatched">{unmatched}</option>
-          <option value="gift">{gift}</option>
-          <option value="ignored">{ignored}</option>
+        <select class="dropdown" name="AStatus" id="match_status_id">
+          <option value="" selected>{all}</option>
+          <option value="UNMATCHED">{unmatched}</option>
+          <option value="MATCHED-GL">{matchedgl}</option>
+          <option value="MATCHED-GIFT">{matchedgift}</option>
+          <option value="DONT-MATCH">{ignored}</option>
         </select>
       </div>
     </div>
 	</div>
-	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
-	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
-	<input type="hidden" name="AMaxRecords" value="25"/>
+	<button type="button" class="btn btn-primary" onclick="display_list();">{display}</button>
 </div>
 
 <div class="container" id="browse">
