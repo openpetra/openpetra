@@ -62,6 +62,7 @@
         "BankImport_label":"Import donations from bank",
         "ImportPartners_label":"Import partner",
         "Trees_label":"Hierarchies",
+        "LedgerInfo_label":"Ledger infos",
         "AccountTree_label":"Account hierarchi",
         "CostCenterTree_label":"Cost center hierarchi"
     },
@@ -198,6 +199,9 @@
         "trans_account_code": "Account Code",
         "trans_ccenter_code": "Cost Centre Code",
         "trans_narrative_code": "Description",
+        "batch_unpost": "Reverse batch",
+        "batch_post": "Close batch",
+        "batch_test_post": "Test batch post",
         "DEBIT": "Debit",
         "CREDIT": "Credit",
         "POSTED": "Posted",

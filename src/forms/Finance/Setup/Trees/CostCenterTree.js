@@ -58,10 +58,7 @@ function export_file() {
     AAccountHierarchyName: 'STANDARD'
   };
   api.post('serverMFinance.asmx/TGLSetupWebConnector_ExportCostCenterHierarchyYml', x).then(function (data) {
-    console.log(data.data.d);
-    parsed = JSON.parse(data.data.d);
-    console.log(atob(parsed));
-    $('<a>')
+    console.log(data.d);
   })
 
 }
