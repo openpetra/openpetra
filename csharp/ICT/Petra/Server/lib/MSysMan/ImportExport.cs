@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 }
             }
 
-            ADataYmlGzBase64 = THttpBinarySerializer.SerializeToBase64(TYml2Xml.Xml2YmlGz(OpenPetraData));
+            ADataYmlGzBase64 = TYml2Xml.Xml2YmlGz(OpenPetraData);
 
             return true;
         }

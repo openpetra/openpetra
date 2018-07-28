@@ -1054,7 +1054,7 @@ namespace Ict.Common.Verification
                     si.ResultCode = "";
                 }
 
-                ReturnValue+=", \"code\": \"" + si.ResultCode + "\"}";
+                ReturnValue+=", \"code\": \"" + si.ResultCode + "\", \"message\": \"" + si.ResultText + "\"}";
 
             }
 
