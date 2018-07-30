@@ -753,6 +753,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     BankImportTDSTransactionDetailRow newRow = ADetails.NewRowTyped(false);
                     DataUtilities.CopyAllColumnValues(row, newRow);
                     newRow.LedgerNumber = ALedgerNumber;
+                    newRow.StatementKey = AStatementKey;
                     newRow.Order = AOrderNumber;
                     ADetails.Rows.Add(newRow);
                 }
@@ -784,7 +785,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 {
                     foreach (BankImportTDSAEpMatchRow match in MainDS.AEpMatch.Rows)
                     {
-                        if (match.MatchText == row.MatchText)
+                        if ((match.MatchText == row.MatchText) && (match.Detail == ADetail))
                         {
                             BankImportTDSTransactionDetailRow newRow = TransactionDetail.NewRowTyped(false);
                             DataUtilities.CopyAllColumnValues(match, newRow);
