@@ -719,7 +719,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool LoadTransactionAndDetails(Int32 AStatementKey, Int32 ALedgerNumber, Int32 AOrderNumber,
             out BankImportTDSAEpTransactionTable ATransactions,
-            out BankImportTDSAEpMatchTable ADetails)
+            out BankImportTDSTransactionDetailTable ADetails)
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
 
@@ -744,14 +744,16 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             ATransactions.AcceptChanges();
 
-            ADetails = new BankImportTDSAEpMatchTable();
+            ADetails = new BankImportTDSTransactionDetailTable();
 
             foreach (BankImportTDSAEpMatchRow row in MainDS.AEpMatch.Rows)
             {
                 if (row.MatchText == ATransactions[0].MatchText)
                 {
-                    BankImportTDSAEpMatchRow newRow = ADetails.NewRowTyped(false);
+                    BankImportTDSTransactionDetailRow newRow = ADetails.NewRowTyped(false);
                     DataUtilities.CopyAllColumnValues(row, newRow);
+                    newRow.LedgerNumber = ALedgerNumber;
+                    newRow.Order = AOrderNumber;
                     ADetails.Rows.Add(newRow);
                 }
             }
