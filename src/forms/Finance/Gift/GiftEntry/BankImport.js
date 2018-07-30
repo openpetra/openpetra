@@ -240,6 +240,8 @@ function import_file(self) {
 			'ASeparator': ';',
 			'ADateFormat': "dmy",
 			"ANumberFormat": "European",
+			"ACurrencyCode": "EUR",
+			"AStartAfterLine": '"Buchungstag";"Wertstellungstag";"Verwendungszweck";"Umsatz";"Währung"',
 			"AColumnMeaning": "unused,DateEffective,Description,Amount,Currency" // TODO
 			};
 
@@ -261,6 +263,6 @@ function import_file(self) {
 
 	}
 	// Read in the file as a data URL.
-	reader.readAsText(self[0].files[0]);
+	reader.readAsText(self[0].files[0], 'ISO-8859-1');
 
 };
