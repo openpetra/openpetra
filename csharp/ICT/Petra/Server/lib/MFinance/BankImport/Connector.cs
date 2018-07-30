@@ -765,6 +765,40 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         }
 
         /// <summary>
+        /// returns the specified transaction detail of a transaction of the bank statement
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool LoadTransactionDetail(Int32 ALedgerNumber, Int32 AStatementKey, Int32 AOrder,
+            Int32 ADetail,
+            out BankImportTDSTransactionDetailTable TransactionDetail)
+        {
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+
+            TransactionDetail = new BankImportTDSTransactionDetailTable();
+
+            foreach (BankImportTDSAEpTransactionRow row in MainDS.AEpTransaction.Rows)
+            {
+                if (row.Order == AOrder)
+                {
+                    foreach (BankImportTDSAEpMatchRow match in MainDS.AEpMatch.Rows)
+                    {
+                        if (match.MatchText == row.MatchText)
+                        {
+                            BankImportTDSTransactionDetailRow newRow = TransactionDetail.NewRowTyped(false);
+                            DataUtilities.CopyAllColumnValues(match, newRow);
+                            newRow.LedgerNumber = ALedgerNumber;
+                            newRow.StatementKey = AStatementKey;
+                            newRow.Order = AOrder;
+                            TransactionDetail.Rows.Add(newRow);
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// commit matches into a_ep_match
         /// </summary>
         /// <param name="AMainDS"></param>

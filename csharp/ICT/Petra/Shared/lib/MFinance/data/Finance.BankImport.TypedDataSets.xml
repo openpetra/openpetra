@@ -30,6 +30,10 @@
             <CustomField name="GiftDetailNumbers" type="string"/>
             <CustomField name="DonorKey" type="Int64"/>
         </Table>
+        <Table name="TransactionDetail" sqltable="a_ep_match">
+            <Field sqltable="a_ep_transaction" sqlfield="a_statement_key_i"/>
+            <Field sqltable="a_ep_transaction" sqlfield="a_order_i"/>
+        </Table>
         <Table sqltable="a_cost_centre"/>
         <Table sqltable="a_motivation_detail"/>
     </DataSet>
