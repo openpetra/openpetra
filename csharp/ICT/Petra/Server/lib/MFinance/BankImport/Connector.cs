@@ -33,7 +33,7 @@ using System.Threading;
 using System.Web;
 using Ict.Common;
 using Ict.Common.Verification;
-using Ict.Common.Data; // Needed indirectly by Ict.Petra.Server.lib.MFinance.Common.dll and Ict.Petra.Shared.lib.data.dll
+using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Session;
@@ -683,9 +683,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         }
 
         /// <summary>
-        /// returns the transactions of the bank statement, and the matches if they exist;
-        /// tries to find matches too.
-        /// returns only the transactions, not the details.
+        /// returns the transactions of the bank statement.
+        /// returns only the transactions, not the details. no matching.
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static AEpTransactionTable GetTransactions(Int32 AStatementKey, Int32 ALedgerNumber, String AMatchAction)
@@ -696,19 +695,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             {
                 if (row.DetailKey != -1)
                 {
+                    // will never happen, we only have one detail per transaction
                     row.Delete();
                 }
                 else if (AMatchAction != String.Empty)
                 {
-                    TLogging.Log(AMatchAction + " " + row.MatchAction);
-                    if (AMatchAction == MFinanceConstants.BANK_STMT_STATUS_UNMATCHED)
-                    {
-                        if (row.MatchAction != AMatchAction && row.MatchAction != MFinanceConstants.BANK_STMT_POTENTIAL_GIFT)
-                        {
-                            row.Delete();
-                        }
-                    }
-                    else if (row.MatchAction != AMatchAction)
+                    if (row.MatchAction != AMatchAction)
                     {
                         row.Delete();
                     }
@@ -725,21 +717,51 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// tries to find matches too.
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static AEpTransactionTable LoadTransactionAndDetails(Int32 AStatementKey, Int32 ALedgerNumber, Int32 AOrderNumber)
+        public static bool LoadTransactionAndDetails(Int32 AStatementKey, Int32 ALedgerNumber, Int32 AOrderNumber,
+            out BankImportTDSAEpTransactionTable ATransactions,
+            out BankImportTDSAEpMatchTable ADetails)
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
-            
-            foreach (AEpTransactionRow row in MainDS.AEpTransaction.Rows)
+
+            ATransactions = new BankImportTDSAEpTransactionTable();
+
+            foreach (BankImportTDSAEpTransactionRow row in MainDS.AEpTransaction.Rows)
             {
-                if (row.Order != AOrderNumber)
+                if (row.Order == AOrderNumber)
                 {
-                    row.Delete();
+                    BankImportTDSAEpTransactionRow newRow = ATransactions.NewRowTyped(false);
+                    DataUtilities.CopyAllColumnValues(row, newRow);
+                    ATransactions.Rows.Add(newRow);
                 }
             }
 
-            MainDS.AcceptChanges();
+            ATransactions.Constraints.Clear();
+            ATransactions.Columns.Remove("a_detail_key_i");
+            ATransactions.Columns.Remove("GiftLedgerNumber");
+            ATransactions.Columns.Remove("GiftBatchNumber");
+            ATransactions.Columns.Remove("GiftTransactionNumber");
+            ATransactions.Columns.Remove("GiftDetailNumbers");
 
-            return MainDS.AEpTransaction;
+            ATransactions.AcceptChanges();
+
+            ADetails = new BankImportTDSAEpMatchTable();
+
+            foreach (BankImportTDSAEpMatchRow row in MainDS.AEpMatch.Rows)
+            {
+                if (row.MatchText == ATransactions[0].MatchText)
+                {
+                    BankImportTDSAEpMatchRow newRow = ADetails.NewRowTyped(false);
+                    DataUtilities.CopyAllColumnValues(row, newRow);
+                    ADetails.Rows.Add(newRow);
+                }
+            }
+
+            ATransactions[0].DonorKey = ADetails[0].DonorKey;
+            ADetails.Columns.Remove("p_donor_key_n");
+
+            ADetails.AcceptChanges();
+
+            return true;
         }
 
         /// <summary>
