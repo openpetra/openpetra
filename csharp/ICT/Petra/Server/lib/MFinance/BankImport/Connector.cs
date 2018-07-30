@@ -821,6 +821,106 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         }
 
         /// <summary>
+        /// commit matches into a_ep_match
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainTransactionDetail(
+            string action,
+            int ALedgerNumber,
+            int AStatementKey, int AOrder, int ADetail,
+            string MatchAction,
+            Int64 DonorKey, string AMotivationGroupCode, string AMotivationDetailCode, 
+            string AAccountCode, string ACostCentreCode,
+            Decimal AGiftTransactionAmount)
+        {
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+
+            if (MainDS == null)
+            {
+                return false;
+            }
+
+            // find the right transaction
+            BankImportTDSAEpTransactionRow transaction = null;
+
+            foreach (BankImportTDSAEpTransactionRow row in MainDS.AEpTransaction.Rows)
+            {
+                if (row.Order == AOrder)
+                {
+                    transaction = row;
+                }
+            }
+
+            if (action == "delete")
+            {
+                foreach (BankImportTDSAEpMatchRow row in MainDS.AEpMatch.Rows)
+                {
+                    if (row.MatchText == transaction.MatchText && row.Detail == ADetail)
+                    {
+                        row.Delete();
+                    }
+                    else if (row.Detail > ADetail)
+                    {
+                        row.Detail--;
+                    }
+                }
+            }
+            else if (action == "create")
+            {
+                transaction.MatchAction = MatchAction;
+                BankImportTDSAEpMatchRow row = MainDS.AEpMatch.NewRowTyped(true);
+                row.EpMatchKey = -1;
+                row.MatchText = transaction.MatchText;
+                row.Detail = ADetail;
+                row.LedgerNumber = ALedgerNumber;
+                row.Action = MatchAction;
+                row.MotivationGroupCode = AMotivationGroupCode;
+                row.MotivationDetailCode = AMotivationDetailCode;
+                row.AccountCode = AAccountCode;
+                row.CostCentreCode = ACostCentreCode;
+                row.GiftTransactionAmount = AGiftTransactionAmount;
+                MainDS.AEpMatch.Rows.Add(row);
+            }
+            else if (action == "update")
+            {
+                transaction.MatchAction = MatchAction;
+
+                foreach (BankImportTDSAEpMatchRow row in MainDS.AEpMatch.Rows)
+                {
+                    if (row.MatchText == transaction.MatchText && row.Detail == ADetail)
+                    {
+                        row.MotivationGroupCode = AMotivationGroupCode;
+                        row.MotivationDetailCode = AMotivationDetailCode;
+                        row.AccountCode = AAccountCode;
+                        row.CostCentreCode = ACostCentreCode;
+                        row.GiftTransactionAmount = AGiftTransactionAmount;
+                    }
+                }
+            }
+
+            try
+            {
+                BankImportTDSAccess.SubmitChanges(MainDS);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// delete a match
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool DeleteTransactionDetail(
+            int AStatementKey, int AOrder, int ADetail)
+        {
+            // TODO
+            return false;
+        }
+
+        /// <summary>
         /// create a gift batch for the matched gifts, and return the gift batch number
         /// </summary>
         /// <returns>the gift batch number</returns>
