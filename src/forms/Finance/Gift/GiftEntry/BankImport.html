@@ -40,7 +40,7 @@
 	<div class="tpl_trans_detail_row">
 		<div class="row">
 			<div class="col">
-					<span>{val_a_detail_i}</span>
+					<span>{val_a_detail_key_i}</span>
 			</div>
 			<div class="col">
 					<span>{val_a_transaction_amount_n}</span>
@@ -52,7 +52,7 @@
 					<span>{val_a_motivation_detail_code_c}</span>
 			</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" onclick="edit_gift_trans_detail({val_a_order_i}, {val_a_detail_i})">
+				<button type="button" class="btn btn-primary" onclick="edit_gift_trans_detail({val_a_order_i}, {val_a_detail_key_i})">
 					<i class="fa fa-wrench"></i>
 				</button>
 			</div>
@@ -103,13 +103,13 @@
 							</div>
 							<div class="col">
 								<fieldset>
-									<label><input type="radio" id="unmatched" name="a_action_c" value="UNMATCHED">
+									<label><input type="radio" name="MatchAction" value="UNMATCHED">
 									{unmatched}</label><br/>
-									<label><input type="radio" id="matchedgift" name="a_action_c" value="MATCHED-GIFT">
+									<label><input type="radio" name="MatchAction" value="MATCHED-GIFT">
 									{matchedgift}</label><br/>
-									<label><input type="radio" id="matchedgl" name="a_action_c" value="MATCHED-GL">
+									<label><input type="radio" name="MatchAction" value="MATCHED-GL">
 									{matchedgl}</label><br/>
-									<label><input type="radio" id="ignored" name="a_action_c" value="DONT-MATCH">
+									<label><input type="radio" name="MatchAction" value="DONT-MATCH">
 									{ignored}</label><br/>
 								</fieldset>
 							</div>

@@ -50,6 +50,7 @@ function display_list() {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_GetTransactions', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
+		console.log(data);
 		let field = $('#browse_container').html('');
 		for (item of data.result) {
 			format_item(item);
@@ -101,7 +102,6 @@ function edit_gift_trans(trans_order) {
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed.result[0] );
 
 		for (detail of parsed.result) {
