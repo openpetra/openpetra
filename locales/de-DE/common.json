@@ -308,6 +308,33 @@
       "motivation_center_c":"Kostenstelle",
       "motivation_detail_code":"Detail-Code"
     },
+
+    "BankImport":{
+      "display":"Anzeigen",
+      "all":"Alle",
+      "caption":"Bank Import",
+      "detail":"Detail",
+      "bankimport_name":"Name",
+      "bankimport_status":"status",
+      "matched":"Zugeordned",
+      "unmatched":"Nicht zugeordned",
+      "gift":"Spende",
+      "ignored":"Ignoriert",
+      "edittitle_trans":"Transaktionen bearbeiten",
+      "order_id":"Autragsnummer",
+      "description":"Beschreibung",
+      "transaction_amount":"Betrag",
+      "action":"Aktion",
+      "donor_key":"Spendernummer",
+      "detail_id":"Detail ID",
+      "motivation_group_code":"Spendengrund Code",
+      "motivation_detail_code":"Spendengrunddetail Code",
+      "matchedgift":"Zugeordnete Spende",
+      "matchedgl":"Zugeordnete Batch",
+      "cost_center_code":"Kostenstelle",
+      "account_code":"Account"
+    },
+
     "ImportPartners":{
       "importUser":"Partner aus CSV Datei importieren"
     }

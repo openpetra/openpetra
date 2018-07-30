@@ -43,16 +43,22 @@
 					<span>{val_a_detail_i}</span>
 			</div>
 			<div class="col">
-					<span>{val_a_transaction_amount_n}</span>
+					<span>{val_a_gift_transaction_amount_n}</span>
 			</div>
-			<div class="col">
+			<div class="col MATCHED-GL" requireClass>
+					<span>{val_a_account_code_c}</span>
+			</div>
+			<div class="col MATCHED-GL" requireClass>
+					<span>{val_a_cost_centre_code_c}</span>
+			</div>
+			<div class="col MATCHED-GIFT" requireClass>
 					<span>{val_a_motivation_group_code_c}</span>
 			</div>
-			<div class="col">
+			<div class="col MATCHED-GIFT" requireClass>
 					<span>{val_a_motivation_detail_code_c}</span>
 			</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" onclick="edit_gift_trans_detail({val_a_order_i}, {val_a_detail_i})">
+				<button type="button" class="btn btn-primary" onclick="edit_gift_trans_detail({val_a_statement_key_i},{val_a_order_i},{val_a_detail_i})">
 					<i class="fa fa-wrench"></i>
 				</button>
 			</div>
@@ -102,42 +108,63 @@
 								<span>{action}</span>
 							</div>
 							<div class="col">
-								<fieldset>
-									<label><input type="radio" id="unmatched" name="a_action_c" value="UNMATCHED">
+								<fieldset onchange="update_requireClass($(this).closest('.modal'), $(this).find('[type=radio]:checked').val())">
+									<label><input type="radio" name="MatchAction" value="UNMATCHED">
 									{unmatched}</label><br/>
-									<label><input type="radio" id="matchedgift" name="a_action_c" value="MATCHED-GIFT">
+									<label><input type="radio" name="MatchAction" value="MATCHED-GIFT">
 									{matchedgift}</label><br/>
-									<label><input type="radio" id="matchedgl" name="a_action_c" value="MATCHED-GL">
+									<label><input type="radio" name="MatchAction" value="MATCHED-GL">
 									{matchedgl}</label><br/>
-									<label><input type="radio" id="ignored" name="a_action_c" value="DONT-MATCH">
+									<label><input type="radio" name="MatchAction" value="DONT-MATCH">
 									{ignored}</label><br/>
 								</fieldset>
 							</div>
 						</div>
 
-						<div class="row">
+
+						<!-- details -->
+
+						<div requireClass class="UNMATCHED">
+							<h4>{Detail}</h4>
+							<p>{not_av}</p>
+						</div>
+
+						<div requireClass class="DONT-MATCH">
+							<h4>{Detail}</h4>
+							<p>{not_av}</p>
+						</div>
+
+						<div requireClass class="row MATCHED-GIFT">
 							<div class="col">
 								<span>{donor_key}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="p_donor_key_n" value="" >
+								<div class="autocomplete">
+									<input class="" type="text" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)">
+								</div>
 							</div>
 						</div>
 
-						<!-- details -->
-
-						<div class="row">
+						<div requireClass class="row MATCHED-GIFT MATCHED-GL">
 							<div class="col">
-								<h4>Detail</h4>
-								<button type="button" class="btn btn-primary" onclick="new_trans_detail()">
+								<h4>{detail}</h4>
+								<button type="button" class="btn btn-primary" onclick="new_trans_detail({val_a_order_i})">
 									<span>{forms.new}</span>
 									<i class="fa fa-plus"></i>
 								</button>
-								<div class="row">
+								<div class="row MATCHED-GIFT" requireClass>
 									<div class="col">{detail_id}</div>
 									<div class="col">{transaction_amount}</div>
 									<div class="col">{motivation_group_code}</div>
 									<div class="col">{motivation_detail_code}</div>
+									<div class="col-1">
+									</div>
+								</div>
+								<div class="row MATCHED-GL" requireClass>
+									<div class="col">{detail_id}</div>
+									<div class="col">{transaction_amount}</div>
+									<div class="col">{account_code}</div>
+									<div class="col">{cost_center_code}</div>
 									<div class="col-1">
 									</div>
 								</div>
@@ -198,52 +225,47 @@
 								<span>{transaction_amount}</span>
 							</div>
 							<div class="col">
-								<input type="number" name="a_transaction_amount_n" value="" readonly>
+								<input type="number" name="a_gift_transaction_amount_n" value="">
 							</div>
 						</div>
 
-						<div class="row">
+						<div class="row MATCHED-GIFT" requireClass>
 							<div class="col">
 								<span>{motivation_group_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_motivation_group_code_c" value="" readonly>
+								<input class="" type="text" name="a_motivation_group_code_c" value="">
 							</div>
 						</div>
 
-						<div class="row">
+						<div class="row MATCHED-GIFT" requireClass>
 							<div class="col">
 								<span>{motivation_detail_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_motivation_detail_code_c" value="" readonly>
+								<input class="" type="text" name="a_motivation_detail_code_c" value="">
 							</div>
 						</div>
 
-						<div class="row">
-							<div class="col">
-								<span>{description}</span>
-							</div>
-							<div class="col">
-								<input type="text" name="a_narrative_c" value="">
-							</div>
-						</div>
-
-						<div class="row">
+						<div class="row MATCHED-GL" requireClass>
 							<div class="col">
 								<span>{account_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_account_code_c" value="">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_account_code_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
+								</div>
 							</div>
 						</div>
 
-						<div class="row">
+						<div class="row MATCHED-GL" requireClass>
 							<div class="col">
 								<span>{cost_center}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_cost_centre_code_c" value="">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_cost_centre_code_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+								</div>
 							</div>
 						</div>
 
@@ -318,3 +340,6 @@
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>

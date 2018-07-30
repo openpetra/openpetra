@@ -23,8 +23,6 @@
 
 $('document').ready(function () {
 	// TODO set proper default values for the filter
-	// $('#tabfilter input[name="ABatchPeriod"]').val(44);
-	// $('#tabfilter input[name="ABatchYear"]').val(0);
 	get_avariable_years();
 	display_list('preset');
 

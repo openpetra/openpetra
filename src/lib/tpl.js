@@ -56,6 +56,10 @@ function format_tpl(tpl, data, limit_to_table) {
       f.attr('checked', data[variable]);
       f.prop('checked', data[variable]);
     }
+    else if (f.attr('type') == "radio" && key==false) {
+      tpl.find('[name='+variable+'][value='+data[variable]+']').prop('checked', true);
+      tpl.find('[name='+variable+'][value='+data[variable]+']').attr('checked', 'checked');
+    }
     else if ( key==false ) {
       value = data[variable];
       if (typeof value === 'string' || value instanceof String) {
@@ -125,6 +129,9 @@ function extract_data(object) {
       }
 
     }
+    if (obj.attr('type') == 'radio') {
+      r[obj.attr('name')] = object.find('[name='+obj.attr('name')+']:checked').val();
+    }
   });
 
   object.find('[key-name]').each(function (i, obj) {
@@ -133,4 +140,10 @@ function extract_data(object) {
   });
 
   return r;
+}
+
+function update_requireClass(object, class_) {
+	object = $(object);
+	object.find('[requireClass]').hide();
+	object.find('.'+class_).show();
 }

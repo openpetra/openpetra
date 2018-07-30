@@ -80,13 +80,25 @@ function format_item(item) {
 
 /////
 
-function new_trans_detail() {
-	let tpl_edit_raw = $('[phantom] .tpl_edit_trans_detail').clone();
-	$('#modal_space').append(tpl_edit_raw);
-	$('.modal').modal('hide');
-	tpl_edit_raw.find('[action]').val('create');
-	tpl_edit_raw.modal('show');
-
+function new_trans_detail(trans_order) {
+	let x = {
+		"ALedgerNumber":window.localStorage.getItem('current_ledger'),
+		"AStatementKey":$('#bank_number_id').val(),
+		"AOrderNumber": trans_order
+	};
+	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		let p = parsed.ATransactions[0];
+		p['a_detail_i'] = $('#modal_space .tpl_edit_trans .detail_col > *').length;
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), p );
+		$('#modal_space').append(tpl_edit_raw);
+		$('.modal').modal('hide');
+		let sclass = $('#modal_space > .tpl_edit_trans [name=MatchAction]:checked').val();
+		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
+		tpl_edit_raw.find('[action]').val('create');
+		tpl_edit_raw.modal('show');
+		update_requireClass(tpl_edit_raw, sclass);
+	})
 }
 
 /////
@@ -101,60 +113,41 @@ function edit_gift_trans(trans_order) {
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed.ATransactions[0] );
 
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed.result[0] );
-
-		for (detail of parsed.result) {
+		for (detail of parsed.ADetails) {
+			console.log(detail);
 			let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
 			tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 		}
 
-
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
+		update_requireClass(tpl_edit_raw, parsed.ATransactions[0].a_action_c);
 
 	})
 }
 
-function edit_gift_trans_detail(trans_id, order_id) {
+function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 
 	let x = {
 		"ALedgerNumber":window.localStorage.getItem('current_ledger'),
-		"AStatementKey":trans_id,
-		"ADetailKey": order_id
+		"AStatementKey":statement_id,
+		"AOrder": order_id,
+		"ADetail": detail_id
 	};
-	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
-		// parsed = JSON.parse(data.data.d);
-		parsed = {
-			'transaction': {
-				'a_statement_key_i': 1, 'a_order_i' : 0, 'a_description_c': 'Spende von TP für Projekt Rettet die Pinguine', 'a_transaction_amount_n': 50, 'a_action_c':'unmatched', 'p_donor_key_n': null
-			},
-			'details': [
-				{
-					'a_statement_key_i': 1, 'a_order_i' : 0, 'a_detail_i': 1, 'a_transaction_amount_n': 50, 'a_motivation_group_code_c': null, 'a_motivation_detail_code_c': null
-				},
-				{
-					'a_statement_key_i': 1, 'a_order_i' : 0, 'a_detail_i': 2, 'a_transaction_amount_n': 500, 'a_motivation_group_code_c': null, 'a_motivation_detail_code_c': null, 'a_narrative_c': 'Mieteinnahme', 'a_account_code_c': '4211', 'a_cost_centre_code_c': '4300'
-				}
-			]
-		}
-
-		let detail = null;
-		for (d of parsed.details) {
-			if (d.a_detail_i == order_id) {
-				detail = d;
-				break;
-			}
-		}
-
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), detail );
-
+	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionDetail', x).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		console.log(parsed.TransactionDetail[0]);
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), parsed.TransactionDetail[0] );
+		let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
+		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 		$('#modal_space').append(tpl_edit_raw);
 		$('.modal').modal('hide');
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
-
+		update_requireClass(tpl_edit_raw, sclass);
 	})
 }
 
@@ -188,9 +181,11 @@ function save_edit_trans_detail(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
+	payload['action'] = mode;
+ 	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+	payload['AStatementKey'] = $('#bank_number_id').val();
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
+	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
