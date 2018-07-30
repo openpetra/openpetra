@@ -319,6 +319,9 @@
     },
 
     "BankImport":{
+      "display":"display",
+      "all":"all",
+      "detail":"Detail",
       "caption":"Bank Import",
       "bankimport_name":"Name",
       "bankimport_status":"status",
@@ -334,7 +337,11 @@
       "donor_key":"Donor number",
       "detail_id":"Detail number",
       "motivation_group_code":"Motivation Group Code",
-      "motivation_detail_code":"Motivation Detail Code"
+      "motivation_detail_code":"Motivation Detail Code",
+      "matchedgift":"matched gift",
+      "matchedgl":"matched batch",
+      "cost_center_code":"cost center",
+      "account_code":"account"
     },
 
     "ImportPartners":{

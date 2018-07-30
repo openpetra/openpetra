@@ -141,3 +141,9 @@ function extract_data(object) {
 
   return r;
 }
+
+function update_requireClass(object, class_) {
+	object = $(object);
+	object.find('[requireClass]').hide();
+	object.find('.'+class_).show();
+}
