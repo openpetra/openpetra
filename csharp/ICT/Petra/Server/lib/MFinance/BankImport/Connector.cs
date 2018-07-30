@@ -76,7 +76,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// <param name="ASeparator"></param>
         /// <param name="ADateFormat">DMY or MDY</param>
         /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ACurrencyCode">eg. EUR</param>
         /// <param name="AColumnMeaning"></param>
+        /// <param name="AStartAfterLine">can be empty, otherwise only the lines after the line matching AStartAfterLine will be parsed</param>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
         /// <param name="AVerificationResult"></param>
         [RequireModulePermission("FINANCE-1")]
@@ -88,7 +90,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             string ASeparator,
             string ADateFormat,
             string ANumberFormat,
+            string ACurrencyCode,
             string AColumnMeaning,
+            string AStartAfterLine,
             out Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -100,7 +104,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 ASeparator,
                 ADateFormat,
                 ANumberFormat,
+                ACurrencyCode,
                 AColumnMeaning,
+                AStartAfterLine,
                 out AStatementKey,
                 out AVerificationResult);
         }

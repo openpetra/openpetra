@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Xml;
+using System.Text;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
@@ -54,7 +55,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
         /// <param name="ASeparator"></param>
         /// <param name="ADateFormat">DMY or MDY</param>
         /// <param name="ANumberFormat">European or American</param>
+        /// <param name="ACurrencyCode">eg. EUR</param>
         /// <param name="AColumnMeaning"></param>
+        /// <param name="AStartAfterLine">can be empty, otherwise only the lines after the line matching AStartAfterLine will be parsed</param>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
         /// <param name="AVerificationResult"></param>
         public static bool ImportBankStatement(
@@ -65,7 +68,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             string ASeparator,
             string ADateFormat,
             string ANumberFormat,
+            string ACurrencyCode,
             string AColumnMeaning,
+            string AStartAfterLine,
             out Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -77,7 +82,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                 ASeparator,
                 ADateFormat,
                 ANumberFormat,
+                ACurrencyCode,
                 AColumnMeaning,
+                AStartAfterLine,
                 ABankStatementFilename,
                 ACSVContent);
 
@@ -103,7 +110,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             string ASeparator,
             string ADateFormat,
             string ANumberFormat,
+            string ACurrencyCode,
             string AColumnsUsage,
+            string AStartAfterLine,
             string ABankStatementFilename,
             string AStatementData)
         {
@@ -153,30 +162,44 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             }
 
             stmt.LedgerNumber = ALedgerNumber;
-            stmt.CurrencyCode = string.Empty;
+            stmt.CurrencyCode = ACurrencyCode;
             stmt.BankAccountCode = ABankAccountCode;
             MainDS.AEpStatement.Rows.Add(stmt);
 
-            DateTime latestDate = DateTime.MinValue;
-
-            Int32 rowCount = 0;
-
             // TODO would need to allow the user to change the order&meaning of columns
             string[] ColumnsUsage = AColumnsUsage.Split(new char[] { ',' });
+            Dictionary<DateTime, List<AEpTransactionRow>> TransactionsPerMonth = new Dictionary<DateTime,List<AEpTransactionRow>>();
+
+            bool startParsing = (AStartAfterLine == String.Empty);
 
             for (; lineCounter < StatementData.Count; lineCounter++)
             {
                 string line = StatementData[lineCounter];
 
-                rowCount++;
+                if (AStartAfterLine == line)
+                {
+                    startParsing = true;
+                    continue;
+                }
+
+                if (!startParsing)
+                {
+                    continue;
+                }
 
                 AEpTransactionRow row = MainDS.AEpTransaction.NewRowTyped();
                 row.StatementKey = stmt.StatementKey;
-                row.Order = rowCount;
-                row.NumberOnPaperStatement = row.Order;
 
                 foreach (string UseAs in ColumnsUsage)
                 {
+                    if (line == String.Empty)
+                    {
+                        // this line is too short, does not have enough columns.
+                        // ignore this row.
+                        row = null;
+                        continue;
+                    }
+
                     string Value = StringHelper.GetNextCSV(ref line, StatementData, ref lineCounter, ASeparator);
 
                     if (UseAs.ToLower() == "dateeffective")
@@ -193,11 +216,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                         catch (Exception)
                         {
                             TLogging.Log("Problem with date effective: " + Value + " (Format: " + DateFormat + ")");
-                        }
-
-                        if (row.DateEffective > latestDate)
-                        {
-                            latestDate = row.DateEffective;
                         }
                     }
                     else if (UseAs.ToLower() == "accountname")
@@ -257,13 +275,63 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                     }
                 }
 
+                if (row == null)
+                {
+                    // ignore this line
+                    continue;
+                }
+
                 // all transactions with positive amount can be donations
                 if (row.TransactionAmount > 0)
                 {
                     row.TransactionTypeCode = MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
                 }
 
+                DateTime month = new DateTime(row.DateEffective.Year, row.DateEffective.Month, 1);
+                if (!TransactionsPerMonth.ContainsKey(month))
+                {
+                    TransactionsPerMonth.Add(month, new List<AEpTransactionRow>());
+                }
+                TransactionsPerMonth[month].Add(row);
+            }
+
+            if (TransactionsPerMonth.Keys.Count == 0)
+            {
+                // cannot find any transactions
+                return MainDS;
+            }
+
+            // now find the month that should be imported
+            DateTime MonthToBeImported = DateTime.MinValue;
+            foreach(DateTime month in TransactionsPerMonth.Keys)
+            {
+                if (MonthToBeImported == DateTime.MinValue)
+                {
+                    MonthToBeImported = month;
+                }
+                else
+                {
+                    if (TransactionsPerMonth[month].Count > TransactionsPerMonth[MonthToBeImported].Count)
+                    {
+                        MonthToBeImported = month;
+                    }
+                }
+            }
+
+            DateTime latestDate = DateTime.MinValue;
+            Int32 rowCount = 0;
+            foreach (AEpTransactionRow row in TransactionsPerMonth[MonthToBeImported])
+            {
+                rowCount++;
+
+                row.Order = rowCount;
+                row.NumberOnPaperStatement = row.Order;
+
                 MainDS.AEpTransaction.Rows.Add(row);
+                if (row.DateEffective > latestDate)
+                {
+                    latestDate = row.DateEffective;
+                }
             }
 
             stmt.Date = latestDate;
