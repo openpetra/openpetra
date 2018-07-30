@@ -456,5 +456,44 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             AResult = result;
             return result.Rows.Count > 0;
         }
-   }
+
+        /// <summary>
+        /// Returns a list of possible candidates for the motivation group or detail
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool TypeAheadMotivationCode(Int32 ALedgerNumber, string ASearch,
+                Int32 ALimit,
+                out DataTable AResult)
+        {
+            TDBTransaction Transaction = null;
+            DataTable result = new DataTable();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string SqlStmt = TDataBase.ReadSqlFile("Finance.TypeAheadMotivation.sql");
+
+                    OdbcParameter[] parameters = new OdbcParameter[4];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("MotivationGroupCode", OdbcType.VarChar);
+                    parameters[1].Value = "%" + ASearch + "%";
+                    parameters[2] = new OdbcParameter("MotivationDetailCode", OdbcType.VarChar);
+                    parameters[2].Value = "%" + ASearch + "%";
+                    parameters[3] = new OdbcParameter("DescGroup", OdbcType.VarChar);
+                    parameters[3].Value = "%" + ASearch + "%";
+                    parameters[4] = new OdbcParameter("DescDetail", OdbcType.VarChar);
+                    parameters[4].Value = "%" + ASearch + "%";
+
+                    SqlStmt += " LIMIT " + ALimit.ToString();
+
+                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                });
+
+            AResult = result;
+            return result.Rows.Count > 0;
+        }
+    }
 }
