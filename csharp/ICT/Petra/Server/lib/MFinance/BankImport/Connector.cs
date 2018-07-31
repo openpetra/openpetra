@@ -858,6 +858,62 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         }
 
         /// <summary>
+        /// commit transaction
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainTransaction(
+            string action,
+            int ALedgerNumber,
+            int AStatementKey, int AOrder,
+            string MatchAction,
+            Int64 DonorKey)
+        {
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+
+            if (MainDS == null)
+            {
+                return false;
+            }
+
+            // find the right transaction
+            BankImportTDSAEpTransactionRow transaction = null;
+
+            foreach (BankImportTDSAEpTransactionRow row in MainDS.AEpTransaction.Rows)
+            {
+                if (row.Order == AOrder)
+                {
+                    transaction = row;
+                }
+            }
+
+            if (action == "update")
+            {
+                foreach (BankImportTDSAEpMatchRow row in MainDS.AEpMatch.Rows)
+                {
+                    if (row.MatchText == transaction.MatchText)
+                    {
+                        row.Action = MatchAction;
+                        row.DonorKey = DonorKey;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            try
+            {
+                BankImportTDSAccess.SubmitChanges(MainDS);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// commit matches into a_ep_match
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
@@ -904,13 +960,22 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
             else if (action == "create")
             {
-                transaction.MatchAction = MatchAction;
+                foreach (BankImportTDSAEpMatchRow rowOther in MainDS.AEpMatch.Rows)
+                {
+                    if (rowOther.MatchText == transaction.MatchText)
+                    {
+                        rowOther.Action = MatchAction;
+                        rowOther.DonorKey = DonorKey;
+                    }
+                }
+
                 BankImportTDSAEpMatchRow row = MainDS.AEpMatch.NewRowTyped(true);
                 row.EpMatchKey = -1;
                 row.MatchText = transaction.MatchText;
                 row.Detail = ADetail;
                 row.LedgerNumber = ALedgerNumber;
                 row.Action = MatchAction;
+                row.DonorKey = DonorKey;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.AccountCode = AAccountCode;
@@ -920,19 +985,26 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
             else if (action == "update")
             {
-                transaction.MatchAction = MatchAction;
-
                 foreach (BankImportTDSAEpMatchRow row in MainDS.AEpMatch.Rows)
                 {
-                    if (row.MatchText == transaction.MatchText && row.Detail == ADetail)
+                    if (row.MatchText == transaction.MatchText)
                     {
-                        row.MotivationGroupCode = AMotivationGroupCode;
-                        row.MotivationDetailCode = AMotivationDetailCode;
-                        row.AccountCode = AAccountCode;
-                        row.CostCentreCode = ACostCentreCode;
-                        row.GiftTransactionAmount = AGiftTransactionAmount;
+                        row.Action = MatchAction;
+                        row.DonorKey = DonorKey;
+                        if (row.Detail == ADetail)
+                        {
+                            row.MotivationGroupCode = AMotivationGroupCode;
+                            row.MotivationDetailCode = AMotivationDetailCode;
+                            row.AccountCode = AAccountCode;
+                            row.CostCentreCode = ACostCentreCode;
+                            row.GiftTransactionAmount = AGiftTransactionAmount;
+                        }
                     }
                 }
+            }
+            else
+            {
+                return false;
             }
 
             try
