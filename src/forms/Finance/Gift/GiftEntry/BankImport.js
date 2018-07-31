@@ -116,7 +116,6 @@ function edit_gift_trans(trans_order) {
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed.ATransactions[0] );
 
 		for (detail of parsed.ADetails) {
-			console.log(detail);
 			let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
 			tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 		}
@@ -124,7 +123,7 @@ function edit_gift_trans(trans_order) {
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
-		update_requireClass(tpl_edit_raw, parsed.ATransactions[0].a_action_c);
+		update_requireClass(tpl_edit_raw, parsed.ATransactions[0].MatchAction);
 
 	})
 }
@@ -139,7 +138,6 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 	};
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionDetail', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		console.log(parsed.TransactionDetail[0]);
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), parsed.TransactionDetail[0] );
 		let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
@@ -160,8 +158,9 @@ function save_edit_trans(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
- 	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
-	payload['AStatementKey'] = $('#bank_number_id').val();
+	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+	payload["AStatementKey"] = $('#bank_number_id').val();
+
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransaction', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
@@ -170,6 +169,7 @@ function save_edit_trans(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
+			display_message(i18next.t('forms.error'), "success");
 			for (msg of parsed.AVerificationResult) {
 				display_message(i18next.t(msg.code), "fail");
 			}
@@ -195,8 +195,9 @@ function save_edit_trans_detail(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+			display_message(i18next.t('forms.error'), "fail");
+			for (error of parsed.AVerificationResult) {
+				display_message(i18next.t(error.msg), "fail");
 			}
 		}
 
@@ -209,7 +210,22 @@ function save_edit_trans_detail(obj_modal) {
 function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
+	payload['action'] = "delete";
+	payload['AStatementKey'] = $('#bank_number_id').val();
+	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		if (parsed.result) {
+			$('#modal_space .modal').modal('hide');
+			display_message(i18next.t('forms.deleted'), "success");
+		} else {
+			display_message(i18next.t('forms.error'), "fail");
+			for (error of parsed.AVerificationResult) {
+				display_message(i18next.t(error.msg), "fail");
+			}
+		}
+
+	});
 }
 
 /////
@@ -263,3 +279,59 @@ function import_file(self) {
 	reader.readAsText(self[0].files[0], 'ISO-8859-1');
 
 };
+
+function transform_to_gl() {
+ let x = {
+	 ALedgerNumber: window.localStorage.getItem('current_ledger'),
+	 AStatementKey: $('#bank_number_id').val(),
+ };
+ // AVerificationResult
+	api.post('serverMFinance.asmx/TBankImportWebConnector_CreateGLBatch', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		let s = false;
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.saved'), 'success' )
+		}
+		else {
+			for (error of parsed.AVerificationResult) {
+				if (error.code == "") {
+					continue;
+				}
+				s = true;
+				display_message( i18next.t(error.code), "fail");
+			}
+			if (!s) {
+				display_message('forms.error', 'fail');
+			}
+		}
+	});
+
+
+}
+
+function transform_to_gift() {
+ let x = {
+	 ALedgerNumber: window.localStorage.getItem('current_ledger'),
+	 AStatementKey: $('#bank_number_id').val(),
+ };
+	api.post('serverMFinance.asmx/TBankImportWebConnector_CreateGiftBatch', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		let s = false;
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.saved'), 'success' )
+		}
+		else {
+			for (error of parsed.AVerificationResult) {
+				if (error.code == "") {
+					continue;
+				}
+				s = true;
+				display_message( i18next.t(error.code), "fail");
+			}
+			if (!s) {
+				display_message('forms.error', 'fail');
+			}
+		}
+	});
+
+}

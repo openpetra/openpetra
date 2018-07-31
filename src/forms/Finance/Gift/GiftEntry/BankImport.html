@@ -234,7 +234,9 @@
 								<span>{motivation_group_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_motivation_group_code_c" value="">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_motivation_group_code_c" key-name="a_motivation_group_code_c" value="" oninput="autocomplete_motivation_group(this)">
+								</div>
 							</div>
 						</div>
 
@@ -243,7 +245,9 @@
 								<span>{motivation_detail_code}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_motivation_detail_code_c" value="">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+								</div>
 							</div>
 						</div>
 
@@ -321,7 +325,9 @@
       </div>
     </div>
 	</div>
-	<button type="button" class="btn btn-primary" onclick="display_list();">{display}</button>
+	<button type="button" class="btn btn-primary" style="margin:2px;" onclick="display_list();">{display}</button>
+	<button type="button" class="btn" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
+	<button type="button" class="btn" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
 </div>
 
 <div class="container" id="browse">
@@ -342,4 +348,5 @@
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
