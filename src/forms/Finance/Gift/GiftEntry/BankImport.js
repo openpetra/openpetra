@@ -122,7 +122,7 @@ function edit_gift_trans(trans_order) {
 		}
 
 		$('#modal_space').html(tpl_edit_raw);
-		tpl_edit_raw.find('[action]').val('edit');
+		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, parsed.ATransactions[0].a_action_c);
 
@@ -145,7 +145,7 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 		$('#modal_space').append(tpl_edit_raw);
 		$('.modal').modal('hide');
-		tpl_edit_raw.find('[action]').val('edit');
+		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, sclass);
 	})
@@ -160,7 +160,9 @@ function save_edit_trans(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
-	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactions', payload).then(function (result) {
+ 	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+	payload['AStatementKey'] = $('#bank_number_id').val();
+	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransaction', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
