@@ -371,7 +371,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return ReturnValue;
         }
- 
+
         /// <summary>
         /// Returns a list of possible candidates for the account code
         /// </summary>
@@ -484,8 +484,6 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     parameters[2].Value = "%" + ASearch + "%";
                     parameters[3] = new OdbcParameter("DescGroup", OdbcType.VarChar);
                     parameters[3].Value = "%" + ASearch + "%";
-                    parameters[4] = new OdbcParameter("DescDetail", OdbcType.VarChar);
-                    parameters[4].Value = "%" + ASearch + "%";
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 

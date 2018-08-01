@@ -324,7 +324,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             {
                 r = AR;
                 a = AAccountCode;
-                b = ABankCode; 
+                b = ABankCode;
             }
 
             public AEpMatchRow r;
@@ -804,7 +804,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// <summary>
         /// commit matches into a_ep_match
         /// </summary>
-        /// <param name="AMainDS"></param>
+        /// <param name="MainDS"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool CommitMatches(BankImportTDS AMainDS)
@@ -822,7 +822,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 for (int RowCount = 0; (RowCount != AMainDS.AEpMatch.Rows.Count); RowCount++)
                 {
                     DataRow TheRow = AMainDS.AEpMatch.Rows[RowCount];
-    
+
                     if (TheRow.RowState == DataRowState.Deleted)
                     {
                         string sql = "UPDATE " + AEpTransactionTable.GetTableDBName() +
@@ -866,10 +866,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             int ALedgerNumber,
             int AStatementKey, int AOrder,
             string MatchAction,
-            Int64 DonorKey)
+            Int64 DonorKey,
+            out TVerificationResultCollection AVerificationResult)
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
-
+            AVerificationResult = new TVerificationResultCollection();
             if (MainDS == null)
             {
                 return false;
@@ -907,8 +908,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 BankImportTDSAccess.SubmitChanges(MainDS);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.ToString(), TResultSeverity.Resv_Critical));
                 return false;
             }
         }
@@ -921,12 +924,14 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             string action,
             int ALedgerNumber,
             int AStatementKey, int AOrder, int ADetail,
-            string MatchAction,
-            Int64 DonorKey, string AMotivationGroupCode, string AMotivationDetailCode, 
+            string AMatchAction,
+            Int64 DonorKey, string AMotivationGroupCode, string AMotivationDetailCode,
             string AAccountCode, string ACostCentreCode,
-            Decimal AGiftTransactionAmount)
+            Decimal AGiftTransactionAmount,
+            out TVerificationResultCollection AVerificationResult)
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            AVerificationResult = new TVerificationResultCollection();
 
             if (MainDS == null)
             {
@@ -964,7 +969,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 {
                     if (rowOther.MatchText == transaction.MatchText)
                     {
-                        rowOther.Action = MatchAction;
+                        rowOther.Action = AMatchAction;
                         rowOther.DonorKey = DonorKey;
                     }
                 }
@@ -974,7 +979,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 row.MatchText = transaction.MatchText;
                 row.Detail = ADetail;
                 row.LedgerNumber = ALedgerNumber;
-                row.Action = MatchAction;
+                row.Action = AMatchAction;
                 row.DonorKey = DonorKey;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
@@ -989,7 +994,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 {
                     if (row.MatchText == transaction.MatchText)
                     {
-                        row.Action = MatchAction;
+                        row.Action = AMatchAction;
                         row.DonorKey = DonorKey;
                         if (row.Detail == ADetail)
                         {
@@ -1004,6 +1009,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
             else
             {
+                AVerificationResult.Add(new TVerificationResult("unknown", "unknown action: '"+action+"'", TResultSeverity.Resv_Critical));
                 return false;
             }
 
@@ -1012,8 +1018,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 BankImportTDSAccess.SubmitChanges(MainDS);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                AVerificationResult.Add(new TVerificationResult("error", e.ToString(), TResultSeverity.Resv_Critical));
                 return false;
             }
         }
@@ -1034,14 +1041,14 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// </summary>
         /// <returns>the gift batch number</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int32 CreateGiftBatch(
+        public static bool CreateGiftBatch(
             Int32 ALedgerNumber,
             Int32 AStatementKey,
-            Int32 AGiftBatchNumber,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            out Int32 ABatchNumber)
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
-
+            ABatchNumber = -1;
             string MyClientID = DomainManager.GClientID.ToString();
 
             TProgressTracker.InitProgressTracker(MyClientID,
@@ -1059,8 +1066,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     AEpStatementTable.GetStatementKeyDBName(),
                     AStatementKey);
             AEpStatementRow stmt = (AEpStatementRow)MainDS.AEpStatement.DefaultView[0].Row;
-
-            // TODO: optional: use the preselected gift batch, AGiftBatchNumber
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             DateTime BatchDateEffective = stmt.Date;
@@ -1092,7 +1097,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         String.Format(Catalog.GetString("There are no transactions for statement #{0}."), AStatementKey),
                         TResultSeverity.Resv_Info));
                 TProgressTracker.FinishJob(MyClientID);
-                return -1;
+                return false;
             }
 
             foreach (DataRowView dv in MainDS.AEpTransaction.DefaultView)
@@ -1116,7 +1121,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                         DBAccess.GDBAccessObj.RollbackTransaction();
                         TProgressTracker.FinishJob(MyClientID);
-                        return -1;
+                        return false;
                     }
                 }
             }
@@ -1264,7 +1269,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             if (AVerificationResult.HasCriticalErrors)
             {
                 TProgressTracker.FinishJob(MyClientID);
-                return -1;
+                return false;
             }
 
             giftbatchRow.HashTotal = HashTotal;
@@ -1280,7 +1285,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             if (result == TSubmitChangesResult.scrOK)
             {
-                return giftbatchRow.BatchNumber;
+                ABatchNumber = giftbatchRow.BatchNumber;
+                return true;
             }
             else
             {
@@ -1288,7 +1294,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 TLogging.Log(VerificationResultSubmitChanges.BuildVerificationResultString());
             }
 
-            return -1;
+            return false;
         }
 
         /// <summary>
@@ -1296,21 +1302,25 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// </summary>
         /// <returns>the GL batch number</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int32 CreateGLBatch(BankImportTDS AMainDS,
+        public static bool CreateGLBatch(
+
             Int32 ALedgerNumber,
             Int32 AStatementKey,
-            Int32 AGLBatchNumber,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            out Int32 ABatchNumber)
         {
-            AMainDS.AEpTransaction.DefaultView.RowFilter =
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            ABatchNumber = -1;
+
+            MainDS.AEpTransaction.DefaultView.RowFilter =
                 String.Format("{0}={1}",
                     AEpTransactionTable.GetStatementKeyDBName(),
                     AStatementKey);
-            AMainDS.AEpStatement.DefaultView.RowFilter =
+            MainDS.AEpStatement.DefaultView.RowFilter =
                 String.Format("{0}={1}",
                     AEpStatementTable.GetStatementKeyDBName(),
                     AStatementKey);
-            AEpStatementRow stmt = (AEpStatementRow)AMainDS.AEpStatement.DefaultView[0].Row;
+            AEpStatementRow stmt = (AEpStatementRow)MainDS.AEpStatement.DefaultView[0].Row;
 
             AVerificationResult = null;
 
@@ -1327,7 +1337,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating GL Batch"), msg, TResultSeverity.Resv_Critical));
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                return -1;
+                return false;
             }
 
             Int32 BatchYear, BatchPeriod;
@@ -1369,11 +1379,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             ATransactionRow trans;
 
-            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
+            foreach (DataRowView dv in MainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
-                DataView v = AMainDS.AEpMatch.DefaultView;
+                DataView v = MainDS.AEpMatch.DefaultView;
                 v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL + "' and " +
                               AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
 
@@ -1454,11 +1464,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             if (result == TSubmitChangesResult.scrOK)
             {
-                return glbatchRow.BatchNumber;
+                ABatchNumber = glbatchRow.BatchNumber;
+                return true;
             }
 
             TLogging.Log("Problems storing GL Batch");
-            return -1;
+            return false;
         }
     }
 }
