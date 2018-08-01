@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -160,7 +160,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //TODO: Calendar vs Financial Date Handling - Check if this should not assume 12 but rather use number of financial periods in ledger
             while (!blnHasErrors && periodCounter < 12)
             {
-                blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
+                blnHasErrors = !TPeriodIntervalConnector.PeriodMonthEnd(
                     FLedgerNumber, false,
                     out glBatchNumbers,
                     out stewardshipBatch,
@@ -171,7 +171,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 Assert.AreEqual(periodCounter, new TLedgerInfo(FLedgerNumber).CurrentPeriod, "should be in new period");
             }
 
-            blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
+            blnHasErrors = !TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, false,
                 out glBatchNumbers,
                 out stewardshipBatch,
@@ -241,7 +241,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Boolean stewardshipBatch;
             TVerificationResultCollection verificationResult;
 
-            bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
+            bool blnHasErrors = !TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true,
                 out glBatchNumbers,
                 out stewardshipBatch,
@@ -298,7 +298,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             /*
              * This error is no longer critical - it's OK to run month end even if a reval is required. (Mantis# 03905)
              *
-             *          bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+             *          bool blnHasErrors = !TPeriodIntervalConnector.TPeriodMonthEnd(
              *              FLedgerNumber, true, out verificationResult);
              *
              *          for (int i = 0; i < verificationResult.Count; ++i)
@@ -334,7 +334,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             Assert.IsTrue(revalueOk, "Problem running the revaluation");
 
-            Boolean Err = TPeriodIntervalConnector.PeriodMonthEnd(
+            Boolean Err = !TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true,
                 out glBatchNumbers,
                 out stewardshipBatch,
@@ -374,7 +374,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 List <Int32>glBatchNumbers;
                 Boolean stewardshipBatch;
 
-                bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
+                bool blnHasErrors = !TPeriodIntervalConnector.PeriodMonthEnd(
                     FLedgerNumber, false,
                     out glBatchNumbers,
                     out stewardshipBatch,
