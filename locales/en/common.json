@@ -340,6 +340,11 @@
       "matchedgift":"matched gift",
       "matchedgl":"matched batch",
       "cost_center_code":"cost center",
+      "account_code":"account",
+      "transform_to_gift":"Create Gift Badge from Import",
+      "transform_to_gl":"Create GL from Import",
+      "not_av":"not avaliable for selected option",
+      "edittitle_trans_detail":"Edit transaction detail",
       "account_code":"account"
     },
 

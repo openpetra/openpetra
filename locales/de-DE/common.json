@@ -335,10 +335,44 @@
       "matchedgift":"Zugeordnete Spende",
       "matchedgl":"Zugeordnete Hauptbuch-Buchung",
       "cost_center_code":"Kostenstelle",
+      "account_code":"Konto",
+      "transform_to_gift":"Erstelle Spendenstapel aus Import",
+      "transform_to_gl":"Erstelle GL aus Import",
+      "not_av":"Nicht verfügbar für die derzeit gewählte Option",
+      "edittitle_trans_detail":"Transactionsdetails bearbeiten",
       "account_code":"Konto"
     },
 
     "ImportPartners":{
       "importUser":"Partner aus CSV Datei importieren"
+    },
+
+    "LedgerInfo":{
+      "caption":"Ledger Info",
+      "ledgername":"Ledgername",
+      "1_month":"Januar",
+      "2_month":"Febuar",
+      "3_month":"März",
+      "4_month":"April",
+      "5_month":"Mai",
+      "6_month":"Juni",
+      "7_month":"Juli",
+      "8_month":"August",
+      "9_month":"September",
+      "10_month":"Oktober",
+      "11_month":"November",
+      "12_month":"Dezember",
+      "years":"Jahre",
+      "ledgernumber":"Ledgernummer",
+      "ledger_base":"Wärung",
+      "ledger_intl":"international wärung",
+      "ledger_current_period":"Derzeitiger Monat",
+      "ledger_accounting_periods":"Berechenbare Monate",
+      "ledger_fwd_posting_periods":"Maximale Anzahl offener Monate",
+      "ledger_retention_gl":"Aufbewarungsrist für GL",
+      "ledger_retention_gift":"Aufbewarungsrist für Spenden",
+      "fwd_posting":"Zeitspanne für offene Monate",
+      "period":"Berechenbare Zeitspanne für Spenden"
     }
+
 }

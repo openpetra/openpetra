@@ -169,7 +169,7 @@ function save_edit_trans(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
-			display_message(i18next.t('forms.error'), "success");
+			display_message(i18next.t('errors.general'), "success");
 			for (msg of parsed.AVerificationResult) {
 				display_message(i18next.t(msg.code), "fail");
 			}
@@ -195,7 +195,7 @@ function save_edit_trans_detail(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
-			display_message(i18next.t('forms.error'), "fail");
+			display_message(i18next.t('errors.general'), "fail");
 			for (error of parsed.AVerificationResult) {
 				display_message(i18next.t(error.msg), "fail");
 			}
@@ -219,7 +219,7 @@ function delete_trans_detail(obj_modal) {
 			$('#modal_space .modal').modal('hide');
 			display_message(i18next.t('forms.deleted'), "success");
 		} else {
-			display_message(i18next.t('forms.error'), "fail");
+			display_message(i18next.t('errors.general'), "fail");
 			for (error of parsed.AVerificationResult) {
 				display_message(i18next.t(error.msg), "fail");
 			}
@@ -301,7 +301,7 @@ function transform_to_gl() {
 				display_message( i18next.t(error.code), "fail");
 			}
 			if (!s) {
-				display_message('forms.error', 'fail');
+				display_message( i18next.t('errors.general'), 'fail');
 			}
 		}
 	});
@@ -329,9 +329,16 @@ function transform_to_gift() {
 				display_message( i18next.t(error.code), "fail");
 			}
 			if (!s) {
-				display_message('forms.error', 'fail');
+				display_message( i18next.t('errors.general'), 'fail');
 			}
 		}
 	});
 
 }
+
+/////
+
+// when closing a detail we wanna reopen the transaction
+$(document).on('hidden.bs.modal', '.modal.tpl_edit_trans_detail', function () {
+	edit_gift_trans( $(this).find('[name=a_order_i]').val() );
+})
