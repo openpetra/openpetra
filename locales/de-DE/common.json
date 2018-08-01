@@ -327,6 +327,7 @@
       "order_id":"Auftragsnummer",
       "description":"Beschreibung",
       "transaction_amount":"Betrag",
+      "transaction_date":"Datum",
       "action":"Aktion",
       "donor_key":"Spendernummer",
       "detail_id":"Detail ID",

@@ -54,6 +54,7 @@ function display_list() {
 		for (item of data.result) {
 			format_item(item);
 		}
+		format_date();
 	})
 }
 

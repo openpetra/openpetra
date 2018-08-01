@@ -332,6 +332,7 @@
       "order_id":"Order number",
       "description":"Description",
       "transaction_amount":"Transaction amount",
+      "transaction_date":"Date",
       "action":"Action",
       "donor_key":"Donor number",
       "detail_id":"Detail number",
