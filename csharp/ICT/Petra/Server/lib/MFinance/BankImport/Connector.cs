@@ -513,7 +513,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             }
                         }
 
-                        if (sum != row.TransactionAmount)
+                        // this is kinda wrong. because you allways have to change status after every detail edit,
+                        // so we ignore it, for now
+                        if (sum != row.TransactionAmount && false)
                         {
                             TLogging.Log(
                                 "we should drop this match since the total is wrong: " + row.Description + " " + sum.ToString() + " " +
