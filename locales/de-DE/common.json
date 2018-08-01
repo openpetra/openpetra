@@ -62,7 +62,9 @@
         "ImportPartners_label":"Partner importieren",
         "LedgerInfo_label":"Hauptbuch Statusinformationen",
         "AccountTree_label":"Konten verwalten",
-        "CostCenterTree_label":"Kostenstellen verwalten"
+        "CostCenterTree_label":"Kostenstellen verwalten",
+        "MonthEnd_label": "Monatsabschluss durchführen",
+        "YearEnd_label": "Jahresabschluss durchführen"
     },
     "forms": {
         "search":"Suchen",
@@ -87,7 +89,7 @@
         "import": "Import"
     },
     "errors": {
-      "general": "Der Vorgang ist Fehlgeschlagen",
+      "general": "Der Vorgang ist fehlgeschlagen",
       "save": "Speichern fehlgeschlagen",
       "edit": "Änderungen sind fehlgeschlagen"
     },
@@ -316,6 +318,7 @@
       "display":"Anzeigen",
       "all":"Alle",
       "caption":"Kontoauszüge importieren",
+      "upload_success": "Kontoauszug wurde erfolgreich importiert",
       "detail":"Detail",
       "bankimport_name":"Name",
       "bankimport_status":"Status",
@@ -329,7 +332,7 @@
       "transaction_amount":"Betrag",
       "transaction_date":"Datum",
       "action":"Aktion",
-      "donor_key":"Spendernummer",
+      "donor":"Spender",
       "detail_id":"Detail ID",
       "motivation_group_code":"Verwendungszweck Gruppe",
       "motivation_detail_code":"Verwendungszweck Detail",
@@ -337,10 +340,10 @@
       "matchedgl":"Zugeordnete Hauptbuch-Buchung",
       "cost_center_code":"Kostenstelle",
       "account_code":"Konto",
-      "transform_to_gift":"Erstelle Spendenstapel aus Import",
-      "transform_to_gl":"Erstelle GL aus Import",
+      "transform_to_gift":"Erstelle Spendenstapel aus Kontoauszug",
+      "transform_to_gl":"Erstelle GL Stapel aus Kontoauszug",
       "not_av":"Nicht verfügbar für die derzeit gewählte Option",
-      "edittitle_trans_detail":"Transactionsdetails bearbeiten",
+      "edittitle_trans_detail":"Details bearbeiten",
       "account_code":"Konto"
     },
 

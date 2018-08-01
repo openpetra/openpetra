@@ -62,7 +62,9 @@
         "ImportPartners_label":"Import partner",
         "LedgerInfo_label":"Ledger infos",
         "AccountTree_label":"Manage Accounts",
-        "CostCenterTree_label":"Manage Cost Centres"
+        "CostCenterTree_label":"Manage Cost Centres",
+        "MonthEnd_label": "Close the current period",
+        "YearEnd_label": "Run the year end"
     },
     "forms": {
         "search":"Search",
@@ -322,6 +324,7 @@
       "all":"all",
       "detail":"Detail",
       "caption":"Bank Import",
+      "upload_success": "Bank statement has been imported successfully",
       "bankimport_name":"Name",
       "bankimport_status":"status",
       "matched":"Matched",
@@ -334,7 +337,7 @@
       "transaction_amount":"Transaction amount",
       "transaction_date":"Date",
       "action":"Action",
-      "donor_key":"Donor number",
+      "donor":"Donor",
       "detail_id":"Detail number",
       "motivation_group_code":"Motivation Group Code",
       "motivation_detail_code":"Motivation Detail Code",
@@ -342,8 +345,8 @@
       "matchedgl":"matched batch",
       "cost_center_code":"cost center",
       "account_code":"account",
-      "transform_to_gift":"Create Gift Badge from Import",
-      "transform_to_gl":"Create GL from Import",
+      "transform_to_gift":"Create Gift Batch from Import",
+      "transform_to_gl":"Create GL Batch from Import",
       "not_av":"not avaliable for selected option",
       "edittitle_trans_detail":"Edit transaction detail",
       "account_code":"account"
