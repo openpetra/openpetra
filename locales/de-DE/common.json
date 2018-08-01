@@ -373,6 +373,11 @@
       "ledger_retention_gift":"Aufbewarungsrist für Spenden",
       "fwd_posting":"Zeitspanne für offene Monate",
       "period":"Berechenbare Zeitspanne für Spenden"
+    },
+    "YearEnd": {
+      "end_year": "End year period"
+    },
+    "MonthEnd": {
+      "end_month": "End month period"
     }
-
 }

@@ -378,5 +378,12 @@
       "ledger_retention_gift":"Retention time for Gifts",
       "fwd_posting":"Forward posting range",
       "period":"Gift posting range"
+    },
+
+    "YearEnd": {
+      "end_year": "Beende Jahresperiode"
+    },
+    "MonthEnd": {
+      "end_month": "Beende Monatsperiode"
     }
 }
