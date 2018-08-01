@@ -54,17 +54,15 @@
         "SystemManager_label": "System Management",
         "Users_label": "Users",
         "Database_label": "Database",
-        "ManageAccounts_label": "Manage Accounts",
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
         "Motivations_label": "Maintain Motivation groups and details",
         "switchledger":"Active Ledger is now:",
         "BankImport_label":"Import donations from bank",
         "ImportPartners_label":"Import partner",
-        "Trees_label":"Hierarchies",
         "LedgerInfo_label":"Ledger infos",
-        "AccountTree_label":"Account hierarchi",
-        "CostCenterTree_label":"Cost center hierarchi"
+        "AccountTree_label":"Manage Accounts",
+        "CostCenterTree_label":"Manage Cost Centres"
     },
     "forms": {
         "search":"Search",

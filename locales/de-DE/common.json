@@ -54,13 +54,15 @@
         "SystemManager_label": "System einrichten",
         "Users_label": "Benutzer",
         "Database_label": "Datenbank",
-        "ManageAccounts_label": "Konten verwalten",
         "FindPartners_label": "Partner suchen",
         "AccountDetail_label": "Bericht über die Konten",
         "Motivations_label": "Verwendungszwecke verwalten",
         "switchledger":"Aktiver Ledger wurde geändert auf:",
         "BankImport_label":"Spenden von Bank importieren",
-        "ImportPartners_label":"Partner importieren"
+        "ImportPartners_label":"Partner importieren",
+        "LedgerInfo_label":"Hauptbuch Statusinformationen",
+        "AccountTree_label":"Konten verwalten",
+        "CostCenterTree_label":"Kostenstellen verwalten"
     },
     "forms": {
         "search":"Suchen",
