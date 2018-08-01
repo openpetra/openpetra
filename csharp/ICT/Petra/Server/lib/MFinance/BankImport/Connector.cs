@@ -306,6 +306,20 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             return false;
         }
 
+        private static string FindDonorName(
+            DataView APartnerByDonorKey,
+            Int64 ADonorKey)
+        {
+            DataRowView[] rows = APartnerByDonorKey.FindRows(new object[] { ADonorKey });
+
+            if (rows.Length == 1)
+            {
+                return rows[0].Row["ShortName"].ToString();
+            }
+
+            return String.Empty;
+        }
+
         private struct MatchDate
         {
             public MatchDate(AEpMatchRow AR, DateTime AD)
@@ -351,6 +365,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 Catalog.GetString("loading statement"),
                 0);
 
+            DataTable PartnerByDonorKey;
+
             try
             {
                 AEpStatementAccess.LoadByPrimaryKey(ResultDataset, AStatementKey, Transaction);
@@ -386,6 +402,18 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
                 DataTable PartnerByBankAccount = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
                 PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
+
+                // load all partner short names of matches
+                string sqlLoadPartnerName =
+                    "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, " +
+                    "p.p_partner_short_name_c AS ShortName " +
+                    "FROM PUB_a_ep_transaction t, PUB_a_ep_match m, PUB_p_partner p " +
+                    "WHERE t.a_statement_key_i = " + AStatementKey.ToString() + " " +
+                    "AND t.a_match_text_c = m.a_match_text_c " +
+                    "AND m.p_donor_key_n = p.p_partner_key_n";
+
+                PartnerByDonorKey = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerName, "partnerByDonorKey", Transaction);
+                PartnerByDonorKey.DefaultView.Sort = "PartnerKey";
 
                 // get all recipients that have been merged
                 string sqlGetMergedRecipients =
@@ -513,7 +541,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             }
                         }
 
-                        // this is kinda wrong. because you allways have to change status after every detail edit,
+                        // this is kinda wrong. because you always have to change status after every detail edit,
                         // so we ignore it, for now
                         if (sum != row.TransactionAmount && false)
                         {
@@ -654,6 +682,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 {
                     row.CostCentreName = ccRow.CostCentreName;
                 }
+
+                row.DonorShortName = FindDonorName(PartnerByDonorKey.DefaultView, row.DonorKey);
             }
 
             // remove all rows that we do not need on the client side
@@ -762,6 +792,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
 
             ATransactions[0].DonorKey = ADetails[0].DonorKey;
+            ATransactions[0].DonorName = ADetails[0].DonorShortName;
             ADetails.Columns.Remove("p_donor_key_n");
 
             ADetails.AcceptChanges();
@@ -806,7 +837,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// <summary>
         /// commit matches into a_ep_match
         /// </summary>
-        /// <param name="MainDS"></param>
+        /// <param name="AMainDS"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool CommitMatches(BankImportTDS AMainDS)
@@ -868,7 +899,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             int ALedgerNumber,
             int AStatementKey, int AOrder,
             string MatchAction,
-            Int64 DonorKey,
+            Int64 ADonorKey,
             out TVerificationResultCollection AVerificationResult)
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
@@ -896,7 +927,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     if (row.MatchText == transaction.MatchText)
                     {
                         row.Action = MatchAction;
-                        row.DonorKey = DonorKey;
+                        row.DonorKey = ADonorKey;
                     }
                 }
             }
@@ -927,7 +958,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             int ALedgerNumber,
             int AStatementKey, int AOrder, int ADetail,
             string AMatchAction,
-            Int64 DonorKey, string AMotivationGroupCode, string AMotivationDetailCode,
+            Int64 ADonorKey, string AMotivationGroupCode, string AMotivationDetailCode,
             string AAccountCode, string ACostCentreCode,
             Decimal AGiftTransactionAmount,
             out TVerificationResultCollection AVerificationResult)
@@ -955,13 +986,16 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             {
                 foreach (BankImportTDSAEpMatchRow row in MainDS.AEpMatch.Rows)
                 {
-                    if (row.MatchText == transaction.MatchText && row.Detail == ADetail)
+                    if (row.MatchText == transaction.MatchText)
                     {
-                        row.Delete();
-                    }
-                    else if (row.Detail > ADetail)
-                    {
-                        row.Detail--;
+                        if(row.Detail == ADetail)
+                        {
+                            row.Delete();
+                        }
+                        else if (row.Detail > ADetail)
+                        {
+                            row.Detail--;
+                        }
                     }
                 }
             }
@@ -972,7 +1006,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     if (rowOther.MatchText == transaction.MatchText)
                     {
                         rowOther.Action = AMatchAction;
-                        rowOther.DonorKey = DonorKey;
+                        rowOther.DonorKey = ADonorKey;
                     }
                 }
 
@@ -982,7 +1016,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 row.Detail = ADetail;
                 row.LedgerNumber = ALedgerNumber;
                 row.Action = AMatchAction;
-                row.DonorKey = DonorKey;
+                row.DonorKey = ADonorKey;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.AccountCode = AAccountCode;
@@ -997,7 +1031,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     if (row.MatchText == transaction.MatchText)
                     {
                         row.Action = AMatchAction;
-                        row.DonorKey = DonorKey;
+                        row.DonorKey = ADonorKey;
                         if (row.Detail == ADetail)
                         {
                             row.MotivationGroupCode = AMotivationGroupCode;
@@ -1025,17 +1059,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 AVerificationResult.Add(new TVerificationResult("error", e.ToString(), TResultSeverity.Resv_Critical));
                 return false;
             }
-        }
-
-        /// <summary>
-        /// delete a match
-        /// </summary>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool DeleteTransactionDetail(
-            int AStatementKey, int AOrder, int ADetail)
-        {
-            // TODO
-            return false;
         }
 
         /// <summary>

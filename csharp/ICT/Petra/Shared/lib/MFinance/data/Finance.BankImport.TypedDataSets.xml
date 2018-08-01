@@ -29,6 +29,7 @@
             <CustomField name="GiftTransactionNumber" type="Int32"/>
             <CustomField name="GiftDetailNumbers" type="string"/>
             <CustomField name="DonorKey" type="Int64"/>
+            <CustomField name="DonorName" type="string"/>
         </Table>
         <Table name="TransactionDetail" sqltable="a_ep_match">
             <Field sqltable="a_ep_transaction" sqlfield="a_statement_key_i"/>
