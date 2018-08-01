@@ -153,6 +153,7 @@
         "BANK": "BANK",
         "UNIT": "UNIT",
         "addresses": "Addresses",
+        "address": "Address",
         "subscriptions": "Subscriptions",
         "types": "Tags",
         "comment": "Comments",

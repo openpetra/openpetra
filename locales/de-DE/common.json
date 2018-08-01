@@ -151,6 +151,7 @@
         "BANK": "BANK",
         "UNIT": "EINHEIT",
         "addresses": "Adressen",
+        "address": "Adresse",
         "subscriptions": "Abonnements",
         "types": "Kategorien",
         "comment": "Anmerkungen",
