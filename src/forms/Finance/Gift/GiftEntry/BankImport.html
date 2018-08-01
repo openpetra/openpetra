@@ -11,7 +11,7 @@
 			<div class="col">{val_a_description_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_gift_trans({val_a_order_i})">
-					<i class="fa fa-eye"></i>
+					<i class="fa fa-wrench"></i>
 				</button>
 			</div>
 		</div>
@@ -91,7 +91,7 @@
 								<span>{description}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_description_c" value="" readonly>
+								<input type="text" name="a_description_c" value="" size="40" readonly>
 							</div>
 						</div>
 
@@ -137,11 +137,11 @@
 
 						<div requireClass class="row MATCHED-GIFT">
 							<div class="col">
-								<span>{donor_key}</span>
+								<span>{donor}</span>
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)">
+									<input class="" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" size="40" oninput="autocomplete_donor(this)">
 								</div>
 							</div>
 						</div>
@@ -149,10 +149,6 @@
 						<div requireClass class="row MATCHED-GIFT MATCHED-GL">
 							<div class="col">
 								<h4>{detail}</h4>
-								<button type="button" class="btn btn-primary" onclick="new_trans_detail({val_a_order_i})">
-									<span>{forms.new}</span>
-									<i class="fa fa-plus"></i>
-								</button>
 								<div class="row MATCHED-GIFT" requireClass>
 									<div class="col">{detail_id}</div>
 									<div class="col">{transaction_amount}</div>
@@ -174,6 +170,10 @@
 
 									</div>
 								</div>
+								<button type="button" class="btn btn-primary" onclick="new_trans_detail({val_a_order_i})">
+									<span>{forms.new}</span>
+									<i class="fa fa-plus"></i>
+								</button>
 							</div>
 
 						</div>
@@ -265,7 +265,7 @@
 
 						<div class="row MATCHED-GL" requireClass>
 							<div class="col">
-								<span>{cost_center}</span>
+								<span>{cost_center_code}</span>
 							</div>
 							<div class="col">
 								<div class="autocomplete">

@@ -114,7 +114,10 @@ function edit_gift_trans(trans_order) {
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), parsed.ATransactions[0] );
+		transaction = parsed.ATransactions[0];
+		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
+		transaction['p_donor_key_n'] = transaction['DonorKey'];
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
 		for (detail of parsed.ADetails) {
 			let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
