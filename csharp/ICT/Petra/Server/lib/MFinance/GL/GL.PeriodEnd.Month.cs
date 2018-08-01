@@ -62,7 +62,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AglBatchNumbers"></param>
         /// <param name="AStewardshipBatch">True if Stewardship Batch was generated</param>
         /// <param name="AVerificationResults"></param>
-        /// <returns>false if there's no problem</returns>
+        /// <returns>true if there's no problem</returns>
         [RequireModulePermission("FINANCE-2")]
         public static bool PeriodMonthEnd(
             Int32 ALedgerNumber,
@@ -119,7 +119,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         TResultSeverity.Resv_Critical));
 
 
-                return true;
+                return false;
             }
         }
     }
@@ -343,7 +343,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            return FHasCriticalErrors;
+            return !FHasCriticalErrors;
         }
     }
 

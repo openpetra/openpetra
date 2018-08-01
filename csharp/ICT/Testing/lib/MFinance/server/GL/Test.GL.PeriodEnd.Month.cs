@@ -86,7 +86,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             List <Int32>glBatchNumbers;
             Boolean stewardshipBatch;
 
-            bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
+            bool blnHasErrors = !TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true,
                 out glBatchNumbers,
                 out stewardshipBatch,
@@ -134,7 +134,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             List <Int32>glBatchNumbers;
             Boolean stewardshipBatch;
 
-            bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(    // Changed to InfoMode because
+            bool blnHasErrors = !TPeriodIntervalConnector.PeriodMonthEnd(    // Changed to InfoMode because
                 FLedgerNumber, true,                                        // the suspense accounts warning is now shown only in InfoMode.
                 out glBatchNumbers,
                 out stewardshipBatch,
