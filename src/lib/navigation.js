@@ -30,6 +30,7 @@ class Navigation {
 		// will be replaced by the build script for the release
 		this.currentrelease = "CURRENTRELEASE";
 		this.classesLoaded = [];
+		$(window).scrollTop(0);
 	}
 
 	// TODO: something about parameters
@@ -81,6 +82,7 @@ class Navigation {
 		if (document.title != windowTitle) {
 			document.title = windowTitle;
 		}
+		$(window).scrollTop(0);
 	};
 
 	IsNavigationPage(path) {
