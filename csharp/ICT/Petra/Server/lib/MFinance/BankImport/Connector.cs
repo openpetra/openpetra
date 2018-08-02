@@ -719,24 +719,70 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// returns only the transactions, not the details. no matching.
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static AEpTransactionTable GetTransactions(Int32 AStatementKey, Int32 ALedgerNumber, String AMatchAction)
+        public static AEpTransactionTable GetTransactions(
+            Int32 AStatementKey,
+            Int32 ALedgerNumber,
+            String AMatchAction,
+            out decimal ATotalDebit,
+            out decimal ATotalCredit,
+            out String ACurrency,
+            out String ACurrencySymbol
+            )
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            ATotalCredit = 0;
+            ATotalDebit = 0;
+
 
             foreach (BankImportTDSAEpTransactionRow row in MainDS.AEpTransaction.Rows)
             {
                 if (row.DetailKey != -1)
                 {
-                    // will never happen, we only have one detail per transaction
-                    row.Delete();
+                  // will never happen, we only have one detail per transaction
+                  row.Delete();
                 }
-                else if (AMatchAction != String.Empty)
+
+                else
                 {
-                    if (row.MatchAction != AMatchAction)
-                    {
-                        row.Delete();
+                  if (row.MatchAction != AMatchAction && AMatchAction != String.Empty )
+                  {
+                      row.Delete();
+                  }
+
+                  else
+                  {
+                    if (row.TransactionAmount > 0) {
+                      ATotalCredit += row.TransactionAmount;
                     }
+                    else {
+                      ATotalDebit += row.TransactionAmount;
+                    }
+                  }
                 }
+
+            }
+            // SELECT ac.a_currency_symbol_c, ac.a_currency_name_c FROM a_currency ac
+
+
+            string sqlSelectCurrency =
+                "SELECT "+
+                "ac.a_currency_symbol_c AS a_currency_symbol_c, "+
+                "ac.a_currency_code_c AS a_currency_code_c, "+
+                "l.a_base_currency_c AS a_base_currency_c"+
+                "FROM a_currency ac, a_ledger l "+
+                "WHERE l.a_base_currency_c = ac.a_currency_code_c "+
+                "AND l.a_ledger_number_i = "+
+                ALedgerNumber.ToString()+";";
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            DataTable RightCurrency = DBAccess.GDBAccessObj.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            ACurrency = "N/A";
+            ACurrencySymbol = "N/A";
+            if (RightCurrency.Rows.Count > 0) {
+              ACurrency = RightCurrency.Rows[0]["a_currency_name_c"].ToString();
+              ACurrencySymbol = RightCurrency.Rows[0]["a_currency_symbol_c"].ToString();
             }
 
             MainDS.AcceptChanges();
