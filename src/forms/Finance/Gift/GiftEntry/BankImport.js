@@ -190,6 +190,9 @@ function save_edit_trans_detail(obj_modal) {
 	payload['action'] = mode;
  	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	payload['AStatementKey'] = $('#bank_number_id').val();
+	payload['ADonorKey'] = getKeyValue('p_donor_key_n');
+
+console.log(payload);
 
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);

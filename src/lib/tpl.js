@@ -142,6 +142,17 @@ function extract_data(object) {
   return r;
 }
 
+function getKeyValue(name) {
+  value = undefined;
+  object.find('[key-name]').each(function (i, obj) {
+    obj = $(obj);
+    if (obj.attr('key-name') == name) {
+      value = obj.attr('key-value');
+    }
+  });
+  return value;
+}
+
 function update_requireClass(object, class_) {
 	object = $(object);
 	object.find('[requireClass]').hide();
