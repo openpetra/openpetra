@@ -27,7 +27,7 @@ function autocomplete_motivation_group(input_field) {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ALimit: 5
 		};
-	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadMotivationCode', x).then(function (result) {
+	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadMotivationGroup', x).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 
 		if (parsed.result == true) {
@@ -36,9 +36,9 @@ function autocomplete_motivation_group(input_field) {
 				value = parsed.AResult[key];
 				list.push({
 					key: value.a_motivation_group_code_c,
-					display: "<b>" + value.a_motivation_group_code_c + "</b>"
+					label: value.a_motivation_group_description_c,
+					display: "<b>" + value.a_motivation_group_code_c + "</b><br/>" + value.a_motivation_group_description_c
 				})
-					// label: value.p_partner_short_name_c,
 			}
 			autocomplete( $(input_field), list);
 		}
@@ -51,7 +51,7 @@ function autocomplete_motivation_detail(input_field) {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ALimit: 5
 		};
-	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadMotivationCode', x).then(function (result) {
+	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadMotivationDetail', x).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		console.log(parsed);
 		if (parsed.result == true) {
@@ -61,8 +61,8 @@ function autocomplete_motivation_detail(input_field) {
 				list.push(
 					{
 						key: value.a_motivation_detail_code_c,
+						label: value.a_motivation_detail_desc_c,
 						display: "<b>" + value.a_motivation_detail_code_c + "</b><br>" + value.a_motivation_detail_desc_c
-						// label: value.p_partner_short_name_c,
 					}
 				);
 			}
