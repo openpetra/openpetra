@@ -65,6 +65,27 @@ function display_message(content, style_arguments) {
 
 }
 
+function display_error(VerificationResult) {
+  if (VerificationResult == null) {
+    display_message( i18next.t('errors.general'), 'fail');
+    return;
+  }
+  for (error of VerificationResult) {
+    if (error.code == "" && error.message == "") {
+      continue;
+    }
+    s = true;
+    if (error.code != "") {
+      display_message( i18next.t(error.code), "fail");
+    } else {
+      display_message( error.message, "fail");
+    }
+  }
+  if (!s) {
+    display_message( i18next.t('errors.general'), 'fail');
+  }
+}
+
 // splits words on _ and capitalize first letter each word
 function translate_to_server(array) {
   let new_a = {};

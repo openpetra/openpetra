@@ -164,10 +164,7 @@ function save_edit_trans(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
-			display_message(i18next.t('errors.general'), "success");
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
-			}
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -190,10 +187,7 @@ function save_edit_trans_detail(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
-			display_message(i18next.t('errors.general'), "fail");
-			for (error of parsed.AVerificationResult) {
-				display_message(i18next.t(error.msg), "fail");
-			}
+			display_error(parsed.AVerificationResult);
 		}
 
 	});
@@ -214,10 +208,7 @@ function delete_trans_detail(obj_modal) {
 			$('#modal_space .modal').modal('hide');
 			display_message(i18next.t('forms.deleted'), "success");
 		} else {
-			display_message(i18next.t('errors.general'), "fail");
-			for (error of parsed.AVerificationResult) {
-				display_message(i18next.t(error.msg), "fail");
-			}
+			display_error(parsed.AVerificationResult);
 		}
 
 	});
@@ -280,7 +271,6 @@ function transform_to_gl() {
 	 ALedgerNumber: window.localStorage.getItem('current_ledger'),
 	 AStatementKey: $('#bank_number_id').val(),
  };
- // AVerificationResult
 	api.post('serverMFinance.asmx/TBankImportWebConnector_CreateGLBatch', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
 		let s = false;
@@ -288,16 +278,7 @@ function transform_to_gl() {
 			display_message( i18next.t('forms.saved'), 'success' )
 		}
 		else {
-			for (error of parsed.AVerificationResult) {
-				if (error.code == "") {
-					continue;
-				}
-				s = true;
-				display_message( i18next.t(error.code), "fail");
-			}
-			if (!s) {
-				display_message( i18next.t('errors.general'), 'fail');
-			}
+			display_error( parsed.AVerificationResult );
 		}
 	});
 
@@ -316,16 +297,7 @@ function transform_to_gift() {
 			display_message( i18next.t('forms.saved'), 'success' )
 		}
 		else {
-			for (error of parsed.AVerificationResult) {
-				if (error.code == "") {
-					continue;
-				}
-				s = true;
-				display_message( i18next.t(error.code), "fail");
-			}
-			if (!s) {
-				display_message( i18next.t('errors.general'), 'fail');
-			}
+			display_error( parsed.AVerificationResult );
 		}
 	});
 
