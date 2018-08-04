@@ -131,6 +131,7 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 	};
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionDetail', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
+		parsed.TransactionDetail[0]['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), parsed.TransactionDetail[0] );
 		let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
