@@ -79,6 +79,7 @@ function new_trans_detail(trans_order) {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let p = parsed.ATransactions[0];
+		p['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
 		p['a_detail_i'] = $('#modal_space .tpl_edit_trans .detail_col > *').length;
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), p );
 		$('#modal_space').append(tpl_edit_raw);
