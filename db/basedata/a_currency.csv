@@ -21,7 +21,7 @@ DZD,Algerian Dinar,DZD,DZ,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 EEK,Estonian Kroon,EEK,EE,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 EGP,Egyptian Pound,EGP,EG,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 ESP,Spanish Peseta,ESP,ES,"->>,>>>,>>>,>>>,>>9",true,?,?,?,?,?
-EUR,European Monetary Unit,EUR,99,"->>>,>>>,>>>,>>9.99",true,?,?,?,?,?
+EUR,European Monetary Unit,€,99,"->>>,>>>,>>>,>>9.99",true,?,?,?,?,?
 FIM,Finnish Markka,FIM,FI,"->>>,>>>,>>>,>>9.99",true,?,?,?,?,?
 FRF,French Franc,FFR,FR,"->>>,>>>,>>>,>>9.99",true,?,?,?,?,?
 GBP,Pound Sterling,GBP,GB,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?

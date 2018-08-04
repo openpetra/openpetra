@@ -714,6 +714,27 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             return ResultDataset;
         }
 
+        private static string GetBaseCurrencyCode(Int32 ALedgerNumber)
+        {
+            string sqlSelectCurrency =
+                "SELECT ac.a_currency_code_c " +
+                "FROM a_currency ac, a_ledger l " +
+                "WHERE l.a_base_currency_c = ac.a_currency_code_c " +
+                "AND l.a_ledger_number_i = " + ALedgerNumber.ToString();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            DataTable RightCurrency = DBAccess.GDBAccessObj.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            string CurrencyCode = "N/A";
+
+            if (RightCurrency.Rows.Count > 0) {
+                CurrencyCode = RightCurrency.Rows[0]["a_currency_code_c"].ToString();
+            }
+
+            return CurrencyCode;
+        }
+
         /// <summary>
         /// returns the transactions of the bank statement.
         /// returns only the transactions, not the details. no matching.
@@ -725,65 +746,33 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             String AMatchAction,
             out decimal ATotalDebit,
             out decimal ATotalCredit,
-            out String ACurrency,
-            out String ACurrencySymbol
+            out String ACurrencyCode
             )
         {
             BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
             ATotalCredit = 0;
             ATotalDebit = 0;
 
-
             foreach (BankImportTDSAEpTransactionRow row in MainDS.AEpTransaction.Rows)
             {
-                if (row.DetailKey != -1)
+                if (row.MatchAction != AMatchAction && AMatchAction != String.Empty )
                 {
-                  // will never happen, we only have one detail per transaction
-                  row.Delete();
+                    row.Delete();
                 }
-
                 else
                 {
-                  if (row.MatchAction != AMatchAction && AMatchAction != String.Empty )
-                  {
-                      row.Delete();
-                  }
-
-                  else
-                  {
-                    if (row.TransactionAmount > 0) {
-                      ATotalCredit += row.TransactionAmount;
+                    if (row.TransactionAmount > 0)
+                    {
+                        ATotalCredit += row.TransactionAmount;
                     }
-                    else {
-                      ATotalDebit += row.TransactionAmount;
+                    else
+                    {
+                        ATotalDebit += row.TransactionAmount*(-1.0m);
                     }
-                  }
                 }
-
             }
-            // SELECT ac.a_currency_symbol_c, ac.a_currency_name_c FROM a_currency ac
 
-
-            string sqlSelectCurrency =
-                "SELECT "+
-                "ac.a_currency_symbol_c AS a_currency_symbol_c, "+
-                "ac.a_currency_code_c AS a_currency_code_c, "+
-                "l.a_base_currency_c AS a_base_currency_c"+
-                "FROM a_currency ac, a_ledger l "+
-                "WHERE l.a_base_currency_c = ac.a_currency_code_c "+
-                "AND l.a_ledger_number_i = "+
-                ALedgerNumber.ToString()+";";
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            DataTable RightCurrency = DBAccess.GDBAccessObj.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            ACurrency = "N/A";
-            ACurrencySymbol = "N/A";
-            if (RightCurrency.Rows.Count > 0) {
-              ACurrency = RightCurrency.Rows[0]["a_currency_name_c"].ToString();
-              ACurrencySymbol = RightCurrency.Rows[0]["a_currency_symbol_c"].ToString();
-            }
+            ACurrencyCode = GetBaseCurrencyCode(ALedgerNumber);
 
             MainDS.AcceptChanges();
 
