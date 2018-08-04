@@ -21,26 +21,37 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-function autocomplete_donor(input_field) {
-	let x = {
-		ASearch: $(input_field).val(),
-		APartnerClass: '',
-		AActiveOnly: true,
-		ALimit: 5
-		};
-	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_TypeAheadPartnerFind', x).then(function (result) {
-		parsed = JSON.parse(result.data.d);
-		if (parsed.result == true) {
-			list = [];
-			for (key in parsed.AResult) {
-				value = parsed.AResult[key];
-				list.push({key: value.p_partner_key_n,
-					label: value.p_partner_short_name_c,
-					display: "<b>" + value.p_partner_short_name_c + "</b> (" + value.p_partner_key_n + ")<br/>" +
-						value.p_street_name_c + "<br/>" + value.p_postal_code_c + " " + value.p_city_c});
-			}
-			autocomplete( $(input_field), list);
-		}
-	})
+var timeout_autocomplete = null;
 
+function autocomplete_donor(input_field) {
+
+	if (timeout_autocomplete) {
+		clearTimeout(timeout_autocomplete);
+	}
+	timeout_autocomplete = setTimeout(function() {
+		let x = {
+			ASearch: $(input_field).val(),
+			APartnerClass: '',
+			AActiveOnly: false,
+			ALimit: 5
+			};
+		api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_TypeAheadPartnerFind', x).then(function (result) {
+			parsed = JSON.parse(result.data.d);
+			if (parsed.result == true) {
+				list = [];
+				for (key in parsed.AResult) {
+					value = parsed.AResult[key];
+					list.push({key: value.p_partner_key_n,
+						label: value.p_partner_short_name_c,
+						display: (value.p_status_code_c != "ACTIVE"? value.p_status_code_c + " ":"") + 
+							"<b>" + value.p_partner_short_name_c + "</b> (" + value.p_partner_key_n + ")<br/>" +
+							value.p_street_name_c + "<br/>" + value.p_postal_code_c + " " + value.p_city_c});
+				}
+				autocomplete( $(input_field), list);
+			} else {
+				list = [];
+				autocomplete( $(input_field), list);
+			}
+		});
+	}, 500);
 }

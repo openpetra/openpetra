@@ -148,6 +148,7 @@
         "city": "City",
         "postalcode": "Postal code",
         "partnerclass": "Partner class",
+        "partnerstatus": "Status",
         "streetname": "Street name",
         "PERSON": "PERSON",
         "FAMILY": "FAMILY",

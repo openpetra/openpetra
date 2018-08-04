@@ -146,6 +146,7 @@
         "city": "Stadt",
         "postalcode": "Postleitzahl",
         "partnerclass": "Partner Klasse",
+        "partnerstatus": "Status",
         "streetname": "Straße und Hausnummer",
         "PERSON": "PERSON",
         "FAMILY": "FAMILIE",

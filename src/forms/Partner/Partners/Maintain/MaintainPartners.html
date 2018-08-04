@@ -5,8 +5,9 @@
 
 	<div class="tpl_row" onclick="open_detail(this)">
 		<div class="row">
-			<div class="col">{val_p_partner_key_n}</div>
-			<div class="col">{val_p_partner_short_name_c}</div>
+			<div class="col-2">{val_p_partner_key_n}</div>
+			<div class="col-2">{val_p_status_code_c}</div>
+			<div class="col-8">{val_p_partner_short_name_c}</div>
 		</div>
 		<div class="row">
 			<div class="col">
@@ -395,8 +396,9 @@
 
 <div class="container" id="browse">
 	<div class="row">
-		<div class="col"><b>{partnerkey}</b></div>
-		<div class="col"><b>{partnername}</b></div>
+		<div class="col-2"><b>{partnerkey}</b></div>
+		<div class="col-2"><b>{partnerstatus}</b></div>
+		<div class="col-8"><b>{partnername}</b></div>
 	</div>
 
 	<div id="browse_container">
