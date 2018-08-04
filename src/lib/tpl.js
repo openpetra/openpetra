@@ -123,6 +123,11 @@ function printJSONDate(value) {
 
 function printCurrency(value, currency) {
 
+  if (isNaN(value)) {
+    // perhaps the value has been formatted already
+    return value;
+  }
+
   var formatter = new Intl.NumberFormat(navigator.language || navigator.userLanguage, {
     style: 'currency',
     currency: currency,
