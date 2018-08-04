@@ -54,25 +54,12 @@ function display_list() {
 		for (item of data.result) {
 			format_item(item);
 		}
+		format_currency(data.ACurrencyCode);
 		format_date();
-		$('#trans_total_debit').text(data.ATotalDebit);
-		$('#trans_total_credit').text(data.ATotalCredit);
+		$('#trans_total_debit').text(printCurrency(data.ATotalDebit, data.ACurrencyCode));
+		$('#trans_total_credit').text(printCurrency(data.ATotalCredit, data.ACurrencyCode));
 	})
 }
-
-function format_date() {
-	$('.format_date').each(
-		function(x, obj) {
-			obj = $(obj);
-			let t = /\((.+)\)/g.exec(obj.text());
-			if (t == null || t.length <=1) {return}
-
-			time = new Date(parseInt(t[1])).toLocaleDateString();
-			obj.text(time);
-
-		}
-	)
-};
 
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);

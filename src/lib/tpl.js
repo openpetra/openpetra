@@ -113,6 +113,44 @@ function printJSONDate(value) {
   return value;
 }
 
+function printCurrency(value, currency) {
+
+  var formatter = new Intl.NumberFormat(navigator.language || navigator.userLanguage, {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2
+  });
+
+  return formatter.format(value);
+}
+
+function format_currency(currencyCode) {
+	$(".format_currency:contains('-')").addClass('debit');
+	$('.format_currency').each(
+		function(x, obj) {
+			obj = $(obj);
+			let t = obj.text();
+			if (t == null || t.length <=1) {return}
+			obj.text(printCurrency(t, currencyCode));
+
+		}
+	)
+};
+
+function format_date() {
+	$('.format_date').each(
+		function(x, obj) {
+			obj = $(obj);
+			let t = /\((.+)\)/g.exec(obj.text());
+			if (t == null || t.length <=1) {return}
+
+			time = new Date(parseInt(t[1])).toLocaleDateString();
+			obj.text(time);
+
+		}
+	)
+};
+
 // this is the oposite the format one, it will extract all name= objects
 // and will return a object in key, values where key is the name and value... well the value
 function extract_data(object) {

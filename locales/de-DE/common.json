@@ -344,7 +344,8 @@
       "transform_to_gl":"Erstelle GL Stapel aus Kontoauszug",
       "not_av":"Nicht verfügbar für die derzeit gewählte Option",
       "edittitle_trans_detail":"Details bearbeiten",
-      "account_code":"Konto"
+      "total_debit":"Summe Soll",
+      "total_credit":"Summe Haben"
     },
 
     "ImportPartners":{

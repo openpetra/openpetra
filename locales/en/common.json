@@ -349,7 +349,8 @@
       "transform_to_gl":"Create GL Batch from Import",
       "not_av":"not avaliable for selected option",
       "edittitle_trans_detail":"Edit transaction detail",
-      "account_code":"account"
+      "total_debit": "Total Debit",
+      "total_credit": "Total Credit"
     },
 
     "ImportPartners":{
