@@ -65,7 +65,7 @@ function display_message(content, style_arguments) {
 
 }
 
-function display_error(VerificationResult) {
+function display_error(VerificationResult, generalerror = 'errors.general') {
   if (VerificationResult == null) {
     display_message( i18next.t('errors.general'), 'fail');
     return;
@@ -82,7 +82,7 @@ function display_error(VerificationResult) {
     }
   }
   if (!s) {
-    display_message( i18next.t('errors.general'), 'fail');
+    display_message( i18next.t(generalerror), 'fail');
   }
 }
 

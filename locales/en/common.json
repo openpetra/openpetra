@@ -355,7 +355,10 @@
     },
 
     "ImportPartners":{
-      "importUser":"Import partner from CSV file"
+      "importUser":"Import partner from CSV file",
+      "examplefile":"See this example file for the possible columns:",
+      "upload_partner_success":"Partners have been imported successfully",
+      "upload_partner_fail":"Partners could not be imported"
     },
 
     "LedgerInfo":{

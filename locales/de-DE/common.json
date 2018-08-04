@@ -350,7 +350,10 @@
     },
 
     "ImportPartners":{
-      "importUser":"Partner aus CSV Datei importieren"
+      "importUser":"Partner aus CSV Datei importieren",
+      "examplefile":"Hier ist ein Beispiel, um das erwartete Format zu beschreiben:",
+      "upload_partner_success":"Partner wurden erfolgreich importiert!",
+      "upload_partner_fail":"Partner konnten nicht importiert werden."
     },
 
     "LedgerInfo":{
