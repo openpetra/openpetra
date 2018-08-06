@@ -258,7 +258,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         {
             PartnerImportExportTDS MainDS =
                 ImportFromCSVFileReturnDataSet(ACSVPartnerData, ADateFormat, ASeparator, out AVerificationResult);
-            return MainDS.PPartner.Rows.Count > 0;
+
+            if (AVerificationResult.HasCriticalErrors || (MainDS.PPartner.Rows.Count == 0))
+            {
+                return false;
+            }
+
+            return CommitChanges(MainDS, TImportFileFormat.csv, false, false, -1, -1, out AVerificationResult);
         }
 
         /// <summary>
@@ -1997,6 +2003,70 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             if (CanImport)
             {
+                Int64 NewPartnerKey = -1;
+                foreach (PPartnerRow partner in MainDS.PPartner.Rows)
+                {
+                    if (partner.PartnerKey < 0)
+                    {
+                        if (NewPartnerKey < 0)
+                        {
+                            NewPartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
+                        }
+                        else
+                        {
+                            NewPartnerKey++;
+                        }
+
+                        Int64 tempKey = partner.PartnerKey;
+                        partner.PartnerKey = NewPartnerKey;
+
+                        foreach (PFamilyRow family in MainDS.PFamily.Rows)
+                        {
+                            if (family.PartnerKey == tempKey)
+                            {
+                                family.PartnerKey = partner.PartnerKey;
+                            }
+                        }
+
+                        foreach (POrganisationRow org in MainDS.POrganisation.Rows)
+                        {
+                            if (org.PartnerKey == tempKey)
+                            {
+                                org.PartnerKey = partner.PartnerKey;
+                            }
+                        }
+
+                        foreach (PPersonRow person in MainDS.PPerson.Rows)
+                        {
+                            if (person.PartnerKey == tempKey)
+                            {
+                                person.PartnerKey = partner.PartnerKey;
+                            }
+
+                            if (person.FamilyKey == tempKey)
+                            {
+                                person.FamilyKey = partner.PartnerKey;
+                            }
+                        }
+
+                        foreach (PPartnerLocationRow partloc in MainDS.PPartnerLocation.Rows)
+                        {
+                            if (partloc.PartnerKey == tempKey)
+                            {
+                                partloc.PartnerKey = partner.PartnerKey;
+                            }
+                        }
+
+                        foreach (PPartnerAttributeRow partattr in MainDS.PPartnerAttribute.Rows)
+                        {
+                            if (partattr.PartnerKey == tempKey)
+                            {
+                                partattr.PartnerKey = partner.PartnerKey;
+                            }
+                        }
+                    }
+                }
+
                 try
                 {
                     PartnerImportExportTDSAccess.SubmitChanges(MainDS);
