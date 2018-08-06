@@ -50,7 +50,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// Return all partners that match the given criteria. This is used for the partner import screen.
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerFindTDSSearchResultTable FindPartners(string AFirstName, string AFamilyNameOrOrganisation, string ACity, string APartnerClass, short AMaxRecords, out int ATotalRecords)
+        public static PartnerFindTDSSearchResultTable FindPartners(
+            string AFirstName,
+            string AFamilyNameOrOrganisation,
+            string ACity,
+            string APostCode,
+            string APartnerClass,
+            short AMaxRecords,
+            out int ATotalRecords)
         {
             TPartnerFind PartnerFind = new TPartnerFind();
 
@@ -71,6 +78,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             else
             {
                 CriteriaRow.PartnerClass = "*";
+            }
+
+            if (APostCode.Length > 0)
+            {
+                CriteriaRow.PostCode = APostCode;
             }
 
             PartnerFind.PerformSearch(CriteriaData, true);
@@ -153,7 +165,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             int TotalRecords;
-            AResult = FindPartners(String.Empty, ASearch, String.Empty, APartnerClass, ALimit, out TotalRecords);
+            AResult = FindPartners(String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, ALimit, out TotalRecords);
 
             return AResult.Rows.Count > 0;
         }
