@@ -164,6 +164,8 @@
         "financedetails": "Financial Details",
         "receiptletterfrequency": "Frequency for receipt letters",
         "receiptforeachgift": "Send a receipt for each gift?",
+        "annual_receiptletters": "Annually",
+        "no_receiptletters": "Never",
         "eachgift": "for each gift",
         "anonymousdonor": "Anonymous Donor",
         "anonymous": "anonymous",

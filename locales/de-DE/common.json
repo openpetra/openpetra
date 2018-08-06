@@ -162,6 +162,8 @@
         "financedetails": "Finanzen",
         "receiptletterfrequency": "Wie oft sollen Spendenbescheinigungen geschickt werden?",
         "receiptforeachgift": "Jede Spenden einzeln bescheinigen?",
+        "annual_receiptletters": "Einmal pro Jahr",
+        "no_receiptletters": "Niemals",
         "eachgift": "Jede Spenden einzeln",
         "anonymousdonor": "Anonymer Spender",
         "anonymous": "anonym",
