@@ -176,9 +176,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         if (true)
                         {
-                            // don't load p_partner_location for the moment, because we have custom fields duplicating p_location.
-                            // those custom fields need to be set, then we don't need to deliver p_location
-                            // PPartnerLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                            PPartnerLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                             PLocationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                         }
 
@@ -308,7 +306,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool SavePartner(PartnerEditTDS AMainDS,
             List<string> ASubscriptions,
-            List<string> APartnerTypes)
+            List<string> APartnerTypes,
+            bool ASendMail)
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
@@ -345,6 +344,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerlocation.PartnerKey = SaveDS.PPartner[0].PartnerKey;
                 partnerlocation.LocationKey = SaveDS.PLocation[0].LocationKey;
                 partnerlocation.SiteKey = SaveDS.PLocation[0].SiteKey;
+                partnerlocation.SendMail = ASendMail;
                 SaveDS.PPartnerLocation.Rows.Add(partnerlocation);
             }
             else
