@@ -56,6 +56,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string ACity,
             string APostCode,
             string APartnerClass,
+            bool AActiveOnly,
             short AMaxRecords,
             out int ATotalRecords)
         {
@@ -65,7 +66,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PartnerFindTDSSearchCriteriaRow CriteriaRow = CriteriaData.NewRowTyped();
 
             CriteriaData.Rows.Add(CriteriaRow);
-            CriteriaRow.PartnerName = AFamilyNameOrOrganisation;
+            CriteriaRow.PartnerName = "%" + AFamilyNameOrOrganisation + "%";
 
             // CriteriaRow.PersonalName = AFirstName;
             CriteriaRow.City = ACity;
@@ -83,6 +84,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (APostCode.Length > 0)
             {
                 CriteriaRow.PostCode = APostCode;
+            }
+
+            if (AActiveOnly)
+            {
+                CriteriaRow.PartnerStatus = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+            }
+            else
+            {
+                CriteriaRow.PartnerStatus = "*";
             }
 
             PartnerFind.PerformSearch(CriteriaData, true);
@@ -165,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             int TotalRecords;
-            AResult = FindPartners(String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, ALimit, out TotalRecords);
+            AResult = FindPartners(String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, ALimit, out TotalRecords);
 
             return AResult.Rows.Count > 0;
         }
