@@ -43,7 +43,7 @@
   </copy>
 
   <exec program="bash"
-    commandline="-c &quot;killall mono; sleep 1; killall mono; sudo systemctl restart openpetra-server&quot;"/>
+    commandline="-c &quot;killall mono; sleep 1; killall mono; sudo systemctl restart openpetra&quot;"/>
 </target>
 
 <target name="install.js">
