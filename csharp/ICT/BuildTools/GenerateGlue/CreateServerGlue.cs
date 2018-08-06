@@ -293,7 +293,8 @@ namespace GenerateGlue
                 {
                     snippet.AddToCodelet(
                         "LOCALVARIABLES",
-                        parametertype + " Local" + p.ParameterName + " = JsonConvert.DeserializeObject<" + parametertype + ">(" + p.ParameterName + ");" +
+                        parametertype + " Local" + p.ParameterName + " = new " + parametertype + "();" + Environment.NewLine + 
+                        "Local" + p.ParameterName + " = (" + parametertype + ") THttpBinarySerializer.DeserializeDataSet(" + p.ParameterName + ", Local" + p.ParameterName + ");" +
                         Environment.NewLine);
                 }
 

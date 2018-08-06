@@ -365,5 +365,35 @@ namespace Ict.Common.Remoting.Shared
 
             return result;
         }
+
+        /// Deserialize a DataSet
+        static public DataSet DeserializeDataSet(string s, DataSet dataset)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            Dictionary<string,object> tables = (Dictionary<string,object>)serializer.DeserializeObject(s);
+            foreach (KeyValuePair<string, object> entry in tables)
+            {
+                object[] list2 = (object[]) entry.Value;
+                foreach (Dictionary<string,object> obj in list2)
+                {
+                    DataRow row = dataset.Tables[entry.Key].NewRow();
+                    foreach (KeyValuePair<string, object> cell in obj)
+                    {
+                        if (cell.Value == null)
+                        {
+                            row[cell.Key] = DBNull.Value;
+                        }
+                        else
+                        {
+                            row[cell.Key] = cell.Value;
+                        }
+                    }
+
+                    dataset.Tables[entry.Key].Rows.Add(row);
+                }
+            }
+
+            return dataset;
+        }
     }
 }

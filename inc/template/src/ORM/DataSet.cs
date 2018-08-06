@@ -30,12 +30,6 @@ public class {#DATASETNAME} : TTypedDataSet
     {
     }
     
-    /// auto generated for serialization
-    public {#DATASETNAME}(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-            base(info, context)
-    {
-    }
-    
     /// auto generated
     public {#DATASETNAME}(string ADatasetName) : 
             base(ADatasetName)
