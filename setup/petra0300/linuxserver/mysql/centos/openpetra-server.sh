@@ -12,9 +12,9 @@ generatepwd() {
   dd bs=1024 count=1 if=/dev/urandom status=none | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1
 }
 
-if [ -z "$NAME" ]
+if [ -z "$OP_CUSTOMER" ]
 then
-  export NAME=openpetra-server
+  export OP_CUSTOMER=openpetra
   export userName=openpetra
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
@@ -23,6 +23,18 @@ then
   export OPENPETRA_PORT=9000
   export OPENPETRA_HTTP_PORT=80
   export OPENPETRA_DBHOST=localhost
+else
+  config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
+  if [ -f $config ]
+  then
+    export username=$OP_CUSTOMER
+    export OPENPETRA_DBHOST=`cat $config | grep DBHostOrFile | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBUSER=`cat $config | grep DBUserName | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBNAME=`cat $config | grep DBName | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
+    export OPENPETRA_PORT=`cat $config | grep "Server.Port" | awk -F'"' '{print $4}'`
+  fi
 fi
 
 if [ -z "$backupfile" ]
@@ -73,9 +85,25 @@ dumpYmlGz() {
     su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile"
 }
 
+# display the status to check for logged in users etc
+status() {
+    su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
+}
+
 # display a menu to check for logged in users etc
 menu() {
     su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+}
+
+# export variables for debugging to use mysql on the command line
+mysql() {
+    export DBHost=$OPENPETRA_DBHOST
+    export DBUser=$OPENPETRA_DBUSER
+    export DBName=$OPENPETRA_DBNAME
+    export DBPort=$OPENPETRA_DBPORT
+    export DBPwd=$OPENPETRA_DBPWD
+    echo 'call: mysql -u $DBUser -h $DBHost --port=$DBPort --password="$DBPwd" $DBName --default-character-set=utf8'
+    echo " or visit http://localhost/phpMyAdmin, with user $DBUser and password $DBPwd"
 }
 
 # backup the mysql database
@@ -157,6 +185,7 @@ init() {
        | sed -e "s/OPENPETRA_DBNAME/$OPENPETRA_DBNAME/" \
        | sed -e "s/OPENPETRA_DBPORT/$OPENPETRA_DBPORT/" \
        | sed -e "s~PG_OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
+       | sed -e "s~OPENPETRA_PORT~$OPENPETRA_PORT~" \
        | sed -e "s~OPENPETRA_URL~$OPENPETRA_URL~" \
        | sed -e "s/USERNAME/$userName/" \
        > /home/$userName/etc/PetraServerConsole.config
@@ -214,15 +243,15 @@ FINISH
     systemctl restart nginx
     systemctl enable nginx
 
-    if [[ "$NAME" != "openpetra-server" ]]
+    if [[ "$OP_CUSTOMER" != "openpetra" ]]
     then
       # create the service script
-      cp /usr/lib/systemd/system/openpetra-server.service /usr/lib/systemd/system/${NAME}.service
-      sed -i "s~OpenPetra Server~OpenPetra Server for $userName~g" /usr/lib/systemd/system/${NAME}.service
-      sed -i "s~User=openpetra~User=$userName\nEnvironment=NAME=$userName\nEnvironment=userName=$userName\nEnvironment=OPENPETRA_DBUSER=$OPENPETRA_DBUSER\nEnvironment=OPENPETRA_DBPWD='$OPENPETRA_DBPWD'\nEnvironment=OPENPETRA_DBHOST=$OPENPETRA_DBHOST\nEnvironment=OPENPETRA_DBPORT=$OPENPETRA_DBPORT\nEnvironment=OPENPETRA_DBNAME=$OPENPETRA_DBNAME\nEnvironment=OPENPETRA_PORT=$OPENPETRA_PORT~g" /usr/lib/systemd/system/${NAME}.service
+      cp /usr/lib/systemd/system/openpetra-server.service /usr/lib/systemd/system/${OP_CUSTOMER}.service
+      sed -i "s~OpenPetra Server~OpenPetra Server for $userName~g" /usr/lib/systemd/system/${OP_CUSTOMER}.service
+      sed -i "s~User=openpetra~User=$userName\nEnvironment=OP_CUSTOMER=$userName~g" /usr/lib/systemd/system/${OP_CUSTOMER}.service
     fi
-    systemctl enable ${NAME}
-    systemctl start ${NAME}
+    systemctl enable ${OP_CUSTOMER}
+    systemctl start ${OP_CUSTOMER}
 
 }
 
@@ -313,8 +342,14 @@ case "$1" in
     menu)
         menu
         ;;
+    mysql)
+        mysql
+        ;;
+    status)
+        status
+        ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|backup|restore|init|initdb|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|restore|init|initdb|loadYmlGz|dumpYmlGz}"
         exit 1
         ;;
 esac
