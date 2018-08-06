@@ -40,16 +40,15 @@ function UploadUserCSV(self) {
 		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromCSVFile', p)
 		.then(function (result) {
 			result = JSON.parse(result.data.d);
-			result = result.result;
-			if (result == true) {
-				display_message(i18next.t('ImportAndExportDatabase.upload_partner_success'), "success");
+			if (result.result == true) {
+				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
-				display_message(i18next.t('ImportAndExportDatabase.upload_partner_fail'), "fail");
+				display_error(result.AVerificationResult, 'ImportPartners.upload_partner_fail');
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
-			display_message(i18next.t('ImportAndExportDatabase.upload_partner_fail'), "fail");
+			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
 		});
 
 	}

@@ -7,7 +7,7 @@
 		<div class="row">
 			<div class="col">{val_a_order_i}</div>
 			<div class="col format_date">{val_a_date_effective_d}</div>
-			<div class="col">{val_a_transaction_amount_n}</div>
+			<div class="col format_currency">{val_a_transaction_amount_n}</div>
 			<div class="col">{val_a_description_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_gift_trans({val_a_order_i})">
@@ -196,6 +196,7 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<input type="hidden" action value="create">
+				<input type="hidden" name="p_donor_key_n" value="{val_p_donor_key_n}">
 				<div class="modal-header">
 					<h3>{edittitle_trans_detail}</h3>
 				</div>
@@ -299,6 +300,7 @@
 
 <div id="modal_space"></div>
 
+<div class="row">
 <div class="container collapse show" id="tabfilter">
 	<div class="container group-container">
     <div class="row">
@@ -330,19 +332,17 @@
 	<button type="button" class="btn" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
 	<button type="button" class="btn" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
 </div>
+</div>
 
+<div class="row">
 <div class="container" id="browse">
 	<div class="row">
 		<div class="col">
-			<span>{total_debit} : -<span id="trans_total_debit">0</span></span>
+			<span>{total_debit}: <span id="trans_total_debit" class="debit"></span></span>
 		</div>
 		<div class="col">
-			<span>{total_credit} : +<span id="trans_total_credit">0</span></span>
+			<span>{total_credit}: <span id="trans_total_credit"></span></span>
 		</div>
-		</div>
-
-		</div>
-
 	</div>
 	<div class="row">
 		<div class="col"><b>{order_id}</b></div>
@@ -356,6 +356,7 @@
 
 	</div>
 
+</div>
 </div>
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>

@@ -146,6 +146,7 @@
         "city": "Stadt",
         "postalcode": "Postleitzahl",
         "partnerclass": "Partner Klasse",
+        "partnerstatus": "Status",
         "streetname": "Straße und Hausnummer",
         "PERSON": "PERSON",
         "FAMILY": "FAMILIE",
@@ -344,11 +345,15 @@
       "transform_to_gl":"Erstelle GL Stapel aus Kontoauszug",
       "not_av":"Nicht verfügbar für die derzeit gewählte Option",
       "edittitle_trans_detail":"Details bearbeiten",
-      "account_code":"Konto"
+      "total_debit":"Summe Soll",
+      "total_credit":"Summe Haben"
     },
 
     "ImportPartners":{
-      "importUser":"Partner aus CSV Datei importieren"
+      "importUser":"Partner aus CSV Datei importieren",
+      "examplefile":"Hier ist ein Beispiel, um das erwartete Format zu beschreiben:",
+      "upload_partner_success":"Partner wurden erfolgreich importiert!",
+      "upload_partner_fail":"Partner konnten nicht importiert werden."
     },
 
     "LedgerInfo":{

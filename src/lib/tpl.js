@@ -45,33 +45,41 @@ function format_tpl(tpl, data, limit_to_table) {
       key = true;
     }
 
-    if (f.is('select') && key==false) {
-      value = data[variable];
-      $(f).find("option[value='" + value + "']").attr("selected", true);
-    }
-    else if (f.is('textarea') && key==false) {
-      f.text(data[variable]);
-    }
-    else if (f.attr('type') == "checkbox" && key==false) {
-      f.attr('checked', data[variable]);
-      f.prop('checked', data[variable]);
-    }
-    else if (f.attr('type') == "radio" && key==false) {
-      tpl.find('[name='+variable+'][value='+data[variable]+']').prop('checked', true);
-      tpl.find('[name='+variable+'][value='+data[variable]+']').attr('checked', 'checked');
-    }
-    else if ( key==false ) {
-      value = data[variable];
-      if (typeof value === 'string' || value instanceof String) {
-        value = parseJSONDate(variable, value);
-      }
-      f.attr('value', value);
-      f.val(value);
-    }
-    else {
+    if (key == true) {
       //hidden key case
       value = data[variable];
       f.attr('key-value', value);
+    } else {
+      if (f.is('select')) {
+        value = data[variable];
+        $(f).find("option[value='" + value + "']").attr("selected", true);
+      }
+      else if (f.is('textarea')) {
+        f.text(data[variable]);
+      }
+      else if (f.attr('type') == "checkbox") {
+        f.attr('checked', data[variable]);
+        f.prop('checked', data[variable]);
+      }
+      else if (f.attr('type') == "radio") {
+        tpl.find('[name='+variable+'][value='+data[variable]+']').prop('checked', true);
+        tpl.find('[name='+variable+'][value='+data[variable]+']').attr('checked', 'checked');
+      }
+      else {
+        value = data[variable];
+        if (typeof value === 'string' || value instanceof String) {
+          value = parseJSONDate(variable, value);
+        }
+        f.attr('value', value);
+        f.val(value);
+      }
+
+      // check if this field also has a key-name with the same name as the field (eg. a_motivation_group_code_c)
+      f2 = tpl.find("[key-name="+variable+"]");
+      if (f2.length != 0) {
+        value = data[variable];
+        f2.attr('key-value', value);
+      }
     }
 
     let g = tpl[0].outerHTML;
@@ -113,6 +121,49 @@ function printJSONDate(value) {
   return value;
 }
 
+function printCurrency(value, currency) {
+
+  if (isNaN(value)) {
+    // perhaps the value has been formatted already
+    return value;
+  }
+
+  var formatter = new Intl.NumberFormat(navigator.language || navigator.userLanguage, {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2
+  });
+
+  return formatter.format(value);
+}
+
+function format_currency(currencyCode) {
+	$(".format_currency:contains('-')").addClass('debit');
+	$('.format_currency').each(
+		function(x, obj) {
+			obj = $(obj);
+			let t = obj.text();
+			if (t == null || t.length <=1) {return}
+			obj.text(printCurrency(t, currencyCode));
+
+		}
+	)
+};
+
+function format_date() {
+	$('.format_date').each(
+		function(x, obj) {
+			obj = $(obj);
+			let t = /\((.+)\)/g.exec(obj.text());
+			if (t == null || t.length <=1) {return}
+
+			time = new Date(parseInt(t[1])).toLocaleDateString();
+			obj.text(time);
+
+		}
+	)
+};
+
 // this is the oposite the format one, it will extract all name= objects
 // and will return a object in key, values where key is the name and value... well the value
 function extract_data(object) {
@@ -142,7 +193,7 @@ function extract_data(object) {
   return r;
 }
 
-function getKeyValue(name) {
+function getKeyValue(object, name) {
   value = undefined;
   object.find('[key-name]').each(function (i, obj) {
     obj = $(obj);

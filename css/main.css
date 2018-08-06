@@ -97,3 +97,10 @@ body {
 .display_message_fail {
   background:#ee8844!important;
 }
+
+.debit {
+  color:red!important;
+}
+.credit {
+  color:black!important;
+}
