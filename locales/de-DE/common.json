@@ -145,6 +145,7 @@
         "partnername": "Name",
         "city": "Stadt",
         "postalcode": "Postleitzahl",
+        "countrycode": "Land",
         "partnerclass": "Partner Klasse",
         "partnerstatus": "Status",
         "streetname": "Straße und Hausnummer",
