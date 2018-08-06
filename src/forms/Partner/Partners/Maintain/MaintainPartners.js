@@ -135,7 +135,8 @@ function display_partner(parsed) {
 	m = format_tpl(m,
 		{'p_default_email_address_c': parsed.ADefaultEmailAddress,
 		'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
-		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile},
+		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile,
+		'p_send_mail_l': parsed.result.PPartnerLocation[0].p_send_mail_l},
 		null);
 
 	m.find('.select_case').hide();

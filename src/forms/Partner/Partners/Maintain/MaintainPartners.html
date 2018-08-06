@@ -84,6 +84,13 @@
 						<option value="INACTIVE">NOT ACTIVE</option>
 					</select>
 				</div>
+
+				<div class="col-3">
+					<span>{nosolicitations1}</span>
+				</div>
+				<div class="col-3">
+					<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkNoSolicitations" name="p_no_solicitations_l"> {nosolicitations2}</label>
+				</div>
 			</div>
 			<hr>
 
@@ -212,37 +219,44 @@
 					<div class="container">
 
 						<div class="row">
-							<div class="col">
+							<div class="col-3">
 								<span>{streetname}</span>
 							</div>
-							<div class="col">
+							<div class="col-3">
 								<input type="text" name="p_street_name_c" />
+							</div>
+
+							<div class="col-3">
+								<span>{mailingaddress}</span>
+							</div>
+							<div class="col-3">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkSendMail" name="p_send_mail_l"> {mailingaddress}</label>
 							</div>
 						</div>
 
 						<div class="row">
-							<div class="col">
+							<div class="col-3">
 								<span>{city}</span>
 							</div>
-							<div class="col">
+							<div class="col-3">
 								<input type="text" name="p_city_c"/>
 							</div>
 						</div>
 
 						<div class="row">
-							<div class="col">
+							<div class="col-3">
 								<span>{postalcode}</span>
 							</div>
-							<div class="col">
+							<div class="col-3">
 								<input type="text" name="p_postal_code_c"/>
 							</div>
 						</div>
 
 						<div class="row">
-							<div class="col">
+							<div class="col-3">
 								<span>{countrycode}</span>
 							</div>
-							<div class="col">
+							<div class="col-3">
 								<input type="text" name="p_country_code_c" />
 							</div>
 						</div>
