@@ -27,7 +27,7 @@ else
   config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
   if [ -f $config ]
   then
-    export username=$OP_CUSTOMER
+    export userName=$OP_CUSTOMER
     export OPENPETRA_DBHOST=`cat $config | grep DBHostOrFile | awk -F'"' '{print $4}'`
     export OPENPETRA_DBUSER=`cat $config | grep DBUserName | awk -F'"' '{print $4}'`
     export OPENPETRA_DBNAME=`cat $config | grep DBName | awk -F'"' '{print $4}'`
