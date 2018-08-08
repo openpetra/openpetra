@@ -99,7 +99,7 @@
         "welcome": "Welcome to OpenPetra, brought to you by <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> is an easy to use software system for the administration of non-profit organisations, licensed under the GPL.",
         "target": "OpenPetra runs on the main stream browsers, independant of Operating System or screen size.",
-        "favourites": "TODO: here you will be able to add some of your favourite screens, that you use every day.",
+        "favourites": "In the future, you will be able to add here some of your favourite screens, that you use every day.",
         "example": "for example"
     },
     "ChangePassword": {

@@ -86,7 +86,9 @@
         "PleaseWait": "Bitte warten",
         "WaitInfo": "Diese Aktion kann ein paar Sekunden dauern...",
         "description": "Beschreibung",
-        "import": "Import"
+        "import": "Import",
+        "save_preset": "Als Voreinstellung speichern",
+        "preset": "Voreinstellung"
     },
     "errors": {
       "general": "Der Vorgang ist fehlgeschlagen",
@@ -97,7 +99,7 @@
         "welcome": "Willkommen bei OpenPetra, mit den besten Empfehlungen von <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> ist eine einfach zu benutzende Softwareanwendung für die Verwaltung von Vereinen, Missionen und Hilfswerken, und steht unter der GPL Lizenz.",
         "target": "OpenPetra läuft in den gängigen Browsern, und es ist egal welches Betriebssystem oder welche Bildschirmgröße Sie benutzen.",
-        "favourites": "TODO: hier sollen Sie Ihre wichtigsten Formulare hinterlegen können, die Sie jeden Tag benutzen.",
+        "favourites": "Hier sollen Sie in Zukunft Ihre wichtigsten Formulare hinterlegen können, die Sie jeden Tag benutzen.",
         "example": "zum Beispiel"
     },
     "ChangePassword": {
@@ -384,8 +386,8 @@
       "ledger_current_period":"Derzeitiger Monat",
       "ledger_accounting_periods":"Berechenbare Monate",
       "ledger_fwd_posting_periods":"Maximale Anzahl offener Monate",
-      "ledger_retention_gl":"Aufbewarungsrist für GL",
-      "ledger_retention_gift":"Aufbewarungsrist für Spenden",
+      "ledger_retention_gl":"Aufbewahrungsfrist für GL",
+      "ledger_retention_gift":"Aufbewahrungsfrist für Spenden",
       "fwd_posting":"Zeitspanne für offene Monate",
       "period":"Berechenbare Zeitspanne für Spenden"
     },
