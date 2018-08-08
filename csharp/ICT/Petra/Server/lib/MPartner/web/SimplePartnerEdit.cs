@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 -1,
                 out TmpSiteCountryCode);
 
-            MainDS.PPartner[0].ReceiptLetterFrequency = "ANNUAL";
+            MainDS.PPartner[0].ReceiptLetterFrequency = "Annual";
 
             PLocationRow location = MainDS.PLocation.NewRowTyped();
             location.SiteKey = DomainManager.GSiteKey;

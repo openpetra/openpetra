@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -102,7 +102,7 @@ namespace Tests.MFinance.Server.Gift
 
             //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             string receipts =
-                TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber, "ANNUAL",
+                TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber, "Annual",
                     new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31), FileContent);
             StreamWriter sw = new StreamWriter(formletterExpectedFile + ".new", false, encodingOfHTMLfile);
             sw.WriteLine(receipts);
