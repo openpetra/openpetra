@@ -34,6 +34,9 @@ else
     export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
     export OPENPETRA_PORT=`cat $config | grep "Server.Port" | awk -F'"' '{print $4}'`
+  else
+    echo "cannot find $config"
+    exit -1
   fi
 fi
 
@@ -102,7 +105,7 @@ mysql() {
     export DBName=$OPENPETRA_DBNAME
     export DBPort=$OPENPETRA_DBPORT
     export DBPwd=$OPENPETRA_DBPWD
-    echo 'call: mysql -u $DBUser -h $DBHost --port=$DBPort --password="$DBPwd" $DBName --default-character-set=utf8'
+    echo "call: mysql -u $DBUser -h $DBHost --port=$DBPort --password=\"$DBPwd\" $DBName --default-character-set=utf8"
     echo " or visit http://localhost/phpMyAdmin, with user $DBUser and password $DBPwd"
 }
 
