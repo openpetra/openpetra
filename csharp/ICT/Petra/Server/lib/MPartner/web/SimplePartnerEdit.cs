@@ -307,11 +307,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool SavePartner(PartnerEditTDS AMainDS,
             List<string> ASubscriptions,
             List<string> APartnerTypes,
-            bool ASendMail)
+            bool ASendMail,
+            out TVerificationResultCollection AVerificationResult)
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
             PartnerEditTDS SaveDS;
+            AVerificationResult = new TVerificationResultCollection();
 
             if (AMainDS.PPartner[0].ModificationId == DateTime.MinValue)
             {
@@ -443,12 +445,27 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (SaveDS.PLocation[0].RowState == DataRowState.Modified && SaveDS.PLocation[0].LocationKey == 0)
             {
                 TLogging.Log("we cannot update addresses of people with location 0");
+                AVerificationResult.Add(new TVerificationResult("error", "we cannot update addresses of people with location 0", TResultSeverity.Resv_Critical));
                 return false;
             }
 
-            PartnerEditTDSAccess.SubmitChanges(SaveDS);
+            DataSet ResponseDS = new PartnerEditTDS();
+            TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
 
-            return true;
+            try
+            {
+                TSubmitChangesResult result = uiconnector.SubmitChanges(
+                    ref SaveDS,
+                    ref ResponseDS,
+                    out AVerificationResult);
+                return result != TSubmitChangesResult.scrError;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
         }
     }
 }

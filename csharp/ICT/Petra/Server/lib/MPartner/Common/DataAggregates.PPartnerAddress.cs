@@ -1683,6 +1683,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
             for (Int16 LocationCounter = 0; LocationCounter < ALocationTable.Rows.Count; LocationCounter++)
             {
+                if (ALocationTable[LocationCounter].CountryCode == String.Empty)
+                {
+                    throw new Exception("TPPartnerAddress.ProcessLocationChanges: empty country code");
+                }
                 if ((ALocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
                     || (ALocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
                 {
