@@ -26,25 +26,20 @@ $('document').ready(function () {
 	// $('#tabfilter input[name="APeriod"]').val(0);
 	// $('#tabfilter input[name="AYear"]').val(0);
 	get_avariable_years();
+	load_preset();
 	display_list();
 });
 
+function load_preset() {
+	var x = window.localStorage.getItem('GiftBatches');
+	if (x != null) {
+		x = JSON.parse(x);
+		format_tpl($('#tabfilter'), x);
+	}
+}
+
 function display_list(source) {
-	if (source == null) {
-		source = "preset";
-	}
-	if (source == 'preset') {
-		var x = window.localStorage.getItem('GiftBatches');
-		if (x == null) {
-			source = "filter";
-		} else {
-			x = JSON.parse(x);
-			format_tpl($('#tabfilter'), x);
-		}
-	}
-	if (source == 'filter') {
-		var x = extract_data($('#tabfilter'));
-	}
+	var x = extract_data($('#tabfilter'));
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
 		data = JSON.parse(data.data.d);
