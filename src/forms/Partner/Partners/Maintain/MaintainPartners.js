@@ -175,16 +175,16 @@ function save_entry(obj_modal) {
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs};
+
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
-		parsed_data = JSON.parse(data.data.d);
-		if (parsed_data) {
+		parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
 			$('#modal_space .modal').modal('hide');
 			display_message(i18next.t('forms.saved'), "success");
 			display_list();
-		} else {
-			// TODO we need an error code from the server, to display a meaningful error message here
-			message = "We cannot yet change the address if there is none.";
-			display_message(message, "fail");
+		}
+		else {
+			display_error( parsed.AVerificationResult );
 		}
 	})
 }

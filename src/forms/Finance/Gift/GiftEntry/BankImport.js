@@ -273,7 +273,6 @@ function transform_to_gl() {
  };
 	api.post('serverMFinance.asmx/TBankImportWebConnector_CreateGLBatch', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
-		let s = false;
 		if (parsed.result == true) {
 			display_message( i18next.t('forms.saved'), 'success' )
 		}
@@ -292,7 +291,6 @@ function transform_to_gift() {
  };
 	api.post('serverMFinance.asmx/TBankImportWebConnector_CreateGiftBatch', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
-		let s = false;
 		if (parsed.result == true) {
 			display_message( i18next.t('forms.saved'), 'success' )
 		}
