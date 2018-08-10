@@ -620,7 +620,7 @@ namespace Ict.Common
                     }
                     else
                     {
-                        value = new TVariant(valuestr);
+                        value = new TVariant(originalEncodedValue);
                     }
                 }
 
@@ -1189,6 +1189,19 @@ namespace Ict.Common
                         Convert.ToInt32(matches[0].Groups[5].ToString()),
                         Convert.ToInt32(matches[0].Groups[6].ToString()),
                         Convert.ToInt32(matches[0].Groups[7].ToString()));
+                }
+
+                // for Javascript, attempt to match eg. 2009-02-28T00:00:00.000Z
+                exp = new Regex(@"(\d\d\d\d)-(\d\d)-(\d\d)[T ](\d\d):(\d\d):(\d\d).(\d\d\d)Z");
+                matches = exp.Matches(StringValue);
+                if ((matches.Count == 1) && (matches[0].Length == StringValue.Length))
+                {
+                    return new DateTime(Convert.ToInt32(matches[0].Groups[1].ToString()),
+                        Convert.ToInt32(matches[0].Groups[2].ToString()),
+                        Convert.ToInt32(matches[0].Groups[3].ToString()),
+                        Convert.ToInt32(matches[0].Groups[4].ToString()),
+                        Convert.ToInt32(matches[0].Groups[5].ToString()),
+                        Convert.ToInt32(matches[0].Groups[6].ToString()));
                 }
             }
             else
