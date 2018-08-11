@@ -402,7 +402,7 @@ namespace Ict.Petra.Server.MReporting
             {
                 while ((parampos != -1) && (parampos <= pos))
                 {
-                    parampos = this.FSQLStmt.IndexOf("PARAMETER?", parampos + 1);
+                    parampos = this.FSQLStmt.IndexOf("?", parampos + 1);
 
                     if ((parampos != -1) && (parampos <= pos))
                     {

@@ -66,7 +66,7 @@
                 </queryDetail>
                 <queryDetail condition="eq({param_only_addresses_valid_on},true)"><value>
                         AND pub_p_partner_location.p_send_mail_l = true
-                        AND {#param_today#} &gt;= pub_p_partner_location.p_date_effective_d 
+                        AND ({#param_today#} &gt;= pub_p_partner_location.p_date_effective_d OR pub_p_partner_location.p_date_effective_d IS NULL)
                         AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
                 </value></queryDetail>
                 <queryDetail condition="gt(length({param_city}), 1)">
