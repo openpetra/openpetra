@@ -366,8 +366,8 @@
     },
 
     "LedgerInfo":{
-      "caption":"Ledger Info",
-      "ledgername":"Ledgername",
+      "caption":"Hauptbuch Info",
+      "ledgername":"Name des Hauptbuches",
       "1_month":"Januar",
       "2_month":"Febuar",
       "3_month":"März",
@@ -381,16 +381,16 @@
       "11_month":"November",
       "12_month":"Dezember",
       "years":"Jahre",
-      "ledgernumber":"Ledgernummer",
-      "ledger_base":"Wärung",
-      "ledger_intl":"international wärung",
+      "ledgernumber":"Nummer des Hauptbuches",
+      "ledger_base":"Währung",
+      "ledger_intl":"Internationale Währung",
       "ledger_current_period":"Derzeitiger Monat",
-      "ledger_accounting_periods":"Berechenbare Monate",
-      "ledger_fwd_posting_periods":"Maximale Anzahl offener Monate",
+      "ledger_accounting_periods":"Anzahl von Buchungs-Perioden pro Jahr",
+      "ledger_fwd_posting_periods":"Maximale Anzahl offener Monate nach der aktuellen Periode",
       "ledger_retention_gl":"Aufbewahrungsfrist für GL",
       "ledger_retention_gift":"Aufbewahrungsfrist für Spenden",
       "fwd_posting":"Zeitspanne für offene Monate",
-      "period":"Berechenbare Zeitspanne für Spenden"
+      "period":"Zeitspanne der aktuellen Periode"
     },
     "YearEnd": {
       "end_year": "Jahresabschluss durchführen"

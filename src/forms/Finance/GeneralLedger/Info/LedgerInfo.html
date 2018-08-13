@@ -28,10 +28,10 @@
 
       <div class="row">
         <div class="col">
-          <h4>{ledgername}</h4>
+          <span><b>{ledgername}</b></span>
         </div>
         <div class="col">
-          <h4>{val_a_ledger_name_c}</h4>
+          <span><b>{val_a_ledger_name_c}</b></span>
         </div>
       </div>
 
@@ -50,15 +50,6 @@
         </div>
         <div class="col">
           <span>{val_a_base_currency_c}</span>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <span>{ledger_intl}</span>
-        </div>
-        <div class="col">
-          <span>{val_a_intl_currency_c}</span>
         </div>
       </div>
 
@@ -84,15 +75,6 @@
 
       <div class="row">
         <div class="col">
-          <span>{ledger_current_period}</span>
-        </div>
-        <div class="col current_period">
-          <span></span>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
           <span>{ledger_retention_gl}</span>
         </div>
         <div class="col">
@@ -112,12 +94,22 @@
       <hr>
 
       <div class="row">
-        <div class="col fwd_posting">
+        <div class="col">
+          <span>{ledger_current_period}</span>
+        </div>
+        <div class="col current_period">
+          <span></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col period">
 
         </div>
       </div>
+
       <div class="row">
-        <div class="col period">
+        <div class="col fwd_posting">
 
         </div>
       </div>

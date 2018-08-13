@@ -393,7 +393,7 @@
       "ledger_retention_gl":"Retention time for GL",
       "ledger_retention_gift":"Retention time for Gifts",
       "fwd_posting":"Forward posting range",
-      "period":"Gift posting range"
+      "period":"Date range of the current period"
     },
 
     "YearEnd": {
