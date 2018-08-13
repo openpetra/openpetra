@@ -87,6 +87,7 @@
         "WaitInfo": "This might take a couple of seconds...",
         "description": "Description",
         "import": "Import",
+        "export": "Export",
         "save_preset": "Save preset",
         "preset": "Preset"
     },
@@ -374,12 +375,12 @@
       "2_month":"Febuary",
       "3_month":"March",
       "4_month":"April",
-      "5_month":"Mai",
+      "5_month":"May",
       "6_month":"June",
       "7_month":"July",
       "8_month":"August",
       "9_month":"September",
-      "10_month":"Oktober",
+      "10_month":"October",
       "11_month":"November",
       "12_month":"December",
       "years":"years",
@@ -396,9 +397,21 @@
     },
 
     "YearEnd": {
-      "end_year": "Beende Jahresperiode"
+      "end_year": "Close the financial year"
     },
     "MonthEnd": {
-      "end_month": "Beende Monatsperiode"
+      "end_month": "Close the current financial period"
+    },
+    "AccountTree": {
+      "caption": "Maintain the hierarchy of accounts",
+      "uploadsuccess": "New hierarchy of accounts was imported successfully",
+      "uploaderror": "Importing of new account hierarchy failed.",
+      "accounts_file": "Accounts"
+    },
+    "CostCenterTree": {
+      "caption": "Maintain the hierarchy of cost centres",
+      "uploadsuccess": "New hierarchy of cost centres was imported successfully",
+      "uploaderror": "Importing of new cost centres failed.",
+      "costcentres_file": "CostCentres"
     }
 }

@@ -12,9 +12,9 @@
 
   <div class="row">
     <div class="col">
+      <button type="button" class="btn btn-primary" onclick="export_file()">{forms.export}</button>
       <button type="button" class="btn btn-primary" onclick="$('#import_file').click()">{forms.import}</button>
       <input type="file" id="import_file" onchange="import_file(this)" hidden/>
-      <button type="button" class="btn btn-primary" onclick="export_file()">{forms.export}</button>
     </div>
   </div>
 	<div id="browse_container">

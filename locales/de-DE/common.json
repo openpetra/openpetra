@@ -86,7 +86,8 @@
         "PleaseWait": "Bitte warten",
         "WaitInfo": "Diese Aktion kann ein paar Sekunden dauern...",
         "description": "Beschreibung",
-        "import": "Import",
+        "import": "Importieren",
+        "export": "Exportieren",
         "save_preset": "Als Voreinstellung speichern",
         "preset": "Voreinstellung"
     },
@@ -392,9 +393,21 @@
       "period":"Berechenbare Zeitspanne für Spenden"
     },
     "YearEnd": {
-      "end_year": "End year period"
+      "end_year": "Jahresabschluss durchführen"
     },
     "MonthEnd": {
-      "end_month": "End month period"
+      "end_month": "Monatsabschluss durchführen"
+    },
+    "AccountTree": {
+      "caption": "Kontenstruktur bearbeiten",
+      "uploadsuccess": "Neue Kontenstruktur wurde erfolgreich importiert.",
+      "uploaderror": "Neue Kontenstruktur konnte nicht importiert werden.",
+      "accounts_file": "Konten"
+    },
+    "CostCenterTree": {
+      "caption": "Struktur der Kostenstellen bearbeiten",
+      "uploadsuccess": "Die neuen Kostenstellen wurden erfolgreich importiert.",
+      "uploaderror": "Neue Kostenstellen konnten nicht importiert werden.",
+      "costcentres_file": "Kostenstellen"
     }
 }

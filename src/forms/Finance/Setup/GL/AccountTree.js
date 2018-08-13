@@ -30,20 +30,28 @@ function import_file(file_field) {
 		return function(e) {
 			s = e.target.result;
 
-			p = {'ATreeFile': s};
+			p = {AYmlAccountHierarchy: s,
+				AHierarchyName: 'STANDARD',
+				ALedgerNumber: window.localStorage.getItem('current_ledger')};
 			api.post('serverMFinance.asmx/TGLSetupWebConnector_ImportAccountHierarchy', p)
 			.then(function (result) {
 				result = result.data;
 				if (result != '') {
-					if (result.d == true) {
+					var parsed = JSON.parse(result.d);
+					if (parsed.result == true) {
 						display_message(i18next.t('AccountTree.uploadsuccess'), "success");
+						LoadTree();
 					} else {
-						display_message(i18next.t('AccountTree.uploaderror'), "fail");
+						display_error(parsed.AVerificationResult);
 					}
 				}
 			})
 			.catch(error => {
-				display_message(i18next.t('AccountTree.uploaderror'), "fail");
+				if (error.response.data.Message != null) {
+					display_message(error.response.data.Message, "fail");
+				} else {
+					display_message(i18next.t('AccountTree.uploaderror'), "fail");
+				}
 			});
 		};
 	})(self[0].files[0]);
@@ -60,11 +68,10 @@ function export_file() {
   api.post('serverMFinance.asmx/TGLSetupWebConnector_ExportAccountHierarchyYml', x).then(function (data) {
     var parsed = JSON.parse(data.data.d);
     var _file_ = window.atob(parsed.AHierarchyYml);
-
     var link = document.createElement("a");
     link.style = "display: none";
-    link.href = 'data:text/plain;charset=utf-8,'+_file_;
-    link.download = 'AccountTree.csv';
+    link.href = 'data:text/plain;charset=utf-8,'+encodeURIComponent(_file_);
+    link.download = i18next.t('AccountTree.accounts_file') + '.csv';
     document.body.appendChild(link);
     link.click();
     link.remove();
