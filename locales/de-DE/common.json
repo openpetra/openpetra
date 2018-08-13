@@ -101,6 +101,7 @@
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> ist eine einfach zu benutzende Softwareanwendung für die Verwaltung von Vereinen, Missionen und Hilfswerken, und steht unter der GPL Lizenz.",
         "target": "OpenPetra läuft in den gängigen Browsern, und es ist egal welches Betriebssystem oder welche Bildschirmgröße Sie benutzen.",
         "favourites": "Hier sollen Sie in Zukunft Ihre wichtigsten Formulare hinterlegen können, die Sie jeden Tag benutzen.",
+        "current_version": "OpenPetra Version",
         "example": "zum Beispiel"
     },
     "ChangePassword": {
