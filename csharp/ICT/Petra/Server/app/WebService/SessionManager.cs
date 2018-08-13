@@ -263,6 +263,20 @@ namespace Ict.Petra.Server.App.WebService
             return JsonConvert.SerializeObject(result);
         }
 
+        /// <summary>get the current version of OpenPetra</summary>
+        [WebMethod(EnableSession = true)]
+        public string GetVersion()
+        {
+            object loggedIn = TSession.GetVariable("LoggedIn");
+
+            if ((null != loggedIn) && ((bool)loggedIn == true))
+            {
+                return TFileVersionInfo.GetApplicationVersion().ToVersion().ToString();
+            }
+
+            return "0.0.0.0";
+        }
+
         /// <summary>
         /// TODO: we should only use one database object per request, and not have global variables for database connections
         /// </summary>
