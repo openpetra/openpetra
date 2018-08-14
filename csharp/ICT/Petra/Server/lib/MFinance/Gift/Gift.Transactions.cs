@@ -587,7 +587,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             DataRow resultRow = ReturnTable.NewRow();
                             resultRow[0] = row[0];
                             resultRow[1] = CurrentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(
-                                                                             row[0]))).ToShortDateString();
+                                                                             row[0]))).ToString("yyyy");
                             ReturnTable.Rows.Add(resultRow);
                         }
                     });
@@ -597,7 +597,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     DataRow resultRow = ReturnTable.NewRow();
                     resultRow[0] = LedgerTable[0].CurrentFinancialYear;
-                    resultRow[1] = CurrentYearEnd.ToShortDateString();
+                    resultRow[1] = CurrentYearEnd.ToString("yyyy");
                     ReturnTable.Rows.InsertAt(resultRow, 0);
                 }
             }
