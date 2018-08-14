@@ -23,7 +23,7 @@
 
 $('document').ready(function () {
 	// TODO set proper default values for the filter
-	get_avariable_years();
+	get_available_years();
 	display_list('preset');
 
 });
@@ -300,7 +300,7 @@ function importTransactions(batch_id, csv_file) {
 	})
 }
 
-function get_avariable_years() {
+function get_available_years() {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 	};

@@ -25,7 +25,7 @@ $('document').ready(function () {
 	// TODO set proper default values for the filter
 	// $('#tabfilter input[name="APeriod"]').val(0);
 	// $('#tabfilter input[name="AYear"]').val(0);
-	get_avariable_years();
+	get_available_years();
 	load_preset();
 	display_list();
 });
@@ -329,7 +329,7 @@ function delete_trans_detail(obj_modal) {
 
 /////
 
-function get_avariable_years() {
+function get_available_years() {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 	};
