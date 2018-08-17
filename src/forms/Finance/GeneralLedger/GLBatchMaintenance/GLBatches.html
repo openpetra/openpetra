@@ -24,14 +24,17 @@
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="importTransactions({val_a_batch_number_i})">
 							<span>{import}&nbsp;</span><i class="fa fa-file"></i>
 						</button>
+						<button type="button" class="btn" style="margin-top:0.5em;" onclick="batch_cancel({val_a_batch_number_i})">
+							<span>{batch_cancel}&nbsp;</span><i class="fa fa-ban"></i>
+						</button>
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="batch_reverse({val_a_batch_number_i}, '{val_a_date_effective_d}')">
+							<span>{batch_reverse}&nbsp;</span><i class="fa fa-unlock"></i>
+						</button>
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="test_post({val_a_batch_number_i})">
 							<span>{batch_test_post}&nbsp;</span><i class="fa fa-question"></i>
 						</button>
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="batch_post({val_a_batch_number_i})">
 							<span>{batch_post}&nbsp;</span><i class="fa fa-lock"></i>
-						</button>
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="batch_unpost({val_a_batch_number_i}, '{val_a_date_effective_d}')">
-							<span>{batch_unpost}&nbsp;</span><i class="fa fa-unlock"></i>
 						</button>
 						<div class="import_space" style="display:none;">
 							<span style="margin-top:1em;">{message_import_howto}</span>

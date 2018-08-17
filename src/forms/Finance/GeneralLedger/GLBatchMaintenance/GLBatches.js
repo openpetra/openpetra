@@ -338,13 +338,30 @@ function batch_post(batch_id) {
 	})
 }
 
-function batch_unpost(batch_id, date) {
+function batch_cancel(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_CancelGLBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		if (data.result == true) {
+			display_message( i18next.t('GLBatches.success_cancelled'), 'success' );
+			display_list('filter');
+		} else {
+			display_error( parsed.AVerificationResult );
+		}
+	})
+}
+
+function batch_reverse(batch_id, date) {
 	var date_extractor = new RegExp(/Date\((.+)\)/g);
 	var date = new Date( parseInt( date_extractor.exec(date)[1] ) );
 	var date_str = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ABatchNumberToReverse: batch_id,
+		// TODO use reasonable date for reversal???
 		ADateForReversal: "2018-07-01",//date_str,
 		AAutoPostReverseBatch: false
 	};

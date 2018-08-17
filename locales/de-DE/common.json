@@ -76,6 +76,7 @@
         "delete": "Löschen",
         "save": "Übernehmen",
         "saved": "Änderungen wurden übernommen",
+        "post": "Buchen",
         "notsaved": "Fehler beim Speichern",
         "deleted": "Erfolgreich gelöscht",
         "notdeleted": "Fehler beim Löschen",
@@ -209,11 +210,15 @@
         "trans_account_code": "Konto",
         "trans_ccenter_code": "Kostenstelle",
         "trans_narrative_code": "Beschreibung",
+        "batch_reverse": "Zurück buchen",
+        "batch_post": "Stapel buchen",
+        "batch_cancel": "Stapel abbrechen",
         "DEBIT": "Debit",
         "CREDIT": "Kredit",
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
+        "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
         "import": "Transaktionen importieren",
         "isPosted": "Gepostete Batches können nicht bearbeitet werden"
     },
@@ -246,6 +251,23 @@
       "trans_description":"Beschreibung",
       "edittitle_trans_detail":"Spendendetails bearbeiten",
       "ledgernumber":"Ledgernummer"
+    },
+
+    "SelectPeriods": {
+      "all_periods": "Alle Monate",
+      "all_open_periods": "Alle offenen Monate",
+      "January":"Januar",
+      "February":"Februar",
+      "March":"März",
+      "April":"April",
+      "May":"Mai",
+      "June":"Juni",
+      "July":"Juli",
+      "August":"August",
+      "September":"September",
+      "October":"Oktober",
+      "November":"November",
+      "December":"Dezember"
     },
 
     "MaintainPublications": {
@@ -370,7 +392,7 @@
       "caption":"Hauptbuch Info",
       "ledgername":"Name des Hauptbuches",
       "1_month":"Januar",
-      "2_month":"Febuar",
+      "2_month":"Februar",
       "3_month":"März",
       "4_month":"April",
       "5_month":"Mai",

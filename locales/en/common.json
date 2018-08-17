@@ -76,6 +76,7 @@
         "delete": "Delete",
         "save": "Save",
         "saved": "Successfully saved",
+        "post": "Buchen",
         "notsaved": "Saving failed",
         "deleted": "Successfully deleted",
         "notdeleted": "Deletion failed",
@@ -209,14 +210,16 @@
         "trans_account_code": "Account Code",
         "trans_ccenter_code": "Cost Centre Code",
         "trans_narrative_code": "Description",
-        "batch_unpost": "Reverse batch",
-        "batch_post": "Close batch",
+        "batch_reverse": "Reverse batch",
+        "batch_post": "Post batch",
+        "batch_cancel": "Cancel batch",
         "batch_test_post": "Test batch post",
         "DEBIT": "Debit",
         "CREDIT": "Credit",
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
+        "success_cancelled": "The Batch has been cancelled",
         "import": "Import transactions",
         "isPosted": "We cannot edit batches that have been posted already"
     },
@@ -249,6 +252,23 @@
       "trans_description":"Transaction Comment",
       "edittitle_trans_detail":"Edit transaction details",
       "ledgernumber":"Ledgernumber"
+    },
+
+    "SelectPeriods": {
+      "all_periods": "All periods",
+      "all_open_periods": "All open periods",
+      "January":"January",
+      "February":"February",
+      "March":"March",
+      "April":"April",
+      "May":"May",
+      "June":"June",
+      "July":"July",
+      "August":"August",
+      "September":"September",
+      "October":"October",
+      "November":"November",
+      "December":"December"
     },
 
     "MaintainPublications": {

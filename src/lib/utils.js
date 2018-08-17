@@ -76,7 +76,7 @@ function display_error(VerificationResult, generalerror = 'errors.general') {
       continue;
     }
     s = true;
-    if (error.code != "") {
+    if (error.code != "" && i18next.t(error.code) != error.code) {
       display_message( i18next.t(error.code), "fail");
     } else {
       display_message( error.message, "fail");
