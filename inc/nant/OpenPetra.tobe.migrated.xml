@@ -97,7 +97,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <nant inheritall="true" target="custdependGlue" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Plugins/Plugins.build')}" verbose="${verbose}"/>
   <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateGlue.exe" commandline="-ymlfile:${dir.root}/csharp/ICT/Petra/Definitions/NamespaceHierarchy.yml -outputdir:${dir.root}/csharp/ICT/Petra -TemplateDir:${dir.incdir.template.src} -module:${module} -compileForStandalone:${compileForStandalone}"/>
   <delete file="${dir.bin}/Ict.Petra.Server.app.WebService.dll" />
-  <echo message="now run: nant quickCompile -D:onlyonce=true"/>
+  <echo message="now run: nant quickCompile -D:onlyonce=true install.net"/>
 </target>
 
 <!-- Some database settings -->
