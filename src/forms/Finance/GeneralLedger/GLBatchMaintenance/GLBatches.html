@@ -323,7 +323,7 @@
 			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<select class="" name="ABatchYear"></select>
+			<select class="" name="ABatchYear" onchange="get_available_periods($(this).val(), display_list)"></select>
 		</div>
 	</div>
 	<div class="row">
@@ -331,7 +331,7 @@
 			<span>{period}:</span>
 		</div>
 		<div class="col">
-			<input type="text" name="ABatchPeriod"/>
+			<select name="ABatchPeriod"/>
 		</div>
 	</div>
 	<div class="row">

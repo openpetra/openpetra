@@ -22,11 +22,23 @@
 //
 
 $('document').ready(function () {
-	// TODO set proper default values for the filter
-	get_available_years();
-	display_list('preset');
-
+	get_available_years(
+		function() {
+			load_preset();
+		});
 });
+
+function load_preset() {
+	var x = window.localStorage.getItem('GLBatches');
+	if (x != null) {
+		x = JSON.parse(x);
+		// first set the period so that it can be used when the year has been selected
+		let y = {"ABatchPeriod":x["ABatchPeriod"]};
+		format_tpl($('#tabfilter'), y);
+		format_tpl($('#tabfilter'), x);
+		display_list();
+	}
+}
 
 function display_list(source) {
 	if (source == null) {
@@ -300,18 +312,58 @@ function importTransactions(batch_id, csv_file) {
 	})
 }
 
-function get_available_years() {
+function get_available_years(fn_to_call) {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 	};
 	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailableGLYears', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		r = data.result;
+		let currentYearNumber = -1;
 		for (year of r) {
 			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
+			if (year.YearNumber > currentYearNumber) {
+				currentYearNumber = year.YearNumber;
+			}
 			$('#tabfilter [name=ABatchYear]').append(y);
 		}
+
+		get_available_periods(currentYearNumber, fn_to_call);
 	})
+}
+
+function get_available_periods(year, fn_to_call) {
+	selectedPeriod = $('#tabfilter [name=ABatchPeriod]').val();
+	if (selectedPeriod == null) {
+		selectedPeriod = -1;
+	}
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AFinancialYear: year,
+	};
+	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailablePeriods', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		r = data.result;
+		$('#tabfilter [name=ABatchPeriod]').html('');
+		for (period of r) {
+			let translated = period.PeriodName;
+			transsplit = translated.split(' ');
+			if (transsplit[1] != undefined) {
+				// separate the year
+				translated = i18next.t('SelectPeriods.' + transsplit[0]) + ' ' + transsplit[1];
+			} else {
+				translated = i18next.t('SelectPeriods.' + translated);
+			}
+			selected = (period.PeriodNumber == selectedPeriod)?'selected':'';
+			let y = $('<option value="'+period.PeriodNumber+'" ' + selected + '>'+translated+'</option>');
+			$('#tabfilter [name=ABatchPeriod]').append(y);
+		}
+
+		if (fn_to_call != undefined) {
+			fn_to_call();
+		}
+	})
+	
 }
 
 /////

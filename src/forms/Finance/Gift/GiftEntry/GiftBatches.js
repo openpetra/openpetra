@@ -362,7 +362,7 @@ function get_available_periods(year, fn_to_call) {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		AFinancialYear: year,
 	};
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_GetAvailableGiftPeriods', x).then(function (data) {
+	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailablePeriods', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		r = data.result;
 		$('#tabfilter [name=APeriod]').html('');
