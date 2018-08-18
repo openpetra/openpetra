@@ -22,18 +22,21 @@
 //
 
 $('document').ready(function () {
-	// TODO set proper default values for the filter
-	// $('#tabfilter input[name="APeriod"]').val(0);
-	// $('#tabfilter input[name="AYear"]').val(0);
-	get_available_years();
 	load_preset();
-	display_list();
+	get_available_years(
+		function() {
+			load_preset();
+			display_list();
+		});
 });
 
 function load_preset() {
 	var x = window.localStorage.getItem('GiftBatches');
 	if (x != null) {
 		x = JSON.parse(x);
+		// first set the period so that it can be used when the year has been selected
+		let y = {"APeriod":x["APeriod"]};
+		format_tpl($('#tabfilter'), y);
 		format_tpl($('#tabfilter'), x);
 	}
 }
@@ -46,7 +49,7 @@ function display_list(source) {
 		// on reload, clear content
 		$('#browse_container').html('');
 		for (item of data.result.AGiftBatch) {
-      format_item(item);
+			format_item(item);
 		}
 		format_date();
 	})
@@ -329,18 +332,60 @@ function delete_trans_detail(obj_modal) {
 
 /////
 
-function get_available_years() {
+function get_available_years(fn_to_call) {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 	};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_GetAvailableGiftYears', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		r = data.result;
+		let currentYearNumber = -1;
+
 		for (year of r) {
 			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
+
+			if (year.YearNumber > currentYearNumber) {
+				currentYearNumber = year.YearNumber;
+			}
 			$('#tabfilter [name=AYear]').append(y);
 		}
+
+		get_available_periods(currentYearNumber, fn_to_call);
 	})
+}
+
+function get_available_periods(year, fn_to_call) {
+	selectedPeriod = $('#tabfilter [name=APeriod]').val();
+	if (selectedPeriod == null) {
+		selectedPeriod = -1;
+	}
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AFinancialYear: year,
+	};
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_GetAvailableGiftPeriods', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		r = data.result;
+		$('#tabfilter [name=APeriod]').html('');
+		for (period of r) {
+			let translated = period.PeriodName;
+			transsplit = translated.split(' ');
+			if (transsplit[1] != undefined) {
+				// separate the year
+				translated = i18next.t('SelectPeriods.' + transsplit[0]) + ' ' + transsplit[1];
+			} else {
+				translated = i18next.t('SelectPeriods.' + translated);
+			}
+			selected = (period.PeriodNumber == selectedPeriod)?'selected':'';
+			let y = $('<option value="'+period.PeriodNumber+'" ' + selected + '>'+translated+'</option>');
+			$('#tabfilter [name=APeriod]').append(y);
+		}
+
+		if (fn_to_call != undefined) {
+			fn_to_call();
+		}
+	})
+	
 }
 
 function post_batch(batch_id) {

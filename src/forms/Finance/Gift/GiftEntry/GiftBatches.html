@@ -373,7 +373,7 @@
 			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<select name="AYear"></select>
+			<select name="AYear" onchange="get_available_periods($(this).val(), display_list)"></select>
 		</div>
 	</div>
 	<div class="row">
@@ -381,7 +381,7 @@
 			<span>{period}:</span>
 		</div>
 		<div class="col">
-			<input type="text" name="APeriod"/>
+			<select name="APeriod"></select>
 		</div>
 	</div>
 	<div class="row">
