@@ -23,9 +23,12 @@
 //
 
 
-// this will fill all possible elements with data, if there name=
+
+// this will fill all possible elements with data, if their name=
 // attribute is the same as the given object key
-// it also replaces all {something} in this object, by converting it to a string and back
+// OR it replaces all {val_something} in this object, by converting it to a string and back
+// it seems, we can only do replacement of {val_...} variables, or setting input values.
+// both does not work because .html() does not return the selected options properly
 function format_tpl(tpl, data, limit_to_table) {
   if (tpl[0] === undefined) {
     console.log("missing tpl for format_tpl");
@@ -34,6 +37,19 @@ function format_tpl(tpl, data, limit_to_table) {
   if (limit_to_table == null) {
     limit_to_table = "";
   }
+
+  let g = $(tpl).html();
+  if (g.indexOf('{val_') !== -1) {
+    for (variable in data) {
+      if (data[variable] == null) {
+        data[variable] = "";
+      }
+      g = g.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
+    }
+    $(tpl).html(g);
+    return tpl;
+  }
+
   for (variable in data) {
     let key = false;
     let f = tpl.find("[name="+variable+"]");
@@ -52,7 +68,7 @@ function format_tpl(tpl, data, limit_to_table) {
     } else {
       if (f.is('select')) {
         value = data[variable];
-        $(f).find("option[value='" + value + "']").attr("selected", true);
+        f.val(value).change();
       }
       else if (f.is('textarea')) {
         f.text(data[variable]);
@@ -81,13 +97,6 @@ function format_tpl(tpl, data, limit_to_table) {
         f2.attr('key-value', value);
       }
     }
-
-    let g = tpl[0].outerHTML;
-    if (data[variable] == null) {
-      data[variable] = "";
-    }
-    g = g.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
-    tpl = $(g);
   }
 
   return tpl;
