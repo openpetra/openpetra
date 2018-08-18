@@ -22,11 +22,9 @@
 //
 
 $('document').ready(function () {
-	load_preset();
 	get_available_years(
 		function() {
 			load_preset();
-			display_list();
 		});
 });
 
@@ -38,6 +36,7 @@ function load_preset() {
 		let y = {"APeriod":x["APeriod"]};
 		format_tpl($('#tabfilter'), y);
 		format_tpl($('#tabfilter'), x);
+		display_list();
 	}
 }
 
