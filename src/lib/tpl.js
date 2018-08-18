@@ -38,7 +38,7 @@ function format_tpl(tpl, data, limit_to_table) {
     limit_to_table = "";
   }
 
-  let g = $(tpl).html();
+  let g = tpl[0].outerHTML;
   if (g.indexOf('{val_') !== -1) {
     for (variable in data) {
       if (data[variable] == null) {
