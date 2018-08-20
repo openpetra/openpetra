@@ -349,7 +349,7 @@
     },
 
     "BankImport":{
-      "display":"display",
+      "display":"Display",
       "all":"all",
       "detail":"Detail",
       "caption":"Bank Import",
