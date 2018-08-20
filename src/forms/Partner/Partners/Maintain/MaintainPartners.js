@@ -54,8 +54,8 @@ function display_list(source) {
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
-	row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
+	$('#partner'+item['p_partner_key_n']).find('.collapse_col').append(view);
 }
 
 function open_detail(obj) {

@@ -46,8 +46,7 @@ function format_tpl(tpl, data, limit_to_table) {
       }
       g = g.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
     }
-    $(tpl).html(g);
-    return tpl;
+    return g;
   }
 
   for (variable in data) {
