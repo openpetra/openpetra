@@ -22,31 +22,73 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+function replace_val_variables_in_attr(attr, data) {
+  if (attr !== undefined && attr.indexOf('{val_') !== -1) {
+    for (variable in data) {
+      if (data[variable] == null) {
+        data[variable] = "";
+      }
+      attr = attr.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
+    }
+  }
+  return attr;
+}
 
+// this will replace all {val_something} in this object, by converting it to a string and back
+// check all attributes of div, id and onclick, and replace variables
+// check all attributes of button, onclick, and replace variables
+function replace_val_variables(tpl, data) {
+    if (tpl[0] === undefined) {
+        console.log("missing tpl for format_tpl");
+        return "";
+    }
+    let id = $(tpl).attr('id');
+    if (id !== undefined && id != null) {
+        $(tpl).attr('id', replace_val_variables_in_attr(id, data));
+    }
 
-// this will fill all possible elements with data, if their name=
-// attribute is the same as the given object key
-// OR it replaces all {val_something} in this object, by converting it to a string and back
-// it seems, we can only do replacement of {val_...} variables, or setting input values.
-// both does not work because .html() does not return the selected options properly
+    let onclick = $(tpl).attr('onclick');
+    if (onclick != undefined && onclick != null) {
+        $(tpl).attr('onclick', replace_val_variables_in_attr(onclick, data));
+    }
+
+    $(tpl).find('button, div div').each(function() {
+        let id = $(this).attr('id');
+        if (id !== undefined && id != null) {
+            $(this).attr('id', replace_val_variables_in_attr(id, data));
+        }
+        let onclick = $(this).attr('onclick');
+        if (onclick !== undefined && onclick != null) {
+            $(this).attr('onclick', replace_val_variables_in_attr(onclick, data));
+        }
+        let text = $(this).text();
+        if (text !== undefined && text != null && text[0] == "{") {
+            $(this).text(replace_val_variables_in_attr(text, data));
+        }
+    });
+
+    return tpl;
+}
+
+// tpl needs to be a DOM object, not just text.
 function format_tpl(tpl, data, limit_to_table) {
   if (tpl[0] === undefined) {
     console.log("missing tpl for format_tpl");
     return "";
   }
+
+  tpl = replace_val_variables(tpl, data);
+  tpl = set_values_of_input_variables(tpl, data);
+
+  return tpl;
+}
+
+// this will fill all possible elements with data, if their name=
+// attribute is the same as the given object key
+function set_values_of_input_variables(tpl, data, limit_to_table) {
+
   if (limit_to_table == null) {
     limit_to_table = "";
-  }
-
-  let g = tpl[0].outerHTML;
-  if (g.indexOf('{val_') !== -1) {
-    for (variable in data) {
-      if (data[variable] == null) {
-        data[variable] = "";
-      }
-      g = g.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
-    }
-    return g;
   }
 
   for (variable in data) {
