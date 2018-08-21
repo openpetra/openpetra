@@ -70,8 +70,6 @@ function format_date() {
 
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
-	// row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
 }
 
@@ -181,7 +179,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 
-	// serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
+	// TODO: use serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
@@ -207,7 +205,6 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 
 			}
 		}
-
 
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
