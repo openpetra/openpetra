@@ -64,8 +64,8 @@
 
 	<div class="tpl_trans_detail">
 		<div class="row">
-			<div class="col format_curr">{val_a_gift_amount_n}</div>
-			<div class="col">{val_RecipientDescription}</div>
+			<div class="col format_curr">{val_a_gift_transaction_amount_n}</div>
+			<div class="col">{val_a_gift_comment_one_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
 					<i class="fa fa-wrench"></i>
@@ -306,7 +306,7 @@
 								<span>{trans_amount_in_base}</span>
 							</div>
 							<div class="col">
-								<input class="" type="number" step="0.01" name="a_gift_amount_n" value="">
+								<input class="" type="number" step="0.01" name="a_gift_transaction_amount_n" value="">
 							</div>
 						</div>
 
@@ -315,28 +315,28 @@
 								<span>{trans_description}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="RecipientDescription" value="">
+								<input class="" type="text" name="a_gift_comment_one_c" value="">
 							</div>
 						</div>
 
-						<div class="row">
+						<div class="row" requireClass>
 							<div class="col">
-								<span>{trans_account_code}</span>
-							</div>
-							<div class="col">
-									<div class="autocomplete">
-										<input class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
-									</div>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{trans_ccenter_code}</span>
+								<span>{motivation_group_code}</span>
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+									<input class="" type="text" name="a_motivation_group_code_c" key-name="a_motivation_group_code_c" value="" oninput="autocomplete_motivation_group(this)">
+								</div>
+							</div>
+						</div>
+
+						<div class="row" requireClass>
+							<div class="col">
+								<span>{motivation_detail_code}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
 								</div>
 							</div>
 						</div>
@@ -420,7 +420,7 @@
 </div>
 
 <script src="/src/lib/autocomplete.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

@@ -245,6 +245,8 @@
       "trans_amount_in_base": "Amount",
       "trans_account_code": "Account",
       "trans_ccenter_code": "Cost centre",
+      "motivation_group_code":"Motivation Group Code",
+      "motivation_detail_code":"Motivation Detail Code",
       "trans_narrative_code": "Comment",
       "trans_donor_key":"Donor Key",
       "trans_donor":"Donor Name",

@@ -244,6 +244,8 @@
       "trans_amount_in_base": "Betrag",
       "trans_account_code": "Konto",
       "trans_ccenter_code": "Kostenstelle",
+      "motivation_group_code":"Verwendungszweck Gruppe",
+      "motivation_detail_code":"Verwendungszweck Detail",
       "trans_narrative_code": "Bemerkung",
       "trans_donor_key":"Spender Schlüssel",
       "trans_donor":"Spendername",

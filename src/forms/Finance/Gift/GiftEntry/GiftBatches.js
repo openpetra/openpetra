@@ -279,9 +279,7 @@ function save_edit_trans(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
-			}
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -302,9 +300,7 @@ function save_edit_trans_detail(obj_modal) {
 			display_list();
 		}
 		else if (parsed.result == false) {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
-			}
+			display_error(parsed.AVerificationResult);
 		}
 
 	});
