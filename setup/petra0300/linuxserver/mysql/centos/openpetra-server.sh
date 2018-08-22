@@ -34,7 +34,8 @@ else
     export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
     export OPENPETRA_PORT=`cat $config | grep "Server.Port" | awk -F'"' '{print $4}'`
-  else
+  else if [ -z $OPENPETRA_DBUSER ]
+  then
     echo "cannot find $config"
     exit -1
   fi
