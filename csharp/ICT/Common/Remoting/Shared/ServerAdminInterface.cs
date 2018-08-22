@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -204,6 +204,12 @@ namespace Ict.Common.Remoting.Shared
         /// RDMBS Connection Pools.
         /// </summary>
         int ClearConnectionPoolAndGetNumberOfDBConnections();
+
+        /// <summary>
+        /// set the password of a user
+        /// </summary>
+        /// <returns></returns>
+        bool SetPassword(string AUserID, string APassword);
 
         /// <summary>
         /// add a new user

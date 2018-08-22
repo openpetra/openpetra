@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -614,6 +614,15 @@ CheckAllClientsDisconnected:
         {
             // implemented in derived class
             return -1;
+        }
+
+        /// <summary>
+        /// SetPassword
+        /// </summary>
+        public virtual bool SetPassword(string AUserID, string APassword)
+        {
+            // implemented in derived class
+            return false;
         }
 
         /// <summary>

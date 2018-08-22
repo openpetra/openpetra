@@ -304,9 +304,18 @@ FINISH
     then
       mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
            -e "UPDATE s_user SET s_password_needs_change_l = 1 WHERE s_user_id_c = 'SYSADMIN'" $OPENPETRA_DBNAME
+      mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
+           -e "DELETE FROM s_user WHERE s_user_id_c <> 'SYSADMIN'" $OPENPETRA_DBNAME
     fi
 
-    echo "For production use, please change the password for user SYSADMIN immediately (initial password: CHANGEME)"
+    if [ -z $SYSADMIN_PWD ]
+    then
+      $SYSADMIN_PWD="CHANGEME"
+    fi
+
+    su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:$SYSADMIN_PWD"
+
+    echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
 }
 
 case "$1" in

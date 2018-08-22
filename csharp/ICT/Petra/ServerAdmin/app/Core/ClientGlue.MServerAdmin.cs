@@ -229,6 +229,15 @@ namespace Ict.Petra.ServerAdmin.App.Core.RemoteObjects
                 return (System.Int32) Result[0];
             }
             /// forward the method call
+            public System.Boolean SetPassword(System.String AUserID, System.String APassword)
+            {
+                SortedList<string, object> ActualParameters = new SortedList<string, object>();
+                ActualParameters.Add("AUserID", AUserID);
+                ActualParameters.Add("APassword", APassword);
+                List<object> Result = THttpConnector.CallWebConnector("MServerAdmin", "TServerAdminWebConnector.SetPassword", ActualParameters, "System.Boolean");
+                return (System.Boolean) Result[0];
+            }
+            /// forward the method call
             public System.Boolean AddUser(System.String AUserID)
             {
                 SortedList<string, object> ActualParameters = new SortedList<string, object>();

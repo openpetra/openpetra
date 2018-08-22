@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -301,6 +301,15 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         public static int ClearConnectionPoolAndGetNumberOfDBConnections()
         {
             return TServerManagerBase.TheServerManager.ClearConnectionPoolAndGetNumberOfDBConnections();
+        }
+
+        /// <summary>
+        /// set the password of a user
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static bool SetPassword(string AUserID, string APassword)
+        {
+            return TServerManagerBase.TheServerManager.SetPassword(AUserID, APassword);
         }
 
         /// <summary>

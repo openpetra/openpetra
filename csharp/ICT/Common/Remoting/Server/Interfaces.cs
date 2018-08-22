@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,6 +37,11 @@ namespace Ict.Common.Remoting.Server
     /// </summary>
     public interface IUserManager
     {
+        /// <summary>
+        /// Set Password
+        /// </summary>
+        bool SetPassword(string AUserID, string APassword);
+
         /// <summary>
         /// Adds a new user
         /// </summary>

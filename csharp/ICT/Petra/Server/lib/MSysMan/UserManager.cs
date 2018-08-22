@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -632,6 +632,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
     /// </summary>
     public class TUserManager : IUserManager
     {
+        /// <summary>
+        /// Set the password
+        /// </summary>
+        /// <remarks>Gets called from TServerManager.SetPassword() Method, which is used to 
+        /// set the initial password for SYSADMIN.</remarks>
+        public bool SetPassword(string AUserID, string APassword)
+        {
+            TVerificationResultCollection VerificationResult;
+            return TMaintenanceWebConnector.SetUserPassword(AUserID, APassword, true, true, string.Empty, string.Empty, out VerificationResult);
+        }
+
         /// <summary>
         /// Adds a new user.
         /// </summary>
