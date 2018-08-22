@@ -2378,6 +2378,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 AGiftTransactionNumber,
             Int32 ADetailNumber,
             Decimal AGiftTransactionAmount,
+            string AGiftCommentOne,
             string AMotivationGroupCode,
             string AMotivationDetailCode,
             Int64 ARecipientKey,
@@ -2395,6 +2396,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.GiftTransactionNumber = AGiftTransactionNumber;
                 row.DetailNumber = ADetailNumber;
                 row.GiftTransactionAmount = AGiftTransactionAmount;
+                row.GiftCommentOne = AGiftCommentOne;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.RecipientKey = ARecipientKey;
@@ -2420,6 +2422,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))
                     {
                         row.GiftTransactionAmount = AGiftTransactionAmount;
+                        row.GiftCommentOne = AGiftCommentOne;
                         row.MotivationGroupCode = AMotivationGroupCode;
                         row.MotivationDetailCode = AMotivationDetailCode;
                         row.RecipientKey = ARecipientKey;
