@@ -64,8 +64,8 @@
 
 	<div class="tpl_trans_detail">
 		<div class="row">
+			<div class="col">{val_a_motivation_group_code_c} {val_a_motivation_detail_code_c}</div>
 			<div class="col format_curr">{val_a_gift_transaction_amount_n}</div>
-			<div class="col">{val_a_gift_comment_one_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
 					<i class="fa fa-wrench"></i>
@@ -224,17 +224,19 @@
 						<!-- details -->
 
 						<div class="row" edit-only>
-							<div class="col">
+							<div class="col" id="Batch{val_a_batch_number_i}Gift{val_a_gift_transaction_number_i}">
 								<h4>Detail</h4>
 								<button type="button" class="btn btn-primary" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
 									<span>{forms.new}</span>
 									<i class="fa fa-plus"></i>
 								</button>
+
 								<div class="row">
+									<div class="col">{trans_motivation}</div>
 									<div class="col">{trans_amount_in_base}</div>
-									<div class="col">{trans_description}</div>
 									<div class="col-1"></div>
 								</div>
+
 								<div class="detail_col"></div>
 							</div>
 
@@ -289,6 +291,15 @@
 							</div>
 							<div class="col">
 								<input type="text" name="a_gift_transaction_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_detail}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_detail_number_i" value="" readonly>
 							</div>
 						</div>
 

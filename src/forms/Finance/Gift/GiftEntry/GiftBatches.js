@@ -138,7 +138,7 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
 		a_gift_transaction_number_i: trans_id,
-		// a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1
+		a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1
 	};
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
