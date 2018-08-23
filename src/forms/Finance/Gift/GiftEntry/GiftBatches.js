@@ -255,10 +255,8 @@ function save_edit_batch(obj_modal) {
 			$('#modal_space .modal').modal('hide');
 			display_list();
 		}
-		else if (parsed.result == "false") {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
-			}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }
