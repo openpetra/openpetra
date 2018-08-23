@@ -1123,11 +1123,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
         {
             #region Validate Arguments
 
@@ -1158,6 +1155,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 });
 
             MainDS.AcceptChanges();
+
+            ABatchIsUnposted = MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             return MainDS;
         }
@@ -1631,11 +1630,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// loads a list of gift transactions and details for the given ledger and batch
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
         {
             #region Validate Arguments
 
@@ -1655,6 +1651,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            ABatchIsUnposted = false;
 
             try
             {
@@ -1672,10 +1669,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 #endregion Validate Data
 
-                // drop all tables apart from AGiftBatch, AGift and AGiftDetail
+                ABatchIsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+                // drop all tables apart from AGift and AGiftDetail
                 foreach (DataTable table in MainDS.Tables)
                 {
-                    if ((table.TableName != MainDS.AGiftBatch.TableName) && (table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
+                    if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
                     {
                         table.Clear();
                     }
@@ -2187,12 +2186,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ABankCostCentre,
             out TVerificationResultCollection AVerificationResult)
         {
+            bool BatchIsUnposted;
+            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
             AVerificationResult = new TVerificationResultCollection();
-            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber);
 
             if (action != "create")
             {
-                if (MainDS.AGiftBatch[0].BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                if (!BatchIsUnposted)
                 {
                     AVerificationResult.Add(new TVerificationResult(
                         Catalog.GetString("Save Gift Batch"),
@@ -2285,12 +2285,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string AReference,
             out TVerificationResultCollection AVerificationResult)
         {
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
+            bool BatchIsUnposted;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")
             {
-                if (MainDS.AGiftBatch[0].BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                if (!BatchIsUnposted)
                 {
                     AVerificationResult.Add(new TVerificationResult(
                         "Save Gift Batch",
@@ -2403,13 +2404,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int64 ARecipientKey,
             out TVerificationResultCollection AVerificationResult)
         {
+            bool BatchIsUnposted;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
             AVerificationResult = new TVerificationResultCollection();
-
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
 
             if (action != "create")
             {
-                if (MainDS.AGiftBatch[0].BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                if (!BatchIsUnposted)
                 {
                     AVerificationResult.Add(new TVerificationResult(
                         "Save Gift Batch",
