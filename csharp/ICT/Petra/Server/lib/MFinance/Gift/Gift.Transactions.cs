@@ -2397,6 +2397,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.DetailNumber = ADetailNumber;
                 row.GiftTransactionAmount = AGiftTransactionAmount;
                 row.GiftCommentOne = AGiftCommentOne;
+                row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.RecipientKey = ARecipientKey;
@@ -2423,6 +2424,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         row.GiftTransactionAmount = AGiftTransactionAmount;
                         row.GiftCommentOne = AGiftCommentOne;
+                        row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
                         row.MotivationGroupCode = AMotivationGroupCode;
                         row.MotivationDetailCode = AMotivationDetailCode;
                         row.RecipientKey = ARecipientKey;
