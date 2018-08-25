@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -255,14 +255,14 @@ namespace Ict.Common.IO
         /// <summary>
         /// this will compare the original file with the file that has the same name but an extension .new additionally at the end
         /// if the files have identical content, the new file is dropped
-        /// otherwise the original file is backed up, and the new file is renamed to the original file name
+        /// otherwise new file is renamed to the original file name. there is no backup.
         ///
         /// the intention is to generate code, but not to touch it for VCS if not necessary
         /// </summary>
         /// <param name="AOrigFilename">the original name of the file</param>
         /// <param name="AIgnoreNewLine">should ignore line break character differences</param>
         /// <returns></returns>
-        public static bool UpdateFile(String AOrigFilename, bool AIgnoreNewLine)
+        public static bool UpdateFile(String AOrigFilename, bool AIgnoreNewLine = false)
         {
             string NewFilename = AOrigFilename + ".new";
 
@@ -280,30 +280,16 @@ namespace Ict.Common.IO
 
                 if (System.IO.File.Exists(AOrigFilename))
                 {
-                    // create backup of original file
-                    TFileHelper.MoveToBackup(AOrigFilename);
+                    // disabled: create backup of original file
+                    // TFileHelper.MoveToBackup(AOrigFilename);
+                    // delete the file instead:
+                    System.IO.File.Delete(AOrigFilename);
                 }
 
                 System.IO.File.Move(NewFilename, AOrigFilename);
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// this will compare the original file with the file that has the same name but an extension .new additionally at the end
-        /// if the files have identical content, the new file is dropped
-        /// otherwise the original file is backed up, and the new file is renamed to the original file name
-        ///
-        /// the intention is to generate code, but not to touch it for VCS if not necessary.
-        ///
-        /// this overload will compare line endings as well.
-        /// </summary>
-        /// <param name="AOrigFilename"></param>
-        /// <returns></returns>
-        public static bool UpdateFile(String AOrigFilename)
-        {
-            return UpdateFile(AOrigFilename, false);
         }
 
         /// StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
