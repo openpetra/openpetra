@@ -193,12 +193,14 @@ namespace Ict.Petra.Server.App.WebService
             out Int32 AClientID,
             out string AWelcomeMessage,
             out Boolean ASystemEnabled,
-            out IPrincipal AUserInfo)
+            out IPrincipal AUserInfo,
+            out Boolean AMustChangePassword)
         {
             AUserInfo = null;
             ASystemEnabled = true;
             AWelcomeMessage = string.Empty;
             AClientID = -1;
+            AMustChangePassword = false;
 
             if (DBAccess.GDBAccessObj == null)
             {
@@ -228,6 +230,8 @@ namespace Ict.Petra.Server.App.WebService
 
                 TServerManager.TheCastedServerManager.AddDBConnection(DBAccess.GDBAccessObj);
 
+                AMustChangePassword = (((TPetraPrincipal)AUserInfo).LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
+
                 return eLoginEnum.eLoginSucceeded;
             }
             catch (Exception e)
@@ -254,12 +258,14 @@ namespace Ict.Petra.Server.App.WebService
             bool SystemEnabled;
             IPrincipal UserInfo;
             Int32 ClientID;
+            bool MustChangePassword;
 
             eLoginEnum resultCode =  LoginInternal(username, password, TFileVersionInfo.GetApplicationVersion().ToVersion(),
-                out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo);
+                out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo, out MustChangePassword);
 
             Dictionary<string, object> result = new Dictionary<string, object>();
             result.Add("resultcode", resultCode.ToString());
+            result.Add("mustchangepassword", MustChangePassword);
             return JsonConvert.SerializeObject(result);
         }
 
