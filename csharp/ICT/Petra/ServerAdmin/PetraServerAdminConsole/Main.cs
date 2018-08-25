@@ -974,8 +974,6 @@ namespace PetraServerAdminConsole
                 ExitError = true;
             }
 
-            string CannotDisconnectMessage;
-            new THTTPClientManager().DisconnectClient(out CannotDisconnectMessage);
             ClearSecurityToken();
 
             if (ExitError)
