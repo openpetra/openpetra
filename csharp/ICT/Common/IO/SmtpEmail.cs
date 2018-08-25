@@ -566,6 +566,69 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// Create a mail message from a language specific template and send it as from the specified sender address.
+        /// The first line in the template is the subject, all following lines are the body.
+        /// </summary>
+        /// <returns>Flag indicating whether email was sent.</returns>
+        /// <exception cref="ESmtpSenderInitializeException">Thrown when the sender address is invalid. An inner exception may contain more detail.</exception>
+        public bool SendEmailFromTemplate(string fromemail, string fromDisplayName, string recipients,
+            string template, string language, Dictionary<string, string> parameters,
+            string[] attachfiles = null)
+        {
+            SetSender(fromemail, fromDisplayName);
+
+            string TemplateFilename = TAppSettingsManager.GetValue("EMailTemplates.Path", ".") +
+                           Path.DirectorySeparatorChar +
+                           template + "_" + language.ToLower() + ".txt";
+
+            if (!File.Exists(TemplateFilename) && language.Contains('-'))
+            {
+                TemplateFilename = TAppSettingsManager.GetValue("EMailTemplates.Path", ".") +
+                           Path.DirectorySeparatorChar +
+                           template + "_" + language.ToLower().Substring(0,language.IndexOf('-')) + ".txt";
+            }
+
+            if (!File.Exists(TemplateFilename))
+            {
+                TemplateFilename = TAppSettingsManager.GetValue("EMailTemplates.Path", ".") +
+                           Path.DirectorySeparatorChar +
+                           template + "_en.txt";
+            }
+
+            string subject = String.Empty;
+            string body = String.Empty;
+
+            using (StreamReader reader = new StreamReader(TemplateFilename))
+            {
+                if (reader == null)
+                {
+                    throw new Exception("cannot open file " + TemplateFilename);
+                }
+
+                subject = reader.ReadLine();
+
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    body += line + Environment.NewLine;
+                }
+            }
+
+            foreach (var pair in parameters)
+            {
+                subject = subject.Replace("{" + pair.Key + "}", pair.Value);
+                body = body.Replace("{" + pair.Key + "}", pair.Value);
+            }
+
+            if ((subject.Length == 0) || (body.Length == 0))
+            {
+                return false;
+            }
+
+            return SendEmail(recipients, subject, body, attachfiles);
+        }
+
+        /// <summary>
         /// Create a mail message and send it as from the address that has already been set.
         /// </summary>
         /// <remarks>The sender address must be set using <see cref="SetSender(string, string)"/></remarks>

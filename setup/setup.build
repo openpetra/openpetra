@@ -73,6 +73,7 @@
   <mkdir dir="${dir.setup}/reports"/>
   <mkdir dir="${dir.setup}/manuals"/>
   <mkdir dir="${dir.setup}/sql"/>
+  <mkdir dir="${dir.setup}/emails"/>
   <mkdir dir="${dir.setup}/formletters"/>
   <mkdir dir="${dir.setup}/bin"/>
   <mkdir dir="${dir.setup}/server"/>
@@ -209,6 +210,12 @@
   <copy todir="${dir.setup}/sql">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/lib/MSysMan/DBUpgrades/">
         <include name="*.sql" />
+    </fileset>
+  </copy>
+  <copy todir="${dir.setup}/emails">
+    <fileset basedir="${dir.root}/inc/template/email/">
+        <include name="*.txt" />
+        <include name="*.html" />
     </fileset>
   </copy>
 </target> 
