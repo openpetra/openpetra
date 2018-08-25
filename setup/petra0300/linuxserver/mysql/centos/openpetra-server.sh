@@ -196,7 +196,7 @@ init() {
        > /home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/etc/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
-       | sed -e "s/openpetraOPENPETRA_PORT/$userName/" \
+       | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_HTTP_PORT/#" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
     chown -R $userName:$userName /home/$userName
