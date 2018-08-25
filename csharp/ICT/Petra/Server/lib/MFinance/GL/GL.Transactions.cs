@@ -4346,6 +4346,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// cancel a GL Batch
+        [RequireModulePermission("FINANCE-2")]
         public static bool CancelGLBatch(
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
