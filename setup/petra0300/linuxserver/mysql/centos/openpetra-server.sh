@@ -100,7 +100,7 @@ menu() {
 }
 
 # export variables for debugging to use mysql on the command line
-mysql() {
+mysqlscript() {
     export DBHost=$OPENPETRA_DBHOST
     export DBUser=$OPENPETRA_DBUSER
     export DBName=$OPENPETRA_DBNAME
@@ -250,7 +250,7 @@ FINISH
     if [[ "$OP_CUSTOMER" != "openpetra" ]]
     then
       # create the service script
-      cp /usr/lib/systemd/system/openpetra-server.service /usr/lib/systemd/system/${OP_CUSTOMER}.service
+      cp /usr/lib/systemd/system/openpetra.service /usr/lib/systemd/system/${OP_CUSTOMER}.service
       sed -i "s~OpenPetra Server~OpenPetra Server for $userName~g" /usr/lib/systemd/system/${OP_CUSTOMER}.service
       sed -i "s~User=openpetra~User=$userName\nEnvironment=OP_CUSTOMER=$userName~g" /usr/lib/systemd/system/${OP_CUSTOMER}.service
     fi
@@ -356,7 +356,7 @@ case "$1" in
         menu
         ;;
     mysql)
-        mysql
+        mysqlscript
         ;;
     status)
         status
