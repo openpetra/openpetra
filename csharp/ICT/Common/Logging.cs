@@ -388,16 +388,23 @@ namespace Ict.Common
             }
             else if (!FNoLoggingToConsoleError)
             {
-                if (((ALoggingType & TLoggingType.ToConsole) != 0)
-                     // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
-                     || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel != 0)))
+                try
                 {
-                    Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
-
-                    if (!string.IsNullOrEmpty(TLogging.Context))
+                    if (((ALoggingType & TLoggingType.ToConsole) != 0)
+                         // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
+                         || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel != 0)))
                     {
-                        Console.Error.WriteLine("  Context: " + TLogging.Context);
+                        Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
+
+                        if (!string.IsNullOrEmpty(TLogging.Context))
+                        {
+                            Console.Error.WriteLine("  Context: " + TLogging.Context);
+                        }
                     }
+                }
+                catch (System.NotSupportedException)
+                {
+                    // ignore this exception: System.NotSupportedException: Stream does not support writing
                 }
             }
 
