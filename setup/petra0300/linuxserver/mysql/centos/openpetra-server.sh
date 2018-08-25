@@ -183,6 +183,7 @@ init() {
 
     # copy config files (server, serveradmin.config) to etc, with adjustments
     cat $OpenPetraPath/etc/PetraServerConsole.config \
+       | sed -e "s/OPENPETRA_PORT/$OPENPETRA_PORT/" \
        | sed -e "s/OPENPETRA_RDBMSType/$OPENPETRA_RDBMSType/" \
        | sed -e "s/OPENPETRA_DBHOST/$OPENPETRA_DBHOST/" \
        | sed -e "s/OPENPETRA_DBUSER/$OPENPETRA_DBUSER/" \
