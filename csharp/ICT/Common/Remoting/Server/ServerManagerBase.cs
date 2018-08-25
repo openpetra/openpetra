@@ -262,7 +262,6 @@ namespace Ict.Common.Remoting.Server
             // only display this for the main instance!
             if (FFirstInstance == true)
             {
-                Console.WriteLine();
                 TLogging.Log(Catalog.GetString("SERVER STOPPED!"));
             }
         }
@@ -343,7 +342,6 @@ namespace Ict.Common.Remoting.Server
             const int MAX_RETRIES = 100; // = 500 milliseconds * 100 = 50 seconds
             int Retries = 0;
 
-            Console.WriteLine();
             TLogging.Log(Catalog.GetString("CONTROLLED SHUTDOWN PROCEDURE INITIATED"));
 
             // Stop the DB Connection check Timer (only if a check interval is specified).
@@ -468,7 +466,6 @@ CheckAllClientsDisconnected:
         /// <returns>void</returns>
         public void StopServer()
         {
-            Console.WriteLine();
             TLogging.Log(Catalog.GetString("SHUTDOWN PROCEDURE INITIATED"));
             TLogging.Log("  " + Catalog.GetString("SHUTDOWN: Executing step 1 of 2..."));
 
