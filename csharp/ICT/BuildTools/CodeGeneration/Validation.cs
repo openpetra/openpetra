@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,47 +51,6 @@ namespace Ict.Tools.CodeGeneration
 
             /// <summary>Only Number Range Checks</summary>
             advsNumberRangeChecks
-        }
-
-        /// <summary>
-        /// Determines whether automatic Data Validation code should be created for a certain Control in a YAML file.
-        /// </summary>
-        /// <param name="AControl">Control in YAML file.</param>
-        /// <param name="AHasDataField"></param>
-        /// <param name="AMasterOrDetailTable">Pass in 'true' if the YAML file has got a 'MasterTable' or 'DetailTable' Element. </param>
-        /// <param name="AIncludeMasterOrDetailTableControl"></param>
-        /// <param name="AScope">Scope of the Data Validation that should be checked for. Specify <see cref="TAutomDataValidationScope.advsAll"/>
-        /// to find out if any of the scopes should be checked against, or use any other value of that enum to specifiy a specific scope.</param>
-        /// <param name="AReasonForAutomValidation">Contains the reason why automatic data validation code needs to be generated.</param>
-        /// <returns>True if automatic Data Validation code should be created for the Control in a YAML that was passed in in <paramref name="AControl" /> for
-        /// the scope that was specified with <paramref name="AScope" />, otherwise false. This Method also returns false if the Control specified in
-        /// <paramref name="AControl" /> isn't linked to a DB Table Field.</returns>
-        public static bool GenerateAutoValidationCodeForControl(TControlDef AControl, bool AHasDataField, bool AMasterOrDetailTable,
-            bool AIncludeMasterOrDetailTableControl, TAutomDataValidationScope AScope, out string AReasonForAutomValidation)
-        {
-            TTableField DBField = null;
-            bool IsDetailNotMaster;
-
-            AReasonForAutomValidation = String.Empty;
-
-            if (AHasDataField)
-            {
-                DBField = TDataBinding.GetTableField(AControl, AControl.GetAttribute("DataField"), out IsDetailNotMaster, true);
-            }
-            else if (AMasterOrDetailTable && AIncludeMasterOrDetailTableControl)
-            {
-                DBField = TDataBinding.GetTableField(AControl, AControl.controlName.Substring(
-                        AControl.controlTypePrefix.Length), out IsDetailNotMaster, false);
-            }
-
-            if (DBField != null)
-            {
-                return GenerateAutoValidationCodeForDBTableField(DBField, AScope, null, out AReasonForAutomValidation);
-            }
-            else
-            {
-                return false;
-            }
         }
 
         /// <summary>
