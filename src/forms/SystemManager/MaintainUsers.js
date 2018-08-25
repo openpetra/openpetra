@@ -34,6 +34,7 @@ function display_list() {
 			// format a user for every entry
 			format_item(item, data.result);
 		}
+		format_chk();
 	})
 }
 

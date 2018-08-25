@@ -214,6 +214,23 @@ function format_date() {
 	)
 };
 
+function format_chk() {
+	$('.format_chk').each(
+		function(x, obj) {
+			obj = $(obj);
+			let t = obj.text();
+			if (t == null || t.length <=1) {return}
+
+			if (t == "false") {
+				obj.html("<i class='fa fa-circle-thin'></i>");
+			} else {
+				obj.html("<i class='fa fa-check-circle'></i>");
+			}
+
+		}
+	)
+};
+
 // this is the oposite the format one, it will extract all name= objects
 // and will return a object in key, values where key is the name and value... well the value
 function extract_data(object) {
