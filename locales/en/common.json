@@ -126,6 +126,11 @@
         "firstname": "Forename",
         "lastname": "Surname",
         "email": "E-Mail",
+        "language": "Language",
+        "german": "German",
+        "english": "English",
+        "sendpassword": "Initial Password",
+        "sendpassword_checkbox": "Send initial password per email to the new user",
         "permissions": "Permissions",
         "locked": "Locked",
         "retired": "Disabled"

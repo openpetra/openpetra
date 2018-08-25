@@ -126,6 +126,11 @@
         "firstname": "Vorname",
         "lastname": "Nachname",
         "email": "E-Mail",
+        "language": "Sprache",
+        "german": "Deutsch",
+        "english": "Englisch",
+        "sendpassword": "Neues Passwort",
+        "sendpassword_checkbox": "Neues Passwort per E-Mail an den neuen Benutzer schicken",
         "permissions": "Berechtigungen",
         "locked": "Gesperrt",
         "retired": "Deaktiviert"
