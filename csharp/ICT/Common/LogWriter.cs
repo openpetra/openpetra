@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, simonj, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -257,7 +257,7 @@ namespace Ict.Common
                 }
 
                 try
-		{
+                {
                     File.AppendAllText(strFile, line);
                 }
                 catch (Exception e)
