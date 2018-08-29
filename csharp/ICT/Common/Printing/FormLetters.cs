@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -932,9 +932,7 @@ namespace Ict.Common.Printing
 
             try
             {
-                PrintDocument doc = new PrintDocument();
-
-                TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+                TPdfPrinter pdfPrinter = new TPdfPrinter(TPdfPrinter.ePrinterBehaviour.eFormLetter);
                 TPrinterHtml htmlPrinter = new TPrinterHtml(AHTMLDoc, String.Empty, pdfPrinter);
 
                 pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);

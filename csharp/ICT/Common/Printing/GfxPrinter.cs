@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,21 +31,10 @@ using System.Collections.Generic;
 namespace Ict.Common.Printing
 {
     /// <summary>
-    /// The TGfxPrinter class helps to print to a System.Drawing.Printing.PrintDocument.
-    ///
-    /// This means you can use several fonts, etc.
-    ///
-    /// see also
-    /// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnwinforms/html/printwinforms.asp
-    /// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnadvnet/html/vbnet01282003.asp
+    /// The TGfxPrinter class is the base class for TPdfPrinter
     /// </summary>
     public class TGfxPrinter : TPrinter
     {
-        /// <summary>
-        /// the graphical document
-        /// </summary>
-        protected System.Drawing.Printing.PrintDocument FDocument;
-
         /// we have some different behaviour when printing the columns of a report and when printing a form letter
         public enum ePrinterBehaviour
         {
@@ -66,62 +55,22 @@ namespace Ict.Common.Printing
         /// space available for printing
         public float FPageWidthAvailable;
 
-        /// todoComment
-        public System.Drawing.Font FDefaultFont;
-
-        /// todoComment
-        public System.Drawing.Font FDefaultBoldFont;
-
-        /// todoComment
-        public System.Drawing.Font FHeadingFont;
-
-        /// fonts for printing barcodes, using Code 128
-        public System.Drawing.Font FBarCodeFont;
-
-        /// todoComment
-        public System.Drawing.Font FSmallPrintFont;
-
-        /// todoComment
-        public System.Drawing.Font FBiggestLastUsedFont;
         private StringFormat FLeft;
         private StringFormat FRight;
         private StringFormat FCenter;
-        private System.Drawing.Pen FBlackPen;
 
         /// <summary>these values are set by PrintPage</summary>
         protected float FLinesPerPage;
-
-        /// <summary>todoComment</summary>
-        protected PrintPageEventArgs FEv;
-
-        /// <summary>the document to print into</summary>
-        public PrintDocument Document
-        {
-            get
-            {
-                return FDocument;
-            }
-        }
-
 
         /// <summary>
         /// sets the orientation of the page
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TGfxPrinter(System.Drawing.Printing.PrintDocument ADocument, ePrinterBehaviour APrinterBehaviour) : base()
+        public TGfxPrinter(ePrinterBehaviour APrinterBehaviour) : base()
         {
-            FDocument = ADocument;
             FPrinterBehaviour = APrinterBehaviour;
-            FSmallPrintFont = new System.Drawing.Font("Arial", 6);
-            FDefaultFont = new System.Drawing.Font("Arial", 8);
-            FDefaultBoldFont = new System.Drawing.Font("Arial", 8, FontStyle.Bold);
-            FHeadingFont = new System.Drawing.Font("Arial", 10, FontStyle.Bold);
-
-            // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
-            FBarCodeFont = new System.Drawing.Font("Code 128", 35, FontStyle.Regular);
-
-            FBiggestLastUsedFont = null;
+            
             FRight = new StringFormat(StringFormat.GenericDefault);
             FRight.Alignment = StringAlignment.Far;
             FLeft = new StringFormat(StringFormat.GenericDefault);
@@ -136,32 +85,7 @@ namespace Ict.Common.Printing
         public override void Init(eOrientation AOrientation, TPrinterLayout APrinterLayout, eMarginType AMarginType)
         {
             base.Init(AOrientation, APrinterLayout, AMarginType);
-            SetPageSize();
-
-            if (AOrientation == eOrientation.ePortrait)
-            {
-                FDocument.DefaultPageSettings.Margins = new Margins(
-					Convert.ToInt32(Cm2Inch(0.5f) * 100),
-					Convert.ToInt32(Cm2Inch(0.5f) * 100),
-					Convert.ToInt32(Cm2Inch(0.5f) * 100),
-					Convert.ToInt32(Cm2Inch(1) * 100));
-            }
-            else if (AOrientation == eOrientation.eLandscape)
-            {
-                FDocument.DefaultPageSettings.Margins = new Margins(
-					Convert.ToInt32(Cm2Inch(0.5f) * 100),
-					Convert.ToInt32(Cm2Inch(1) * 100),
-					Convert.ToInt32(Cm2Inch(0.5f) * 100),
-					Convert.ToInt32(Cm2Inch(0.5f) * 100));
-            }
-
-            // Associate the eventhandling method with the
-            // document's PrintPage event.
-            FDocument.PrintPage += new PrintPageEventHandler(this.PrintPage);
-            FDocument.BeginPrint += new PrintEventHandler(this.BeginPrint);
-            FDocument.EndPrint += new PrintEventHandler(this.EndPrint);
-
-            FDocument.DefaultPageSettings.Landscape = (FOrientation == eOrientation.eLandscape);
+//            SetPageSize();
         }
 
         void BeginPrint(object ASender, PrintEventArgs AEv)
@@ -169,11 +93,6 @@ namespace Ict.Common.Printing
             if ((FNumberOfPages == 0) && (CurrentPageNr != 0))
             {
                 FNumberOfPages = CurrentPageNr;
-            }
-
-            if (AEv != null)
-            {
-                FprintAction = AEv.PrintAction;
             }
 
             CurrentPageNr = 0;
@@ -194,76 +113,12 @@ namespace Ict.Common.Printing
             }
         }
 
-        private SortedList <string, Font>FFontCache = new SortedList <string, Font>();
-
-        /// <summary>
-        /// get the font that is associated with the enum value.
-        /// this way we do not need to create a new font each time
-        /// </summary>
-        /// <param name="AFont"></param>
-        /// <returns></returns>
-        protected System.Drawing.Font GetFont(eFont AFont)
-        {
-            System.Drawing.Font ReturnValue;
-            ReturnValue = FDefaultFont;
-
-            switch (AFont)
-            {
-                case eFont.eDefaultFont:
-                    ReturnValue = FDefaultFont;
-                    break;
-
-                case eFont.eDefaultBoldFont:
-                    ReturnValue = FDefaultBoldFont;
-                    break;
-
-                case eFont.eHeadingFont:
-                    ReturnValue = FHeadingFont;
-                    break;
-
-                case eFont.eBarCodeFont:
-                    ReturnValue = FBarCodeFont;
-                    break;
-
-                case eFont.eSmallPrintFont:
-                    ReturnValue = FSmallPrintFont;
-                    break;
-            }
-
-            if (CurrentRelativeFontSize != 0)
-            {
-                float FontSize = ReturnValue.SizeInPoints + CurrentRelativeFontSize;
-
-                if (FontSize <= 0.0f)
-                {
-                    FontSize = 0.5f;
-                }
-
-                string id = ReturnValue.FontFamily.ToString() + FontSize.ToString() + ReturnValue.Style.ToString();
-
-                if (!FFontCache.ContainsKey(id))
-                {
-                    FFontCache.Add(id, new Font(ReturnValue.FontFamily, FontSize, ReturnValue.Style));
-                }
-
-                ReturnValue = FFontCache[id];
-            }
-
-            return ReturnValue;
-        }
-
         /// <summary>
         /// update the biggest last used font for the next line feed
         /// </summary>
         /// <param name="AFont"></param>
         protected virtual bool UpdateBiggestLastUsedFont(eFont AFont)
         {
-            if ((FBiggestLastUsedFont == null) || (GetFont(AFont).GetHeight(FEv.Graphics) > FBiggestLastUsedFont.GetHeight(FEv.Graphics)))
-            {
-                FBiggestLastUsedFont = GetFont(AFont);
-                return true;
-            }
-
             return false;
         }
 
@@ -300,24 +155,7 @@ namespace Ict.Common.Printing
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, eAlignment AAlign)
         {
-            if ((ATxt == null) || (ATxt.Length == 0))
-            {
-                return false;
-            }
-
-            UpdateBiggestLastUsedFont(AFont);
-
-            RectangleF rect;
-
-            rect = new RectangleF(FLeftMargin, CurrentYPos, FWidth, GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight);
-
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                ATxt = GetFittedText(ATxt, AFont, rect.Width);
-                FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, GetStringFormat(AAlign));
-            }
-
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -326,19 +164,7 @@ namespace Ict.Common.Printing
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos)
         {
-            if ((ATxt == null) || (ATxt.Length == 0))
-            {
-                return false;
-            }
-
-            UpdateBiggestLastUsedFont(AFont);
-
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, AXPos, CurrentYPos);
-            }
-
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -347,29 +173,7 @@ namespace Ict.Common.Printing
         /// <returns>true if something was printed</returns>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
-            if ((ATxt == null) || (ATxt.Length == 0))
-            {
-                return false;
-            }
-
-            UpdateBiggestLastUsedFont(AFont);
-
-            RectangleF rect = new RectangleF(AXPos, CurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight);
-
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                StringFormat f = GetStringFormat(AAlign);
-                f.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
-
-                if (FPrinterBehaviour == ePrinterBehaviour.eReport)
-                {
-                    ATxt = GetFittedText(ATxt, AFont, rect.Width);
-                }
-
-                FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, f);
-            }
-
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -633,7 +437,7 @@ namespace Ict.Common.Printing
         /// <returns>Return the width of the string, if it was printed in one line, using the given Font</returns>
         public override float GetWidthString(String ATxt, eFont AFont)
         {
-            return FEv.Graphics.MeasureString(ATxt, GetFont(AFont)).Width;
+            return 0.0f;
         }
 
         /// <summary>
@@ -647,31 +451,7 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         public override Boolean DrawLine(float AXPos1, float AXPos2, eLinePosition ALinePosition, eFont AFont)
         {
-            float YPos;
-
-            YPos = CurrentYPos;
-
-            if (ALinePosition == eLinePosition.eBelow)
-            {
-                YPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight;
-            }
-            else if (ALinePosition == eLinePosition.eAbove)
-            {
-                YPos = CurrentYPos;
-            }
-
-            if (AXPos1 != LeftMargin)
-            {
-                // lines above/below columns should not touch
-                AXPos1 = AXPos1 + Cm(0.3f);
-            }
-
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                FEv.Graphics.DrawLine(FBlackPen, AXPos1, YPos, AXPos2, YPos);
-            }
-
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -679,10 +459,6 @@ namespace Ict.Common.Printing
         /// </summary>
         public override void DrawLine(Int32 APenPixels, float AXPos1, float AYPos1, float AXPos2, float AYPos2)
         {
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                FEv.Graphics.DrawLine(FBlackPen, AXPos1, AYPos1, AXPos2, AYPos2);
-            }
         }
 
         /// <summary>
@@ -699,10 +475,6 @@ namespace Ict.Common.Printing
             float AWidth,
             float AHeight)
         {
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                FEv.Graphics.DrawRectangle(FBlackPen, AXPos, AYPos, AWidth, AHeight);
-            }
         }
 
         /// <summary>
@@ -716,23 +488,6 @@ namespace Ict.Common.Printing
             float AXPos,
             float AYPos)
         {
-            if (!File.Exists(APath))
-            {
-                TLogging.Log("cannot draw bitmap because file does not exist " + APath);
-                return;
-            }
-
-            Bitmap img = new System.Drawing.Bitmap(APath);
-
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                FEv.Graphics.DrawImage(img, AXPos, AYPos);
-            }
-
-            // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
-            // pixel/inch = dpi <=> inch = pixel/dpi
-            CurrentYPos += img.Size.Height / img.VerticalResolution;
-            CurrentXPos += img.Size.Width / img.HorizontalResolution;
         }
 
         /// <summary>
@@ -750,43 +505,6 @@ namespace Ict.Common.Printing
             float AWidthPercentage,
             float AHeightPercentage)
         {
-            if (!System.IO.File.Exists(APath))
-            {
-                throw new Exception("TGfxPrinter.DrawBitmap: cannot find image file " + APath);
-            }
-
-            Bitmap img = new System.Drawing.Bitmap(APath);
-            float Height = img.Size.Height;
-
-            if (AHeightPercentage != 0.0f)
-            {
-                Height = Height / img.VerticalResolution * AHeightPercentage;
-            }
-            else
-            {
-                Height = AHeight;
-            }
-
-            float Width = img.Size.Width;
-
-            if (AHeightPercentage != 0.0f)
-            {
-                Width = Width / img.HorizontalResolution * AWidthPercentage;
-            }
-            else
-            {
-                Width = AWidth;
-            }
-
-            if (PrintingMode == ePrintingMode.eDoPrint)
-            {
-                FEv.Graphics.DrawImage(img, AXPos, AYPos, Width, Height);
-            }
-
-            // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
-            // pixel/inch = dpi <=> inch = pixel/dpi
-            CurrentYPos += Height;
-            CurrentXPos += Width;
         }
 
         /// <summary>
@@ -796,7 +514,6 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -806,15 +523,6 @@ namespace Ict.Common.Printing
         /// <returns>the new current line</returns>
         public override float LineFeed()
         {
-            if (FBiggestLastUsedFont == null)
-            {
-                FBiggestLastUsedFont = GetFont(eFont.eDefaultFont);
-            }
-
-            CurrentYPos = CurrentYPos + FBiggestLastUsedFont.GetHeight(FEv.Graphics) * CurrentLineHeight;
-
-            // reset the biggest last used font
-            FBiggestLastUsedFont = null;
             return CurrentYPos;
         }
 
@@ -825,7 +533,6 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineSpaceFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) / 2 * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -836,7 +543,6 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineUnFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos - GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -848,12 +554,6 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override void SetPageFooterSpace(System.Int32 ANumberOfLines, eFont AFont)
         {
-            // half a line for the drawn line, to separate the report body from the footer
-            if (ANumberOfLines != 0)
-            {
-                FPageFooterSpace = ((float)Convert.ToDouble(ANumberOfLines) + 0.5f) * GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight +
-                                   FDefaultFont.GetHeight(FEv.Graphics);
-            }
         }
 
         /// <summary>
@@ -864,7 +564,6 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override float LineFeedToPageFooter()
         {
-            CurrentYPos = FTopMargin + FHeight - FPageFooterSpace + FDefaultFont.GetHeight(FEv.Graphics) * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -889,6 +588,8 @@ namespace Ict.Common.Printing
             return CurrentYPos < FTopMargin + FHeight - FPageFooterSpace;
         }
 
+        bool FHasMorePages = false;
+
         /// <summary>
         /// Tell the printer, that there are more pages coming
         ///
@@ -896,10 +597,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override void SetHasMorePages(bool AHasMorePages)
         {
-            if (FEv != null)
-            {
-                FEv.HasMorePages = AHasMorePages;
-            }
+            FHasMorePages = AHasMorePages;
         }
 
         /// <summary>
@@ -908,12 +606,7 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         public override bool HasMorePages()
         {
-            if (FEv != null)
-            {
-                return FEv.HasMorePages;
-            }
-
-            return false;
+            return FHasMorePages;
         }
 
         /// <summary>
@@ -925,20 +618,10 @@ namespace Ict.Common.Printing
         {
             float ReturnValue = 0;
 
-            if (FEv != null)
+            if (true)
+            // if (FEv.Graphics.PageUnit == GraphicsUnit.Inch)
             {
-                if (FEv.Graphics.PageUnit == GraphicsUnit.Millimeter)
-                {
-                    ReturnValue = Convert.ToInt32(AValueInCm * 10);
-                }
-                else if (FEv.Graphics.PageUnit == GraphicsUnit.Point)
-                {
-                    ReturnValue = Cm2Twips(AValueInCm);
-                }
-                else if (FEv.Graphics.PageUnit == GraphicsUnit.Inch)
-                {
-                    ReturnValue = AValueInCm / 2.54f;
-                }
+                ReturnValue = AValueInCm / 2.54f;
             }
 
             return ReturnValue;
@@ -956,7 +639,8 @@ namespace Ict.Common.Printing
         /// <returns></returns>
         public override float PixelHorizontal(float AWidth)
         {
-            if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
+            if (true)
+            //if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
             {
                 // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
                 // pixel/inch = dpi <=> inch = pixel/dpi
@@ -965,7 +649,7 @@ namespace Ict.Common.Printing
             }
 
             // TODO other units
-            return AWidth;
+//            return AWidth;
         }
 
         /// <summary>
@@ -973,7 +657,8 @@ namespace Ict.Common.Printing
         /// </summary>
         public override float PixelVertical(float AHeight)
         {
-            if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
+            if (true)
+            //if ((FEv != null) && (FEv.Graphics.PageUnit == GraphicsUnit.Inch))
             {
                 // FEv.Graphics.PageUnit is inch; therefore need to convert pixel to inch
                 // pixel/inch = dpi <=> inch = pixel/dpi
@@ -982,9 +667,9 @@ namespace Ict.Common.Printing
             }
 
             // TODO other units
-            return AHeight;
+//            return AHeight;
         }
-
+/*
         /// <summary>
         /// Converts the given value in Point/Pixel to the currently used measurement unit
         ///
@@ -1252,5 +937,6 @@ namespace Ict.Common.Printing
                 }
             }
         }
+        */
     }
 }

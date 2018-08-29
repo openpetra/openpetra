@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -369,8 +369,8 @@ namespace Ict.Common.Printing
                         // printer.FPageWidthAvailable = 3;
                     }
 
-                    printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
-                    printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
+                    //printer.FDefaultFont = new System.Drawing.Font("Arial", 12);
+                    //printer.FDefaultBoldFont = new System.Drawing.Font("Arial", 12, FontStyle.Bold);
                     printer.CurrentRelativeFontSize = 0;
                 }
 
@@ -434,9 +434,9 @@ namespace Ict.Common.Printing
             {
                 FHasMorePages = false;
             }
-            else if (FPrinter is TGfxPrinter)
+            else if (FPrinter is TPdfPrinter)
             {
-                TGfxPrinter printer = (TGfxPrinter)FPrinter;
+                TPdfPrinter printer = (TPdfPrinter)FPrinter;
                 RenderContent(printer.FPageXPos, printer.FPageWidthAvailable, ref CurrentNode);
 
                 FHasMorePages = false;
