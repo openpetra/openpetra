@@ -581,7 +581,7 @@ namespace Ict.Common.IO
                            Path.DirectorySeparatorChar +
                            template + "_" + language.ToLower() + ".txt";
 
-            if (!File.Exists(TemplateFilename) && language.Contains('-'))
+            if (!File.Exists(TemplateFilename) && language.Contains("-"))
             {
                 TemplateFilename = TAppSettingsManager.GetValue("EMailTemplates.Path", ".") +
                            Path.DirectorySeparatorChar +
