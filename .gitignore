@@ -25,6 +25,7 @@ obj
 *.pdb
 *.pidb
 *.orig
+*.userprefs
 /tmp
 /var
 /delivery
