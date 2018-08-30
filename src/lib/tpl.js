@@ -52,7 +52,7 @@ function replace_val_variables(tpl, data) {
         $(tpl).attr('onclick', replace_val_variables_in_attr(onclick, data));
     }
 
-    $(tpl).find('button, div div').each(function() {
+    $(tpl).find('button, div div, div div span, div span').each(function() {
         let id = $(this).attr('id');
         if (id !== undefined && id != null) {
             $(this).attr('id', replace_val_variables_in_attr(id, data));
