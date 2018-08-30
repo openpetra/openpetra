@@ -34,6 +34,7 @@ function display_list() {
 			// format a user for every entry
 			format_item(item, data.result);
 		}
+		format_chk();
 	})
 }
 
@@ -87,6 +88,10 @@ function open_new() {
 
 		$('#modal_space').html(m);
 		$('#modal_space .modal').modal('show');
+		update_requireClass($('#modal_space .modal'), "adduser");
+
+		// set the language of the current user as default language for the new user
+		$('#modal_space .modal #language_code_id').val(i18next.language.toUpperCase());
 	});
 }
 
@@ -111,6 +116,7 @@ function open_edit(s_user_id_c) {
 
 		$('#modal_space').html(m);
 		$('#modal_space .modal').modal('show');
+		update_requireClass($('#modal_space .modal'), "edituser");
 	});
 }
 

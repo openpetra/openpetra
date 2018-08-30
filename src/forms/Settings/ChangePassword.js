@@ -40,16 +40,19 @@ $("#btnSubmitPassword").click(function(e) {
 			.then(function(response) {
 
 				var result = JSON.parse(response.data.d);
-				if (result.result == "false") {
+				if (result.result == false) {
 					if (result.AVerification[0].code == "SYS.00002V")
 						alert(i18next.t("ChangePassword.criteria"));
+					else if (result.AVerification[0].code == "SYS.00003V")
+						alert(i18next.t("ChangePassword.mustbedifferent"));
 					else if (result.AVerification[0].code == "ChangePassword.CurrentPwdWrong")
 						alert(i18next.t("ChangePassword.wrong"));
 					else
 						alert(i18next.t("ChangePassword.unknown") + " " + result.AVerification[0].code);
 				} else {
 					alert(i18next.t("ChangePassword.success"));
-					nav.OpenTab("Home", "home");
+					window.localStorage.setItem('mustchangepassword', false);
+					window.location.replace('/');
 				}
 		});
 	});

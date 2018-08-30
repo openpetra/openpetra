@@ -22,6 +22,9 @@
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans(43 ,{val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
 						</button>
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
+							<span>{forms.post}&nbsp;</span><i class="fa fa-lock"></i>
+						</button>
 					</div>
 					<div class="col"></div>
 				</div>
@@ -61,8 +64,8 @@
 
 	<div class="tpl_trans_detail">
 		<div class="row">
-			<div class="col format_curr">{val_a_gift_amount_n}</div>
-			<div class="col">{val_RecipientDescription}</div>
+			<div class="col">{val_a_motivation_group_code_c} {val_a_motivation_detail_code_c}</div>
+			<div class="col format_curr">{val_a_gift_transaction_amount_n}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
 					<i class="fa fa-wrench"></i>
@@ -221,17 +224,19 @@
 						<!-- details -->
 
 						<div class="row" edit-only>
-							<div class="col">
+							<div class="col" id="Batch{val_a_batch_number_i}Gift{val_a_gift_transaction_number_i}">
 								<h4>Detail</h4>
 								<button type="button" class="btn btn-primary" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
 									<span>{forms.new}</span>
 									<i class="fa fa-plus"></i>
 								</button>
+
 								<div class="row">
+									<div class="col">{trans_motivation}</div>
 									<div class="col">{trans_amount_in_base}</div>
-									<div class="col">{trans_description}</div>
 									<div class="col-1"></div>
 								</div>
+
 								<div class="detail_col"></div>
 							</div>
 
@@ -291,6 +296,15 @@
 
 						<div class="row">
 							<div class="col">
+								<span>{trans_detail}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_detail_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
 								<span>{trans_date}</span>
 							</div>
 							<div class="col">
@@ -303,7 +317,7 @@
 								<span>{trans_amount_in_base}</span>
 							</div>
 							<div class="col">
-								<input class="" type="number" step="0.01" name="a_gift_amount_n" value="">
+								<input class="" type="number" step="0.01" name="a_gift_transaction_amount_n" value="">
 							</div>
 						</div>
 
@@ -312,28 +326,28 @@
 								<span>{trans_description}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="RecipientDescription" value="">
+								<input class="" type="text" name="a_gift_comment_one_c" value="">
 							</div>
 						</div>
 
-						<div class="row">
+						<div class="row" requireClass>
 							<div class="col">
-								<span>{trans_account_code}</span>
-							</div>
-							<div class="col">
-									<div class="autocomplete">
-										<input class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
-									</div>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{trans_ccenter_code}</span>
+								<span>{motivation_group_code}</span>
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+									<input class="" type="text" name="a_motivation_group_code_c" key-name="a_motivation_group_code_c" value="" oninput="autocomplete_motivation_group(this)">
+								</div>
+							</div>
+						</div>
+
+						<div class="row" requireClass>
+							<div class="col">
+								<span>{motivation_detail_code}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
 								</div>
 							</div>
 						</div>
@@ -355,7 +369,7 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="new_batch(43)">{forms.new}</button>
+			<button id="new" class="btn btn-primary" onclick="new_batch()">{forms.new}</button>
 			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>
@@ -370,7 +384,7 @@
 			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<input type="text" name="AYear"/>
+			<select name="AYear" onchange="get_available_periods($(this).val(), display_list)"></select>
 		</div>
 	</div>
 	<div class="row">
@@ -378,7 +392,7 @@
 			<span>{period}:</span>
 		</div>
 		<div class="col">
-			<input type="text" name="APeriod"/>
+			<select name="APeriod"></select>
 		</div>
 	</div>
 	<div class="row">
@@ -395,8 +409,9 @@
 		</div>
 	</div>
 	</div>
+	<button type="button" class="btn" onclick="save_preset('GiftBatches')">{forms.save_preset}</button>
 	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
-	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
+	<button type="button" class="btn btn-primary" onclick="display_list('filter');$('#tabfilter').collapse('toggle')">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
 </div>
 
@@ -417,6 +432,7 @@
 
 <script src="/src/lib/autocomplete.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

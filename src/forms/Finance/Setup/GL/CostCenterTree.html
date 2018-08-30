@@ -1,0 +1,26 @@
+<h2>{caption}</h2>
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+
+
+</div>
+
+<div id="modal_space"></div>
+
+<div class="container" id="browse">
+
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn btn-primary" onclick="export_file()">{forms.export}</button>
+      <button type="button" class="btn btn-primary" onclick="$('#import_file').click()">{forms.import}</button>
+      <input type="file" id="import_file" onchange="import_file(this)" hidden/>
+    </div>
+  </div>
+	<div id="browse_container">
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

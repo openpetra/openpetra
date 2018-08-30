@@ -22,23 +22,33 @@
 //
 
 $('document').ready(function () {
-	// TODO set proper default values for the filter
-	$('#tabfilter input[name="APeriod"]').val(0);
-	$('#tabfilter input[name="AYear"]').val(0);
-	display_list();
+	get_available_years(
+		function() {
+			load_preset();
+		});
 });
 
-function display_list() {
-	// x is search
-	let x = extract_data($('#tabfilter'));
-	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+function load_preset() {
+	var x = window.localStorage.getItem('GiftBatches');
+	if (x != null) {
+		x = JSON.parse(x);
+		// first set the period so that it can be used when the year has been selected
+		let y = {"APeriod":x["APeriod"]};
+		format_tpl($('#tabfilter'), y);
+		format_tpl($('#tabfilter'), x);
+		display_list();
+	}
+}
 
+function display_list(source) {
+	var x = extract_data($('#tabfilter'));
+	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
 		for (item of data.result.AGiftBatch) {
-      format_item(item);
+			format_item(item);
 		}
 		format_date();
 	})
@@ -60,8 +70,6 @@ function format_date() {
 
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
-	// row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
 }
 
@@ -70,7 +78,7 @@ function open_gift_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
-	let x = {"ALedgerNumber":43, "ABatchNumber":number};
+	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
@@ -90,8 +98,8 @@ function open_gift_transactions(obj, number) {
 /////
 
 var new_entry_data = {};
-function new_batch(ledger_number) {
-	let x = {ALedgerNumber :ledger_number};
+function new_batch() {
+	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateAGiftBatch', x).then(
 		function (data) {
 			parsed = JSON.parse(data.data.d);
@@ -117,7 +125,6 @@ function new_trans(ledger_number, batch_number) {
 	today.setUTCHours(0, 0, 0, 0);
 	var strToday = today.toISOString();
 	x['a_date_entered_d'] = strToday.replace('T00:00:00.000Z', '');
-	x['p_donor_key_n'] = 43013125;
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
 	$('#modal_space').html(p);
@@ -131,7 +138,7 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
 		a_gift_transaction_number_i: trans_id,
-		// a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1
+		a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1
 	};
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
@@ -146,7 +153,7 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 
 function edit_batch(batch_id) {
 	var r = {
-				ALedgerNumber: 43,
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ABatchNumber: batch_id,
 			};
 	// on open of a edit modal, we get new data,
@@ -172,7 +179,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 
-	// serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
+	// TODO: use serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
@@ -198,7 +205,6 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 
 			}
 		}
-
 
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
@@ -249,10 +255,8 @@ function save_edit_batch(obj_modal) {
 			$('#modal_space .modal').modal('hide');
 			display_list();
 		}
-		if (parsed.result == "false") {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
-			}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -265,7 +269,6 @@ function save_edit_trans(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	console.log(payload);
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
@@ -273,10 +276,8 @@ function save_edit_trans(obj_modal) {
 			$('#modal_space .modal').modal('hide');
 			display_list();
 		}
-		if (parsed.result == "false") {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
-			}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -289,9 +290,22 @@ function save_edit_trans_detail(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			display_list();
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+
+	});
 
 }
+
+/////
 
 function delete_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
@@ -303,4 +317,74 @@ function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
+}
+
+
+/////
+
+function get_available_years(fn_to_call) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+	};
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_GetAvailableGiftYears', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		r = data.result;
+		let currentYearNumber = -1;
+
+		for (year of r) {
+			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
+
+			if (year.YearNumber > currentYearNumber) {
+				currentYearNumber = year.YearNumber;
+			}
+			$('#tabfilter [name=AYear]').append(y);
+		}
+
+		get_available_periods(currentYearNumber, fn_to_call);
+	})
+}
+
+function get_available_periods(year, fn_to_call) {
+	selectedPeriod = $('#tabfilter [name=APeriod]').val();
+	if (selectedPeriod == null) {
+		selectedPeriod = -1;
+	}
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AFinancialYear: year,
+	};
+	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailablePeriods', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		r = data.result;
+		$('#tabfilter [name=APeriod]').html('');
+		for (period of r) {
+			let translated = period.PeriodName;
+			transsplit = translated.split(' ');
+			if (transsplit[1] != undefined) {
+				// separate the year
+				translated = i18next.t('SelectPeriods.' + transsplit[0]) + ' ' + transsplit[1];
+			} else {
+				translated = i18next.t('SelectPeriods.' + translated);
+			}
+			selected = (period.PeriodNumber == selectedPeriod)?'selected':'';
+			let y = $('<option value="'+period.PeriodNumber+'" ' + selected + '>'+translated+'</option>');
+			$('#tabfilter [name=APeriod]').append(y);
+		}
+
+		if (fn_to_call != undefined) {
+			fn_to_call();
+		}
+	})
+	
+}
+
+function post_batch(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AGiftBatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_PostGiftBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		console.log(data);
+	})
 }

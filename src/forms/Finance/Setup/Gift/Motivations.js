@@ -44,8 +44,6 @@ function display_list() {
 
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
-	// row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
 }
 
@@ -181,7 +179,7 @@ function save_edit_detail(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
+	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);

@@ -58,8 +58,10 @@ function calculate_report() {
 	// TODO: make this a generic function
 	param_table = []
 	for (var param in params) {
-		param_table.push({'name': param, 'value': 'string:' + params[param], 'column': -1, 'level': -1, 'subreport': -1});
+		param_table.push({'name': param, 'value': 'eString:' + params[param], 'column': -1, 'level': -1, 'subreport': -1});
 	}
+	let datenow = new Date();
+	param_table.push({'name': 'param_today', 'value': datenow.toISOString(), 'column': -1, 'level': -1, 'subreport': -1});
 
 	// send request
 	let r = {}
@@ -69,11 +71,6 @@ function calculate_report() {
 		let r = {'UIConnectorObjectID': UIConnectorUID,
 			'AParameters': JSON.stringify(param_table)
 		};
-
-		// TODO: somehow there is a problem with SQL parameter order
-		delete r['param_active'];
-		delete r['param_only_addresses_valid_on'];
-		delete r['param_excludeNoSolicitations'];
 
 		api.post('serverMReporting.asmx/TReportGeneratorUIConnector_Start', r).then(function (data) {
 			// TODO: use TReportGeneratorUIConnector_GetProgress and sleep to check if report was finished

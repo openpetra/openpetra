@@ -3,37 +3,24 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_detail(this)">
+	<div class="tpl_row">
 
 		<div class="row">
 			<div class="col">{val_s_user_id_c}</div>
+			<div class="col">{val_s_email_address_c}</div>
+			<div class="col format_chk">{val_s_account_locked_l}</div>
+			<div class="col format_chk">{val_s_retired_l}</div>
 			<div class="col">{val_permissions}</div>
+			<div class="col-1">
+				<button class="btn btn-primary" onclick="open_edit('{val_s_user_id_c}')"><i class="fa fa-wrench"></i></button>
+			</div>
+
 		</div>
 		<div class="row">
 			<div class="col">
 				<div class="collapse_col"></div>
 			</div>
 		</div>
-
-	</div>
-
-	<div class="collapse tpl_view">
-		<div class="container group-container">
-			<div class="row">
-				<div class="col">{userid}</div><div class="col">{val_s_user_id_c}</div>
-			</div>
-			<div class="row">
-				<div class="col">{permissions}</div><div class="col">{val_permissions}</div>
-			</div>
-			<div class="row">
-				<div class="col">{retired}</div><div class="col">{val_s_retired_l}</div>
-			</div>
-			<div class="row">
-				<div class="col">{locked}</div><div class="col">{val_s_account_locked_l}</div>
-			</div>
-		</div>
-		<button class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
-		<button class="btn btn-primary" onclick="open_edit('{val_s_user_id_c}')">{forms.edit}</button>
 
 	</div>
 
@@ -53,7 +40,8 @@
 		<div class="modal-dialog" role="document">
 		<div class="modal-content">
 		<div class="modal-header">
-		<h3>{edittitle}</h3>
+		<h3 requireClass class="edituser">{edittitle}</h3>
+		<h3 requireClass class="adduser">{addtitle}</h3>
 		</div>
 		<div class="modal-body">
 		<div class="container">
@@ -96,10 +84,22 @@
 
 				<div class="row">
 					<div class="col">
+						{language}
+					</div>
+					<div class="col">
+						<select class="dropdown" name="s_language_code_c" id="language_code_id">
+						  <option value="DE">{german}</option>
+						  <option value="EN">{english}</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col">
 						{retired}
 					</div>
 					<div class="col">
-						<label class="form-check-label">{retired} <input class="form-check-input" type="checkbox" value="1" id="chkRetired" name="s_retired_l"></label>
+						<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkRetired" name="s_retired_l"> {retired}</label>
 					</div>
 				</div>
 
@@ -108,7 +108,7 @@
 						{locked}
 					</div>
 					<div class="col">
-						<label class="form-check-label">{locked} <input class="form-check-input" type="checkbox" value="1" id="chkLocked" name="s_account_locked_l"></label>
+						<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkLocked" name="s_account_locked_l"> {locked}</label>
 					</div>
 				</div>
 
@@ -118,6 +118,15 @@
 					</div>
 					<div class="col">
 						<div class="col permissions" style="border: black; border-style: double; height: 200px;padding: 0;margin: 0; overflow-x: hidden; overflow-y: scroll;"></div>
+					</div>
+				</div>
+
+				<div requireClass class="adduser row">
+					<div class="col">
+						{sendpassword}
+					</div>
+					<div class="col">
+						<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkSendMail" name="a_send_mail_l" checked> {sendpassword_checkbox}</label>
 					</div>
 				</div>
 
@@ -133,6 +142,7 @@
 	</div>
 
 </div>
+
 <table id="toolbar">
 	<tr>
 		<td>
@@ -146,8 +156,11 @@
 <div class="container" id="browse">
 
 	<div class="row">
-		<div class="col-3"><b>{userid}</b></div>
-		<div class="col-3"><b>{permissions}</b></div>
+		<div class="col"><b>{userid}</b></div>
+		<div class="col"><b>{email}</b></div>
+		<div class="col"><b>{locked}</b></div>
+		<div class="col"><b>{retired}</b></div>
+		<div class="col"><b>{permissions}</b></div>
 		<hr>
 	</div>
 

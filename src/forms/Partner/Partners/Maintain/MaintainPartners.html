@@ -3,10 +3,11 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_detail(this)">
+	<div class="tpl_row" onclick="open_detail(this)" id="partner{val_p_partner_key_n}">
 		<div class="row">
-			<div class="col">{val_p_partner_key_n}</div>
-			<div class="col">{val_p_partner_short_name_c}</div>
+			<div class="col-2">{val_p_partner_key_n}</div>
+			<div class="col-2">{val_p_status_code_c}</div>
+			<div class="col-8">{val_p_partner_short_name_c}</div>
 		</div>
 		<div class="row">
 			<div class="col">
@@ -82,6 +83,13 @@
 						<option value="ACTIVE">ACTIVE</option>
 						<option value="INACTIVE">NOT ACTIVE</option>
 					</select>
+				</div>
+
+				<div class="col-3">
+					<span>{nosolicitations1}</span>
+				</div>
+				<div class="col-3">
+					<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkNoSolicitations" name="p_no_solicitations_l"> {nosolicitations2}</label>
 				</div>
 			</div>
 			<hr>
@@ -187,7 +195,7 @@
 
 			<ul class="nav nav-tabs" id="detailTab" role="tablist">
 				<li class="nav-item">
-					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{addresses}</a>
+					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{address}</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</a>
@@ -211,29 +219,45 @@
 					<div class="container">
 
 						<div class="row">
-							<div class="col">
+							<div class="col-3">
 								<span>{streetname}</span>
 							</div>
-							<div class="col">
+							<div class="col-3">
 								<input type="text" name="p_street_name_c" />
+							</div>
+
+							<div class="col-3">
+								<span>{mailingaddress}</span>
+							</div>
+							<div class="col-3">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkSendMail" name="p_send_mail_l"> {mailingaddress}</label>
 							</div>
 						</div>
 
 						<div class="row">
-							<div class="col">
+							<div class="col-3">
 								<span>{city}</span>
 							</div>
-							<div class="col">
+							<div class="col-3">
 								<input type="text" name="p_city_c"/>
 							</div>
 						</div>
 
 						<div class="row">
-							<div class="col">
+							<div class="col-3">
 								<span>{postalcode}</span>
 							</div>
-							<div class="col">
+							<div class="col-3">
 								<input type="text" name="p_postal_code_c"/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-3">
+								<span>{countrycode}</span>
+							</div>
+							<div class="col-3">
+								<input type="text" name="p_country_code_c" />
 							</div>
 						</div>
 
@@ -282,8 +306,8 @@
 							</div>
 							<div class="col">
 								<select name="p_receipt_letter_frequency_c">
-									<option value=""></option>
-									<option value="ANNUAL">ANNUAL</option>
+									<option value="">{no_receiptletters}</option>
+									<option value="Annual">{annual_receiptletters}</option>
 								</select>
 							</div>
 						</div>
@@ -372,6 +396,14 @@
 	</div>
 	<div class="row">
 		<div class="col">
+			<span>{postalcode}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="APostCode"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
 			<span>{partnerclass}:</span>
 		</div>
 		<div class="col">
@@ -387,6 +419,7 @@
 	</div>
 	</div>
 
+	<button type="button" class="btn" onclick="save_preset('MaintainPartners')">{forms.save_preset}</button>
 	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
 	<button type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
@@ -394,8 +427,9 @@
 
 <div class="container" id="browse">
 	<div class="row">
-		<div class="col"><b>{partnerkey}</b></div>
-		<div class="col"><b>{partnername}</b></div>
+		<div class="col-2"><b>{partnerkey}</b></div>
+		<div class="col-2"><b>{partnerstatus}</b></div>
+		<div class="col-8"><b>{partnername}</b></div>
 	</div>
 
 	<div id="browse_container">

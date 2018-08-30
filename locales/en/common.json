@@ -54,11 +54,17 @@
         "SystemManager_label": "System Management",
         "Users_label": "Users",
         "Database_label": "Database",
-        "ManageAccounts_label": "Manage Accounts",
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
         "Motivations_label": "Maintain Motivation groups and details",
-        "switchledger":"Active Ledger is now:"
+        "switchledger":"Active Ledger is now:",
+        "BankImport_label":"Import donations from bank",
+        "ImportPartners_label":"Import partner",
+        "LedgerInfo_label":"Ledger infos",
+        "AccountTree_label":"Manage Accounts",
+        "CostCenterTree_label":"Manage Cost Centres",
+        "MonthEnd_label": "Close the current period",
+        "YearEnd_label": "Run the year end"
     },
     "forms": {
         "search":"Search",
@@ -70,6 +76,7 @@
         "delete": "Delete",
         "save": "Save",
         "saved": "Successfully saved",
+        "post": "Buchen",
         "notsaved": "Saving failed",
         "deleted": "Successfully deleted",
         "notdeleted": "Deletion failed",
@@ -80,7 +87,10 @@
         "PleaseWait": "Please wait",
         "WaitInfo": "This might take a couple of seconds...",
         "description": "Description",
-        "import": "Import"
+        "import": "Import",
+        "export": "Export",
+        "save_preset": "Save preset",
+        "preset": "Preset"
     },
     "errors": {
       "general": "An error has occurred",
@@ -91,17 +101,20 @@
         "welcome": "Welcome to OpenPetra, brought to you by <a href='http://www.tbits.net' target='_blank'>TBits.net</a>!",
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> is an easy to use software system for the administration of non-profit organisations, licensed under the GPL.",
         "target": "OpenPetra runs on the main stream browsers, independant of Operating System or screen size.",
-        "favourites": "TODO: here you will be able to add some of your favourite screens, that you use every day.",
+        "favourites": "In the future, you will be able to add here some of your favourite screens, that you use every day.",
+        "current_version": "OpenPetra version",
         "example": "for example"
     },
     "ChangePassword": {
         "caption": "Change password",
+        "immediately": "Please change your password now!",
         "current": "Current password",
         "new": "New password",
         "repeat": "Repeat new password",
         "submit": "Submit",
         "dontmatch": "The new passwords don't match!",
         "criteria": "The password must have at least 8 characters, and must contain at least one digit and one letter",
+        "mustbedifferent": "The new password must not be the same as the old password",
         "wrong": "The current password was not entered correctly",
         "unknown": "unknown error code",
         "success": "Password has been changed successfully"
@@ -115,6 +128,11 @@
         "firstname": "Forename",
         "lastname": "Surname",
         "email": "E-Mail",
+        "language": "Language",
+        "german": "German",
+        "english": "English",
+        "sendpassword": "Initial Password",
+        "sendpassword_checkbox": "Send initial password per email to the new user",
         "permissions": "Permissions",
         "locked": "Locked",
         "retired": "Disabled"
@@ -127,7 +145,7 @@
         "ask_reset": "Do you really want to loose your current data and reset it with your backup?",
         "uploadsuccess": "Database has been uploaded",
         "uploaderror": "There has been a problem uploading the database"
-},
+    },
 
     "MaintainPartners": {
         "caption": "Maintain partners",
@@ -139,7 +157,12 @@
         "partnername": "Name",
         "city": "City",
         "postalcode": "Postal code",
+        "countrycode": "Country",
+        "mailingaddress": "Valid address",
+        "nosolicitations1": "Contact Preference",
+        "nosolicitations2": "No solicitations",
         "partnerclass": "Partner class",
+        "partnerstatus": "Status",
         "streetname": "Street name",
         "PERSON": "PERSON",
         "FAMILY": "FAMILY",
@@ -147,12 +170,15 @@
         "BANK": "BANK",
         "UNIT": "UNIT",
         "addresses": "Addresses",
+        "address": "Address",
         "subscriptions": "Subscriptions",
         "types": "Tags",
         "comment": "Comments",
         "financedetails": "Financial Details",
         "receiptletterfrequency": "Frequency for receipt letters",
         "receiptforeachgift": "Send a receipt for each gift?",
+        "annual_receiptletters": "Annually",
+        "no_receiptletters": "Never",
         "eachgift": "for each gift",
         "anonymousdonor": "Anonymous Donor",
         "anonymous": "anonymous",
@@ -191,11 +217,16 @@
         "trans_account_code": "Account Code",
         "trans_ccenter_code": "Cost Centre Code",
         "trans_narrative_code": "Description",
+        "batch_reverse": "Reverse batch",
+        "batch_post": "Post batch",
+        "batch_cancel": "Cancel batch",
+        "batch_test_post": "Test batch post",
         "DEBIT": "Debit",
         "CREDIT": "Credit",
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
+        "success_cancelled": "The Batch has been cancelled",
         "import": "Import transactions",
         "isPosted": "We cannot edit batches that have been posted already"
     },
@@ -215,12 +246,16 @@
       "batchstatus":"Batch status",
       "bank_account_code": "Bank Account",
       "bank_ccenter_code": "Bank Cost Centre",
-      "trans_number": "Transaction nummer",
+      "trans_number": "Transaction number",
+      "trans_detail": "Detail number",
       "trans_date": "Entrydate",
       "trans_ref": "Reference",
       "trans_amount_in_base": "Amount",
       "trans_account_code": "Account",
       "trans_ccenter_code": "Cost centre",
+      "trans_motivation": "Motivation Group and Detail",
+      "motivation_group_code":"Motivation Group Code",
+      "motivation_detail_code":"Motivation Detail Code",
       "trans_narrative_code": "Comment",
       "trans_donor_key":"Donor Key",
       "trans_donor":"Donor Name",
@@ -228,6 +263,23 @@
       "trans_description":"Transaction Comment",
       "edittitle_trans_detail":"Edit transaction details",
       "ledgernumber":"Ledgernumber"
+    },
+
+    "SelectPeriods": {
+      "all_periods": "All periods",
+      "all_open_periods": "All open periods",
+      "January":"January",
+      "February":"February",
+      "March":"March",
+      "April":"April",
+      "May":"May",
+      "June":"June",
+      "July":"July",
+      "August":"August",
+      "September":"September",
+      "October":"October",
+      "November":"November",
+      "December":"December"
     },
 
     "MaintainPublications": {
@@ -306,7 +358,92 @@
       "motivation_center_c":"Cost Center",
       "motivation_detail_code":"Detail Code"
     },
+
+    "BankImport":{
+      "display":"Display",
+      "all":"all",
+      "detail":"Detail",
+      "caption":"Bank Import",
+      "upload_success": "Bank statement has been imported successfully",
+      "bankimport_name":"Name",
+      "bankimport_status":"status",
+      "matched":"Matched",
+      "unmatched":"Unmatched",
+      "gift":"Gift",
+      "ignored":"Ignored",
+      "edittitle_trans":"Edit transaction",
+      "order_id":"Order number",
+      "description":"Description",
+      "transaction_amount":"Transaction amount",
+      "transaction_date":"Date",
+      "action":"Action",
+      "donor":"Donor",
+      "detail_id":"Detail number",
+      "motivation_group_code":"Motivation Group Code",
+      "motivation_detail_code":"Motivation Detail Code",
+      "matchedgift":"matched gift",
+      "matchedgl":"matched batch",
+      "cost_center_code":"cost center",
+      "account_code":"account",
+      "transform_to_gift":"Create Gift Batch from Import",
+      "transform_to_gl":"Create GL Batch from Import",
+      "not_av":"not avaliable for selected option",
+      "edittitle_trans_detail":"Edit transaction detail",
+      "total_debit": "Total Debit",
+      "total_credit": "Total Credit"
+    },
+
     "ImportPartners":{
-      "importUser":"Import partner from CSV file"
+      "importUser":"Import partner from CSV file",
+      "examplefile":"See this example file for the possible columns:",
+      "upload_partner_success":"Partners have been imported successfully",
+      "upload_partner_fail":"Partners could not be imported"
+    },
+
+    "LedgerInfo":{
+      "caption":"Ledger Info",
+      "ledgername":"Ledgername",
+      "1_month":"January",
+      "2_month":"Febuary",
+      "3_month":"March",
+      "4_month":"April",
+      "5_month":"May",
+      "6_month":"June",
+      "7_month":"July",
+      "8_month":"August",
+      "9_month":"September",
+      "10_month":"October",
+      "11_month":"November",
+      "12_month":"December",
+      "years":"years",
+      "ledgernumber":"Ledgernumber",
+      "ledger_base":"Base currency",
+      "ledger_intl":"international currency",
+      "ledger_accounting_periods":"Number of accounting periods",
+      "ledger_fwd_posting_periods":"Number of forward posting periods",
+      "ledger_current_period":"Current period",
+      "ledger_retention_gl":"Retention time for GL",
+      "ledger_retention_gift":"Retention time for Gifts",
+      "fwd_posting":"Forward posting range",
+      "period":"Date range of the current period"
+    },
+
+    "YearEnd": {
+      "end_year": "Close the financial year"
+    },
+    "MonthEnd": {
+      "end_month": "Close the current financial period"
+    },
+    "AccountTree": {
+      "caption": "Maintain the hierarchy of accounts",
+      "uploadsuccess": "New hierarchy of accounts was imported successfully",
+      "uploaderror": "Importing of new account hierarchy failed.",
+      "accounts_file": "Accounts"
+    },
+    "CostCenterTree": {
+      "caption": "Maintain the hierarchy of cost centres",
+      "uploadsuccess": "New hierarchy of cost centres was imported successfully",
+      "uploaderror": "Importing of new cost centres failed.",
+      "costcentres_file": "CostCentres"
     }
 }

@@ -35,7 +35,7 @@ function display_list() {
 		$('#browse_container').html('');
 		last_requested_data = data.result.PType;
 		for (item of data.result.PType) {
-			// format a abo for every entry
+			item['p_type_code_c_clean'] = item['p_type_code_c'].replace(/[^a-zA-Z0-9]+/g, '');
 			format_item(item);
 		}
 	})
@@ -44,8 +44,8 @@ function display_list() {
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
-	row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
+	$('#type'+item['p_type_code_c_clean']).find('.collapse_col').append(view);
 }
 
 function open_detail(obj) {
@@ -82,7 +82,7 @@ function save_new() {
 
     let se = $('#modal_space .modal').modal('show');
     let request = translate_to_server(extract_data(raw));
-    
+
     request['action'] = 'create';
 
     api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
@@ -100,7 +100,7 @@ function save_entry(update) {
   let request = translate_to_server(extract_data(modalspace));
 
   request['action'] = 'update';
-  
+
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainTypes", request).then(
     function () {
       display_message(i18next.t('MaintainTypes.confirm_edit'), 'success');

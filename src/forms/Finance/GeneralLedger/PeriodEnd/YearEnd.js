@@ -2,6 +2,7 @@
 //
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
+//       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
 //
@@ -21,10 +22,18 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-$('document').ready(function () {
-  let x = {};
-  api.post('serverSessionManager.asmx/GetVersion', x).then(function (data) {
-    version = data.data.d;
-    $('.version').html( version );
-  });
-});
+function year_end() {
+
+	let x = {ALedgerNum: window.localStorage.getItem('current_ledger')};
+	api.post('serverMFinance.asmx/TPeriodIntervalConnector_PeriodYearEnd', x).then(function (data) {
+	let parsed = JSON.parse(data.data.d);
+		let s = false;
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.saved'), 'success' )
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
+
+}

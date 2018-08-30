@@ -7,15 +7,15 @@ OpenPetra:
                         MaintainPartners:
                         MergePartners: {ActionOpenScreen=TFrmMergePartnersDialog}
                         DeletePartner: {ActionClick=TPartnerMain.DeletePartnerRecord}
-                    CreatePartner:
-                        AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family}
-                        AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person}
-                        AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
-                        AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
+                    #CreatePartner:
+                    #    AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family}
+                    #    AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person}
+                    #    AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
+                    #    AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
                     ImportExport:
                         ImportPartners:
-                    Subscriptions:
-                        CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
+                    #Subscriptions:
+                    #    CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerBySpecialType:
@@ -47,12 +47,12 @@ OpenPetra:
                         ReasonSubscriptionGiven: {ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}
                         ReasonSubscriptionCancelled: {ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}
 
-                    Address-related:
-                        AddresseeTypes: {ActionOpenScreen=TFrmAddresseeTypeSetup}
-                        LocationTypes: {ActionOpenScreen=TFrmLocationTypeSetup}
-                        InternationalPostalTypes: {ActionOpenScreen=TFrmInternationalPostalTypeSetup}
-                        PostcodeRanges: {ActionOpenScreen=TFrmPostcodeRangeSetup}
-                        PostcodeRegions: {ActionOpenScreen=TFrmPostcodeRegionSetup}
+                    #Address-related:
+                    #    AddresseeTypes: {ActionOpenScreen=TFrmAddresseeTypeSetup}
+                    #    LocationTypes: {ActionOpenScreen=TFrmLocationTypeSetup}
+                    #    InternationalPostalTypes: {ActionOpenScreen=TFrmInternationalPostalTypeSetup}
+                    #    PostcodeRanges: {ActionOpenScreen=TFrmPostcodeRangeSetup}
+                    #    PostcodeRegions: {ActionOpenScreen=TFrmPostcodeRegionSetup}
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
         Finance: {fa-icon=money, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
                 GeneralLedger:
@@ -60,10 +60,6 @@ OpenPetra:
                         LedgerInfo:
                     GLBatchMaintenance:
                         GLBatches:
-                        RecurringGLBatches:
-                        ImportBatches:
-                        ImportBatchesFromBankStatement:
-                        ExportBatches:
                     PeriodEnd:
                         MonthEnd:
                         YearEnd:
@@ -76,18 +72,15 @@ OpenPetra:
                 Gift:
                     GiftEntry:
                         GiftBatches:
-                        ImportGiftsFromBankStatement:
-                        ExportGiftBatches:
-                        GiftDetailFind:
+                        BankImport:
                     GiftReceipting:
                         PrintAnnualReceipts:
                         DonorRecipientHistory:
                 Setup:
                     GL:
                         LedgerSettings:
-                        ManageAccounts:
-                        ManageCostCentres:
-                        DeleteLedger:
+                        AccountTree:
+                        CostCenterTree:
                     Gift:
                         Motivations:
         CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}

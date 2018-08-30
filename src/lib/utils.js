@@ -26,7 +26,7 @@
 function display_message(content, style_arguments) {
   var display_space = $('#global_message_space');
   if (display_space.length == 0) {
-    let x = $('<div id ="global_message_space" class="text-center" style="position:fixed;top:10vh;width:100%;padding:20px;z-index:5000;">');
+    let x = $('<div id ="global_message_space" class="text-center" style="position:fixed;top:10vh;width:100%;z-index:5000;">');
     $('body').append(x);
   }
   var message = $('<div class="text-center msg" style="width:50%;margin:5px auto;cursor:pointer;" onclick="$(this).closest(\'.msg\').remove()">');
@@ -63,6 +63,28 @@ function display_message(content, style_arguments) {
     $('[message-id='+m_id+']').remove();
   }, 5000);
 
+}
+
+function display_error(VerificationResult, generalerror = 'errors.general') {
+  if (VerificationResult == null) {
+    display_message( i18next.t(generalerror), 'fail');
+    return;
+  }
+  let s = false;
+  for (error of VerificationResult) {
+    if (error.code == "" && error.message == "") {
+      continue;
+    }
+    s = true;
+    if (error.code != "" && i18next.t(error.code) != error.code) {
+      display_message( i18next.t(error.code), "fail");
+    } else {
+      display_message( error.message, "fail");
+    }
+  }
+  if (!s) {
+    display_message( i18next.t(generalerror), 'fail');
+  }
 }
 
 // splits words on _ and capitalize first letter each word
@@ -126,4 +148,15 @@ function replace_data(replace_obj, update_data, prev_table) {
     }
   }
   return replace_obj;
+}
+
+// used to save presets in localStorage
+function save_preset(field_name, field_values) {
+
+  if (field_values == null) {
+    field_values = extract_data( $('#tabfilter') );
+  }
+
+  window.localStorage.setItem(field_name, JSON.stringify(field_values) );
+
 }

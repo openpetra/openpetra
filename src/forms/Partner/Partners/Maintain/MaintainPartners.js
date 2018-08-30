@@ -25,11 +25,21 @@
 var last_opened_entry_data = {};
 
 $('document').ready(function () {
+	load_preset();
 	display_list();
 });
 
-function display_list() {
-	let x = extract_data($('#tabfilter'));
+function load_preset() {
+	var x = window.localStorage.getItem('MaintainPartners');
+	if (x != null) {
+		x = JSON.parse(x);
+		format_tpl($('#tabfilter'), x);
+	}
+}
+
+function display_list(source) {
+	var x = extract_data($('#tabfilter'));
+	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
@@ -44,8 +54,8 @@ function display_list() {
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
-	row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
+	$('#partner'+item['p_partner_key_n']).find('.collapse_col').append(view);
 }
 
 function open_detail(obj) {
@@ -119,7 +129,8 @@ function display_partner(parsed) {
 	m = format_tpl(m,
 		{'p_default_email_address_c': parsed.ADefaultEmailAddress,
 		'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
-		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile},
+		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile,
+		'p_send_mail_l': parsed.result.PPartnerLocation[0].p_send_mail_l},
 		null);
 
 	m.find('.select_case').hide();
@@ -164,16 +175,16 @@ function save_entry(obj_modal) {
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs};
+
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
-		parsed_data = JSON.parse(data.data.d);
-		if (parsed_data) {
+		parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
 			$('#modal_space .modal').modal('hide');
 			display_message(i18next.t('forms.saved'), "success");
 			display_list();
-		} else {
-			// TODO we need an error code from the server, to display a meaningful error message here
-			message = "We cannot yet change the address if there is none.";
-			display_message(message, "fail");
+		}
+		else {
+			display_error( parsed.AVerificationResult );
 		}
 	})
 }

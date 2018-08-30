@@ -57,6 +57,7 @@ auth = new Auth();
 
 auth.checkAuth(function() {
 	$("#loading").hide();
+	$(window).scrollTop(0);
 	$("#login").show();
 	$("#btnLogin").click(function(e) {
 		e.preventDefault();

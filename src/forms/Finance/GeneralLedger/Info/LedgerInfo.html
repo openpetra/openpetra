@@ -1,0 +1,130 @@
+<h2>{caption}</h2>
+
+  <div phantom hidden>
+
+    <div class="row fwd_posting">
+      <div class="col">
+        <span>{fwd_posting}</span>
+      </div>
+      <div class="col">
+        <span class="date">{val_AStartDateCurrentPeriod}</span> - <span class="date">{val_AEndDateLastForwardingPeriod}</span>
+      </div>
+    </div>
+
+    <div class="row period">
+      <div class="col">
+        <span>{period}</span>
+      </div>
+      <div class="col">
+        <span class="date">{val_AStartDateCurrentPeriod}</span> - <span class="date">{val_AEndDateCurrentPeriod}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="frame">
+
+    <div class="container" style="background:#eee;" id="ledger_info">
+
+      <div class="row">
+        <div class="col">
+          <span><b>{ledgername}</b></span>
+        </div>
+        <div class="col">
+          <span><b>{val_a_ledger_name_c}</b></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <span>{ledgernumber}</span>
+        </div>
+        <div class="col">
+          <span>{val_a_ledger_number_i}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <span>{ledger_base}</span>
+        </div>
+        <div class="col">
+          <span>{val_a_base_currency_c}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <span>{ledger_accounting_periods}</span>
+        </div>
+        <div class="col">
+          <span>{val_a_number_of_accounting_periods_i}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <span>{ledger_fwd_posting_periods}</span>
+        </div>
+        <div class="col">
+          <span>{val_a_number_fwd_posting_periods_i}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <span>{ledger_retention_gl}</span>
+        </div>
+        <div class="col">
+          <span>{val_a_actuals_data_retention_i} {years}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <span>{ledger_retention_gift}</span>
+        </div>
+        <div class="col">
+          <span>{val_a_gift_data_retention_i} {years}</span>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="col">
+          <span>{ledger_current_period}</span>
+        </div>
+        <div class="col current_period">
+          <span></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col period">
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col fwd_posting">
+
+        </div>
+      </div>
+
+
+    </div>
+
+
+
+
+
+  </div>
+
+
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

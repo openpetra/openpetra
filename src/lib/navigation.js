@@ -30,6 +30,7 @@ class Navigation {
 		// will be replaced by the build script for the release
 		this.currentrelease = "CURRENTRELEASE";
 		this.classesLoaded = [];
+		$(window).scrollTop(0);
 	}
 
 	// TODO: something about parameters
@@ -81,6 +82,7 @@ class Navigation {
 		if (document.title != windowTitle) {
 			document.title = windowTitle;
 		}
+		$(window).scrollTop(0);
 	};
 
 	IsNavigationPage(path) {
@@ -271,13 +273,19 @@ class Navigation {
 }
 
 $('document').ready(function () {
+	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
+		return; // User is not logged in
+	}
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
 		data = JSON.parse(data.data.d);
 		let dump = $('#ledger_select_dropdown').html('');
 		current_selected_ledger = null;
 		for (ledger of data.result) {
-			if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') ) {
+			if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') || data.result.length == 1) {
 				current_selected_ledger = ledger;
+				if (data.result.length == 1 && window.localStorage.getItem('current_ledger') == null) {
+					change_standard_ledger(current_selected_ledger.a_ledger_number_i);
+				}
 			}
 			let z = $('<a class="dropdown-item"></a>');
 			z.text(ledger.a_ledger_name_c);
