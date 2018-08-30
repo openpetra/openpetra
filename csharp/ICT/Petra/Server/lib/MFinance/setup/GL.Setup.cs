@@ -1174,6 +1174,83 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return result.ToString();
         }
 
+        private static string InsertNodeIntoHTMLTreeView(GLSetupTDS AMainDS,
+            Int32 ALedgerNumber,
+            ACostCentreRow ARow,
+            bool AIsRootNode = false)
+        {
+            StringBuilder result = new StringBuilder();
+
+            string nodeLabel = ARow.CostCentreCode;
+
+            if (!ARow.IsCostCentreNameNull())
+            {
+                nodeLabel += " (" + ARow.CostCentreName + ")";
+            }
+
+            if (AIsRootNode)
+            {
+                result.Append("<ul><li id='acct" + ARow.CostCentreCode + "'><span><i class=\"icon-folder-open\"></i>" + nodeLabel + "</span><ul>");
+            }
+            else if (!ARow.PostingCostCentreFlag)
+            {
+                result.Append("<li id='acct" + ARow.CostCentreCode + "'><span><i class=\"icon-minus-sign\"></i>" + nodeLabel + "</span><ul>");
+            }
+            else if (ARow.PostingCostCentreFlag)
+            {
+                result.Append("<li id='acct" + ARow.CostCentreCode + "'><span><i class=\"icon-leaf\"></i>" + nodeLabel + "</span></<li>");
+            }
+
+            // Now add the children of this node:
+            DataView view = new DataView(AMainDS.ACostCentre);
+            view.Sort = ACostCentreTable.GetCostCentreCodeDBName() + ", " + ACostCentreTable.GetCostCentreToReportToDBName();
+            view.RowFilter =
+                ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ARow.CostCentreCode + "'";
+
+            if (view.Count > 0)
+            {
+                foreach (DataRowView rowView in view)
+                {
+                    ACostCentreRow childRow = (ACostCentreRow)rowView.Row;
+                    result.Append(InsertNodeIntoHTMLTreeView(AMainDS, ALedgerNumber, childRow));
+                }
+            }
+
+            if (AIsRootNode)
+            {
+                result.Append("</ul></li></ul>");
+            }
+            else if (!ARow.PostingCostCentreFlag)
+            {
+                result.Append("</ul></li>");
+            }
+
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// returns the cost centre hierarchy available for this ledger, formatted for the html client
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static string LoadCostCentreHierarchyHtmlCode(Int32 ALedgerNumber)
+        {
+            GLSetupTDS MainDS = LoadCostCentreHierarchy(ALedgerNumber);
+
+            StringBuilder result = new StringBuilder();
+
+            // find the root cost centre
+            MainDS.ACostCentre.DefaultView.RowFilter =
+                ACostCentreTable.GetCostCentreToReportToDBName() + " IS NULL";
+
+            result.Append(InsertNodeIntoHTMLTreeView(
+                    MainDS,
+                    ALedgerNumber,
+                    (ACostCentreRow)MainDS.ACostCentre.DefaultView[0].Row,
+                    true));
+
+            return result.ToString();
+        }
+
         /// <summary>
         /// returns cost centre hierarchy and cost centre details for this ledger
         /// </summary>
@@ -2740,11 +2817,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// return a simple XMLDocument (encoded into a string) with the account hierarchy and account details;
         /// root account can be calculated (find which account is reporting nowhere)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AAccountHierarchyName"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName)
+        public static bool ExportAccountHierarchy(Int32 ALedgerNumber, string AAccountHierarchyName, out string AHierarchyXml)
         {
             #region Validate Arguments
 
@@ -2801,18 +2876,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             // XmlDocument is not serializable, therefore print it to string and return the string
-            return TXMLParser.XmlToString(xmlDoc);
+            AHierarchyXml = TXMLParser.XmlToString(xmlDoc);
+
+            return true;
         }
 
-        /// export account hierarchy as base64 encoded yml.gz file
+        /// export account hierarchy as yml string encoded in base64
         [RequireModulePermission("FINANCE-1")]
-        public static string ExportAccountHierarchyYmlGz(Int32 ALedgerNumber, string AAccountHierarchyName)
+        public static bool ExportAccountHierarchyYml(Int32 ALedgerNumber, string AAccountHierarchyName, out string AHierarchyYml)
         {
             XmlDocument doc = new XmlDocument();
 
-            doc.LoadXml(ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName));
+            string docstr;
 
-            return TYml2Xml.Xml2YmlGz(doc);
+            ExportAccountHierarchy(ALedgerNumber, AAccountHierarchyName, out docstr);
+
+            doc.LoadXml(docstr);
+
+            AHierarchyYml = THttpBinarySerializer.SerializeToBase64(TYml2Xml.Xml2Yml(doc));
+
+            return true;
         }
 
         /// <summary>
@@ -2922,6 +3005,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // XmlDocument is not serializable, therefore print it to string and return the string
             return TXMLParser.XmlToString(doc);
+        }
+
+        /// export cost centre hierarchy as yml string encoded in base64
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ExportCostCentreHierarchyYml(Int32 ALedgerNumber, out string AHierarchyYml)
+        {
+            XmlDocument doc = new XmlDocument();
+
+            string docstr = ExportCostCentreHierarchy(ALedgerNumber);
+
+            doc.LoadXml(docstr);
+
+            AHierarchyYml = THttpBinarySerializer.SerializeToBase64(TYml2Xml.Xml2Yml(doc));
+
+            return true;
         }
 
         private static void CreateAccountHierarchyRecursively(ref GLSetupTDS AMainDS,
@@ -3263,16 +3361,37 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Returns false with helpful error message otherwise.
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy, out TVerificationResultCollection VerificationResult)
+        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AYmlHierarchy, out TVerificationResultCollection VerificationResult)
         {
-            XmlDocument doc = new XmlDocument();
-
             VerificationResult = new TVerificationResultCollection();
 
-            doc.LoadXml(AXmlHierarchy);
+            XmlDocument XMLDoc = new XmlDocument();
+
+            if (AYmlHierarchy.StartsWith("<?xml version="))
+            {
+                XMLDoc.LoadXml(AYmlHierarchy);
+            }
+            else
+            {
+                try
+                {
+                    TYml2Xml ymlParser = new TYml2Xml(AYmlHierarchy.Split(new char[] { '\n' }));
+                    XMLDoc = ymlParser.ParseYML2XML();
+                }
+                catch (XmlException exp)
+                {
+                    TLogging.Log(exp.ToString());
+                    throw new Exception(
+                        Catalog.GetString("There was a problem with the syntax of the file.") +
+                        Environment.NewLine +
+                        exp.Message +
+                        Environment.NewLine +
+                        AYmlHierarchy);
+                }
+            }
 
             GLSetupTDS MainDS = LoadCostCentreHierarchy(ALedgerNumber);
-            XmlNode root = doc.FirstChild.NextSibling.FirstChild;
+            XmlNode root = XMLDoc.FirstChild.NextSibling.FirstChild;
 
             StringCollection ImportedCostCentreNames = new StringCollection();
 
@@ -4474,7 +4593,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     TLogging.LogException(ex, Utilities.GetMethodSignature());
                     return false;
                 }
-                
+
                 return true;
             }
             else if (action == "delete")

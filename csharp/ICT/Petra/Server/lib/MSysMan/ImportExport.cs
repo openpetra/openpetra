@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,7 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
@@ -56,7 +57,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("SYSMAN")]
-        public static string ExportAllTables()
+        public static bool ExportAllTables(out string ADataYmlGzBase64)
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction ReadTransaction = null;
@@ -99,7 +100,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 }
             }
 
-            return TYml2Xml.Xml2YmlGz(OpenPetraData);
+            ADataYmlGzBase64 = TYml2Xml.Xml2YmlGz(OpenPetraData);
+
+            return true;
         }
 
         /// <summary>
@@ -701,7 +704,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport
         /// </summary>
         public string BackupDatabaseToYmlGZ()
         {
-            return TImportExportWebConnector.ExportAllTables();
+            string Base64EncodedBackup;
+            TImportExportWebConnector.ExportAllTables(out Base64EncodedBackup);
+            return Base64EncodedBackup;
         }
 
         /// <summary>

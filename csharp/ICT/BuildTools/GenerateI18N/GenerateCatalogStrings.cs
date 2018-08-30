@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -141,45 +141,16 @@ namespace GenerateI18N
                 // catch all .Text = , but also TooltipsText = , but ignore lblSomethingText = new ...
                 if (designerLine.Contains("Text = \""))
                 {
-                    bool trailingColon = false;
-                    bool trailingAsterisk = false;
                     string content = designerLine.Substring(
                         designerLine.IndexOf("\"") + 1, designerLine.LastIndexOf("\"") - designerLine.IndexOf("\"") - 1);
 
                     if (content.EndsWith(":"))
                     {
-                        trailingColon = true;
                         content = content.Substring(0, content.Length - 1);
                     }
                     else if (content.EndsWith("*"))
                     {
-                        trailingAsterisk = true;
                         content = content.Substring(0, content.Length - 1);
-                    }
-
-                    // see also FormWriter.cs, SetControlProperty; it also calls ProperI18NCatalogGetString
-                    try
-                    {
-                        if (TFormWriter.ProperI18NCatalogGetString(content))
-                        {
-                            writer.WriteLine(identation +
-                                designerLine.Substring(0, designerLine.IndexOf(" = ")).Trim() +
-                                " = Catalog.GetString(\"" + content + "\")" +
-                                (trailingColon ? " + \":\"" : trailingAsterisk ? " + \"*\"" : string.Empty) + ";");
-
-                            ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + content + "\");");
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        if (e.Message == "Problem with \\r or \\n")
-                        {
-                            throw new Exception("Problem with \\r or \\n in file " + DesignerFileName + ": " + designerLine);
-                        }
-                        else
-                        {
-                            throw;
-                        }
                     }
                 }
             }

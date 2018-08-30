@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,6 @@ using Ict.Common.Data;
 using Ict.Petra.Server.MReporting.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Tests.MReporting.Tools

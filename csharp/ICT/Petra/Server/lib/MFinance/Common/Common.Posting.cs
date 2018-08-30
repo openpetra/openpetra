@@ -2726,6 +2726,46 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
+        /// Cancel this batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        public static bool CancelGLBatch(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS;
+            if (TGLPosting.GLBatchCanBeCancelled(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                ABatchRow Batch = MainDS.ABatch[0];
+                Batch.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                GLBatchTDSAccess.SubmitChanges(MainDS.GetChangesTyped(true));
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// If a Batch has been created then found to be not required, it can be deleted here.
         /// (This was added for ICH and Stewardship calculations, which can otherwise leave empty batches in the ledger.)
         /// </summary>

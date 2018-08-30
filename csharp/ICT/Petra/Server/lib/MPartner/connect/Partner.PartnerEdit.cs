@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,7 +49,6 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
@@ -84,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     ///          are also UIConnectors are feasible.
     ///
     /// </summary>
-    public partial class TPartnerEditUIConnector : IPartnerUIConnectorsPartnerEdit
+    public partial class TPartnerEditUIConnector
     {
         private const String DATASETNAME = "PartnerEditScreen";
 

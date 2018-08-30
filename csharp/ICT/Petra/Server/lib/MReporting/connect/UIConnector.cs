@@ -31,7 +31,6 @@ using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MReporting;
@@ -55,7 +54,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
     /// <summary>
     /// the connector for the report generation
     /// </summary>
-    public class TReportGeneratorUIConnector : IReportingUIConnectorsReportGenerator
+    public class TReportGeneratorUIConnector
     {
         private TRptDataCalculator FDatacalculator;
         private TResultList FResultList;
@@ -317,21 +316,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
         private bool PrintToPDF(string AFilename, bool AWrapColumn)
         {
-            PrintDocument doc = new PrintDocument();
-
-            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
+            TPdfPrinter pdfPrinter = new TPdfPrinter(TGfxPrinter.ePrinterBehaviour.eReport);
             TReportPrinterLayout layout = new TReportPrinterLayout(FResultList, FParameterList, pdfPrinter, AWrapColumn);
 
-            eOrientation Orientation;
-
-            if (false && pdfPrinter.Document.DefaultPageSettings.Landscape)
-            {
-                Orientation = eOrientation.eLandscape;
-            }
-            else
-            {
-                Orientation = eOrientation.ePortrait;
-            }
+            eOrientation Orientation = eOrientation.ePortrait;
 
             pdfPrinter.Init(Orientation, layout, eMarginType.ePrintableArea);
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,6 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MConference.Data;
 
@@ -47,6 +46,7 @@ namespace Ict.Petra.Shared.MConference.Validation
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
+        /// <param name="AGridData"></param>
         public static void ValidateConferenceStandardCost(object AContext, PcConferenceCostRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
             DataRowCollection AGridData)

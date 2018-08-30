@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,6 @@ using Ict.Common.Data;
 using Ict.Petra.Server.MReporting.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.Interfaces.MReporting;
 using Tests.MReporting.Tools;
 
 namespace Tests.MPartner.Server.Reporting
@@ -82,8 +81,10 @@ namespace Tests.MPartner.Server.Reporting
             string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Test.xml";
 
             TParameterList SpecificParameters = new TParameterList();
-            SpecificParameters.Add("param_address_date_valid_on", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
+            //SpecificParameters.Add("param_today", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
+            //SpecificParameters.Add("param_only_addresses_valid_on", true);
             SpecificParameters.Add("param_explicit_specialtypes", new TVariant("LEDGER"));
+            SpecificParameters.Add("param_active", new TVariant(true));
 
             TReportTestingTools.CalculateReport(testFile, SpecificParameters);
 

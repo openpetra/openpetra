@@ -4345,6 +4345,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return TGLPosting.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
+        /// cancel a GL Batch
+        [RequireModulePermission("FINANCE-2")]
+        public static bool CancelGLBatch(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            return TGLPosting.CancelGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
         /// <summary>
         /// return a string that shows the balances of the accounts involved, if the GL Batch was posted
         /// </summary>

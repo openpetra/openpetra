@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -313,6 +313,11 @@ namespace PetraServerAdminConsole
         private static int ClearConnectionPoolAndGetNumberOfDBConnections()
         {
             return TRemote.ClearConnectionPoolAndGetNumberOfDBConnections();
+        }
+
+        private static void SetPassword(string AUserID, string APassword)
+        {
+            TRemote.SetPassword(AUserID, APassword);
         }
 
         private static void AddUser(string AUserId)
@@ -938,6 +943,10 @@ namespace PetraServerAdminConsole
                     {
                         RefreshAllCachedTables();
                     }
+                    else if (TAppSettingsManager.GetValue("Command") == "SetPassword")
+                    {
+                        SetPassword(TAppSettingsManager.GetValue("UserID"), TAppSettingsManager.GetValue("NewPassword"));
+                    }
                     else if (TAppSettingsManager.GetValue("Command") == "AddUser")
                     {
                         AddUser(TAppSettingsManager.GetValue("UserId"));
@@ -965,8 +974,6 @@ namespace PetraServerAdminConsole
                 ExitError = true;
             }
 
-            string CannotDisconnectMessage;
-            new THTTPClientManager().DisconnectClient(out CannotDisconnectMessage);
             ClearSecurityToken();
 
             if (ExitError)

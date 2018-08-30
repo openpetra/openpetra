@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
 {
@@ -39,7 +38,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
     /// New Extract User Interface Connector
     /// It contains methods to create new extracts in m_extract_master data table
     /// </summary>
-    public class TPartnerNewExtractUIConnector : IPartnerUIConnectorsPartnerNewExtract
+    public class TPartnerNewExtractUIConnector
     {
         Int32 FNewExtractID = -1;
 

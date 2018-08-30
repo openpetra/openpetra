@@ -49,7 +49,6 @@ using Ict.Petra.Shared.Security;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
-using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
 
@@ -194,12 +193,14 @@ namespace Ict.Petra.Server.App.WebService
             out Int32 AClientID,
             out string AWelcomeMessage,
             out Boolean ASystemEnabled,
-            out IPrincipal AUserInfo)
+            out IPrincipal AUserInfo,
+            out Boolean AMustChangePassword)
         {
             AUserInfo = null;
             ASystemEnabled = true;
             AWelcomeMessage = string.Empty;
             AClientID = -1;
+            AMustChangePassword = false;
 
             if (DBAccess.GDBAccessObj == null)
             {
@@ -229,6 +230,8 @@ namespace Ict.Petra.Server.App.WebService
 
                 TServerManager.TheCastedServerManager.AddDBConnection(DBAccess.GDBAccessObj);
 
+                AMustChangePassword = (((TPetraPrincipal)AUserInfo).LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
+
                 return eLoginEnum.eLoginSucceeded;
             }
             catch (Exception e)
@@ -255,48 +258,29 @@ namespace Ict.Petra.Server.App.WebService
             bool SystemEnabled;
             IPrincipal UserInfo;
             Int32 ClientID;
+            bool MustChangePassword;
 
             eLoginEnum resultCode =  LoginInternal(username, password, TFileVersionInfo.GetApplicationVersion().ToVersion(),
-                out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo);
+                out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo, out MustChangePassword);
 
             Dictionary<string, object> result = new Dictionary<string, object>();
             result.Add("resultcode", resultCode.ToString());
+            result.Add("mustchangepassword", MustChangePassword);
             return JsonConvert.SerializeObject(result);
         }
 
-        /// <summary>Login a user</summary>
+        /// <summary>get the current version of OpenPetra</summary>
         [WebMethod(EnableSession = true)]
-        public string LoginClient(string username, string password, string version)
+        public string GetVersion()
         {
-            Version ClientVersion;
+            object loggedIn = TSession.GetVariable("LoggedIn");
 
-            try
+            if ((null != loggedIn) && ((bool)loggedIn == true))
             {
-                ClientVersion = Version.Parse(version);
-            }
-            catch (Exception)
-            {
-                TLogging.Log("LoginClient: invalid version, cannot be parsed: " + version);
-                return THttpBinarySerializer.SerializeObjectWithType(eLoginEnum.eLoginVersionMismatch);
+                return TFileVersionInfo.GetApplicationVersion().ToVersion().ToString();
             }
 
-            string WelcomeMessage;
-            bool SystemEnabled;
-            IPrincipal UserInfo;
-            Int32 ClientID;
-            eLoginEnum Result = LoginInternal(username, password, ClientVersion,
-                out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo);
-
-            if (Result != eLoginEnum.eLoginSucceeded)
-            {
-                return THttpBinarySerializer.SerializeObjectWithType(Result);
-            }
-
-            return THttpBinarySerializer.SerializeObjectWithType(Result) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(ClientID) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(WelcomeMessage) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(SystemEnabled) + "," +
-                   THttpBinarySerializer.SerializeObjectWithType(UserInfo);
+            return "0.0.0.0";
         }
 
         /// <summary>
@@ -491,7 +475,7 @@ namespace Ict.Petra.Server.App.WebService
                     return THttpBinarySerializer.SerializeObject(false);
                 }
 
-                return THttpBinarySerializer.SerializeObject(DomainManager.CurrentClient.FPollClientTasks.PollClientTasks(), true);
+                return THttpBinarySerializer.SerializeObject(DomainManager.CurrentClient.FPollClientTasks.PollClientTasks());
             }
             catch (Exception e)
             {

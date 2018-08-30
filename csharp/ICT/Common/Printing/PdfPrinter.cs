@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,12 +34,12 @@ using PdfSharp;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
+using PdfSharp.Fonts;
 
 namespace Ict.Common.Printing
 {
     /// <summary>
     /// this printer uses PdfSharp to print to PDF.
-    /// we need to overwrite the graphics functions, otherwise we use the same layout/text wrapping functions like TGfxPrinter
     /// </summary>
     public class TPdfPrinter : TGfxPrinter
     {
@@ -73,8 +73,9 @@ namespace Ict.Common.Printing
         /// <summary>
         /// constructor
         /// </summary>
-        public TPdfPrinter(System.Drawing.Printing.PrintDocument ADocument, ePrinterBehaviour APrinterBehaviour) : base(ADocument, APrinterBehaviour)
+        public TPdfPrinter(ePrinterBehaviour APrinterBehaviour): base(APrinterBehaviour)
         {
+            GlobalFontSettings.FontResolver = new MonoFontResolver();
         }
 
         /// the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?
@@ -88,7 +89,7 @@ namespace Ict.Common.Printing
         {
             FXBlackPen = new XPen(XColor.FromKnownColor(XKnownColor.Black), Cm(0.05f));
 
-            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
+            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
 
             // the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?
             FXSmallPrintFont = new XFont("Arial", 0.12, XFontStyle.Regular, options); // Point(6 + XFONTSIZE)
@@ -137,14 +138,12 @@ namespace Ict.Common.Printing
                     break;
             }
 
-            Font gFont = GetFont(AFont);
-
-            string id = ReturnValue.FontFamily.Name + gFont.SizeInPoints.ToString() + gFont.Style.ToString();
+            string id = ReturnValue.FontFamily.Name + ReturnValue.Size.ToString() + ReturnValue.Style.ToString();
 
             if (!FXFontCache.ContainsKey(id))
             {
-                XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
-                FXFontCache.Add(id, new XFont(ReturnValue.FontFamily.Name, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, options));
+                XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
+                FXFontCache.Add(id, new XFont(ReturnValue.FontFamily.Name, ReturnValue.Size /*+XFONTSIZE*/, ReturnValue.Style, options));
             }
 
             ReturnValue = FXFontCache[id];
@@ -158,13 +157,41 @@ namespace Ict.Common.Printing
         /// <param name="AFont"></param>
         protected override bool UpdateBiggestLastUsedFont(eFont AFont)
         {
-            if (base.UpdateBiggestLastUsedFont(AFont))
+            if ((FXBiggestLastUsedFont == null) || (GetXFont(AFont).Height > FXBiggestLastUsedFont.Height))
             {
                 FXBiggestLastUsedFont = GetXFont(AFont);
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Set the space that is required by the page footer.
+        /// ValidYPos will consider this value.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public override void SetPageFooterSpace(System.Int32 ANumberOfLines, eFont AFont)
+        {
+            // half a line for the drawn line, to separate the report body from the footer
+            if (ANumberOfLines != 0)
+            {
+                FPageFooterSpace = ((float)Convert.ToDouble(ANumberOfLines) + 0.5f) * GetXFont(AFont).Height * CurrentLineHeight +
+                                   FXDefaultFont.Height;
+            }
+        }
+
+        /// <summary>
+        /// Jump to the position where the page footer starts.
+        /// SetPageFooterSpace is used to define the space reserved for the footer.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        public override float LineFeedToPageFooter()
+        {
+            CurrentYPos = FTopMargin + FHeight - FPageFooterSpace + FXDefaultFont.Height * CurrentLineHeight;
+            return CurrentYPos;
         }
 
         private XStringFormat GetXStringFormat(eAlignment AAlign)
@@ -195,7 +222,7 @@ namespace Ict.Common.Printing
             return ReturnValue;
         }
 
-        private RectangleF CalculatePrintStringRectangle(float ALeft, float ATop, float AWidth, eFont AFont)
+        private XRect CalculatePrintStringRectangle(float ALeft, float ATop, float AWidth, eFont AFont)
         {
             float MyYPos = ATop;
 
@@ -205,7 +232,7 @@ namespace Ict.Common.Printing
                 MyYPos += GetFontHeight(AFont);
             }
 
-            return new RectangleF(ALeft, MyYPos, AWidth, GetFontHeight(AFont) + 0.2f);
+            return new XRect(ALeft, MyYPos, AWidth, GetFontHeight(AFont) + 0.2f);
         }
 
         /// <summary>
@@ -214,12 +241,12 @@ namespace Ict.Common.Printing
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, eAlignment AAlign)
         {
-            RectangleF rect = CalculatePrintStringRectangle(FLeftMargin, CurrentYPos, FWidth, AFont);
+            XRect rect = CalculatePrintStringRectangle(FLeftMargin, CurrentYPos, FWidth, AFont);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                ATxt = GetFittedText(ATxt, AFont, rect.Width);
-                FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, GetXStringFormat(AAlign));
+                ATxt = GetFittedText(ATxt, AFont, (float)rect.Width);
+                FXGraphics.DrawString(ATxt, GetXFont(AFont), new XSolidBrush(XColors.Black), rect, GetXStringFormat(AAlign));
             }
 
             return (ATxt != null) && (ATxt.Length != 0);
@@ -233,7 +260,7 @@ namespace Ict.Common.Printing
         {
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, AXPos, CurrentYPos);
+                FXGraphics.DrawString(ATxt, GetXFont(AFont), new XSolidBrush(XColors.Black), AXPos, CurrentYPos);
             }
 
             return (ATxt != null) && (ATxt.Length != 0);
@@ -245,28 +272,27 @@ namespace Ict.Common.Printing
         /// <returns>true if something was printed</returns>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
-            RectangleF rect = CalculatePrintStringRectangle(AXPos, CurrentYPos, AWidth, AFont);
+            XRect rect = CalculatePrintStringRectangle(AXPos, CurrentYPos, AWidth, AFont);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 if (FPrinterBehaviour == ePrinterBehaviour.eReport)
                 {
-                    ATxt = GetFittedText(ATxt, AFont, rect.Width);
+                    ATxt = GetFittedText(ATxt, AFont, (float)rect.Width);
                 }
 
                 if ((AAlign == eAlignment.eCenter) && Environment.OSVersion.ToString().StartsWith("Unix"))
                 {
                     // it seems on Mono/Unix, the string aligning to the center does not work properly. so we do it manually
-                    rect = new RectangleF(rect.Left + (AWidth - GetWidthString(ATxt, AFont)) / 2.0f, rect.Top, rect.Height, rect.Width);
-                    FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, GetXStringFormat(eAlignment.eLeft));
+                    rect = new XRect(rect.Left + (AWidth - GetWidthString(ATxt, AFont)) / 2.0f, rect.Top, rect.Height, rect.Width);
+                    FXGraphics.DrawString(ATxt, GetXFont(AFont), new XSolidBrush(XColors.Black), rect, GetXStringFormat(eAlignment.eLeft));
                 }
                 else
                 {
                     XStringFormat f = GetXStringFormat(AAlign);
-                    f.FormatFlags = XStringFormatFlags.MeasureTrailingSpaces;
 
                     //TLogging.Log("curr ypos " + CurrentYPos.ToString() + " " + AXPos.ToString() + " " + ATxt + AWidth.ToString());
-                    FXGraphics.DrawString(ATxt, GetXFont(AFont), Brushes.Black, rect, f);
+                    FXGraphics.DrawString(ATxt, GetXFont(AFont), new XSolidBrush(XColors.Black), rect, f);
                 }
             }
 
@@ -496,7 +522,7 @@ namespace Ict.Common.Printing
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
-                FXGraphics.DrawImage(img, AXPos, AYPos, AWidth, AHeight);
+// TODO                FXGraphics.DrawImage(XImage.FromGdiPlusImage(img), AXPos, AYPos, AWidth, AHeight);
             }
 
             CurrentYPos += AHeight;
@@ -521,15 +547,6 @@ namespace Ict.Common.Printing
         /// <returns>Return the width of the string, if it was printed in one line, using the given Font</returns>
         public override float GetWidthString(String ATxt, eFont AFont)
         {
-            // somehow, on Linux we need to use base.GetWidthString.
-            // on Windows, base.GetWidthString is too long.
-            if (Environment.OSVersion.ToString().StartsWith("Unix"))
-            {
-                // FXGraphics.MeasureString seems to be useless on Mono/Unix.
-                // it returns 0 for single letters, for more letters there is a huge factor of difference to the desired value
-                return base.GetWidthString(ATxt, AFont);
-            }
-
             return (float)FXGraphics.MeasureString(ATxt, GetXFont(AFont), XStringFormats.Default).Width;
         }
 
@@ -586,7 +603,6 @@ namespace Ict.Common.Printing
 
             // reset the biggest last used font
             FXBiggestLastUsedFont = FXDefaultFont;
-            FBiggestLastUsedFont = FDefaultFont;
             return CurrentYPos;
         }
 
@@ -612,24 +628,78 @@ namespace Ict.Common.Printing
             return CurrentYPos;
         }
 
-        /// <summary>
-        /// print the page, either to PDF or to the screen
-        /// </summary>
-        /// <param name="ASender"></param>
-        /// <param name="AEv"></param>
-        protected override void PrintPage(Object ASender, PrintPageEventArgs AEv)
+        void BeginPrint(object ASender, PrintEventArgs AEv)
         {
-            // only use the AEv.Graphics if we display on screen
-            if (FEv != AEv)
+            if ((FNumberOfPages == 0) && (CurrentPageNr != 0))
             {
-                FEv = AEv;
-                FEv.Graphics.PageUnit = GraphicsUnit.Inch;
-                FEv.Graphics.TranslateTransform(0, 0);
-                FXGraphics = XGraphics.FromGraphics(AEv.Graphics, PageSizeConverter.ToSize(PageSize.A4));
-                InitFontsAndPens();
+                FNumberOfPages = CurrentPageNr;
             }
 
-            base.PrintPage(ASender, AEv);
+            CurrentPageNr = 0;
+            CurrentDocumentNr = 1;
+            FPrinterLayout.StartPrintDocument();
+        }
+
+        /// <summary>
+        /// print the page to PDF
+        /// </summary>
+        protected void PrintPage()
+        {
+            // first page? then we should store some settings
+            if (CurrentPageNr == 0)
+            {
+                if (FMarginType == eMarginType.ePrintableArea)
+                {
+                    // if no printer is installed, use default values
+                    FLeftMargin = 0;
+                    FTopMargin = 0.1f;
+                    FRightMargin = -0.1f;
+                    FBottomMargin = 0.1f;
+                    FWidth = 8.268333f;
+                    FHeight = 11.69333f;
+                }
+
+                // Calculate the number of lines per page.
+                FLinesPerPage = (float)FHeight / (float)FXDefaultFont.GetHeight() * CurrentLineHeight;
+
+                if (FNumberOfPages == 0)
+                {
+                    // do a dry run without printing but calculate the number of pages
+
+                    StartSimulatePrinting();
+
+                    int pageCounter = 0;
+                    FNumberOfPages = 1;
+
+                    do
+                    {
+                        pageCounter++;
+                        PrintPage();
+                    } while (HasMorePages());
+
+                    FinishSimulatePrinting();
+                    BeginPrint(null, null);
+                    FNumberOfPages = pageCounter;
+                }
+            }
+
+            CurrentPageNr++;
+
+            CurrentYPos = FTopMargin;
+            CurrentXPos = FLeftMargin;
+
+            FPrinterLayout.PrintPageHeader();
+
+            float CurrentYPosBefore = CurrentYPos;
+            float CurrentXPosBefore = CurrentXPos;
+            FPrinterLayout.PrintPageBody();
+
+            if ((CurrentYPosBefore == CurrentYPos) && (CurrentXPosBefore == CurrentXPos) && HasMorePages())
+            {
+                throw new Exception("failure printing, does not fit the page");
+            }
+
+            FPrinterLayout.PrintPageFooter();
         }
 
         /// <summary>
@@ -675,11 +745,6 @@ namespace Ict.Common.Printing
         /// </summary>
         public void SavePDF(string AFilename, PaperKind APaperKind, Margins AMargins, float AWidthInPoint, float AHeightInPoint)
         {
-            if (Directory.Exists("/usr/share/fonts/"))
-            {
-                PdfSharp.Internal.NativeMethods.FontDirectory = "/usr/share/fonts/";
-            }
-
             if (RegionInfo.CurrentRegion == null)
             {
                 // https://bugzilla.novell.com/show_bug.cgi?id=588708
@@ -707,7 +772,7 @@ namespace Ict.Common.Printing
                     }
                 }
 
-                if ((AWidthInPoint != -1) && (AHeightInPoint != -1))
+                if ((AWidthInPoint != -1.0) && (AHeightInPoint != -1.0))
                 {
                     // to get the points, eg. inch * 72
                     page.Width = AWidthInPoint;
@@ -715,7 +780,6 @@ namespace Ict.Common.Printing
                 }
 
                 FXGraphics = XGraphics.FromPdfPage(page, XGraphicsUnit.Inch);
-                FXGraphics.MFEH = PdfFontEmbedding.Always;
 
                 // it seems for Linux we better reset the FEv, otherwise the positions are only correct on the first page, but wrong on the following pages
                 // was: if (FEv == null)
@@ -730,39 +794,122 @@ namespace Ict.Common.Printing
                         new PaperSize(page.Size.ToString(), Convert.ToInt32(page.Width.Point / 72.0f * 100.0f),
                             Convert.ToInt32(page.Height.Point / 72.0f * 100.0f));
 
-                    try
-                    {
-                        myPageSettings.PrinterResolution.X = DEFAULTPRINTERRESOLUTION;
-                        myPageSettings.PrinterResolution.Y = DEFAULTPRINTERRESOLUTION;
-                    }
-                    catch (Exception)
-                    {
-                        // if no printer is installed we get an exception, but it should work anyway
-                    }
-                    FEv = new PrintPageEventArgs(FXGraphics.Graphics,
-                        new Rectangle(20, 20, 787, 1110),
-                        new Rectangle(0, 0, 827, 1169),
-                        myPageSettings);
-                    FEv.HasMorePages = true;
-                    FEv.Graphics.PageUnit = GraphicsUnit.Inch;
-                    FEv.Graphics.TranslateTransform(0, 0);
                     InitFontsAndPens();
                 }
 
                 if (firstPage)
                 {
-                    PrintPage(this, FEv);
+                    PrintPage();
                     firstPage = false;
                 }
                 else
                 {
-                    PrintPage(null, FEv);
+                    PrintPage();
                 }
             } while (HasMorePages());
 
             // should we catch an exception if document cannot be written?
             FPdfDocument.Save(AFilename);
             FPdfDocument.Close();
+
+            // Console.WriteLine("PDF has been written to " + Path.GetFullPath(AFilename));
+        }
+    }
+
+    class MonoFontResolver: PdfSharp.Fonts.IFontResolver
+    {
+        static string _FontDirectory = "";
+        
+        static List<string> _FontDirectories = new List<string>();
+        static List<string> _FontFiles = new List<string>();
+
+        static string FontDirectory
+        {
+            set
+            {
+                _FontDirectory = value;
+                _FontDirectories.Add(value);
+                RecursiveFontLookup(value);
+            }
+        }
+        static List<string> FontDirectories
+        {
+          get { return _FontDirectories; }
+        }
+
+        static void RecursiveFontLookup(string dir)
+        {
+            string[] files = Directory.GetFiles(dir);
+            foreach (string file in files)
+            {
+                if (file.EndsWith(".ttf"))
+                {
+                    _FontFiles.Add(file);
+                }
+            }
+
+            string[] directories = Directory.GetDirectories(dir);
+
+            foreach (string directory in directories)
+            {
+                _FontDirectories.Add(directory);
+                RecursiveFontLookup(directory);
+            }
+        }
+
+        public FontResolverInfo ResolveTypeface(string familyName, bool isBold, bool isItalic)
+        {
+            // see https://github.com/empira/PDFsharp-samples/blob/master/samples/core/FontResolver/SegoeWpFontResolver.cs
+            return new FontResolverInfo(familyName, isBold, isItalic);
+        }
+
+        public byte[] GetFont(string faceName)
+        {
+            if (_FontDirectory == "")
+            {
+                // yum install liberation*fonts*
+                FontDirectory = "/usr/share/fonts/";
+            }
+
+            // Console.WriteLine("looking for " + faceName);
+
+            // see https://ask.libreoffice.org/en/question/87444/replacing-fonts-by-similar-ones/
+            if (faceName.ToLower() == "arial")
+            {
+                faceName = "LiberationSans";
+            }
+            else if (faceName.ToLower() == "code 128")
+            {
+                faceName = "code128";
+                // wget https://github.com/Holger-Will/code-128-font/raw/master/fonts/code128.ttf
+                // see https://github.com/Holger-Will/code-128-font
+            }
+            else if (faceName.ToLower() == "times new roman")
+            {
+                faceName = "LiberationSerif";
+            }
+
+            foreach (string fontFile in _FontFiles)
+            {
+                try
+                {
+                    // Console.WriteLine(fontFile);
+                    BinaryReader br = new BinaryReader(File.OpenRead(fontFile));
+                    byte[] buffer = br.ReadBytes((int)br.BaseStream.Length);
+                    br.Close();
+
+                    if (Path.GetFileNameWithoutExtension(fontFile).Contains(faceName))
+                    {
+                        return buffer;
+                    }
+                }
+                catch // (Exception exc)
+                {
+                    //System.Console.WriteLine(exc.ToString());
+                }
+            }
+
+            return null;
         }
     }
 }

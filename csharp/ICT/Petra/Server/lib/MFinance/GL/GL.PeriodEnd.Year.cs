@@ -71,7 +71,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AIsInInfoMode">True means: no calculation is done, only verification result messages are collected</param>
         /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVerificationResult"></param>
-        /// <returns>false if there's no problem</returns>
+        /// <returns>true if there's no problem</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool PeriodYearEnd(
             int ALedgerNum,
@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         Catalog.GetString("Year End"),
                         Catalog.GetString("Exception: ") + e.Message,
                         TResultSeverity.Resv_Critical));
-                return true;
+                return false;
             }
         }
     }
@@ -193,7 +193,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         TResultSeverity.Resv_Critical);
                 AVRCollection.Add(tvt);
                 FHasCriticalErrors = true;
-                return true;
+                return !FHasCriticalErrors;
             }
 
             TPeriodEndOperations.FwasCancelled = false;
@@ -251,7 +251,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 });
 
-            return FHasCriticalErrors;
+            return !FHasCriticalErrors;
         } // Run YearEnd
     } // T YearEnd
 
@@ -986,7 +986,7 @@ namespace Ict.Petra.Server.MFinance.GL
      *      }
      *
      *      /// <summary>
-     *      /// In a_budget_period move this year’s values to last year, next year’s to this year, and set next year to zero.
+     *      /// In a_budget_period move this year's values to last year, next year's to this year, and set next year to zero.
      *      /// </summary>
      *      public override Int32 RunOperation()
      *      {

@@ -159,7 +159,6 @@ namespace GenerateGlue
             string ActualParameters = string.Empty;
 
             snippet.SetCodelet("LOCALVARIABLES", string.Empty);
-            string returnCodeFatClient = string.Empty;
             string returnCodeJSClient = string.Empty;
             int returnCounter = 0;
 
@@ -211,16 +210,15 @@ namespace GenerateGlue
                 bool DecimalParameter = parametertype.StartsWith("System.Decimal") && !ArrayParameter;
                 bool DateTimeParameter = parametertype.EndsWith("DateTime");
                 bool ListParameter = parametertype.StartsWith("List<");
-                bool DictParameter = false && parametertype.StartsWith("Dictionary<");
                 bool BinaryParameter =
+                    p.ParameterName.EndsWith("Base64") ||
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
                       || (parametertype.StartsWith("System.Int16"))
                       || (parametertype.StartsWith("System.String")) || (parametertype.StartsWith("System.Boolean"))
                       || DecimalParameter
                       || DateTimeParameter
                       || EnumParameter
-                      || ListParameter
-                      || DictParameter);
+                      || ListParameter);
 
                 if (ActualParameters.Length > 0)
                 {
@@ -264,16 +262,6 @@ namespace GenerateGlue
                             Environment.NewLine);
                     }
                 }
-                else if (DictParameter && parametertype.Contains("System.String>") && ((ParameterModifiers.Out & p.ParamModifier) == 0))
-                {
-                    if (!parametertype.Contains("[]"))
-                    {
-                        snippet.AddToCodelet(
-                            "LOCALVARIABLES",
-                            p.ParameterName + " = THttpBinarySerializer.DeserializeObject(" + p.ParameterName + ");" +
-                            Environment.NewLine);
-                    }
-                }
 
                 // EnumParameters are also binary encoded
                 // this obviously does not apply to out parameters
@@ -305,7 +293,8 @@ namespace GenerateGlue
                 {
                     snippet.AddToCodelet(
                         "LOCALVARIABLES",
-                        parametertype + " Local" + p.ParameterName + " = JsonConvert.DeserializeObject<" + parametertype + ">(" + p.ParameterName + ");" +
+                        parametertype + " Local" + p.ParameterName + " = new " + parametertype + "();" + Environment.NewLine + 
+                        "Local" + p.ParameterName + " = (" + parametertype + ") THttpBinarySerializer.DeserializeDataSet(" + p.ParameterName + ", Local" + p.ParameterName + ");" +
                         Environment.NewLine);
                 }
 
@@ -366,12 +355,6 @@ namespace GenerateGlue
 
                 if (((ParameterModifiers.Ref & p.ParamModifier) > 0) || ((ParameterModifiers.Out & p.ParamModifier) > 0))
                 {
-                    returnCodeFatClient +=
-                        (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) +
-                        "THttpBinarySerializer.SerializeObjectWithType(" +
-                        (((ParameterModifiers.Ref & p.ParamModifier) > 0 && BinaryParameter) ? "Local" : string.Empty) +
-                        p.ParameterName + ")";
-
                     if (returnCounter == 0)
                     {
                         returnCodeJSClient = "\"{\" + ";
@@ -420,11 +403,8 @@ namespace GenerateGlue
                 {
                     if (returntype != "void")
                     {
-                        returnCodeFatClient +=
-                            (returnCodeFatClient.Length > 0 ? "+\",\"+" : string.Empty) + "THttpBinarySerializer.SerializeObjectWithType(Result)";
-
                         returnCodeJSClient += "+ \",\" + \"\\\"result\\\": \"+" +
-                                              "THttpBinarySerializer.SerializeObjectWithType(Result)";
+                                              "THttpBinarySerializer.SerializeObject(Result)";
 
                         returnCounter++;
                     }
@@ -434,7 +414,6 @@ namespace GenerateGlue
                 else if (returntype == "System.String")
                 {
                     returntype = "string";
-                    returnCodeFatClient = "THttpBinarySerializer.SerializeObjectWithType(Result)";
                     returnCodeJSClient = "Result";
                 }
                 else if (!((returntype == "System.Int64") || (returntype == "System.Int32") || (returntype == "System.Int16")
@@ -443,7 +422,6 @@ namespace GenerateGlue
                            || (returntype == "System.Boolean")) && (returntype != "void"))
                 {
                     returntype = "string";
-                    returnCodeFatClient = "THttpBinarySerializer.SerializeObject(Result)";
                     returnCodeJSClient = "\"{\\\"result\\\": \"+" +
                                          "THttpBinarySerializer.SerializeObject(Result)" + " + \"}\"";
                 }
@@ -454,7 +432,7 @@ namespace GenerateGlue
                 {
                     localreturn = string.Empty;
                 }
-                else if ((returnCodeFatClient.Length > 0) || (returnCodeJSClient.Length > 0))
+                else if (returnCodeJSClient.Length > 0)
                 {
                     localreturn += " Result = ";
                 }
@@ -470,7 +448,7 @@ namespace GenerateGlue
 
                 snippet.SetCodelet("RETURN", string.Empty);
 
-                if ((returnCodeFatClient.Length > 0) || (returnCodeJSClient.Length > 0))
+                if (returnCodeJSClient.Length > 0)
                 {
                     snippet.SetCodelet("RETURN",
                         returntype != "void" ? "return " + returnCodeJSClient + ";" : string.Empty);
@@ -714,7 +692,7 @@ namespace GenerateGlue
 
             foreach (string connector in connectors.Keys)
             {
-                if (connector.Contains(":"))
+                if (connector.EndsWith("UIConnector"))
                 {
                     WriteUIConnector(connector, connectors[connector], Template);
                 }

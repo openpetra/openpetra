@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -120,16 +120,6 @@ namespace Ict.Tools.GenerateGlue
 
             try
             {
-                /*
-                 * CreateInstantiators instantiators = new CreateInstantiators();
-                 * instantiators.CreateFiles(namespaceRoot, OutputDir + "/Server/lib", cmd.GetOptValue("TemplateDir"));
-                 * TCreateConnectors connectors = new TCreateConnectors();
-                 * connectors.CreateFiles(namespaceRoot, OutputDir + "/Server/lib", cmd.GetOptValue("TemplateDir"));
-                 */
-
-                CreateInterfaces interfaces = new CreateInterfaces();
-                interfaces.CreateFiles(namespaceRoot, AOutputDir + "/Shared/lib/Interfaces", ACmd.GetOptValue("TemplateDir"));
-                GenerateClientGlue.GenerateConnectorCode(AOutputDir + "/../Common/Remoting/Client", ACmd.GetOptValue("TemplateDir"));
                 GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server/app/WebService", ACmd.GetOptValue("TemplateDir"));
 
                 namespaceRoot = new TNamespace();
@@ -139,7 +129,6 @@ namespace Ict.Tools.GenerateGlue
                 ServerAdminNamespace.Children.Add("WebConnectors", ServerAdminWebConnectorNamespace);
 
                 GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server/app/WebService", ACmd.GetOptValue("TemplateDir"));
-                GenerateClientGlue.GenerateCode(namespaceRoot, AOutputDir + "/ServerAdmin/app/Core", ACmd.GetOptValue("TemplateDir"));
             }
             catch (Exception e)
             {
@@ -176,15 +165,6 @@ namespace Ict.Tools.GenerateGlue
 
             try
             {
-#if disabled
-                CreateInterfaces interfaces = new CreateInterfaces();
-                // at the moment, we do not support UIConnectors for plugins. Better to focus on Webconnectors!
-                if (!Directory.Exists(AOutputDir + "/Shared"))
-                {
-                    Directory.CreateDirectory(AOutputDir + "/Shared");
-                }
-                interfaces.CreateFiles(namespaceRoot, AOutputDir + "/Shared", ACmd.GetOptValue("TemplateDir"));
-#endif
                 GenerateServerGlue.GenerateCode(namespaceRoot, AOutputDir + "/Server", ACmd.GetOptValue("TemplateDir"));
             }
             catch (Exception e)

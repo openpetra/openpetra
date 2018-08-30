@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,6 @@ using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Common;
 
-using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors

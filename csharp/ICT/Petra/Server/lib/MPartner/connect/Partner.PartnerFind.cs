@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,6 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.MPartner.PartnerFind;
 using Ict.Petra.Shared.MCommon;
 
@@ -56,7 +55,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     /// </summary>
-    public class TPartnerFindUIConnector : IPartnerUIConnectorsPartnerFind
+    public class TPartnerFindUIConnector
     {
         private TPartnerFind FPartnerFind = new TPartnerFind();
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,8 +30,6 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
@@ -65,7 +63,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
     ///          are also UIConnectors are feasible.
     ///
     /// </summary>
-    public class TOfficeSpecificDataLabelsUIConnector : IDataElementsUIConnectorsOfficeSpecificDataLabels
+    public class TOfficeSpecificDataLabelsUIConnector
     {
         private OfficeSpecificDataLabelsTDS FOfficeSpecificDataLabelsTDS;
         private System.Int64 FPartnerKey;

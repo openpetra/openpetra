@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.Globalization;
 using System.IO;
 using System.Security.Principal;
@@ -213,11 +214,26 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             string EmailAddress = AUserID;
 
-            if (AUserID.Contains("@"))
+            if (EmailAddress.Contains("@"))
             {
-                AUserID = AUserID.Substring(0, AUserID.IndexOf("@")).
-                          Replace(".", string.Empty).
-                          Replace("_", string.Empty).ToUpper();
+                // try to find unique User for this e-mail address
+                string sql = "SELECT s_user_id_c FROM PUB_s_user WHERE UPPER(s_email_address_c) = ?";
+
+                OdbcParameter[] parameters = new OdbcParameter[1];
+                parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
+                parameters[0].Value = EmailAddress.ToUpper();
+
+                DataTable result = ATransaction.DataBaseObj.SelectDT(sql, "user", ATransaction, parameters);
+
+                if (result.Rows.Count == 1)
+                {
+                    AUserID = result.Rows[0][0].ToString();
+                }
+                else
+                {
+                    TLogging.Log("Login with E-Mail address failed for " + EmailAddress + ". " +
+                        "We found " + result.Rows.Count.ToString() + " matching rows for this address.");
+                }
             }
 
             try
@@ -632,6 +648,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
     /// </summary>
     public class TUserManager : IUserManager
     {
+        /// <summary>
+        /// Set the password
+        /// </summary>
+        /// <remarks>Gets called from TServerManager.SetPassword() Method, which is used to 
+        /// set the initial password for SYSADMIN.</remarks>
+        public bool SetPassword(string AUserID, string APassword)
+        {
+            TVerificationResultCollection VerificationResult;
+            return TMaintenanceWebConnector.SetUserPassword(AUserID, APassword, true, true, string.Empty, string.Empty, out VerificationResult);
+        }
+
         /// <summary>
         /// Adds a new user.
         /// </summary>

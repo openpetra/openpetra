@@ -4,7 +4,7 @@
 // @Authors:
 //       timh, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,7 +32,6 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Session;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
@@ -48,7 +47,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     /// <summary>
     /// Partner Location Search Screen UIConnector
     /// </summary>
-    public class TPartnerLocationFindUIConnector : IPartnerUIConnectorsPartnerLocationFind
+    public class TPartnerLocationFindUIConnector
     {
         /// <summary>Paged query object</summary>
         private TPagedDataSet FPagedDataSetObject;

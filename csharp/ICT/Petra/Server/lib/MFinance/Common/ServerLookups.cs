@@ -371,7 +371,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return ReturnValue;
         }
- 
+
         /// <summary>
         /// Returns a list of possible candidates for the account code
         /// </summary>
@@ -456,5 +456,75 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             AResult = result;
             return result.Rows.Count > 0;
         }
-   }
+
+        /// <summary>
+        /// Returns a list of possible candidates for the motivation group
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool TypeAheadMotivationGroup(Int32 ALedgerNumber, string ASearch,
+                Int32 ALimit,
+                out DataTable AResult)
+        {
+            TDBTransaction Transaction = null;
+            DataTable result = new DataTable();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string SqlStmt = TDataBase.ReadSqlFile("Finance.TypeAheadMotivationGroup.sql");
+
+                    OdbcParameter[] parameters = new OdbcParameter[3];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("MotivationGroupCode", OdbcType.VarChar);
+                    parameters[1].Value = "%" + ASearch + "%";
+                    parameters[2] = new OdbcParameter("DescGroup", OdbcType.VarChar);
+                    parameters[2].Value = "%" + ASearch + "%";
+
+                    SqlStmt += " LIMIT " + ALimit.ToString();
+
+                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                });
+
+            AResult = result;
+            return result.Rows.Count > 0;
+        }
+
+        /// <summary>
+        /// Returns a list of possible candidates for the motivation detail
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool TypeAheadMotivationDetail(Int32 ALedgerNumber, string ASearch,
+                Int32 ALimit,
+                out DataTable AResult)
+        {
+            TDBTransaction Transaction = null;
+            DataTable result = new DataTable();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string SqlStmt = TDataBase.ReadSqlFile("Finance.TypeAheadMotivationDetail.sql");
+
+                    OdbcParameter[] parameters = new OdbcParameter[3];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("MotivationDetailCode", OdbcType.VarChar);
+                    parameters[1].Value = "%" + ASearch + "%";
+                    parameters[2] = new OdbcParameter("DescDetail", OdbcType.VarChar);
+                    parameters[2].Value = "%" + ASearch + "%";
+
+                    SqlStmt += " LIMIT " + ALimit.ToString();
+
+                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                });
+
+            AResult = result;
+            return result.Rows.Count > 0;
+        }
+    }
 }

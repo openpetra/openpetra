@@ -587,7 +587,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             DataRow resultRow = ReturnTable.NewRow();
                             resultRow[0] = row[0];
                             resultRow[1] = CurrentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(
-                                                                             row[0]))).ToShortDateString();
+                                                                             row[0]))).ToString("yyyy");
                             ReturnTable.Rows.Add(resultRow);
                         }
                     });
@@ -597,7 +597,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     DataRow resultRow = ReturnTable.NewRow();
                     resultRow[0] = LedgerTable[0].CurrentFinancialYear;
-                    resultRow[1] = CurrentYearEnd.ToShortDateString();
+                    resultRow[1] = CurrentYearEnd.ToString("yyyy");
                     ReturnTable.Rows.InsertAt(resultRow, 0);
                 }
             }
@@ -1123,11 +1123,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
         {
             #region Validate Arguments
 
@@ -1158,6 +1155,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 });
 
             MainDS.AcceptChanges();
+
+            ABatchIsUnposted = MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             return MainDS;
         }
@@ -1631,11 +1630,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// loads a list of gift transactions and details for the given ledger and batch
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
         {
             #region Validate Arguments
 
@@ -1655,10 +1651,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            ABatchIsUnposted = false;
 
             try
             {
-                MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true);
+                MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, false);
 
                 #region Validate Data
 
@@ -1671,6 +1668,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 #endregion Validate Data
+
+                ABatchIsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
                 // drop all tables apart from AGift and AGiftDetail
                 foreach (DataTable table in MainDS.Tables)
@@ -2187,13 +2186,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ABankCostCentre,
             out TVerificationResultCollection AVerificationResult)
         {
-            GiftBatchTDS MainDS;
-
+            bool BatchIsUnposted;
+            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
             AVerificationResult = new TVerificationResultCollection();
+
+            if (action != "create")
+            {
+                if (!BatchIsUnposted)
+                {
+                    AVerificationResult.Add(new TVerificationResult(
+                        Catalog.GetString("Save Gift Batch"),
+                        "Cannot save because status of batch is " + MainDS.AGiftBatch[0].BatchStatus,
+                        "Cannot save",
+                        "ERROR_MODIFY_CLOSED_GIFTBATCH",
+                        TResultSeverity.Resv_Critical));
+                        return false;
+                }
+            }
 
             if ((action == "create") || (action == "edit"))
             {
-                MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber);
 
                 if (MainDS.AGiftBatch.Rows.Count != 1)
                 {
@@ -2218,8 +2230,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "delete")
             {
-                MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber);
-
                 if (MainDS.AGiftBatch.Rows.Count != 1)
                 {
                     return false;
@@ -2275,12 +2285,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string AReference,
             out TVerificationResultCollection AVerificationResult)
         {
-            GiftBatchTDS MainDS;
+            bool BatchIsUnposted;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
             AVerificationResult = new TVerificationResultCollection();
+
+            if (action != "create")
+            {
+                if (!BatchIsUnposted)
+                {
+                    AVerificationResult.Add(new TVerificationResult(
+                        "Save Gift Batch",
+                        "Cannot save because status of batch is " + MainDS.AGiftBatch[0].BatchStatus,
+                        "Cannot save",
+                        "ERROR_MODIFY_CLOSED_GIFTBATCH",
+                        TResultSeverity.Resv_Critical));
+                        return false;
+                }
+            }
 
             if (action == "create")
             {
-                MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
                 AGiftRow row = MainDS.AGift.NewRowTyped();
                 row.LedgerNumber = ALedgerNumber;
                 row.BatchNumber = ABatchNumber;
@@ -2303,8 +2327,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "edit")
             {
-                MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
-
                 foreach (AGiftRow row in MainDS.AGift.Rows)
                 {
                     if (row.GiftTransactionNumber == AGiftTransactionNumber)
@@ -2326,8 +2348,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "delete")
             {
-                MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
-
                 foreach (AGiftDetailRow row in MainDS.AGiftDetail.Rows)
                 {
                     if (row.GiftTransactionNumber == AGiftTransactionNumber)
@@ -2378,23 +2398,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 AGiftTransactionNumber,
             Int32 ADetailNumber,
             Decimal AGiftTransactionAmount,
+            string AGiftCommentOne,
             string AMotivationGroupCode,
             string AMotivationDetailCode,
             Int64 ARecipientKey,
             out TVerificationResultCollection AVerificationResult)
         {
-            GiftBatchTDS MainDS;
+            bool BatchIsUnposted;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
             AVerificationResult = new TVerificationResultCollection();
+
+            if (action != "create")
+            {
+                if (!BatchIsUnposted)
+                {
+                    AVerificationResult.Add(new TVerificationResult(
+                        "Save Gift Batch",
+                        "Cannot save because status of batch is " + MainDS.AGiftBatch[0].BatchStatus,
+                        "Cannot save",
+                        "ERROR_MODIFY_CLOSED_GIFTBATCH",
+                        TResultSeverity.Resv_Critical));
+                        return false;
+                }
+            }
 
             if (action == "create")
             {
-                MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
                 AGiftDetailRow row = MainDS.AGiftDetail.NewRowTyped();
                 row.LedgerNumber = ALedgerNumber;
                 row.BatchNumber = ABatchNumber;
                 row.GiftTransactionNumber = AGiftTransactionNumber;
                 row.DetailNumber = ADetailNumber;
                 row.GiftTransactionAmount = AGiftTransactionAmount;
+                row.GiftCommentOne = AGiftCommentOne;
+                row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.RecipientKey = ARecipientKey;
@@ -2413,13 +2450,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "edit")
             {
-                MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
-
                 foreach (AGiftDetailRow row in MainDS.AGiftDetail.Rows)
                 {
                     if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))
                     {
                         row.GiftTransactionAmount = AGiftTransactionAmount;
+                        row.GiftCommentOne = AGiftCommentOne;
+                        row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
                         row.MotivationGroupCode = AMotivationGroupCode;
                         row.MotivationDetailCode = AMotivationDetailCode;
                         row.RecipientKey = ARecipientKey;
@@ -2437,8 +2474,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "delete")
             {
-                MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
-
                 foreach (AGiftDetailRow row in MainDS.AGiftDetail.Rows)
                 {
                     if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))

@@ -727,6 +727,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         public static string SaveUserAndModulePermissions(string AUserId,
             string AFirstName, string ALastName, string AEmailAddress, string ALanguageCode,
             bool AAccountLocked, bool ARetired,
+            bool ASendMail,
             List<string> AModulePermissions, Int64 AModificationId)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
@@ -844,25 +845,26 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     TLogging.Log("There is no configuration for SmtpHost. The new password for " + AUserId + " is " + NewPassword);
                 }
-                else if (NewUser)
+                else if (NewUser && ASendMail)
                 {
                     // send E-Mail with temporary password
-                    // TODO: use the language of the user to send a translated message
                     // TODO: use double opt-in before sending the actual information???
+
                     string Domain = TAppSettingsManager.GetValue("Server.Url");
-                    new TSmtpSender().SendEmail(
+                    Dictionary<string, string> parameters = new Dictionary<string, string>();
+                    parameters.Add("UserId", AUserId);
+                    parameters.Add("FirstName", SubmitDS.SUser[0].FirstName);
+                    parameters.Add("LastName", SubmitDS.SUser[0].LastName);
+                    parameters.Add("Domain", Domain);
+                    parameters.Add("NewPassword", NewPassword);
+                    
+                    new TSmtpSender().SendEmailFromTemplate(
                         "no-reply@" + Domain,
                         "OpenPetra Admin",
                         SubmitDS.SUser[0].EmailAddress,
-                        "New password for " + AUserId,
-                        "Dear " + SubmitDS.SUser[0].FirstName + " " + SubmitDS.SUser[0].LastName + "," + Environment.NewLine +
-                        "Your initial password for your account " + AUserId +
-                        " at https://" + Domain + " is: " + Environment.NewLine +
-                        NewPassword + Environment.NewLine +
-                        "You will be asked to change it on the first login." + Environment.NewLine + Environment.NewLine +
-                        "This is an automated e-mail." + Environment.NewLine +
-                        "If you did not register yourself at https://" + Domain +
-                        " then please ignore this e-mail!");                    
+                        "newuserpassword",
+                        ALanguageCode,
+                        parameters);
                 }
             }
             else

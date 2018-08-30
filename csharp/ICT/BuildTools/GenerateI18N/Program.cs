@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, jomammele
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -105,13 +105,6 @@ namespace Ict.Tools.GenerateI18N
                     TGenerateErrorCodeDoc.Execute(TAppSettingsManager.GetValue("csharppath"),
                         TAppSettingsManager.GetValue("templatefilepath"),
                         TAppSettingsManager.GetValue("outfilepath"));
-                }
-                else if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "yamlfiles"))
-                {
-                    GenerateYamlFiles.WriteYamlFiles(
-                        TAppSettingsManager.GetValue("language"),
-                        TAppSettingsManager.GetValue("path"),
-                        TAppSettingsManager.GetValue("pofile"));
                 }
                 else if (TAppSettingsManager.HasValue("file"))
                 {
