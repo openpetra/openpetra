@@ -316,21 +316,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
         private bool PrintToPDF(string AFilename, bool AWrapColumn)
         {
-            PrintDocument doc = new PrintDocument();
-
-            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
+            TPdfPrinter pdfPrinter = new TPdfPrinter(TGfxPrinter.ePrinterBehaviour.eReport);
             TReportPrinterLayout layout = new TReportPrinterLayout(FResultList, FParameterList, pdfPrinter, AWrapColumn);
 
-            eOrientation Orientation;
-
-            if (false && pdfPrinter.Document.DefaultPageSettings.Landscape)
-            {
-                Orientation = eOrientation.eLandscape;
-            }
-            else
-            {
-                Orientation = eOrientation.ePortrait;
-            }
+            eOrientation Orientation = eOrientation.ePortrait;
 
             pdfPrinter.Init(Orientation, layout, eMarginType.ePrintableArea);
 
