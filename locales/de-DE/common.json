@@ -107,12 +107,14 @@
     },
     "ChangePassword": {
         "caption": "Passwort ändern",
+        "immediately": "Bitte ändern Sie Ihr Passwort jetzt!",
         "current": "Aktuelles Passwort",
         "new": "Neues Passwort",
         "repeat": "Neues Passwort wiederholen",
         "submit": "Bestätigen",
         "dontmatch": "Die neuen Passwörter stimmen nicht überein!",
-        "criteria": "Das Password muss aus mindestens 8 Zeichen bestehen, und muss mindestens eine Ziffer und einen Buchstaben enthalten",
+        "criteria": "Das Passwort muss aus mindestens 8 Zeichen bestehen, und muss mindestens eine Ziffer und einen Buchstaben enthalten",
+        "mustbedifferent": "Das neue Passwort darf nicht dasselbe wie das alte Passwort sein",
         "wrong": "Das alte Password wurde nicht korrekt eingegeben",
         "unknown": "Unbekannter Fehler ",
         "success": "Das Passwort wurde erfolgreich geändert"

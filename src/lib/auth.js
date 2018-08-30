@@ -36,8 +36,15 @@ class Auth {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "eLoginSucceeded") {
 					window.localStorage.setItem('username', username);
-					window.localStorage.setItem('authenticated', new Date());
-					window.location.reload();
+					window.localStorage.setItem('authenticated', Date.now());
+					window.localStorage.setItem('mustchangepassword', result.mustchangepassword);
+
+					if (result.mustchangepassword === true) {
+						alert(i18next.t("ChangePassword.immediately"));
+						window.location.replace('/Settings/ChangePassword');
+					} else {
+						window.location.reload();
+					}
 				} else {
 					alert(i18next.t("login.failedlogin"));
 				}
@@ -71,7 +78,12 @@ class Auth {
 
 		// what if the session timed out on the server?
 		// how long ago was the last auth check? check every 5 minutes
-		if (lastAuthCheck != null && lastAuthCheck != 0 && ((new Date() - lastAuthCheck) / 1000 / 60 <= 5)) {
+		if (lastAuthCheck != null && lastAuthCheck != 0 && ((Date.now() - lastAuthCheck) / 1000 / 60 <= 5)) {
+			if (window.localStorage.getItem('mustchangepassword') === true) {
+				alert(i18next.t("ChangePassword.immediately"));
+				window.location.replace('/Settings/ChangePassword');
+			}
+
 			fnAuthenticatedUser();
 		} else {
 			api.post('serverSessionManager.asmx/IsUserLoggedIn', {})

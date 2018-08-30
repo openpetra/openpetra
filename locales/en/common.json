@@ -107,12 +107,14 @@
     },
     "ChangePassword": {
         "caption": "Change password",
+        "immediately": "Please change your password now!",
         "current": "Current password",
         "new": "New password",
         "repeat": "Repeat new password",
         "submit": "Submit",
         "dontmatch": "The new passwords don't match!",
         "criteria": "The password must have at least 8 characters, and must contain at least one digit and one letter",
+        "mustbedifferent": "The new password must not be the same as the old password",
         "wrong": "The current password was not entered correctly",
         "unknown": "unknown error code",
         "success": "Password has been changed successfully"
