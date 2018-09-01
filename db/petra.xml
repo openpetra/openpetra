@@ -459,6 +459,14 @@
                 label="Partner Key"
                 help="Enter the partner key of the user if they have a Partner record"
                 initial="?"/>
+    <tablefield name="s_password_reset_token_c"
+                type="varchar"
+                descr="If this token is set and it is still valid, then the user can reset his password using this token"
+                format="X(32)"/>
+    <tablefield name="s_password_reset_valid_until_d"
+                type="date"
+                descr="The date until the password reset token is valid"
+                format="99/99/9999"/>
     <!-- Constraints on table s_user -->
     <primarykey name="s_user_pk"
                 descr=""

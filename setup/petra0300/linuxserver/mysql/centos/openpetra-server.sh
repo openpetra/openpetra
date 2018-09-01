@@ -320,6 +320,11 @@ FINISH
     echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
 }
 
+# this will update the current database
+upgradedb() {
+    su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
+}
+
 case "$1" in
     start)
         start
@@ -347,6 +352,9 @@ case "$1" in
     initdb)
         initdb
         ;;
+    upgradedb)
+        upgradedb
+        ;;
     loadYmlGz)
         loadYmlGz
         ;;
@@ -363,7 +371,7 @@ case "$1" in
         status
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|restore|init|initdb|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|restore|init|initdb|upgradedb|loadYmlGz|dumpYmlGz}"
         exit 1
         ;;
 esac
