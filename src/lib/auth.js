@@ -107,4 +107,40 @@ class Auth {
 				});
 		}
 	}
+
+	requestNewPassword(txtEmail) {
+		api.post('serverSessionManager.asmx/RequestNewPassword', {AEmailAddress: txtEmail})
+			.then(function(response) {
+				var result = JSON.parse(response.data.d);
+				if (result == true) {
+					display_message(i18next.t('login.successPwdResetEmailSent'), "success");
+					setTimeout(function() {
+						window.location.reload();
+						}, 3000);
+				} else {
+					display_message(i18next.t('login.errorPwdResetEmailSent'), "fail");
+				}
+			})
+			.catch(function(error) {
+				display_message(i18next.t('login.errorPwdResetEmailSent'), "fail");
+			});
+	}
+
+	setNewPassword(UserId, token, pwd) {
+		api.post('serverSessionManager.asmx/SetNewPassword', {AUserID: UserId, AToken: token, ANewPassword: pwd})
+			.then(function(response) {
+				var result = JSON.parse(response.data.d);
+				if (result.result == true) {
+					display_message(i18next.t('login.successPwdChanged'), "success");
+					setTimeout(function() {
+						window.location.replace('/');
+						}, 3000);
+				} else {
+					display_error(result.AVerificationResult, i18next.t('login.errorPwdChanged'));
+				}
+			})
+			.catch(function(error) {
+				display_message(i18next.t('login.errorPwdChanged'), "fail");
+			});
+	}
 }

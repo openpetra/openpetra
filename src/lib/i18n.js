@@ -54,7 +54,8 @@ function translateElement(obj, form) {
 // this function will translate the index.html
 function updateContent() {
   // specify the elements that should be translated
-  $('#login input, #login button, #login h4, #login p').each(function () { translateElement($(this), 'login'); });
+  $('#login input, #login button, #login h4, #login p, #login div a, #login span').each(function () { translateElement($(this), 'login'); });
+  $('#reqNewPwd input, #reqNewPwd button, #setNewPwd input, #setNewPwd button').each(function () { translateElement($(this), 'login'); });
   $('#topnavigation a').each(function () { translateElement($(this), 'navigation'); });
   $('#sidebar span, #sidebar a').each(function () { translateElement($(this), 'navigation'); });
   $('.nav-link span').each(function () { translateElement($(this), 'navigation'); });

@@ -56,6 +56,10 @@
 	</form>
 
 	<div class="form-signin">
+		<span>{forgotpwd}</span> <a href="#" onClick="requestNewPassword()">{reqnewpwdclickhere}</a>
+	</div>
+
+	<div class="form-signin">
 		<div class="bs-callout bs-callout-info">
 			<h4>{support_caption}</h4>
 			<p>{support_text}</p>
@@ -63,6 +67,25 @@
 	</div>
 </div> <!-- /container -->
 <!-- End of login screen -->
+
+<!-- Begin of Request new password -->
+<div id="reqNewPwd" class="container" style="display:none">
+	<form class="form-signin">
+		<input type="email" class="form-control" placeholder="{email}" id="txtEmailRequestPwd" autofocus>
+		<button id="btnReqNewPwd" class="btn btn-lg btn-primary btn-block" type="submit">{requestNewPassword}</button>
+	</form>
+</div> <!-- /container -->
+<!-- End of Request new password -->
+
+<!-- Begin of setting new password -->
+<div id="setNewPwd" class="container" style="display:none">
+	<form class="form-signin">
+		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPassword1" autofocus>
+		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPassword2">
+		<button id="btnSetNewPwd" class="btn btn-lg btn-primary btn-block" type="submit">{setNewPassword}</button>
+	</form>
+</div> <!-- /container -->
+<!-- End of setting new password -->
 
 <!-- Begin of navigation bars -->
 <div id="main" style="display:none">
