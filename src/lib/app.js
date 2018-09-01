@@ -58,17 +58,34 @@ auth = new Auth();
 auth.checkAuth(function() {
 	$("#loading").hide();
 	$(window).scrollTop(0);
-	$("#login").show();
-	$("#btnLogin").click(function(e) {
-		e.preventDefault();
-		user=$("#txtEmail").val();
-		pwd=$("#txtPassword").val();
-		if (user == "" && pwd == "") {
-			user = "demo";
-			pwd = "demo";
-		}
-		auth.login(user, pwd);
-	});
+	var url = new URL(window.location.href);
+	var ResetPasswordToken = url.searchParams.get("ResetPasswordToken");
+	var UserId = url.searchParams.get("UserId");
+	if (ResetPasswordToken != null) {
+		$("#setNewPwd").show();
+		$("#btnSetNewPwd").click(function(e) {
+			e.preventDefault();
+			pwd1=$("#txtPassword1").val();
+			pwd2=$("#txtPassword2").val();
+			if (pwd1 != pwd2) {
+				display_message(i18next.t('login.passwords_dont_match'), "fail");
+			} else {
+				auth.setNewPassword(UserId, ResetPasswordToken, pwd1);
+			}
+		});
+	} else {
+		$("#login").show();
+		$("#btnLogin").click(function(e) {
+			e.preventDefault();
+			user=$("#txtEmail").val();
+			pwd=$("#txtPassword").val();
+			if (user == "" && pwd == "") {
+				user = "demo";
+				pwd = "demo";
+			}
+			auth.login(user, pwd);
+		});
+	}
 }, function () {
 	setTimeout(keepConnection, 5000);
 
@@ -80,3 +97,18 @@ auth.checkAuth(function() {
         setTimeout(loadNavigation, 50);
 
 });
+
+function requestNewPassword() {
+	$("#login").hide();
+	$("#reqNewPwd").show();
+	$("#btnReqNewPwd").click(function(e) {
+		e.preventDefault();
+		user=$("#txtEmailRequestPwd").val();
+		if (user == "" || user.indexOf('@') == -1) {
+			display_message(i18next.t('login.enterValidEmail'), "fail");
+		} else {
+			auth.requestNewPassword(user);
+		}
+
+	});
+}
