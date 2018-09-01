@@ -50,6 +50,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
 
 namespace Ict.Petra.Server.App.WebService
@@ -383,6 +384,22 @@ namespace Ict.Petra.Server.App.WebService
             }
 
             return JsonConvert.SerializeObject(result);
+        }
+
+        /// <summary>send out an e-mail for setting a new password</summary>
+        [WebMethod(EnableSession = true)]
+        public bool RequestNewPassword(string AEmailAddress)
+        {
+            return TMaintenanceWebConnector.RequestNewPassword(AEmailAddress);
+        }
+
+        /// <summary>set a new password with a token that was sent via e-mail</summary>
+        [WebMethod(EnableSession = true)]
+        public string SetNewPassword(string AUserID, string AToken, string ANewPassword)
+        {
+            TVerificationResultCollection VerificationResult;
+            bool Result = TMaintenanceWebConnector.SetNewPassword(AUserID, AToken, ANewPassword, out VerificationResult);
+            return "{" + "\"AVerificationResult\": " + THttpBinarySerializer.SerializeObject(VerificationResult)+ "," + "\"result\": "+THttpBinarySerializer.SerializeObject(Result)+ "}";
         }
 
         /// <summary>log the user out</summary>

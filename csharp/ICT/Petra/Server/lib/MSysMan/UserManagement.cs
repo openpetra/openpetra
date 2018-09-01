@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -873,6 +874,169 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             return JsonConvert.SerializeObject(result); 
+        }
+
+        /// <summary>
+        /// request new password
+        /// </summary>
+        [NoRemoting]
+        public static bool RequestNewPassword(string AEmailAddress)
+        {
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("RequestNewPassword");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "RequireNewPassword");
+
+            try
+            {
+                // check if we have a unique s_user with that email address
+                string sql = "SELECT s_user_id_c, s_first_name_c, s_last_name_c, s_language_code_c" +
+                    " FROM PUB_s_user WHERE UPPER(s_email_address_c) = ?";
+
+                OdbcParameter[] parameters = new OdbcParameter[1];
+                parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
+                parameters[0].Value = AEmailAddress.ToUpper();
+
+                DataTable result = db.SelectDT(sql, "user", Transaction, parameters);
+
+                if (result.Rows.Count == 0)
+                {
+                    // not telling the requester that this email does not exist. just return true
+                    return true;
+                }
+                if (result.Rows.Count > 1)
+                {
+                    TLogging.Log("RequestNewPassword: there are multiple users for e-mail " + AEmailAddress + "; no email has been sent");
+                    return true;
+                }
+                else if (result.Rows.Count == 1)
+                {
+                    string UserID = result.Rows[0][0].ToString();
+                    string FirstName = result.Rows[0][1].ToString();
+                    string LastName = result.Rows[0][2].ToString();
+                    string LanguageCode = result.Rows[0][3].ToString();
+
+                    // generate token and save with valid date until in the s_user record
+                    string token = TPasswordHelper.GetRandomToken();
+                    DateTime validUntil = DateTime.Now;
+                    validUntil = validUntil.AddHours(24);
+                    string sqlUpdate = "UPDATE PUB_s_user SET s_password_reset_token_c = ?, s_password_reset_valid_until_d = ?" +
+                        " WHERE s_user_id_c = ?";
+                    parameters = new OdbcParameter[3];
+                    parameters[0] = new OdbcParameter("Token", OdbcType.VarChar);
+                    parameters[0].Value = token;
+                    parameters[1] = new OdbcParameter("ValidUntil", OdbcType.DateTime);
+                    parameters[1].Value = validUntil;
+                    parameters[2] = new OdbcParameter("UserID", OdbcType.VarChar);
+                    parameters[2].Value = UserID;
+                    db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+
+                    // send the email with the link for resetting the password
+                    string Domain = TAppSettingsManager.GetValue("Server.Url");
+                    Dictionary<string, string> emailparameters = new Dictionary<string, string>();
+                    emailparameters.Add("UserId", UserID);
+                    emailparameters.Add("FirstName", FirstName);
+                    emailparameters.Add("LastName", LastName);
+                    emailparameters.Add("Domain", Domain);
+                    emailparameters.Add("Token", token);
+                    
+                    new TSmtpSender().SendEmailFromTemplate(
+                        "no-reply@" + Domain,
+                        "OpenPetra Admin",
+                        AEmailAddress,
+                        "requestnewpassword",
+                        LanguageCode,
+                        emailparameters);
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("RequestNewPassword " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
+        }
+
+        /// set a new password, authorized by the token that was sent via e-mail
+        [NoRemoting]
+        public static bool SetNewPassword(string AUserID, string AToken, string ANewPassword, out TVerificationResultCollection AVerificationResult)
+        {
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("RequestNewPassword");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SetNewPassword1");
+            AVerificationResult = new TVerificationResultCollection();
+
+            try
+            {
+                // check if we have a valid token for this user
+                string sql = "SELECT s_user_id_c" +
+                    " FROM PUB_s_user WHERE UPPER(s_user_id_c) = ?" +
+                    " AND s_password_reset_token_c = ?" + 
+                    " AND s_password_reset_valid_until_d >= CURRENT_DATE()";
+
+                OdbcParameter[] parameters = new OdbcParameter[2];
+                parameters[0] = new OdbcParameter("UserID", OdbcType.VarChar);
+                parameters[0].Value = AUserID.ToUpper();
+                parameters[1] = new OdbcParameter("Token", OdbcType.VarChar);
+                parameters[1].Value = AToken;
+
+                DataTable result = db.SelectDT(sql, "user", Transaction, parameters);
+
+                if (result.Rows.Count == 0)
+                {
+                    AVerificationResult.Add(new TVerificationResult("SetNewPassword",
+                        "invalid token",
+                        "invalid token",
+                        "INVALID_TOKEN",
+                        TResultSeverity.Resv_Critical));
+                    TLogging.Log("SetNewPassword: invalid token for user " + AUserID);
+                    return false;
+                } else {
+                    db.RollbackTransaction();
+                    DBAccess.GDBAccessObj = db;
+                    TPetraIdentity PetraIdentity = new TPetraIdentity(
+                        AUserID, "", "", "", "",
+                        DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+                        0, -1, -1, false, false, false);
+                    UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+                    
+                    if (SetUserPassword(AUserID,
+                        ANewPassword,
+                        false,
+                        true,
+                        String.Empty,
+                        String.Empty,
+                        out AVerificationResult))
+                    {
+                        Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SetNewPassword2");
+                        string sqlUpdate = "UPDATE PUB_s_user SET s_password_reset_token_c = NULL, s_password_reset_valid_until_d = NULL" +
+                            " WHERE s_user_id_c = ?";
+                        parameters = new OdbcParameter[1];
+                        parameters[0] = new OdbcParameter("UserID", OdbcType.VarChar);
+                        parameters[0].Value = AUserID.ToUpper();
+                        db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+                        return true;
+                    }
+                    else
+                    {
+                        TLogging.Log("SetNewPassword: cannot update password for user " + AUserID);
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SetNewPassword " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>

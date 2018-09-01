@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       christiank
+//       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -155,6 +156,35 @@ namespace Ict.Common
             // Don't allow the following characters:     | *$£-+_&=%/\^~#@
             // (because the 'british pound' character doesn't exist on every keyboard!)
             PWPolicy.CharacterSetRemove("AO");
+
+            PasswordGenerator PWGenerator = new PasswordGenerator(PWPolicy);
+
+            // NOTE: An Entropy of 91 was deemed sufficient in 2016 but it should be raised in future years to accommodate
+            // the increase in computing power (CPU and GPU) and advance of parallel processing and hence the lessening of
+            // time it would take to break a password of such an Entropy.
+            while (Entropy < 91)
+            {
+                PWGenerator.GeneratePassword();
+                Entropy = PWGenerator.PasswordEntropy;
+            }
+
+            return PWGenerator.Password;
+        }
+
+        /// return a token for the password reset functionality
+        public static string GetRandomToken()
+        {
+            double Entropy = 0;
+            const string LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+            const string UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string NUMERIC = "0123456789";
+
+            List<CharacterSet>characterSets = new List<CharacterSet>();
+            characterSets.Add(new CharacterSet("AL", "ASCII lowercase", LOWERCASE));
+            characterSets.Add(new CharacterSet("AU", "ASCII uppercase", UPPERCASE));
+            characterSets.Add(new CharacterSet("AN", "ASCII numeric", NUMERIC));
+           
+            PasswordPolicy PWPolicy = new PasswordPolicy(30, 32, characterSets);
 
             PasswordGenerator PWGenerator = new PasswordGenerator(PWPolicy);
 
