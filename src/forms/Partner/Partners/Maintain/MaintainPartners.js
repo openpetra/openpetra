@@ -126,11 +126,17 @@ function display_partner(parsed) {
 	// generated fields
 	m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);
 	m = load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
+
+	var sendmail = false;
+	if (parsed.result.PPartnerLocation.length > 0) {
+		sendmail = parsed.result.PPartnerLocation[0].p_send_mail_l;
+	}
+
 	m = format_tpl(m,
 		{'p_default_email_address_c': parsed.ADefaultEmailAddress,
 		'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
 		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile,
-		'p_send_mail_l': parsed.result.PPartnerLocation[0].p_send_mail_l},
+		'p_send_mail_l': sendmail},
 		null);
 
 	m.find('.select_case').hide();
