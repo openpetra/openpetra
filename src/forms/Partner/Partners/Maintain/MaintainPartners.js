@@ -174,7 +174,11 @@ function save_entry(obj_modal) {
 	// send request
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
-			 'ASubscriptions': applied_subs};
+			 'ASubscriptions': applied_subs,
+			 'ADefaultEmailAddress': updated_data.ADefaultEmailAddress,
+			 'ADefaultPhoneLandline': updated_data.ADefaultPhoneLandline,
+			 'ADefaultPhoneMobile': updated_data.ADefaultPhoneMobile
+			 };
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
 		parsed = JSON.parse(data.data.d);

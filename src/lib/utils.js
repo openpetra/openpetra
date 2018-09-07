@@ -129,6 +129,7 @@ function replace_data(replace_obj, update_data, prev_table) {
   if (prev_table == null) {
     prev_table = "";
   }
+  update_data = translate_to_server(update_data);
   for (var variable in replace_obj) {
     // update_date has a var with same name as replace_obj, so we replace it
     if (typeof update_data[variable] !== 'undefined') {
