@@ -308,6 +308,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             List<string> ASubscriptions,
             List<string> APartnerTypes,
             bool ASendMail,
+            string ADefaultEmailAddress,
+            string ADefaultPhoneMobile,
+            string ADefaultPhoneLandline,
             out TVerificationResultCollection AVerificationResult)
         {
             List<string> Dummy1, Dummy2;
@@ -404,6 +407,56 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     subscriptionRow.ReasonSubsGivenCode = "FREE";
                     SaveDS.PSubscription.Rows.Add(subscriptionRow);
                 }
+            }
+
+            bool foundDefaultEmailAddress = false;
+            bool foundDefaultPhoneLandLine = false;
+            bool foundDefaultMobileLandLine = false;
+
+            foreach(PPartnerAttributeRow partnerattr in SaveDS.PPartnerAttribute.Rows)
+            {
+                if (partnerattr.AttributeType == MPartnerConstants.ATTR_TYPE_EMAIL)
+                {
+                    partnerattr.Value = ADefaultEmailAddress;
+                    foundDefaultEmailAddress = true;
+                }
+                else if (partnerattr.AttributeType == MPartnerConstants.ATTR_TYPE_PHONE)
+                {
+                    partnerattr.Value = ADefaultPhoneLandline;
+                    foundDefaultPhoneLandLine = true;
+                }
+                else if (partnerattr.AttributeType == MPartnerConstants.ATTR_TYPE_MOBILE_PHONE)
+                {
+                    partnerattr.Value = ADefaultPhoneMobile;
+                    foundDefaultMobileLandLine = true;
+                }
+            }
+
+            if (!foundDefaultEmailAddress)
+            {
+                PPartnerAttributeRow partnerattr = SaveDS.PPartnerAttribute.NewRowTyped();
+                partnerattr.PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
+                partnerattr.Value = ADefaultEmailAddress;
+                SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
+            }
+
+            if (!foundDefaultPhoneLandLine)
+            {
+                PPartnerAttributeRow partnerattr = SaveDS.PPartnerAttribute.NewRowTyped();
+                partnerattr.PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
+                partnerattr.Value = ADefaultPhoneLandline;
+                SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
+            }
+
+            if (!foundDefaultMobileLandLine)
+            {
+                PPartnerAttributeRow partnerattr = SaveDS.PPartnerAttribute.NewRowTyped();
+                partnerattr.PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                partnerattr.Value = ADefaultPhoneMobile;
+                SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
             }
 
             // TODO: either reuse Partner Edit UIConnector
