@@ -29,7 +29,7 @@ function display_message(content, style_arguments) {
     let x = $('<div id ="global_message_space" class="text-center" style="position:fixed;top:10vh;width:100%;z-index:5000;">');
     $('body').append(x);
   }
-  var message = $('<div class="text-center msg" style="width:50%;margin:5px auto;cursor:pointer;" onclick="$(this).closest(\'.msg\').remove()">');
+  var message = $('<div id="message" class="text-center msg" style="width:50%;margin:5px auto;cursor:pointer;" onclick="$(this).closest(\'.msg\').remove()">');
   message.addClass('display_message');
 
   if (style_arguments == null) {
