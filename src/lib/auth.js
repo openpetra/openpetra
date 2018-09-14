@@ -40,13 +40,12 @@ class Auth {
 					window.localStorage.setItem('mustchangepassword', result.mustchangepassword);
 
 					if (result.mustchangepassword === true) {
-						alert(i18next.t("ChangePassword.immediately"));
 						window.location.replace('/Settings/ChangePassword');
 					} else {
 						window.location.reload();
 					}
 				} else {
-					alert(i18next.t("login.failedlogin"));
+					display_message(i18next.t("login.failedlogin"), "fail");
 				}
 			})
 			.catch(function(error) {
@@ -79,11 +78,6 @@ class Auth {
 		// what if the session timed out on the server?
 		// how long ago was the last auth check? check every 5 minutes
 		if (lastAuthCheck != null && lastAuthCheck != 0 && ((Date.now() - lastAuthCheck) / 1000 / 60 <= 5)) {
-			if (window.localStorage.getItem('mustchangepassword') === true) {
-				alert(i18next.t("ChangePassword.immediately"));
-				window.location.replace('/Settings/ChangePassword');
-			}
-
 			fnAuthenticatedUser();
 		} else {
 			api.post('serverSessionManager.asmx/IsUserLoggedIn', {})
