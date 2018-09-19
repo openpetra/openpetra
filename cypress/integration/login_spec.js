@@ -23,6 +23,7 @@ describe('simple login', function() {
     cy.get('#txtEmail').type('DEMO')
     cy.get('#txtPassword').type('demo1234')
     cy.get('#btnLogin').click()
+    cy.get('#message').should("be.visible")
     cy.get('#message').contains('Wrong username or password')
   })
 })
