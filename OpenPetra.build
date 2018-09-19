@@ -453,10 +453,9 @@ useful parameters
 </target>
 
 <target name="checkHtml">
-      <exec program="Ict.Tools.CheckHtml.exe" 
-            basedir="${dir.bin}" 
-            workingdir="${dir.bin}"
-            commandline="-formsdir:../../../openpetra-client-js/src/forms/"/>
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+    <ExecDotNet program="${dir.bin}/Ict.Tools.CheckHtml.exe" 
+        commandline="-formsdir:../openpetra-client-js/src/forms/"/>
 </target>
 
 <target name="enable-sqlite-config-for-jenkins">

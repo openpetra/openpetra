@@ -32,7 +32,7 @@ namespace Ict.Tools.CheckHtml
     class Program
     {
         private static String sampleCall =
-            "CheckHTML -formsdir:..\\..\\..\\openpetra-client-js\\src\\forms\\";
+            "CheckHTML -formsdir:../../../openpetra-client-js/src/forms/";
 
         public static void Main(string[] args)
         {
@@ -68,6 +68,7 @@ namespace Ict.Tools.CheckHtml
                          "*.html",
                          SearchOption.AllDirectories))
             {
+                TLogging.Log("checking file " + file);
                 string contents = File.ReadAllText(file);
 
                 // Drop all white spaces
