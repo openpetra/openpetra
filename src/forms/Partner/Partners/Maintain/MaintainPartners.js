@@ -152,6 +152,10 @@ function save_entry(obj_modal) {
 	let x = extract_data(obj);
 
 	// replace all new information in the original data
+	last_opened_entry_data.p_default_email_address_c = last_opened_entry_data.ADefaultEmailAddress;
+	last_opened_entry_data.p_default_phone_land_line_c = last_opened_entry_data.ADefaultPhoneLandline;
+	last_opened_entry_data.p_default_phone_mobile_c = last_opened_entry_data.ADefaultPhoneMobile;
+
 	let updated_data = replace_data(last_opened_entry_data, x);
 
 	// get all tags for the partner
@@ -181,9 +185,9 @@ function save_entry(obj_modal) {
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs,
-			 'ADefaultEmailAddress': updated_data.ADefaultEmailAddress,
-			 'ADefaultPhoneLandline': updated_data.ADefaultPhoneLandline,
-			 'ADefaultPhoneMobile': updated_data.ADefaultPhoneMobile
+			 'ADefaultEmailAddress': updated_data.p_default_email_address_c,
+			 'ADefaultPhoneLandline': updated_data.p_default_phone_land_line_c,
+			 'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c
 			 };
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
