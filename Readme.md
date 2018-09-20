@@ -20,6 +20,6 @@ Running the tests
 
     npm install
     # run from commandline
-    LANG=en CYPRESS_baseUrl=http://localhost ./node_modules/.bin/cypress run --config video=false
+    LANG=en CYPRESS_baseUrl=http://localhost ./node_modules/.bin/cypress run --config video=false --spec cypress/integration/partner_edit.js
     # run with GUI (Chrome/Chromium required)
     LANG=en CYPRESS_baseUrl=http://localhost ./node_modules/.bin/cypress open
