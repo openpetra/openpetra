@@ -21,6 +21,10 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+if (window.localStorage.getItem('mustchangepassword') === "true") {
+	display_message(i18next.t("ChangePassword.immediately"), "info");
+}
+
 $("#btnSubmitPassword").click(function(e) {
 		e.preventDefault();
 

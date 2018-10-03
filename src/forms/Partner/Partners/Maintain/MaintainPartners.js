@@ -126,11 +126,17 @@ function display_partner(parsed) {
 	// generated fields
 	m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);
 	m = load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
+
+	var sendmail = false;
+	if (parsed.result.PPartnerLocation.length > 0) {
+		sendmail = parsed.result.PPartnerLocation[0].p_send_mail_l;
+	}
+
 	m = format_tpl(m,
 		{'p_default_email_address_c': parsed.ADefaultEmailAddress,
 		'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
 		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile,
-		'p_send_mail_l': parsed.result.PPartnerLocation[0].p_send_mail_l},
+		'p_send_mail_l': sendmail},
 		null);
 
 	m.find('.select_case').hide();
@@ -146,6 +152,10 @@ function save_entry(obj_modal) {
 	let x = extract_data(obj);
 
 	// replace all new information in the original data
+	last_opened_entry_data.p_default_email_address_c = last_opened_entry_data.ADefaultEmailAddress;
+	last_opened_entry_data.p_default_phone_land_line_c = last_opened_entry_data.ADefaultPhoneLandline;
+	last_opened_entry_data.p_default_phone_mobile_c = last_opened_entry_data.ADefaultPhoneMobile;
+
 	let updated_data = replace_data(last_opened_entry_data, x);
 
 	// get all tags for the partner
@@ -174,7 +184,11 @@ function save_entry(obj_modal) {
 	// send request
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
-			 'ASubscriptions': applied_subs};
+			 'ASubscriptions': applied_subs,
+			 'ADefaultEmailAddress': updated_data.p_default_email_address_c,
+			 'ADefaultPhoneLandline': updated_data.p_default_phone_land_line_c,
+			 'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c
+			 };
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
 		parsed = JSON.parse(data.data.d);

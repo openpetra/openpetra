@@ -78,7 +78,7 @@ function format_tpl(tpl, data, limit_to_table) {
   }
 
   tpl = replace_val_variables(tpl, data);
-  tpl = set_values_of_input_variables(tpl, data);
+  tpl = set_values_of_input_variables(tpl, data, limit_to_table);
 
   return tpl;
 }
