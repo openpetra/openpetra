@@ -312,7 +312,7 @@ FINISH
 
     if [ -z $SYSADMIN_PWD ]
     then
-      $SYSADMIN_PWD="CHANGEME"
+      SYSADMIN_PWD="CHANGEME"
     fi
 
     su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:$SYSADMIN_PWD"

@@ -292,7 +292,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
         private static Int64 GetDonorByBankAccountNumber(BankImportTDS AMainDS, string ABankSortCode, string ABankAccountNumber)
         {
-            if (Regex.IsMatch(ABankAccountNumber, "^[A-Z]"))
+            if (Regex.IsMatch(ABankAccountNumber, "^[A-Z]") && (ABankAccountNumber.Length > 2) && (ABankAccountNumber.Substring(0,2) == "DE"))
             {
                 // TODO search for IBAN / BIC instead of bank sort code and account number
 
