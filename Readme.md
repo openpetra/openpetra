@@ -8,7 +8,7 @@ License
 
 This code is licensed under GPL v3 or later.
 
-Copyright 2017 by TBits.net GmbH
+Copyright 2017-2018 by TBits.net GmbH
 
 Setup for Development
 =====================
