@@ -113,6 +113,12 @@ mysqlscript() {
 # backup the mysql database
 backup() {
     echo `date` "Writing to " $backupfile
+    cat > /home/$userName/.my.cnf <<FINISH
+[mysqldump]
+user=$OPENPETRA_DBUSER
+password=$OPENPETRA_DBPWD
+FINISH
+    chown $userName:$userName /home/$userName/.my.cnf
     su $userName -c "mysqldump --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
