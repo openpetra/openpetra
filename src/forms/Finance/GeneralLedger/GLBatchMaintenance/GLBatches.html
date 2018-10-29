@@ -3,7 +3,7 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
+	<div class="tpl_row" onclick="open_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}" status="{val_a_batch_status_c}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
 			<div class="col format_date">{val_a_date_effective_d}</div>
@@ -18,22 +18,22 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row">
 					<div class="col">
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="new_trans({val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
 						</button>
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="importTransactions({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="importTransactions({val_a_batch_number_i})">
 							<span>{import}&nbsp;</span><i class="fa fa-file"></i>
 						</button>
-						<button type="button" class="btn" style="margin-top:0.5em;" onclick="batch_cancel({val_a_batch_number_i})">
+						<button type="button" class="btn only_show_when_not_posted" style="margin-top:0.5em;" onclick="batch_cancel({val_a_batch_number_i})">
 							<span>{batch_cancel}&nbsp;</span><i class="fa fa-ban"></i>
 						</button>
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="batch_reverse({val_a_batch_number_i}, '{val_a_date_effective_d}')">
 							<span>{batch_reverse}&nbsp;</span><i class="fa fa-unlock"></i>
 						</button>
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="test_post({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="test_post({val_a_batch_number_i})">
 							<span>{batch_test_post}&nbsp;</span><i class="fa fa-question"></i>
 						</button>
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="batch_post({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="batch_post({val_a_batch_number_i})">
 							<span>{batch_post}&nbsp;</span><i class="fa fa-lock"></i>
 						</button>
 						<div class="import_space" style="display:none;">

@@ -91,10 +91,15 @@ function open_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
+	if (obj.attr('status') == "Posted" ) {
+		obj.find('.only_show_when_not_posted').hide();
+		return;
+	}
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
+
 		let place_to_put_content = obj.find('.content_col').html('');
 		for (item of data.result.ATransaction) {
 			if (item['a_debit_credit_indicator_l']) {
@@ -103,8 +108,8 @@ function open_transactions(obj, number) {
 				item['debitamountbase'] = item['a_amount_in_base_currency_n'];
 			} else {
 				item['debitcredit'] = i18next.t('GLBatches.CREDIT');
-				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
 				item['debitamountbase'] = '';
+				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
 			}
 			// console.log(item);
 			let transaction_row = $('[phantom] .tpl_transaction').clone();
@@ -363,7 +368,7 @@ function get_available_periods(year, fn_to_call) {
 			fn_to_call();
 		}
 	})
-	
+
 }
 
 /////
