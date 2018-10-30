@@ -91,9 +91,11 @@ function open_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
-	if (obj.attr('status') == "Posted" ) {
+	if (obj.find('[batch-status]').text() == "Posted" ) {
 		obj.find('.only_show_when_not_posted').hide();
-		return;
+	}
+	else {
+		obj.find('.only_show_when_posted').hide();
 	}
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
@@ -186,6 +188,9 @@ function edit_batch(batch_id) {
 			return alert('ERROR');
 		}
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_m.find('.posted_readonly').attr('readonly', true)
+		}
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
 		tpl_m.modal('show');
@@ -220,6 +225,9 @@ function edit_trans(batch_id, trans_id) {
 		searched['a_account_name_c'] = searched['a_account_code_c'];
 		searched['a_cost_center_name_c'] = searched['a_cost_centre_code_c'];
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_m.find('.posted_readonly').attr('readonly', true)
+		}
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
 		tpl_m.modal('show');
