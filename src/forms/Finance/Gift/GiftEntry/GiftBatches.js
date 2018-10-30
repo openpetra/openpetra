@@ -78,6 +78,9 @@ function open_gift_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
+	if (obj.find('[batch-status]').text() == "Posted") {
+		obj.find('.not_show_when_posted').hide();
+	}
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
