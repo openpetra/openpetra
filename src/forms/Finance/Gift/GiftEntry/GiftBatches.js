@@ -166,6 +166,9 @@ function edit_batch(batch_id) {
 		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
 
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
+		if (batch['a_batch_status_c'] == "Posted") {
+				tpl_m.find('.posted_readonly').attr('readonly', true);
+		}
 
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
@@ -196,6 +199,9 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
+		}
 
 		for (detail of parsed.result.AGiftDetail) {
 			if (detail.a_gift_transaction_number_i == trans_id) {
@@ -230,6 +236,9 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		}
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
+		}
 
 		$('#modal_space').append(tpl_edit_raw);
 		$('.modal').modal('hide');
@@ -375,7 +384,7 @@ function get_available_periods(year, fn_to_call) {
 			fn_to_call();
 		}
 	})
-	
+
 }
 
 function post_batch(batch_id) {
