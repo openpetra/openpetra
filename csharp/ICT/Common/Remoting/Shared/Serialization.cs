@@ -195,6 +195,11 @@ namespace Ict.Common.Remoting.Shared
                 return VerificationResultCollectionToJson((TVerificationResultCollection)o);
             }
 
+            if (o is TProgressState)
+            {
+                return ((TProgressState)o).ToJson();
+            }
+
             throw new Exception("cannot deserialize object to JSON of Type " + o.GetType().ToString());
         }
 
