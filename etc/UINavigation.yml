@@ -64,7 +64,7 @@ OpenPetra:
                         MonthEnd:
                         YearEnd:
                     Reports:
-                        AccountDetailReport:
+                        AccountDetail:
                         TrialBalance:
                         SurplusDeficit:
                         BalanceSheetStandard:

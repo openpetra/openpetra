@@ -323,7 +323,7 @@
 			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<select class="" name="ABatchYear" onchange="get_available_periods($(this).val(), display_list)"></select>
+			<select class="" name="ABatchYear" onchange="updatePeriods($(this).val())"></select>
 		</div>
 	</div>
 	<div class="row">
@@ -372,3 +372,4 @@
 <script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/finance.js" charset="utf-8"></script>

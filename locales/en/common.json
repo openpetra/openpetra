@@ -457,5 +457,15 @@
       "uploadsuccess": "New hierarchy of cost centres was imported successfully",
       "uploaderror": "Importing of new cost centres failed.",
       "costcentres_file": "CostCentres"
+    },
+    "AccountDetail": {
+      "caption": "Report for the transactions on account level",
+      "start_period": "From month",
+      "end_period": "To month",
+      "year": "Year",
+      "cost_centre_start": "From Cost Centre",
+      "cost_centre_end": "To Cost Centre",
+      "account_start": "From Account",
+      "account_end": "To Account"
     }
 }
