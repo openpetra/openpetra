@@ -22,12 +22,53 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+var myPleaseWaitDiv;
+myPleaseWaitDiv = myPleaseWaitDiv || (function () {
+    var pleaseWaitDiv = $('<div class="modal fade" tabindex="-1" role="dialog" id="spinnerModal"><div class="modal-dialog modal-dialog-centered text-center" role="document"><span class="fa fa-spinner fa-spin fa-3x w-100"></span></div></div>');
+    return {
+        showPleaseWait: function() {
+            pleaseWaitDiv.modal('show');
+        },
+        hidePleaseWait: function () {
+            pleaseWaitDiv.modal('hide');
+        },
+
+    };
+})();
+
+function modal_spinner(){
+	$('.modal').modal('show');
+}
+   
 function print_report(UIConnectorUID) {
 	let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
 	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadText', r).then(function (data) {
 		report = data.data.d;
 		$('#reporttxt').html("<pre>"+report+"</pre>");
 	});
+	/*
+	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadPDF', r).then(function (data) {
+		report = data.data.d;
+		var link = document.createElement("a");
+		link.style = "display: none";
+		link.href = 'data:application/pdf;base64,'+report;
+		link.download = i18next.t('Report') + '.pdf';
+		document.body.appendChild(link);
+		link.click();
+		link.remove();
+	});
+	*/
+	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadExcel', r).then(function (data) {
+		report = data.data.d;
+		var link = document.createElement("a");
+		link.style = "display: none";
+		link.href = 'data:application/excel;base64,'+report;
+		link.download = i18next.t('Report') + '.xlsx';
+		document.body.appendChild(link);
+		link.click();
+		link.remove();
+	});
+	myPleaseWaitDiv.hidePleaseWait();
 }
 
 function check_for_report(UIConnectorUID) {
@@ -63,6 +104,7 @@ function calculate_report_common(params) {
 		};
 
 		api.post('serverMReporting.asmx/TReportGeneratorUIConnector_Start', r).then(function (data) {
+			myPleaseWaitDiv.showPleaseWait();
 			setTimeout(function() { check_for_report(UIConnectorUID); }, 1000);
 		});
 	});
