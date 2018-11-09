@@ -75,7 +75,10 @@ namespace Ict.Common.Printing
         /// </summary>
         public TPdfPrinter(ePrinterBehaviour APrinterBehaviour): base(APrinterBehaviour)
         {
-            GlobalFontSettings.FontResolver = new MonoFontResolver();
+            if (GlobalFontSettings.FontResolver == null)
+            {
+                GlobalFontSettings.FontResolver = new MonoFontResolver();
+            }
         }
 
         /// the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?

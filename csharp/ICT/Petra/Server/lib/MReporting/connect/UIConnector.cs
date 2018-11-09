@@ -376,6 +376,24 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return String.Empty;
         }
 
+        /// Download the result of the report as Excel File in base64 encoding
+        public string DownloadExcel()
+        {
+            string ExcelFile = TFileHelper.GetTempFileName(
+                FParameterList.Get("currentReport").ToString(),
+                ".xls");
+
+            if (ExportToExcelFile(ExcelFile))
+            {
+                byte[] data = System.IO.File.ReadAllBytes(ExcelFile);
+                string result = Convert.ToBase64String(data);
+                System.IO.File.Delete(ExcelFile);
+                return result;
+            }
+
+            return String.Empty;
+        }
+
         /// <summary>
         /// send report as email
         /// </summary>
