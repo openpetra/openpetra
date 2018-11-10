@@ -93,6 +93,8 @@
         "deleted": "Successfully deleted",
         "notdeleted": "Deletion failed",
         "report": "Show Report",
+        "download_excel": "Get Excel file",
+        "download_pdf": "Get PDF file",
         "any": "any",
         "status": "Status",
         "name": "Name",

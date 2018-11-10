@@ -39,14 +39,10 @@ myPleaseWaitDiv = myPleaseWaitDiv || (function () {
 function modal_spinner(){
 	$('.modal').modal('show');
 }
-   
-function print_report(UIConnectorUID) {
+
+function download_pdf() {
+	let UIConnectorUID = window.localStorage.getItem('current_report_UIConnectorUID');
 	let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
-	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadText', r).then(function (data) {
-		report = data.data.d;
-		$('#reporttxt').html("<pre>"+report+"</pre>");
-	});
-	/*
 	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadPDF', r).then(function (data) {
 		report = data.data.d;
 		var link = document.createElement("a");
@@ -57,7 +53,11 @@ function print_report(UIConnectorUID) {
 		link.click();
 		link.remove();
 	});
-	*/
+}
+
+function download_excel() {
+	let UIConnectorUID = window.localStorage.getItem('current_report_UIConnectorUID');
+	let r = {'UIConnectorObjectID': UIConnectorUID};
 	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadExcel', r).then(function (data) {
 		report = data.data.d;
 		var link = document.createElement("a");
@@ -68,6 +68,17 @@ function print_report(UIConnectorUID) {
 		link.click();
 		link.remove();
 	});
+}
+
+function print_report(UIConnectorUID) {
+	let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
+	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadText', r).then(function (data) {
+		report = data.data.d;
+		$('#reporttxt').html("<pre>"+report+"</pre>");
+	});
+	window.localStorage.setItem('current_report_UIConnectorUID', UIConnectorUID);
+	$('#DownloadExcel').show();
+	$('#DownloadPDF').show();
 	myPleaseWaitDiv.hidePleaseWait();
 }
 
@@ -87,13 +98,37 @@ function check_for_report(UIConnectorUID) {
 	});
 }
 
-function calculate_report_common(params) {
+function calculate_report_common(report_common_params_file, specific_params) {
 	// now make the parameters into a data table
 	param_table = []
-	for (var param in params) {
-		param_table.push({'name': param, 'value': 'eString:' + params[param], 'column': -1, 'level': -1, 'subreport': -1});
+	for (var param in specific_params) {
+		param_table.push({'name': param, 'value': 'eString:' + specific_params[param], 'column': -1, 'level': -1, 'subreport': -1});
 	}
 
+	if (report_common_params_file != '') {
+		src.get(report_common_params_file, r).then(function (data) {
+			for (var param in data.data) {
+				// only if parameter does not exist yet
+				let exists = false;
+				if (data.data[param].column === undefined) { data.data[param].column = -1; }
+				for (var existing in param_table) {
+					if ((param_table[existing].name == data.data[param].name) && (param_table[existing].column == data.data[param].column)) {
+						exists = true;
+					}
+				}
+				if (!exists) {
+					param_table.push({'name': data.data[param].name, 'value': data.data[param].value, 'column': data.data[param].column, 'level': -1, 'subreport': -1});
+				}
+			}
+
+			start_calculate_report(param_table);
+		});
+	} else {
+		start_calculate_report(param_table);
+	}
+}
+
+function start_calculate_report(param_table) {
 	// send request
 	let r = {}
 	api.post('serverMReporting.asmx/Create_TReportGeneratorUIConnector', r).then(function (data) {

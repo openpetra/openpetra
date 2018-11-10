@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2017 by TBits.net
+// Copyright 2017-2018 by TBits.net
 //
 // This file is part of OpenPetra.
 //
@@ -32,3 +32,10 @@ var api = axios.create({
     responseType: 'json'
 });
 api.defaults.headers.post['Content-Type'] = 'application/json';
+
+// for the report parameters json file
+var src = axios.create({
+    baseURL: '/src/',
+    responseType: 'json'
+});
+src.defaults.headers.get['Content-Type'] = 'application/json';

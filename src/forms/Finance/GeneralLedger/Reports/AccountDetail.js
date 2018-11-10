@@ -44,19 +44,14 @@ function calculate_report() {
 	let params = extract_data(obj);
 
 	params['xmlfiles'] = 'Finance/accountdetail.xml,Finance/accountdetailcommon.xml,Finance/finance.xml,common.xml';
-	params['currentReport'] = 'Account Detail';
 	params['param_ledger_number_i'] = window.localStorage.getItem('current_ledger');
-	params['param_account_hierarchy_c'] = 'STANDARD';
-	params['param_currency'] = 'Base';
-	params['param_sortby'] = 'Account';
 	params['param_account_codes'] = '';
 	params['param_rgrAccounts'] = '';
 	params['param_rgrCostCentres'] = '';
 	params['param_reference_start'] = '';
 	params['param_start_period'] -= 1;
 	params['param_end_period'] -= 1;
-	params['param_with_analysis_attributes'] = false;
 	// TODO: param_start_date, param_end_date
 
-	calculate_report_common(params);
+	calculate_report_common("forms/Finance/GeneralLedger/Reports/AccountDetail.json", params);
 }

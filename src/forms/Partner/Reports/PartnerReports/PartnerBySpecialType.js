@@ -56,7 +56,7 @@ function calculate_report() {
 	let datenow = new Date();
 	params['param_today'] = datenow.toISOString();
 
-	calculate_report_common(params);
+	calculate_report_common("", params);
 }
 
 // used to load all available tags
