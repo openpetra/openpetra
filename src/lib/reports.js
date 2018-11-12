@@ -72,9 +72,9 @@ function download_excel() {
 
 function print_report(UIConnectorUID) {
 	let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
-	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadText', r).then(function (data) {
+	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadHTML', r).then(function (data) {
 		report = data.data.d;
-		$('#reporttxt').html("<pre>"+report+"</pre>");
+		$('#reporttxt').html(report);
 	});
 	window.localStorage.setItem('current_report_UIConnectorUID', UIConnectorUID);
 	$('#DownloadExcel').show();

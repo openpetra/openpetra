@@ -66,5 +66,6 @@
 	{"name": "param_rgrCostCentres", "value": "CostCentreRange"},
 	{"name": "param_sortby", "value": "Account"},
 	{"name": "param_with_analysis_attributes", "value": false},
-	{"name": "xmlfiles", "value": "Finance/accountdetail.xml,Finance/accountdetailcommon.xml,Finance/finance.xml,common.xml"}
+	{"name": "htmlfile", "value": "Finance/accountdetail.html"},
+	{"name": "CalculateFromClass", "value": "Ict.Petra.Server.MReporting.MFinance.AccountDetail"}
 ]
