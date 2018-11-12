@@ -59,6 +59,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         private TRptDataCalculator FDatacalculator;
         private TResultList FResultList;
         private TParameterList FParameterList;
+        private string FHTMLOutput;
         private String FErrorMessage = string.Empty;
         private Exception FException = null;
         private Boolean FSuccess;
@@ -188,7 +189,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FErrorMessage, ref FException))
+                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FHTMLOutput, ref FErrorMessage, ref FException))
                         {
                             FSuccess = true;
                             SubmissionOK = true;
@@ -328,15 +329,6 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return true;
         }
 
-        private String PrintToText(bool AWrapColumn)
-        {
-            TTxtPrinter txtPrinter = new TTxtPrinter();
-            TReportPrinterLayout ReportTxtPrinter = new TReportPrinterLayout(FResultList, FParameterList, txtPrinter, AWrapColumn);
-            ReportTxtPrinter.PrintReport();
-
-            return txtPrinter.GetString();
-        }
-
         private bool ExportToCSVFile(string AFilename)
         {
             bool ExportOnlyLowestLevel = false;
@@ -352,10 +344,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return FResultList.WriteCSV(FParameterList, AFilename, ExportOnlyLowestLevel);
         }
 
-        /// Download the result of the report as Text in utf8 encoding
-        public string DownloadText(bool AWrapColumn)
+        /// Download the result of the report as HTML
+        public string DownloadHTML(bool AWrapColumn)
         {
-            return PrintToText(AWrapColumn);
+            return FHTMLOutput;
         }
 
         /// Download the result of the report as PDF File in base64 encoding

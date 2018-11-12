@@ -1,0 +1,149 @@
+<html>
+<head>
+<title>OpenPetra Reports</title>
+<link href="/css/report.css" rel="stylesheet">
+</head>
+
+<body>
+<div id="head">
+	<div class="title1" visible="{param_with_analysis_attributes}==true">Account Detail with Analysis Attributes</div>
+	<div class="title1" visible="{param_with_analysis_attributes}!=true">Account Detail</div>
+	<div class="title2">{{getLedgerName({{param_ledger_number_i}})}}</div>
+	<div class="descr1">
+		<!-- TODO -->
+	</div>
+	<div class="descr2">
+		<!-- TODO -->
+	</div>
+	<div class="descr3">
+		<!-- TODO -->
+	</div>
+
+	<div class="period1">
+		<!-- TODO -->
+	</div>
+
+	<div class="period2">
+		<div visible="{param_sortby} == 'Reference' &&
+			length({param_reference_start}) == 0) and length({param_reference_end}) == 0">Reference: All references</div>
+		<div visible="{param_sortby} == 'Reference' &&
+			length({param_reference_start}) != 0) and length({param_reference_end}) != 0">Reference: {{param_reference_start}} to {{param_reference_end}}</div>
+		<div visible="{param_sortby} == 'Analysis Type' &&
+			length({param_analysis_type_start}) == 0) and length({param_analysis_type_end}) == 0">Analysis Attributes: All Analysis Attributes</div>
+		<div visible="{param_sortby} == 'Analysis Type' &&
+			length({param_analysis_type_start}) != 0) and length({param_analysis_type_end}) != 0">Analysis Attributes: {{param_analysis_type_start}} to {{param_analysis_type_end}}</div>
+		<div visible="{param_rgrCostCentres} == 'CostCentreRange'">Cost Centre: {{param_cost_centre_code_start}} To {{param_cost_centre_code_end}}</div>
+		<div visible="{param_rgrCostCentres} == 'CostCentreList'">Cost Centres: {{param_cost_centre_codes}}</div>
+	</div>
+	<div class="period3">
+		<!-- TODO -->
+	</div>
+</div>
+
+<!-- Begin SelectTransactionsSQL -->
+SELECT 
+a_transaction_date_d,
+trans.a_batch_number_i as batchNumber, 
+trans.a_journal_number_i as journalNumber, 
+trans.a_transaction_number_i as transactionNumber,
+a_debit_credit_indicator_l,
+j.a_transaction_currency_c,
+a_transaction_amount_n,
+a_narrative_c,
+a_reference_c
+FROM PUB.a_transaction AS trans, PUB.a_journal AS j 
+WHERE trans.a_ledger_number_i = j.a_ledger_number_i 
+AND trans.a_journal_number_i = j.a_journal_number_i
+AND trans.a_batch_number_i = j.a_batch_number_i
+AND trans.a_ledger_number_i = {{param_ledger_number_i}}
+#ifdef {param_account_code_start}
+AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
+#endif
+#ifdef {param_account_codes}
+AND trans.a_account_code_c IN {LIST param_account_codes}
+#endif
+#ifdef {param_cost_centre_code_start}
+AND trans.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
+#endif
+#ifdef {param_cost_centre_codes}
+AND trans.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
+#endif
+AND batch.a_batch_period_i BETWEEN {#param_start_period#} AND {#param_end_period#}
+AND batch.a_batch_year_i = {{param_year_i}}
+AND trans.a_transaction_status_l = 1
+AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
+ORDER BY 1, 2, 3, 4
+<!-- End SelectTransactionsSQL -->
+
+<!-- Begin SelectBalancesSQL -->
+SELECT a_account_code_c, a_cost_centre_code_c, a_year_i, a_period_number_i, a_start_balance_base_n, a_actual_base_n
+FROM PUB.a_general_ledger_master AS gl, PUB.a_general_ledger_master_period AS glm
+WHERE gl.a_glm_sequence_i = glm.a_glm_sequence_i
+AND gl.a_ledger_number_i = {{param_ledger_number_i}}
+AND gl.a_year_i = {{param_year_i}}
+AND glm.a_period_number_i BETWEEN {{param_start_period}} AND {{param_end_period}}
+#ifdef {param_account_code_start}
+AND gl.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
+#endif
+#ifdef {param_account_codes}
+AND gl.a_account_code_c IN {LIST param_account_codes}
+#endif
+#ifdef {param_cost_centre_code_start}
+AND gl.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
+#endif
+#ifdef {param_cost_centre_codes}
+AND gl.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
+#endif
+<!-- End SelectBalancesSQL -->
+
+<div id="column_headings">
+	<div class="left0">Transaction Date</div>
+	<div class="left1">Reference</div>
+	<div class="col2">Debit</div>
+	<div class="col3">Credit</div>
+	<div class="col4to5">Narrative<br/>Start/End Balance</div>
+</div>
+<div id="content">
+	<div class="line grandtotal">
+		<!-- Begin costcentreaccount -->
+		<div class="line">
+			<div class="header1">{{line_a_cost_centre_code_c}}-{{line_a_account_alias_c}}
+				{{cost_centre_name}}, {{account_name}}
+			</div>
+			<!-- Begin transactions -->
+			<div class="line">
+				<div class="left0">{{a_transaction_date_d}}</div>
+				<div class="left1">{{a_reference_c}}</div>
+				<div class="col2">{{Debit({{a_debit_credit_indicator_l}}, {{a_transaction_amount_n}})}}</div>
+				<div class="col3">{{Credit({{a_debit_credit_indicator_l}}, {{a_transaction_amount_n}})}}</div>
+				<div class="col4to5">{{a_narrative_c}}</div>
+			</div>
+			<!-- End transactions -->
+			<div class="total">
+				<div class="left0">Net Balance:</div>
+				<div class="col2">{{Debit(getSumLower2Report({{lineId}},3)-getSumLower2Report({{lineId}},2))}}</div>
+				<div class="col3">{{Credit(getSumLower2Report({{lineId}},3)-getSumLower2Report({{lineId}},2))}}</div>
+				<div class="col4">{{Start Balance}}</div>
+				<div class="col5">{{End Balance}}</div>
+			</div> 
+		</div>
+		<!-- End costcentreaccount -->
+		<div class="total">
+			<div class="left0">Grand Total:</div>
+			<div class="col2">{{getSumLower2Report({{lineId}},2)}}</div>
+			<div class="col3">{{getSumLower2Report({{lineId}},3)}}</div>
+			<div class="col4">{{getSumLower2Report({{lineId}},4)}}</div>
+			<div class="col5">{{getSumLower2Report({{lineId}},5)}}</div>
+		</div> 
+	</div>
+	<div class="total GrandTotalNetBalance">
+		<div class="left0">Net Balance:</div>
+		<div class="col2">{{getNetBalance({{lineId}},2)}}</div>
+		<div class="col3">{{getNetBalance({{lineId}},3)}}</div>
+		<div class="col4">{{getNetBalance({{lineId}},4)}}</div>
+		<div class="col5">{{getNetBalance({{lineId}},5)}}</div>
+	</div>
+</div>
+
+</body>
+</html>

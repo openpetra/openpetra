@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,6 +53,12 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// <summary>where to search for the custom reports (xml files)</summary>
         protected String FPathCustomReports;
 
+        /// the HTML template
+        protected string FHTMLTemplate;
+
+        /// the HTML Output
+        protected string FHTMLOutput;
+
         static bool HasBeenInitialized = false;
         private static void InitializeUnit()
         {
@@ -91,6 +97,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// </returns>
         public Boolean GenerateResult(ref TParameterList parameterlist,
             ref TResultList resultlist,
+            ref string HTMLOutput,
             ref String AErrorMessage,
             ref Exception AException)
         {
@@ -109,20 +116,11 @@ namespace Ict.Petra.Server.MReporting.Calculator
             {
                 this.Parameters = parameterlist;
 
-                if (!Parameters.Exists("calculateFromMethod"))
-                {
-                    LoadReportDefinitionFiles(Parameters.Get("xmlfiles").ToString());
-                    this.CurrentReport = this.ReportStore.Get(Parameters.Get("currentReport").ToString());
+                this.FHTMLTemplate = LoadReportDefinitionFile(Parameters.Get("htmlfile").ToString());
 
-                    if (this.CurrentReport == null)
-                    {
-                        TLogging.Log("report \"" + Parameters.Get("currentReport").ToString() + "\" could not be found. XML file missing?");
-                        return false;
-                    }
-
-                    InitColumns();
-                    InitColumnsFormat();
-                }
+/*
+                InitColumns();
+                InitColumnsFormat();
 
                 InitParameterLedgers();
 
@@ -132,7 +130,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
                 }
 
                 Results.SetMaxDisplayColumns(Parameters.Get("MaxDisplayColumns").ToInt());
-
+*/
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                 {
                     Parameters.Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogParamAfterPreproc.xml", true);
@@ -141,7 +139,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
                 // to avoid still having in the status line: loading common.xml, although he is already working on the report
                 TLogging.Log("Preparing data for the report... ", TLoggingType.ToStatusBar);
 
-                if (Calculate())
+                if (CalculateFromClass(Parameters.Get("calculateFromClass").ToString()))
                 {
                     if (Parameters.Get("CancelReportCalculation").ToBool() == true)
                     {
@@ -150,6 +148,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     }
 
                     resultlist = this.Results;
+                    HTMLOutput = this.FHTMLOutput;
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                     {
@@ -189,17 +188,13 @@ namespace Ict.Petra.Server.MReporting.Calculator
         private SortedList <string, Assembly>FReportAssemblies = new SortedList <string, Assembly>();
 
         /// <summary>
-        /// as an alternative to calculate reports from an xml file, you can also write a method now that calculates the result for a report or extract
+        /// call a class that calculates the result for a report or extract
         /// </summary>
-        /// <param name="ANamespaceClassAndMethodName"></param>
-        /// <returns></returns>
-        protected Boolean CalculateFromMethod(string ANamespaceClassAndMethodName)
+        /// <param name="ANamespaceClass"></param>
+        protected Boolean CalculateFromClass(string ANamespaceClass)
         {
-            string methodName = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
-
-            ANamespaceClassAndMethodName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
-            string className = ANamespaceClassAndMethodName.Substring(ANamespaceClassAndMethodName.LastIndexOf(".") + 1);
-            string namespaceName = ANamespaceClassAndMethodName.Substring(0, ANamespaceClassAndMethodName.LastIndexOf("."));
+            string className = ANamespaceClass.Substring(ANamespaceClass.LastIndexOf(".") + 1);
+            string namespaceName = ANamespaceClass.Substring(0, ANamespaceClass.LastIndexOf("."));
 
             if (!FReportAssemblies.Keys.Contains(namespaceName))
             {
@@ -214,6 +209,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
                 try
                 {
+TLogging.Log("loading dll " + DllName + ".dll");
                     FReportAssemblies.Add(namespaceName, Assembly.LoadFrom(DllName + ".dll"));
                 }
                 catch (Exception exp)
@@ -228,14 +224,16 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
             if (classType == null)
             {
-                throw new Exception("cannot find class " + namespaceName + "." + className + " for method " + methodName);
+                throw new Exception("cannot find class " + namespaceName + "." + className);
             }
 
+            string methodName = "Calculate";
             MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
 
             if (method != null)
             {
-                return (bool)method.Invoke(null, new object[] { this.Parameters, this.Results });
+                this.FHTMLOutput = (string)method.Invoke(null, new object[] { this.FHTMLTemplate, this.Parameters, this.Results });
+                return true;
             }
             else
             {
@@ -244,88 +242,35 @@ namespace Ict.Petra.Server.MReporting.Calculator
         }
 
         /// <summary>
-        /// todoComment
+        /// load the HTML file that defines the report
         /// </summary>
-        /// <returns></returns>
-        protected Boolean Calculate()
-        {
-            this.Results.Clear();
-
-            if (Parameters.Exists("calculateFromMethod"))
-            {
-                if (!CalculateFromMethod(Parameters.Get("calculateFromMethod").ToString()))
-                {
-                    TLogging.Log(TLogging.LOG_PREFIX_ERROR + "Could not calculate from method (or report was cancelled).");
-                    return false;
-                }
-            }
-            else
-            {
-                TRptDataCalcHeaderFooter calcHeaderFooter = new TRptDataCalcHeaderFooter(this, -1, -1, 0, 0);
-                calcHeaderFooter.Calculate(CurrentReport.pagefield, CurrentReport.pageswitch);
-                InitColumnCaptions();
-                TRptDataCalcLevel calclevel = new TRptDataCalcLevel(this, 0, -1, 0, 0);
-
-                if ((calclevel.Calculate(CurrentReport.GetLevel("main"), 0) == -1) || (Parameters.Get("CancelReportCalculation").ToBool() == true))
-                {
-                    TLogging.Log(TLogging.LOG_PREFIX_ERROR + "Could not calculate main level (or report was cancelled).");
-                    return false;
-                }
-
-                InitColumnLayout();
-            }
-
-            // call after calculating, because new parameters will be added
-            InitDetailReports();
-
-            return true;
-        }
-
-        /// <summary>
-        /// load the xml files that define the report
-        /// </summary>
-        /// <param name="xmlfiles">a comma separated list of file names
+        /// <param name="htmlfile">a file name
         /// </param>
-        /// <returns>void</returns>
-        protected bool LoadReportDefinitionFiles(String xmlfiles)
+        protected string LoadReportDefinitionFile(String htmlfile)
         {
-            string xmlfile;
-            TReportParser reportParser;
-
-            if (xmlfiles.Length == 0)
+            if (htmlfile.Length == 0)
             {
-                throw new Exception("No xmlfile defined to be loaded");
+                throw new Exception("No htmlfile defined to be loaded");
             }
 
-            xmlfiles = xmlfiles.Replace("\\", "/");
-            xmlfile = StringHelper.GetNextCSV(ref xmlfiles).Trim();
+            TLogging.Log("Loading " + htmlfile, TLoggingType.ToStatusBar);
 
-            while (xmlfile.Length != 0)
+            if (!System.IO.File.Exists(htmlfile) && System.IO.File.Exists(FPathCustomReports + '/' + htmlfile))
             {
-                TLogging.Log("Loading " + xmlfile, TLoggingType.ToStatusBar);
-
-                if (!System.IO.File.Exists(xmlfile) && System.IO.File.Exists(FPathCustomReports + '/' + xmlfile))
-                {
-                    xmlfile = FPathCustomReports + '/' + xmlfile;
-                }
-
-                if (!System.IO.File.Exists(xmlfile) && System.IO.File.Exists(FPathStandardReports + '/' + xmlfile))
-                {
-                    xmlfile = FPathStandardReports + '/' + xmlfile;
-                }
-
-                if (!System.IO.File.Exists(xmlfile))
-                {
-                    throw new Exception("Error: Cannot find the xml file " + xmlfile + " in " + FPathStandardReports + " or " + FPathCustomReports);
-                }
-
-                reportParser = new TReportParser(xmlfile);
-                reportParser.ParseDocument(ref ReportStore);
-                reportParser = null;
-                xmlfile = StringHelper.GetNextCSV(ref xmlfiles).Trim();
+                htmlfile = FPathCustomReports + '/' + htmlfile;
             }
 
-            return true;
+            if (!System.IO.File.Exists(htmlfile) && System.IO.File.Exists(FPathStandardReports + '/' + htmlfile))
+            {
+                htmlfile = FPathStandardReports + '/' + htmlfile;
+            }
+
+            if (!System.IO.File.Exists(htmlfile))
+            {
+                throw new Exception("Error: Cannot find the html file " + htmlfile + " in " + FPathStandardReports + " or " + FPathCustomReports);
+            }
+
+            return System.IO.File.ReadAllText(htmlfile);
         }
 
         /// <summary>
