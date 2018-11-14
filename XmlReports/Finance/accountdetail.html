@@ -40,7 +40,7 @@
 	</div>
 </div>
 
-<!-- Begin SelectTransactionsSQL -->
+<!-- BeginSQL SelectTransactions -->
 SELECT 
 a_transaction_date_d,
 trans.a_batch_number_i as batchNumber, 
@@ -73,9 +73,9 @@ AND batch.a_batch_year_i = {{param_year_i}}
 AND trans.a_transaction_status_l = 1
 AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
 ORDER BY 1, 2, 3, 4
-<!-- End SelectTransactionsSQL -->
+<!-- EndSQL SelectTransactions -->
 
-<!-- Begin SelectBalancesSQL -->
+<!-- BeginSQL SelectBalances -->
 SELECT a_account_code_c, a_cost_centre_code_c, a_year_i, a_period_number_i, a_start_balance_base_n, a_actual_base_n
 FROM PUB.a_general_ledger_master AS gl, PUB.a_general_ledger_master_period AS glm
 WHERE gl.a_glm_sequence_i = glm.a_glm_sequence_i
@@ -94,7 +94,7 @@ AND gl.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_co
 #ifdef {param_cost_centre_codes}
 AND gl.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
 #endif
-<!-- End SelectBalancesSQL -->
+<!-- EndSQL SelectBalances-->
 
 <div id="column_headings">
 	<div class="left0">Transaction Date</div>

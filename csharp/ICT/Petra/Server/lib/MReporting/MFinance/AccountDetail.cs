@@ -41,12 +41,14 @@ namespace Ict.Petra.Server.MReporting.MFinance
     public class AccountDetail
     {
         /// calculate the report
-        public string Calculate(
+        public static string Calculate(
             string AHTMLReportDefinition,
             TParameterList parameterlist,
             out TResultList resultlist)
         {
             resultlist = new TResultList();
+
+            HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
             // get all the transactions
 
@@ -54,7 +56,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             // render the report
 
-            return AHTMLReportDefinition;
+            return templateProcessor.GetHTML();
         }
     }
 }
