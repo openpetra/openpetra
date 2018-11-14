@@ -48,7 +48,10 @@ namespace Ict.Petra.Server.MReporting
 
             SeparateSQLQueries();
 
-            //FHTMLTemplate = InsertParameters(AHTMLTemplate, AParameters);
+            FHTMLTemplate = InsertParameters("{{", "}}", FHTMLTemplate, AParameters);
+            FHTMLTemplate = InsertParameters("{", "}", FHTMLTemplate, AParameters);
+
+            FHTMLTemplate = EvaluateVisible(FHTMLTemplate, AParameters);
         }
 
         /// separate the sql queries from the HTML template
@@ -61,8 +64,6 @@ namespace Ict.Petra.Server.MReporting
                 string name = FHTMLTemplate.Substring(pos + "<!-- BeginSQL ".Length, posAfterName - (pos + "<!-- BeginSQL ".Length)).Trim();
                 int posAfterSQL = FHTMLTemplate.IndexOf("<!-- EndSQL", pos);
                 string sql = FHTMLTemplate.Substring(posAfterName + "-->".Length, posAfterSQL - (posAfterName + "-->".Length)).Trim();
-                TLogging.Log("name: " + name);
-                TLogging.Log("sql: " + sql);
                 FSQLQueries.Add(name, sql);
 
                 // remove sql from template
@@ -70,9 +71,7 @@ namespace Ict.Petra.Server.MReporting
                     FHTMLTemplate.Substring(FHTMLTemplate.IndexOf("-->", posAfterSQL)+"-->".Length);
                 pos = FHTMLTemplate.IndexOf("<!-- BeginSQL");
             }
-
-            TLogging.Log(FHTMLTemplate);
-        }
+}
 
         /// <summary>
         ///  the processed HTML
@@ -82,7 +81,6 @@ namespace Ict.Petra.Server.MReporting
             return FHTMLTemplate;
         }
 
-        /*
         private string InsertParameters(string searchOpen, string searchClose, string template, TParameterList parameters)
         {
             int bracket = template.IndexOf(searchOpen);
@@ -146,8 +144,7 @@ namespace Ict.Petra.Server.MReporting
                         {
                             // this can be alright, for empty values; for example method of giving can be empty; for report GiftTransactions
                             TLogging.Log(
-                                "Variable " + parameter + " empty or not found (column: " + column.ToString() +
-                                "; level: " + depth.ToString() + "). " + this.FSQLStmt);
+                                "Variable " + parameter + " empty or not found");
                         }
                         else if (CountWarning % 20 == 0)
                         {
@@ -165,7 +162,15 @@ namespace Ict.Petra.Server.MReporting
                         newvalue = new TVariant(new DateTime(date.Year, date.Month, date.Day));
                     }
 
-                    this.AddOdbcParameters(searchOpen, parameter, searchClose, newvalue);
+                    string strValue = newvalue.ToString();
+                    if (newvalue.TypeVariant == eVariantTypes.eString) {
+                        strValue = '"' + newvalue.ToString() + '"';
+                    }
+                    if (searchOpen == "{#")
+                    {
+                        //newvalue = '"' + newvalue.ToString() + '"';';
+                    }
+                    template = template.Replace(searchOpen + parameter + searchClose, strValue);
                 }
                 catch (Exception e)
                 {
@@ -176,16 +181,23 @@ namespace Ict.Petra.Server.MReporting
                 bracket = template.IndexOf(searchOpen);
             } // while
 
+            return template;
         }
 
-        private string InsertParameters(string AHTMLTemplate, TParameterList AParameters)
+        string EvaluateVisible(string template, TParameterList AParameters)
         {
-            AHtmlTemplate = InsertParameters(" IN {{", "}}", AHtmlTemplate, AParameters);
-            AHtmlTemplate = InsertParameters("{{", "}}", AHtmlTemplate, AParameters);
-            AHtmlTemplate = InsertParameters("{", "}", AHtmlTemplate, AParameters);
+            int visiblePos = template.IndexOf("visible=");
 
-            return AHTMLTemplate;
+            while (visiblePos != -1)
+            {
+                int firstRealChar = visiblePos + "visible='".Length;
+                int paramEndIdx = template.IndexOf('"', firstRealChar);
+                string hidden = "style='visibility:hidden'";
+                // TODO: evaluate the condition, eg. with jint
+                template = template.Replace(template.Substring(visiblePos, paramEndIdx - visiblePos + 1), hidden);
+                visiblePos = template.IndexOf("visible=");
+            }
+            return template;
         }
-        */
     }
 }

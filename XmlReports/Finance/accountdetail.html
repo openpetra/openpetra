@@ -8,7 +8,7 @@
 <div id="head">
 	<div class="title1" visible="{param_with_analysis_attributes}==true">Account Detail with Analysis Attributes</div>
 	<div class="title1" visible="{param_with_analysis_attributes}!=true">Account Detail</div>
-	<div class="title2">{{getLedgerName({{param_ledger_number_i}})}}</div>
+	<div class="title2">[getLedgerName({{param_ledger_number_i}})]</div>
 	<div class="descr1">
 		<!-- TODO -->
 	</div>
@@ -114,15 +114,15 @@ AND gl.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
 			<div class="line">
 				<div class="left0">{{a_transaction_date_d}}</div>
 				<div class="left1">{{a_reference_c}}</div>
-				<div class="col2">{{Debit({{a_debit_credit_indicator_l}}, {{a_transaction_amount_n}})}}</div>
-				<div class="col3">{{Credit({{a_debit_credit_indicator_l}}, {{a_transaction_amount_n}})}}</div>
+				<div class="col2">[Debit({{a_debit_credit_indicator_l}}, {{a_transaction_amount_n}})]</div>
+				<div class="col3">[Credit({{a_debit_credit_indicator_l}}, {{a_transaction_amount_n}})]</div>
 				<div class="col4to5">{{a_narrative_c}}</div>
 			</div>
 			<!-- End transactions -->
 			<div class="total">
 				<div class="left0">Net Balance:</div>
-				<div class="col2">{{Debit(getSumLower2Report({{lineId}},3)-getSumLower2Report({{lineId}},2))}}</div>
-				<div class="col3">{{Credit(getSumLower2Report({{lineId}},3)-getSumLower2Report({{lineId}},2))}}</div>
+				<div class="col2">[Debit(getSumLower2Report({{lineId}},3)-getSumLower2Report({{lineId}},2))]</div>
+				<div class="col3">[Credit(getSumLower2Report({{lineId}},3)-getSumLower2Report({{lineId}},2))]</div>
 				<div class="col4">{{Start Balance}}</div>
 				<div class="col5">{{End Balance}}</div>
 			</div> 
@@ -130,18 +130,18 @@ AND gl.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
 		<!-- End costcentreaccount -->
 		<div class="total">
 			<div class="left0">Grand Total:</div>
-			<div class="col2">{{getSumLower2Report({{lineId}},2)}}</div>
-			<div class="col3">{{getSumLower2Report({{lineId}},3)}}</div>
-			<div class="col4">{{getSumLower2Report({{lineId}},4)}}</div>
-			<div class="col5">{{getSumLower2Report({{lineId}},5)}}</div>
+			<div class="col2">[getSumLower2Report({{lineId}},2)]</div>
+			<div class="col3">[getSumLower2Report({{lineId}},3)]</div>
+			<div class="col4">[getSumLower2Report({{lineId}},4)]</div>
+			<div class="col5">[getSumLower2Report({{lineId}},5)]</div>
 		</div> 
 	</div>
 	<div class="total GrandTotalNetBalance">
 		<div class="left0">Net Balance:</div>
-		<div class="col2">{{getNetBalance({{lineId}},2)}}</div>
-		<div class="col3">{{getNetBalance({{lineId}},3)}}</div>
-		<div class="col4">{{getNetBalance({{lineId}},4)}}</div>
-		<div class="col5">{{getNetBalance({{lineId}},5)}}</div>
+		<div class="col2">[getNetBalance({{lineId}},2)]</div>
+		<div class="col3">[getNetBalance({{lineId}},3)]</div>
+		<div class="col4">[getNetBalance({{lineId}},4)]</div>
+		<div class="col5">[getNetBalance({{lineId}},5)]</div>
 	</div>
 </div>
 
