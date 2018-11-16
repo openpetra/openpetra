@@ -54,6 +54,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             string sql = templateProcessor.GetSQLQuery("SelectTransactions", parameterlist);
             TLogging.Log(sql);
 
+            sql = templateProcessor.GetSQLQuery("SelectBalances", parameterlist);
+            TLogging.Log(sql);
 
             // get all the balances
 

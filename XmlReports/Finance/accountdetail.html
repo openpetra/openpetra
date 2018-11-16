@@ -81,7 +81,7 @@ FROM PUB.a_general_ledger_master AS gl, PUB.a_general_ledger_master_period AS gl
 WHERE gl.a_glm_sequence_i = glm.a_glm_sequence_i
 AND gl.a_ledger_number_i = {{param_ledger_number_i}}
 AND gl.a_year_i = {{param_year_i}}
-AND glm.a_period_number_i BETWEEN {{param_start_period}} AND {{param_end_period}}
+AND glm.a_period_number_i BETWEEN {{param_start_period_i}} AND {{param_end_period_i}}
 #ifdef {param_account_code_start}
 AND gl.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
 #endif

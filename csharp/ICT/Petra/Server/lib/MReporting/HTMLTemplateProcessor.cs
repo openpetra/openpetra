@@ -80,12 +80,13 @@ namespace Ict.Petra.Server.MReporting
         {
             string sql = FSQLQueries[queryname];
 
+            sql = ProcessIfDefs(sql, AParameters);
+
+            // TODO: use prepared statements to pass parameters
             sql = InsertParameters("{{", "}}", sql, AParameters);
             sql = InsertParameters("{#", "#}", sql, AParameters);
             sql = InsertParameters("{LIST ", "}", sql, AParameters);
             sql = InsertParameters("{", "}", sql, AParameters);
-
-            sql = ProcessIfDefs(sql);
 
             return sql;
         }
@@ -217,13 +218,19 @@ namespace Ict.Petra.Server.MReporting
             return template;
         }
 
-        string ProcessIfDefs(string s)
+        string ProcessIfDefs(string s, TParameterList AParameters)
         {
             int posPlaceholder = s.IndexOf("#ifdef ");
+
+            // to avoid issues with ifdefs at the end
+            s += "\n";
 
             while (posPlaceholder > -1)
             {
                 string condition = s.Substring(posPlaceholder + "#ifdef ".Length, s.IndexOf("\n", posPlaceholder) - posPlaceholder - "#ifdef ".Length);
+                condition = InsertParameters("{{", "}}", condition, AParameters);
+                condition = InsertParameters("{#", "#}", condition, AParameters);
+                condition = InsertParameters("{", "}", condition, AParameters);
 
                 // TODO: support nested ifdefs???
                 int posPlaceholderAfter = s.IndexOf("#endif", posPlaceholder);
