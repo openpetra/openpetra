@@ -55,7 +55,7 @@ FROM PUB.a_transaction AS trans, PUB.a_journal AS j
 WHERE trans.a_ledger_number_i = j.a_ledger_number_i 
 AND trans.a_journal_number_i = j.a_journal_number_i
 AND trans.a_batch_number_i = j.a_batch_number_i
-AND trans.a_ledger_number_i = {{param_ledger_number_i}}
+AND trans.a_ledger_number_i = {param_ledger_number_i}
 #ifdef {param_account_code_start}
 AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
 #endif
@@ -68,8 +68,8 @@ AND trans.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param
 #ifdef {param_cost_centre_codes}
 AND trans.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
 #endif
-AND batch.a_batch_period_i BETWEEN {#param_start_period#} AND {#param_end_period#}
-AND batch.a_batch_year_i = {{param_year_i}}
+AND batch.a_batch_period_i BETWEEN {param_start_period_i} AND {param_end_period_i}
+AND batch.a_batch_year_i = {param_year_i}
 AND trans.a_transaction_status_l = 1
 AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
 ORDER BY 1, 2, 3, 4

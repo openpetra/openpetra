@@ -51,6 +51,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
             // get all the transactions
+            string sql = templateProcessor.GetSQLQuery("SelectTransactions", parameterlist);
+            TLogging.Log(sql);
+
 
             // get all the balances
 

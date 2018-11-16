@@ -71,7 +71,24 @@ namespace Ict.Petra.Server.MReporting
                     FHTMLTemplate.Substring(FHTMLTemplate.IndexOf("-->", posAfterSQL)+"-->".Length);
                 pos = FHTMLTemplate.IndexOf("<!-- BeginSQL");
             }
-}
+        }
+
+        /// <summary>
+        /// Gets the SQL query.
+        /// </summary>
+        public string GetSQLQuery(string queryname, TParameterList AParameters)
+        {
+            string sql = FSQLQueries[queryname];
+
+            sql = InsertParameters("{{", "}}", sql, AParameters);
+            sql = InsertParameters("{#", "#}", sql, AParameters);
+            sql = InsertParameters("{LIST ", "}", sql, AParameters);
+            sql = InsertParameters("{", "}", sql, AParameters);
+
+            sql = ProcessIfDefs(sql);
+
+            return sql;
+        }
 
         /// <summary>
         ///  the processed HTML
@@ -163,12 +180,28 @@ namespace Ict.Petra.Server.MReporting
                     }
 
                     string strValue = newvalue.ToString();
-                    if (newvalue.TypeVariant == eVariantTypes.eString) {
-                        strValue = '"' + newvalue.ToString() + '"';
-                    }
-                    if (searchOpen == "{#")
+                    if (searchOpen == "{LIST ")
                     {
-                        //newvalue = '"' + newvalue.ToString() + '"';';
+                        string[] elements = newvalue.ToString().Split(new char[] { ',' });
+                        strValue = String.Empty;
+                        foreach (string element in elements)
+                        {
+                            if (strValue.Length > 0)
+                            {
+                                strValue += ",";
+                            }
+                            strValue += "'" + element + "'";
+                        }
+                    }
+                    else if ((searchOpen == "{#") && (newvalue.TypeVariant == eVariantTypes.eDateTime))
+                    {
+                        strValue = "'" + newvalue.ToDate().ToString("yyyy-MM-dd") + "'";
+                    }
+                    else if ((searchOpen != "{{") && 
+                             !(parameter.Length > 2 && parameter.Substring(parameter.Length - 2) == "_i") &&
+                             (newvalue.TypeVariant == eVariantTypes.eString))
+                    {
+                        strValue = "'" + newvalue.ToString() + "'";
                     }
                     template = template.Replace(searchOpen + parameter + searchClose, strValue);
                 }
@@ -182,6 +215,41 @@ namespace Ict.Petra.Server.MReporting
             } // while
 
             return template;
+        }
+
+        string ProcessIfDefs(string s)
+        {
+            int posPlaceholder = s.IndexOf("#ifdef ");
+
+            while (posPlaceholder > -1)
+            {
+                string condition = s.Substring(posPlaceholder + "#ifdef ".Length, s.IndexOf("\n", posPlaceholder) - posPlaceholder - "#ifdef ".Length);
+
+                // TODO: support nested ifdefs???
+                int posPlaceholderAfter = s.IndexOf("#endif", posPlaceholder);
+
+                if (posPlaceholderAfter == -1)
+                {
+                    throw new Exception("The template has a bug: " +
+                        "We are missing and #endif");
+                }
+
+                if ((condition == "") || (condition == "''") || (condition == "0") || (condition == "'*NOTUSED*'"))
+                {
+                    // drop the content of the ifdef section
+                    s = s.Substring(0, posPlaceholder) + s.Substring(s.IndexOf("\n", posPlaceholderAfter) + 1);
+                }
+                else
+                {
+                    s = s.Substring(0, posPlaceholder) +
+                         s.Substring(s.IndexOf("\n", posPlaceholder) + 1, posPlaceholderAfter - s.IndexOf("\n", posPlaceholder) - 1) +
+                         s.Substring(s.IndexOf("\n", posPlaceholderAfter) + 1);
+                }
+
+                posPlaceholder = s.IndexOf("#ifdef ");
+            }
+
+            return s;
         }
 
         string EvaluateVisible(string template, TParameterList AParameters)
