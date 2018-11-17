@@ -51,6 +51,7 @@ function calculate_report() {
 	params['param_reference_start'] = '';
 	params['param_start_period'] -= 1;
 	params['param_end_period'] -= 1;
+	params['param_cost_centre_code_start'] = '*NOTUSED*';
 	// TODO: param_start_date, param_end_date
 
 	calculate_report_common("forms/Finance/GeneralLedger/Reports/AccountDetail.json", params);
