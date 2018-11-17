@@ -79,7 +79,8 @@ namespace Tests.MFinance.Server.Reporting
         [Test]
         public void TestAccountDetail()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.Test.xml";
+            string testFile = "../../../openpetra-client-js/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.Results.csv";
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_start_period_i", 1);
@@ -91,9 +92,9 @@ namespace Tests.MFinance.Server.Reporting
             SpecificParameters.Add("param_cost_centre_code_start", new TVariant("10100", true));
             SpecificParameters.Add("param_cost_centre_code_end", new TVariant("10500", true));
 
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters, LedgerNumber);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters, LedgerNumber);
 
-            TReportTestingTools.TestResult(testFile, LedgerNumber);
+            TReportTestingTools.TestResult(resultFile, LedgerNumber);
         }
 
         /// <summary>
@@ -102,7 +103,8 @@ namespace Tests.MFinance.Server.Reporting
         [Test]
         public void TestAccountDetailSelectedAccount()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetailSelectedAccount.Test.xml";
+            string testFile = "../../../openpetra-client-js/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetailSelectedAccount.Results.csv";
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_start_period_i", 1);
@@ -116,9 +118,9 @@ namespace Tests.MFinance.Server.Reporting
             SpecificParameters.Add("param_cost_centre_code_start", new TVariant("10100", true));
             SpecificParameters.Add("param_cost_centre_code_end", new TVariant("10500", true));
 
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters, LedgerNumber);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters, LedgerNumber);
 
-            TReportTestingTools.TestResult(testFile, LedgerNumber);
+            TReportTestingTools.TestResult(resultFile, LedgerNumber);
         }
      }
 }

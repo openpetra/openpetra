@@ -80,15 +80,17 @@ namespace Tests.MFinance.Server.Reporting
         [Ignore("Balance sheet needs fixing to calculate the summaries in glm")]
         public void TestBalanceSheet()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/BalanceSheet.Test.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/BalanceSheet.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/BalanceSheet.Results.csv";
+
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_start_period_i", 1);
             SpecificParameters.Add("param_end_period_i", 1);
 
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters, LedgerNumber);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters, LedgerNumber);
 
-            TReportTestingTools.TestResult(testFile, LedgerNumber);
+            TReportTestingTools.TestResult(resultFile, LedgerNumber);
         }
     }
 }

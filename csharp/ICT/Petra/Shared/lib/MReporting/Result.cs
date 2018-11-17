@@ -600,156 +600,6 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// This stores the resultlist and parameterlist into a binary file (using the Datatable conversion);
-        /// This can be used for debugging the printing, and saving time on calculating the report by reusing previous results
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void WriteBinaryFile(TParameterList AParameters, String AFilename)
-        {
-            DataTable dt = ToDataTable(AParameters);
-            FileStream fs = new FileStream(AFilename, FileMode.Create);
-            BinaryFormatter bf = new BinaryFormatter();
-
-            bf.Serialize(fs, dt);
-
-            dt = AParameters.ToDataTable();
-            bf.Serialize(fs, dt);
-
-            fs.Close();
-        }
-
-        /// <summary>
-        /// This loads the resultlist and parameterlist from a binary file (using the Datatable conversion);
-        /// This can be used for debugging the printing, and saving time on calculating the report by reusing previous results
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void ReadBinaryFile(String AFilename, out TParameterList AParameters)
-        {
-            FileStream fs = new FileStream(AFilename, FileMode.Open);
-            BinaryFormatter bf = new BinaryFormatter();
-            DataTable dt = (DataTable)bf.Deserialize(fs);
-
-            results = new ArrayList();
-            LoadFromDataTable(dt);
-
-            dt = (DataTable)bf.Deserialize(fs);
-            AParameters = new TParameterList();
-            AParameters.LoadFromDataTable(dt);
-
-            fs.Close();
-        }
-
-        /// <summary>
-        /// This loads the resultlist from a datatable.
-        /// Mainly used for sending the resultlist over a remote connection
-        /// </summary>
-        /// <param name="table">the datatable that contains a collection of results
-        /// </param>
-        /// <returns>void</returns>
-        public void LoadFromDataTable(System.Data.DataTable table)
-        {
-            Int32 maxColumn;
-            Int32 i;
-
-            TVariant[] header =
-            {
-                new TVariant(), new TVariant()
-            };
-            TVariant[] descr =
-            {
-                new TVariant(), new TVariant()
-            };
-            TVariant[] column;
-
-            results.Clear();
-
-            foreach (DataRow row in table.Rows)
-            {
-                header[0] = TVariant.DecodeFromString(row["header1"].ToString());
-                header[1] = TVariant.DecodeFromString(row["header2"].ToString());
-                descr[0] = TVariant.DecodeFromString(row["descr1"].ToString());
-                descr[1] = TVariant.DecodeFromString(row["descr2"].ToString());
-                maxColumn = Convert.ToInt32(row["maxcolumn"]);
-                column = new TVariant[maxColumn];
-
-                for (i = 0; i <= maxColumn - 1; i += 1)
-                {
-                    column[i] = TVariant.DecodeFromString(row["column" + i.ToString()].ToString());
-                }
-
-                AddRow(Convert.ToInt32(row["masterRow"]), Convert.ToInt32(row["childRow"]), Convert.ToBoolean(row["display"]),
-                    Convert.ToInt32(row["depth"]), row["code"].ToString(), row["condition"].ToString(), Convert.ToBoolean(
-                        row["debit_credit_indicator"]), header, descr, column);
-            }
-        }
-
-        /// <summary>
-        /// This stores the resultlist into a datatable.
-        /// Mainly used for sending the resultlist over a remote connection
-        /// </summary>
-        /// <returns>the datatable that contains a collection of results
-        /// </returns>
-        public System.Data.DataTable ToDataTable(TParameterList parameters)
-        {
-            int maxColumn = 0;
-
-            for (int i = 0; i < MaxDisplayColumns; i++)
-            {
-                if ((!parameters.Get("ColumnWidth", i, -1, eParameterFit.eBestFit).IsNil()))
-                {
-                    maxColumn = i + 1;
-                }
-            }
-
-            DataTable ReturnValue = new System.Data.DataTable();
-            ReturnValue.Columns.Add(new System.Data.DataColumn("masterRow", typeof(System.Int32)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("childRow", typeof(System.Int32)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("display", typeof(bool)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("depth", typeof(System.Int32)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("code", typeof(String)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("condition", typeof(String)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("debit_credit_indicator", typeof(bool)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("header1", typeof(String)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("header2", typeof(String)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("descr1", typeof(String)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("descr2", typeof(String)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("maxcolumn", typeof(System.Int32)));
-
-            for (int i = 0; i < maxColumn; i++)
-            {
-                ReturnValue.Columns.Add(new System.Data.DataColumn("column" + i.ToString(), typeof(String)));
-            }
-
-            foreach (TResult element in results)
-            {
-                DataRow row = ReturnValue.NewRow();
-                row["maxcolumn"] = (System.Object)maxColumn;
-                row["masterRow"] = (System.Object)element.masterRow;
-                row["childRow"] = (System.Object)element.childRow;
-                row["display"] = (System.Object)element.display;
-                row["depth"] = (System.Object)element.depth;
-                row["code"] = element.code;
-                row["condition"] = element.condition;
-                row["debit_credit_indicator"] = (System.Object)element.debit_credit_indicator;
-                row["header1"] = element.header[0].EncodeToString();
-                row["header2"] = element.header[1].EncodeToString();
-                row["descr1"] = element.descr[0].EncodeToString();
-                row["descr2"] = element.descr[1].EncodeToString();
-
-                for (int i = 0; i < maxColumn; i++)
-                {
-                    row["column" + i.ToString()] = element.column[i].EncodeToString();
-                }
-
-                ReturnValue.Rows.InsertAt(row, ReturnValue.Rows.Count);
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
         /// This formats the dates for different output, for example printing
         /// </summary>
         /// <param name="AParameters">the current parameters, environmnent variables, for formatting</param>
@@ -980,8 +830,7 @@ namespace Ict.Petra.Shared.MReporting
             FormattedResult.SortChildren();
             sortedList = new ArrayList();
             FormattedResult.CreateSortedListByMaster(sortedList, 0);
-
-            int LowestLevel = -1;
+            int LowestLevel = -1; 
 
             if (AExportOnlyLowestLevel)
             {
@@ -1006,7 +855,7 @@ namespace Ict.Petra.Shared.MReporting
 
                 if (element.display)
                 {
-                    strLine = "";
+                    strLine = String.Empty;
 
                     // for debugging
                     // strLine = StringHelper.AddCSV(strLine, element.masterRow.ToString(), separator);

@@ -148,7 +148,16 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     }
 
                     resultlist = this.Results;
-                    HTMLOutput = this.FHTMLOutput;
+                    // HTMLOutput = this.FHTMLOutput;
+                    HTMLOutput = "<pre>";
+                    List<string> csvlines = this.Results.WriteCSVInternal(Parameters);
+                    foreach (string line in csvlines)
+                    {
+                        HTMLOutput += line + "\n";
+                    }
+                    HTMLOutput += "</pre>";
+                    this.FHTMLOutput = HTMLOutput;
+
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                     {
@@ -209,7 +218,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
                 try
                 {
-TLogging.Log("loading dll " + DllName + ".dll");
+                    // TLogging.Log("loading dll " + DllName + ".dll");
                     FReportAssemblies.Add(namespaceName, Assembly.LoadFrom(DllName + ".dll"));
                 }
                 catch (Exception exp)
@@ -232,7 +241,10 @@ TLogging.Log("loading dll " + DllName + ".dll");
 
             if (method != null)
             {
-                this.FHTMLOutput = (string)method.Invoke(null, new object[] { this.FHTMLTemplate, this.Parameters, this.Results });
+                object[] mparameters = new object[] { this.FHTMLTemplate, this.Parameters, null };
+                this.FHTMLOutput = (string)method.Invoke(null, mparameters);
+                this.Parameters = (TParameterList)mparameters[1];
+                this.Results = (TResultList)mparameters[2];
                 return true;
             }
             else

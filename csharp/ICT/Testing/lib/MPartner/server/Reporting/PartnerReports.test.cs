@@ -78,7 +78,8 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerBySpecialTypes()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Test.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Test.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Results.csv";
 
             TParameterList SpecificParameters = new TParameterList();
             //SpecificParameters.Add("param_today", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
@@ -86,9 +87,9 @@ namespace Tests.MPartner.Server.Reporting
             SpecificParameters.Add("param_explicit_specialtypes", new TVariant("LEDGER"));
             SpecificParameters.Add("param_active", new TVariant(true));
 
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
-            TReportTestingTools.TestResult(testFile);
+            TReportTestingTools.TestResult(resultFile);
         }
 
         /// <summary>
@@ -97,15 +98,16 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerByCity()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Test.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Test.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Results.csv";
 
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_today", new TVariant(DateTime.Today));
             SpecificParameters.Add("param_city", new TVariant("Westhausen"));
 
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
-            TReportTestingTools.TestResult(testFile);
+            TReportTestingTools.TestResult(resultFile);
         }
     }
 }

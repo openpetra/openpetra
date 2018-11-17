@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,9 +31,10 @@ using System.Data.Odbc;
 using System.Collections;
 using System.Globalization;
 using Ict.Petra.Shared.MReporting;
-using System.Xml;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace Ict.Petra.Shared.MReporting
 {
@@ -1017,7 +1018,7 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// Read the parameters from a text file (xml format);
+        /// Read the parameters from a text file (json format);
         /// used for loading settings
         /// </summary>
         /// <param name="filename">relative or absolute filename
@@ -1025,51 +1026,55 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void Load(String filename)
         {
-            XmlNode startNode;
-            XmlNode node;
-            TXMLParser myDoc;
-            String level;
-            String column;
-            int levelNr;
-            int columnNr;
-            int subreport;
+            String jsonString;
 
-            myDoc = new TXMLParser(filename, false);
+            if (!System.IO.File.Exists(filename))
+            {
+                throw new Exception("file " + filename + " could not be found.");
+            }
+
+            using (StreamReader sr = new StreamReader(filename))
+            {
+                jsonString = sr.ReadToEnd();
+            }
+
             try
             {
-                startNode = myDoc.GetDocument().DocumentElement;
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                Object[] list = (Object[])serializer.DeserializeObject(jsonString);
 
-                if (startNode.Name.ToLower() == "parameters")
+                foreach (Dictionary<string, object> param in list)
                 {
-                    node = startNode.FirstChild;
-
-                    while (node != null)
+                    string name = String.Empty;
+                    int columnNr = -1, levelNr = -1, subreport = -1;
+                    TVariant value = new TVariant();
+                    foreach (KeyValuePair<string, object> entry in param)
                     {
-                        if (node.Name == "Parameter")
+                        if (entry.Key == "name")
                         {
-                            column = TXMLParser.GetAttribute(node, "column");
-                            level = TXMLParser.GetAttribute(node, "level");
-                            subreport = TXMLParser.GetIntAttribute(node, "subreport");
-                            columnNr = -1;
-                            levelNr = -1;
-
-                            if (column.Length != 0)
-                            {
-                                columnNr = (int)StringHelper.StrToInt(column);
-                            }
-
-                            if (level.Length != 0)
-                            {
-                                levelNr = (int)StringHelper.StrToInt(level);
-                            }
-
-                            Add(TXMLParser.GetAttribute(node, "id"),
-                                TVariant.DecodeFromString(TXMLParser.GetAttribute(node, "value")),
-                                columnNr, levelNr, subreport);
+                            name = entry.Value.ToString();
                         }
-
-                        node = node.NextSibling;
+                        else if (entry.Key == "column")
+                        {
+                            columnNr = Convert.ToInt32(entry.Value);
+                        }
+                        else if (entry.Key == "level")
+                        {
+                            levelNr = Convert.ToInt32(entry.Value);
+                        }
+                        else if (entry.Key == "subreport")
+                        {
+                            subreport = Convert.ToInt32(entry.Value);
+                        }
+                        else if (entry.Key == "value")
+                        {
+                            value = TVariant.DecodeFromString(entry.Value.ToString());
+                        }
                     }
+
+                    Add(name,
+                        value,
+                        columnNr, levelNr, subreport);
                 }
             }
             catch (Exception E)
@@ -1087,7 +1092,7 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// Write all the parameters to a text file (xml format);
+        /// Write all the parameters to a text file (json format);
         /// used for storing settings
         /// </summary>
         /// <param name="filename">relative or absolute filename</param>
@@ -1096,63 +1101,48 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void Save(String filename, bool AWithDebugInfo = false)
         {
-            XmlTextWriter textWriter;
-
-            // create a file
-            textWriter = new XmlTextWriter(filename, null);
-
-            // Opens the document
-            textWriter.WriteStartDocument();
-
-            // Write first element
-            textWriter.WriteWhitespace(new String((char)10, 1));
-            textWriter.WriteStartElement("Parameters");
-            textWriter.WriteWhitespace(new String((char)10, 1));
+            List<Object> list = new List<object>();
 
             foreach (TParameter element in Fparameters)
             {
+                Dictionary<string,object> param = new Dictionary<string, object>();
+
                 if (AWithDebugInfo
                     || ((element.paramType != ReportingConsts.CALCULATIONPARAMETERS) && (element.value.ToString() != "rptGrpValue")
                         && (element.value.ToString() != "calculation")))
                 {
-                    textWriter.WriteWhitespace("  ");
-                    textWriter.WriteStartElement("Parameter", "");
-                    textWriter.WriteStartAttribute("id", "");
-                    textWriter.WriteString(element.name);
-                    textWriter.WriteEndAttribute();
-
+                    param.Add("name", element.name);
                     if (element.column != -1)
                     {
-                        textWriter.WriteStartAttribute("column", "");
-                        textWriter.WriteString(element.column.ToString());
-                        textWriter.WriteEndAttribute();
+                        param.Add("column", element.column);
                     }
 
                     if (element.level != -1)
                     {
-                        textWriter.WriteStartAttribute("level", "");
-                        textWriter.WriteString(element.level.ToString());
-                        textWriter.WriteEndAttribute();
+                        param.Add("level", element.level);
                     }
 
                     if (element.subreport != -1)
                     {
-                        textWriter.WriteStartAttribute("subreport", "");
-                        textWriter.WriteString(element.subreport.ToString());
-                        textWriter.WriteEndAttribute();
+                        param.Add("subreport", element.subreport);
                     }
 
-                    textWriter.WriteAttributeString("value", element.value.EncodeToString());
-                    textWriter.WriteEndElement();
-                    textWriter.WriteWhitespace(new String((char)10, 1));
+                    param.Add("value", element.value.EncodeToString());
+
+                    list.Add(param);
                 }
             }
 
-            // Ends the document.
-            textWriter.WriteEndDocument();
-
-            // close writer
-            textWriter.Close();
+            // write the json file
+            string data = JsonConvert.SerializeObject(list, Formatting.Indented).
+                                     Replace("{" + Environment.NewLine + "    ", "{").
+                                     Replace("," + Environment.NewLine + "    ", ", ").
+                                     Replace(Environment.NewLine + "  }", "}").
+                                     Replace(Environment.NewLine + "  ", Environment.NewLine + "\t");
+            using (StreamWriter sw = new StreamWriter(filename))
+            {
+                sw.Write(data);
+            }
         }
 
         /// <summary>

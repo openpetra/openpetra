@@ -245,17 +245,17 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// get the result of the report calculation
         /// </summary>
-        public DataTable GetResult()
+        public TResultList GetResult()
         {
-            return FResultList.ToDataTable(FParameterList);
+            return FResultList;
         }
 
         /// <summary>
         /// get the environment variables after report calculation
         /// </summary>
-        public DataTable GetParameter()
+        public TParameterList GetParameter()
         {
-            return FParameterList.ToDataTable();
+            return FParameterList;
         }
 
         /// <summary>
