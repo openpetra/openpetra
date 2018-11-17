@@ -50,18 +50,77 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
+            bool NewTransaction;
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                out NewTransaction,
+                "AccountDetailRead");
+
             // get all the transactions
             string sql = templateProcessor.GetSQLQuery("SelectTransactions", parameterlist);
             TLogging.Log(sql);
-
-            sql = templateProcessor.GetSQLQuery("SelectBalances", parameterlist);
-            TLogging.Log(sql);
+            DataTable transactions = DBAccess.GDBAccessObj.SelectDT(sql, "transactions", ReadTransaction);
 
             // get all the balances
+            sql = templateProcessor.GetSQLQuery("SelectBalances", parameterlist);
+            TLogging.Log(sql);
+            DataTable balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", ReadTransaction);
 
-            // render the report
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            // generate the data version for the Excel export
+            resultlist = PrepareResultList(balances, transactions, parameterlist);
+
+            // render the report from the HTML template
 
             return templateProcessor.GetHTML();
+        }
+
+        private static TResultList PrepareResultList(DataTable balances, DataTable transactions, TParameterList parameters)
+        {
+            int MaxDisplayColumns = 5; //parameters.Get("MaxDisplayColumns");
+            int MasterRow = 0;
+            int ChildRow = 1;
+            int Level = 0;
+
+            TResultList result = new TResultList();
+            parameters.Add("MaxDisplayColumns", MaxDisplayColumns);
+
+            foreach (DataRow balance in balances.Rows)
+            {
+
+                TVariant[] Header = new TVariant[MaxDisplayColumns];
+                TVariant[] Description =
+                {
+                    new TVariant("desc1test"), new TVariant("desc2test")
+                };
+                TVariant[] Columns = new TVariant[MaxDisplayColumns];
+
+                for (int Counter = 0; Counter < MaxDisplayColumns; ++Counter)
+                {
+                    Columns[Counter] = new TVariant(" ");
+                    Header[Counter] = new TVariant();
+                }
+
+                // TODO use parameters for column arrangement
+                Columns[0] = new TVariant(balance["a_account_code_c"]);
+                Columns[1] = new TVariant(balance["a_account_code_short_desc_c"]);
+                Columns[2] = new TVariant(balance["a_cost_centre_code_c"]);
+                Columns[3] = new TVariant(balance["a_cost_centre_name_c"]);
+                Columns[4] = new TVariant(balance["a_actual_base_n"]);
+
+                result.AddRow(MasterRow, ChildRow, true, Level,
+                              balance["a_account_code_c"].ToString() + "-" + balance["a_cost_centre_code_c"].ToString(),
+                              "", 
+                              (bool)balance["a_debit_credit_indicator_l"],
+                              Header, Description, Columns);
+                ChildRow++;
+            }
+
+            return result;
         }
     }
 }

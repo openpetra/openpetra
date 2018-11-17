@@ -51,11 +51,13 @@ j.a_transaction_currency_c,
 a_transaction_amount_n,
 a_narrative_c,
 a_reference_c
-FROM PUB.a_transaction AS trans, PUB.a_journal AS j 
+FROM PUB.a_transaction AS trans, PUB.a_journal AS j, PUB.a_batch as batch
 WHERE trans.a_ledger_number_i = j.a_ledger_number_i 
 AND trans.a_journal_number_i = j.a_journal_number_i
 AND trans.a_batch_number_i = j.a_batch_number_i
 AND trans.a_ledger_number_i = {param_ledger_number_i}
+AND batch.a_ledger_number_i = trans.a_ledger_number_i
+AND batch.a_batch_number_i = trans.a_batch_number_i 
 #ifdef {param_account_code_start}
 AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
 #endif
@@ -76,10 +78,17 @@ ORDER BY 1, 2, 3, 4
 <!-- EndSQL SelectTransactions -->
 
 <!-- BeginSQL SelectBalances -->
-SELECT a_account_code_c, a_cost_centre_code_c, a_year_i, a_period_number_i, a_start_balance_base_n, a_actual_base_n
-FROM PUB.a_general_ledger_master AS gl, PUB.a_general_ledger_master_period AS glm
+SELECT gl.a_account_code_c, gl.a_cost_centre_code_c, a_year_i, a_period_number_i,
+        a_actual_base_n,
+        acc.a_debit_credit_indicator_l,
+        acc.a_account_code_short_desc_c, cc.a_cost_centre_name_c
+FROM PUB.a_general_ledger_master AS gl, PUB.a_general_ledger_master_period AS glm, PUB.a_account AS acc, PUB.a_cost_centre AS cc
 WHERE gl.a_glm_sequence_i = glm.a_glm_sequence_i
 AND gl.a_ledger_number_i = {{param_ledger_number_i}}
+AND acc.a_ledger_number_i = gl.a_ledger_number_i
+AND acc.a_account_code_c = gl.a_account_code_c
+AND cc.a_ledger_number_i = gl.a_ledger_number_i
+AND cc.a_cost_centre_code_c = gl.a_cost_centre_code_c
 AND gl.a_year_i = {{param_year_i}}
 AND glm.a_period_number_i BETWEEN {{param_start_period_i}} AND {{param_end_period_i}}
 #ifdef {param_account_code_start}
