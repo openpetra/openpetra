@@ -241,6 +241,7 @@
 <property name="dir.webserver.Formletters" value="${dir.root}/demodata/formletters" overwrite="false"/>
 <property name="dir.webserver.Badges" value="" overwrite="false"/>
 <property name="dir.webserver.HtmlReports" value="" overwrite="false"/>
+<property name="demouser.pwd" value="demo" overwrite="false"/>
 <property name="Formletters.Path" value="${dir.root}/demodata/formletters" overwrite="false"/>
 
 <property name="I18NAnalysis.Output.dir" value="${dir.delivery}/i18nAnalysis" overwrite="false" />
