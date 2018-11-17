@@ -245,6 +245,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// get the result of the report calculation
         /// </summary>
+        [NoRemoting]
         public TResultList GetResult()
         {
             return FResultList;
@@ -253,6 +254,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// get the environment variables after report calculation
         /// </summary>
+        [NoRemoting]
         public TParameterList GetParameter()
         {
             return FParameterList;
