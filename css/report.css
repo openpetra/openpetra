@@ -1,0 +1,4 @@
+/* currently still disabling the head */
+#head { display: none; }
+
+#column_headings {font-weight: bold;}
