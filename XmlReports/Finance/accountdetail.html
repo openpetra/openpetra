@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta charset="utf-8"/>
 <title>OpenPetra Reports</title>
 <link href="/css/report.css" rel="stylesheet">
 </head>
@@ -98,41 +99,41 @@ AND gl.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
 <!-- EndSQL SelectBalances-->
 
 <div id="column_headings" class="row">
-	<div class="col-sm-2">Transaction Date</div>
-	<div class="col-sm-2">Reference</div>
-	<div class="col-sm-4">Narrative</div>
-	<div class="col-sm-1">Debit</div>
-	<div class="col-sm-1">Credit</div>
-	<div class="col-sm-2">End Balance</div>
+	<div class="col-2">Transaction Date</div>
+	<div class="col-2">Reference</div>
+	<div class="col-4">Narrative</div>
+	<div class="col-1">Debit</div>
+	<div class="col-1">Credit</div>
+	<div class="col-2">End Balance</div>
 </div>
 <div class="row">
-	<div class="col-sm-12">
+	<div class="col-12">
 		<hr/>
 	</div>
 </div>
 <div id="content">
 	<div id="costcentreaccount_template">
 		<div class="header row">
-			<div class="header1 col-sm-4"><strong>{a_cost_centre_code_c}-{a_account_code_c}</strong></div>
-			<div class="header2 col-sm-8"><strong>{cc_name}, {account_name}</strong></div>
+			<div class="header1 col-4"><strong>{a_cost_centre_code_c}-{a_account_code_c}</strong></div>
+			<div class="header2 col-8"><strong>{cc_name}, {account_name}</strong></div>
 		</div>
 		<div id="transaction_template" class="row">
-			<div class="col-sm-2 date">{a_transaction_date_d}</div>
-			<div class="col-sm-2">{a_reference_c}</div>
-			<div class="col-sm-4">{a_narrative_c}</div>
-			<div class="col-sm-1 currency">{debit}</div>
-			<div class="col-sm-1 currency">{credit}</div>
+			<div class="col-2 date">{a_transaction_date_d}</div>
+			<div class="col-2">{a_reference_c}</div>
+			<div class="col-4">{a_narrative_c}</div>
+			<div class="col-1 currency">{debit}</div>
+			<div class="col-1 currency">{credit}</div>
 		</div>
 		<div class="footer row">
-			<div class="col-sm-2">Net Balance:</div>
-			<div class="col-sm-2">&nbsp;</div>
-			<div class="col-sm-4">&nbsp;</div>
-			<div class="col-sm-1 currency">{total_debit}</div>
-			<div class="col-sm-1 currency">{total_credit}</div>
-			<div class="col-sm-2 currency">{end_balance}</div>
+			<div class="col-2">Net Balance:</div>
+			<div class="col-2">&nbsp;</div>
+			<div class="col-4">&nbsp;</div>
+			<div class="col-1 currency">{total_debit}</div>
+			<div class="col-1 currency">{total_credit}</div>
+			<div class="col-2 currency">{end_balance}</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-12">
+			<div class="col-12">
 				<hr/>
 			</div>
 		</div>

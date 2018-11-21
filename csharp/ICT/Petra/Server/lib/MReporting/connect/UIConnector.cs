@@ -49,6 +49,7 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Common.Exceptions;
 using Npgsql;
 using OfficeOpenXml;
+using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
 {
@@ -61,7 +62,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         private TResultList FResultList;
         private TParameterList FParameterList;
         private string FHTMLOutput;
-        private ExcelPackage FCalcDoc;
+        private HtmlDocument FHTMLDocument;
         private String FErrorMessage = string.Empty;
         private Exception FException = null;
         private Boolean FSuccess;
@@ -191,7 +192,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FCalcDoc, ref FHTMLOutput, ref FErrorMessage, ref FException))
+                    if (FDatacalculator.GenerateResult(ref FParameterList, ref FHTMLOutput, out FHTMLDocument, ref FErrorMessage, ref FException))
                         {
                             FSuccess = true;
                             SubmissionOK = true;
@@ -291,11 +292,14 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
         private bool ExportToExcelFile(string AFilename)
         {
-            if (FCalcDoc != null)
+            // transform the HTML output to xlsx file
+            ExcelPackage ExcelDoc = HTMLTemplateProcessor.HTMLToCalc(FHTMLDocument);
+
+            if (ExcelDoc != null)
             {
                 using (FileStream fs = new FileStream(AFilename, FileMode.Create))
                 {
-                    FCalcDoc.SaveAs(fs);
+                    ExcelDoc.SaveAs(fs);
                     fs.Close();
                 }
 
@@ -307,12 +311,8 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
         private bool PrintToPDF(string AFilename, bool AWrapColumn)
         {
-            TPdfPrinter pdfPrinter = new TPdfPrinter(TGfxPrinter.ePrinterBehaviour.eReport);
-            TReportPrinterLayout layout = new TReportPrinterLayout(FResultList, FParameterList, pdfPrinter, AWrapColumn);
-
-            pdfPrinter.Init(Ict.Common.Printing.eOrientation.ePortrait, layout, eMarginType.ePrintableArea);
-
-            pdfPrinter.SavePDF(AFilename);
+            // transform the HTML output to pdf file
+            HTMLTemplateProcessor.HTMLToPDF(FHTMLDocument, AFilename);
 
             return true;
         }

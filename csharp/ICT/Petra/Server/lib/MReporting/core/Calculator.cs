@@ -40,6 +40,7 @@ using Ict.Petra.Server.MReporting.MPersonnel;
 using Ict.Petra.Server.MReporting.MConference;
 using System.IO;
 using OfficeOpenXml;
+using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MReporting.Calculator
 {
@@ -58,10 +59,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
         protected string FHTMLTemplate;
 
         /// the HTML Output
-        protected string FHTMLOutput;
-
-        /// the Excel Document
-        protected ExcelPackage FCalcDoc;
+        protected HtmlDocument FHtmlDocument;
 
         static bool HasBeenInitialized = false;
         private static void InitializeUnit()
@@ -100,13 +98,13 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// <returns>true if the report was successfully generated
         /// </returns>
         public Boolean GenerateResult(ref TParameterList parameterlist,
-            ref TResultList resultlist,
-            ref ExcelPackage CalcDoc,
-            ref string HTMLOutput,
+            ref string strHTMLOutput,
+            out HtmlDocument HTMLDocument,
             ref String AErrorMessage,
             ref Exception AException)
         {
             Boolean ReturnValue = false;
+            HTMLDocument = null;
 
             if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
             {
@@ -152,15 +150,17 @@ namespace Ict.Petra.Server.MReporting.Calculator
                         return false;
                     }
 
-                    resultlist = this.Results;
-                    CalcDoc = this.FCalcDoc;
-                    HTMLOutput = this.FHTMLOutput;
+                    HTMLDocument = this.FHtmlDocument;
+                    strHTMLOutput = this.FHtmlDocument.DocumentNode.WriteTo();
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                     {
                         string FilePath = Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar;
-                        Parameters.Save(FilePath + "LogParamAfterCalculation.xml", true);
-                        Results.WriteCSV(Parameters, FilePath + Path.DirectorySeparatorChar + "ReportResults.csv", ",", true, false);
+                        using (StreamWriter sw = new StreamWriter(FilePath + "LogReport.html"))
+                        {
+                            sw.Write(strHTMLOutput);
+                            sw.Close();
+                        }
                     }
 
                     ReturnValue = true;
@@ -238,11 +238,9 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
             if (method != null)
             {
-                object[] mparameters = new object[] { this.FHTMLTemplate, this.Parameters, null, null };
-                this.FHTMLOutput = (string)method.Invoke(null, mparameters);
+                object[] mparameters = new object[] { this.FHTMLTemplate, this.Parameters };
+                this.FHtmlDocument = (HtmlDocument)method.Invoke(null, mparameters);
                 this.Parameters = (TParameterList)mparameters[1];
-                this.Results = (TResultList)mparameters[2];
-                this.FCalcDoc = (ExcelPackage)mparameters[3];
                 return true;
             }
             else

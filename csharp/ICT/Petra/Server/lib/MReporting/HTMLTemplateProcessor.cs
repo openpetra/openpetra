@@ -26,8 +26,10 @@ using Ict.Petra.Shared.MReporting;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using System.IO;
 using OfficeOpenXml;
 using HtmlAgilityPack;
@@ -161,8 +163,18 @@ namespace Ict.Petra.Server.MReporting
             return result;
         }
 
-        public enum ReplaceOptions { NoQuotes, QuotesForStrings, SqlParameters };
+        /// how to replace values
+        public enum ReplaceOptions {
+            /// no quotes
+            NoQuotes,
+            /// use quotes for strings
+            QuotesForStrings,
+            /// use sql parameters
+            SqlParameters };
 
+        /// <summary>
+        /// Inserts the parameters into a template
+        /// </summary>
         public string InsertParameters(string searchOpen, string searchClose, string template, ReplaceOptions options)
         {
             int bracket = template.IndexOf(searchOpen);
@@ -410,6 +422,60 @@ namespace Ict.Petra.Server.MReporting
             worksheet.Cells.AutoFitColumns();
 
             return pck;
+        }
+
+        /// <summary>
+        /// Create a PDF file from the HTML
+        /// </summary>
+        public static bool HTMLToPDF(HtmlDocument html, string AOutputPDFFilename)
+        {
+            // export HTML including the CSS to a single file.
+            string HTMLFile = TFileHelper.GetTempFileName(
+                "htmlreport",
+                ".html");
+
+            string CSSContent = String.Empty;
+
+            using (StreamReader sr = new StreamReader("/usr/local/openpetra/client/css/report.css"))
+            {
+                CSSContent = sr.ReadToEnd();
+            }
+
+            string BootstrapCSSContent = String.Empty;
+
+            using (StreamReader sr = new StreamReader("/usr/local/openpetra/client/node_modules/bootstrap/dist/css/bootstrap.min.css"))
+            {
+                BootstrapCSSContent = sr.ReadToEnd();
+            }
+
+            string BundledJSContent = string.Empty;
+            using (StreamReader sr = new StreamReader("/usr/local/openpetra/client/dist/bundle.min.js"))
+            {
+                BundledJSContent = sr.ReadToEnd();
+            }
+
+
+            using (StreamWriter sw = new StreamWriter(HTMLFile))
+            {
+                string strhtml = html.DocumentNode.WriteTo().
+                    Replace("<link href=\"/css/report.css\" rel=\"stylesheet\">",
+                            "<style>" + 
+                            BootstrapCSSContent + Environment.NewLine +
+                            CSSContent + "</style>" + Environment.NewLine +
+                            "<script>" + BundledJSContent + "</script>");
+                sw.Write(strhtml);
+                sw.Close();
+            }
+
+            Process process = new Process();
+            process.StartInfo.FileName = "/usr/local/bin/wkhtmltopdf";
+            process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
+            process.Start();
+            process.WaitForExit();
+
+            File.Delete(HTMLFile);
+
+            return true;
         }
     }
 }

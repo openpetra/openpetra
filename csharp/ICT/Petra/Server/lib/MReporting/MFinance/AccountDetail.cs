@@ -34,7 +34,6 @@ using Ict.Common.DB;
 using Ict.Common.IO; // Implicit reference
 using Ict.Common.Remoting.Server;
 using System.IO;
-using OfficeOpenXml;
 using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MReporting.MFinance
@@ -43,14 +42,10 @@ namespace Ict.Petra.Server.MReporting.MFinance
     public class AccountDetail
     {
         /// calculate the report
-        public static string Calculate(
+        public static HtmlDocument Calculate(
             string AHTMLReportDefinition,
-            TParameterList parameterlist,
-            out TResultList resultlist,
-            out ExcelPackage CalcDoc)
+            TParameterList parameterlist)
         {
-            resultlist = new TResultList();
-
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
             bool NewTransaction;
@@ -72,14 +67,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            // render the report from the HTML template
+            // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();
-
-            // generate the data version for the Excel export
             CalculateData(ref html, balances, transactions, templateProcessor);
-            CalcDoc = HTMLTemplateProcessor.HTMLToCalc(html);
 
-            return html.DocumentNode.WriteTo();
+            return html;
         }
 
 
