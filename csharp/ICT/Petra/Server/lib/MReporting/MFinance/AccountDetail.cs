@@ -34,6 +34,8 @@ using Ict.Common.DB;
 using Ict.Common.IO; // Implicit reference
 using Ict.Common.Remoting.Server;
 using System.IO;
+using OfficeOpenXml;
+using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MReporting.MFinance
 {
@@ -44,7 +46,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
         public static string Calculate(
             string AHTMLReportDefinition,
             TParameterList parameterlist,
-            out TResultList resultlist)
+            out TResultList resultlist,
+            out ExcelPackage CalcDoc)
         {
             resultlist = new TResultList();
 
@@ -57,13 +60,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 "AccountDetailRead");
 
             // get all the transactions
-            string sql = templateProcessor.GetSQLQuery("SelectTransactions", parameterlist);
-            TLogging.Log(sql);
+            string sql = templateProcessor.GetSQLQuery("SelectTransactions");
             DataTable transactions = DBAccess.GDBAccessObj.SelectDT(sql, "transactions", ReadTransaction);
 
             // get all the balances
-            sql = templateProcessor.GetSQLQuery("SelectBalances", parameterlist);
-            TLogging.Log(sql);
+            sql = templateProcessor.GetSQLQuery("SelectBalances");
             DataTable balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", ReadTransaction);
 
             if (NewTransaction)
@@ -71,56 +72,104 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            // generate the data version for the Excel export
-            resultlist = PrepareResultList(balances, transactions, parameterlist);
-
             // render the report from the HTML template
+            HtmlDocument html = templateProcessor.GetHTML();
 
-            return templateProcessor.GetHTML();
+            // generate the data version for the Excel export
+            CalculateData(ref html, balances, transactions, templateProcessor);
+            CalcDoc = HTMLTemplateProcessor.HTMLToCalc(html);
+
+            return html.DocumentNode.WriteTo();
         }
 
-        private static TResultList PrepareResultList(DataTable balances, DataTable transactions, TParameterList parameters)
+
+        private static void CalculateData(ref HtmlDocument html, DataTable balances, DataTable transactions, HTMLTemplateProcessor templateProcessor)
         {
-            int MaxDisplayColumns = 5; //parameters.Get("MaxDisplayColumns");
-            int MasterRow = 0;
-            int ChildRow = 1;
-            int Level = 0;
+            var balanceTemplate = HTMLTemplateProcessor.SelectSingleNode(html.DocumentNode, "//div[@id='costcentreaccount_template']");
+            var balanceParentNode = balanceTemplate.ParentNode;
 
-            TResultList result = new TResultList();
-            parameters.Add("MaxDisplayColumns", MaxDisplayColumns);
-
+            int countBalanceRow = 0;
+            int countTransactionRow = 0;
             foreach (DataRow balance in balances.Rows)
             {
-
-                TVariant[] Header = new TVariant[MaxDisplayColumns];
-                TVariant[] Description =
+                // skip account/costcentre combination if there are no transations and the balance is 0
+                if ((Decimal)balance["end_balance"] == 0.0m)
                 {
-                    new TVariant("desc1test"), new TVariant("desc2test")
-                };
-                TVariant[] Columns = new TVariant[MaxDisplayColumns];
+                    bool transactionExists = false;
+                    foreach (DataRow transaction in transactions.Rows)
+                    {
+                        if ((transaction["a_account_code_c"].ToString() == balance["a_account_code_c"].ToString()) &&
+                              (transaction["a_cost_centre_code_c"].ToString() == balance["a_cost_centre_code_c"].ToString()))
+                        {
+                            transactionExists = true;
+                            break;
+                        }
+                    }
 
-                for (int Counter = 0; Counter < MaxDisplayColumns; ++Counter)
-                {
-                    Columns[Counter] = new TVariant(" ");
-                    Header[Counter] = new TVariant();
+                    if (!transactionExists)
+                    {
+                        continue;
+                    }
                 }
 
-                // TODO use parameters for column arrangement
-                Columns[0] = new TVariant(balance["a_account_code_c"]);
-                Columns[1] = new TVariant(balance["a_account_code_short_desc_c"]);
-                Columns[2] = new TVariant(balance["a_cost_centre_code_c"]);
-                Columns[3] = new TVariant(balance["a_cost_centre_name_c"]);
-                Columns[4] = new TVariant(balance["a_actual_base_n"]);
+                templateProcessor.AddParametersFromRow(balance);
 
-                result.AddRow(MasterRow, ChildRow, true, Level,
-                              balance["a_account_code_c"].ToString() + "-" + balance["a_cost_centre_code_c"].ToString(),
-                              "", 
-                              (bool)balance["a_debit_credit_indicator_l"],
-                              Header, Description, Columns);
-                ChildRow++;
+                var newBalanceRow = balanceTemplate.Clone();
+                string balanceId = "acccc" + countBalanceRow.ToString();
+                newBalanceRow.SetAttributeValue("id", balanceId);
+                balanceParentNode.AppendChild(newBalanceRow);
+                var header = HTMLTemplateProcessor.SelectSingleNode(newBalanceRow, ".//div[contains(@class,'header')]");
+                header.InnerHtml = templateProcessor.InsertParameters("{", "}", header.InnerHtml,
+                    HTMLTemplateProcessor.ReplaceOptions.NoQuotes);
+                countBalanceRow++;
+
+                var transactionTemplate = HTMLTemplateProcessor.SelectSingleNode(newBalanceRow, ".//div[@id='transaction_template']");
+                var FooterDiv = HTMLTemplateProcessor.SelectSingleNode(newBalanceRow, ".//div[@class='footer row']");
+
+                Decimal TotalCredit = 0.0m;
+                Decimal TotalDebit = 0.0m;
+                foreach (DataRow transaction in transactions.Rows)
+                {
+                    if (!((transaction["a_account_code_c"].ToString() == balance["a_account_code_c"].ToString()) &&
+                          (transaction["a_cost_centre_code_c"].ToString() == balance["a_cost_centre_code_c"].ToString())))
+                    {
+                        continue;
+                    }
+
+                    TVariant amount = new TVariant(transaction["a_transaction_amount_n"]);
+                    if ((bool)transaction["a_debit_credit_indicator_l"])
+                    {
+                        templateProcessor.SetParameter("debit", amount);
+                        templateProcessor.SetParameter("credit", new TVariant());
+                        TotalDebit += amount.ToDecimal();
+                    }
+                    else
+                    {
+                        templateProcessor.SetParameter("credit", amount);
+                        templateProcessor.SetParameter("debit", new TVariant());
+                        TotalCredit += amount.ToDecimal();
+                    }
+
+                    templateProcessor.AddParametersFromRow(transaction);
+
+                    var newTransactionRow = transactionTemplate.Clone();
+                    string transactionID = "trans" + countTransactionRow.ToString();
+                    newTransactionRow.SetAttributeValue("id", transactionID);
+                    newBalanceRow.InsertBefore(newTransactionRow, FooterDiv);
+                    newTransactionRow.InnerHtml = templateProcessor.InsertParameters("{", "}", newTransactionRow.InnerHtml,
+                        HTMLTemplateProcessor.ReplaceOptions.NoQuotes);
+                    countTransactionRow++;
+                }
+
+                templateProcessor.SetParameter("total_debit", new TVariant(TotalDebit));
+                templateProcessor.SetParameter("total_credit", new TVariant(TotalCredit));
+                FooterDiv.InnerHtml = templateProcessor.InsertParameters("{", "}", FooterDiv.InnerHtml,
+                            HTMLTemplateProcessor.ReplaceOptions.NoQuotes);
+
+                transactionTemplate.Remove();
             }
 
-            return result;
+            balanceTemplate.Remove();
         }
     }
 }

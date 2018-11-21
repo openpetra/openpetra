@@ -25,9 +25,12 @@ using System;
 using Ict.Petra.Shared.MReporting;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using System.IO;
+using OfficeOpenXml;
+using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MReporting
 {
@@ -35,9 +38,11 @@ namespace Ict.Petra.Server.MReporting
     public class HTMLTemplateProcessor
     {
         private string FHTMLTemplate;
+        private HtmlDocument FHTMLDocument;
         private Dictionary<string, string> FSQLQueries = new Dictionary<string, string>();
         // do not print warning too many times for the same variable
-        private static SortedList<string, Int32> VariablesNotFound = new SortedList<string, int>();
+        private SortedList<string, Int32> VariablesNotFound = new SortedList<string, int>();
+        private TParameterList FParameters;
 
         /// <summary>
         /// constructor
@@ -45,13 +50,39 @@ namespace Ict.Petra.Server.MReporting
         public HTMLTemplateProcessor(string AHTMLTemplate, TParameterList AParameters)
         {
             FHTMLTemplate = AHTMLTemplate;
+            FParameters = AParameters;
 
             SeparateSQLQueries();
 
-            FHTMLTemplate = InsertParameters("{{", "}}", FHTMLTemplate, AParameters);
-            FHTMLTemplate = InsertParameters("{", "}", FHTMLTemplate, AParameters);
+            FHTMLDocument = new HtmlDocument();
+            FHTMLDocument.LoadHtml(FHTMLTemplate);
 
-            FHTMLTemplate = EvaluateVisible(FHTMLTemplate, AParameters);
+            var head = FHTMLDocument.DocumentNode.SelectSingleNode("//div[@id='head']");
+            string strHead = head.InnerHtml;
+            strHead = InsertParameters("{{", "}}", strHead, ReplaceOptions.NoQuotes);
+            strHead = InsertParameters("{", "}", strHead, ReplaceOptions.NoQuotes);
+
+            strHead = EvaluateVisible(strHead);
+            head.InnerHtml = strHead;
+        }
+
+        /// <summary>
+        /// Adds the parameters from row.
+        /// </summary>
+        public void AddParametersFromRow(DataRow row)
+        {
+            foreach (DataColumn c in row.Table.Columns)
+            {
+                FParameters.Add(c.ColumnName, new TVariant(row[c]));
+            }
+        }
+
+        /// <summary>
+        /// Sets the parameter.
+        /// </summary>
+        public void SetParameter(string name, TVariant value)
+        {
+            FParameters.Add(name, value);
         }
 
         /// separate the sql queries from the HTML template
@@ -76,17 +107,16 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// Gets the SQL query.
         /// </summary>
-        public string GetSQLQuery(string queryname, TParameterList AParameters)
+        public string GetSQLQuery(string queryname)
         {
             string sql = FSQLQueries[queryname];
 
-            sql = ProcessIfDefs(sql, AParameters);
+            sql = ProcessIfDefs(sql);
 
             // TODO: use prepared statements to pass parameters
-            sql = InsertParameters("{{", "}}", sql, AParameters);
-            sql = InsertParameters("{#", "#}", sql, AParameters);
-            sql = InsertParameters("{LIST ", "}", sql, AParameters);
-            sql = InsertParameters("{", "}", sql, AParameters);
+            sql = InsertParameters("{{", "}}", sql, ReplaceOptions.SqlParameters);
+            sql = InsertParameters("{LIST ", "}", sql, ReplaceOptions.SqlParameters);
+            sql = InsertParameters("{", "}", sql, ReplaceOptions.SqlParameters);
 
             return sql;
         }
@@ -94,12 +124,46 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         ///  the processed HTML
         /// </summary>
-        public string GetHTML()
+        public HtmlDocument GetHTML()
         {
-            return FHTMLTemplate;
+            return FHTMLDocument;
         }
 
-        private string InsertParameters(string searchOpen, string searchClose, string template, TParameterList parameters)
+        /// <summary>
+        /// Selects the nodes.
+        /// </summary>
+        public static HtmlNodeCollection SelectNodes(HtmlNode node, string xpath)
+        {
+            // important: use a dot at the beginning of xpath if you want to limit the search to node.
+            var result = node.SelectNodes(xpath);
+
+            if (result == null)
+            {
+                // return empty collection
+                result = new HtmlNodeCollection(node);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Selects the first matching node.
+        /// </summary>
+        public static HtmlNode SelectSingleNode(HtmlNode node, string xpath)
+        {
+            var result = node.SelectSingleNode(xpath);
+
+            if (result == null)
+            {
+                throw new Exception("SelectSingleNode: cannot find " + xpath);
+            }
+
+            return result;
+        }
+
+        public enum ReplaceOptions { NoQuotes, QuotesForStrings, SqlParameters };
+
+        public string InsertParameters(string searchOpen, string searchClose, string template, ReplaceOptions options)
         {
             int bracket = template.IndexOf(searchOpen);
 
@@ -125,9 +189,9 @@ namespace Ict.Petra.Server.MReporting
                 bool ParameterExists = false;
                 TVariant newvalue;
 
-                if (parameters != null)
+                if (FParameters != null)
                 {
-                    newvalue = parameters.Get(parameter, -1, -1, eParameterFit.eBestFitEvenLowerLevel);
+                    newvalue = FParameters.Get(parameter, -1, -1, eParameterFit.eBestFitEvenLowerLevel);
 
                     ParameterExists = (newvalue.TypeVariant != eVariantTypes.eEmpty);
                 }
@@ -181,6 +245,7 @@ namespace Ict.Petra.Server.MReporting
                     }
 
                     string strValue = newvalue.ToString();
+                    string Quotes = (options == ReplaceOptions.NoQuotes ? "" : "'");
                     if (searchOpen == "{LIST ")
                     {
                         string[] elements = newvalue.ToString().Split(new char[] { ',' });
@@ -191,18 +256,24 @@ namespace Ict.Petra.Server.MReporting
                             {
                                 strValue += ",";
                             }
-                            strValue += "'" + element + "'";
+                            strValue += Quotes + element + Quotes;
                         }
                     }
-                    else if ((searchOpen == "{#") && (newvalue.TypeVariant == eVariantTypes.eDateTime))
+                    else if (newvalue.TypeVariant == eVariantTypes.eDateTime)
                     {
-                        strValue = "'" + newvalue.ToDate().ToString("yyyy-MM-dd") + "'";
+                        strValue = Quotes + newvalue.ToDate().ToString("yyyy-MM-dd") + Quotes;
                     }
                     else if ((searchOpen != "{{") && 
                              !(parameter.Length > 2 && parameter.Substring(parameter.Length - 2) == "_i") &&
                              (newvalue.TypeVariant == eVariantTypes.eString))
                     {
-                        strValue = "'" + newvalue.ToString() + "'";
+                        strValue = Quotes + newvalue.ToString() + Quotes;
+                    }
+                    else if (
+                        (newvalue.TypeVariant == eVariantTypes.eCurrency) ||
+                        ((newvalue.TypeVariant == eVariantTypes.eDecimal) && (Quotes.Length == 0)))
+                    {
+                        strValue = newvalue.ToDecimal().ToString("0.00");
                     }
                     template = template.Replace(searchOpen + parameter + searchClose, strValue);
                 }
@@ -218,7 +289,7 @@ namespace Ict.Petra.Server.MReporting
             return template;
         }
 
-        string ProcessIfDefs(string s, TParameterList AParameters)
+        string ProcessIfDefs(string s)
         {
             int posPlaceholder = s.IndexOf("#ifdef ");
 
@@ -228,9 +299,8 @@ namespace Ict.Petra.Server.MReporting
             while (posPlaceholder > -1)
             {
                 string condition = s.Substring(posPlaceholder + "#ifdef ".Length, s.IndexOf("\n", posPlaceholder) - posPlaceholder - "#ifdef ".Length);
-                condition = InsertParameters("{{", "}}", condition, AParameters);
-                condition = InsertParameters("{#", "#}", condition, AParameters);
-                condition = InsertParameters("{", "}", condition, AParameters);
+                condition = InsertParameters("{{", "}}", condition, ReplaceOptions.QuotesForStrings);
+                condition = InsertParameters("{", "}", condition, ReplaceOptions.QuotesForStrings);
 
                 // TODO: support nested ifdefs???
                 int posPlaceholderAfter = s.IndexOf("#endif", posPlaceholder);
@@ -259,7 +329,7 @@ namespace Ict.Petra.Server.MReporting
             return s;
         }
 
-        string EvaluateVisible(string template, TParameterList AParameters)
+        string EvaluateVisible(string template)
         {
             int visiblePos = template.IndexOf("visible=");
 
@@ -273,6 +343,73 @@ namespace Ict.Petra.Server.MReporting
                 visiblePos = template.IndexOf("visible=");
             }
             return template;
+        }
+
+        /// <summary>
+        /// Create a Calc file from the HTML
+        /// </summary>
+        public static ExcelPackage HTMLToCalc(HtmlDocument html)
+        {
+            ExcelPackage pck = new ExcelPackage();
+
+            ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
+
+            // write the column headings
+            var elements = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='column_headings']/div");
+            int colCounter = 1;
+            int rowCounter = 3;
+            foreach (var element in elements)
+            {
+                worksheet.Cells[rowCounter, colCounter].Value = element.InnerText;
+                worksheet.Cells[rowCounter, colCounter].Style.Font.Bold = true;
+                colCounter++;
+            }
+            rowCounter+=2;
+
+            var rows = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='content']//div[contains(@class, 'row')]");
+            foreach (var row in rows)
+            {
+                colCounter = 1;
+                elements = HTMLTemplateProcessor.SelectNodes(row, ".//div[contains(@class, 'col-')]");
+                foreach (var element in elements)
+                {
+                    string value = element.InnerText;
+
+                    if (value == "&nbsp;")
+                    {
+                        value = String.Empty;
+                    }
+
+                    if (element.HasClass("currency"))
+                    {
+                        TVariant v = new TVariant(value);
+                        worksheet.Cells[rowCounter, colCounter].Value = v.ToDecimal();
+                    }
+                    else if (element.HasClass("date"))
+                    {
+                        TVariant v = new TVariant(value);
+                        worksheet.Cells[rowCounter, colCounter].Value = v.ToDate();
+                        worksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
+                    }
+                    else
+                    {
+                        worksheet.Cells[rowCounter, colCounter].Value = value;
+                    }
+
+                    if (element.InnerHtml.Contains("<strong>"))
+                    {
+                        worksheet.Cells[rowCounter, colCounter].Style.Font.Bold = true;
+                    }
+
+                    colCounter++;
+                }
+
+                rowCounter++;
+            }
+
+            worksheet.Cells.AutoFitColumns();
+
+            return pck;
         }
     }
 }

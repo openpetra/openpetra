@@ -48,6 +48,7 @@ using Ict.Common.Session;
 using Ict.Petra.Shared.MCommon;
 using Ict.Common.Exceptions;
 using Npgsql;
+using OfficeOpenXml;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
 {
@@ -60,6 +61,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         private TResultList FResultList;
         private TParameterList FParameterList;
         private string FHTMLOutput;
+        private ExcelPackage FCalcDoc;
         private String FErrorMessage = string.Empty;
         private Exception FException = null;
         private Boolean FSuccess;
@@ -189,7 +191,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FHTMLOutput, ref FErrorMessage, ref FException))
+                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FCalcDoc, ref FHTMLOutput, ref FErrorMessage, ref FException))
                         {
                             FSuccess = true;
                             SubmissionOK = true;
@@ -289,26 +291,12 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
         private bool ExportToExcelFile(string AFilename)
         {
-            bool ExportOnlyLowestLevel = false;
-
-            // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
-            // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
-            // output looks much nicer if it doesn't contain the unnecessary higher levels.
-            if (FParameterList.Exists("csv_export_only_lowest_level"))
-            {
-                ExportOnlyLowestLevel = FParameterList.Get("csv_export_only_lowest_level").ToBool();
-            }
-
-            XmlDocument doc = FResultList.WriteXmlDocument(FParameterList, ExportOnlyLowestLevel);
-
-            if (doc != null)
+            if (FCalcDoc != null)
             {
                 using (FileStream fs = new FileStream(AFilename, FileMode.Create))
                 {
-                    if (TCsv2Xml.Xml2ExcelStream(doc, fs, false))
-                    {
-                        fs.Close();
-                    }
+                    FCalcDoc.SaveAs(fs);
+                    fs.Close();
                 }
 
                 return true;
@@ -322,9 +310,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             TPdfPrinter pdfPrinter = new TPdfPrinter(TGfxPrinter.ePrinterBehaviour.eReport);
             TReportPrinterLayout layout = new TReportPrinterLayout(FResultList, FParameterList, pdfPrinter, AWrapColumn);
 
-            eOrientation Orientation = eOrientation.ePortrait;
-
-            pdfPrinter.Init(Orientation, layout, eMarginType.ePrintableArea);
+            pdfPrinter.Init(Ict.Common.Printing.eOrientation.ePortrait, layout, eMarginType.ePrintableArea);
 
             pdfPrinter.SavePDF(AFilename);
 

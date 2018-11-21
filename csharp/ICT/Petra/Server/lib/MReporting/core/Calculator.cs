@@ -39,6 +39,7 @@ using Ict.Petra.Server.MReporting.MPartner;
 using Ict.Petra.Server.MReporting.MPersonnel;
 using Ict.Petra.Server.MReporting.MConference;
 using System.IO;
+using OfficeOpenXml;
 
 namespace Ict.Petra.Server.MReporting.Calculator
 {
@@ -58,6 +59,9 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
         /// the HTML Output
         protected string FHTMLOutput;
+
+        /// the Excel Document
+        protected ExcelPackage FCalcDoc;
 
         static bool HasBeenInitialized = false;
         private static void InitializeUnit()
@@ -97,6 +101,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// </returns>
         public Boolean GenerateResult(ref TParameterList parameterlist,
             ref TResultList resultlist,
+            ref ExcelPackage CalcDoc,
             ref string HTMLOutput,
             ref String AErrorMessage,
             ref Exception AException)
@@ -148,16 +153,8 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     }
 
                     resultlist = this.Results;
-                    // HTMLOutput = this.FHTMLOutput;
-                    HTMLOutput = "<pre>";
-                    List<string> csvlines = this.Results.WriteCSVInternal(Parameters);
-                    foreach (string line in csvlines)
-                    {
-                        HTMLOutput += line + "\n";
-                    }
-                    HTMLOutput += "</pre>";
-                    this.FHTMLOutput = HTMLOutput;
-
+                    CalcDoc = this.FCalcDoc;
+                    HTMLOutput = this.FHTMLOutput;
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                     {
@@ -241,10 +238,11 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
             if (method != null)
             {
-                object[] mparameters = new object[] { this.FHTMLTemplate, this.Parameters, null };
+                object[] mparameters = new object[] { this.FHTMLTemplate, this.Parameters, null, null };
                 this.FHTMLOutput = (string)method.Invoke(null, mparameters);
                 this.Parameters = (TParameterList)mparameters[1];
                 this.Results = (TResultList)mparameters[2];
+                this.FCalcDoc = (ExcelPackage)mparameters[3];
                 return true;
             }
             else
