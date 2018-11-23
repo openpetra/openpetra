@@ -107,7 +107,6 @@ namespace Tests.MReporting.Tools
             }
 
             string resultFile = AReportResultFile;
-            string parameterFile = AReportResultFile.Replace(".Results.csv", ".Parameters.json");
             Parameters.Load(AReportParameterJsonFile);
 
             if (ALedgerNumber != -1)
@@ -125,15 +124,11 @@ namespace Tests.MReporting.Tools
             }
 
             Assert.IsTrue(ReportGenerator.GetSuccess(), "Report did not run successfully");
-            TResultList Results = new TResultList();
 
-            Results = ReportGenerator.GetResult();
-            Parameters = ReportGenerator.GetParameter();
-
-            Parameters.Sort();
-            Parameters.Save(parameterFile, false);
-            TLogging.Log("write CVS in Test");
-            Results.WriteCSV(Parameters, resultFile, ",");
+            using (StreamWriter sw = new StreamWriter(resultFile))
+            {
+                sw.Write(ReportGenerator.DownloadHTML());
+            }
         }
 
         /// <summary>
@@ -141,15 +136,13 @@ namespace Tests.MReporting.Tools
         /// </summary>
         public static void TestResult(string AResultsFile, int ALedgerNumber = -1)
         {
-            if (AResultsFile.IndexOf(".Results.csv") == -1)
+            if (AResultsFile.IndexOf(".Results.html") == -1)
             {
-                throw new Exception("invalid file name, should end with .Results.csv");
+                throw new Exception("invalid file name, should end with .Results.html");
             }
 
             string resultFile = AResultsFile;
-            string parameterFile = AResultsFile.Replace(".Results.csv", ".Parameters.json");
-            string resultExpectedFile = AResultsFile.Replace(".Results.csv", ".Results.Expected.csv");
-            string parameterExpectedFile = AResultsFile.Replace(".Results.csv", ".Parameters.Expected.json");
+            string resultExpectedFile = AResultsFile.Replace(".Results.html", ".Results.Expected.html");
 
             SortedList <string, string>ToReplace = new SortedList <string, string>();
             ToReplace.Add("{ledgernumber}", ALedgerNumber.ToString());
@@ -168,10 +161,6 @@ namespace Tests.MReporting.Tools
             Assert.True(TTextFile.SameContent(resultFile, resultExpectedFile, true, ToReplace, true),
                 "the file " + resultFile + " should have the same content as " + resultExpectedFile);
 
-            Assert.True(TTextFile.SameContent(parameterFile, parameterExpectedFile, true, ToReplace, true),
-                "the file " + parameterFile + " should have the same content as " + parameterExpectedFile);
-
-            File.Delete(parameterFile);
             File.Delete(resultFile);
         }
     }

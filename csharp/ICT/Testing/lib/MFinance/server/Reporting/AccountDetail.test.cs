@@ -80,7 +80,7 @@ namespace Tests.MFinance.Server.Reporting
         public void TestAccountDetail()
         {
             string testFile = "../../../openpetra-client-js/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
-            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.Results.csv";
+            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.Results.html";
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_start_period_i", 1);
@@ -104,9 +104,10 @@ namespace Tests.MFinance.Server.Reporting
         public void TestAccountDetailSelectedAccount()
         {
             string testFile = "../../../openpetra-client-js/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
-            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetailSelectedAccount.Results.csv";
+            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetailSelectedAccount.Results.html";
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_year_i", 0);
             SpecificParameters.Add("param_start_period_i", 1);
             SpecificParameters.Add("param_end_period_i", 1);
 

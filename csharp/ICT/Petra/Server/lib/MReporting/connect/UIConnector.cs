@@ -59,7 +59,6 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
     public class TReportGeneratorUIConnector
     {
         private TRptDataCalculator FDatacalculator;
-        private TResultList FResultList;
         private TParameterList FParameterList;
         private string FHTMLOutput;
         private HtmlDocument FHTMLDocument;
@@ -246,15 +245,6 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         }
 
         /// <summary>
-        /// get the result of the report calculation
-        /// </summary>
-        [NoRemoting]
-        public TResultList GetResult()
-        {
-            return FResultList;
-        }
-
-        /// <summary>
         /// get the environment variables after report calculation
         /// </summary>
         [NoRemoting]
@@ -309,7 +299,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return false;
         }
 
-        private bool PrintToPDF(string AFilename, bool AWrapColumn)
+        private bool PrintToPDF(string AFilename)
         {
             // transform the HTML output to pdf file
             HTMLTemplateProcessor.HTMLToPDF(FHTMLDocument, AFilename);
@@ -317,35 +307,20 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return true;
         }
 
-        private bool ExportToCSVFile(string AFilename)
-        {
-            bool ExportOnlyLowestLevel = false;
-
-            // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
-            // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
-            // output looks much nicer if it doesn't contain the unnecessary higher levels.
-            if (FParameterList.Exists("csv_export_only_lowest_level"))
-            {
-                ExportOnlyLowestLevel = FParameterList.Get("csv_export_only_lowest_level").ToBool();
-            }
-
-            return FResultList.WriteCSV(FParameterList, AFilename, ExportOnlyLowestLevel);
-        }
-
         /// Download the result of the report as HTML
-        public string DownloadHTML(bool AWrapColumn)
+        public string DownloadHTML()
         {
             return FHTMLOutput;
         }
 
         /// Download the result of the report as PDF File in base64 encoding
-        public string DownloadPDF(bool AWrapColumn)
+        public string DownloadPDF()
         {
             string PDFFile = TFileHelper.GetTempFileName(
                 FParameterList.Get("currentReport").ToString(),
                 ".pdf");
 
-            if (PrintToPDF(PDFFile, AWrapColumn))
+            if (PrintToPDF(PDFFile))
             {
                 byte[] data = System.IO.File.ReadAllBytes(PDFFile);
                 string result = Convert.ToBase64String(data);
@@ -379,9 +354,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// </summary>
         public Boolean SendEmail(string AEmailAddresses,
             bool AAttachExcelFile,
-            bool AAttachCSVFile,
             bool AAttachPDF,
-            bool AWrapColumn,
             out TVerificationResultCollection AVerification)
         {
             TSmtpSender EmailSender = null;
@@ -407,25 +380,13 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     }
                 }
 
-                if (AAttachCSVFile)
-                {
-                    string CSVFile = TFileHelper.GetTempFileName(
-                        FParameterList.Get("currentReport").ToString(),
-                        ".csv");
-
-                    if (ExportToCSVFile(CSVFile))
-                    {
-                        FilesToAttach.Add(CSVFile);
-                    }
-                }
-
                 if (AAttachPDF)
                 {
                     string PDFFile = TFileHelper.GetTempFileName(
                         FParameterList.Get("currentReport").ToString(),
                         ".pdf");
 
-                    if (PrintToPDF(PDFFile, AWrapColumn))
+                    if (PrintToPDF(PDFFile))
                     {
                         FilesToAttach.Add(PDFFile);
                     }

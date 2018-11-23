@@ -49,7 +49,7 @@ i18n/template.pot.withallsources
 *.es-ES.yaml
 -*.xml
 csharp/ICT/Testing/**/*.Parameters.json
-csharp/ICT/Testing/**/*.Results.csv
+csharp/ICT/Testing/**/*.Results.html
 csharp/ICT/Testing/lib/Common/IO/TestData/testUnzip
 csharp/ICT/Testing/lib/Common/IO/TestData/test.xlsx
 .gitmodules
