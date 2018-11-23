@@ -27,6 +27,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
 
+#if disabled
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB; // Implicit reference
@@ -1155,3 +1156,4 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         }
     }
 }
+#endif

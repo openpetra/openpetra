@@ -71,31 +71,22 @@ namespace Ict.Petra.Shared.MReporting
     /// </summary>
     public class TParameter: IComparable
     {
+        /// if this is set in column, the parameter applies to all columns
+        public const int ALLCOLUMNS = 99;
+        
         /// <summary>
         /// name of the parameter
         /// </summary>
         public String name;
 
-        /// <summary>can be between 1 and 12 and more, or one of the constants defined in Ict.Petra.Shared.MReporting.Consts</summary>
+        /// <summary>can be between 1 and 12 and more</summary>
         public int column;
 
         /// <summary>level 1 is the main level, the bigger the number, the lower the level.</summary>
         public int level;
 
-        /// <summary>there can be several subreports on a report, with different formatting (lines etc). default is 1 for report wide settings, 0 for the first report</summary>
-        public int subreport;
-
         /// <summary>the value of this parameter</summary>
         public TVariant value;
-
-        /// <summary>CALCULATIONPARAMETERS should not be written back to the UI</summary>
-        public int paramType;
-
-        /// <summary>can be used for later calculations, when the depending values have been calculated</summary>
-        public System.Object pRptElement;
-
-        /// <summary>can be used for later calculations, when the depending values have been calculated</summary>
-        public System.Object pRptGroup;
 
         /// <summary>
         /// constructor
@@ -103,20 +94,12 @@ namespace Ict.Petra.Shared.MReporting
         public TParameter(String pname,
             TVariant pvalue,
             int pcolumn,
-            int plevel,
-            int psubreport,
-            System.Object pRptElement = null,
-            System.Object pRptGroup = null,
-            int paramType = -1)
+            int plevel)
         {
             name = pname;
             value = pvalue;
             column = pcolumn;
             level = plevel;
-            subreport = psubreport;
-            this.pRptElement = pRptElement;
-            this.pRptGroup = pRptGroup;
-            this.paramType = paramType;
         }
 
         /// <summary>
@@ -129,10 +112,6 @@ namespace Ict.Petra.Shared.MReporting
             value = copy.value;
             column = copy.column;
             level = copy.level;
-            subreport = copy.subreport;
-            this.pRptElement = copy.pRptElement;
-            this.pRptGroup = copy.pRptGroup;
-            this.paramType = copy.paramType;
         }
 
         /// <summary>
@@ -238,12 +217,12 @@ namespace Ict.Petra.Shared.MReporting
             foreach (System.Data.DataRow row in param.Rows)
             {
                 Fparameters.Add(new TParameter(row["name"].ToString(), TVariant.DecodeFromString(row["value"].ToString()),
-                        Convert.ToInt32(row["column"]), Convert.ToInt32(row["level"]), Convert.ToInt16(row["subreport"])));
+                        Convert.ToInt32(row["column"]), Convert.ToInt32(row["level"])));
             }
 
             if ((TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING) && (TSrvSetting.ServerLogFile.Length > 0))
             {
-                Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "param.xml");
+                Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "param.json");
             }
         }
 
@@ -261,21 +240,14 @@ namespace Ict.Petra.Shared.MReporting
             ReturnValue.Columns.Add(new System.Data.DataColumn("name", typeof(String)));
             ReturnValue.Columns.Add(new System.Data.DataColumn("column", typeof(System.Int32)));
             ReturnValue.Columns.Add(new System.Data.DataColumn("level", typeof(System.Int32)));
-            ReturnValue.Columns.Add(new System.Data.DataColumn("subreport", typeof(System.Int32)));
             ReturnValue.Columns.Add(new System.Data.DataColumn("value", typeof(String)));
 
             foreach (TParameter element in Fparameters)
             {
-                if (element.paramType == ReportingConsts.CALCULATIONPARAMETERS)
-                {
-                    continue;
-                }
-
                 row = ReturnValue.NewRow();
                 row["name"] = element.name;
                 row["column"] = (System.Object)element.column;
                 row["level"] = (System.Object)element.level;
-                row["subreport"] = (System.Object)element.subreport;
                 row["value"] = element.value.EncodeToString();
                 ReturnValue.Rows.InsertAt(row, ReturnValue.Rows.Count);
             }
@@ -322,7 +294,7 @@ namespace Ict.Petra.Shared.MReporting
             {
                 if (element2.column == column)
                 {
-                    Add(element2.name, element2.value, ADestColumn, element2.level, element2.subreport);
+                    Add(element2.name, element2.value, ADestColumn, element2.level);
                 }
             }
         }
@@ -344,7 +316,7 @@ namespace Ict.Petra.Shared.MReporting
         {
             foreach (TParameter element in AOtherList.Fparameters)
             {
-                Add(element.name, element.value, element.column, element.level, element.subreport);
+                Add(element.name, element.value, element.column, element.level);
             }
         }
 
@@ -370,161 +342,23 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// Procedure to move a column
-        /// That means, all parameters in ANewColumn will be deleted,
-        /// and all parameters in the column AOldColumn will be changed to column ANewColumn.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void MoveColumn(int AOldColumn, int ANewColumn)
-        {
-            // remove all parameters in column ANewColumn
-            RemoveColumn(ANewColumn);
-
-            // move all parameters from column AOldColumn to ANewColumn
-            foreach (TParameter element in Fparameters)
-            {
-                if (element.column == AOldColumn)
-                {
-                    element.column = ANewColumn;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Switch to columns; can be used to move a column forward.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void SwitchColumn(int AColumn1, int AColumn2)
-        {
-            foreach (TParameter element in Fparameters)
-            {
-                if (element.column == AColumn1)
-                {
-                    element.column = AColumn2;
-                }
-                else if (element.column == AColumn2)
-                {
-                    element.column = AColumn1;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Remove a column; will not move the following columns
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void RemoveColumn(int AColumn)
-        {
-            TParameter element;
-
-            System.Int32 Counter;
-            Counter = 0;
-
-            while (Counter < Fparameters.Count)
-            {
-                element = (TParameter)Fparameters[Counter];
-
-                if (element.column == AColumn)
-                {
-                    Fparameters.RemoveAt(Counter);
-                }
-                else
-                {
-                    Counter = Counter + 1;
-                }
-            }
-        }
-
-        /// <summary>
         /// Common procedure to add a parameter, expects the value as a variant
         /// </summary>
-        public void Add(String parameterId, TVariant value, int column, int depth, System.Object pRptElement, System.Object pRptGroup, int paramType)
+        public void Add(String parameterId, TVariant value, int column = -1, int depth = -1)
         {
-            Int32 subreport;
-
-            if (parameterId != "CurrentSubReport")
-            {
-                subreport = GetOrDefault("CurrentSubReport", -1, new TVariant(-1)).ToInt();
-            }
-            else
-            {
-                subreport = -1;
-                paramType = ReportingConsts.CALCULATIONPARAMETERS;
-            }
-
             // find if there is already an element in the list with the exact same column/level combination
             foreach (TParameter element in Fparameters)
             {
-                if ((element.name == parameterId) && (element.level == depth) && (element.column == column) && (element.subreport == subreport))
+                if ((element.name == parameterId) && (element.level == depth) && (element.column == column))
                 {
                     element.value = value;
-                    element.pRptElement = pRptElement;
-                    element.pRptGroup = pRptGroup;
                     return;
                 }
             }
 
             // else add a new element
-            TParameter element2 = new TParameter(parameterId, value, column, depth, subreport, pRptElement, pRptGroup, paramType);
+            TParameter element2 = new TParameter(parameterId, value, column, depth);
             Fparameters.Add(element2);
-        }
-
-        /// <summary>
-        /// overloaded method
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        /// <param name="column"></param>
-        /// <param name="depth"></param>
-        public void Add(String parameterId, TVariant value, int column, int depth)
-        {
-            Add(parameterId, value, column, depth, null, null, -1);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        /// <param name="column"></param>
-        public void Add(String parameterId, TVariant value, int column)
-        {
-            Add(parameterId, value, column, -1, null, null, -1);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        public void AddCalculationParameter(String parameterId, TVariant value)
-        {
-            Add(parameterId, value, -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
-        }
-
-        /// <summary>
-        /// overloaded add
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        public void Add(String parameterId, TVariant value)
-        {
-            Add(parameterId, value, -1, -1, null, null, -1);
-        }
-
-        /// <summary>
-        /// procedure to add a parameter, expects the value as a variant;
-        /// used when loading from xml file (value of subreport is known)
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void Add(String parameterId, TVariant value, int column, int depth, int subreport)
-        {
-            Add("CurrentSubReport", new TVariant(subreport));
-            Add(parameterId, value, column, depth, null, null, -1);
         }
 
         /// <summary>
@@ -532,19 +366,9 @@ namespace Ict.Petra.Shared.MReporting
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void Add(String parameterId, bool value, int column, int depth, System.Object pRptElement, System.Object pRptGroup, int paramType)
+        public void Add(String parameterId, bool value, int column = -1, int depth = -1)
         {
-            Add(parameterId, new TVariant(value), column, depth, pRptElement, pRptGroup, paramType);
-        }
-
-        /// <summary>
-        /// overloaded add
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        public void Add(String parameterId, bool value)
-        {
-            Add(parameterId, value, -1, -1, null, null, -1);
+            Add(parameterId, new TVariant(value), column, depth);
         }
 
         /// <summary>
@@ -552,19 +376,9 @@ namespace Ict.Petra.Shared.MReporting
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void Add(String parameterId, decimal value, int column, int depth, System.Object pRptElement, System.Object pRptGroup, int paramType)
+        public void Add(String parameterId, decimal value, int column = -1, int depth = -1)
         {
-            Add(parameterId, new TVariant(value), column, depth, pRptElement, pRptGroup, paramType);
-        }
-
-        /// <summary>
-        /// overloaded add for Decimal
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        public void Add(String parameterId, decimal value)
-        {
-            Add(parameterId, value, -1, -1, null, null, -1);
+            Add(parameterId, new TVariant(value), column, depth);
         }
 
         /// <summary>
@@ -572,19 +386,9 @@ namespace Ict.Petra.Shared.MReporting
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void Add(String parameterId, String value, int column, int depth, System.Object pRptElement, System.Object pRptGroup, int paramType)
+        public void Add(String parameterId, String value, int column = -1, int depth = -1)
         {
-            Add(parameterId, new TVariant(value), column, depth, pRptElement, pRptGroup, paramType);
-        }
-
-        /// <summary>
-        /// overloaded add for string
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        public void Add(String parameterId, String value)
-        {
-            Add(parameterId, value, -1, -1, null, null, -1);
+            Add(parameterId, new TVariant(value), column, depth);
         }
 
         /// <summary>
@@ -594,23 +398,10 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void Add(String parameterId,
             System.DateTime value,
-            int column,
-            int depth,
-            System.Object pRptElement,
-            System.Object pRptGroup,
-            int paramType)
+            int column = -1,
+            int depth = -1)
         {
-            Add(parameterId, new TVariant(value), column, depth, pRptElement, pRptGroup, paramType);
-        }
-
-        /// <summary>
-        /// overloaded add for date
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        public void Add(String parameterId, System.DateTime value)
-        {
-            Add(parameterId, value, -1, -1, null, null, -1);
+            Add(parameterId, new TVariant(value), column, depth);
         }
 
         /// <summary>
@@ -620,23 +411,10 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void Add(String parameterId,
             System.Int32 value,
-            int column,
-            int depth,
-            System.Object pRptElement,
-            System.Object pRptGroup,
-            int paramType)
+            int column = -1,
+            int depth = -1)
         {
-            Add(parameterId, new TVariant(value), column, depth, pRptElement, pRptGroup, paramType);
-        }
-
-        /// <summary>
-        /// overloaded add for int32
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="value"></param>
-        public void Add(String parameterId, System.Int32 value)
-        {
-            Add(parameterId, value, -1, -1, null, null, -1);
+            Add(parameterId, new TVariant(value), column, depth);
         }
 
         /// <summary>
@@ -644,7 +422,7 @@ namespace Ict.Petra.Shared.MReporting
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void RemoveVariable(String AParameterId, int AColumn, int ADepth, eParameterFit AExact)
+        public void RemoveVariable(String AParameterId, int AColumn, int ADepth = -1, eParameterFit AExact = eParameterFit.eBestFit)
         {
             TParameter element;
 
@@ -656,16 +434,6 @@ namespace Ict.Petra.Shared.MReporting
 
                 element = GetParameter(AParameterId, AColumn, ADepth, AExact);
             }
-        }
-
-        /// <summary>
-        /// overloaded version of RemoveVariable; uses bestfit
-        /// </summary>
-        /// <param name="AParameterId"></param>
-        /// <param name="AColumn"></param>
-        public void RemoveVariable(String AParameterId, int AColumn)
-        {
-            RemoveVariable(AParameterId, AColumn, -1, eParameterFit.eBestFit);
         }
 
         /// <summary>
@@ -703,7 +471,7 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="exact">determines how strictly a match has to fit the request; can be eExact, eBestFit, eAllColumnFit, eBestFitEvenLowerLevel</param>
         /// <returns>true if the parameter exists in the current collection
         /// </returns>
-        public Boolean Exists(String parameterId, int column, int depth, eParameterFit exact)
+        public Boolean Exists(String parameterId, int column = -1, int depth = -1, eParameterFit exact = eParameterFit.eBestFit)
         {
             Boolean ReturnValue;
             TParameter element;
@@ -717,39 +485,6 @@ namespace Ict.Petra.Shared.MReporting
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// overloaded method
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="column"></param>
-        /// <param name="depth"></param>
-        /// <returns></returns>
-        public Boolean Exists(String parameterId, int column, int depth)
-        {
-            return Exists(parameterId, column, depth, eParameterFit.eBestFit);
-        }
-
-        /// <summary>
-        /// overloaded
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="column"></param>
-        /// <returns></returns>
-        public Boolean Exists(String parameterId, int column)
-        {
-            return Exists(parameterId, column, -1, eParameterFit.eBestFit);
-        }
-
-        /// <summary>
-        /// overloaded version of exists
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <returns></returns>
-        public Boolean Exists(String parameterId)
-        {
-            return Exists(parameterId, -1, -1, eParameterFit.eBestFit);
         }
 
         /// <summary>
@@ -769,7 +504,7 @@ namespace Ict.Petra.Shared.MReporting
                 if (StringHelper.IsSame(element.name, parameterId))
                 {
                     message = message + element.name + ' ' + element.value.ToString() + ' ' + element.column.ToString() + ' ' +
-                              element.level.ToString() + ' ' + element.subreport.ToString() + Environment.NewLine;
+                              element.level.ToString() + ' ' + Environment.NewLine;
                 }
             }
 
@@ -780,7 +515,7 @@ namespace Ict.Petra.Shared.MReporting
         /// Common procedure to retrieve a parameter of any type; will return a TVariant object
         /// </summary>
         /// <returns>void</returns>
-        public TVariant Get(String parameterId, int column, int depth, eParameterFit exact)
+        public TVariant Get(String parameterId, int column = -1, int depth = -1, eParameterFit exact = eParameterFit.eBestFit)
         {
             TParameter element = GetParameter(parameterId, column, depth, exact);
 
@@ -790,39 +525,6 @@ namespace Ict.Petra.Shared.MReporting
             }
 
             return new TVariant();
-        }
-
-        /// <summary>
-        /// overloaded method
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="column"></param>
-        /// <param name="depth"></param>
-        /// <returns></returns>
-        public TVariant Get(String parameterId, int column, int depth)
-        {
-            return Get(parameterId, column, depth, eParameterFit.eBestFit);
-        }
-
-        /// <summary>
-        /// overloaded version
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <param name="column"></param>
-        /// <returns></returns>
-        public TVariant Get(String parameterId, int column)
-        {
-            return Get(parameterId, column, -1, eParameterFit.eBestFit);
-        }
-
-        /// <summary>
-        /// overloaded version of Get
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <returns></returns>
-        public TVariant Get(String parameterId)
-        {
-            return Get(parameterId, -1, -1, eParameterFit.eBestFit);
         }
 
         /// <summary>
@@ -845,44 +547,12 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// get an untyped reference to an object of TRptGrpValue
-        /// </summary>
-        /// <returns>an untyped reference to an object of TRptGrpValue
-        /// </returns>
-        public System.Object GetGrpValue(String parameterId, int column, int depth, eParameterFit exact)
-        {
-            System.Object ReturnValue;
-            TParameter element;
-            ReturnValue = null;
-            element = GetParameter(parameterId, column, depth, exact);
-
-            if ((element != null) && (element.pRptGroup != null))
-            {
-                ReturnValue = element.pRptGroup;
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// overload for GetGrpValue
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <returns></returns>
-        public System.Object GetGrpValue(String parameterId)
-        {
-            return GetGrpValue(parameterId, -1, -1, eParameterFit.eBestFit);
-        }
-
-        /// <summary>
         /// Common procedure to retrieve a parameter of any type; will return a TParameter object
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TParameter GetParameter(String parameterId, int column, int depth, eParameterFit exact)
+        public TParameter GetParameter(String parameterId, int column = -1, int depth = -1, eParameterFit exact = eParameterFit.eBestFit)
         {
-            int subreport = -1;
-
             TParameter ReturnValue = null;
             TParameter columnFit = null;
             TParameter commonFit = null;
@@ -893,29 +563,9 @@ namespace Ict.Petra.Shared.MReporting
             int closestLevel = -1;
             int lowerLevel = 20;
 
-            if (parameterId != "CurrentSubReport")
-            {
-                subreport = GetOrDefault("CurrentSubReport", -1, new TVariant(-1)).ToInt();
-            }
-
-/* Perhaps I'll get more speed if I remove this..
- *          // just to be careful: if curly brackets were used by accident in the xml file, remove them
- *          if (parameterId[0] == '{')
- *          {
- *              TLogging.Log(
- *                  "deprecated: " + parameterId +
- *                  "; make sure your report xml file is correct, you might be using a variable with brackets in a function call to exists or isnull");
- *              parameterId = parameterId.Substring(1, parameterId.Length - 2);
- *
- *              if ((parameterId[0] == '{') || (parameterId[0] == '#'))
- *              {
- *                  parameterId = parameterId.Substring(1, parameterId.Length - 2);
- *              }
- *          }
- */
             foreach (TParameter element in Fparameters)
             {
-                if (((element.subreport == subreport) || (element.subreport == -1)) && StringHelper.IsSame(element.name, parameterId))
+                if (StringHelper.IsSame(element.name, parameterId))
                 {
                     // is there an exact match?
                     if ((element.level == depth) && (element.column == column))
@@ -930,7 +580,7 @@ namespace Ict.Petra.Shared.MReporting
                     }
 
                     // there is a match for all data columns (ALLCOLUMNS)
-                    if ((element.level == depth) && (element.column == ReportingConsts.ALLCOLUMNS))
+                    if ((element.level == depth) && (element.column == TParameter.ALLCOLUMNS))
                     {
                         allColumnFit = element;
                     }
@@ -1008,16 +658,6 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// overload for GetParameter
-        /// </summary>
-        /// <param name="parameterId"></param>
-        /// <returns></returns>
-        public TParameter GetParameter(String parameterId)
-        {
-            return GetParameter(parameterId, -1, -1, eParameterFit.eBestFit);
-        }
-
-        /// <summary>
         /// Read the parameters from a text file (json format);
         /// used for loading settings
         /// </summary>
@@ -1046,7 +686,7 @@ namespace Ict.Petra.Shared.MReporting
                 foreach (Dictionary<string, object> param in list)
                 {
                     string name = String.Empty;
-                    int columnNr = -1, levelNr = -1, subreport = -1;
+                    int columnNr = -1, levelNr = -1;
                     TVariant value = new TVariant();
                     foreach (KeyValuePair<string, object> entry in param)
                     {
@@ -1062,19 +702,13 @@ namespace Ict.Petra.Shared.MReporting
                         {
                             levelNr = Convert.ToInt32(entry.Value);
                         }
-                        else if (entry.Key == "subreport")
-                        {
-                            subreport = Convert.ToInt32(entry.Value);
-                        }
                         else if (entry.Key == "value")
                         {
                             value = TVariant.DecodeFromString(entry.Value.ToString());
                         }
                     }
 
-                    Add(name,
-                        value,
-                        columnNr, levelNr, subreport);
+                    Add(name, value, columnNr, levelNr);
                 }
             }
             catch (Exception E)
@@ -1096,10 +730,7 @@ namespace Ict.Petra.Shared.MReporting
         /// used for storing settings
         /// </summary>
         /// <param name="filename">relative or absolute filename</param>
-        /// <param name="AWithDebugInfo">should internal values be printed, only true for Testing
-        /// </param>
-        /// <returns>void</returns>
-        public void Save(String filename, bool AWithDebugInfo = false)
+        public void Save(String filename)
         {
             List<Object> list = new List<object>();
 
@@ -1107,30 +738,20 @@ namespace Ict.Petra.Shared.MReporting
             {
                 Dictionary<string,object> param = new Dictionary<string, object>();
 
-                if (AWithDebugInfo
-                    || ((element.paramType != ReportingConsts.CALCULATIONPARAMETERS) && (element.value.ToString() != "rptGrpValue")
-                        && (element.value.ToString() != "calculation")))
+                param.Add("name", element.name);
+                if (element.column != -1)
                 {
-                    param.Add("name", element.name);
-                    if (element.column != -1)
-                    {
-                        param.Add("column", element.column);
-                    }
-
-                    if (element.level != -1)
-                    {
-                        param.Add("level", element.level);
-                    }
-
-                    if (element.subreport != -1)
-                    {
-                        param.Add("subreport", element.subreport);
-                    }
-
-                    param.Add("value", element.value.EncodeToString());
-
-                    list.Add(param);
+                    param.Add("column", element.column);
                 }
+
+                if (element.level != -1)
+                {
+                    param.Add("level", element.level);
+                }
+
+                param.Add("value", element.value.EncodeToString());
+
+                list.Add(param);
             }
 
             // write the json file

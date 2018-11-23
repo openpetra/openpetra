@@ -23,7 +23,7 @@
 //
 using System;
 
-
+#if disabled
 using Ict.Common;
 using Ict.Common.Conversion;
 using Ict.Common.Data; // Implicit reference
@@ -1860,3 +1860,4 @@ namespace Ict.Petra.Server.MReporting.MPartner
         }
     }
 }
+#endif

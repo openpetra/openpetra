@@ -109,8 +109,6 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 return;
             }
 
-            TRptUserFunctionsFinance.FlushSqlCache();
-
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
 
@@ -119,7 +117,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
             String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
 
-            FDatacalculator = new TRptDataCalculator(DBAccess.GDBAccessObj, PathStandardReports, PathCustomReports);
+            FDatacalculator = new TRptDataCalculator(PathStandardReports, PathCustomReports);
 
             // setup the logging to go to the TProgressTracker
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
