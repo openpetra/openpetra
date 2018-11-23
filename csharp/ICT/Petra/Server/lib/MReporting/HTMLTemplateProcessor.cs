@@ -261,15 +261,16 @@ namespace Ict.Petra.Server.MReporting
                     if (searchOpen == "{LIST ")
                     {
                         string[] elements = newvalue.ToString().Split(new char[] { ',' });
-                        strValue = String.Empty;
+                        strValue = "(";
                         foreach (string element in elements)
                         {
-                            if (strValue.Length > 0)
+                            if (strValue.Length > 1)
                             {
                                 strValue += ",";
                             }
                             strValue += Quotes + element + Quotes;
                         }
+                        strValue += ")";
                     }
                     else if (newvalue.TypeVariant == eVariantTypes.eDateTime)
                     {
