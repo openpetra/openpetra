@@ -82,6 +82,7 @@ namespace Tests.MPartner.Server.Reporting
             string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Results.html";
 
             TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_only_addresses_valid_on", new TVariant(false));
             SpecificParameters.Add("param_today", new TVariant(new DateTime(2017, 1, 1)));
             SpecificParameters.Add("param_explicit_specialtypes", new TVariant("LEDGER"));
             SpecificParameters.Add("param_active", new TVariant(true));

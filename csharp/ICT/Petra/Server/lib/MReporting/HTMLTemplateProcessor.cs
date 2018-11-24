@@ -96,7 +96,11 @@ namespace Ict.Petra.Server.MReporting
                 int posAfterName = FHTMLTemplate.IndexOf("-->", pos);
                 string name = FHTMLTemplate.Substring(pos + "<!-- BeginSQL ".Length, posAfterName - (pos + "<!-- BeginSQL ".Length)).Trim();
                 int posAfterSQL = FHTMLTemplate.IndexOf("<!-- EndSQL", pos);
-                string sql = FHTMLTemplate.Substring(posAfterName + "-->".Length, posAfterSQL - (posAfterName + "-->".Length)).Trim();
+                string sql = FHTMLTemplate.Substring(posAfterName + "-->".Length, posAfterSQL - (posAfterName + "-->".Length)).
+                                          Trim().
+                                          Replace("&gt;", ">").
+                                          Replace("&lt;", "<");
+
                 FSQLQueries.Add(name, sql);
 
                 // remove sql from template
@@ -357,7 +361,7 @@ namespace Ict.Petra.Server.MReporting
                         "We are missing and #endif");
                 }
 
-                if ((condition == "") || (condition == "''") || (condition == "0") || (condition == "'*NOTUSED*'"))
+                if ((condition == "") || (condition == "''") || (condition == "0") || (condition == "'*NOTUSED*'") || (condition == "false"))
                 {
                     // drop the content of the ifdef section
                     s = s.Substring(0, posPlaceholder) + s.Substring(s.IndexOf("\n", posPlaceholderAfter) + 1);

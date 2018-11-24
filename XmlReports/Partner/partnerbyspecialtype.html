@@ -38,15 +38,15 @@ SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
  AND NOT PUB_p_partner.p_no_solicitations_l
 #endif
 #ifdef {param_only_addresses_valid_on}
-	AND pub_p_partner_location.p_send_mail_l = true
-	AND ({param_today} &gt;= pub_p_partner_location.p_date_effective_d OR pub_p_partner_location.p_date_effective_d IS NULL)
-	AND ({param_today} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
+	AND pl.p_send_mail_l = true
+	AND ({param_today} &gt;= pl.p_date_effective_d OR pl.p_date_effective_d IS NULL)
+	AND ({param_today} &lt;= pl.p_date_good_until_d OR pl.p_date_good_until_d IS NULL)
 #endif
 #ifdef {param_city}
-	AND LOWER(pub_p_location.p_city_c) = LOWER({param_city})
+	AND LOWER(loc.p_city_c) = LOWER({param_city})
 #endif
 #ifdef {param_country}
-	AND {LISTCMP param_country pub_p_location.p_country_code_c}
+	AND {LISTCMP param_country loc.p_country_code_c}
 #endif
 <!-- EndSQL SelectPartners -->
 
