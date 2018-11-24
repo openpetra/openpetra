@@ -75,14 +75,15 @@ auth.checkAuth(function() {
 		});
 	} else {
 		$("#login").show();
+		if (window.location.hostname.indexOf("demo.") !== -1)
+		{
+			$("#txtEmail").val("demo");
+			$("#txtPassword").val("demo");
+		}
 		$("#btnLogin").click(function(e) {
 			e.preventDefault();
 			user=$("#txtEmail").val();
 			pwd=$("#txtPassword").val();
-			if (user == "" && pwd == "") {
-				user = "demo";
-				pwd = "demo";
-			}
 			auth.login(user, pwd);
 		});
 	}
