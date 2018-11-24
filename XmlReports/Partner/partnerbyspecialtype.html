@@ -51,13 +51,13 @@ SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
 <!-- EndSQL SelectPartners -->
 
 <div id="column_headings" class="row">
-	<div class="col-1">Partner Key</div>
+	<div class="col-2">Partner Key</div>
 	<div class="col-2">Name</div>
 	<div class="col-2">Street</div>
 	<div class="col-1">Post Code</div>
 	<div class="col-2">City</div>
 	<div class="col-2">Country</div>
-	<div class="col-2">Phone</div>
+	<div class="col-1">Phone</div>
 </div>
 <div class="row">
 	<div class="col-12">
@@ -66,13 +66,13 @@ SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
 </div>
 <div id="content">
 	<div id="partner_template" class="row">
-		<div class="col-1">{PartnerKey}</div>
+		<div class="col-2">{PartnerKey}</div>
 		<div class="col-2">{ShortName}</div>
 		<div class="col-2">{p_street_name_c}</div>
 		<div class="col-1">{p_postal_code_c}</div>
 		<div class="col-2">{p_city_c}</div>
 		<div class="col-2">{p_country_code_c}</div>
-		<div class="col-2">{Phone}</div>
+		<div class="col-1">{Phone}</div>
 	</div>
 </div>
 
