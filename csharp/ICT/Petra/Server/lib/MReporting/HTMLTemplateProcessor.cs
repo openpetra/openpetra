@@ -341,14 +341,14 @@ namespace Ict.Petra.Server.MReporting
 
         string ProcessIfDefs(string s)
         {
-            int posPlaceholder = s.IndexOf("#ifdef ");
+            int posPlaceholder = s.IndexOf("#if ");
 
             // to avoid issues with ifdefs at the end
             s += "\n";
 
             while (posPlaceholder > -1)
             {
-                string condition = s.Substring(posPlaceholder + "#ifdef ".Length, s.IndexOf("\n", posPlaceholder) - posPlaceholder - "#ifdef ".Length);
+                string condition = s.Substring(posPlaceholder + "#if ".Length, s.IndexOf("\n", posPlaceholder) - posPlaceholder - "#if ".Length);
                 condition = InsertParameters("{{", "}}", condition, ReplaceOptions.QuotesForStrings);
                 condition = InsertParameters("{", "}", condition, ReplaceOptions.QuotesForStrings);
 
@@ -373,7 +373,7 @@ namespace Ict.Petra.Server.MReporting
                          s.Substring(s.IndexOf("\n", posPlaceholderAfter) + 1);
                 }
 
-                posPlaceholder = s.IndexOf("#ifdef ");
+                posPlaceholder = s.IndexOf("#if ");
             }
 
             return s;
