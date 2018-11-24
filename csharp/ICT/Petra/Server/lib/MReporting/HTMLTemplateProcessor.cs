@@ -117,6 +117,7 @@ namespace Ict.Petra.Server.MReporting
 
             // TODO: use prepared statements to pass parameters
             sql = InsertParameters("{{", "}}", sql, ReplaceOptions.SqlParameters);
+            sql = InsertParameters("{LISTCMP ", "}", sql, ReplaceOptions.SqlParameters);
             sql = InsertParameters("{LIST ", "}", sql, ReplaceOptions.SqlParameters);
             sql = InsertParameters("{", "}", sql, ReplaceOptions.SqlParameters);
 
@@ -178,6 +179,7 @@ namespace Ict.Petra.Server.MReporting
         public string InsertParameters(string searchOpen, string searchClose, string template, ReplaceOptions options)
         {
             int bracket = template.IndexOf(searchOpen);
+            int prevBracket = bracket;
 
             while (bracket != -1)
             {
@@ -198,9 +200,18 @@ namespace Ict.Petra.Server.MReporting
                 }
 
                 String parameter = template.Substring(firstRealChar, paramEndIdx - firstRealChar);
+                string placeHolder = searchOpen + parameter + searchClose;
+                string otherValue = string.Empty;
+
+                if (parameter.Contains(" "))
+                {
+                    string[] split = parameter.Split(new char[] {' '});
+                    parameter = split[0];
+                    // for LISTCMP
+                    otherValue = split[1];
+                }
                 bool ParameterExists = false;
                 TVariant newvalue;
-
                 if (FParameters != null)
                 {
                     newvalue = FParameters.Get(parameter, -1, -1, eParameterFit.eBestFitEvenLowerLevel);
@@ -272,6 +283,20 @@ namespace Ict.Petra.Server.MReporting
                         }
                         strValue += ")";
                     }
+                    else if (searchOpen == "{LISTCMP ")
+                    {
+                        string[] elements = newvalue.ToString().Split(new char[] { ',' });
+                        strValue = "(";
+                        foreach (string element in elements)
+                        {
+                            if (strValue.Length > 1)
+                            {
+                                strValue += " AND ";
+                            }
+                            strValue += Quotes + element + Quotes + " = " + otherValue;
+                        }
+                        strValue += ")";
+                    }
                     else if (newvalue.TypeVariant == eVariantTypes.eDateTime)
                     {
                         strValue = Quotes + newvalue.ToDate().ToString("yyyy-MM-dd") + Quotes;
@@ -288,7 +313,7 @@ namespace Ict.Petra.Server.MReporting
                     {
                         strValue = newvalue.ToDecimal().ToString("0.00");
                     }
-                    template = template.Replace(searchOpen + parameter + searchClose, strValue);
+                    template = template.Replace(placeHolder, strValue);
                 }
                 catch (Exception e)
                 {
@@ -296,7 +321,15 @@ namespace Ict.Petra.Server.MReporting
                         "While trying to format parameter " + parameter + ", there was a problem with formatting." + Environment.NewLine + e.Message);
                 }
 
+                prevBracket = bracket;
                 bracket = template.IndexOf(searchOpen);
+                if ((prevBracket >= bracket) && (bracket >= 0)) 
+                {
+                    TLogging.Log("endless loop in InsertParameters at pos " + bracket.ToString());
+                    TLogging.Log("after replacing " + placeHolder);
+                    TLogging.Log(template);
+                    throw new Exception("Problem in InsertParameters, endless loop");
+                }
             } // while
 
             return template;
