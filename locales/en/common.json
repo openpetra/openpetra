@@ -43,6 +43,7 @@
         "Subscription_label":"Subscriptions",
         "Reports_label": "Reports",
         "PartnerReports_label": "Reports",
+        "PartnerByCity_label": "Partner by City",
         "PartnerBySpecialType_label": "Partner with Categories",
         "PartnerBySubscription_label": "Partner with Subscriptions",
         "Setup_label": "Setup",
@@ -349,6 +350,14 @@
     "PartnerBySpecialType":{
       "caption":"Partner with Categories",
       "partnertypes":"Categories",
+      "activePartnersOnly":"Active Partners Only",
+      "onlyValidAddresses":"Only valid mailing addresses",
+      "excludeNoSolicitations":"Exclude people who don't want any solicitations"
+    },
+
+    "PartnerByCity":{
+      "caption":"Partner by City",
+      "city":"City",
       "activePartnersOnly":"Active Partners Only",
       "onlyValidAddresses":"Only valid mailing addresses",
       "excludeNoSolicitations":"Exclude people who don't want any solicitations"

@@ -18,6 +18,7 @@ OpenPetra:
                     #    CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
+                        PartnerByCity:
                         PartnerBySpecialType:
                         PartnerBySubscription:
 

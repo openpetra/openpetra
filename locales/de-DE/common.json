@@ -43,6 +43,7 @@
         "Subscription_label": "Abonnements",
         "Reports_label": "Berichte",
         "PartnerReports_label": "Berichte",
+        "PartnerByCity_label": "Partner pro Stadt",
         "PartnerBySpecialType_label": "Partner mit Kategorien",
         "PartnerBySubscription_label": "Partner mit Abonnements",
         "Setup_label": "Konfiguration",
@@ -348,6 +349,14 @@
     "PartnerBySpecialType":{
       "caption":"Partner mit Kategorien",
       "partnertypes":"Kategorien",
+      "activePartnersOnly":"Nur aktive Partner",
+      "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
+      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+    },
+
+    "PartnerByCity":{
+      "caption":"Partner pro Stadt",
+      "city":"Stadt",
       "activePartnersOnly":"Nur aktive Partner",
       "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
       "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
