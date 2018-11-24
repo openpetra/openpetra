@@ -50,8 +50,7 @@ function calculate_report() {
 	});
 
 	params['param_explicit_specialtypes'] = applied_tags;
-	let datenow = new Date();
-	params['param_today'] = datenow.toISOString();
+	params['param_today'] = new Date();
 
 	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySpecialType.json", params);
 }

@@ -102,7 +102,21 @@ function calculate_report_common(report_common_params_file, specific_params) {
 	// now make the parameters into a data table
 	param_table = []
 	for (var param in specific_params) {
-		param_table.push({'name': param, 'value': 'eString:' + specific_params[param], 'column': -1, 'level': -1, 'subreport': -1});
+		if (typeof specific_params[param] === "boolean") {
+			specific_params[param] = "eBoolean:" + specific_params[param];
+		}
+		else if (specific_params[param] instanceof Date) {
+			strDate = specific_params[param].toISOString();
+			// transform from 2018-11-24T21:10:23.922Z to 2018-11-24T21:10:23
+			strDate = strDate.substr(0,"2018-11-24T21:10:23".length);
+			specific_params[param] = 'eDateTime:"' + strDate + '"';
+		}
+		else
+		{
+			specific_params[param] = "eString:" + specific_params[param];
+		} 
+		param_table.push({'name': param, 'value': specific_params[param], 'column': -1, 'level': -1});
+
 	}
 
 	if (report_common_params_file != '') {
