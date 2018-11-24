@@ -24,7 +24,6 @@
 var last_opened_entry_data = {};
 
 $('document').ready(function () {
-	var r = {};
 	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPartnerTypes', {}).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		display_report_form(parsed);
@@ -51,12 +50,10 @@ function calculate_report() {
 	});
 
 	params['param_explicit_specialtypes'] = applied_tags;
-	params['xmlfiles'] = 'Partner/partnerbyspecialtype.xml';
-	params['currentReport'] = 'Partner By Special Type';
 	let datenow = new Date();
 	params['param_today'] = datenow.toISOString();
 
-	calculate_report_common("", params);
+	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySpecialType.json", params);
 }
 
 // used to load all available tags

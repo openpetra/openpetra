@@ -106,7 +106,7 @@ function calculate_report_common(report_common_params_file, specific_params) {
 	}
 
 	if (report_common_params_file != '') {
-		src.get(report_common_params_file, r).then(function (data) {
+		src.get(report_common_params_file, {}).then(function (data) {
 			for (var param in data.data) {
 				// only if parameter does not exist yet
 				let exists = false;

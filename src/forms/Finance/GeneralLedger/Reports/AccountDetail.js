@@ -43,7 +43,6 @@ function calculate_report() {
 	// extract information from a jquery object
 	let params = extract_data(obj);
 
-	params['xmlfiles'] = 'Finance/accountdetail.xml,Finance/accountdetailcommon.xml,Finance/finance.xml,common.xml';
 	params['param_ledger_number_i'] = window.localStorage.getItem('current_ledger');
 	params['param_account_codes'] = '';
 	params['param_rgrAccounts'] = '';
