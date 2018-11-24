@@ -102,8 +102,10 @@ namespace Tests.MPartner.Server.Reporting
             string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Results.html";
 
             TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_only_addresses_valid_on", new TVariant(true));
             SpecificParameters.Add("param_today", new TVariant(new DateTime(2017, 1, 1)));
             SpecificParameters.Add("param_city", new TVariant("Westhausen"));
+            SpecificParameters.Add("param_active", new TVariant(true));
 
             TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
