@@ -43,6 +43,7 @@
         "Subscription_label":"Subscriptions",
         "Reports_label": "Reports",
         "PartnerReports_label": "Reports",
+        "PartnerByCity_label": "Partner by City",
         "PartnerBySpecialType_label": "Partner with Categories",
         "PartnerBySubscription_label": "Partner with Subscriptions",
         "Setup_label": "Setup",
@@ -93,6 +94,8 @@
         "deleted": "Successfully deleted",
         "notdeleted": "Deletion failed",
         "report": "Show Report",
+        "download_excel": "Get Excel file",
+        "download_pdf": "Get PDF file",
         "any": "any",
         "status": "Status",
         "name": "Name",
@@ -352,6 +355,14 @@
       "excludeNoSolicitations":"Exclude people who don't want any solicitations"
     },
 
+    "PartnerByCity":{
+      "caption":"Partner by City",
+      "city":"City",
+      "activePartnersOnly":"Active Partners Only",
+      "onlyValidAddresses":"Only valid mailing addresses",
+      "excludeNoSolicitations":"Exclude people who don't want any solicitations"
+    },
+
     "ChangeLanguage": {
         "caption": "Change the language"
     },
@@ -457,5 +468,15 @@
       "uploadsuccess": "New hierarchy of cost centres was imported successfully",
       "uploaderror": "Importing of new cost centres failed.",
       "costcentres_file": "CostCentres"
+    },
+    "AccountDetail": {
+      "caption": "Report for the transactions on account level",
+      "start_period": "From month",
+      "end_period": "To month",
+      "year": "Year",
+      "cost_centre_start": "From Cost Centre",
+      "cost_centre_end": "To Cost Centre",
+      "account_start": "From Account",
+      "account_end": "To Account"
     }
 }

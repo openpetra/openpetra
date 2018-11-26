@@ -18,44 +18,65 @@
 
 </div>
 
-
 <div class="container" id="reportfilter">
 	<div class="container group-container">
 		<div class="row">
-			<div class="col">
-				<span>{partnertypes}:</span>
+			<div class="col-2">
+				<span>{year}:</span>
 			</div>
-			<div class="col">
-				<div class="tab-pane" id="types" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+			<div class="col-2">
+				<select class="" name="param_year_i" onchange="updatePeriods()"></select>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-1">
-				<input type="checkbox" name="param_active" checked>
+			<div class="col-2">
+				<span>{start_period}:</span>
 			</div>
-			<div class="col">
-				<span>{activePartnersOnly}</span>
+			<div class="col-2">
+				<select name="param_start_period_i"/>
 			</div>
-			<data value="param_active"></data>
 		</div>
 		<div class="row">
-			<div class="col-1">
-				<input type="checkbox" name="param_only_addresses_valid_on">
+			<div class="col-2">
+				<span>{end_period}:</span>
 			</div>
-			<div class="col">
-				<span>{onlyValidAddresses}</span>
+			<div class="col-2">
+				<select name="param_end_period_i"/>
 			</div>
-			<data value="param_only_addresses_valid_on"></data>
 		</div>
+		<!--
 		<div class="row">
-			<div class="col-1">
-				<input type="checkbox" name="param_excludeNoSolicitations">
+			<div class="col">
+				<span>{cost_centre_start}:</span>
 			</div>
 			<div class="col">
-				<span>{excludeNoSolicitations}</span>
+				<div class="autocomplete">
+					<input type="input" name="param_cost_centre_code_start" value="4300">
+				</div>
 			</div>
-			<data value="param_excludeNoSolicitations"></data>
+			<div class="col">
+				<span>{cost_centre_end}:</span>
+			</div>
+			<div class="col">
+				<input type="input" name="param_cost_centre_code_end" value="4300">
+			</div>
 		</div>
+		-->
+		<div class="row">
+			<div class="col">
+				<span>{account_start}:</span>
+			</div>
+			<div class="col">
+				<input type="input" name="param_account_code_start" value="0100">
+			</div>
+			<div class="col">
+				<span>{account_end}:</span>
+			</div>
+			<div class="col">
+				<input type="input" name="param_account_code_end" value="0400">
+			</div>
+		</div>
+
 	</div>
 
 	<button type="button" class="btn btn-primary" onclick="calculate_report()">{forms.report}</button>
@@ -71,4 +92,6 @@
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/finance.js" charset="utf-8"></script>
 <script src="/src/lib/reports.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>

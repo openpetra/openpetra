@@ -1,4 +1,3 @@
-//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -22,20 +21,23 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// set the Content-Type header
-// see https://stackoverflow.com/questions/211348/how-to-let-an-asmx-file-output-json
-// https://weblogs.asp.net/scottgu/json-hijacking-and-how-asp-net-ajax-1-0-mitigates-these-attacks
-// we can only use POST with json and ASP.Net
+var last_opened_entry_data = {};
 
-var api = axios.create({
-    baseURL: '/api/',
-    responseType: 'json'
-});
-api.defaults.headers.post['Content-Type'] = 'application/json';
+function calculate_report() {
+	let obj = $('#reportfilter');
+	// extract information from a jquery object
+	let params = extract_data(obj);
 
-// for the report parameters json file
-var src = axios.create({
-    baseURL: '/src/',
-    responseType: 'json'
-});
-src.defaults.headers.get['Content-Type'] = 'application/json';
+	// get all tags for the partner
+	applied_tags = []
+	obj.find('#types').find('.tpl_check').each(function (i, o) {
+		o = $(o);
+		if (o.find('input').is(':checked')) {
+			applied_tags.push(o.find('data').attr('value'));
+		}
+	});
+
+	params['param_today'] = new Date();
+
+	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerByCity.json", params);
+}

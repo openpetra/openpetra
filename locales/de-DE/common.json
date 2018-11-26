@@ -43,6 +43,7 @@
         "Subscription_label": "Abonnements",
         "Reports_label": "Berichte",
         "PartnerReports_label": "Berichte",
+        "PartnerByCity_label": "Partner pro Stadt",
         "PartnerBySpecialType_label": "Partner mit Kategorien",
         "PartnerBySubscription_label": "Partner mit Abonnements",
         "Setup_label": "Konfiguration",
@@ -67,7 +68,7 @@
         "Users_label": "Benutzer",
         "Database_label": "Datenbank",
         "FindPartners_label": "Partner suchen",
-        "AccountDetail_label": "Bericht über die Konten",
+        "AccountDetail_label": "Bericht über die Kontenbewegungen",
         "Motivations_label": "Verwendungszwecke verwalten",
         "switchledger":"Aktiver Ledger wurde geändert auf:",
         "BankImport_label":"Spenden von Bank importieren",
@@ -92,7 +93,9 @@
         "notsaved": "Fehler beim Speichern",
         "deleted": "Erfolgreich gelöscht",
         "notdeleted": "Fehler beim Löschen",
-        "report": "Bericht anzeigen",
+        "report": "Bericht erzeugen",
+        "download_excel": "Excel Datei",
+        "download_pdf": "PDF Datei",
         "any": "alle",
         "status": "Status",
         "name": "Name",
@@ -351,6 +354,14 @@
       "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
     },
 
+    "PartnerByCity":{
+      "caption":"Partner pro Stadt",
+      "city":"Stadt",
+      "activePartnersOnly":"Nur aktive Partner",
+      "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
+      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+    },
+
     "ChangeLanguage": {
         "caption": "Sprache wechseln"
     },
@@ -455,5 +466,15 @@
       "uploadsuccess": "Die neuen Kostenstellen wurden erfolgreich importiert.",
       "uploaderror": "Neue Kostenstellen konnten nicht importiert werden.",
       "costcentres_file": "Kostenstellen"
+    },
+    "AccountDetail": {
+      "caption": "Bericht über die Kontenbewegungen",
+      "start_period": "Von Monat",
+      "end_period": "Bis Monat",
+      "year": "Jahr",
+      "cost_centre_start": "Von Kostenstelle",
+      "cost_centre_end": "Bis Kostenstelle",
+      "account_start": "Von Konto",
+      "account_end": "Bis Konto"
     }
 }
