@@ -22,13 +22,23 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using Ict.Common.DB;
+using Ict.Common;
+using Ict.Common.Data;
 
-namespace Ict.Petra.Shared.MReporting
+namespace Ict.Petra.Server.MSysMan.DBUpgrades
 {
     /// <summary>
-    /// This will be removed soon.
+    /// Upgrade the database
     /// </summary>
-    public class TResultList
+    public static partial class TDBUpgrade
     {
+        /// Upgrade to version 2018-11
+        public static bool UpgradeDatabase201810_201811()
+        {
+            // there are no changes to the database structure
+            return true;
+        }
     }
 }

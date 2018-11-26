@@ -93,7 +93,7 @@ namespace Tests.MReporting.Tools
         /// <summary>
         /// calculate the report and save the result and returned parameters to file
         /// </summary>
-        public static void CalculateReport(string AReportParameterXmlFile, TParameterList ASpecificParameters, int ALedgerNumber = -1)
+        public static void CalculateReport(string AReportParameterJsonFile, string AReportResultFile, TParameterList ASpecificParameters, int ALedgerNumber = -1)
         {
             // important: otherwise month names are in different language, etc
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
@@ -101,14 +101,13 @@ namespace Tests.MReporting.Tools
             TReportGeneratorUIConnector ReportGenerator = new TReportGeneratorUIConnector();
             TParameterList Parameters = new TParameterList();
 
-            if (AReportParameterXmlFile.IndexOf(".Test.xml") == -1)
+            if (AReportParameterJsonFile.IndexOf(".json") == -1)
             {
-                throw new Exception("invalid report name, should end with .Test.xml");
+                throw new Exception("invalid report name, should end with .json");
             }
 
-            string resultFile = AReportParameterXmlFile.Replace(".Test.xml", ".Results.csv");
-            string parameterFile = AReportParameterXmlFile.Replace(".Test.xml", ".Parameters.xml");
-            Parameters.Load(AReportParameterXmlFile);
+            string resultFile = AReportResultFile;
+            Parameters.Load(AReportParameterJsonFile);
 
             if (ALedgerNumber != -1)
             {
@@ -125,30 +124,25 @@ namespace Tests.MReporting.Tools
             }
 
             Assert.IsTrue(ReportGenerator.GetSuccess(), "Report did not run successfully");
-            TResultList Results = new TResultList();
 
-            Results.LoadFromDataTable(ReportGenerator.GetResult());
-            Parameters.LoadFromDataTable(ReportGenerator.GetParameter());
-
-            Parameters.Sort();
-            Parameters.Save(parameterFile, false);
-            Results.WriteCSV(Parameters, resultFile, ",");
+            using (StreamWriter sw = new StreamWriter(resultFile))
+            {
+                sw.Write(ReportGenerator.DownloadHTML());
+            }
         }
 
         /// <summary>
         /// compare the written result and parameter files with the files approved by a domain expert
         /// </summary>
-        public static void TestResult(string AReportParameterXmlFile, int ALedgerNumber = -1)
+        public static void TestResult(string AResultsFile, int ALedgerNumber = -1)
         {
-            if (AReportParameterXmlFile.IndexOf(".Test.xml") == -1)
+            if (AResultsFile.IndexOf(".Results.html") == -1)
             {
-                throw new Exception("invalid report name, should end with .Test.xml");
+                throw new Exception("invalid file name, should end with .Results.html");
             }
 
-            string resultFile = AReportParameterXmlFile.Replace(".Test.xml", ".Results.csv");
-            string parameterFile = AReportParameterXmlFile.Replace(".Test.xml", ".Parameters.xml");
-            string resultExpectedFile = AReportParameterXmlFile.Replace(".Test.xml", ".Results.Expected.csv");
-            string parameterExpectedFile = AReportParameterXmlFile.Replace(".Test.xml", ".Parameters.Expected.xml");
+            string resultFile = AResultsFile;
+            string resultExpectedFile = AResultsFile.Replace(".Results.html", ".Results.Expected.html");
 
             SortedList <string, string>ToReplace = new SortedList <string, string>();
             ToReplace.Add("{ledgernumber}", ALedgerNumber.ToString());
@@ -167,10 +161,6 @@ namespace Tests.MReporting.Tools
             Assert.True(TTextFile.SameContent(resultFile, resultExpectedFile, true, ToReplace, true),
                 "the file " + resultFile + " should have the same content as " + resultExpectedFile);
 
-            Assert.True(TTextFile.SameContent(parameterFile, parameterExpectedFile, true, ToReplace, true),
-                "the file " + parameterFile + " should have the same content as " + parameterExpectedFile);
-
-            File.Delete(parameterFile);
             File.Delete(resultFile);
         }
     }

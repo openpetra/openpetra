@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>OpenPetra Reports</title>
+<link href="/css/report.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="head">
+	<div class="title1">Partner By City</div>
+</div>
+
+<!-- BeginSQL SelectPartners -->
+SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
+	PUB_p_partner.p_partner_short_name_c AS ShortName,
+	PUB_p_partner.p_partner_class_c AS PartnerClass,
+	loc.*
+	FROM  PUB_p_partner, PUB_p_partner_location pl, PUB_p_location loc
+	WHERE pl.p_partner_key_n = pub_p_partner.p_partner_key_n
+		AND pl.p_location_key_i = loc.p_location_key_i
+#if {param_active}
+	AND PUB_p_partner.p_status_code_c = 'ACTIVE'
+#endif
+#if {param_families_only}
+	AND PUB_p_partner.p_partner_class_c LIKE 'FAMILY%'
+#endif
+#if {param_excludeNoSolicitations}
+ AND NOT PUB_p_partner.p_no_solicitations_l
+#endif
+#if {param_only_addresses_valid_on}
+	AND pl.p_send_mail_l = true
+	AND ({param_today} &gt;= pl.p_date_effective_d OR pl.p_date_effective_d IS NULL)
+	AND ({param_today} &lt;= pl.p_date_good_until_d OR pl.p_date_good_until_d IS NULL)
+#endif
+#if {param_city}
+	AND LOWER(loc.p_city_c) = LOWER({param_city})
+#endif
+#if {param_country}
+	AND {LISTCMP param_country loc.p_country_code_c}
+#endif
+<!-- EndSQL SelectPartners -->
+
+<div id="column_headings" class="row">
+	<div class="col-2">Partner Key</div>
+	<div class="col-2">Name</div>
+	<div class="col-2">Street</div>
+	<div class="col-1">Post Code</div>
+	<div class="col-2">City</div>
+	<div class="col-2">Country</div>
+	<div class="col-1">Phone</div>
+</div>
+<div class="row">
+	<div class="col-12">
+		<hr/>
+	</div>
+</div>
+<div id="content">
+	<div id="partner_template" class="row">
+		<div class="col-2">{PartnerKey}</div>
+		<div class="col-2">{ShortName}</div>
+		<div class="col-2">{p_street_name_c}</div>
+		<div class="col-1">{p_postal_code_c}</div>
+		<div class="col-2">{p_city_c}</div>
+		<div class="col-2">{p_country_code_c}</div>
+		<div class="col-1">{Phone}</div>
+	</div>
+</div>
+
+</body>
+</html>

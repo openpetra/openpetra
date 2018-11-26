@@ -30,6 +30,7 @@ using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
+#if disabled
 namespace Ict.Petra.Server.MReporting.MFinance
 {
     /// <summary>
@@ -592,3 +593,4 @@ namespace Ict.Petra.Server.MReporting.MFinance
         }
     }
 }
+#endif

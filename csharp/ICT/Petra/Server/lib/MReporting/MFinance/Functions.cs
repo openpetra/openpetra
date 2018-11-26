@@ -33,6 +33,7 @@ using System.Collections;
 using System.Data.Odbc;
 using Ict.Petra.Server.MFinance.Reporting.WebConnectors;
 
+#if disabled
 namespace Ict.Petra.Server.MReporting.MFinance
 {
     /// <summary>
@@ -1208,3 +1209,4 @@ namespace Ict.Petra.Server.MReporting.MFinance
         }
     }
 }
+#endif

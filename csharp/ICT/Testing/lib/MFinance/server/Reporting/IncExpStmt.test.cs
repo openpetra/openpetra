@@ -80,7 +80,8 @@ namespace Tests.MFinance.Server.Reporting
         [Ignore("IncExc statement needs fixing to calculate the summaries in glm")]
         public void TestIncExpStatement()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.Test.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.Test.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.Results.csv";
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_start_period_i", 1);
@@ -88,9 +89,9 @@ namespace Tests.MFinance.Server.Reporting
             SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
             string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(LedgerNumber);
             SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters, LedgerNumber);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters, LedgerNumber);
 
-            TReportTestingTools.TestResult(testFile, LedgerNumber);
+            TReportTestingTools.TestResult(resultFile, LedgerNumber);
         }
     }
 }

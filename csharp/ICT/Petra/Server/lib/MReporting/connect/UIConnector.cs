@@ -48,6 +48,8 @@ using Ict.Common.Session;
 using Ict.Petra.Shared.MCommon;
 using Ict.Common.Exceptions;
 using Npgsql;
+using OfficeOpenXml;
+using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
 {
@@ -57,8 +59,9 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
     public class TReportGeneratorUIConnector
     {
         private TRptDataCalculator FDatacalculator;
-        private TResultList FResultList;
         private TParameterList FParameterList;
+        private string FHTMLOutput;
+        private HtmlDocument FHTMLDocument;
         private String FErrorMessage = string.Empty;
         private Exception FException = null;
         private Boolean FSuccess;
@@ -106,8 +109,6 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 return;
             }
 
-            TRptUserFunctionsFinance.FlushSqlCache();
-
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
 
@@ -116,7 +117,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
             String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
 
-            FDatacalculator = new TRptDataCalculator(DBAccess.GDBAccessObj, PathStandardReports, PathCustomReports);
+            FDatacalculator = new TRptDataCalculator(PathStandardReports, PathCustomReports);
 
             // setup the logging to go to the TProgressTracker
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
@@ -188,7 +189,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FErrorMessage, ref FException))
+                    if (FDatacalculator.GenerateResult(ref FParameterList, ref FHTMLOutput, out FHTMLDocument, ref FErrorMessage, ref FException))
                         {
                             FSuccess = true;
                             SubmissionOK = true;
@@ -242,19 +243,12 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         }
 
         /// <summary>
-        /// get the result of the report calculation
-        /// </summary>
-        public DataTable GetResult()
-        {
-            return FResultList.ToDataTable(FParameterList);
-        }
-
-        /// <summary>
         /// get the environment variables after report calculation
         /// </summary>
-        public DataTable GetParameter()
+        [NoRemoting]
+        public TParameterList GetParameter()
         {
-            return FParameterList.ToDataTable();
+            return FParameterList;
         }
 
         /// <summary>
@@ -286,26 +280,15 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
         private bool ExportToExcelFile(string AFilename)
         {
-            bool ExportOnlyLowestLevel = false;
+            // transform the HTML output to xlsx file
+            ExcelPackage ExcelDoc = HTMLTemplateProcessor.HTMLToCalc(FHTMLDocument);
 
-            // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
-            // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
-            // output looks much nicer if it doesn't contain the unnecessary higher levels.
-            if (FParameterList.Exists("csv_export_only_lowest_level"))
-            {
-                ExportOnlyLowestLevel = FParameterList.Get("csv_export_only_lowest_level").ToBool();
-            }
-
-            XmlDocument doc = FResultList.WriteXmlDocument(FParameterList, ExportOnlyLowestLevel);
-
-            if (doc != null)
+            if (ExcelDoc != null)
             {
                 using (FileStream fs = new FileStream(AFilename, FileMode.Create))
                 {
-                    if (TCsv2Xml.Xml2ExcelStream(doc, fs, false))
-                    {
-                        fs.Close();
-                    }
+                    ExcelDoc.SaveAs(fs);
+                    fs.Close();
                 }
 
                 return true;
@@ -314,62 +297,50 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return false;
         }
 
-        private bool PrintToPDF(string AFilename, bool AWrapColumn)
+        private bool PrintToPDF(string AFilename)
         {
-            TPdfPrinter pdfPrinter = new TPdfPrinter(TGfxPrinter.ePrinterBehaviour.eReport);
-            TReportPrinterLayout layout = new TReportPrinterLayout(FResultList, FParameterList, pdfPrinter, AWrapColumn);
-
-            eOrientation Orientation = eOrientation.ePortrait;
-
-            pdfPrinter.Init(Orientation, layout, eMarginType.ePrintableArea);
-
-            pdfPrinter.SavePDF(AFilename);
+            // transform the HTML output to pdf file
+            HTMLTemplateProcessor.HTMLToPDF(FHTMLDocument, AFilename);
 
             return true;
         }
 
-        private String PrintToText(bool AWrapColumn)
+        /// Download the result of the report as HTML
+        public string DownloadHTML()
         {
-            TTxtPrinter txtPrinter = new TTxtPrinter();
-            TReportPrinterLayout ReportTxtPrinter = new TReportPrinterLayout(FResultList, FParameterList, txtPrinter, AWrapColumn);
-            ReportTxtPrinter.PrintReport();
-
-            return txtPrinter.GetString();
-        }
-
-        private bool ExportToCSVFile(string AFilename)
-        {
-            bool ExportOnlyLowestLevel = false;
-
-            // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
-            // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
-            // output looks much nicer if it doesn't contain the unnecessary higher levels.
-            if (FParameterList.Exists("csv_export_only_lowest_level"))
-            {
-                ExportOnlyLowestLevel = FParameterList.Get("csv_export_only_lowest_level").ToBool();
-            }
-
-            return FResultList.WriteCSV(FParameterList, AFilename, ExportOnlyLowestLevel);
-        }
-
-        /// Download the result of the report as Text in utf8 encoding
-        public string DownloadText(bool AWrapColumn)
-        {
-            return PrintToText(AWrapColumn);
+            return FHTMLOutput;
         }
 
         /// Download the result of the report as PDF File in base64 encoding
-        public string DownloadPDF(bool AWrapColumn)
+        public string DownloadPDF()
         {
             string PDFFile = TFileHelper.GetTempFileName(
                 FParameterList.Get("currentReport").ToString(),
                 ".pdf");
 
-            if (PrintToPDF(PDFFile, AWrapColumn))
+            if (PrintToPDF(PDFFile))
             {
                 byte[] data = System.IO.File.ReadAllBytes(PDFFile);
                 string result = Convert.ToBase64String(data);
                 System.IO.File.Delete(PDFFile);
+                return result;
+            }
+
+            return String.Empty;
+        }
+
+        /// Download the result of the report as Excel File in base64 encoding
+        public string DownloadExcel()
+        {
+            string ExcelFile = TFileHelper.GetTempFileName(
+                FParameterList.Get("currentReport").ToString(),
+                ".xls");
+
+            if (ExportToExcelFile(ExcelFile))
+            {
+                byte[] data = System.IO.File.ReadAllBytes(ExcelFile);
+                string result = Convert.ToBase64String(data);
+                System.IO.File.Delete(ExcelFile);
                 return result;
             }
 
@@ -381,9 +352,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// </summary>
         public Boolean SendEmail(string AEmailAddresses,
             bool AAttachExcelFile,
-            bool AAttachCSVFile,
             bool AAttachPDF,
-            bool AWrapColumn,
             out TVerificationResultCollection AVerification)
         {
             TSmtpSender EmailSender = null;
@@ -409,25 +378,13 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     }
                 }
 
-                if (AAttachCSVFile)
-                {
-                    string CSVFile = TFileHelper.GetTempFileName(
-                        FParameterList.Get("currentReport").ToString(),
-                        ".csv");
-
-                    if (ExportToCSVFile(CSVFile))
-                    {
-                        FilesToAttach.Add(CSVFile);
-                    }
-                }
-
                 if (AAttachPDF)
                 {
                     string PDFFile = TFileHelper.GetTempFileName(
                         FParameterList.Get("currentReport").ToString(),
                         ".pdf");
 
-                    if (PrintToPDF(PDFFile, AWrapColumn))
+                    if (PrintToPDF(PDFFile))
                     {
                         FilesToAttach.Add(PDFFile);
                     }

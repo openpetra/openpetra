@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,8 +69,8 @@ namespace Tests.Reporting
             value.ApplyFormatString("Currency");
             Assert.AreEqual("0", value.ToFormattedString(), "null value for currency should be 0");
             value = new TVariant(value.ToFormattedString());
-            parameters.Add("amountdue", value, -1, 2, null, null, ReportingConsts.CALCULATIONPARAMETERS);
-            parameters.Save("testDebug.csv", true);
+            parameters.Add("amountdue", value, -1, 2);
+            parameters.Save("testDebug.json");
             Assert.AreEqual(true, parameters.Exists("amountdue", -1, 1, eParameterFit.eBestFitEvenLowerLevel), "can find added parameter");
             Assert.AreEqual("0", parameters.Get("amountdue", -1, 2,
                     eParameterFit.eBestFit).ToFormattedString(), "currency parameter is stored not correctly");
@@ -79,11 +79,11 @@ namespace Tests.Reporting
                     eParameterFit.eBestFitEvenLowerLevel).ToFormattedString(), "currency parameter cannot be accessed from level up");
 
             parameters.Add("IntegerList", "300,400");
-            parameters.Save("test.csv", false);
-            parameters.Load(Path.GetFullPath("test.csv"));
+            parameters.Save("test.json");
+            parameters.Load(Path.GetFullPath("test.json"));
             Assert.AreEqual("eString:300,400", parameters.Get(
                     "IntegerList").EncodeToString(), "integers separated by comma should be treated as string");
-            parameters.Save("test2.csv", true);
+            parameters.Save("test2.json");
         }
     }
 }

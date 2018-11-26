@@ -41,6 +41,7 @@
   <include name="libsodium-64.dll"/>
   <include name="MailKit.dll"/>
   <include name="MimeKit.dll"/>
+  <include name="HtmlAgilityPack.dll"/>
 </patternset>
 
 <patternset id="NunitPattern">

@@ -2088,6 +2088,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             AVerificationResult = new TVerificationResultCollection();
             TLocationPK[, ] SimilarLocationReUseKeyMapping = new TLocationPK[1, 2];
 
+            // for the moment, don't check for changed addresses, or duplicate addresses
+            return TSubmitChangesResult.scrOK;
+
             if (AInspectDS.PLocation != null)
             {
 //              TLogging.LogAtLevel(9, "SubmitChanges: PLocation Rows: " + AInspectDS.PLocation.Rows.Count.ToString());

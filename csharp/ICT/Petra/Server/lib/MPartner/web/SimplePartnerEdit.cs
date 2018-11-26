@@ -511,7 +511,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ref SaveDS,
                     ref ResponseDS,
                     out AVerificationResult);
-                return result != TSubmitChangesResult.scrError;
+                return result == TSubmitChangesResult.scrOK;
             }
             catch (Exception e)
             {

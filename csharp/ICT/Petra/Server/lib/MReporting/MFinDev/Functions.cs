@@ -21,6 +21,8 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
+#if disabled
 using System;
 using System.Data.Odbc;
 using System.Data;
@@ -910,3 +912,4 @@ namespace Ict.Petra.Server.MReporting.MFinDev
         }
     }
 }
+#endif

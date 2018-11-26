@@ -78,17 +78,18 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerBySpecialTypes()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Test.xml";
+            string testFile = "../../../openpetra-client-js/src/forms/Partner/Reports/PartnerReports/PartnerBySpecialType.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Results.html";
 
             TParameterList SpecificParameters = new TParameterList();
-            //SpecificParameters.Add("param_today", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
-            //SpecificParameters.Add("param_only_addresses_valid_on", true);
+            SpecificParameters.Add("param_only_addresses_valid_on", new TVariant(false));
+            SpecificParameters.Add("param_today", new TVariant(new DateTime(2017, 1, 1)));
             SpecificParameters.Add("param_explicit_specialtypes", new TVariant("LEDGER"));
             SpecificParameters.Add("param_active", new TVariant(true));
 
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
-            TReportTestingTools.TestResult(testFile);
+            TReportTestingTools.TestResult(resultFile);
         }
 
         /// <summary>
@@ -97,15 +98,18 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerByCity()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Test.xml";
+            string testFile = "../../../openpetra-client-js/src/forms/Partner/Reports/PartnerReports/PartnerByCity.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Results.html";
 
             TParameterList SpecificParameters = new TParameterList();
-            SpecificParameters.Add("param_today", new TVariant(DateTime.Today));
+            SpecificParameters.Add("param_only_addresses_valid_on", new TVariant(true));
+            SpecificParameters.Add("param_today", new TVariant(new DateTime(2017, 1, 1)));
             SpecificParameters.Add("param_city", new TVariant("Westhausen"));
+            SpecificParameters.Add("param_active", new TVariant(true));
 
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters);
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
-            TReportTestingTools.TestResult(testFile);
+            TReportTestingTools.TestResult(resultFile);
         }
     }
 }

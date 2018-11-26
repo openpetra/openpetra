@@ -16,6 +16,7 @@ PasswordUtilities*=${dir.3rdParty}/PasswordUtilities/PasswordUtilities.dll
 Sodium*=${dir.3rdParty}/libsodium-net/Sodium.dll
 MailKit*=${dir.3rdParty}/MailKit/MailKit.dll
 MimeKit*=${dir.3rdParty}/MailKit/MimeKit.dll
+HtmlAgilityPack*=${dir.3rdParty}/HtmlAgilityPack/HtmlAgilityPack.dll
 Accessibility=${csharpStdLibs}/Accessibility.dll
 System.Collections.Generic=${csharpStdLibs}/System.Core.dll
 System.Configuration=${csharpStdLibs}/System.Configuration.dll
