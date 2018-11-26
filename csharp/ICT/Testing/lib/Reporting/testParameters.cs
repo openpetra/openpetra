@@ -80,7 +80,7 @@ namespace Tests.Reporting
 
             parameters.Add("IntegerList", "300,400");
             parameters.Save("test.json");
-            parameters.Load(Path.GetFullPath("test.csv"));
+            parameters.Load(Path.GetFullPath("test.json"));
             Assert.AreEqual("eString:300,400", parameters.Get(
                     "IntegerList").EncodeToString(), "integers separated by comma should be treated as string");
             parameters.Save("test2.json");
