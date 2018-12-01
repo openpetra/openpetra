@@ -4501,8 +4501,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     accRow.AccountCodeShortDesc + "), " +
                                     ccRow.CostCentreCode + " (" +
                                     ccRow.CostCentreName + "), " +
-                                    "was: " + (CurrentValue * DebitCredit).ToString() + ", " +
-                                    "would be: " + (glmpRow.ActualBase * DebitCredit).ToString() +
+                                    "was: " + (CurrentValue * DebitCredit).ToString("#.##") + ", " +
+                                    "would be: " + (glmpRow.ActualBase * DebitCredit).ToString("#.##") +
                                     "<br/>";
                             }
                         }
