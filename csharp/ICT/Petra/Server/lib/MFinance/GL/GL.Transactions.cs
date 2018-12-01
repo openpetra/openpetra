@@ -3270,6 +3270,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     {
                         row.Delete();
                     }
+                    else if ((row.JournalNumber == AJournalNumber) && (row.TransactionNumber > ATransactionNumber))
+                    {
+                        row.TransactionNumber--;
+                    }
                 }
 
                 try
@@ -4358,11 +4362,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// return a string that shows the balances of the accounts involved, if the GL Batch was posted
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        public static bool TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications, out string ResultingBalances)
         {
             #region Validate Arguments
 
@@ -4389,6 +4390,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
             bool Success = false;
+            ResultingBalances = String.Empty;
 
             try
             {
@@ -4412,8 +4414,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             AVerifications = Verifications;
-
-            List <TVariant>Result = new List <TVariant>();
 
             if (Success)
             {
@@ -4496,22 +4496,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     DebitCredit = -1.0m;
                                 }
 
-                                // only return values, the client compiles the message, with Catalog.GetString
-                                TVariant values = new TVariant(accRow.AccountCode);
-                                values.Add(new TVariant(accRow.AccountCodeShortDesc), "", false);
-                                values.Add(new TVariant(ccRow.CostCentreCode), "", false);
-                                values.Add(new TVariant(ccRow.CostCentreName), "", false);
-                                values.Add(new TVariant(CurrentValue * DebitCredit), "", false);
-                                values.Add(new TVariant(glmpRow.ActualBase * DebitCredit), "", false);
-
-                                Result.Add(values);
+                                // return formatted string
+                                ResultingBalances += accRow.AccountCode + " (" +
+                                    accRow.AccountCodeShortDesc + "), " +
+                                    ccRow.CostCentreCode + " (" +
+                                    ccRow.CostCentreName + "), " +
+                                    "was: " + (CurrentValue * DebitCredit).ToString() + ", " +
+                                    "would be: " + (glmpRow.ActualBase * DebitCredit).ToString() +
+                                    "\n";
                             }
                         }
                     }
                 }
             }
 
-            return Result;
+            return Success;
         }
 
         /// <summary>
