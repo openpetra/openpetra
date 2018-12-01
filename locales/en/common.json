@@ -242,6 +242,7 @@
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
         "success_cancelled": "The Batch has been cancelled",
+        "success_posted": "The Batch has been posted",
         "import": "Import transactions",
         "isPosted": "We cannot edit batches that have been posted already"
     },
