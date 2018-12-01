@@ -354,7 +354,6 @@ function test_post(batch_id) {
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
 		if (data.result == true) {
 			display_message ( data.ResultingBalances );
 		} else {
