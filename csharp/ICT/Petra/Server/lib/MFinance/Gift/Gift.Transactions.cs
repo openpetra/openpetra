@@ -2172,6 +2172,48 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return SubmissionResult;
         }
 
+        /// cancel a Gift Batch
+        [RequireModulePermission("FINANCE-2")]
+        public static bool CancelBatch(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            bool BatchIsUnposted;
+            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (!BatchIsUnposted)
+            {
+                AVerificationResult.Add(new TVerificationResult(
+                    Catalog.GetString("Cancel Gift Batch"),
+                    "Cannot cancel because status of batch is " + MainDS.AGiftBatch[0].BatchStatus,
+                    "Cannot cancel",
+                    "ERROR_MODIFY_CLOSED_GIFTBATCH",
+                    TResultSeverity.Resv_Critical));
+                    return false;
+            }
+
+            if (MainDS.AGiftBatch.Rows.Count != 1)
+            {
+                return false;
+            }
+
+            AGiftBatchRow row = MainDS.AGiftBatch[0];
+            row.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+
+            try
+            {
+                SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
+            return true;
+        }
+
         /// <summary>
         /// this will save and delete a batch
         /// </summary>
@@ -2244,34 +2286,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     TLogging.LogException(ex, Utilities.GetMethodSignature());
                     throw;
                 }
-
-                try
-                {
-                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
-            else if (action == "delete")
-            {
-                if (MainDS.AGiftBatch.Rows.Count != 1)
-                {
-                    return false;
-                }
-
-                foreach (AGiftDetailRow row in MainDS.AGiftDetail.Rows)
-                {
-                    row.Delete();
-                }
-
-                foreach (AGiftRow row in MainDS.AGift.Rows)
-                {
-                    row.Delete();
-                }
-
-                MainDS.AGiftBatch[0].Delete();
 
                 try
                 {

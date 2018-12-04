@@ -3145,26 +3145,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     return false;
                 }
             }
-            else if (action == "delete")
-            {
-                MainDS = LoadABatch(ALedgerNumber, ABatchNumber);
-
-                if (MainDS.ABatch.Rows.Count != 1)
-                {
-                    return false;
-                }
-
-                MainDS.ABatch[0].Delete();
-
-                try
-                {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
             else
             {
                 return false;
