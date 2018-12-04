@@ -331,7 +331,6 @@ function delete_trans_detail(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
 }
 
-
 /////
 
 function get_available_years(fn_to_call) {
@@ -399,4 +398,23 @@ function post_batch(batch_id) {
 		data = JSON.parse(data.data.d);
 		console.log(data);
 	})
+}
+
+function cancle_batch(batch_id) {
+	var r = {
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
+				ABatchNumber: batch_id,
+			};
+
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CancleBatch', r).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			display_list();
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+	});
 }
