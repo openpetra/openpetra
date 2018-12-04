@@ -98,10 +98,17 @@ function open_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
+	if (obj.find('[batch-status]').text() == "Posted" ) {
+		obj.find('.only_show_when_not_posted').hide();
+	}
+	else {
+		obj.find('.only_show_when_posted').hide();
+	}
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
+
 		let place_to_put_content = obj.find('.content_col').html('');
 		for (item of data.result.ATransaction) {
 			if (item['a_debit_credit_indicator_l']) {
@@ -110,8 +117,8 @@ function open_transactions(obj, number) {
 				item['debitamountbase'] = item['a_amount_in_base_currency_n'];
 			} else {
 				item['debitcredit'] = i18next.t('GLBatches.CREDIT');
-				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
 				item['debitamountbase'] = '';
+				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
 			}
 			// console.log(item);
 			let transaction_row = $('[phantom] .tpl_transaction').clone();
@@ -188,6 +195,9 @@ function edit_batch(batch_id) {
 			return alert('ERROR');
 		}
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_m.find('.posted_readonly').attr('readonly', true)
+		}
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
 		tpl_m.modal('show');
@@ -222,6 +232,9 @@ function edit_trans(batch_id, trans_id) {
 		searched['a_account_name_c'] = searched['a_account_code_c'];
 		searched['a_cost_center_name_c'] = searched['a_cost_centre_code_c'];
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_m.find('.posted_readonly').attr('readonly', true)
+		}
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
 		tpl_m.modal('show');
@@ -342,7 +355,6 @@ function importTransactions(batch_id, csv_file) {
 		}
 	})
 }
-
 
 
 /////

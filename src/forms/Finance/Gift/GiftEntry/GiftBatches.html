@@ -8,7 +8,7 @@
 			<div class="col">{val_a_batch_number_i}</div>
 			<div class="col format_date">{val_a_gl_effective_date_d}</div>
 			<div class="col">{val_a_batch_description_c}</div>
-			<div class="col">{val_a_batch_status_c}</div>
+			<div class="col" batch-status>{val_a_batch_status_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
 					<i class="fa fa-wrench"></i>
@@ -19,11 +19,14 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row">
 					<div class="col">
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans(43 ,{val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary not_show_when_posted" style="margin-top:0.5em;" onclick="new_trans(43 ,{val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
 						</button>
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary not_show_when_posted" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
 							<span>{forms.post}&nbsp;</span><i class="fa fa-lock"></i>
+						</button>
+						<button type="button" class="btn not_show_when_posted" style="margin-top:0.5em;" onclick="cancle_batch({val_a_batch_number_i})">
+							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fa fa-ban"></i>
 						</button>
 					</div>
 					<div class="col"></div>
@@ -117,7 +120,7 @@
 								<span>{batchname}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_batch_description_c" value="" size="30">
+								<input class="posted_readonly" type="text" name="a_batch_description_c" value="" size="30">
 							</div>
 						</div>
 
@@ -126,7 +129,7 @@
 								<span>{batchdate}</span>
 							</div>
 							<div class="col">
-								<input class="" type="date" name="a_gl_effective_date_d" value="">
+								<input class="posted_readonly" type="date" name="a_gl_effective_date_d" value="">
 							</div>
 						</div>
 
@@ -136,7 +139,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_account_name_c" key-name="a_bank_account_code_c" value="" oninput="autocomplete_a(this)">
+									<input class="posted_readonly" type="text" name="a_account_name_c" key-name="a_bank_account_code_c" value="" oninput="autocomplete_a(this)">
 								</div>
 							</div>
 						</div>
@@ -147,7 +150,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_cost_center_name_c" key-name="a_bank_cost_centre_c" value="" oninput="autocomplete_cc(this)">
+									<input class="posted_readonly" type="text" name="a_cost_center_name_c" key-name="a_bank_cost_centre_c" value="" oninput="autocomplete_cc(this)">
 								</div>
 							</div>
 						</div>
@@ -197,7 +200,7 @@
 								<span>{trans_number}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_gift_transaction_number_i" value="" readonly>
+								<input class="posted_readonly" type="text" name="a_gift_transaction_number_i" value="" readonly>
 							</div>
 						</div>
 
@@ -206,7 +209,7 @@
 								<span>{trans_date}</span>
 							</div>
 							<div class="col">
-								<input class="" type="date" name="a_date_entered_d" value="">
+								<input class="posted_readonly" type="date" name="a_date_entered_d" value="">
 							</div>
 						</div>
 
@@ -216,7 +219,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
 								</div>
 							</div>
 						</div>
@@ -290,7 +293,7 @@
 								<span>{trans_number}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_gift_transaction_number_i" value="" readonly>
+								<input class="posted_readonly" type="text" name="a_gift_transaction_number_i" value="" readonly>
 							</div>
 						</div>
 
@@ -308,7 +311,7 @@
 								<span>{trans_date}</span>
 							</div>
 							<div class="col">
-								<input class="" type="date" name="DateEntered" value="">
+								<input class="posted_readonly" type="date" name="DateEntered" value="">
 							</div>
 						</div>
 
@@ -317,7 +320,7 @@
 								<span>{trans_amount_in_base}</span>
 							</div>
 							<div class="col">
-								<input class="" type="number" step="0.01" name="a_gift_transaction_amount_n" value="">
+								<input class="posted_readonly" type="number" step="0.01" name="a_gift_transaction_amount_n" value="">
 							</div>
 						</div>
 
@@ -326,7 +329,7 @@
 								<span>{trans_description}</span>
 							</div>
 							<div class="col">
-								<input class="" type="text" name="a_gift_comment_one_c" value="">
+								<input class="posted_readonly" type="text" name="a_gift_comment_one_c" value="">
 							</div>
 						</div>
 
@@ -336,7 +339,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_motivation_group_code_c" key-name="a_motivation_group_code_c" value="" oninput="autocomplete_motivation_group(this)">
+									<input class="posted_readonly" type="text" name="a_motivation_group_code_c" key-name="a_motivation_group_code_c" value="" oninput="autocomplete_motivation_group(this)">
 								</div>
 							</div>
 						</div>
@@ -347,7 +350,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
 								</div>
 							</div>
 						</div>
