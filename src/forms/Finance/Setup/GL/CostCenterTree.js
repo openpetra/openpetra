@@ -84,9 +84,7 @@ function export_file() {
     ALedgerNumber: window.localStorage.getItem('current_ledger')
   };
   api.post('serverMFinance.asmx/TGLSetupWebConnector_ExportCostCentreHierarchyYml', x).then(function (data) {
-	  console.log(data);
     var parsed = JSON.parse(data.data.d);
-    console.log(parsed);
     var _file_ = window.atob(parsed.AHierarchyYml);
     var link = document.createElement("a");
     link.style = "display: none";

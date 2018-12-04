@@ -23,10 +23,17 @@
 
 $('document').ready(function () {
 	get_available_years(
+		'#tabfilter [name=ABatchYear]',
+		'#tabfilter [name=ABatchPeriod]',
+		'',
 		function() {
 			load_preset();
 		});
 });
+
+function updatePeriods(year) {
+	get_available_periods(year, '#tabfilter [name=ABatchPeriod]', display_list, true);
+}
 
 function load_preset() {
 	var x = window.localStorage.getItem('GLBatches');
@@ -277,7 +284,6 @@ function save_edit_trans(obj_modal) {
 		payload['AAmountInBaseCurrency'] = amount;
 		payload['ADebitCreditIndicator'] = false;
 	}
-	console.log(payload);
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
@@ -295,6 +301,31 @@ function save_edit_trans(obj_modal) {
 
 }
 
+function delete_edit_trans(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+
+	// extract information from a jquery object
+	let payload = translate_to_server( extract_data(obj) );
+	payload['action'] = "delete";
+	payload['AJournalNumber'] = 1;
+	payload['AAmountInIntlCurrency'] = 0.0;
+	payload['AAmountInBaseCurrency'] = 0.0;
+	payload['ADebitCreditIndicator'] = true;
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.deleted'), "success");
+			$('#modal_space .modal').modal('hide');
+			display_list();
+		}
+		if (parsed.result == "false") {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+		}
+
+	});
+}
 
 function importTransactions(batch_id, csv_file) {
 	if (csv_file == undefined) {
@@ -325,59 +356,6 @@ function importTransactions(batch_id, csv_file) {
 	})
 }
 
-function get_available_years(fn_to_call) {
-	let x = {
-		ALedgerNumber: window.localStorage.getItem('current_ledger'),
-	};
-	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailableGLYears', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		r = data.result;
-		let currentYearNumber = -1;
-		for (year of r) {
-			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
-			if (year.YearNumber > currentYearNumber) {
-				currentYearNumber = year.YearNumber;
-			}
-			$('#tabfilter [name=ABatchYear]').append(y);
-		}
-
-		get_available_periods(currentYearNumber, fn_to_call);
-	})
-}
-
-function get_available_periods(year, fn_to_call) {
-	selectedPeriod = $('#tabfilter [name=ABatchPeriod]').val();
-	if (selectedPeriod == null) {
-		selectedPeriod = -1;
-	}
-	let x = {
-		ALedgerNumber: window.localStorage.getItem('current_ledger'),
-		AFinancialYear: year,
-	};
-	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailablePeriods', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		r = data.result;
-		$('#tabfilter [name=ABatchPeriod]').html('');
-		for (period of r) {
-			let translated = period.PeriodName;
-			transsplit = translated.split(' ');
-			if (transsplit[1] != undefined) {
-				// separate the year
-				translated = i18next.t('SelectPeriods.' + transsplit[0]) + ' ' + transsplit[1];
-			} else {
-				translated = i18next.t('SelectPeriods.' + translated);
-			}
-			selected = (period.PeriodNumber == selectedPeriod)?'selected':'';
-			let y = $('<option value="'+period.PeriodNumber+'" ' + selected + '>'+translated+'</option>');
-			$('#tabfilter [name=ABatchPeriod]').append(y);
-		}
-
-		if (fn_to_call != undefined) {
-			fn_to_call();
-		}
-	})
-
-}
 
 /////
 
@@ -388,7 +366,11 @@ function test_post(batch_id) {
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
+		if (data.result == true) {
+			display_message ( data.ResultingBalances );
+		} else {
+			display_error( data.AVerifications );
+		}
 	})
 }
 
@@ -399,7 +381,12 @@ function batch_post(batch_id) {
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_PostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
+		if (data.result == true) {
+			display_message( i18next.t('GLBatches.success_posted'), 'success' );
+			display_list('filter');
+		} else {
+			display_error( data.AVerifications );
+		}
 	})
 }
 
@@ -414,7 +401,7 @@ function batch_cancel(batch_id) {
 			display_message( i18next.t('GLBatches.success_cancelled'), 'success' );
 			display_list('filter');
 		} else {
-			display_error( parsed.AVerificationResult );
+			display_error( data.AVerificationResult );
 		}
 	})
 }

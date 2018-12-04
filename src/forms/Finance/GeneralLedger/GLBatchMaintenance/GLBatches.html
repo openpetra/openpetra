@@ -297,6 +297,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
+					<button class="btn btn-danger" onclick="delete_edit_trans(this)">{forms.delete}</button>
 					<button class="btn btn-primary" onclick="save_edit_trans(this)">{forms.save}</button>
 					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
@@ -324,7 +325,7 @@
 			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<select class="" name="ABatchYear" onchange="get_available_periods($(this).val(), display_list)"></select>
+			<select class="" name="ABatchYear" onchange="updatePeriods($(this).val())"></select>
 		</div>
 	</div>
 	<div class="row">
@@ -374,3 +375,4 @@
 <script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/finance.js" charset="utf-8"></script>

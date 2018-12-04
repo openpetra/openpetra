@@ -18,6 +18,7 @@ OpenPetra:
                     #    CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
+                        PartnerByCity:
                         PartnerBySpecialType:
                         PartnerBySubscription:
 
@@ -64,7 +65,7 @@ OpenPetra:
                         MonthEnd:
                         YearEnd:
                     Reports:
-                        AccountDetailReport:
+                        AccountDetail:
                         TrialBalance:
                         SurplusDeficit:
                         BalanceSheetStandard:

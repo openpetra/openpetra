@@ -24,7 +24,6 @@
 var last_opened_entry_data = {};
 
 $('document').ready(function () {
-	var r = {};
 	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPartnerTypes', {}).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		display_report_form(parsed);
@@ -51,39 +50,9 @@ function calculate_report() {
 	});
 
 	params['param_explicit_specialtypes'] = applied_tags;
-	params['xmlfiles'] = 'Partner/partnerbyspecialtype.xml';
-	params['currentReport'] = 'Partner By Special Type';
+	params['param_today'] = new Date();
 
-	// now make the parameters into a data table
-	// TODO: make this a generic function
-	param_table = []
-	for (var param in params) {
-		param_table.push({'name': param, 'value': 'eString:' + params[param], 'column': -1, 'level': -1, 'subreport': -1});
-	}
-	let datenow = new Date();
-	param_table.push({'name': 'param_today', 'value': datenow.toISOString(), 'column': -1, 'level': -1, 'subreport': -1});
-
-	// send request
-	let r = {}
-	api.post('serverMReporting.asmx/Create_TReportGeneratorUIConnector', r).then(function (data) {
-		let UIConnectorUID = data.data.d;
-
-		let r = {'UIConnectorObjectID': UIConnectorUID,
-			'AParameters': JSON.stringify(param_table)
-		};
-
-		api.post('serverMReporting.asmx/TReportGeneratorUIConnector_Start', r).then(function (data) {
-			// TODO: use TReportGeneratorUIConnector_GetProgress and sleep to check if report was finished
-			setTimeout(function() {
-				let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
-				api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadText', r).then(function (data) {
-					report = data.data.d;
-					$('#reporttxt').html("<pre>"+report+"</pre>");
-				});
-				}, 3000);
-		});
-	});
-
+	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySpecialType.json", params);
 }
 
 // used to load all available tags
