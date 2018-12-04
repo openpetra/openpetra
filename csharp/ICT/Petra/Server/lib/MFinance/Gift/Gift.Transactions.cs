@@ -2219,6 +2219,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.BankAccountCode = ABankAccountCode;
                 row.BankCostCentre = ABankCostCentre;
 
+                TDBTransaction ReadTransaction = null;
+
+                try
+                {
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                        ref ReadTransaction,
+                        delegate
+                        {
+                            int DateEffectivePeriod, DateEffectiveYear;
+
+                            TFinancialYear.IsValidPostingPeriod(row.LedgerNumber,
+                                row.GlEffectiveDate,
+                                out DateEffectivePeriod,
+                                out DateEffectiveYear,
+                                ReadTransaction);
+                            row.BatchPeriod = DateEffectivePeriod;
+                            row.BatchYear = DateEffectiveYear;
+                        });
+
+                }
+                catch (Exception ex)
+                {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
+                }
+
                 try
                 {
                     SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
