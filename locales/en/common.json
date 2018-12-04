@@ -260,6 +260,7 @@
       "batchdate":"Batch booking date",
       "batchname":"Batch description",
       "batchstatus":"Batch status",
+      "batchtotal":"Batch Total",
       "bank_account_code": "Bank Account",
       "bank_ccenter_code": "Bank Cost Centre",
       "trans_number": "Transaction number",
@@ -278,6 +279,8 @@
       "edittitle_trans":"Edit transaction",
       "trans_description":"Transaction Comment",
       "edittitle_trans_detail":"Edit transaction details",
+      "success_cancelled": "The Batch has been cancelled",
+      "success_posted": "The Batch has been posted",
       "ledgernumber":"Ledgernumber"
     },
 

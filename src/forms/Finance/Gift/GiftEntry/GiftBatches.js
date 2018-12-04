@@ -396,17 +396,22 @@ function post_batch(batch_id) {
 	};
 	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_PostGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
+		if (data.result == true) {
+			display_message( i18next.t('GiftBatches.success_posted'), 'success' );
+			display_list('filter');
+		} else {
+			display_error( data.AVerifications );
+		}
 	})
 }
 
-function cancle_batch(batch_id) {
+function cancel_batch(batch_id) {
 	var r = {
 				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ABatchNumber: batch_id,
 			};
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CancleBatch', r).then(function (result) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CancelBatch', r).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");

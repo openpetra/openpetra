@@ -259,6 +259,7 @@
       "batchdate":"Buchungsdatum",
       "batchname":"Beschreibung",
       "batchstatus":"Stapelstatus",
+      "batchtotal":"Prüfsumme",
       "bank_account_code": "Bank Konto",
       "bank_ccenter_code": "Bank Kostenstelle",
       "trans_number": "Transaktions-Nummer",
@@ -277,6 +278,8 @@
       "edittitle_trans":"Spende bearbeiten",
       "trans_description":"Beschreibung",
       "edittitle_trans_detail":"Spendendetails bearbeiten",
+      "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
+      "success_posted": "Der Stapel wurde erfolgreich gebucht",
       "ledgernumber":"Ledgernummer"
     },
 
