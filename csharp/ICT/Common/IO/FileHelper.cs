@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2018 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -288,6 +288,7 @@ namespace Ict.Common.IO
                     Path.GetTempPath(),
                     ASpeakingName.Replace(" ", "_") + "_" +
                     DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() +
+                    "_" + Guid.NewGuid () +
                     (counter > 0 ? "_" + counter.ToString("00") : "") + "." + AExtension.Replace(".", ""));
                 counter++;
             } while (File.Exists(filename));

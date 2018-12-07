@@ -21,6 +21,7 @@ SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
 		AND NOT PUB_p_partner.p_partner_key_n = 0 
 		AND pl.p_partner_key_n = pub_p_partner.p_partner_key_n
 		AND pl.p_location_key_i = loc.p_location_key_i
+		AND pl.p_site_key_n = loc.p_site_key_n
 
 #if {param_exclude_specialtypes}
 	AND NOT {LISTCMP param_exclude_specialtypes ptype.p_type_code_c}
@@ -48,6 +49,7 @@ SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
 #if {param_country}
 	AND {LISTCMP param_country loc.p_country_code_c}
 #endif
+ORDER BY 1
 <!-- EndSQL SelectPartners -->
 
 <div id="column_headings" class="row">

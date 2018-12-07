@@ -657,7 +657,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 resultRow[1] = "all_periods";
                 ReturnTable.Rows.Add(resultRow);
 
-                for (int i = LedgerTable[0].CurrentPeriod; i <= LedgerTable[0].NumberOfAccountingPeriods; i++)
+                for (int i = 1; i <= LedgerTable[0].NumberOfAccountingPeriods; i++)
                 {
                     AAccountingPeriodRow period =
                         (AAccountingPeriodRow)AccountingPeriods.Rows.Find(new object[] { ALedgerNumber, i });

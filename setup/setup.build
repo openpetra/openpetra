@@ -109,8 +109,8 @@
   <copy todir="${dir.setup}/reports">
     <fileset basedir="${dir.root}/XmlReports/">
       <include name="*.dtd" />
-      <!-- TODO exclude the report xml files from client tar, only include report settings -->
       <include name="**/*.xml" />
+      <include name="**/*.html" />
     </fileset>
   </copy>
   <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>

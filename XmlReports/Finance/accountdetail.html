@@ -96,6 +96,7 @@ AND gl.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_co
 #if {param_cost_centre_codes}
 AND gl.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
 #endif
+ORDER BY 1,2
 <!-- EndSQL SelectBalances-->
 
 <div id="column_headings" class="row">

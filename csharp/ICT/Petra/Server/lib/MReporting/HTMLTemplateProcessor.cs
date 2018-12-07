@@ -480,8 +480,14 @@ namespace Ict.Petra.Server.MReporting
             }
 
             string BootstrapCSSContent = String.Empty;
+            string cssBootstrap = "/usr/local/openpetra/client/node_modules/bootstrap/dist/css/bootstrap.min.css";
 
-            using (StreamReader sr = new StreamReader("/usr/local/openpetra/client/node_modules/bootstrap/dist/css/bootstrap.min.css"))
+            if (!File.Exists(cssBootstrap))
+            {
+                cssBootstrap = "/usr/local/openpetra/client/css/bootstrap.min.css";
+            }
+
+            using (StreamReader sr = new StreamReader(cssBootstrap))
             {
                 BootstrapCSSContent = sr.ReadToEnd();
             }
