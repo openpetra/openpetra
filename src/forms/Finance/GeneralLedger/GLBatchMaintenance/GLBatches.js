@@ -98,10 +98,17 @@ function open_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
+	if (obj.find('[batch-status]').text() == "Posted" ) {
+		obj.find('.only_show_when_not_posted').hide();
+	}
+	else {
+		obj.find('.only_show_when_posted').hide();
+	}
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
+
 		let place_to_put_content = obj.find('.content_col').html('');
 		for (item of data.result.ATransaction) {
 			if (item['a_debit_credit_indicator_l']) {
@@ -110,8 +117,8 @@ function open_transactions(obj, number) {
 				item['debitamountbase'] = item['a_amount_in_base_currency_n'];
 			} else {
 				item['debitcredit'] = i18next.t('GLBatches.CREDIT');
-				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
 				item['debitamountbase'] = '';
+				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
 			}
 			// console.log(item);
 			let transaction_row = $('[phantom] .tpl_transaction').clone();
@@ -144,7 +151,7 @@ function new_batch() {
 	)
 };
 
-function new_trans(batch_number) {
+function new_trans(batch_number, batch_date) {
 	ledger_number = window.localStorage.getItem('current_ledger');
 	new_entry_data = [];
 	new_entry_data['a_ledger_number_i'] = ledger_number;
@@ -152,10 +159,7 @@ function new_trans(batch_number) {
 	new_entry_data['a_transaction_number_i'] = $("#Batch" + batch_number + " .tpl_transaction").length + 1;
 	new_entry_data['a_account_code_c'] = "0100";
 	new_entry_data['a_cost_centre_code_c'] = ledger_number * 100;
-	var today = new Date();
-	today.setUTCHours(0, 0, 0, 0);
-	var strToday = today.toISOString();
-	new_entry_data['a_transaction_date_d'] = strToday.replace('T00:00:00.000Z', '');
+	new_entry_data['a_transaction_date_d'] = batch_date;
 	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), new_entry_data );
 	$('#modal_space').html(p);
 	p.find('[action]').val('create');
@@ -188,6 +192,9 @@ function edit_batch(batch_id) {
 			return alert('ERROR');
 		}
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_m.find('.posted_readonly').attr('readonly', true)
+		}
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
 		tpl_m.modal('show');
@@ -222,6 +229,9 @@ function edit_trans(batch_id, trans_id) {
 		searched['a_account_name_c'] = searched['a_account_code_c'];
 		searched['a_cost_center_name_c'] = searched['a_cost_centre_code_c'];
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
+		if (searched['a_batch_status_c'] == "Posted") {
+			tpl_m.find('.posted_readonly').attr('readonly', true)
+		}
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
 		tpl_m.modal('show');
@@ -271,7 +281,6 @@ function save_edit_trans(obj_modal) {
 		payload['AAmountInBaseCurrency'] = amount;
 		payload['ADebitCreditIndicator'] = false;
 	}
-	console.log(payload);
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
@@ -289,6 +298,31 @@ function save_edit_trans(obj_modal) {
 
 }
 
+function delete_edit_trans(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+
+	// extract information from a jquery object
+	let payload = translate_to_server( extract_data(obj) );
+	payload['action'] = "delete";
+	payload['AJournalNumber'] = 1;
+	payload['AAmountInIntlCurrency'] = 0.0;
+	payload['AAmountInBaseCurrency'] = 0.0;
+	payload['ADebitCreditIndicator'] = true;
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.deleted'), "success");
+			$('#modal_space .modal').modal('hide');
+			display_list();
+		}
+		if (parsed.result == "false") {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+		}
+
+	});
+}
 
 function importTransactions(batch_id, csv_file) {
 	if (csv_file == undefined) {
@@ -320,7 +354,6 @@ function importTransactions(batch_id, csv_file) {
 }
 
 
-
 /////
 
 function test_post(batch_id) {
@@ -330,7 +363,11 @@ function test_post(batch_id) {
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
+		if (data.result == true) {
+			display_message ( data.ResultingBalances );
+		} else {
+			display_error( data.AVerifications );
+		}
 	})
 }
 
@@ -341,7 +378,12 @@ function batch_post(batch_id) {
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_PostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
+		if (data.result == true) {
+			display_message( i18next.t('GLBatches.success_posted'), 'success' );
+			display_list('filter');
+		} else {
+			display_error( data.AVerifications );
+		}
 	})
 }
 
@@ -356,7 +398,7 @@ function batch_cancel(batch_id) {
 			display_message( i18next.t('GLBatches.success_cancelled'), 'success' );
 			display_list('filter');
 		} else {
-			display_error( parsed.AVerificationResult );
+			display_error( data.AVerificationResult );
 		}
 	})
 }

@@ -33,9 +33,9 @@ $('document').ready(function () {
 		});
 });
 
-function updatePeriods() {
-	get_available_periods($(this).val(), '#reportfilter [name=param_start_period_i]', false);
-	get_available_periods($(this).val(), '#reportfilter [name=param_end_period_i]', false);
+function updatePeriods(selected_year) {
+	get_available_periods(selected_year, '#reportfilter [name=param_start_period_i]', false);
+	get_available_periods(selected_year, '#reportfilter [name=param_end_period_i]', false);
 }
 
 function calculate_report() {

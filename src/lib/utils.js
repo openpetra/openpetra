@@ -51,7 +51,7 @@ function display_message(content, style_arguments) {
     }
   }
 
-  message.text(content);
+  message.html(content);
 
   // need a random int to delete message
   var m_id = Math.floor(Math.random() * 100000);
