@@ -17,7 +17,18 @@
         "errorPwdChanged": "Password could not be changed",
         "failedlogin": "Wrong username or password",
         "support_caption": "Support",
-        "support_text": "If you have any issues, please visit <a href='https://forum.openpetra.org'>the public OpenPetra forum</a> and share your questions!"
+        "support_text": "If you have any issues, please visit <a href='https://forum.openpetra.org' target='_new'>the public OpenPetra forum</a> and share your questions!",
+        "manual_caption": "Manual",
+        "manual_text": "There is a <a href='https://docs.openpetra.org' target='_new'>manual</a>, which helps you with your first steps with OpenPetra, but also explains the deeper concepts of OpenPetra.",
+        "status_caption": "Status of OpenPetra",
+        "status_text": "Please be aware, that OpenPetra is far from being complete. We want to give OpenPetra to you as early as possible, to avoid missing your actual needs and requirements.",
+        "roadmap_caption": "New Functionality",
+        "roadmap_text": "Visit our <a href='https://www.openpetra.org/en/news' target='_new'>Blog</a>, which has details on the latest releases and where the project is heading!",
+        "contribute_caption": "We need you!",
+        "contribute_text": "OpenPetra is an Open Source project. Everyone can contribute, and give something back. Even without programming skills, there are important tasks, like helping other users in the forum, or to contribute to the manual, and much more...",
+        "sales_caption": "You need a professional partner?",
+        "sales_text": "Your charity needs a reliable partner, that helps with getting OpenPetra up and running in your organisation, and can also develop extensions: Contact us at <a href='mailto:sales@openpetra.com'>sales@openpetra.com</a> to start a conversation!",
+        "":""
     },
     "navigation": {
         "openpetra": "OpenPetra",

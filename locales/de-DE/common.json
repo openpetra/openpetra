@@ -17,7 +17,18 @@
         "errorPwdChanged": "Passwort konnte nicht geändert werden",
         "failedlogin": "Falscher Benutzername oder falsches Passwort",
         "support_caption": "Unterstützung",
-        "support_text": "Falls Sie Fragen oder Anregungen haben, besuchen Sie uns doch im <a href='https://forum.openpetra.de'>öffentlichen OpenPetra Forum</a> und reden Sie dort mit uns!"
+        "support_text": "Falls Sie Fragen oder Anregungen haben, besuchen Sie uns doch im <a href='https://forum.openpetra.de' target='_new'>öffentlichen OpenPetra Forum</a> und reden Sie dort mit uns!",
+        "manual_caption": "Handbuch",
+        "manual_text": "Es gibt ein <a href='https://handbuch.openpetra.de' target='_new'>Handbuch</a>, dass Ihnen bei den ersten Schritten mit OpenPetra hilft, aber auch die tiefergehenden Konzepte von OpenPetra erklärt.",
+        "status_caption": "Stand von OpenPetra",
+        "status_text": "Bitte beachten Sie, dass OpenPetra noch längst nicht fertig ist. Wir wollen Ihnen OpenPetra so früh wie möglich zur Verfügung stellen, damit wir nicht an Ihren Bedürfnissen vorbeientwickeln.",
+        "roadmap_caption": "Neue Funktionen",
+        "roadmap_text": "Besuchen Sie unseren <a href='https://www.openpetra.org/de/news' target='_new'>Blog</a>, dort gibt es Informationen über den aktuellen Entwicklungsstand!",
+        "contribute_caption": "Wir brauchen Ihre Mithilfe!",
+        "contribute_text": "OpenPetra wird als Open Source Projekt entwickelt. Jeder kann etwas dazu beitragen, und etwas zurückgeben. Auch ohne Programmierkenntnisse gibt es wichtige Aufgaben, z.B. können Sie anderen Benutzern im Forum helfen, oder einen Beitrag zum Handbuch schreiben, uvm.",
+        "sales_caption": "Sie brauchen professionelle Unterstützung?",
+        "sales_text": "Ihre Organisation braucht einen zuverlässigen Partner, der bei der Einführung und dem Betrieb von OpenPetra zur Verfügung steht, und ggf. Erweiterungen entwickelt: Melden Sie sich bei <a href='mailto:verkauf@openpetra.com'>verkauf@openpetra.com</a>, um ein Gespräch zu vereinbaren!",
+        "":""
     },
     "navigation": {
         "openpetra": "OpenPetra",
