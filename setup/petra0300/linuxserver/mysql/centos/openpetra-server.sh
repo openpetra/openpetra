@@ -198,6 +198,7 @@ init() {
        | sed -e "s~PG_OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
        | sed -e "s~OPENPETRA_PORT~$OPENPETRA_PORT~" \
        | sed -e "s~OPENPETRA_URL~$OPENPETRA_URL~" \
+       | sed -e "s~OPENPETRA_EMAILDOMAIN~$OPENPETRA_EMAILDOMAIN~" \
        | sed -e "s/USERNAME/$userName/" \
        > /home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/etc/PetraServerAdminConsole.config \
