@@ -757,10 +757,15 @@ namespace Ict.Common.IO
                     AttemptCount--;
                     try
                     {
+                        TLogging.LogAtLevel(1, "Trying to send E-Mail to " +
+                                            AEmail.To.ToString() + " from " + AEmail.From.ToString());
+
                         // for office365, this takes about 15 seconds
                         FSmtpClient.Send(AEmail);
 
                         AEmail.Headers.Add("Date-Sent", DateTime.Now.ToString());
+
+                        TLogging.LogAtLevel(1, "E-Mail was sent successfully");
 
                         return true;
                     }
