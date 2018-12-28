@@ -33,6 +33,7 @@ using System.ComponentModel.DataAnnotations;
 
 using MailKit.Net.Smtp;
 using MailKit;
+using MailKit.Security;
 using MimeKit;
 
 using Ict.Common;
@@ -413,7 +414,7 @@ namespace Ict.Common.IO
                     FSmtpClient.ServerCertificateValidationCallback = (s,c,h,e) => true;
                 }
 
-                FSmtpClient.Connect(SmtpSettings.SmtpHost, SmtpSettings.SmtpPort, SmtpSettings.SmtpEnableSsl);
+                FSmtpClient.Connect(SmtpSettings.SmtpHost, SmtpSettings.SmtpPort, SecureSocketOptions.Auto);
                 FSmtpClient.Authenticate(SmtpSettings.SmtpUsername, SmtpSettings.SmtpPassword);
 
                 FFailedRecipients = new List <TsmtpFailedRecipient>();
@@ -756,10 +757,15 @@ namespace Ict.Common.IO
                     AttemptCount--;
                     try
                     {
+                        TLogging.LogAtLevel(1, "Trying to send E-Mail to " +
+                                            AEmail.To.ToString() + " from " + AEmail.From.ToString());
+
                         // for office365, this takes about 15 seconds
                         FSmtpClient.Send(AEmail);
 
                         AEmail.Headers.Add("Date-Sent", DateTime.Now.ToString());
+
+                        TLogging.LogAtLevel(1, "E-Mail was sent successfully");
 
                         return true;
                     }

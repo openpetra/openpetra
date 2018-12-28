@@ -852,6 +852,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     // TODO: use double opt-in before sending the actual information???
 
                     string Domain = TAppSettingsManager.GetValue("Server.Url");
+                    string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
                     Dictionary<string, string> parameters = new Dictionary<string, string>();
                     parameters.Add("UserId", AUserId);
                     parameters.Add("FirstName", SubmitDS.SUser[0].FirstName);
@@ -860,7 +861,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     parameters.Add("NewPassword", NewPassword);
                     
                     new TSmtpSender().SendEmailFromTemplate(
-                        "no-reply@" + Domain,
+                        "no-reply@" + EMailDomain,
                         "OpenPetra Admin",
                         SubmitDS.SUser[0].EmailAddress,
                         "newuserpassword",
@@ -931,6 +932,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                     // send the email with the link for resetting the password
                     string Domain = TAppSettingsManager.GetValue("Server.Url");
+                    string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
                     Dictionary<string, string> emailparameters = new Dictionary<string, string>();
                     emailparameters.Add("UserId", UserID);
                     emailparameters.Add("FirstName", FirstName);
@@ -939,7 +941,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     emailparameters.Add("Token", token);
                     
                     new TSmtpSender().SendEmailFromTemplate(
-                        "no-reply@" + Domain,
+                        "no-reply@" + EMailDomain,
                         "OpenPetra Admin",
                         AEmailAddress,
                         "requestnewpassword",
