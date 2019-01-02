@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.app.JSClient
                 {
                     // If there is more than one Ledger in the system, show a 'Select Ledger' Collapsible Panel with a Task (=LinkLabel)
                     // for each Ledger.
-                    if (AAvailableLedgers.Rows.Count > 1)
+                    if (false && (AAvailableLedgers.Rows.Count > 1))
                     {
                         LedgersAvailableToUserCreatedInThisIteration = false;
                         AAvailableLedgers.DefaultView.Sort = ALedgerTable.GetLedgerNumberDBName() + " ASC";

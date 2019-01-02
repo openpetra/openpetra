@@ -3952,7 +3952,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DateTime ACalendarStartDate,
             Int32 ANumberOfAccountingPeriods,
             Int32 ACurrentPeriod,
-            Int32 ANumberOfFwdPostingPeriods,
+            Int32 ANumberFwdPostingPeriods,
             out TVerificationResultCollection AVerificationResult)
         {
             bool AActivateAccountsPayable = false;
@@ -4000,7 +4000,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ledgerRow.LedgerName = ALedgerName;
                 ledgerRow.CurrentPeriod = ACurrentPeriod;
                 ledgerRow.NumberOfAccountingPeriods = ANumberOfAccountingPeriods;
-                ledgerRow.NumberFwdPostingPeriods = ANumberOfFwdPostingPeriods;
+                ledgerRow.NumberFwdPostingPeriods = ANumberFwdPostingPeriods;
                 ledgerRow.BaseCurrency = ABaseCurrency;
                 ledgerRow.IntlCurrency = AIntlCurrency;
                 ledgerRow.ActualsDataRetention = 11;
@@ -4131,7 +4131,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods
                 DateTime periodStartDate = ACalendarStartDate;
 
-                for (Int32 periodNumber = 1; periodNumber <= ANumberOfAccountingPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
+                for (Int32 periodNumber = 1; periodNumber <= ANumberOfAccountingPeriods + ANumberFwdPostingPeriods; periodNumber++)
                 {
                     AAccountingPeriodRow accountingPeriodRow = MainDS.AAccountingPeriod.NewRowTyped();
                     accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
