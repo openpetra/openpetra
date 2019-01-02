@@ -87,6 +87,7 @@ function save_new() {
 		let d = extract_data(se);
 
 		let request = translate_to_server(d);
+		request['AIntlCurrency'] = 'EUR';
 		api.post("serverMFinance.asmx/TGLSetupWebConnector_CreateNewLedger", request).then(
 			function (result) {
 				parsed = JSON.parse(result.data.d);
@@ -95,7 +96,7 @@ function save_new() {
 					se.modal('hide');
 					display_list();
 				} else {
-					display_message(i18next.t('LedgerSetup.error_create'), 'error');
+					display_error(parsed.AVerificationResult, 'fail');
 				}
 			}
 		)
