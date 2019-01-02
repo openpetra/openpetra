@@ -28,10 +28,6 @@
 				<div class="col">{val_a_base_currency_c}</div>
 			</div>
 			<div class="row">
-				<div class="col">{entry_intl_currency}</div>
-				<div class="col">{val_a_intl_currency_c}</div>
-			</div>
-			<div class="row">
 				<div class="col">{entry_account_periods}</div>
 				<div class="col">{val_a_number_of_accounting_periods_i}</div>
 			</div>
@@ -95,16 +91,7 @@
 
 						<div class="row">
 							<div class="col">
-								{entry_intl_currency}
-							</div>
-							<div class="col">
-								<input type="text" name="a_intl_currency_c" readonly>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								{entry_account_periods_first}
+								{entry_first_current_period}
 							</div>
 							<div class="col">
 								<input type="text" name="a_current_period_i" readonly>
@@ -157,7 +144,7 @@
 								<span>{number}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_new_ledger_number_i">
+								<input type="number" min="1" name="a_new_ledger_number_i">
 							</div>
 						</div>
 
@@ -197,15 +184,6 @@
 							</div>
 						</div>
 
-            <div class="row">
-							<div class="col">
-								<span>{entry_intl_currency}</span>
-							</div>
-							<div class="col">
-                <input type="text" name="a_intl_currency_c" value="EUR">
-							</div>
-						</div>
-
 						<div class="row">
 							<div class="col">
 								<span>{entry_account_periods}</span>
@@ -217,7 +195,7 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{entry_account_periods_first}</span>
+								<span>{entry_first_current_period}</span>
 							</div>
 							<div class="col">
                 <input type="number" name="ACurrentPeriod" value="1">

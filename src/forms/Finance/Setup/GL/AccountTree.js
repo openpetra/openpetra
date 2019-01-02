@@ -95,7 +95,7 @@ function export_file() {
     var link = document.createElement("a");
     link.style = "display: none";
     link.href = 'data:text/plain;charset=utf-8,'+encodeURIComponent(_file_);
-    link.download = i18next.t('AccountTree.accounts_file') + '.csv';
+    link.download = i18next.t('AccountTree.accounts_file') + '.yml';
     document.body.appendChild(link);
     link.click();
     link.remove();
