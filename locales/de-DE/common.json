@@ -85,7 +85,7 @@
         "BankImport_label":"Spenden von Bank importieren",
         "ImportPartners_label":"Partner importieren",
         "LedgerInfo_label":"Hauptbuch Statusinformationen",
-        "AccountTree_label":"Konten verwalten",
+        "AccountTree_label":"Kontenrahmen verwalten",
         "CostCenterTree_label":"Kostenstellen verwalten",
         "MonthEnd_label": "Monatsabschluss durchführen",
         "YearEnd_label": "Jahresabschluss durchführen"
@@ -471,13 +471,13 @@
       "end_month": "Monatsabschluss durchführen"
     },
     "AccountTree": {
-      "caption": "Kontenstruktur bearbeiten",
-      "uploadsuccess": "Neue Kontenstruktur wurde erfolgreich importiert.",
-      "uploaderror": "Neue Kontenstruktur konnte nicht importiert werden.",
+      "caption": "Kontenrahmen verwalten",
+      "uploadsuccess": "Neuer Kontenrahmen wurde erfolgreich importiert.",
+      "uploaderror": "Neuer Kontenrahmen konnte nicht importiert werden.",
       "accounts_file": "Konten"
     },
     "CostCenterTree": {
-      "caption": "Struktur der Kostenstellen bearbeiten",
+      "caption": "Kostenstellen verwalten",
       "uploadsuccess": "Die neuen Kostenstellen wurden erfolgreich importiert.",
       "uploaderror": "Neue Kostenstellen konnten nicht importiert werden.",
       "costcentres_file": "Kostenstellen"
