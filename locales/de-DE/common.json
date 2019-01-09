@@ -223,7 +223,6 @@
     "GLBatches": {
         "caption": "Buchungen verwalten",
         "edittitle":"Buchungen bearbeiten",
-        "ledgernumber":"Ledger Nummer",
         "batchnumber":"Stapel Nummer",
         "batchname":"Stapel Name",
         "batch_status":"Stapel Status",
@@ -290,8 +289,7 @@
       "trans_description":"Beschreibung",
       "edittitle_trans_detail":"Spendendetails bearbeiten",
       "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
-      "success_posted": "Der Stapel wurde erfolgreich gebucht",
-      "ledgernumber":"Ledgernummer"
+      "success_posted": "Der Stapel wurde erfolgreich gebucht"
     },
 
     "SelectPeriods": {
@@ -383,11 +381,10 @@
 
     "Motivations":{
       "caption":"Verwendungszwecke verwalten",
-      "edittitle":"Zweck bearbeiten",
-      "edittitle_moti":"Zweck Details bearbeiten",
+      "edittitle":"Gruppe bearbeiten",
+      "edittitle_moti":"Details bearbeiten",
       "ask_delete_group": "Sind Sie sicher, dass Sie diese Gruppe mit allen Details löschen möchten?",
       "ask_delete_detail": "Sind Sie sicher, dass Sie dieses Detail löschen möchten?",
-      "ledgernumber":"Ledgernummer",
       "motivation_group_code":"Gruppen-Code",
       "motivation_detail_code":"Detail-Code",
       "motivation_desc":"Beschreibung",
