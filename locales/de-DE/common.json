@@ -47,8 +47,8 @@
         "Types_label": "Kategorien",
         "Maintain_label": "Verwalten",
         "MaintainPartners_label": "Partner verwalten",
-        "MaintainPublications_label": "Bearbeiten von Abonnements",
-        "MaintainTypes_label": "Bearbeiten von Kategorien",
+        "MaintainPublications_label": "Abonnements verwalten",
+        "MaintainTypes_label": "Kategorien verwalten",
         "CreatePartner_label": "Partner anlegen",
         "ImportExport_label": "Importieren/Exportieren",
         "Subscription_label": "Abonnements",
@@ -65,7 +65,7 @@
         "GeneralLedger_label": "Hauptbuch",
         "Info_label": "Übersicht",
         "GLBatchMaintenance_label": "Buchungen im Hauptbuch pflegen",
-        "GLBatches_label": "Buchungen bearbeiten",
+        "GLBatches_label": "Buchungen verwalten",
         "PeriodEnd_label": "Monats- und Jahresabschluss",
         "Gift_label": "Spenden",
         "GiftBatches_label": "Spenden verwalten",
@@ -82,7 +82,7 @@
         "AccountDetail_label": "Bericht über die Kontenbewegungen",
         "Motivations_label": "Verwendungszwecke verwalten",
         "switchledger":"Aktiver Ledger wurde geändert auf:",
-        "BankImport_label":"Spenden von Bank importieren",
+        "BankImport_label":"Kontoauszüge importieren",
         "ImportPartners_label":"Partner importieren",
         "LedgerInfo_label":"Hauptbuch Statusinformationen",
         "AccountTree_label":"Kontenrahmen verwalten",
@@ -258,8 +258,8 @@
     },
 
     "GiftBatches": {
-      "edittitle":"Spendenstapel bearbeiten",
-      "caption":"Spenden bearbeiten",
+      "edittitle":"Spendenstapel verwalten",
+      "caption":"Spenden verwalten",
       "year": "Jahr",
       "period": "Monat",
       "batch_status": "Stapel Status",
@@ -312,13 +312,13 @@
     },
 
     "MaintainPublications": {
-      "caption":"Abo bearbeiten",
-      "addtitle":"Abo hinzufügen",
-      "edittitle":"Abo bearbeiten",
-      "name":"Abo Name",
-      "entry_name":"Abo Benennung",
+      "caption":"Abonnements verwalten",
+      "addtitle":"Abonnement hinzufügen",
+      "edittitle":"Abonnement bearbeiten",
+      "name":"Name",
+      "entry_name":"Name des Abonnements",
       "entry_status":"Aktiv",
-      "entry_dis":"Abo Beschreibung",
+      "entry_dis":"Beschreibung",
       "entry_freq":"Frequenz",
       "ask_delete":"Sind Sie sicher, dass Sie dieses Abo löschen möchten?",
       "confirm_create":"Das Abo wurde erstellt",
@@ -328,7 +328,7 @@
 
     "MaintainTypes":{
       "caption":"Kategorien verwalten",
-      "name":"Kategorie Name",
+      "name":"Name der Kategorie",
       "edittitle":"Kategorie bearbeiten",
       "addtitle":"Kategorie hinzufügen",
       "confirm_create":"Kategorie erfolgreich hinzugefügt",
@@ -382,7 +382,7 @@
     },
 
     "Motivations":{
-      "caption":"Verwendungszweck bearbeiten",
+      "caption":"Verwendungszwecke verwalten",
       "edittitle":"Zweck bearbeiten",
       "edittitle_moti":"Zweck Details bearbeiten",
       "ask_delete_group": "Sind Sie sicher, dass Sie diese Gruppe mit allen Details löschen möchten?",
