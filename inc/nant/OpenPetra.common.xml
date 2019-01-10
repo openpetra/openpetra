@@ -351,6 +351,7 @@
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
           overwrite="false" if="${platform::is-unix()}" />
+<property name="Target-NETframework-version" value ="4.7.2" overwrite="false" />
 <!-- compiler flags -->
 <property name="compile.debug" value="true" 
           overwrite="false" />
