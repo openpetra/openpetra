@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -4081,6 +4081,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, Transaction);
                     partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
                     partnerRow.PartnerShortName = ALedgerName;
+                }
+
+                PPartnerLedgerRow partnerledger;
+
+                if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
+                {
+                    partnerledger = MainDS.PPartnerLedger.NewRowTyped();
+                    partnerledger.PartnerKey = PartnerKey;
+                    partnerledger.LastPartnerId = 5000;
+                    MainDS.PPartnerLedger.Rows.Add(partnerledger);
                 }
 
                 PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, Transaction);
