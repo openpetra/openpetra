@@ -87,7 +87,6 @@ INSERT INTO a_cost_centre(a_ledger_number_i,  a_cost_centre_code_c,  a_cost_cent
 (43,'[43]',null,'[Germany]',false,true,false,0,true,'Local', '8500','9700','Always');
 
 COPY a_account FROM '{#ABSOLUTEBASEDATAPATH}/a_account.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-COPY a_account_property_code FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_property FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_hierarchy FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_hierarchy_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

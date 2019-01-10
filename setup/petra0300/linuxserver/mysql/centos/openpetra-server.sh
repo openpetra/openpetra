@@ -106,8 +106,13 @@ mysqlscript() {
     export DBName=$OPENPETRA_DBNAME
     export DBPort=$OPENPETRA_DBPORT
     export DBPwd=$OPENPETRA_DBPWD
-    echo "call: mysql -u $DBUser -h $DBHost --port=$DBPort --password=\"$DBPwd\" $DBName --default-character-set=utf8"
-    echo " or visit http://localhost/phpMyAdmin, with user $DBUser and password $DBPwd"
+
+    if [ -z "$MYSQL_CMD" ]; then
+      echo "call: mysql -u $DBUser -h $DBHost --port=$DBPort --password=\"$DBPwd\" $DBName --default-character-set=utf8"
+      echo " or visit http://localhost/phpMyAdmin, with user $DBUser and password $DBPwd"
+    else
+      echo $MYSQL_CMD | mysql -u $DBUser -h $DBHost --port=$DBPort --password="$DBPwd" $DBName --default-character-set=utf8
+    fi
 }
 
 # backup the mysql database
