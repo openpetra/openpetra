@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1347,7 +1347,7 @@ namespace Ict.Common.Testing
 
             EErrorCodeNotRegisteredException TestException4 = Assert.Throws <EErrorCodeNotRegisteredException>(
                 delegate { ErrorCodes.GetErrorInfo("TEST.99996V"); });
-            Assert.That(TestException4.Message, Is.StringStarting("Error Code 'TEST.99996V' could not be found in any of the registered Types!"));
+            Assert.That(TestException4.Message, Does.StartWith("Error Code 'TEST.99996V' could not be found in any of the registered Types!"));
 
             ArgumentException TestException5 = Assert.Throws <ArgumentException>(
                 delegate { ErrorCodes.GetErrorInfo("TEST.99996N", new string[] { }); });

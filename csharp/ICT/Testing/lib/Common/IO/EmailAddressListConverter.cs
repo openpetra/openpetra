@@ -5,7 +5,7 @@
 //       AlanP
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,7 @@ namespace Tests.Common.IO
         /// <summary>
         /// Perform necessary setup.
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
         }
@@ -47,7 +47,7 @@ namespace Tests.Common.IO
         /// <summary>
         /// Perform any tear-down.
         /// </summary>
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
         }

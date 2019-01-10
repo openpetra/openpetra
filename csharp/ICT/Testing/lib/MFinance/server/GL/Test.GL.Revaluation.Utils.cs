@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Normally I plan to move out this routine to CommonNUnitFunctions but this is not coorect
         /// for all types of test. So I need a set of CommonNUnitFunctions
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             TPetraServerConnector.Connect();
@@ -54,7 +54,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// TearDown the test
         /// </summary>
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDownTest()
         {
             TPetraServerConnector.Disconnect();
