@@ -117,7 +117,7 @@ namespace Ict.Tools.NAntTasks
                 process.StartInfo.Arguments += " -run=" + FTestCase;
             }
 
-            process.StartInfo.Arguments += " -labels";
+            process.StartInfo.Arguments += " -labels=On";
 
             System.Console.WriteLine("Testing " + FAssemblyName + " " + FTestCase);
 
