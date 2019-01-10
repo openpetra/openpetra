@@ -47,8 +47,8 @@
         "Types_label": "Kategorien",
         "Maintain_label": "Verwalten",
         "MaintainPartners_label": "Partner verwalten",
-        "MaintainPublications_label": "Bearbeiten von Abonnements",
-        "MaintainTypes_label": "Bearbeiten von Kategorien",
+        "MaintainPublications_label": "Abonnements verwalten",
+        "MaintainTypes_label": "Kategorien verwalten",
         "CreatePartner_label": "Partner anlegen",
         "ImportExport_label": "Importieren/Exportieren",
         "Subscription_label": "Abonnements",
@@ -65,7 +65,7 @@
         "GeneralLedger_label": "Hauptbuch",
         "Info_label": "Übersicht",
         "GLBatchMaintenance_label": "Buchungen im Hauptbuch pflegen",
-        "GLBatches_label": "Buchungen bearbeiten",
+        "GLBatches_label": "Buchungen verwalten",
         "PeriodEnd_label": "Monats- und Jahresabschluss",
         "Gift_label": "Spenden",
         "GiftBatches_label": "Spenden verwalten",
@@ -82,10 +82,10 @@
         "AccountDetail_label": "Bericht über die Kontenbewegungen",
         "Motivations_label": "Verwendungszwecke verwalten",
         "switchledger":"Aktiver Ledger wurde geändert auf:",
-        "BankImport_label":"Spenden von Bank importieren",
+        "BankImport_label":"Kontoauszüge importieren",
         "ImportPartners_label":"Partner importieren",
         "LedgerInfo_label":"Hauptbuch Statusinformationen",
-        "AccountTree_label":"Konten verwalten",
+        "AccountTree_label":"Kontenrahmen verwalten",
         "CostCenterTree_label":"Kostenstellen verwalten",
         "MonthEnd_label": "Monatsabschluss durchführen",
         "YearEnd_label": "Jahresabschluss durchführen"
@@ -223,7 +223,6 @@
     "GLBatches": {
         "caption": "Buchungen verwalten",
         "edittitle":"Buchungen bearbeiten",
-        "ledgernumber":"Ledger Nummer",
         "batchnumber":"Stapel Nummer",
         "batchname":"Stapel Name",
         "batch_status":"Stapel Status",
@@ -258,8 +257,8 @@
     },
 
     "GiftBatches": {
-      "edittitle":"Spendenstapel bearbeiten",
-      "caption":"Spenden bearbeiten",
+      "edittitle":"Spendenstapel verwalten",
+      "caption":"Spenden verwalten",
       "year": "Jahr",
       "period": "Monat",
       "batch_status": "Stapel Status",
@@ -290,8 +289,7 @@
       "trans_description":"Beschreibung",
       "edittitle_trans_detail":"Spendendetails bearbeiten",
       "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
-      "success_posted": "Der Stapel wurde erfolgreich gebucht",
-      "ledgernumber":"Ledgernummer"
+      "success_posted": "Der Stapel wurde erfolgreich gebucht"
     },
 
     "SelectPeriods": {
@@ -312,13 +310,13 @@
     },
 
     "MaintainPublications": {
-      "caption":"Abo bearbeiten",
-      "addtitle":"Abo hinzufügen",
-      "edittitle":"Abo bearbeiten",
-      "name":"Abo Name",
-      "entry_name":"Abo Benennung",
+      "caption":"Abonnements verwalten",
+      "addtitle":"Abonnement hinzufügen",
+      "edittitle":"Abonnement bearbeiten",
+      "name":"Name",
+      "entry_name":"Name des Abonnements",
       "entry_status":"Aktiv",
-      "entry_dis":"Abo Beschreibung",
+      "entry_dis":"Beschreibung",
       "entry_freq":"Frequenz",
       "ask_delete":"Sind Sie sicher, dass Sie dieses Abo löschen möchten?",
       "confirm_create":"Das Abo wurde erstellt",
@@ -328,7 +326,7 @@
 
     "MaintainTypes":{
       "caption":"Kategorien verwalten",
-      "name":"Kategorie Name",
+      "name":"Name der Kategorie",
       "edittitle":"Kategorie bearbeiten",
       "addtitle":"Kategorie hinzufügen",
       "confirm_create":"Kategorie erfolgreich hinzugefügt",
@@ -382,12 +380,11 @@
     },
 
     "Motivations":{
-      "caption":"Verwendungszweck bearbeiten",
-      "edittitle":"Zweck bearbeiten",
-      "edittitle_moti":"Zweck Details bearbeiten",
+      "caption":"Verwendungszwecke verwalten",
+      "edittitle":"Gruppe bearbeiten",
+      "edittitle_moti":"Details bearbeiten",
       "ask_delete_group": "Sind Sie sicher, dass Sie diese Gruppe mit allen Details löschen möchten?",
       "ask_delete_detail": "Sind Sie sicher, dass Sie dieses Detail löschen möchten?",
-      "ledgernumber":"Ledgernummer",
       "motivation_group_code":"Gruppen-Code",
       "motivation_detail_code":"Detail-Code",
       "motivation_desc":"Beschreibung",
@@ -471,13 +468,13 @@
       "end_month": "Monatsabschluss durchführen"
     },
     "AccountTree": {
-      "caption": "Kontenstruktur bearbeiten",
-      "uploadsuccess": "Neue Kontenstruktur wurde erfolgreich importiert.",
-      "uploaderror": "Neue Kontenstruktur konnte nicht importiert werden.",
+      "caption": "Kontenrahmen verwalten",
+      "uploadsuccess": "Neuer Kontenrahmen wurde erfolgreich importiert.",
+      "uploaderror": "Neuer Kontenrahmen konnte nicht importiert werden.",
       "accounts_file": "Konten"
     },
     "CostCenterTree": {
-      "caption": "Struktur der Kostenstellen bearbeiten",
+      "caption": "Kostenstellen verwalten",
       "uploadsuccess": "Die neuen Kostenstellen wurden erfolgreich importiert.",
       "uploaderror": "Neue Kostenstellen konnten nicht importiert werden.",
       "costcentres_file": "Kostenstellen"
