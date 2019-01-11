@@ -426,7 +426,7 @@
     <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit3-console.exe"/>
     <if test="${not file::exists(search.NUnitConsole)}">
         <!-- we have now included the nunit3-console in our git repository -->
-        <property name="search.NUnitConsole" value="/root/openpetra/csharp/ThirdParty/NUnit/nunit3-console/nunit3-console.exe"/>
+        <property name="search.NUnitConsole" value="${dir.3rdParty}/NUnit/nunit3-console/nunit3-console.exe"/>
     </if>
     <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
     <if test="${not file::exists(external.NUnitConsole)}">
