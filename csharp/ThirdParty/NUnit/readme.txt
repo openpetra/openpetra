@@ -6,3 +6,5 @@ from: https://github.com/nunit/nunit/releases/tag/3.5
 
 License according to https://github.com/nunit/nunit/blob/master/README.md:
 NUnit is Open Source software and NUnit 3.0 is released under the MIT license. Earlier releases used the NUnit license. Both of these licenses allow the use of NUnit in free and commercial applications and libraries without restrictions.
+
+We have NUnit Console 3.9 in subdirectory nunit3-console, from https://github.com/nunit/nunit-console/releases/tag/v3.9
