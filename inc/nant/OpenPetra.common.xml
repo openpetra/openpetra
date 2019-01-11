@@ -351,6 +351,7 @@
           overwrite="false" if="${platform::is-windows()}" />
 <property name="nant.settings.currentframework" value="mono-${NETframework-version}" 
           overwrite="false" if="${platform::is-unix()}" />
+<property name="Target-NETframework-version" value ="4.7.2" overwrite="false" />
 <!-- compiler flags -->
 <property name="compile.debug" value="true" 
           overwrite="false" />
@@ -401,7 +402,7 @@
   <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
-  <property name="NUnitVersion" value="NUnit 2.6.1" overwrite="false"/> 
+  <property name="NUnitVersion" value="NUnit 3.11.0" overwrite="false"/> 
   <property name="external.NUnitConsole" value="${OP::GetFileInProgramDirectory('/' + NUnitVersion + '/bin/nunit-console-x86.exe')}" overwrite="false"/>
 </if>
 <if test="${'win32'!=platform::get-name()}">
@@ -421,27 +422,15 @@
         <property name="libsodium.so" value="/usr/lib64/libsodium.so.23" overwrite="true"/>
     </if>
 
-    <!-- this is the location of NUnit on mono-openpetra rpm -->
-    <property name="search.NUnitConsole" value="/opt/mono/lib/mono/4.5/nunit-console.exe"/>
+    <!-- this could be the location of NUnit installed by rpm -->
+    <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit3-console.exe"/>
     <if test="${not file::exists(search.NUnitConsole)}">
-        <!-- this is the location of NUnit on the Jenkins build server -->
-        <property name="search.NUnitConsole" value="/opt/NUnit-2.6.1/bin/nunit-console.exe"/>
-    </if>
-    <if test="${not file::exists(search.NUnitConsole)}">
-        <!-- this is the location of NUnit from the Xamarin packages -->
-        <property name="search.NUnitConsole" value="/usr/lib/nunit/nunit-console.exe"/>
-    </if>
-    <if test="${not file::exists(search.NUnitConsole)}">
-        <!-- this is the location of NUnit with the Epel7 and F26 packages -->
-        <property name="search.NUnitConsole" value="/usr/lib/mono/nunit2/nunit-console.exe"/>
-    </if>
-    <if test="${not file::exists(search.NUnitConsole)}">
-        <!-- this is the location of NUnit with the older Fedora/CentOS packages (before NUnit3) -->
-        <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit-console.exe"/>
+        <!-- we have now included the nunit3-console in our git repository -->
+        <property name="search.NUnitConsole" value="${dir.3rdParty}/NUnit/nunit3-console/nunit3-console.exe"/>
     </if>
     <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
     <if test="${not file::exists(external.NUnitConsole)}">
-        <echo>Cannot find nunit-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</echo>
+        <echo>Cannot find nunit3-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</echo>
     </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">

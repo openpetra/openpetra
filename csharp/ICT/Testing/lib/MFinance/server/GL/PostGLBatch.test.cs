@@ -4,7 +4,7 @@
 // @Authors:
 //      peters
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,7 +51,7 @@ namespace Tests.MFinance.Server.GL
         /// <summary>
         /// open database connection or prepare other things for this test
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             //new TLogging("TestServer.log");
@@ -63,7 +63,7 @@ namespace Tests.MFinance.Server.GL
         /// <summary>
         /// cleaning up everything that was set up for this test
         /// </summary>
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             TPetraServerConnector.Disconnect();

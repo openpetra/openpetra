@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,7 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
         /// <summary>
         /// open database connection or prepare other things for this test
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             TPetraServerConnector.Connect("../../etc/TestServer.config");
@@ -70,7 +70,7 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
         /// <summary>
         /// cleaning up everything that was set up for this test
         /// </summary>
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             TPetraServerConnector.Disconnect();

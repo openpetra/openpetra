@@ -4,7 +4,7 @@
 // @Authors:
 //       AlanP
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,7 +63,7 @@ namespace Tests.MFinance.Server.CrossLedger
         /// <summary>
         /// Open database connection and prepare other things for this test
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             TPetraServerConnector.Connect("../../etc/TestServer.config");
@@ -112,7 +112,7 @@ namespace Tests.MFinance.Server.CrossLedger
         /// <summary>
         /// Clean up everything that was set up for this test
         /// </summary>
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             // Delete our working test rows
