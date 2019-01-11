@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <tp@tbits.net>
 //       Christopher Jäkel <cj@tbits.net>
 //
-// Copyright 2017-2018 by TBits.net
+// Copyright 2017-2019 by TBits.net
 //
 // This file is part of OpenPetra.
 //
@@ -81,7 +81,7 @@ function open_new() {
 function save_new() {
 
     let se = $('#modal_space .modal').modal('show');
-    let request = translate_to_server(extract_data(raw));
+    let request = translate_to_server(extract_data(se));
 
     request['action'] = 'create';
 
