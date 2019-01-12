@@ -153,7 +153,7 @@ function save_entry(obj_modal) {
 
 	// replace all new information in the original data
 	last_opened_entry_data.p_default_email_address_c = last_opened_entry_data.ADefaultEmailAddress;
-	last_opened_entry_data.p_default_phone_land_line_c = last_opened_entry_data.ADefaultPhoneLandline;
+	last_opened_entry_data.p_default_phone_landline_c = last_opened_entry_data.ADefaultPhoneLandline;
 	last_opened_entry_data.p_default_phone_mobile_c = last_opened_entry_data.ADefaultPhoneMobile;
 
 	let updated_data = replace_data(last_opened_entry_data, x);
@@ -186,7 +186,7 @@ function save_entry(obj_modal) {
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs,
 			 'ADefaultEmailAddress': updated_data.p_default_email_address_c,
-			 'ADefaultPhoneLandline': updated_data.p_default_phone_land_line_c,
+			 'ADefaultPhoneLandline': updated_data.p_default_phone_landline_c,
 			 'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c
 			 };
 
@@ -219,8 +219,10 @@ function show_tab(tab_id) {
 
 // used to load all available tags and set checkbox if needed
 function load_tags(all_tags, selected_tags, obj) {
-	let p = $('<div class="container">');
+	let p = $('<div class="container"></div>');
+	emtpy = true;
 	for (tag of all_tags) {
+		empty = false;
 		let pe = $('[phantom] .tpl_check').clone();
 		pe.find('data').attr('value', tag['p_type_code_c']);
 		pe.find('span').text(tag['p_type_description_c']);
@@ -230,14 +232,21 @@ function load_tags(all_tags, selected_tags, obj) {
 		}
 		p.append(pe);
 	}
+	if (empty)
+	{
+		let pe = $('[phantom] .tpl_empty_types').clone();
+		p.append(pe);
+	}
 	obj.find('#types').html(p);
 	return obj;
 }
 
 // same as: load_tags just with subscriptions
 function load_subs(all_subs, selected_subs, obj) {
-	let p = $('<div class="container">');
+	let p = $('<div class="container"></div>');
+	empty = true;
 	for (tag of all_subs) {
+		empty = false;
 		let pe = $('[phantom] .tpl_check').clone();
 		pe.find('data').attr('value', tag['p_publication_code_c']);
 		pe.find('span').text(tag['p_publication_code_c']);
@@ -247,6 +256,12 @@ function load_subs(all_subs, selected_subs, obj) {
 		}
 		p.append(pe);
 	}
+	if (empty)
+	{
+		let pe = $('[phantom] .tpl_empty_subscriptions').clone();
+		p.append(pe);
+	}
+
 	obj.find('#subscriptions').html(p);
 	return obj;
 }
