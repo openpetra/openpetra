@@ -5,7 +5,7 @@
 //       Timotheus Pokorra <tp@tbits.net>
 //       CJ <cj@tbits.net>
 //
-// Copyright 2017-2018 by TBits.net
+// Copyright 2017-2019 by TBits.net
 //
 // This file is part of OpenPetra.
 //
@@ -68,11 +68,12 @@ class Navigation {
 		{
 			this.loadNavigationPage(name);
 		}
+
 		var stateObj = { name: name, title: title };
 		var newUrl = name.replace(/_/g, '/');
 		if (newUrl == "Home") { newUrl = ''; }
-		newUrl = "/" + newUrl;
-		if (window.location.pathname != newUrl && pushState) {
+		newUrl = window.location.protocol + '//' + window.location.hostname + '/' + newUrl;
+		if (window.location.protocol + '//' + window.location.hostname + '/' + window.location.pathname != newUrl && pushState) {
 			if (this.debug) {
 				console.log("history.pushState " + newUrl);
 			}
