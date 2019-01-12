@@ -247,6 +247,7 @@
         "batch_reverse": "Zurück buchen",
         "batch_post": "Stapel buchen",
         "batch_cancel": "Stapel abbrechen",
+        "batch_test_post": "Stapel prüfen",
         "DEBIT": "Debit",
         "CREDIT": "Kredit",
         "POSTED": "Posted",
