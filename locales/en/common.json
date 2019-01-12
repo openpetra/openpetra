@@ -65,7 +65,7 @@
         "GeneralLedger_label": "General Ledger",
         "Info_label": "Info",
         "GLBatchMaintenance_label": "Maintain GL Batches",
-        "GLBatches_label": "Maintain GL Batches and Transaction",
+        "GLBatches_label": "Maintain GL Batches and Transactions",
         "PeriodEnd_label": "Month and Year - Ends",
         "Gift_label": "Donations",
         "GiftBatches_label": "Donation Batches",
@@ -83,10 +83,10 @@
         "Motivations_label": "Maintain Motivation groups and details",
         "switchledger":"Active Ledger is now:",
         "BankImport_label":"Import donations from bank",
-        "ImportPartners_label":"Import partner",
+        "ImportPartners_label":"Import partners",
         "LedgerInfo_label":"Ledger infos",
-        "AccountTree_label":"Manage Accounts",
-        "CostCenterTree_label":"Manage Cost Centres",
+        "AccountTree_label":"Maintain the Chart of Accounts",
+        "CostCenterTree_label":"Maintain the Cost Centres",
         "MonthEnd_label": "Close the current period",
         "YearEnd_label": "Run the year end"
     },
@@ -383,7 +383,7 @@
     },
 
     "Motivations":{
-      "caption":"Edit motivations",
+      "caption":"Maintain motivations",
       "edittitle":"Edit motivation",
       "edittitle_moti":"Edit motivation detail",
       "ask_delete_group": "Do you really want to delete this group with all its details?",
@@ -432,7 +432,7 @@
     },
 
     "ImportPartners":{
-      "importUser":"Import partner from CSV file",
+      "importUser":"Import partners from CSV file",
       "examplefile":"See this example file for the possible columns:",
       "upload_partner_success":"Partners have been imported successfully",
       "upload_partner_fail":"Partners could not be imported"
@@ -473,14 +473,14 @@
       "end_month": "Close the current financial period"
     },
     "AccountTree": {
-      "caption": "Maintain the hierarchy of accounts",
-      "uploadsuccess": "New hierarchy of accounts was imported successfully",
-      "uploaderror": "Importing of new account hierarchy failed.",
+      "caption": "Maintain the Chart of Accounts",
+      "uploadsuccess": "New chart of accounts was imported successfully",
+      "uploaderror": "Importing of new chart of accounts failed.",
       "accounts_file": "Accounts"
     },
     "CostCenterTree": {
-      "caption": "Maintain the hierarchy of cost centres",
-      "uploadsuccess": "New hierarchy of cost centres was imported successfully",
+      "caption": "Maintain the Cost Centres",
+      "uploadsuccess": "New cost centres were imported successfully",
       "uploaderror": "Importing of new cost centres failed.",
       "costcentres_file": "CostCentres"
     },
