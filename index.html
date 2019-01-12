@@ -7,7 +7,7 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2017-2018 by TBits.net
+// Copyright 2017-2019 by TBits.net
 //
 // This file is part of OpenPetra.
 //
@@ -184,13 +184,18 @@
 <!-- End of navigation bars -->
 
 <script src="/dist/bundle.min.js"></script>
-<script src="/src/lib/string.js"></script>
-<script src="/src/lib/ajax.js"></script>
-<script src="/src/lib/auth.js"></script>
-<script src="/src/lib/i18n.js"></script>
-<script src="/src/lib/navigation.js"></script>
-<script src="/src/lib/app.js"></script>
-<script src="/src/lib/utils.js"></script>
+
+<script type="text/javascript">
+	WithVersion = '?' + Date.now();
+	$.getScript('/src/lib/string.js' + WithVersion);
+	$.getScript('/src/lib/ajax.js' + WithVersion);
+	$.getScript('/src/lib/auth.js' + WithVersion);
+	$.getScript('/src/lib/i18n.js' + WithVersion);
+	$.getScript('/src/lib/navigation.js' + WithVersion);
+	$.getScript('/src/lib/app.js' + WithVersion);
+	$.getScript('/src/lib/utils.js' + WithVersion);
+	
+</script>
 
 </body>
 </html>
