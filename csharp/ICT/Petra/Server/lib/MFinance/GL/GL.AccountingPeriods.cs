@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -639,7 +639,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 resultRow[1] = "all_open_periods";
                 ReturnTable.Rows.Add(resultRow);
 
-                for (int i = 1; i < LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods; i++)
+                for (int i = 1; i <= LedgerTable[0].CurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods; i++)
                 {
                     AAccountingPeriodRow period =
                         (AAccountingPeriodRow)AccountingPeriods.Rows.Find(new object[] { ALedgerNumber, i });

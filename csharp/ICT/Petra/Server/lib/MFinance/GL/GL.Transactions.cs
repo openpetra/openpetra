@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -3194,6 +3194,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 row.Narrative = ANarrative;
                 row.Reference = AReference;
                 row.TransactionDate = ATransactionDate;
+                row.TransactionAmount = AAmountInBaseCurrency;
                 row.AmountInBaseCurrency = AAmountInBaseCurrency;
                 row.AmountInIntlCurrency = AAmountInIntlCurrency;
                 row.DebitCreditIndicator = ADebitCreditIndicator;
@@ -3223,6 +3224,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         row.Narrative = ANarrative;
                         row.Reference = AReference;
                         row.TransactionDate = ATransactionDate;
+                        row.TransactionAmount = AAmountInBaseCurrency;
                         row.AmountInBaseCurrency = AAmountInBaseCurrency;
                         row.AmountInIntlCurrency = AAmountInIntlCurrency;
                         row.DebitCreditIndicator = ADebitCreditIndicator;
