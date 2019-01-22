@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -875,6 +875,49 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             return JsonConvert.SerializeObject(result); 
+        }
+
+        /// <summary>
+        /// set initial email address for user SYSADMIN
+        /// </summary>
+        [NoRemoting]
+        public static bool SetInitialSysadminEmail(string AEmailAddress)
+        {
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("InitialSysadminEmail");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "InitialSysadminEmail");
+
+            try
+            {
+                // check if the SYSADMIN user does not have an email address yet
+                string sql = "SELECT s_email_address_c" +
+                    " FROM PUB_s_user WHERE s_user_id_c = 'SYSADMIN' AND s_email_address_c <> ''";
+
+                DataTable result = db.SelectDT(sql, "user", Transaction);
+
+                if (result.Rows.Count > 0)
+                {
+                    // this instance has already been initialised
+                    TLogging.Log("SetInitialSysadminEmail: has already been initialised");
+                    return false;
+                }
+
+                string sqlUpdate = "UPDATE s_user SET s_email_address_c = ? WHERE s_user_id_c = 'SYSADMIN'";
+                OdbcParameter[] parameters = new OdbcParameter[1];
+                parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
+                parameters[0].Value = AEmailAddress;
+                db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SetInitialSysadminEmail " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -384,6 +384,23 @@ namespace Ict.Petra.Server.App.WebService
             }
 
             return JsonConvert.SerializeObject(result);
+        }
+
+        /// <summary>set the initial email address for user SYSADMIN</summary>
+        [WebMethod(EnableSession = true)]
+        public bool SetInitialSysadminEmail(string AEmailAddress, string AAuthToken)
+        {
+            if (AAuthToken != TAppSettingsManager.GetValue("AuthTokenForInitialisation"))
+            {
+                return false;
+            }
+
+            if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress))
+            {
+                return RequestNewPassword(AEmailAddress);
+            }
+
+            return false;
         }
 
         /// <summary>send out an e-mail for setting a new password</summary>
