@@ -3194,6 +3194,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 row.Narrative = ANarrative;
                 row.Reference = AReference;
                 row.TransactionDate = ATransactionDate;
+                row.TransactionAmount = AAmountInBaseCurrency;
                 row.AmountInBaseCurrency = AAmountInBaseCurrency;
                 row.AmountInIntlCurrency = AAmountInIntlCurrency;
                 row.DebitCreditIndicator = ADebitCreditIndicator;
@@ -3223,6 +3224,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         row.Narrative = ANarrative;
                         row.Reference = AReference;
                         row.TransactionDate = ATransactionDate;
+                        row.TransactionAmount = AAmountInBaseCurrency;
                         row.AmountInBaseCurrency = AAmountInBaseCurrency;
                         row.AmountInIntlCurrency = AAmountInIntlCurrency;
                         row.DebitCreditIndicator = ADebitCreditIndicator;
