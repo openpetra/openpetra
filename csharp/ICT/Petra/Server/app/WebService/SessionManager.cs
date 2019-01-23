@@ -390,7 +390,8 @@ namespace Ict.Petra.Server.App.WebService
         [WebMethod(EnableSession = true)]
         public bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode, string AAuthToken)
         {
-            if (AAuthToken != TAppSettingsManager.GetValue("AuthTokenForInitialisation"))
+            string requiredToken = TAppSettingsManager.GetValue("AuthTokenForInitialisation");
+            if ((AAuthToken != requiredToken) || (requiredToken == String.Empty) )
             {
                 return false;
             }
