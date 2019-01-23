@@ -388,14 +388,14 @@ namespace Ict.Petra.Server.App.WebService
 
         /// <summary>set the initial email address for user SYSADMIN</summary>
         [WebMethod(EnableSession = true)]
-        public bool SetInitialSysadminEmail(string AEmailAddress, string AAuthToken)
+        public bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode, string AAuthToken)
         {
             if (AAuthToken != TAppSettingsManager.GetValue("AuthTokenForInitialisation"))
             {
                 return false;
             }
 
-            if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress))
+            if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress, ALanguageCode))
             {
                 return RequestNewPassword(AEmailAddress);
             }

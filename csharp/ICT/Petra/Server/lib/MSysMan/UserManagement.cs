@@ -881,7 +881,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// set initial email address for user SYSADMIN
         /// </summary>
         [NoRemoting]
-        public static bool SetInitialSysadminEmail(string AEmailAddress)
+        public static bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode)
         {
             TDataBase db = DBAccess.SimpleEstablishDBConnection("InitialSysadminEmail");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "InitialSysadminEmail");
@@ -901,10 +901,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     return false;
                 }
 
-                string sqlUpdate = "UPDATE s_user SET s_email_address_c = ? WHERE s_user_id_c = 'SYSADMIN'";
-                OdbcParameter[] parameters = new OdbcParameter[1];
+                string sqlUpdate = "UPDATE s_user SET s_email_address_c = ?, s_language_code_c = ? WHERE s_user_id_c = 'SYSADMIN'";
+                OdbcParameter[] parameters = new OdbcParameter[2];
                 parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
                 parameters[0].Value = AEmailAddress;
+                parameters[1] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
+                parameters[1].Value = ALanguageCode;
                 db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
 
                 return true;
