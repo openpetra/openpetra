@@ -157,8 +157,8 @@
         "language": "Language",
         "german": "German",
         "english": "English",
-        "sendpassword": "Initial Password",
-        "sendpassword_checkbox": "Send initial password per email to the new user",
+        "sendresetpasswordlink": "Initial Password",
+        "sendresetpasswordlink_checkbox": "Send email with link to set the password to the new user",
         "permissions": "Permissions",
         "locked": "Locked",
         "retired": "Disabled"
