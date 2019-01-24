@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -386,6 +386,24 @@ namespace Ict.Petra.Server.App.WebService
             return JsonConvert.SerializeObject(result);
         }
 
+        /// <summary>set the initial email address for user SYSADMIN</summary>
+        [WebMethod(EnableSession = true)]
+        public bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode, string AAuthToken)
+        {
+            string requiredToken = TAppSettingsManager.GetValue("AuthTokenForInitialisation");
+            if ((AAuthToken != requiredToken) || (requiredToken == String.Empty) )
+            {
+                return false;
+            }
+
+            if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress, ALanguageCode))
+            {
+                return RequestNewPassword(AEmailAddress);
+            }
+
+            return false;
+        }
+
         /// <summary>send out an e-mail for setting a new password</summary>
         [WebMethod(EnableSession = true)]
         public bool RequestNewPassword(string AEmailAddress)
@@ -397,6 +415,9 @@ namespace Ict.Petra.Server.App.WebService
         [WebMethod(EnableSession = true)]
         public string SetNewPassword(string AUserID, string AToken, string ANewPassword)
         {
+            // make sure we are logged out. especially SYSADMIN could be logged in when a new user is created.
+            Logout();
+
             TVerificationResultCollection VerificationResult;
             bool Result = TMaintenanceWebConnector.SetNewPassword(AUserID, AToken, ANewPassword, out VerificationResult);
             return "{" + "\"AVerificationResult\": " + THttpBinarySerializer.SerializeObject(VerificationResult)+ "," + "\"result\": "+THttpBinarySerializer.SerializeObject(Result)+ "}";

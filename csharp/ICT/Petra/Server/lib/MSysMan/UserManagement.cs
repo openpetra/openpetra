@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -848,25 +848,37 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 }
                 else if (NewUser && ASendMail)
                 {
-                    // send E-Mail with temporary password
-                    // TODO: use double opt-in before sending the actual information???
+                    TDBTransaction SubmitChangesTransaction = null;
+                    bool SubmissionResult = false;
 
-                    string Domain = TAppSettingsManager.GetValue("Server.Url");
-                    string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
-                    Dictionary<string, string> parameters = new Dictionary<string, string>();
-                    parameters.Add("UserId", AUserId);
-                    parameters.Add("FirstName", SubmitDS.SUser[0].FirstName);
-                    parameters.Add("LastName", SubmitDS.SUser[0].LastName);
-                    parameters.Add("Domain", Domain);
-                    parameters.Add("NewPassword", NewPassword);
+                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                        ref SubmissionResult,
+                        delegate
+                        {
+                            // send E-Mail with link to reset the password
+                            // TODO: use double opt-in before sending the actual information???
+                            string token = SaveNewToken(AUserId, DBAccess.GDBAccessObj, SubmitChangesTransaction);
+
+                            string Domain = TAppSettingsManager.GetValue("Server.Url");
+                            string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
+                            Dictionary<string, string> parameters = new Dictionary<string, string>();
+                            parameters.Add("UserId", AUserId);
+                            parameters.Add("FirstName", SubmitDS.SUser[0].FirstName);
+                            parameters.Add("LastName", SubmitDS.SUser[0].LastName);
+                            parameters.Add("Domain", Domain);
+                            parameters.Add("Token", token);
+
+                            new TSmtpSender().SendEmailFromTemplate(
+                                "no-reply@" + EMailDomain,
+                                "OpenPetra Admin",
+                                SubmitDS.SUser[0].EmailAddress,
+                                "requestnewpassword",
+                                ALanguageCode,
+                                parameters);
+
+                            SubmissionResult = true;
+                        });
                     
-                    new TSmtpSender().SendEmailFromTemplate(
-                        "no-reply@" + EMailDomain,
-                        "OpenPetra Admin",
-                        SubmitDS.SUser[0].EmailAddress,
-                        "newuserpassword",
-                        ALanguageCode,
-                        parameters);
                 }
             }
             else
@@ -875,6 +887,71 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             return JsonConvert.SerializeObject(result); 
+        }
+
+        /// <summary>
+        /// set initial email address for user SYSADMIN
+        /// </summary>
+        [NoRemoting]
+        public static bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode)
+        {
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("InitialSysadminEmail");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "InitialSysadminEmail");
+
+            try
+            {
+                // check if the SYSADMIN user does not have an email address yet
+                string sql = "SELECT s_email_address_c" +
+                    " FROM PUB_s_user WHERE s_user_id_c = 'SYSADMIN' AND s_email_address_c <> ''";
+
+                DataTable result = db.SelectDT(sql, "user", Transaction);
+
+                if (result.Rows.Count > 0)
+                {
+                    // this instance has already been initialised
+                    TLogging.Log("SetInitialSysadminEmail: has already been initialised");
+                    return false;
+                }
+
+                string sqlUpdate = "UPDATE s_user SET s_email_address_c = ?, s_language_code_c = ? WHERE s_user_id_c = 'SYSADMIN'";
+                OdbcParameter[] parameters = new OdbcParameter[2];
+                parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
+                parameters[0].Value = AEmailAddress;
+                parameters[1] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
+                parameters[1].Value = ALanguageCode;
+                db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SetInitialSysadminEmail " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
+        }
+
+        /// generate token and save with valid date until in the s_user record
+        private static string SaveNewToken(string AUserID, TDataBase db, TDBTransaction Transaction)
+        {
+            string token = TPasswordHelper.GetRandomToken();
+            DateTime validUntil = DateTime.Now;
+            validUntil = validUntil.AddHours(24);
+            string sqlUpdate = "UPDATE PUB_s_user SET s_password_reset_token_c = ?, s_password_reset_valid_until_d = ?" +
+                " WHERE s_user_id_c = ?";
+            OdbcParameter[] parameters = new OdbcParameter[3];
+            parameters[0] = new OdbcParameter("Token", OdbcType.VarChar);
+            parameters[0].Value = token;
+            parameters[1] = new OdbcParameter("ValidUntil", OdbcType.DateTime);
+            parameters[1].Value = validUntil;
+            parameters[2] = new OdbcParameter("UserID", OdbcType.VarChar);
+            parameters[2].Value = AUserID;
+            db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+
+            return token;
         }
 
         /// <summary>
@@ -915,20 +992,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     string LastName = result.Rows[0][2].ToString();
                     string LanguageCode = result.Rows[0][3].ToString();
 
-                    // generate token and save with valid date until in the s_user record
-                    string token = TPasswordHelper.GetRandomToken();
-                    DateTime validUntil = DateTime.Now;
-                    validUntil = validUntil.AddHours(24);
-                    string sqlUpdate = "UPDATE PUB_s_user SET s_password_reset_token_c = ?, s_password_reset_valid_until_d = ?" +
-                        " WHERE s_user_id_c = ?";
-                    parameters = new OdbcParameter[3];
-                    parameters[0] = new OdbcParameter("Token", OdbcType.VarChar);
-                    parameters[0].Value = token;
-                    parameters[1] = new OdbcParameter("ValidUntil", OdbcType.DateTime);
-                    parameters[1].Value = validUntil;
-                    parameters[2] = new OdbcParameter("UserID", OdbcType.VarChar);
-                    parameters[2].Value = UserID;
-                    db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+                    string token = SaveNewToken(UserID, db, Transaction);
 
                     // send the email with the link for resetting the password
                     string Domain = TAppSettingsManager.GetValue("Server.Url");
