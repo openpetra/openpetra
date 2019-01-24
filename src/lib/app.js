@@ -55,13 +55,15 @@ function loadNavigation() {
 
 auth = new Auth();
 
-auth.checkAuth(function() {
-	$("#loading").hide();
-	$(window).scrollTop(0);
+function resetPassword() {
 	var url = new URL(window.location.href);
 	var ResetPasswordToken = url.searchParams.get("ResetPasswordToken");
 	var UserId = url.searchParams.get("UserId");
 	if (ResetPasswordToken != null) {
+		// delete our session to be logged out
+		window.localStorage.setItem('username', '');
+		window.localStorage.setItem('authenticated', 0);
+
 		$("#setNewPwd").show();
 		$("#btnSetNewPwd").click(function(e) {
 			e.preventDefault();
@@ -73,7 +75,16 @@ auth.checkAuth(function() {
 				auth.setNewPassword(UserId, ResetPasswordToken, pwd1);
 			}
 		});
-	} else {
+		return true;
+	}
+	return false;
+}
+
+
+auth.checkAuth(function(isAuthenticated) {
+	$("#loading").hide();
+	$(window).scrollTop(0);
+	if (!resetPassword()) {
 		$("#login").show();
 		if (window.location.hostname.indexOf("demo.") !== -1)
 		{
@@ -89,14 +100,15 @@ auth.checkAuth(function() {
 	}
 }, function () {
 	setTimeout(keepConnection, 5000);
-
-	// load the navigation bars now.
-	// we don't want the navigation bars displayed if the user is not logged in
 	$("#loading").hide();
-	$("#main").show();
 
-        setTimeout(loadNavigation, 50);
+	if (!resetPassword()) {
+		// load the navigation bars now.
+		// we don't want the navigation bars displayed if the user is not logged in
+		$("#main").show();
 
+		setTimeout(loadNavigation, 50);
+	}
 });
 
 function requestNewPassword() {
