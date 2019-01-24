@@ -415,6 +415,9 @@ namespace Ict.Petra.Server.App.WebService
         [WebMethod(EnableSession = true)]
         public string SetNewPassword(string AUserID, string AToken, string ANewPassword)
         {
+            // make sure we are logged out. especially SYSADMIN could be logged in when a new user is created.
+            Logout();
+
             TVerificationResultCollection VerificationResult;
             bool Result = TMaintenanceWebConnector.SetNewPassword(AUserID, AToken, ANewPassword, out VerificationResult);
             return "{" + "\"AVerificationResult\": " + THttpBinarySerializer.SerializeObject(VerificationResult)+ "," + "\"result\": "+THttpBinarySerializer.SerializeObject(Result)+ "}";
