@@ -108,8 +108,9 @@ mysqlscript() {
     export DBPwd=$OPENPETRA_DBPWD
 
     if [ -z "$MYSQL_CMD" ]; then
-      echo "call: mysql -u $DBUser -h $DBHost --port=$DBPort --password=\"$DBPwd\" $DBName --default-character-set=utf8"
-      echo " or visit http://localhost/phpMyAdmin, with user $DBUser and password $DBPwd"
+      echo "visit http://localhost/phpMyAdmin, with user $DBUser and password $DBPwd"
+      echo "calling: mysql -u $DBUser -h $DBHost --port=$DBPort --password=\"$DBPwd\" $DBName --default-character-set=utf8"
+      mysql -u $DBUser -h $DBHost --port=$DBPort --password="$DBPwd" $DBName --default-character-set=utf8
     else
       echo $MYSQL_CMD | mysql -u $DBUser -h $DBHost --port=$DBPort --password="$DBPwd" $DBName --default-character-set=utf8
     fi
