@@ -23,6 +23,11 @@ then
   export OPENPETRA_PORT=9000
   export OPENPETRA_HTTP_PORT=80
   export OPENPETRA_DBHOST=localhost
+  config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
+  if [ -f $config ]
+  then
+    export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
+  fi
 else
   config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
   if [ -f $config ]
@@ -151,17 +156,14 @@ restore() {
     mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createtables-MySQL.sql
     rm $OpenPetraPath/tmp/createtables-MySQL.sql
 
-    echo "loading data..."
+    echo "loading data and constraints and indexes..."
     echo $backupfile|grep -qE '\.gz$'
     if [ $? -eq 0 ]
     then
-        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > $OpenPetraPath/log/mysqlload.log
+        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > /home/$userName/log/mysqlload.log
     else
-        mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > $OpenPetraPath/log/mysqlload.log
+        mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > /home/$userName/log/mysqlload.log
     fi
-
-    echo "enabling indexes and constraints..."
-    mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db/createconstraints-MySQL.sql
 
     echo `date` "Finished!"
 }
