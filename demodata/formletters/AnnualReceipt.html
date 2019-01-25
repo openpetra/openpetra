@@ -4,6 +4,12 @@
   <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
   <title>Annual Receipt</title>
   <!-- todo: CSS for position of address label, font sizes, etc? -->
+
+<style>
+.new-page {
+  page-break-before: always;
+}
+</style>
 </head>
 <body>
 <table>
@@ -96,7 +102,7 @@ Steuernummer beim Finanzamt <br/>
 Bankverbindung: 
 </p>
 </font>
-<pagebreak>
+<p class="new-page"></p>
 <br/><br/><br/>
 <font size="-1">
 Anlage zur Sammelzuwendungsbestätigung vom #DATE My Charity<br/>
@@ -147,6 +153,6 @@ für den Zuwendenden #NAME.</font><br/>
 <br/><br/><br/><br/><br/>
 <font size="-3">Dieses Dokument wurde mit OpenPetra erstellt, einem frei verfügbaren Computerprogramm für gemeinnützige Vereine und Organisationen.<br/>
 Mehr Infos unter http://www.openpetra.org</font>
-
+<p class="new-page"></p>
 </body>
 </html>

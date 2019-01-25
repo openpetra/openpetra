@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,8 +68,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     {
         /// <summary>
         /// create the annual gift receipts for all donors in the given year;
-        /// returns several html documents, each in its own body tag; for printing with the HTML printer;
+        /// returns an HTML file containing all receipts
         /// TODO images are currently locally linked
+        /// TODO return the PDF file
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
@@ -77,12 +78,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DateTime AStartDate,
             DateTime AEndDate,
             string AHTMLTemplate,
+            string ALanguage,
             bool ADeceasedFirst = false,
             string AExtract = null,
             Int64 ADonorKey = 0)
         {
             string ResultDocument = string.Empty;
 
+            TLanguageCulture.SetLanguageAndCulture(ALanguage, ALanguage);
             TLanguageCulture.LoadLanguageAndCulture();
 
             // get BaseCurrency
@@ -232,6 +235,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
+            // TODO: return a pdf document
             return ResultDocument;
         }
 
