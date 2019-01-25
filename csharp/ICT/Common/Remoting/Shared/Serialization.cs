@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Data;
 using System.Collections;
@@ -257,6 +258,11 @@ namespace Ict.Common.Remoting.Shared
             }
             else if (type == "System.String")
             {
+                if (s.Length > 30 && s.StartsWith("data:") && s.Substring(0,30).Contains(";base64,"))
+                {
+                    byte[] data = Convert.FromBase64String(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
+                    return(Encoding.UTF8.GetString(data));
+                }
                 return s;
             }
             else if (type == "System.Data.DataTable")
