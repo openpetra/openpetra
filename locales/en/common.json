@@ -71,6 +71,7 @@
         "GiftBatches_label": "Donation Batches",
         "GiftEntry_label": "Donation Entry",
         "GiftReceipting_label": "Donation Receipting",
+        "PrintAnnualReceipts_label": "Print the annual gift receipts",
         "GL_label": "General Ledger",
         "CrossLedgerSetup_label": "Finance Setup",
         "Ledger_label": "Ledger",
@@ -429,6 +430,14 @@
       "edittitle_trans_detail":"Edit transaction detail",
       "total_debit": "Total Debit",
       "total_credit": "Total Credit"
+    },
+
+    "PrintAnnualReceipts":{
+      "caption": "Print the annual gift receipts",
+      "date_from": "Date from",
+      "date_until": "Date to",
+      "AnnualReceipts": "Generate PDF",
+      "uploaderror": "Error with receipts"
     },
 
     "ImportPartners":{

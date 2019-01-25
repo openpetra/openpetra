@@ -71,6 +71,7 @@
         "GiftBatches_label": "Spenden verwalten",
         "GiftEntry_label": "Spenden erfassen",
         "GiftReceipting_label": "Zuwendungsbestätigungen",
+        "PrintAnnualReceipts_label": "Jahresspendenbescheinigungen drucken",
         "GL_label": "Hauptbuch",
         "CrossLedgerSetup_label": "Finanzen einrichten",
         "Ledger_label": "Hauptbuch",
@@ -428,6 +429,14 @@
       "edittitle_trans_detail":"Details bearbeiten",
       "total_debit":"Summe Soll",
       "total_credit":"Summe Haben"
+    },
+
+    "PrintAnnualReceipts":{
+      "caption": "Jahresspendenbescheinigungen drucken",
+      "date_from": "von",
+      "date_until": "bis",
+      "AnnualReceipts": "PDF herunterladen",
+      "uploaderror": "Fehler beim Erstellen der Spendenbescheinigungen"
     },
 
     "ImportPartners":{
