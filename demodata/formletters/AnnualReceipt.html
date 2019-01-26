@@ -3,126 +3,160 @@
 <head>
   <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
   <title>Annual Receipt</title>
-  <!-- todo: CSS for position of address label, font sizes, etc? -->
-
 <style>
 .new-page {
   page-break-before: always;
+}
+body {
+  font-size: 0.95em;
+  font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+  line-height: 1.25em;
+  padding-left: 80px;
+  padding-right: 80px;
+}
+.recipientaddress {
+  font-size: 1.05em;
+}
+.ouraddress {
+  font-size: 0.95em;
+}
+.smalladdress {
+  font-size: 0.6em;
+}
+.hinweis {
+  font-size: 0.85em;
+}
+.details {
+  font-size: 0.85em;
+}
+.donortable, .donortable td, .donortable th {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+.donortable {
+  width: 100%;
+}
+.donations th {
+  font-size: 0.9em;
+  padding-right: 25px;
+}
+.advertisement {
+  font-size: 0.9em;
+}
+.total {
+  font-size: 0.9em;
+  font-weight: bold;
 }
 </style>
 </head>
 <body>
 <table>
   <colgroup>
-    <col width="340"/>
-    <col width="260"/>
+    <col width="500"/>
+    <col width="320"/>
   </colgroup>
 <tr>
 <td><br/><b>INVALID, JUST FOR DEMO PURPOSES</b></td>
-<td><!-- <img src="logo.png"/> --> </td>
+<!-- Logo with percentages does not seem to work with wkhtmltopdf -->
+<td><!-- <img src="logo.png" width="170px" height="200px"/> --> </td>
 </tr>
 </table>
 <table>
   <colgroup>
-    <col width="400"/>
-    <col width="200"/>
+    <col width="500"/>
+    <col width="320"/>
   </colgroup>
 <tr>
-<td>
-<br/><br/>
-<font size="-2">My Charity, Sample Way 14, 23232 London</font><br/>
+<td valign="top">
+<p class="smalladdress">My Charity, Sample Way 14, 23232 Berlin</p>
+<p class="recipientaddress">
 #TITLE<br/>
 #NAME<br/>
 #STREETNAME<br/><br/>
 <b>#POSTALCODE #CITY</b><br/>
 #COUNTRYNAME<br/>
+</p>
+<br/>
 </td>
-<td>
-<font size="-2">My Charity<br/>
+<td valign="top" class="ouraddress">
+My Charity<br/>
 Sample Way 14<br/>
-23232 London<br/>
-<table>
+23232 Berlin<br/>
+<table class="ouraddress">
   <colgroup>
-    <col width="40"/>
-    <col width="150"/>
+    <col width="70"/>
+    <col width="250"/>
   </colgroup>
 <tr><td>Tel</td><td>+49 (0) 234 456789</td></tr>
 <tr><td>Email</td><td>info@example.org</td></tr>
 <tr><td>Web</td><td>www.example.org</td></tr>
 </table>
-</font>
 </td>
 </tr>
 </table>
 <br/>
-<font size="-1">
 <b>Sammelbestätigung für das Jahr 2009</b><br/>
-<br/>
 über Zuwendungen im Sinne des § 10 b des Einkommensteuergesetzes an eine der in § 5 Abs. 1 Nr. 9 <br/>
 des Körperschaftsteuergesetzes bezeichneten Körperschaften, Personenvereinigungen oder Vermögensmassen.<br/><br/>
-Art der Zuwendung: Geldzuwendung<br/>
-<table border="1">
-<tr><td>
+Art der Zuwendung: Geldzuwendung<br/><br/>
+<table class="donortable">
+<tr><td colspan="2">
 Name und Anschrift des Zuwendenden:<br/>
 #NAME, #STREETNAME, #POSTALCODE #CITY</td>
 </tr>
-<tr>
-<td><br/>Gesamtsumme in Euro der Zuwendungen im Jahr 2009<br/>
-<table border="1">
+<tr><td colspan="2">Gesamtsumme in Euro der Zuwendungen im Jahr 2009<br/>
 <tr><td>in Ziffern</td><td>in Buchstaben</td></tr>
-<tr><td>#OVERALLAMOUNT</td><td>#TOTALAMOUNTINWORDS</td></tr></table>
-</td></tr></table>
+<tr><td>#OVERALLAMOUNT</td><td>#TOTALAMOUNTINWORDS</td></tr>
+</table>
+
 <br/>
 Es handelt sich nicht um den Verzicht auf die Erstattung von Aufwendungen. Es wird bestätigt, dass über die in der Gesamtsumme enthaltenen Zuwendungen keine weiteren Bestätigungen, weder formelle Zuwendungsbestätigungen noch Beitragsquittungen o.ä., ausgestellt wurden und werden.<br/>
 <br/>
 Wir sind wegen Förderung von ... durch Bescheinigung des Finanzamtes ... als gemeinnützig anerkannt.<br/>
 Es wird bestätigt, dass es sich nicht um Mitgliedsbeiträge, sonstige Mitgliedsumlagen oder Aufnahmegebühren handelt und die Zuwendungen nur zur Förderung oben genannter Zwecke im Ausland verwendet werden.<br/>
-<table>
-<tr>
-<td>London, den #DATE</td>
-<td>
-.....................................................
 <br/>
-My Charity
+<table>
+  <colgroup>
+    <col width="340"/>
+    <col width="460"/>
+  </colgroup>
+<tr>
+<td valign="bottom">Berlin, den #DATE<br/><br/><br/></td>
+<td>
+<br/>
+<br/>
+...............................................................................
+<br/>
+Max Mustermann, My Charity
 </td>
 </tr>
 </table>
-</font>
-<font size="-8"><br/></font>
-<font size="-3">
+<br/>
+<p class="hinweis">
 Hinweis: <br/>
 Wer vorsätzlich oder grob fahrlässig eine unrichtige Zuwendungsbestätigung erstellt oder wer veranlasst, dass Zuwendungen nicht zu den in der Zuwendungsbestätigung angegebenen steuerbegünstigten Zwecken verwendet werden, haftet für die Steuer, die dem Fiskus durch einen etwaigen Abzug der Zuwendungen beim Zuwendenden entgeht (§ 10 b Abs. 4 EStG, § 9 Abs. 3 KStG, § 9 Nr. 5 GewStG).<br/>
 Diese Bestätigung wird nicht als Nachweis für die steuerliche Berücksichtigung der Zuwendung anerkannt, wenn das Datum des Freistellungsbescheides länger als 5 Jahre bzw. das Datum der vorläufigen Bescheinigung länger als 3 Jahre seit Ausstellung der Bestätigung zurückliegt (BMF vom 15.12.1994 – BStBl I S. 884).
-</font>
-<font size="-4">
-<p align="center">
-Vereinssitz: London; Vorstand: Someone<br/>
+</p>
+<br/><br/>
+<p align="center" class="details">
+Vereinssitz: Berlin; Vorstand: Someone<br/>
 Registernummer beim Vereinsgericht <br/>
 Steuernummer beim Finanzamt <br/>
 Bankverbindung: 
 </p>
-</font>
 <p class="new-page"></p>
 <br/><br/><br/>
-<font size="-1">
-Anlage zur Sammelzuwendungsbestätigung vom #DATE My Charity<br/>
+Anlage zur Sammelzuwendungsbestätigung vom #DATE der My Charity<br/>
 für den Zuwendenden #NAME.</font><br/>
 
-<font size="-2">
-<table border="0">
-  <colgroup>
-    <col width="90"/>
-    <col width="100"/>
-    <col width="100"/>
-    <col width="100"/>
-    <col width="100"/>
-  </colgroup>
+<table border="0" class="donations">
   <tbody>
     <tr>
     <th>Datum</th>
     <th>Betrag EUR</th>
     <th>Förderzweck</th>
     <th>Zuwendungsart</th>
+    <th>Verzicht auf die Erstattung<br/>von Aufwendungen (ja/nein)</th>
     <th>Verwendung</th>
     </tr>
     <tr>
@@ -130,29 +164,19 @@ für den Zuwendenden #NAME.</font><br/>
       <td align="right">#AMOUNT&nbsp;&nbsp;&nbsp;&nbsp;</td>
       <td align="center">gemeinnützig</td>
       <td align="center"><div class="Gift In Kind">Sachspende</div><div class="Gift">Geldzuwendung</div></td>
+      <td align="center">nein</td>
       <td align="center">Ausland</td>
     </tr>
-  </tbody>
-</table>
-<table>
-  <colgroup>
-    <col width="90"/>
-    <col width="100"/>
-    <col width="100"/>
-    <col width="100"/>
-    <col width="100"/>
-  </colgroup>
-  <tbody>
     <tr>
-    <td><b>Summe EUR:</b></td>
+    <td class="total">Summe&nbsp;EUR:</td>
     <td align="right">#OVERALLAMOUNT&nbsp;&nbsp;&nbsp;&nbsp;</td>
     </tr>
   </tbody>
 </table>
-</font>
 <br/><br/><br/><br/><br/>
-<font size="-3">Dieses Dokument wurde mit OpenPetra erstellt, einem frei verfügbaren Computerprogramm für gemeinnützige Vereine und Organisationen.<br/>
-Mehr Infos unter http://www.openpetra.org</font>
+<p class="advertisement">Dieses Dokument wurde mit OpenPetra erstellt, einem frei verfügbaren Computerprogramm für gemeinnützige Vereine.<br/>
+Mehr Infos unter https://www.openpetra.com.<br/>
+Dort gibt es ein Angebot, einen OpenPetra Server inkl. Wartung, Updates und Backups zu einem günstigen Preis mieten zu können.</p>
 <p class="new-page"></p>
 </body>
 </html>
