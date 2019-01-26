@@ -196,6 +196,11 @@
 		WithVersion = "?" + currentrelease;
 	}
 
+	// enable caching
+	$.ajaxSetup({
+		cache: true
+	});
+
 	$.getScript('/src/lib/string.js' + WithVersion);
 	$.getScript('/src/lib/ajax.js' + WithVersion);
 	$.getScript('/src/lib/auth.js' + WithVersion);
