@@ -23,6 +23,16 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+develop = 1;
+// will be replaced by the build script for the release
+currentrelease = "CURRENTRELEASE";
+
+if (develop) {
+  refresh = "?" + Date.now();
+} else {
+  refresh = "?" + currentrelease;
+}
+
 i18next
   .use(i18nextXHRBackend)
   .use(i18nextBrowserLanguageDetector)
@@ -32,7 +42,7 @@ i18next
     ns: ['common'],
     defaultNS: 'common',
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/locales/{{lng}}/{{ns}}.json' + refresh,
     }
   }, function(err, t) {
     // init set content
