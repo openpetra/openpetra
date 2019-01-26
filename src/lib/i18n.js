@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//         Timotheus Pokorra <tp@tbits.net>
+//         Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -22,6 +23,16 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+develop = 1;
+// will be replaced by the build script for the release
+currentrelease = "CURRENTRELEASE";
+
+if (develop) {
+  refresh = "?" + Date.now();
+} else {
+  refresh = "?" + currentrelease;
+}
+
 i18next
   .use(i18nextXHRBackend)
   .use(i18nextBrowserLanguageDetector)
@@ -31,7 +42,7 @@ i18next
     ns: ['common'],
     defaultNS: 'common',
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/locales/{{lng}}/{{ns}}.json' + refresh,
     }
   }, function(err, t) {
     // init set content
@@ -81,6 +92,10 @@ function translate(html, form) {
 
 function changeLng(lng) {
   i18next.changeLanguage(lng);
+}
+
+function currentLng() {
+  return i18next.language;
 }
 
 i18next.on('languageChanged', () => {

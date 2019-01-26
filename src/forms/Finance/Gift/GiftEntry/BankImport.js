@@ -108,7 +108,7 @@ function edit_gift_trans(trans_order) {
 		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
 		transaction['p_donor_key_n'] = transaction['DonorKey'];
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
-
+console.log(transaction);
 		for (detail of parsed.ADetails) {
 			let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
 			tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
