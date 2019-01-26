@@ -57,39 +57,30 @@ function GenerateAnnualReceipts(self) {
 				'ADonorKey': 0};
 			api.post('serverMFinance.asmx/TReceiptingWebConnector_CreateAnnualGiftReceipts', p)
 			.then(function (result) {
-				result = result.data.d;
-				if (result != '')
+				var parsed = JSON.parse(result.data.d);
+				if (parsed.result == true)
 				{
-					// Convert that text into a byte array.
-					var ab = new ArrayBuffer(result.length);
-					var ia = new Uint8Array(ab);
-					for (var i = 0; i < result.length; i++) {
-						ia[i] = result.charCodeAt(i);
-					}
-
-					var blob = new Blob([ia], {encoding:"UTF-8", type : "text/html;charset=UTF-8"});
-					var url = URL.createObjectURL(blob);
-					var a = document.createElement("a");
-					a.style = "display: none";
-					a.href = url;
-					a.download = "AnnualReceipts.html";
-
-					// For Mozilla we need to add the link, otherwise the click won't work
-					// see https://support.mozilla.org/de/questions/968992
-					document.getElementById('myModal').appendChild(a);
-
-					a.click();
-					URL.revokeObjectURL(url);
+					var _file_ = b64DecodeUnicode(parsed.AHTMLReceipt);
+					var link = document.createElement("a");
+					link.style = "display: none";
+					link.href = 'data:text/html;charset=utf-8,'+encodeURIComponent(_file_);
+					var year = payload['AEndDate'].substring(0, 4);
+					link.download = i18next.t('PrintAnnualReceipts.annual_receipt_file') + year + '.html';
+					document.body.appendChild(link);
+					link.click();
+					link.remove();
 				}
 				else
 				{
-					console.debug("something went wrong");
+					display_message(i18next.t('PrintAnnualReceipts.errorempty'), "fail");
 				}
-				hidePleaseWait();
+				// somehow the operation can finish too soon, and hidePleaseWait would not hide the dialog
+				setTimeout(hidePleaseWait, 500);
 			})
 			.catch(error => {
 				console.log(error);
-				hidePleaseWait();
+				// somehow the error can be too early, and hidePleaseWait would not hide the dialog
+				setTimeout(hidePleaseWait, 500);
 				display_message(i18next.t('PrintAnnualReceipts.uploaderror'), "fail");
 			});
 		};

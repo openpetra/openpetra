@@ -436,6 +436,8 @@
       "date_from": "von",
       "date_until": "bis",
       "AnnualReceipts": "PDF herunterladen",
+      "annual_receipt_file": "Spendenbescheinigungen",
+      "errorempty": "In dem Zeitraum gab es keine zu bescheinigende Spendenstapel",
       "uploaderror": "Fehler beim Erstellen der Spendenbescheinigungen"
     },
 

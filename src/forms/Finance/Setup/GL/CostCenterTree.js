@@ -85,7 +85,7 @@ function export_file() {
   };
   api.post('serverMFinance.asmx/TGLSetupWebConnector_ExportCostCentreHierarchyYml', x).then(function (data) {
     var parsed = JSON.parse(data.data.d);
-    var _file_ = window.atob(parsed.AHierarchyYml);
+    var _file_ = b64DecodeUnicode(parsed.AHierarchyYml);
     var link = document.createElement("a");
     link.style = "display: none";
     link.href = 'data:text/plain;charset=utf-8,'+encodeURIComponent(_file_);

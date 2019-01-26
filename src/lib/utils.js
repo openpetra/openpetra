@@ -161,3 +161,11 @@ function save_preset(field_name, field_values) {
   window.localStorage.setItem(field_name, JSON.stringify(field_values) );
 
 }
+
+// window.atob does not work for umlaut
+// see https://stackoverflow.com/a/30106551
+function b64DecodeUnicode(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    }).join(''))
+}
