@@ -152,9 +152,14 @@ namespace Tests.MFinance.Server.Gift
             sw.Close();
 
             //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
-            string receipts =
+            string receipts;
+            bool result =
                 TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber, "ANNUAL",
-                    new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31), FileContent, "de-DE");
+                    new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31), FileContent, "de-DE",
+                    out receipts);
+
+            Assert.AreEqual(true, result, "receipt was empty");
+
             sw = new StreamWriter(formletterExpectedFile + ".new", false, encodingOfHTMLfile);
             sw.WriteLine(receipts);
             sw.WriteLine();
