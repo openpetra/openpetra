@@ -141,6 +141,15 @@ namespace Ict.Common.Remoting.Shared
         }
 
         /// <summary>
+        /// deserialize string from Base64
+        /// </summary>
+        static public string DeserializeFromBase64(string s)
+        {
+            byte[] data = Convert.FromBase64String(s);
+            return(Encoding.UTF8.GetString(data));
+        }
+
+        /// <summary>
         /// serialize any object. if it is a complex type, use JSON
         /// </summary>
         static public string SerializeObjectJSON(object o)
@@ -260,8 +269,7 @@ namespace Ict.Common.Remoting.Shared
             {
                 if (s.Length > 30 && s.StartsWith("data:") && s.Substring(0,30).Contains(";base64,"))
                 {
-                    byte[] data = Convert.FromBase64String(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
-                    return(Encoding.UTF8.GetString(data));
+                    return DeserializeFromBase64(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
                 }
                 return s;
             }
