@@ -185,6 +185,7 @@
         "city": "City",
         "postalcode": "Postal code",
         "countrycode": "Country",
+        "lastdonation": "Last Donation",
         "mailingaddress": "Valid address",
         "nosolicitations1": "Contact Preference",
         "nosolicitations2": "No solicitations",

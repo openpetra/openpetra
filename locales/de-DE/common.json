@@ -185,6 +185,7 @@
         "city": "Stadt",
         "postalcode": "Postleitzahl",
         "countrycode": "Land",
+        "lastdonation": "Letzte Spende",
         "mailingaddress": "Gültige Adresse",
         "nosolicitations1": "Kontaktaufnahme",
         "nosolicitations2": "Keine unaufgeforderte Kontaktierung/Werbung erwünscht",
