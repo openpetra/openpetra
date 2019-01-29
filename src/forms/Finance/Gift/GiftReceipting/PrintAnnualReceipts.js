@@ -21,6 +21,12 @@
 // along with OpenPetra. If not, see <http://www.gnu.org/licenses/>.
 //
 
+$(function() {
+	var year = (new Date()).getYear() + 1900 - 1;
+	$("#StartDate").val(year + "-01-01");
+	$("#EndDate").val(year + "-12-31");
+});
+
 function UploadHTMLTemplate() {
 	$('#fileHTMLTemplate').click();
 }
