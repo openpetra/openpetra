@@ -1,0 +1,73 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Annual Report without recipients of Annual Receipts</title>
+<link href="/css/report.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="head">
+</div>
+
+
+<!-- BeginSQL SelectRecipients-->
+-- Select recipients, exclude people that have received an annual receipt 
+select p.p_partner_key_n, p.p_partner_short_name_c AS PartnerName, p.p_partner_class_c,
+l.p_street_name_c, l.p_city_c, l.p_postal_code_c, l.p_country_code_c,
+m.p_value_c as email
+from p_partner p
+-- select the email address. we only have on per partner at the moment
+LEFT OUTER JOIN p_partner_attribute m ON (p.p_partner_key_n = m.p_partner_key_n AND m.p_attribute_type_c = 'E-Mail'),
+p_subscription s, p_partner_location pl, p_location l
+where p.p_partner_key_n = s.p_partner_key_n
+and s.p_publication_code_c = {PublicationCode}
+and s.p_subscription_status_c = 'PERMANENT'
+and (s.p_date_cancelled_d IS NULL OR p_date_cancelled_d > CURRENT_DATE)
+and (s.p_expiry_date_d IS NULL OR s.p_expiry_date_d > CURRENT_DATE)
+and p.p_status_code_c = 'ACTIVE'
+-- we only have one location per partner at the moment
+AND p.p_partner_key_n = pl.p_partner_key_n
+AND pl.p_location_key_i = l.p_location_key_i
+AND pl.p_site_key_n = l.p_site_key_n
+-- exclude donors with annual receipt because they get the annual letter anyways
+AND NOT EXISTS
+(select distinct p2.p_partner_key_n
+from p_partner p2, a_gift g
+WHERE g.p_donor_key_n = p2.p_partner_key_n
+AND p2.p_receipt_letter_frequency_c = 'Annual'
+AND g.a_date_entered_d between {DonationStartDate} and {DonationEndDate}
+and p2.p_partner_key_n = p.p_partner_key_n)
+AND p.p_no_solicitations_l = 0;
+<!-- EndSQL SelectRecipients -->
+
+<div id="column_headings" class="row">
+	<div class="col-1">PartnerKey</div>
+	<div class="col-2">PartnerName</div>
+	<div class="col-2">StreetName</div>
+	<div class="col-1">PostCode</div>
+	<div class="col-2">City</div>
+	<div class="col-1">Country</div>
+	<div class="col-2">E-Mail</div>
+</div>
+<div class="row">
+	<div class="col-12">
+		<hr/>
+	</div>
+</div>
+<div id="content">
+	<div id="partner_template">
+		<div id="transaction_template" class="row">
+			<div class="col-1">{p_partner_key_n}</div>
+			<div class="col-2">{PartnerName}</div>
+			<div class="col-2">{p_street_name_c}</div>
+			<div class="col-1">{p_postal_code_c}</div>
+			<div class="col-2">{p_city_c}</div>
+			<div class="col-1">{p_country_code_c}</div>
+			<div class="col-2">{email}</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
