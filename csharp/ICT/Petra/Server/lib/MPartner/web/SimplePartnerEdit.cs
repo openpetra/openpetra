@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
@@ -97,6 +98,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             PLocationRow location = MainDS.PLocation.NewRowTyped();
             location.SiteKey = DomainManager.GSiteKey;
+            // TODO: read country code from SystemDefaults table
+            location.CountryCode = "DE";
             location.LocationKey = -1;
             MainDS.PLocation.Rows.Add(location);
 
@@ -501,6 +504,36 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 AVerificationResult.Add(new TVerificationResult("error", "we cannot update addresses of people with location 0", TResultSeverity.Resv_Critical));
                 return false;
             }
+
+            // check if we have a valid country code
+            if (SaveDS.PLocation[0].CountryCode.Trim().Length == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "The country code is missing", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            TDBTransaction Transaction = null;
+            bool WrongCountryCode = false;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    WrongCountryCode = !PCountryAccess.Exists(SaveDS.PLocation[0].CountryCode, Transaction);
+                });
+
+            if (WrongCountryCode)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "The country code does not match a country", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            if (SaveDS.PLocation[0].RowState == DataRowState.Modified && SaveDS.PLocation[0].LocationKey == 0)
+            {
+                TLogging.Log("we cannot update addresses of people with location 0");
+                AVerificationResult.Add(new TVerificationResult("error", "we cannot update addresses of people with location 0", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
 
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
