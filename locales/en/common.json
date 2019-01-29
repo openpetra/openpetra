@@ -57,6 +57,7 @@
         "PartnerByCity_label": "Partner by City",
         "PartnerBySpecialType_label": "Partner with Categories",
         "PartnerBySubscription_label": "Partner with Subscriptions",
+        "AnnualReportWithoutAnnualReceiptRecipients_label": "Partner addresses for annual report without donors",
         "Setup_label": "Setup",
         "Partner-related_label": "Configuration of Partner related data",
         "Subscription-related_label": "Configuration of Subscriptions",
@@ -378,6 +379,13 @@
       "activePartnersOnly":"Active Partners Only",
       "onlyValidAddresses":"Only valid mailing addresses",
       "excludeNoSolicitations":"Exclude people who don't want any solicitations"
+    },
+
+    "AnnualReportWithoutAnnualReceiptRecipients": {
+      "caption": "Partner addresses for annual report without donors",
+      "PublicationCode": "Publication code",
+      "DonationStartDate": "Donations start date",
+      "DonationEndDate": "Donations end date"
     },
 
     "ChangeLanguage": {

@@ -57,6 +57,7 @@
         "PartnerByCity_label": "Partner pro Stadt",
         "PartnerBySpecialType_label": "Partner mit Kategorien",
         "PartnerBySubscription_label": "Partner mit Abonnements",
+        "AnnualReportWithoutAnnualReceiptRecipients_label": "Partner Adressen für Jahresrückblick ohne Spender",
         "Setup_label": "Konfiguration",
         "Partner-related_label": "Konfiguration von Partnerdaten",
         "Subscription-related_label": "Konfiguration von Abonnements",
@@ -378,6 +379,13 @@
       "activePartnersOnly":"Nur aktive Partner",
       "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
       "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+    },
+
+    "AnnualReportWithoutAnnualReceiptRecipients": {
+      "caption": "Partner Adressen für Jahresrückblick ohne Spender",
+      "PublicationCode": "Abonnement",
+      "DonationStartDate": "Anfangsdatum der Jahresspendenbescheinigungen",
+      "DonationEndDate": "Enddatum der Jahresspendenbescheinigungen"
     },
 
     "ChangeLanguage": {
