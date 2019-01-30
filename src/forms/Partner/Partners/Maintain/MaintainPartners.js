@@ -5,6 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -126,6 +127,7 @@ function display_partner(parsed) {
 	// generated fields
 	m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);
 	m = load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
+	m = load_countries(parsed.result.PCountry, parsed.result.PLocation[0].p_country_code_c, m);
 
 	var sendmail = false;
 	if (parsed.result.PPartnerLocation.length > 0) {
@@ -180,6 +182,7 @@ function save_entry(obj_modal) {
 	updated_data.result.PType = [];
 	updated_data.result.PPartnerStatus = [];
 	updated_data.result.PPublication = [];
+	updated_data.result.PCountry = [];
 
 	// send request
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
@@ -263,5 +266,15 @@ function load_subs(all_subs, selected_subs, obj) {
 	}
 
 	obj.find('#subscriptions').html(p);
+	return obj;
+}
+
+function load_countries(all_countries, selected_country, obj) {
+	if (selected_country == null) selected_country="99";
+	for (country of all_countries) {
+		selected = (selected_country == country.p_country_code_c)?" selected":"";
+		let y = $('<option value="'+country.p_country_code_c+'"' + selected + '>'+country.p_country_code_c + " " + country.p_country_name_c + '</option>');
+		obj.find('#CountryCode').append(y);
+	}
 	return obj;
 }
