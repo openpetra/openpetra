@@ -15,7 +15,7 @@
 -- Select recipients, exclude people that have received an annual receipt 
 select p.p_partner_key_n, p.p_partner_short_name_c AS PartnerName, p.p_partner_class_c,
 l.p_street_name_c, l.p_city_c, l.p_postal_code_c, l.p_country_code_c,
-m.p_value_c as email
+m.p_value_c as email, p_send_mail_l as validaddress
 from p_partner p
 -- select the email address. we only have on per partner at the moment
 LEFT OUTER JOIN p_partner_attribute m ON (p.p_partner_key_n = m.p_partner_key_n AND m.p_attribute_type_c = 'E-Mail'),
@@ -38,11 +38,13 @@ WHERE g.p_donor_key_n = p2.p_partner_key_n
 AND p2.p_receipt_letter_frequency_c = 'Annual'
 AND g.a_date_entered_d between {DonationStartDate} and {DonationEndDate}
 and p2.p_partner_key_n = p.p_partner_key_n)
-AND p.p_no_solicitations_l = 0;
+AND p.p_no_solicitations_l = 0
+ORDER BY validaddress, p_city_c, email;
 <!-- EndSQL SelectRecipients -->
 
 <div id="column_headings" class="row">
 	<div class="col-1">PartnerKey</div>
+	<div class="col-1">Valid Post Address</div>
 	<div class="col-2">PartnerName</div>
 	<div class="col-2">StreetName</div>
 	<div class="col-1">PostCode</div>
@@ -59,6 +61,7 @@ AND p.p_no_solicitations_l = 0;
 	<div id="partner_template">
 		<div id="transaction_template" class="row">
 			<div class="col-1">{p_partner_key_n}</div>
+			<div class="col-1">{validaddress}</div>
 			<div class="col-2">{PartnerName}</div>
 			<div class="col-2">{p_street_name_c}</div>
 			<div class="col-1">{p_postal_code_c}</div>
