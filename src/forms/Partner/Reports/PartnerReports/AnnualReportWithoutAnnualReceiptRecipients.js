@@ -23,10 +23,23 @@
 
 var last_opened_entry_data = {};
 
+function get_publications() {
+	let x = {};
+	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPublications', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		publications = data.result.PPublication;
+		for (publication of publications) {
+			let y = $('<option value="'+publication.p_publication_code_c+'">'+publication.p_publication_code_c+'</option>');
+			$('#PublicationCode').append(y);
+		}
+	})
+}
+
 $(function() {
 	var year = (new Date()).getYear() + 1900 - 1;
 	$("#DonationStartDate").val(year + "-01-01");
 	$("#DonationEndDate").val(year + "-12-31");
+	get_publications();
 });
 
 function calculate_report() {
