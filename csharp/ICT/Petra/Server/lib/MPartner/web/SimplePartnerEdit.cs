@@ -190,6 +190,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         if (true)
                         {
+                            PCountryAccess.LoadAll(MainDS, Transaction);
+                        }
+
+                        if (true)
+                        {
                             PPublicationAccess.LoadAll(MainDS, Transaction);
                             PSubscriptionAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
 
