@@ -502,13 +502,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 SaveDS.PPartner[0].PartnerShortName = SaveDS.PBank[0].BranchName;
             }
 
-            // TODO: check if location 0 (no address) was changed. we don't want to overwrite that
-            // alternative: check if somebody else uses that location, and split the locations. or ask if others should be updated???
-            if (SaveDS.PLocation[0].RowState == DataRowState.Modified && SaveDS.PLocation[0].LocationKey == 0)
+            // change legacy addresses. create a new separate location for each partner
+            if (SaveDS.PLocation[0].LocationKey == 0)
             {
-                TLogging.Log("we cannot update addresses of people with location 0");
-                AVerificationResult.Add(new TVerificationResult("error", "we cannot update addresses of people with location 0", TResultSeverity.Resv_Critical));
-                return false;
+                PLocationRow location = SaveDS.PLocation.NewRowTyped();
+                DataUtilities.CopyAllColumnValues(SaveDS.PLocation[0], location); 
+                location.SiteKey = DomainManager.GSiteKey;
+                location.LocationKey = -1;
+                SaveDS.PLocation.Rows.Clear();
+                SaveDS.PLocation.Rows.Add(location);
+
+                PPartnerLocationRow plocation = SaveDS.PPartnerLocation.NewRowTyped();
+                DataUtilities.CopyAllColumnValues(SaveDS.PPartnerLocation[0], plocation); 
+                plocation.LocationKey = -1;
+                plocation.SiteKey = DomainManager.GSiteKey;
+                SaveDS.PPartnerLocation[0].Delete();
+                SaveDS.PPartnerLocation.Rows.Add(plocation);
             }
 
             // check if we have a valid country code
@@ -532,14 +541,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 AVerificationResult.Add(new TVerificationResult("error", "The country code does not match a country", TResultSeverity.Resv_Critical));
                 return false;
             }
-
-            if (SaveDS.PLocation[0].RowState == DataRowState.Modified && SaveDS.PLocation[0].LocationKey == 0)
-            {
-                TLogging.Log("we cannot update addresses of people with location 0");
-                AVerificationResult.Add(new TVerificationResult("error", "we cannot update addresses of people with location 0", TResultSeverity.Resv_Critical));
-                return false;
-            }
-
 
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
