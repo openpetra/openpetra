@@ -108,6 +108,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {
+                    PCountryAccess.LoadAll(MainDS, Transaction);
                     PPublicationAccess.LoadAll(MainDS, Transaction);
                     PPartnerStatusAccess.LoadAll(MainDS, Transaction);
                     PTypeAccess.LoadAll(MainDS, Transaction);
