@@ -85,12 +85,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ASignatureFilename,
             string ALanguage,
             out string APDFReceipt,
+            out string AHTMLReceipt,
             bool ADeceasedFirst = false,
             string AExtract = null,
             Int64 ADonorKey = 0)
         {
             string ResultDocument = string.Empty;
             APDFReceipt = string.Empty;
+            AHTMLReceipt = String.Empty;
 
             TLanguageCulture.SetLanguageAndCulture(ALanguage, ALanguage);
             TLanguageCulture.LoadLanguageAndCulture();
@@ -253,6 +255,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     APDFReceipt = Convert.ToBase64String(data);
                     System.IO.File.Delete(PDFFile);
                 }
+
+                AHTMLReceipt = ResultDocument;
             }
 
             return ResultDocument.Length > 0;
