@@ -59,6 +59,12 @@ var htmldata = "";
 function SetHtmlTemplate(filename, filedata) {
 	htmldata = filedata;
 
+	if (htmldata.length == 0) {
+		display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
+		setTimeout(hidePleaseWait, 500);
+		return;
+	}
+
 	ReadFile(logoimage, SetLogo);
 }
 
@@ -91,11 +97,6 @@ function GenerateAnnualReceipts() {
 		//alert("Great success! All the File APIs are supported.");
 	} else {
 	  alert('The File APIs are not fully supported in this browser.');
-	}
-
-	if (htmldata.length == 0) {
-		display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
-		return;
 	}
 
 	showPleaseWait();
