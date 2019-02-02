@@ -301,6 +301,10 @@ namespace Ict.Common.Remoting.Shared
 
                 throw new Exception("THttpBinarySerializer.DeserializeObject: unknown enum " + type);
             }
+            else if (s.Length > 30 && s.StartsWith("data:") && s.Substring(0,30).Contains(";base64,"))
+            {
+                return Convert.FromBase64String(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
+            }
             else if ((s != null) && (s.Length > 9)) // if (type == "binary" || true)
             {
                 MemoryStream memoryStream = new MemoryStream(Convert.FromBase64String(s));

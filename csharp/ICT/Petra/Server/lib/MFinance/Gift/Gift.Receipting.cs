@@ -28,11 +28,13 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
 using System.IO;
+using System.Diagnostics;
 
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Printing;
 using Ict.Common.Remoting.Shared;
@@ -69,9 +71,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     {
         /// <summary>
         /// create the annual gift receipts for all donors in the given year;
-        /// returns an HTML file containing all receipts
-        /// TODO images are currently locally linked
-        /// TODO return the PDF file
+        /// returns the PDF file containing all receipts
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static bool CreateAnnualGiftReceipts(Int32 ALedgerNumber,
@@ -79,14 +79,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DateTime AStartDate,
             DateTime AEndDate,
             string AHTMLTemplate,
+            byte[] ALogoImage,
+            string ALogoFilename,
+            byte[] ASignatureImage,
+            string ASignatureFilename,
             string ALanguage,
-            out string AHTMLReceipt,
+            out string APDFReceipt,
             bool ADeceasedFirst = false,
             string AExtract = null,
             Int64 ADonorKey = 0)
         {
             string ResultDocument = string.Empty;
-            AHTMLReceipt = string.Empty;
+            APDFReceipt = string.Empty;
 
             TLanguageCulture.SetLanguageAndCulture(ALanguage, ALanguage);
             TLanguageCulture.LoadLanguageAndCulture();
@@ -238,9 +242,82 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
-            // TODO: return a pdf document
-            AHTMLReceipt = THttpBinarySerializer.SerializeToBase64(ResultDocument);
+            if (ResultDocument.Length > 0)
+            {
+                string PDFFile = TFileHelper.GetTempFileName("receipts",".pdf");
+
+                if (PrintToPDF(PDFFile, ResultDocument,
+                    ALogoImage, ALogoFilename, ASignatureImage, ASignatureFilename))
+                {
+                    byte[] data = System.IO.File.ReadAllBytes(PDFFile);
+                    APDFReceipt = Convert.ToBase64String(data);
+                    System.IO.File.Delete(PDFFile);
+                }
+            }
+
             return ResultDocument.Length > 0;
+        }
+
+        private static bool PrintToPDF(string AOutputPDFFilename,
+            string strHTMLData,
+            byte[] ALogoImage,
+            string ALogoFilename,
+            byte[] ASignatureImage,
+            string ASignatureFilename)
+        {
+            // Store the images to the temp directory of this instance
+            string tempFileNameLogo = string.Empty;
+            string tempFileNameSignature = string.Empty;
+
+            if (ALogoFilename.Length > 0)
+            {
+                tempFileNameLogo = TFileHelper.GetTempFileName(
+                    "logo",
+                    Path.GetExtension(ALogoFilename));
+                strHTMLData = strHTMLData.Replace(ALogoFilename, tempFileNameLogo);
+
+                File.WriteAllBytes(tempFileNameLogo, ALogoImage);
+            }
+
+            if (ASignatureFilename.Length > 0)
+            {
+                tempFileNameSignature = TFileHelper.GetTempFileName(
+                    "signature",
+                    Path.GetExtension(ASignatureFilename));
+
+                strHTMLData = strHTMLData.Replace(ASignatureFilename, tempFileNameSignature);
+                File.WriteAllBytes(tempFileNameSignature, ASignatureImage);
+            }
+
+            string HTMLFile = TFileHelper.GetTempFileName(
+                "receipts",
+                ".html");
+
+            using (StreamWriter sw = new StreamWriter(HTMLFile))
+            {
+                sw.Write(strHTMLData);
+                sw.Close();
+            }
+
+            Process process = new Process();
+            process.StartInfo.FileName = "/usr/local/bin/wkhtmltopdf";
+            process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
+            process.Start();
+            process.WaitForExit();
+
+            File.Delete(HTMLFile);
+
+            if (tempFileNameLogo.Length > 0)
+            {
+                File.Delete(tempFileNameLogo);
+            }
+
+            if (tempFileNameSignature.Length > 0)
+            {
+                File.Delete(tempFileNameSignature);
+            }
+
+            return true;
         }
 
         private static string GetStringOrEmpty(object obj)
