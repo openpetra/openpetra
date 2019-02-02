@@ -17,12 +17,39 @@
 			<input type="date" name="AEndDate" id="EndDate">
 		</div>
 	</div>
+	<div class="row">
+		<div class="col">
+			<span>{html_template}</span>
+		</div>
+		<div class="col">
+			<input type="file" name="AHTMLTemplate" id="HTMLTemplate">
+			<small class="form-text text-muted">{html_template_help}</small>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{logo}</span>
+		</div>
+		<div class="col">
+			<input type="file" name="ALogoImage" id="LogoImage">
+			<small class="form-text text-muted">{logo_help}</small>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{signature}</span>
+		</div>
+		<div class="col">
+			<input type="file" name="ASignatureImage" id="SignatureImage">
+			<small class="form-text text-muted">{signature_help}</small>
+		</div>
+	</div>
 </div>
 
 <table id="toolbar">
 	<tr>
 		<td>
-			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="UploadHTMLTemplate()">{AnnualReceipts}</button>
+			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts()">{AnnualReceipts}</button>
 		</td>
 	</tr>
 </table>
@@ -40,8 +67,6 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-<input type="file" id="fileHTMLTemplate" name="file" size="10" onchange="GenerateAnnualReceipts($(this))" style="visibility:hidden"/>
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

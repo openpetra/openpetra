@@ -446,6 +446,13 @@
       "date_until": "bis",
       "AnnualReceipts": "PDF herunterladen",
       "annual_receipt_file": "Spendenbescheinigungen",
+      "html_template": "HTML Vorlage",
+      "html_template_help": "Benutzen Sie diese <a href='https://github.com/openpetra/openpetra/blob/master/demodata/formletters/AnnualReceipt.html' target='_blank'>HTML-Vorlage</a> als Beispiel!",
+      "logo":"Bild für das Logo",
+      "logo_help":"Es kann auch leer gelassen werden",
+      "signature": "Bild für die eingescannte Unterschrift",
+      "signature_help": "Es kann auch leer gelassen werden",
+      "emptytemplate": "Es muss eine HTML Vorlage hochgeladen werden",
       "errorempty": "In dem Zeitraum gab es keine zu bescheinigende Spendenstapel",
       "uploaderror": "Fehler beim Erstellen der Spendenbescheinigungen"
     },
