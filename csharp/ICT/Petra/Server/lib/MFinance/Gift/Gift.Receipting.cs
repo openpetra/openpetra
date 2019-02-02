@@ -256,7 +256,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     System.IO.File.Delete(PDFFile);
                 }
 
-                AHTMLReceipt = ResultDocument;
+                AHTMLReceipt = THttpBinarySerializer.SerializeToBase64(ResultDocument);
             }
 
             return ResultDocument.Length > 0;
