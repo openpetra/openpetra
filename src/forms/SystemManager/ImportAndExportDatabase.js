@@ -4,6 +4,7 @@
 //		 Timotheus Pokorra <tp@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -24,10 +25,10 @@
 function ExportAllData() {
 	showPleaseWait();
 	api.post('serverMSysMan.asmx/TImportExportWebConnector_ExportAllTables', {}).then(function (result) {
-		result = result.data.d;
-		if (result != '')
+		var parsed = JSON.parse(result.data.d);
+		if (parsed.result == true)
 		{
-			data = result;
+			data = parsed.ADataYmlGzBase64;
 			var byteString = atob(data);
 
 			// Convert that text into a byte array.
@@ -46,7 +47,7 @@ function ExportAllData() {
 
 			// For Mozilla we need to add the link, otherwise the click won't work
 			// see https://support.mozilla.org/de/questions/968992
-			document.getElementById('modal_space').appendChild(a);
+			document.body.appendChild(a);
 
 			a.click();
 			URL.revokeObjectURL(url);
