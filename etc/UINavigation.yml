@@ -21,6 +21,7 @@ OpenPetra:
                         PartnerByCity:
                         PartnerBySpecialType:
                         PartnerBySubscription:
+                        AnnualReportWithoutAnnualReceiptRecipients:
 
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
                     Types:

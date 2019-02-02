@@ -57,6 +57,7 @@
         "PartnerByCity_label": "Partner by City",
         "PartnerBySpecialType_label": "Partner with Categories",
         "PartnerBySubscription_label": "Partner with Subscriptions",
+        "AnnualReportWithoutAnnualReceiptRecipients_label": "Partner addresses for annual report without donors",
         "Setup_label": "Setup",
         "Partner-related_label": "Configuration of Partner related data",
         "Subscription-related_label": "Configuration of Subscriptions",
@@ -185,6 +186,7 @@
         "city": "City",
         "postalcode": "Postal code",
         "countrycode": "Country",
+        "lastdonation": "Last Donation",
         "mailingaddress": "Valid address",
         "nosolicitations1": "Contact Preference",
         "nosolicitations2": "No solicitations",
@@ -379,6 +381,13 @@
       "excludeNoSolicitations":"Exclude people who don't want any solicitations"
     },
 
+    "AnnualReportWithoutAnnualReceiptRecipients": {
+      "caption": "Partner addresses for annual report without donors",
+      "PublicationCode": "Publication code",
+      "DonationStartDate": "Donations start date",
+      "DonationEndDate": "Donations end date"
+    },
+
     "ChangeLanguage": {
         "caption": "Change the language"
     },
@@ -438,6 +447,13 @@
       "date_until": "Date to",
       "AnnualReceipts": "Generate PDF",
       "annual_receipt_file": "AnnualReceipts",
+      "html_template": "HTML template",
+      "html_template_help": "You can use <a href='https://github.com/openpetra/openpetra/blob/master/demodata/formletters/AnnualReceipt.html' target='_blank'>this HTML template</a> as an example!",
+      "logo":"Logo",
+      "logo_help":"This is optional.",
+      "signature": "Signature image",
+      "signature_help": "This is optional.",
+      "emptytemplate": "You must upload an HTML template",
       "errorempty": "There are no gift batches in this time period with annual receipting",
       "uploaderror": "Error with receipts"
     },

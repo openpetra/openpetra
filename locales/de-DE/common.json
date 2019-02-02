@@ -57,6 +57,7 @@
         "PartnerByCity_label": "Partner pro Stadt",
         "PartnerBySpecialType_label": "Partner mit Kategorien",
         "PartnerBySubscription_label": "Partner mit Abonnements",
+        "AnnualReportWithoutAnnualReceiptRecipients_label": "Partner Adressen für Jahresrückblick ohne Spender",
         "Setup_label": "Konfiguration",
         "Partner-related_label": "Konfiguration von Partnerdaten",
         "Subscription-related_label": "Konfiguration von Abonnements",
@@ -185,6 +186,7 @@
         "city": "Stadt",
         "postalcode": "Postleitzahl",
         "countrycode": "Land",
+        "lastdonation": "Letzte Spende",
         "mailingaddress": "Gültige Adresse",
         "nosolicitations1": "Kontaktaufnahme",
         "nosolicitations2": "Keine unaufgeforderte Kontaktierung/Werbung erwünscht",
@@ -379,6 +381,13 @@
       "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
     },
 
+    "AnnualReportWithoutAnnualReceiptRecipients": {
+      "caption": "Partner Adressen für Jahresrückblick ohne Spender",
+      "PublicationCode": "Abonnement",
+      "DonationStartDate": "Anfangsdatum der Jahresspendenbescheinigungen",
+      "DonationEndDate": "Enddatum der Jahresspendenbescheinigungen"
+    },
+
     "ChangeLanguage": {
         "caption": "Sprache wechseln"
     },
@@ -437,6 +446,13 @@
       "date_until": "bis",
       "AnnualReceipts": "PDF herunterladen",
       "annual_receipt_file": "Spendenbescheinigungen",
+      "html_template": "HTML Vorlage",
+      "html_template_help": "Benutzen Sie diese <a href='https://github.com/openpetra/openpetra/blob/master/demodata/formletters/AnnualReceipt.html' target='_blank'>HTML-Vorlage</a> als Beispiel!",
+      "logo":"Bild für das Logo",
+      "logo_help":"Es kann auch leer gelassen werden",
+      "signature": "Bild für die eingescannte Unterschrift",
+      "signature_help": "Es kann auch leer gelassen werden",
+      "emptytemplate": "Es muss eine HTML Vorlage hochgeladen werden",
       "errorempty": "In dem Zeitraum gab es keine zu bescheinigende Spendenstapel",
       "uploaderror": "Fehler beim Erstellen der Spendenbescheinigungen"
     },

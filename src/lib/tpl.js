@@ -28,6 +28,10 @@ function replace_val_variables_in_attr(attr, data) {
       if (data[variable] == null) {
         data[variable] = "";
       }
+      else if (typeof data[variable] === 'string' || data[variable] instanceof String) {
+        data[variable] = parseJSONDate(variable, data[variable]);
+      }
+
       attr = attr.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
     }
   }
