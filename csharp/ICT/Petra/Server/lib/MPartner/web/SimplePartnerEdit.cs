@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
@@ -97,6 +98,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             PLocationRow location = MainDS.PLocation.NewRowTyped();
             location.SiteKey = DomainManager.GSiteKey;
+            // TODO: read country code from SystemDefaults table
+            location.CountryCode = "DE";
             location.LocationKey = -1;
             MainDS.PLocation.Rows.Add(location);
 
@@ -105,6 +108,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {
+                    PCountryAccess.LoadAll(MainDS, Transaction);
                     PPublicationAccess.LoadAll(MainDS, Transaction);
                     PPartnerStatusAccess.LoadAll(MainDS, Transaction);
                     PTypeAccess.LoadAll(MainDS, Transaction);
@@ -183,6 +187,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (true)
                         {
                             PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
+                        }
+
+                        if (true)
+                        {
+                            PCountryAccess.LoadAll(MainDS, Transaction);
                         }
 
                         if (true)
@@ -493,12 +502,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 SaveDS.PPartner[0].PartnerShortName = SaveDS.PBank[0].BranchName;
             }
 
-            // TODO: check if location 0 (no address) was changed. we don't want to overwrite that
-            // alternative: check if somebody else uses that location, and split the locations. or ask if others should be updated???
-            if (SaveDS.PLocation[0].RowState == DataRowState.Modified && SaveDS.PLocation[0].LocationKey == 0)
+            // change legacy addresses. create a new separate location for each partner
+            if (SaveDS.PLocation[0].LocationKey == 0)
             {
-                TLogging.Log("we cannot update addresses of people with location 0");
-                AVerificationResult.Add(new TVerificationResult("error", "we cannot update addresses of people with location 0", TResultSeverity.Resv_Critical));
+                PLocationRow location = SaveDS.PLocation.NewRowTyped();
+                DataUtilities.CopyAllColumnValues(SaveDS.PLocation[0], location); 
+                location.SiteKey = DomainManager.GSiteKey;
+                location.LocationKey = -1;
+                SaveDS.PLocation.Rows.Clear();
+                SaveDS.PLocation.Rows.Add(location);
+
+                PPartnerLocationRow plocation = SaveDS.PPartnerLocation.NewRowTyped();
+                DataUtilities.CopyAllColumnValues(SaveDS.PPartnerLocation[0], plocation); 
+                plocation.LocationKey = -1;
+                plocation.SiteKey = DomainManager.GSiteKey;
+                SaveDS.PPartnerLocation[0].Delete();
+                SaveDS.PPartnerLocation.Rows.Add(plocation);
+            }
+
+            // check if we have a valid country code
+            if (SaveDS.PLocation[0].CountryCode.Trim().Length == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "The country code is missing", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            TDBTransaction Transaction = null;
+            bool WrongCountryCode = false;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    WrongCountryCode = !PCountryAccess.Exists(SaveDS.PLocation[0].CountryCode, Transaction);
+                });
+
+            if (WrongCountryCode)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "The country code does not match a country", TResultSeverity.Resv_Critical));
                 return false;
             }
 

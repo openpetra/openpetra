@@ -142,6 +142,9 @@
   <if test="${not file::exists(Config.file)}">
       <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/web.config"/>
   </if>
+  <if test="${not file::exists(Config.file)}">
+      <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/web.config"/>
+  </if>
   <if test="${file::exists(Config.file)}">
       <copy file="${Config.file}"
           tofile="${dir.setup}/etc/web-sample.config" overwrite="true">

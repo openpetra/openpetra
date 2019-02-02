@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -164,7 +164,9 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             sb.AppendFormat("{0},{1}", "PUB.p_location.p_location_key_i", Environment.NewLine);
 
             // short
-            sb.AppendFormat("{0}{1}", "PUB.p_partner_location.p_site_key_n", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_partner_location.p_site_key_n", Environment.NewLine);
+
+            sb.AppendFormat("{0}{1}", "MAX(PUB.a_gift.a_date_entered_d) AS LastGiftDate", Environment.NewLine);
 
             // short
             FieldList = sb.ToString();
@@ -190,8 +192,10 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 sb.AppendFormat("{0}{1}", "ON PUB.p_person.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_family", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.p_family.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
-                sbWhereClause.AppendFormat("{0}{1}", "PUB.p_location.p_location_key_i = PUB.p_partner_location.p_location_key_i", Environment.NewLine);
-                sbWhereClause.AppendFormat("{0}{1}", "AND PUB.p_location.p_site_key_n = PUB.p_partner_location.p_site_key_n", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.p_partner.p_partner_key_n = PUB.a_gift.p_donor_key_n", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift_batch", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift.a_ledger_number_i AND PUB.a_gift_batch.a_batch_number_i AND PUB.a_gift.a_batch_number_i", Environment.NewLine);
             }
             else
             {
@@ -203,10 +207,16 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 sb.AppendFormat("{0}{1}", "ON PUB.p_person.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_family", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.p_family.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.p_partner.p_partner_key_n = PUB.a_gift.p_donor_key_n", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift_batch", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift.a_ledger_number_i AND PUB.a_gift_batch.a_batch_number_i AND PUB.a_gift.a_batch_number_i", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", ", PUB.p_location", Environment.NewLine);
-                sbWhereClause.AppendFormat("{0}{1}", "PUB.p_partner_location.p_location_key_i = PUB.p_location.p_location_key_i", Environment.NewLine);
-                sbWhereClause.AppendFormat("{0}{1}", "AND PUB.p_location.p_site_key_n = PUB.p_partner_location.p_site_key_n", Environment.NewLine);
             }
+
+            sbWhereClause.AppendFormat("{0}{1}", "PUB.p_location.p_location_key_i = PUB.p_partner_location.p_location_key_i", Environment.NewLine);
+            sbWhereClause.AppendFormat("{0}{1}", "AND PUB.p_location.p_site_key_n = PUB.p_partner_location.p_site_key_n", Environment.NewLine);
+            sbWhereClause.AppendFormat("{0}", "AND (PUB.a_gift_batch.a_batch_status_c IS NULL OR PUB.a_gift_batch.a_batch_status_c <> 'Cancelled')");
 
             FromClause = sb.ToString();
             WhereClause = CustomWhereCriteria;
@@ -220,6 +230,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 WhereClause += " AND " + sbWhereClause.ToString();
             }
+
+            WhereClause += " GROUP BY PUB.p_partner.p_partner_key_n";
 
             FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(FieldList,
                 FromClause,

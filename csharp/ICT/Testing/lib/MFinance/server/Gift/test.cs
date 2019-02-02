@@ -95,9 +95,10 @@ namespace Tests.MFinance.Server.Gift
             // for the moment, we expect that there are no gifts in the database in the year 1978
             // the template would need to be loaded from an HTML file
             string receipts;
+            string receiptsPDF;
             bool result = TReceiptingWebConnector.CreateAnnualGiftReceipts(43, "Annual", new DateTime(1978, 1, 1), new DateTime(1978, 1, 31),
-                "invalid HTML template",
-                "de-DE", out receipts);
+                "invalid HTML template", null, String.Empty, null, String.Empty,
+                "de-DE", out receiptsPDF, out receipts);
 
             Assert.AreEqual(false, result, "Testing if using a web connector works");
         }

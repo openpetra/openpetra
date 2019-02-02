@@ -32,6 +32,7 @@ using Ict.Testing.NUnitTools;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
@@ -153,10 +154,13 @@ namespace Tests.MFinance.Server.Gift
 
             //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             string receipts;
+            string receiptsPDF;
             bool result =
                 TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber, "ANNUAL",
-                    new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31), FileContent, "de-DE",
-                    out receipts);
+                    new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
+                    FileContent, null, String.Empty, null, String.Empty, "de-DE",
+                    out receiptsPDF, out receipts);
+            receipts = THttpBinarySerializer.DeserializeFromBase64(receipts);
 
             Assert.AreEqual(true, result, "receipt was empty");
 
