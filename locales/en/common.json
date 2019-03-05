@@ -445,6 +445,8 @@
       "caption": "Print the annual gift receipts",
       "date_from": "Date from",
       "date_until": "Date to",
+      "one_partner": "Only one specific donor",
+      "one_partner_help": "Leave empty to print for all donors",
       "AnnualReceipts": "Generate PDF",
       "annual_receipt_file": "AnnualReceipts",
       "html_template": "HTML template",

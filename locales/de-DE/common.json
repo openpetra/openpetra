@@ -444,6 +444,8 @@
       "caption": "Jahresspendenbescheinigungen drucken",
       "date_from": "von",
       "date_until": "bis",
+      "one_partner": "Nur ein einzelner Spender",
+      "one_partner_help": "Leer lassen, um für alle Spender zu drucken",
       "AnnualReceipts": "PDF herunterladen",
       "annual_receipt_file": "Spendenbescheinigungen",
       "html_template": "HTML Vorlage",
