@@ -44,6 +44,8 @@ class Auth {
 					} else {
 						window.location.reload();
 					}
+				} else if (result.resultcode == "eLoginLicenseExpired") {
+					display_message(i18next.t("login.licenseexpired"), "fail");
 				} else {
 					display_message(i18next.t("login.failedlogin"), "fail");
 				}

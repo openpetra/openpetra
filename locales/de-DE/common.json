@@ -16,6 +16,7 @@
         "successPwdChanged": "Passwort wurde erfolgreich geändert!",
         "errorPwdChanged": "Passwort konnte nicht geändert werden",
         "failedlogin": "Falscher Benutzername oder falsches Passwort",
+        "licenseexpired": "Die Lizenz ist abgelaufen, bitte verlängern Sie den Hosting Vertrag",
         "support_caption": "Unterstützung",
         "support_text": "Falls Sie Fragen oder Anregungen haben, besuchen Sie uns doch im <a href='https://forum.openpetra.de' target='_new'>öffentlichen OpenPetra Forum</a> und reden Sie dort mit uns!",
         "manual_caption": "Handbuch",
