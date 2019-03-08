@@ -389,6 +389,27 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
 
             //
+            // (3b) Check if the license is valid
+            //
+            string LicenseCheckUrl = TAppSettingsManager.GetValue("LicenseCheck.Url", String.Empty, false);
+
+            if (LicenseCheckUrl != String.Empty)
+            {
+                bool valid = false;
+                if (!valid)
+                {
+                    TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
+                        Catalog.GetString("User wanted to log in, but the license is expired. ") +
+                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        out AProcessID, ATransaction);
+
+                    TLoginLog.RecordUserLogout(AUserID, AProcessID, ATransaction);
+
+                    throw new ELicenseExpiredException("LICENSE_EXPIRED");
+                }
+            }
+
+            //
             // (4) Save successful login!
             //
             LoginDateTime = DateTime.Now;

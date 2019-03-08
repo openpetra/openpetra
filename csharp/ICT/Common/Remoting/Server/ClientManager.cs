@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -378,6 +378,13 @@ namespace Ict.Common.Remoting.Server
             catch (ESystemDisabledException)
             {
                 LogFailedUserAuthentication(AUserName, "The System is currently Disabled",
+                    AClientComputerName, AClientIPAddress);
+
+                throw;
+            }
+            catch (ELicenseExpiredException)
+            {
+                LogFailedUserAuthentication(AUserName, "The System is not licensed",
                     AClientComputerName, AClientIPAddress);
 
                 throw;
@@ -1177,6 +1184,10 @@ namespace Ict.Common.Remoting.Server
             else if (e is ESystemDisabledException)
             {
                 return eLoginEnum.eLoginSystemDisabled;
+            }
+            else if (e is ELicenseExpiredException)
+            {
+                return eLoginEnum.eLoginLicenseExpired;
             }
             else if (e is EClientVersionMismatchException)
             {
