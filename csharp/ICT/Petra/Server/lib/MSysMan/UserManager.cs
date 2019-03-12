@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using System.Threading;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
@@ -392,10 +393,16 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // (3b) Check if the license is valid
             //
             string LicenseCheckUrl = TAppSettingsManager.GetValue("LicenseCheck.Url", String.Empty, false);
+            string LicenseUser = TAppSettingsManager.GetValue("Server.DBName");
 
-            if (LicenseCheckUrl != String.Empty)
+            if ((LicenseCheckUrl != String.Empty) && (LicenseUser != "openpetra"))
             {
-                bool valid = false;
+                string url = LicenseCheckUrl + LicenseUser;
+
+                string result = THTTPUtils.ReadWebsite(url);
+
+                bool valid = result.Contains("\"valid\":true");
+
                 if (!valid)
                 {
                     TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
