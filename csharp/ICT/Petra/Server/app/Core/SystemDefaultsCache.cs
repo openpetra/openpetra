@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -489,6 +489,7 @@ namespace Ict.Petra.Server.App.Core
                         TSrvSetting.DBUsername,
                         TSrvSetting.DBPassword,
                         "",
+                        true,
                         "SystemDefaultsCache DB Connection");
 
                     DBAccessObj.BeginAutoReadTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,

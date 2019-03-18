@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -502,21 +502,23 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// Opens a Database connection to the main Database.
         /// </summary>
-        /// <returns>void</returns>
-        public void EstablishDBConnection()
+        public TDataBase EstablishDBConnection()
         {
-            DBAccess.GDBAccessObj = new TDataBase();
+            TDataBase AccessObj = new TDataBase();
 
-            DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+            AccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                 TSrvSetting.PostgreSQLServer,
                 TSrvSetting.PostgreSQLServerPort,
                 TSrvSetting.PostgreSQLDatabaseName,
                 TSrvSetting.DBUsername,
                 TSrvSetting.DBPassword,
                 "",
+                true,
                 "Server's DB Connection");
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
+
+            return AccessObj;
         }
 
         private IImportExportManager FImportExportManager = null;
@@ -572,16 +574,6 @@ namespace Ict.Petra.Server.App.Core
         public override void RefreshAllCachedTables()
         {
             TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
-        }
-
-        /// <summary>
-        /// Clears (flushes) all RDMBS Connection Pools and returns the new number of DB Connections after clearing all
-        /// RDMBS Connection Pools.
-        /// </summary>
-        /// <returns>New number of DB Connections after clearing all RDMBS Connection Pools.</returns>
-        public override int ClearConnectionPoolAndGetNumberOfDBConnections()
-        {
-            return TDataBase.ClearConnectionPoolAndGetNumberOfDBConnections(TSrvSetting.RDMBSType);
         }
 
         /// <summary>

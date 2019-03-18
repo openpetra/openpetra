@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="APassword"></param>
         /// <param name="AConnectionString"></param>
         /// <param name="APetraUserName"></param>
-        public new void EstablishDBConnection(TDBType ADataBaseType,
+        public void EstablishDBConnection(TDBType ADataBaseType,
             String ADsn,
             String ADBPort,
             String ADatabaseName,
@@ -103,6 +103,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
             // Call base Method with same name and same Method signature but different functionality!
             base.EstablishDBConnection(ADataBaseType, ADsn, ADBPort, ADatabaseName, AUsername, APassword, AConnectionString,
+                true,
                 "Client's Default DB Connection");
         }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -856,7 +856,6 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             Boolean ASendUpdateInfoToClient = true)
         {
             TDBTransaction SubmitChangesTransaction = null;
-            bool SubmissionOK = false;
 
             TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
 
@@ -870,16 +869,11 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                 if (DefaultsDT.Rows.Count > 0)
                 {
-                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction
-                    // running and hence can be used to start a DB Transaction.
-                    // After the delegate has been executed the DB Transaction either gets committed or
-                    // rolled back (depending on the value of SubmissionOK) and the DB Connection gets closed
-                    // if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
-                    DBAccess.SimpleAutoTransactionWrapper(IsolationLevel.Serializable,
-                        "SaveUserDefaultsFromServerSide", out SubmitChangesTransaction, ref SubmissionOK,
+                    DBAccess.RunInTransaction(IsolationLevel.Serializable,
+                        "SaveUserDefaultsFromServerSide",
                         delegate
                         {
-                            SubmissionOK = TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
+                            TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
                                 ref DefaultsDT,
                                 SubmitChangesTransaction,
                                 ASendUpdateInfoToClient);
