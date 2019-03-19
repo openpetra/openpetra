@@ -56,23 +56,18 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the loading of the Cacheable DataTable
-        /// through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used 
-        /// (with the 'globally available' open DB Connection that exists for the  users' AppDomain) (default = false).</param>
         /// <returns>
         /// DataTable The desired DataTable
         /// </returns>
         private static DataTable GetCacheableTableInternal(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
-            out System.Type AType,
-            bool ASeparateDBConnection = false)
+            out System.Type AType)
         {
             Init();
 
             DataTable ReturnValue = FCachePopulator.GetCacheableTable(
-                ACacheableTable, AHashCode, ARefreshFromDB, out AType, null, ASeparateDBConnection);
+                ACacheableTable, AHashCode, ARefreshFromDB, out AType, null);
 
             if (ReturnValue != null)
             {
@@ -104,10 +99,6 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the loading of the Cacheable DataTable
-        /// through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used 
-        /// (with the 'globally available' open DB Connection that exists for the  users' AppDomain) (default = false).</param>
         /// <returns>)
         /// DataTable The desired DataTable
         /// </returns>
@@ -115,13 +106,12 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
             String AHashCode,
             Boolean ARefreshFromDB,
             System.Int32 ALedgerNumber,
-            out System.Type AType,
-            bool ASeparateDBConnection = false)
+            out System.Type AType)
         {
             Init();
 
             DataTable ReturnValue = FCachePopulator.GetCacheableTable(
-                ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType, null, ASeparateDBConnection);
+                ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType, null);
 
             if (ReturnValue != null)
             {
@@ -272,15 +262,7 @@ namespace {#NAMESPACE}
         /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
         /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
         /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-        /// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
-        /// is set to true!</param>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
-        /// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
-        /// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
-        /// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
-        /// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
-        /// Any separate DB Connection will be closed automatically.
-        /// </param>
+        /// separate DB Connection (needlessly)!</param>
         /// <returns>
         /// DataTable If the Hash that got passed in AHashCode doesn't fit the
         /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
@@ -290,22 +272,14 @@ namespace {#NAMESPACE}
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType, 
-            TDataBase ADataBase = null,
-            bool ASeparateDBConnection = false)
+            TDataBase ADataBase = null)
         {
             const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
             const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
-            TDataBase DBConnectionObj = null;
+            TDataBase DBConnectionObj = ADataBase;
             TDBTransaction ReadTransaction = null;
-            bool ANewTransaction = false;
             String TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
-            bool ASeparateDBConnectionEstablished = false;
-
-            if ((ASeparateDBConnection) 
-                && (ADataBase != null))
-            {
-                throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
-            }
+            bool SeparateDBConnectionEstablished = false;
 
             TLogging.LogAtLevel (9, "{#CACHEABLECLASS}.GetCacheableTable '{#SUBMODULE}' called.");
 
@@ -313,10 +287,11 @@ namespace {#NAMESPACE}
             {
                 try
                 {
-                    if (ASeparateDBConnection)
+                    if (DBConnectionObj == null)
                     {
                         // Open a separate DB Connection
                         DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+                        SeparateDBConnectionEstablished = true;
 
                         // ...and start a DB Transction on that separate DB Connection                                
                         ReadTransaction = DBConnectionObj.BeginTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
@@ -324,22 +299,8 @@ namespace {#NAMESPACE}
                     }
                     else
                     {
-                        if (ADataBase == null)
-                        {
-                            // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
-                            // hence can be used to start a DB Transaction.
-                            ReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                                out DBConnectionObj, out ASeparateDBConnectionEstablished,
-                                StrDBConnName,
-                                StrDBTransName);
-                                
-                            ANewTransaction = true;
-                        }
-                        else
-                        {
-                            ReadTransaction = ADataBase.GetNewOrExistingTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                                TEnforceIsolationLevel.eilMinimum, out ANewTransaction, StrDBTransName);
-                        }
+                        ReadTransaction = ADataBase.BeginTransaction(IsolationLevel.ReadCommitted,
+                            ATransactionName: StrDBTransName);
                     }
 
                     switch(ACacheableTable)
@@ -354,13 +315,10 @@ namespace {#NAMESPACE}
                 }
                 finally
                 {
-                    if (ANewTransaction)
-                    {
-                        DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
-                    }
+                    ReadTransaction.Rollback();
 
                     // Close separate DB Connection if we opened one earlier
-                    if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+                    if (SeparateDBConnectionEstablished)
                     {
                         DBConnectionObj.CloseDBConnection();
                     }
@@ -395,37 +353,22 @@ namespace {#NAMESPACE}
         /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
         /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
         /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-        /// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
-        /// is set to true!</param>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
-        /// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
-        /// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
-        /// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
-        /// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
-        /// Any separate DB Connection will be closed automatically.
-        /// </param>
+        /// separate DB Connection (needlessly)!</param>
         /// <returns>Status of the operation.</returns>
         public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
             ref TTypedDataTable ASubmitTable,
             out TVerificationResultCollection AVerificationResult, 
-            TDataBase ADataBase = null,
-            bool ASeparateDBConnection = false)
+            TDataBase ADataBase = null)
         {
             const string StrDBTransName = "Cacheable DataTable (saving) DB Transaction";
             const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
-            TDataBase DBConnectionObj = null;
+            TDataBase DBConnectionObj = ADataBase;
             TDBTransaction SubmitChangesTransaction = null;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
             TTypedDataTable SubmitTable = ASubmitTable;
             TVerificationResultCollection VerificationResult;
-            bool ASeparateDBConnectionEstablished = false;
-            
-            if ((ASeparateDBConnection) 
-                && (ADataBase != null))
-            {
-                throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
-            }
+            bool SeparateDBConnectionEstablished = false;
             
             // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
             AVerificationResult = null;
@@ -441,10 +384,11 @@ namespace {#NAMESPACE}
                 {
                     try
                     {
-                        if (ASeparateDBConnection)
+                        if (ADataBase == null)
                         {
                             // Open a separate DB Connection
                             DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+                            SeparateDBConnectionEstablished = true;
 
                             // ...and start a DB Transction on that separate DB Connection
                             SubmitChangesTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable,
@@ -452,20 +396,8 @@ namespace {#NAMESPACE}
                         }
                         else
                         {
-                            if (ADataBase == null)
-                            {
-                                // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
-                                // hence can be used to start a DB Transaction.
-                                SubmitChangesTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.Serializable,
-                                    out DBConnectionObj, out ASeparateDBConnectionEstablished,
-                                    StrDBConnName,
-                                    StrDBTransName);
-                            }
-                            else
-                            {
-                                SubmitChangesTransaction = ADataBase.BeginTransaction(IsolationLevel.Serializable,
-                                    ATransactionName: StrDBTransName);
-                            }
+                            SubmitChangesTransaction = ADataBase.BeginTransaction(IsolationLevel.Serializable,
+                                ATransactionName: StrDBTransName);
                         }
                         
                         // Automatic handling of a (write) DB Transaction
@@ -507,7 +439,7 @@ namespace {#NAMESPACE}
                 finally
                 {
                     // Close separate DB Connection if we opened one earlier
-                    if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+                    if (SeparateDBConnectionEstablished)
                     {
                         DBConnectionObj.CloseDBConnection();
                     }
@@ -574,15 +506,7 @@ namespace {#NAMESPACE}
 /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
 /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
 /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-/// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
-/// is set to true!</param>
-/// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
-/// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
-/// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
-/// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
-/// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
-/// Any separate DB Connection will be closed automatically.
-/// </param>
+/// separate DB Connection (needlessly)!</param>
 /// <returns>
 /// DataTable If the Hash that got passed in AHashCode doesn't fit the
 /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
@@ -593,22 +517,14 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     Boolean ARefreshFromDB,
     System.Int32 ALedgerNumber,
     out System.Type AType, 
-    TDataBase ADataBase = null,
-    bool ASeparateDBConnection = false)
+    TDataBase ADataBase = null)
 {
     const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
     const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
-    TDataBase DBConnectionObj = null;
+    TDataBase DBConnectionObj = ADataBase;
     TDBTransaction ReadTransaction = null;
-    bool ANewTransaction = false;
     string TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
-    bool ASeparateDBConnectionEstablished = false;
-
-    if ((ASeparateDBConnection) 
-        && (ADataBase != null))
-    {
-        throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
-    }
+    bool SeparateDBConnectionEstablished = false;
 
     if (TLogging.DL >= 7)
     {
@@ -634,10 +550,11 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     {
         try
         {
-            if (ASeparateDBConnection)
+            if (DBConnectionObj == null)
             {
                 // Open a separate DB Connection
                 DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+                SeparateDBConnectionEstablished = true;
 
                 // ...and start a DB Transction on that separate DB Connection
                 ReadTransaction = DBConnectionObj.BeginTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
@@ -645,21 +562,8 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
             }
             else
             {
-                if (ADataBase == null)
-                {
-                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
-                    // hence can be used to start a DB Transaction.
-                    ReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                        out DBConnectionObj, out ASeparateDBConnectionEstablished, StrDBConnName,
-                        StrDBTransName);
-                        
-                    ANewTransaction = true;
-                }
-                else
-                {
-                    ReadTransaction = ADataBase.GetNewOrExistingTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                        TEnforceIsolationLevel.eilMinimum, out ANewTransaction, StrDBTransName);
-                }
+                ReadTransaction = DBConnectionObj.BeginTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                    ATransactionName: StrDBTransName);
             }
 
             switch (ACacheableTable)
@@ -676,13 +580,10 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
         }
         finally
         {
-            if (ANewTransaction)
-            {
-                DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
-            }
+            DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
 
             // Close separate DB Connection if we opened one earlier
-            if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+            if (SeparateDBConnectionEstablished)
             {
                 DBConnectionObj.CloseDBConnection();
             }
@@ -722,40 +623,25 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
 /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
 /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
 /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-/// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
-/// is set to true!</param>
-/// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
-/// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
-/// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
-/// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
-/// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
-/// Any separate DB Connection will be closed automatically.
-/// </param>
+/// separate DB Connection (needlessly)!</param>
 /// <returns>Status of the operation.</returns>
 public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
     ref TTypedDataTable ASubmitTable,
     int ALedgerNumber,
     out TVerificationResultCollection AVerificationResult, 
-    TDataBase ADataBase = null,
-    bool ASeparateDBConnection = false)
+    TDataBase ADataBase = null)
 {
     const string StrDBTransName = "Cacheable DataTable (saving) DB Transaction";
     const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
-    TDataBase DBConnectionObj = null;
+    TDataBase DBConnectionObj = ADataBase;
     TDBTransaction SubmitChangesTransaction = null;
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
     TTypedDataTable SubmitTable = ASubmitTable;
     TVerificationResultCollection VerificationResult;    
     Type TmpType;
-    bool ASeparateDBConnectionEstablished = false;
+    bool SeparateDBConnectionEstablished = false;
     
-    if ((ASeparateDBConnection) 
-        && (ADataBase != null))
-    {
-        throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
-    }
-
     // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
     AVerificationResult = null;
 
@@ -770,7 +656,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
         {
             try
             {
-                if (ASeparateDBConnection)
+                if (DBConnectionObj == null)
                 {
                     // Open a separate DB Connection
                     DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
@@ -781,20 +667,8 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
                 }
                 else
                 {
-                    if (ADataBase == null)
-                    {
-                        // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
-                        // hence can be used to start a DB Transaction.
-                        SubmitChangesTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.Serializable,
-                            out DBConnectionObj, out ASeparateDBConnectionEstablished,
-                            StrDBConnName,
-                            StrDBTransName);
-                    }
-                    else
-                    {
-                        SubmitChangesTransaction = ADataBase.BeginTransaction(IsolationLevel.Serializable,
-                            ATransactionName: StrDBTransName);
-                    }
+                    SubmitChangesTransaction = ADataBase.BeginTransaction(IsolationLevel.Serializable,
+                        ATransactionName: StrDBTransName);
                 }
 
                 // Automatic handling of a (write) DB Transaction
@@ -836,7 +710,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
         finally
         {
             // Close separate DB Connection if we opened one earlier
-            if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+            if (SeparateDBConnectionEstablished)
             {
                 DBConnectionObj.CloseDBConnection();
             }

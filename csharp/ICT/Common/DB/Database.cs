@@ -2770,27 +2770,10 @@ namespace Ict.Common.DB
         /// <summary>
         /// Rolls back a running Transaction on the current DB connection.
         /// </summary>
-        /// <returns>void</returns>
-        public void RollbackTransaction()
-        {
-            RollbackTransaction(true);
-        }
-
-        /// <summary>
-        /// Rolls back a running Transaction on the current DB connection.
-        /// </summary>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
-        /// <returns>void</returns>
-        private void RollbackTransaction(bool AMustCoordinateDBAccess)
+        private void RollbackTransaction(bool AMustCoordinateDBAccess = true)
         {
-            string TransactionIdentifier = null;
-            bool TransactionValid = false;
-            bool TransactionReused = false;
-            IsolationLevel TransactionIsolationLevel = IsolationLevel.Unspecified;
-            string ThreadThatTransactionWasStartedOn = null;
-            string AppDomainNameThatTransactionWasStartedIn = null;
-
             if (AMustCoordinateDBAccess)
             {
                 WaitForCoordinatedDBAccess();
@@ -2800,78 +2783,8 @@ namespace Ict.Common.DB
             {
                 if (FTransaction != null)
                 {
-                    // Attempt to roll back the DB Transaction.
-                    try
-                    {
-                        // 'Sanity Check': Check that TheTransaction hasn't been committed or rolled back yet.
-                        if (!FTransaction.Valid)
-                        {
-                            var Exc1 =
-                                new EDBAttemptingToUseTransactionThatIsInvalidException(
-                                    "TDataBase.RollbackTransaction called on DB Transaction that isn't valid",
-                                    ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
-                                    ThreadingHelper.GetCurrentThreadIdentifier());
-
-                            TLogging.Log(Exc1.ToString());
-
-                            throw Exc1;
-                        }
-
-                        // Multi-threading 'Sanity Check':
-                        // Check if the current Thread is the same Thread that the current Transaction was started on:
-                        // if not, throw Exception!
-                        if (!CheckRunningDBTransactionThreadIsCompatible(false))
-                        {
-                            var Exc2 =
-                                new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
-                                    "TDataBase.RollbackTransaction would roll back DB Transaction that got started on a different Thread " +
-                                    "and this isn't supported (ADO.NET provider isn't thread-safe!)",
-                                    ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
-                                    ThreadingHelper.GetCurrentThreadIdentifier());
-
-                            TLogging.Log(Exc2.ToString());
-
-                            throw Exc2;
-                        }
-
-                        if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                        {
-                            // Gather information for logging
-                            TransactionIdentifier = FTransaction.GetDBTransactionIdentifier();
-                            TransactionValid = FTransaction.Valid;
-                            TransactionReused = FTransaction.Reused;
-                            TransactionIsolationLevel = FTransaction.IsolationLevel;
-                            ThreadThatTransactionWasStartedOn = ThreadingHelper.GetThreadIdentifier(
-                                FTransaction.ThreadThatTransactionWasStartedOn);
-                            AppDomainNameThatTransactionWasStartedIn = FTransaction.AppDomainNameThatTransactionWasStartedIn;
-                        }
-
-                        FTransaction.WrappedTransaction.Rollback();
-
-                        // Rollback was OK, now clean up.
-                        FTransaction.Dispose();
-                        FTransaction = null;
-
-                        FLastDBAction = DateTime.Now;
-
-                        ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
-                                "DB Transaction{0} got rolled back.  Before that, its DB Transaction Properties were: Valid: {1}, " +
-                                "IsolationLevel: {2}, Reused: {3} (it got started on Thread {4} in AppDomain '{5}').", TransactionIdentifier,
-                                TransactionValid, TransactionIsolationLevel, TransactionReused, ThreadThatTransactionWasStartedOn,
-                                AppDomainNameThatTransactionWasStartedIn),
-                            DBAccess.DB_DEBUGLEVEL_TRANSACTION);
-                    }
-                    catch (Exception Exc)
-                    {
-                        // This catch block will handle any errors that may have occurred
-                        // on the server that would cause the rollback to fail, such as
-                        // a closed connection.
-                        //
-                        // MSDN says: "Try/Catch exception handling should always be used when rolling back a
-                        // transaction. A Rollback generates an InvalidOperationException if the connection is
-                        // terminated or if the transaction has already been rolled back on the server."
-                        TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
-                    }
+                    FTransaction.Rollback();
+                    FTransaction = null;
                 }
             }
             finally

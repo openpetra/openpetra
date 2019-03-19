@@ -28,6 +28,8 @@ using System.Data.Common;
 using System.Threading;
 using System.Diagnostics;
 
+using Ict.Common.DB.Exceptions;
+
 namespace Ict.Common.DB
 {
     /// <summary>
@@ -284,6 +286,65 @@ namespace Ict.Common.DB
         {
             return " (Trans.Identifier: " + FTransactionIdentifier + ")" +
                    (FTransactionName != String.Empty ? String.Format(" (Transaction Name: {0})", FTransactionName) : "");
+        }
+
+        /// roll back the transaction
+        public void Rollback()
+        {
+            string TransactionIdentifier = null;
+            bool TransactionValid = false;
+            bool TransactionReused = false;
+            IsolationLevel TransactionIsolationLevel = IsolationLevel.Unspecified;
+
+            // Attempt to roll back the DB Transaction.
+            try
+            {
+                // 'Sanity Check': Check that TheTransaction hasn't been committed or rolled back yet.
+                if (!Valid)
+                {
+                    var Exc1 =
+                        new EDBAttemptingToUseTransactionThatIsInvalidException(
+                            "TDataBase.RollbackTransaction called on DB Transaction that isn't valid",
+                            ThreadingHelper.GetThreadIdentifier(ThreadThatTransactionWasStartedOn),
+                            ThreadingHelper.GetCurrentThreadIdentifier());
+
+                    TLogging.Log(Exc1.ToString());
+
+                    throw Exc1;
+                }
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                {
+                    // Gather information for logging
+                    TransactionIdentifier = GetDBTransactionIdentifier();
+                    TransactionValid = Valid;
+                    TransactionReused = Reused;
+                    TransactionIsolationLevel = IsolationLevel;
+                }
+
+                WrappedTransaction.Rollback();
+
+                // Rollback was OK, now clean up.
+                Dispose();
+
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, String.Format(
+                        "DB Transaction{0} got rolled back.  Before that, its DB Transaction Properties were: Valid: {1}, " +
+                        "IsolationLevel: {2}, Reused: {3} (it got started on Thread {4} in AppDomain '{5}').", TransactionIdentifier,
+                        TransactionValid, TransactionIsolationLevel, TransactionReused, ThreadThatTransactionWasStartedOn,
+                        AppDomainNameThatTransactionWasStartedIn)
+                    );
+            }
+            catch (Exception Exc)
+            {
+                // This catch block will handle any errors that may have occurred
+                // on the server that would cause the rollback to fail, such as
+                // a closed connection.
+                //
+                // MSDN says: "Try/Catch exception handling should always be used when rolling back a
+                // transaction. A Rollback generates an InvalidOperationException if the connection is
+                // terminated or if the transaction has already been rolled back on the server."
+                TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
+            }
         }
 
         #region Dispose pattern

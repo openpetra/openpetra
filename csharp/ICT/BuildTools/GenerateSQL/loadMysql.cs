@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,10 +41,11 @@ namespace GenerateSQL
             TDBTransaction WriteTransaction = null;
             bool SubmissionResult = false;
 
-            DBAccess.GDBAccessObj = new TDataBase(TDBType.MySQL);
+            TDataBase DBAccessObj = new TDataBase(TDBType.MySQL);
             try
             {
-                DBAccess.GDBAccessObj.EstablishDBConnection(TDBType.MySQL, AHostname, "", ADatabaseName, AUsername, APassword, "",
+                DBAccessObj.EstablishDBConnection(TDBType.MySQL, AHostname, "", ADatabaseName, AUsername, APassword, "",
+                    true,
                     "GenerateSQL.TLoadMysql.LoadData DB Connection");
                 sr = new StreamReader(ALoadSQLFileName);
             }
@@ -55,7 +56,7 @@ namespace GenerateSQL
                 return false;
             }
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction,
+            DBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction,
                 ref SubmissionResult,
                 delegate
                 {
@@ -79,7 +80,7 @@ namespace GenerateSQL
 
                         if (line.Trim().ToUpper().StartsWith("INSERT"))
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(line, WriteTransaction);
+                            DBAccessObj.ExecuteNonQuery(line, WriteTransaction);
                         }
                         else if (line.Trim().ToUpper().StartsWith("COPY"))
                         {
@@ -151,7 +152,7 @@ namespace GenerateSQL
                                 DataFilename + ".local",
                                 TableName);
 
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, WriteTransaction);
+                            DBAccessObj.ExecuteNonQuery(stmt, WriteTransaction);
                         }
                     }
 
@@ -160,7 +161,7 @@ namespace GenerateSQL
                     sr.Close();
                 });
 
-            DBAccess.GDBAccessObj.CloseDBConnection();
+            DBAccessObj.CloseDBConnection();
 
             return true;
         }
