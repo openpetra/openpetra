@@ -1103,11 +1103,11 @@ namespace Ict.Common.Remoting.Server
                         {
                             if (CommitLoginTransaction)
                             {
-                                DBConnectionObj.CommitTransaction();
+                                ReadWriteTransaction.Commit();
                             }
                             else
                             {
-                                DBConnectionObj.RollbackTransaction();
+                                ReadWriteTransaction.Rollback();
                             }
 
                             DBConnectionObj.CloseDBConnection();

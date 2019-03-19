@@ -338,6 +338,20 @@ namespace Ict.Common.DB
 
         #endregion
 
+        /// simple overload for establishing a database connection using the settings from the configuration file
+        public void EstablishDBConnection(String AConnectionName = "")
+        {
+            EstablishDBConnection(TSrvSetting.RDMBSType,
+                TSrvSetting.PostgreSQLServer,
+                TSrvSetting.PostgreSQLServerPort,
+                TSrvSetting.PostgreSQLDatabaseName,
+                TSrvSetting.DBUsername,
+                TSrvSetting.DBPassword,
+                "",
+                true,
+                AConnectionName);
+        }
+
         /// <summary>
         /// Establishes (opens) a DB connection to a specified RDBMS.
         /// </summary>
@@ -632,7 +646,7 @@ namespace Ict.Common.DB
                                 " before calling this.RollbackTransaction", TLoggingType.ToConsole | TLoggingType.ToLogfile);
                         }
 
-                        this.RollbackTransaction(false);
+                        FTransaction.Rollback();
 
                         if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                         {
@@ -2644,159 +2658,6 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Commits a running Transaction on the current DB connection.
-        /// </summary>
-        /// <returns>void</returns>
-        public void CommitTransaction()
-        {
-            CommitTransaction(true);
-        }
-
-        /// <summary>
-        /// Commits a running Transaction on the current DB connection.
-        /// </summary>
-        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
-        /// set to false if the calling Method already takes care of this.</param>
-        /// <returns>void</returns>
-        private void CommitTransaction(bool AMustCoordinateDBAccess)
-        {
-            string TransactionIdentifier = null;
-            bool TransactionValid = false;
-            bool TransactionReused = false;
-            IsolationLevel TransactionIsolationLevel = IsolationLevel.Unspecified;
-            string ThreadThatTransactionWasStartedOn = null;
-            string AppDomainNameThatTransactionWasStartedIn = null;
-
-            if (AMustCoordinateDBAccess)
-            {
-                WaitForCoordinatedDBAccess();
-            }
-
-            try
-            {
-                if (FTransaction != null)
-                {
-                    // Attempt to commit the DB Transaction
-
-                    // 'Sanity Check': Check that TheTransaction hasn't been committed or rolled back yet.
-                    if (!FTransaction.Valid)
-                    {
-                        var Exc1 =
-                            new EDBAttemptingToUseTransactionThatIsInvalidException(
-                                "TDataBase.CommitTransaction called on DB Transaction that isn't valid",
-                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
-                                ThreadingHelper.GetCurrentThreadIdentifier());
-
-                        TLogging.Log(Exc1.ToString());
-
-                        throw Exc1;
-                    }
-
-                    // Multi-threading 'Sanity Check':
-                    // Check if the current Thread is the same Thread that the current Transaction was started on:
-                    // if not, throw Exception!
-                    if (!CheckRunningDBTransactionThreadIsCompatible(false))
-                    {
-                        var Exc2 =
-                            new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
-                                "TDataBase.CommitTransaction would commit DB Transaction that got started on a different Thread " +
-                                "and this isn't supported (ADO.NET provider isn't thread-safe!)",
-                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
-                                ThreadingHelper.GetCurrentThreadIdentifier());
-
-                        TLogging.Log(Exc2.ToString());
-
-                        throw Exc2;
-                    }
-
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                    {
-                        // Gather information for logging
-                        TransactionIdentifier = FTransaction.GetDBTransactionIdentifier();
-                        TransactionValid = FTransaction.Valid;
-                        TransactionReused = FTransaction.Reused;
-                        TransactionIsolationLevel = FTransaction.IsolationLevel;
-                        ThreadThatTransactionWasStartedOn = ThreadingHelper.GetThreadIdentifier(
-                            FTransaction.ThreadThatTransactionWasStartedOn);
-                        AppDomainNameThatTransactionWasStartedIn = FTransaction.AppDomainNameThatTransactionWasStartedIn;
-                    }
-
-                    FTransaction.WrappedTransaction.Commit();
-
-                    // Commit was OK, now clean up.
-                    FTransaction.Dispose();
-                    FTransaction = null;
-
-                    FLastDBAction = DateTime.Now;
-
-                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
-                            "DB Transaction{0} got committed.  Before that, its DB Transaction Properties were: Valid: {1}, " +
-                            "IsolationLevel: {2}, Reused: {3} (it got started on Thread {4} in AppDomain '{5}').",
-                            TransactionIdentifier, TransactionValid, TransactionIsolationLevel, TransactionReused,
-                            ThreadThatTransactionWasStartedOn, AppDomainNameThatTransactionWasStartedIn),
-                        DBAccess.DB_DEBUGLEVEL_TRANSACTION);
-                }
-            }
-            catch (Exception exp)
-            {
-                if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
-                {
-                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
-                        "EDB40001 exception in TDatabase.CommitTransaction",
-                        exp);
-                    LogException(e, "Exception while attempting Transaction commit.");
-                    throw e;
-                }
-                else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
-                {
-                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
-                        "EDB23505 exception in TDatabase.CommitTransaction",
-                        exp);
-                    LogException(e, "Exception while attempting Transaction commit.");
-                    throw e;
-                }
-
-                LogExceptionAndThrow(exp, "Exception while attempting Transaction commit.");
-            }
-            finally
-            {
-                if (AMustCoordinateDBAccess)
-                {
-                    ReleaseCoordinatedDBAccess();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Rolls back a running Transaction on the current DB connection.
-        /// </summary>
-        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
-        /// set to false if the calling Method already takes care of this.</param>
-        private void RollbackTransaction(bool AMustCoordinateDBAccess = true)
-        {
-            if (AMustCoordinateDBAccess)
-            {
-                WaitForCoordinatedDBAccess();
-            }
-
-            try
-            {
-                if (FTransaction != null)
-                {
-                    FTransaction.Rollback();
-                    FTransaction = null;
-                }
-            }
-            finally
-            {
-                if (AMustCoordinateDBAccess)
-                {
-                    ReleaseCoordinatedDBAccess();
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets the <see cref="IsolationLevel"/> of the current DB Transaction (or debugging purposes).
         /// </summary>
         /// <returns><see cref="IsolationLevel.Unspecified"/> if no DB Transaction is open.</returns>
@@ -3183,7 +3044,7 @@ namespace Ict.Common.DB
 
                     if (ACommitTransaction)
                     {
-                        CommitTransaction(false);
+                        ATransaction.Commit();
                     }
 
                     return NumberOfRowsAffected;
@@ -3362,12 +3223,12 @@ namespace Ict.Common.DB
 
                     if (ACommitTransaction)
                     {
-                        CommitTransaction(false);
+                        ATransaction.Commit();
                     }
                 }
                 catch (Exception exp)
                 {
-                    RollbackTransaction();
+                    ATransaction.Rollback();
 
                     LogException(exp, CurrentBatchEntrySQLStatement,
                         null,
@@ -3426,7 +3287,7 @@ namespace Ict.Common.DB
                         }
                         finally
                         {
-                            CommitTransaction(false);
+                            EnclosingTransaction.Commit();
                         }
                     }
                 }
@@ -3578,7 +3439,7 @@ namespace Ict.Common.DB
 
                     if (ACommitTransaction)
                     {
-                        CommitTransaction(false);
+                        ATransaction.Commit();
                     }
                 }
 
@@ -4506,7 +4367,7 @@ namespace Ict.Common.DB
                 // 'ExceptionThrown' Variable and will act accordingly!
                 if (NewTransaction || ExceptionThrown)
                 {
-                    AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK, ACommitTransaction);
+                    AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmissionOK, ACommitTransaction);
                 }
                 else
                 {
@@ -4746,7 +4607,9 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult, NewTransaction && ACommitTransaction);
+                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown,
+                    ASubmitChangesResult == TSubmitChangesResult.scrOK,
+                    NewTransaction && ACommitTransaction);
             }
         }
 
@@ -4876,7 +4739,7 @@ namespace Ict.Common.DB
                     // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
                     // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
                     // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                    RollbackTransaction();
+                    ATransaction.Rollback();
                 }
             }
         }
@@ -4987,7 +4850,7 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK);
+                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmissionOK);
             }
         }
 
@@ -5102,7 +4965,7 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult);
+                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmitChangesResult == TSubmitChangesResult.scrOK);
             }
         }
 
@@ -5228,7 +5091,7 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK);
+                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmissionOK);
             }
         }
 
@@ -5357,7 +5220,7 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult);
+                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmitChangesResult == TSubmitChangesResult.scrOK);
             }
         }
 
@@ -5462,7 +5325,7 @@ namespace Ict.Common.DB
                 // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
                 // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
                 // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                RollbackTransaction();
+                ATransaction.Rollback();
             }
         }
 
@@ -5635,7 +5498,7 @@ namespace Ict.Common.DB
                 // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
                 // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
                 // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                RollbackTransaction(AMustCoordinateDBAccess);
+                ATransaction.Rollback();
             }
         }
 
@@ -5669,7 +5532,7 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK);
+                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmissionOK);
             }
         }
 
@@ -5704,7 +5567,39 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult);
+                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmitChangesResult == TSubmitChangesResult.scrOK, true);
+            }
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction
+        /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured
+        /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of
+        /// Arguments <paramref name="ASubmissionOK"/> and <paramref name="ACommitTransaction"/>.
+        /// </summary>
+        /// <param name="ATransaction">The transaction to be committed or rollback.</param>
+        /// <param name="AExceptionThrown">Set to true if an Exception occured.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ACommitTransaction">Set this to false if no Exception was thrown, but when the running
+        /// DB Transaction should still not get committed.</param>
+        private void AutoTransCommitOrRollback(ref TDBTransaction ATransaction, bool AExceptionThrown, bool ASubmissionOK, bool ACommitTransaction = true)
+        {
+            if ((!AExceptionThrown)
+                && ASubmissionOK)
+            {
+                // While everthing is fine, the calling code might decide not to Commit the DB Transaction!
+                if (ACommitTransaction)
+                {
+                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Commit");
+
+                    ATransaction.Commit();
+                }
+            }
+            else
+            {
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Rollback");
+
+                ATransaction.Rollback();
             }
         }
 
@@ -5732,68 +5627,7 @@ namespace Ict.Common.DB
                 // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
                 // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
                 // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                RollbackTransaction();
-            }
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction
-        /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured
-        /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of
-        /// Arguments <paramref name="ASubmissionOK"/> and <paramref name="ACommitTransaction"/>.
-        /// </summary>
-        /// <param name="AExceptionThrown">Set to true if an Exception occured.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="ACommitTransaction">Set this to false if no Exception was thrown, but when the running
-        /// DB Transaction should still not get committed.</param>
-        private void AutoTransCommitOrRollback(bool AExceptionThrown, bool ASubmissionOK, bool ACommitTransaction = true)
-        {
-            if ((!AExceptionThrown)
-                && ASubmissionOK)
-            {
-                // While everthing is fine, the calling code might decide not to Commit the DB Transaction!
-                if (ACommitTransaction)
-                {
-                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Commit");
-
-                    CommitTransaction();
-                }
-            }
-            else
-            {
-                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Rollback");
-
-                RollbackTransaction();
-            }
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction
-        /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured
-        /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of
-        /// Arguments <paramref name="ASubmitChangesResult"/> and <paramref name="ACommitTransaction"/>.
-        /// </summary>
-        /// <param name="AExceptionThrown">Set to true if an Exception occured.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
-        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="ACommitTransaction">Set this to false if no Exception was thrown, but when the running
-        /// DB Transaction should still not get committed.</param>
-        private void AutoTransCommitOrRollback(bool AExceptionThrown, TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction = true)
-        {
-            if ((!AExceptionThrown)
-                && (ASubmitChangesResult == TSubmitChangesResult.scrOK))
-            {
-                // While everthing is fine, the calling code might decide not to Commit the DB Transaction!
-                if (ACommitTransaction)
-                {
-                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "AutoTransCommitOrRollback: Commit");
-                    CommitTransaction();
-                }
-            }
-            else
-            {
-                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "AutoTransCommitOrRollback: Rollback");
-                RollbackTransaction();
+                ATransaction.Rollback();
             }
         }
 

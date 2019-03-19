@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,7 +77,7 @@ namespace Ict.Common.DB.DBCaching
         public DataSet GetDataSet(String sql, OdbcParameter[] AParameters, DataTable ATable, TDataBase ADataBase = null)
         {
             TDataBase DBAccessObj = DBAccess.GetDBAccessObj(ADataBase);
-            TDBTransaction ReadTransaction;
+            TDBTransaction ReadTransaction = null;
             Boolean NewTransaction = false;
             DataSet newDataSet;
 
@@ -152,9 +152,9 @@ namespace Ict.Common.DB.DBCaching
             }
             finally
             {
-                if (NewTransaction)
+                if (NewTransaction && (ReadTransaction != null))
                 {
-                    DBAccessObj.CommitTransaction();
+                    ReadTransaction.Rollback();
                 }
             }
             storedDataSet.Add(newDataSet);

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,12 +72,12 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
-            TDBTransaction ReadTransaction = null;
             TTypedDataTable ResultTable = null;
+            TDBTransaction ReadTransaction;
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TCommonDataReader.GetData", out ReadTransaction,
+            DBAccess.RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction, "TCommonDataReader.GetData",
                 delegate
                 {
                     GetData(ATablename, ASearchCriteria, out ResultTable, ReadTransaction);
@@ -271,7 +271,6 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             ref TTypedDataTable ASubmitTable, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
-            TDBTransaction WriteTransaction = null;
             TTypedDataTable SubmitTable = null;
             TVerificationResultCollection VerificationResult = null;
 
@@ -279,7 +278,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 
             // Automatic handling of a DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoTransactionWrapper("TCommonDataReader.SaveData", out WriteTransaction,
+            DBAccess.RunInTransaction("TCommonDataReader.SaveData",
                 ref ReturnValue,
                 delegate
                 {

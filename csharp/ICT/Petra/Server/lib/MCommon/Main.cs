@@ -426,9 +426,7 @@ namespace Ict.Petra.Server.MCommon
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction ReadTransaction = null;
-            bool ANewTransaction = false;
-            bool ASeparateDBConnectionEstablished = false;
-            string StrDBTransAndConnPartialName = AContext ?? "TPagedDataSet.ExecuteFullQuery DB";
+            bool SeparateDBConnectionEstablished = false;
 
             if (FFindParameters.FParametersGivenSeparately)
             {
@@ -463,20 +461,13 @@ namespace Ict.Petra.Server.MCommon
             {
                 if (ADataBase == null)
                 {
-                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
-                    // hence can be used to start a DB Transaction.
-                    ReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.ReadCommitted,
-                        out DBConnectionObj, out ASeparateDBConnectionEstablished,
-                        StrDBTransAndConnPartialName + " Connection",
-                        StrDBTransAndConnPartialName + " Transaction");
+                    ADataBase = new TDataBase();
+                    ADataBase.EstablishDBConnection(AContext + " Connection");
+                    SeparateDBConnectionEstablished = true;
+                }
 
-                    ANewTransaction = true;
-                }
-                else
-                {
-                    ReadTransaction = ADataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum, out ANewTransaction, AContext + " Transaction");
-                }
+                ReadTransaction = ADataBase.BeginTransaction(IsolationLevel.ReadCommitted,
+                    -1, AContext + " Transaction");
 
                 // Fill temporary table with query results (all records)
                 FTotalRecords = DBAccess.GetDBAccessObj(ReadTransaction).SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
@@ -521,13 +512,10 @@ namespace Ict.Petra.Server.MCommon
             }
             finally
             {
-                if (ANewTransaction)
-                {
-                    DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
-                }
+                ReadTransaction.Rollback();
 
                 // Close separate DB Connection if we opened one earlier
-                if (ASeparateDBConnectionEstablished)
+                if (SeparateDBConnectionEstablished)
                 {
                     DBConnectionObj.CloseDBConnection();
                 }
@@ -1090,21 +1078,6 @@ namespace Ict.Petra.Server.MCommon
         }
 
         /// <summary>
-        /// Constructor. It establishes a DB Connection for a FastReports Report.
-        /// </summary>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
-        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used by this instance of
-        /// <see cref="TReportingDbAdapter" /> (with the 'globally available' open DB Connection that exists for the
-        /// users' AppDomain).</param>
-        public TReportingDbAdapter(bool ASeparateDBConnection)
-        {
-            FPrivateDBConnection = ASeparateDBConnection;
-
-            FPrivateDatabaseObj = EstablishDBConnection(ASeparateDBConnection, "FastReports Report DB Connection");
-        }
-
-        /// <summary>
         /// Cancels any reporting query that's running right now, and effectively short-circuits any subsequent queries
         /// made using this object. This might take some time!
         /// </summary>
@@ -1133,50 +1106,6 @@ namespace Ict.Petra.Server.MCommon
             }
 
             FRunningQuery = false;
-        }
-
-        /// <summary>
-        /// Establishes a DB Connection for a FastReports Report.
-        /// </summary>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
-        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets returned by this Method (with the
-        /// 'globally available' open DB Connection that exists for the users' AppDomain).</param>
-        /// <param name="AConnectionName"></param>
-        /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
-        public static TDataBase EstablishDBConnection(bool ASeparateDBConnection, String AConnectionName)
-        {
-            if (ASeparateDBConnection)
-            {
-                TDataBase FDBAccessObj = new Ict.Common.DB.TDataBase();
-
-                FDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "",
-                    AConnectionName);
-                return FDBAccessObj;
-            }
-            else
-            {
-                return DBAccess.GDBAccessObj;
-            }
-        }
-
-        /// <summary>
-        /// Call this to ensure that the DB Connection that got established for the Report gets closed. This only really
-        /// happens if <see cref="EstablishDBConnection" /> got called with Argument 'ASeparateDBConnection' set to
-        /// true, otherwise this Method does nothing.
-        /// </summary>
-        public void CloseConnection()
-        {
-            if (FPrivateDBConnection)
-            {
-                FPrivateDatabaseObj.CloseDBConnection();
-            }
         }
 
         /// <summary>
