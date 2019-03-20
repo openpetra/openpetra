@@ -172,7 +172,7 @@ namespace Ict.Common.DB
         {
             TDataBase DBConnectionObj = SimpleEstablishDBConnection(AContext);
 
-            ATransaction = DBConnectionObj.BeginTransaction(AIsolationLevel, -1, AContext);
+            ATransaction.BeginTransaction(DBConnectionObj, AIsolationLevel, AContext);
 
             try
             {

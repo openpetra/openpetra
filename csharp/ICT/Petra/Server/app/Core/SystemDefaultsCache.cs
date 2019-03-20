@@ -482,17 +482,11 @@ namespace Ict.Petra.Server.App.Core
 
                 try
                 {
-                    DBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                        TSrvSetting.PostgreSQLServer,
-                        TSrvSetting.PostgreSQLServerPort,
-                        TSrvSetting.PostgreSQLDatabaseName,
-                        TSrvSetting.DBUsername,
-                        TSrvSetting.DBPassword,
-                        "",
-                        true,
-                        "SystemDefaultsCache DB Connection");
+                    DBAccessObj.EstablishDBConnection("SystemDefaultsCache DB Connection");
 
-                    DBAccessObj.BeginAutoReadTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,
+                    TSubmitChangesResult result = TSubmitChangesResult.scrOK;
+                    DBAccessObj.BeginAutoTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,
+                        ref result,
                         delegate
                         {
                             FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
@@ -547,7 +541,7 @@ namespace Ict.Petra.Server.App.Core
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction WriteTransaction = null;
-            Boolean SubmissionOK = false;
+            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
             SSystemDefaultsTable SystemDefaultsDT;
             Boolean Added = false;
 
@@ -558,7 +552,7 @@ namespace Ict.Petra.Server.App.Core
 
                 // ...and start a DB Transaction on that separate DB Connection
                 DBConnectionObj.BeginAutoTransaction(IsolationLevel.ReadCommitted, ref WriteTransaction, ref SubmissionOK,
-                    "SetSystemDefault", delegate
+                    delegate
                     {
                         SystemDefaultsDT = SSystemDefaultsAccess.LoadAll(WriteTransaction);
 
@@ -589,7 +583,7 @@ namespace Ict.Petra.Server.App.Core
 
                         SSystemDefaultsAccess.SubmitChanges(SystemDefaultsDT, WriteTransaction);
 
-                        SubmissionOK = true;
+                        SubmissionOK = TSubmitChangesResult.scrOK;
                     });
 
                 AAdded = Added;
@@ -605,7 +599,7 @@ namespace Ict.Petra.Server.App.Core
             }
             finally
             {
-                if (SubmissionOK)
+                if (SubmissionOK == TSubmitChangesResult.scrOK)
                 {
                     // We need to ensure that the next time the System Defaults Caches gets accessed it is refreshed from the DB!!!
 

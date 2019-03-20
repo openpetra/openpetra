@@ -4,7 +4,7 @@
 // @Authors:
 //       alanb
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -147,7 +147,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
             String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
         {
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
+            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
 
             string strSQL = String.Format("UPDATE PUB_{0} SET ", PFormTable.GetTableDBName());
 
@@ -169,10 +169,11 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
                 delegate
                 {
                     int nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, Transaction, null, true);
-                    SubmissionOK = (nRowsAffected == 1);
+                    SubmissionOK = (nRowsAffected == 1) ? TSubmitChangesResult.scrOK : TSubmitChangesResult.scrError;
+
                 });
 
-            return SubmissionOK;
+            return SubmissionOK == TSubmitChangesResult.scrOK;
         }
 
         /// <summary>
@@ -238,9 +239,11 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         {
             TDBTransaction Transaction = null;
             PFormTable ReturnValue = new PFormTable();
+            TSubmitChangesResult result = TSubmitChangesResult.scrError;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable,
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
+                ref result,
                 delegate
                 {
                     ReturnValue = PFormAccess.LoadByPrimaryKey(AFormCode, AFormName, ALanguageCode, Transaction);

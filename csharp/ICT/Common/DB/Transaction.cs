@@ -58,12 +58,10 @@ namespace Ict.Common.DB
         /// <summary>Holds the DbTransaction that we are wrapping inside this class.</summary>
         private DbTransaction FWrappedTransaction;
         private TDataBase FTDataBaseInstanceThatTransactionBelongsTo;
-        private bool FReused = false;
         private Thread FThreadThatTransactionWasStartedOn;
         private AppDomain FAppDomainThatTransactionWasStartedIn;
         private StackTrace FStackTraceAtPointOfTransactionStart;
         private System.Guid FTransactionIdentifier;
-        private System.Guid FConnectionIdentifier;
         private string FTransactionName;
 
         /// <summary>
@@ -75,18 +73,6 @@ namespace Ict.Common.DB
             get
             {
                 return FTransactionIdentifier;
-            }
-        }
-
-        /// <summary>
-        /// An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies the DB Connection that this
-        /// DB Transaction is running against. It is used for internal 'sanity checks'. It also gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</summary>
-        public System.Guid ConnectionIdentifier
-        {
-            get
-            {
-                return FConnectionIdentifier;
             }
         }
 
@@ -118,6 +104,17 @@ namespace Ict.Common.DB
             }
         }
 
+        /// <summary>
+        /// An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies the DB Connection that this
+        /// DB Transaction is running against. It is used for internal 'sanity checks'. It also gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</summary>
+        public System.Guid ConnectionIdentifier
+        {
+            get
+            {
+                return FTDataBaseInstanceThatTransactionBelongsTo.ConnectionIdentifier;
+            }
+        }
 
         /// <summary>
         /// Database connection to which the Transaction belongs.
@@ -155,18 +152,6 @@ namespace Ict.Common.DB
             get
             {
                 return FWrappedTransaction;
-            }
-        }
-
-        /// <summary>
-        /// True if the Transaction has been re-used at least once by way of calling one of the
-        /// 'TDataBase.GetNewOrExistingTransaction' or 'TDataBase.GetNewOrExistingAutoTransaction' Methods.
-        /// </summary>
-        public bool Reused
-        {
-            get
-            {
-                return FReused;
             }
         }
 
@@ -235,44 +220,43 @@ namespace Ict.Common.DB
             }
         }
 
+        /// constructor for empty transaction.
+        /// it can be filled with calling BeginTransaction.
+        public TDBTransaction()
+        {
+        }
+
         /// <summary>
         /// Constructor for a <see cref="TDBTransaction" /> Object.
         /// </summary>
-        /// <param name="ATransaction">The concrete <see cref="DbTransaction"/> object that <see cref="TDBTransaction" />
-        /// should represent.</param>
-        /// <param name="AConnectionIdentifier">ConnectionIdentifier of the DB Connection that this DB Transaction
-        /// is running against.</param>
-        /// <param name="ATDataBaseInstanceThatTransactionBelongsTo">Instance of <see cref="TDataBase"/> that
-        /// owns this <see cref="TDBTransaction"/> instance.</param>
-        /// <param name="AReused">Set to true to make the new instance return 'true' right away when its
-        /// <see cref="Reused"/> Property gets inquired (default=false).</param>
+        /// <param name="ADataBase">The database connection that this transaction should be created from.</param>
+        /// <param name="AIsolationLevel">The isolation level</param>
         /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
         /// debugging (also useful for Unit Testing).</param>
-        public TDBTransaction(DbTransaction ATransaction,
-            System.Guid AConnectionIdentifier,
-            TDataBase ATDataBaseInstanceThatTransactionBelongsTo,
-            bool AReused = false,
+        public TDBTransaction(TDataBase ADataBase,
+            IsolationLevel AIsolationLevel,
+            string ATransactionName = "")
+        {
+            BeginTransaction(ADataBase,
+                AIsolationLevel,
+                ATransactionName);
+        }
+
+        /// to begin a transaction on an existing TDBTransaction object.
+        /// this is useful for RunInTransaction to have access to the transaction object
+        public void BeginTransaction(TDataBase ADataBase,
+            IsolationLevel AIsolationLevel,
             string ATransactionName = "")
         {
             FTransactionIdentifier = System.Guid.NewGuid();
             FTransactionName = ATransactionName;
 
-            FWrappedTransaction = ATransaction;
-            FReused = AReused;
+            FWrappedTransaction = ADataBase.BeginTransaction(AIsolationLevel);
 
-            FTDataBaseInstanceThatTransactionBelongsTo = ATDataBaseInstanceThatTransactionBelongsTo;
+            FTDataBaseInstanceThatTransactionBelongsTo = ADataBase;
             FAppDomainThatTransactionWasStartedIn = AppDomain.CurrentDomain;
             FThreadThatTransactionWasStartedOn = Thread.CurrentThread;
             FStackTraceAtPointOfTransactionStart = new StackTrace(true);
-            FConnectionIdentifier = AConnectionIdentifier;
-        }
-
-        /// <summary>
-        /// This Method must only get called from one of the 'TDataBase.GetNewOrExistingTransaction' Methods, or their extension DBAccess.SimpleGetTransaction!
-        /// </summary>
-        internal void SetTransactionToReused()
-        {
-            FReused = true;
         }
 
         /// <summary>
@@ -293,7 +277,6 @@ namespace Ict.Common.DB
         {
             string TransactionIdentifier = null;
             bool TransactionValid = false;
-            bool TransactionReused = false;
             IsolationLevel TransactionIsolationLevel = IsolationLevel.Unspecified;
 
             // Attempt to commit the DB Transaction.
@@ -318,7 +301,6 @@ namespace Ict.Common.DB
                     // Gather information for logging
                     TransactionIdentifier = GetDBTransactionIdentifier();
                     TransactionValid = Valid;
-                    TransactionReused = Reused;
                     TransactionIsolationLevel = IsolationLevel;
                 }
 
@@ -329,8 +311,8 @@ namespace Ict.Common.DB
 
                 TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, String.Format(
                         "DB Transaction{0} got rolled back.  Before that, its DB Transaction Properties were: Valid: {1}, " +
-                        "IsolationLevel: {2}, Reused: {3} (it got started on Thread {4} in AppDomain '{5}').", TransactionIdentifier,
-                        TransactionValid, TransactionIsolationLevel, TransactionReused, ThreadThatTransactionWasStartedOn,
+                        "IsolationLevel: {2} (it got started on Thread {3} in AppDomain '{4}').", TransactionIdentifier,
+                        TransactionValid, TransactionIsolationLevel, ThreadThatTransactionWasStartedOn,
                         AppDomainNameThatTransactionWasStartedIn)
                     );
             }
@@ -352,7 +334,6 @@ namespace Ict.Common.DB
         {
             string TransactionIdentifier = null;
             bool TransactionValid = false;
-            bool TransactionReused = false;
             IsolationLevel TransactionIsolationLevel = IsolationLevel.Unspecified;
 
             // Attempt to roll back the DB Transaction.
@@ -377,7 +358,6 @@ namespace Ict.Common.DB
                     // Gather information for logging
                     TransactionIdentifier = GetDBTransactionIdentifier();
                     TransactionValid = Valid;
-                    TransactionReused = Reused;
                     TransactionIsolationLevel = IsolationLevel;
                 }
 
@@ -388,8 +368,8 @@ namespace Ict.Common.DB
 
                 TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, String.Format(
                         "DB Transaction{0} got rolled back.  Before that, its DB Transaction Properties were: Valid: {1}, " +
-                        "IsolationLevel: {2}, Reused: {3} (it got started on Thread {4} in AppDomain '{5}').", TransactionIdentifier,
-                        TransactionValid, TransactionIsolationLevel, TransactionReused, ThreadThatTransactionWasStartedOn,
+                        "IsolationLevel: {2} (it got started on Thread {3} in AppDomain '{4}').", TransactionIdentifier,
+                        TransactionValid, TransactionIsolationLevel, ThreadThatTransactionWasStartedOn,
                         AppDomainNameThatTransactionWasStartedIn)
                     );
             }

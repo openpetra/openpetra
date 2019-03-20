@@ -215,7 +215,7 @@ namespace Ict.Petra.Server.MCommon
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "CheckPartnerExists: committed own transaction.");
                     }
                 }
@@ -1052,7 +1052,6 @@ namespace Ict.Petra.Server.MCommon
         private TDataAdapterCanceller FDataAdapterCanceller;
         private Boolean FRunningQuery = false;
         private Exception FRunQueryException = null;
-        private Boolean FPrivateDBConnection = false;
 
         /// <summary>Use this object for creating DB Transactions, etc</summary>
         public TDataBase FPrivateDatabaseObj;

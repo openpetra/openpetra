@@ -63,10 +63,10 @@ namespace Ict.Common.DB
     public class TDataBase
     {
         private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " +
-                                                           "DB Transaction Properties: Valid: {0}, IsolationLevel: {1}, Reused: {2}; it got started on Thread {3} in AppDomain '{4}'.  "
+                                                           "DB Transaction Properties: Valid: {0}, IsolationLevel: {1}; it got started on Thread {2} in AppDomain '{3}'.  "
                                                            +
-                                                           "The attempt to begin a DB Transaction NOW occured on Thread {5} in AppDomain '{6}.'   " +
-                                                           "The StackTrace of the *previously* started DB Transaction is as follows:\r\n  PREVIOUS Stracktrace: {7}\r\n  CURRENT Stracktrace: {8}";
+                                                           "The attempt to begin a DB Transaction NOW occured on Thread {4} in AppDomain '{5}.'   " +
+                                                           "The StackTrace of the *previously* started DB Transaction is as follows:\r\n  PREVIOUS Stracktrace: {6}\r\n  CURRENT Stracktrace: {7}";
 
         /// <summary>An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies a DB Connection once it
         /// gets created. It is used for internal 'sanity checks'. It also gets logged and hence can aid debugging (also useful for
@@ -141,8 +141,6 @@ namespace Ict.Common.DB
         /// This is specific for the user id from table s_user
         /// </summary>
         private string FUserID = string.Empty;
-
-        private static bool FCheckedDatabaseVersion = false;
 
         /// <summary>
         /// Delegate that can optionally be passed to Method <see cref="SelectUsingDataAdapterMulti"/>. It will get called
@@ -496,13 +494,6 @@ namespace Ict.Common.DB
                     throw new EDBConnectionNotEstablishedException(TDBConnection.GetConnectionStringWithHiddenPwd(
                             FConnectionString) + ' ' + Exc.ToString(), Exc, !ExceptionCausedByUnavailableDBConn);
                 }
-
-                // only check database version once when working with multiple connections
-                if (!FCheckedDatabaseVersion)
-                {
-                    CheckDatabaseVersion();
-                    FCheckedDatabaseVersion = true;
-                }
             }
             finally
             {
@@ -510,36 +501,6 @@ namespace Ict.Common.DB
                 {
                     ReleaseCoordinatedDBAccess();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
-        /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
-        /// </summary>
-        private void CheckDatabaseVersion()
-        {
-            TDBTransaction ReadTransaction = null;
-            DataTable Tbl = null;
-
-            if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
-            {
-                // we want to upgrade the database, so don't check for the database version
-                return;
-            }
-
-            BeginAutoReadTransaction(IsolationLevel.ReadCommitted, -1, ref ReadTransaction, false,
-                delegate
-                {
-                    // now check if the database is 'up to date'; otherwise run db patch against it
-                    Tbl = SelectDTInternal(
-                        "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        "Temp", ReadTransaction, new OdbcParameter[0], false);
-                });
-
-            if (Tbl.Rows.Count == 0)
-            {
-                return;
             }
         }
 
@@ -2270,191 +2231,13 @@ namespace Ict.Common.DB
         #endregion
 
         /// <summary>
-        /// Starts a Transaction on the current DB connection.
-        /// Allows a retry timeout to be specified.
+        /// create a basic transaction
         /// </summary>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).
-        /// This is to be able to mitigate the problem of wanting to start a DB
-        /// Transaction while another one is still running (gives time for the
-        /// currently running DB Transaction to be finished).</param>
-        /// <param name="ATransactionName">Name of the DB Transaction  (optional). It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <returns>Started Transaction (null if an error occured).</returns>
-        public TDBTransaction BeginTransaction(Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "")
+        /// <returns>The transaction.</returns>
+        /// <param name="AIsolationLevel">Isolation level.</param>
+        public DbTransaction BeginTransaction(IsolationLevel AIsolationLevel)
         {
-            return BeginTransaction(true, ARetryAfterXSecWhenUnsuccessful, ATransactionName);
-        }
-
-        /// <summary>
-        /// Starts a Transaction on the current DB connection.
-        /// Allows a retry timeout to be specified.
-        /// </summary>
-        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
-        /// set to false if the calling Method already takes care of this.</param>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).
-        /// This is to be able to mitigate the problem of wanting to start a DB
-        /// Transaction while another one is still running (gives time for the
-        /// currently running DB Transaction to be finished).</param>
-        /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="ADBReconnectionAttempt">This must only be set to anything higher than 0 by the recursive call
-        /// inside the Method; set to -1 to suppress an automatic DB reconnection attempt (this automatic behaviour
-        /// should only be turned off if there is a very specific reason for that!).</param>
-        /// <returns>Started Transaction (null if an error occured).</returns>
-        internal TDBTransaction BeginTransaction(bool AMustCoordinateDBAccess,
-            Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "", int ADBReconnectionAttempt = 0)
-        {
-            string NestedTransactionProblemError;
-            bool ExceptionCausedByUnavailableDBConn;
-
-            if (AMustCoordinateDBAccess)
-            {
-                WaitForCoordinatedDBAccess();
-            }
-
-            try
-            {
-                // Guard against running into a 'Nested' DB Transaction (which are not supported!)
-                if (FTransaction != null)
-                {
-                    // Retry again if programmer wants that
-                    if (ARetryAfterXSecWhenUnsuccessful != -1)
-                    {
-                        Thread.Sleep(ARetryAfterXSecWhenUnsuccessful * 1000);
-
-                        // Retry again to begin a transaction (=RECURSIVE call!).
-                        // Note: If this fails again, an Exception is thrown as if there was
-                        // no ARetryAfterXSecWhenUnsuccessful specfied!
-                        return BeginTransaction(false, -1, ATransactionName);
-                    }
-                    else
-                    {
-                        NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, FTransaction.Connection != null,
-                            FTransaction.IsolationLevel, FTransaction.Reused, ThreadingHelper.GetThreadIdentifier(
-                                FTransaction.ThreadThatTransactionWasStartedOn),
-                            FTransaction.AppDomainNameThatTransactionWasStartedIn, ThreadingHelper.GetCurrentThreadIdentifier(),
-                            AppDomain.CurrentDomain.FriendlyName,
-                            TLogging.StackTraceToText(FTransaction.StackTraceAtPointOfTransactionStart),
-                            TLogging.StackTraceToText(new StackTrace(true)));
-                        TLogging.Log(NestedTransactionProblemError);
-
-                        throw new EDBTransactionBusyException(
-                            "Concurrent DB Transactions are not supported: BeginTransaction would overwrite existing DB Transaction - " +
-                            "You must use GetNewOrExistingTransaction, GetNewOrExistingAutoTransaction or " +
-                            "GetNewOrExistingAutoReadTransaction!", NestedTransactionProblemError);
-                    }
-                }
-
-                try
-                {
-                    if ((FSqlConnection == null)
-                        && (ADBReconnectionAttempt > 0))
-                    {
-                        throw new EDBConnectionBrokenException();
-                    }
-                    else
-                    {
-                        ExtendedLoggingInfoOnHigherDebugLevels("Trying to start a DB Transaction... ");
-
-                        FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(), ConnectionIdentifier, this,
-                            false, ATransactionName);
-
-                        ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
-                                "DB Transaction started{0})", FTransaction.GetDBTransactionIdentifier()),
-                            DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
-                    }
-                }
-                catch (Exception Exc)
-                {
-                    ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(Exc);
-
-                    if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken)
-                        || (FSqlConnection.State == ConnectionState.Closed)
-                        || (ExceptionCausedByUnavailableDBConn && (ADBReconnectionAttempt <= 1)))
-                    {
-                        //
-                        // Attempt to reconnect the database connection (one attempt only!)
-                        //
-
-                        if (FSqlConnection != null)
-                        {
-                            if (!ExceptionCausedByUnavailableDBConn)
-                            {
-                                TLogging.Log("BeginTransaction encountered an Exception:\r\n" + Exc.ToString());
-
-                                TLogging.Log(
-                                    "BeginTransaction: Attempting to reconnect to the database because the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
-                                    +
-                                    FSqlConnection.State.ToString("G") + ")");
-
-                                if (FSqlConnection.State == ConnectionState.Broken)
-                                {
-                                    FSqlConnection.Close();
-                                }
-                            }
-                            else
-                            {
-                                TLogging.Log("BeginTransaction: Attempting to reconnect to the database because the DB connection is broken...");
-                            }
-
-                            FSqlConnection.Dispose();
-                            FSqlConnection = null;
-                        }
-
-                        if (ADBReconnectionAttempt < 1)
-                        {
-                            ADBReconnectionAttempt++;
-
-                            TLogging.Log(String.Format("BeginTransaction: DB Reconnection attempt #{0} underway...",
-                                    ADBReconnectionAttempt));
-
-                            try
-                            {
-                                EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword,
-                                    FConnectionString, false);
-                            }
-                            catch (Exception e2)
-                            {
-                                ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(e2);
-
-                                if (!ExceptionCausedByUnavailableDBConn)
-                                {
-                                    LogExceptionAndThrow(e2,
-                                        "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.ToString());
-                                }
-                                else
-                                {
-                                    TLogging.Log("    FAILED to begin a DB Transaction because the DB (Server) is unavailable.");
-                                }
-                            }
-
-                            // Retry again to begin a transaction (=RECURSIVE call!).
-                            return BeginTransaction(false, ARetryAfterXSecWhenUnsuccessful, ATransactionName,
-                                ADBReconnectionAttempt);
-                        }
-                    }
-
-                    if (!(Exc is EDBConnectionBrokenException))
-                    {
-                        LogExceptionAndThrow(Exc, "BeginTransaction: Error creating Transaction - Server-side error.");
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                FLastDBAction = DateTime.Now;
-
-                return FTransaction;
-            }
-            finally
-            {
-                if (AMustCoordinateDBAccess)
-                {
-                    ReleaseCoordinatedDBAccess();
-                }
-            }
+            return FSqlConnection.BeginTransaction(AIsolationLevel);
         }
 
         /// <summary>
@@ -2526,7 +2309,7 @@ namespace Ict.Common.DB
                     else
                     {
                         NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, FTransaction.Connection != null,
-                            FTransaction.IsolationLevel, FTransaction.Reused, ThreadingHelper.GetThreadIdentifier(
+                            FTransaction.IsolationLevel, ThreadingHelper.GetThreadIdentifier(
                                 FTransaction.ThreadThatTransactionWasStartedOn),
                             FTransaction.AppDomainNameThatTransactionWasStartedIn, ThreadingHelper.GetCurrentThreadIdentifier(),
                             AppDomain.CurrentDomain.FriendlyName,
@@ -2556,8 +2339,7 @@ namespace Ict.Common.DB
                         ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
                                 "Trying to start a DB Transaction with IsolationLevel '{0}'...", AIsolationLevel));
 
-                        FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(AIsolationLevel),
-                            ConnectionIdentifier, this, false, ATransactionName);
+                        FTransaction = new TDBTransaction(this, AIsolationLevel, ATransactionName);
 
                         ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
                                 "DB Transaction{0} with IsolationLevel '{1}' got started", FTransaction.GetDBTransactionIdentifier(),
@@ -2823,10 +2605,6 @@ namespace Ict.Common.DB
 
                         throw Exc4;
                     }
-
-                    // Set Flag that indicates that the Transaction has been re-used instead of freshly created! This Flag can be
-                    // inquired using the readonly TDBTransaction.Reused Property!
-                    TheTransaction.SetTransactionToReused();
 
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                     {
@@ -4745,238 +4523,6 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
-            ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(ref ATransaction, ref ASubmissionOK, String.Empty, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
-            ref bool ASubmissionOK, string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(-1, ref ATransaction, ref ASubmissionOK, ATransactionName, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
-            ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(ARetryAfterXSecWhenUnsuccessful, ref ATransaction, ref ASubmissionOK, String.Empty,
-                AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
-            ref bool ASubmissionOK, string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            bool ExceptionThrown = true;
-
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
-            // regarding Exception Handling.)
-            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful, ATransactionName);
-
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-
-                // Once execution gets to here we know that no unhandled Exception was thrown
-                ExceptionThrown = false;
-            }
-            finally
-            {
-                // We can get to here in two ways:
-                //   1) no unhandled Exception was thrown;
-                //   2) an unhandled Exception was thrown.
-
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
-                // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmissionOK);
-            }
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
-        /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
-        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
-            ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(ref ATransaction, ref ASubmitChangesResult, String.Empty, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
-        /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
-        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
-            ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(-1, ref ATransaction, ref ASubmitChangesResult, ATransactionName,
-                AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
-        /// </summary>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
-        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
-            ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(ARetryAfterXSecWhenUnsuccessful, ref ATransaction, ref ASubmitChangesResult, String.Empty,
-                AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
-        /// </summary>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short, string)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
-        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
-            ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            bool ExceptionThrown = true;
-
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
-            // regarding Exception Handling.)
-            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful, ATransactionName);
-
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-
-                // Once execution gets to here we know that no unhandled Exception was thrown
-                ExceptionThrown = false;
-            }
-            finally
-            {
-                // We can get to here in two ways:
-                //   1) no unhandled Exception was thrown;
-                //   2) an unhandled Exception was thrown.
-
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
-                // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmitChangesResult == TSubmitChangesResult.scrOK);
-            }
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
-        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
-        /// the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
@@ -4986,88 +4532,13 @@ namespace Ict.Common.DB
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
-            ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(AIsolationLevel, ref ATransaction, ref ASubmissionOK, String.Empty,
-                AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
-        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
-        /// the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
         /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
-            ref bool ASubmissionOK, string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(AIsolationLevel, -1, ref ATransaction, ref ASubmissionOK, ATransactionName,
-                AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
-        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel,
             ref TDBTransaction ATransaction, ref bool ASubmissionOK,
-            Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, ref ASubmissionOK,
-                String.Empty, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
-        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
-        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, ref bool ASubmissionOK, string ATransactionName,
-            Action AEncapsulatedDBAccessCode)
+            Action AEncapsulatedDBAccessCode,
+            string ATransactionName, Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
             bool ExceptionThrown = true;
 
@@ -5221,284 +4692,6 @@ namespace Ict.Common.DB
                 // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmitChangesResult == TSubmitChangesResult.scrOK);
-            }
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(ref TDBTransaction ATransaction,
-            Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(ref ATransaction, String.Empty, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(ref TDBTransaction ATransaction, string ATransactionName,
-            Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(-1, ref ATransaction, ATransactionName, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(ARetryAfterXSecWhenUnsuccessful, ref ATransaction, String.Empty,
-                AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short, string)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
-            // regarding Exception Handling.)
-            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful, ATransactionName);
-
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-            }
-            finally
-            {
-                // We can get to here in two ways:
-                //   1) no unhandled Exception was thrown;
-                //   2) an unhandled Exception was thrown.
-
-                // A DB Transaction Rollback is issued regardless of whether an unhandled Exception was thrown, or not!
-                //
-                // Reasoning as to why we don't Commit the DB Transaction:
-                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
-                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
-                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                ATransaction.Rollback();
-            }
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
-        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful)
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
-            Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(AIsolationLevel, ref ATransaction, String.Empty, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
-        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful)
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
-            string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(AIsolationLevel, -1, ref ATransaction, ATransactionName, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
-        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, String.Empty,
-                AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
-        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, string ATransactionName, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, true,
-                ATransactionName, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
-        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
-        /// set to false if the calling Method already takes care of this.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        private void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, bool AMustCoordinateDBAccess, Action AEncapsulatedDBAccessCode)
-        {
-            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction,
-                AMustCoordinateDBAccess, String.Empty, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
-        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
-        /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
-        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
-        /// set to false if the calling Method already takes care of this.</param>
-        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
-        /// debugging (also useful for Unit Testing).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        private void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, bool AMustCoordinateDBAccess, string ATransactionName,
-            Action AEncapsulatedDBAccessCode)
-        {
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
-            // regarding Exception Handling.)
-            ATransaction = BeginTransaction(AIsolationLevel, AMustCoordinateDBAccess, ARetryAfterXSecWhenUnsuccessful,
-                ATransactionName);
-
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-            }
-            finally
-            {
-                // We can get to here in two ways:
-                //   1) no unhandled Exception was thrown;
-                //   2) an unhandled Exception was thrown.
-
-                // A DB Transaction Rollback is issued regardless of whether an unhandled Exception was thrown, or not!
-                //
-                // Reasoning as to why we don't Commit the DB Transaction:
-                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
-                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
-                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                ATransaction.Rollback();
             }
         }
 

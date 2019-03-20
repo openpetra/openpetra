@@ -79,7 +79,6 @@ namespace Ict.Common.Remoting.Server
         private static IErrorLog UErrorLog = null;
         private static ILoginLog ULoginLog = null;
         private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null;
-        private static TDelegateDBConnectionBroken UDelegateDBConnectionBroken = null;
 
         /// <summary>Used for ThreadLocking a critical part of the Client Connection code to make sure that this code is executed by exactly one Client at any given time</summary>
         private static System.Object UConnectClientMonitor = new System.Object();
@@ -284,15 +283,13 @@ namespace Ict.Common.Remoting.Server
             IUserManager AUserManager,
             IErrorLog AErrorLog,
             ILoginLog ALoginLog,
-            IMaintenanceLogonMessage AMaintenanceLogonMessage,
-            TDelegateDBConnectionBroken ADelegateDBConnectionBroken)
+            IMaintenanceLogonMessage AMaintenanceLogonMessage)
         {
             USystemDefaultsCache = ASystemDefaultsCache;
             UUserManager = AUserManager;
             UErrorLog = AErrorLog;
             ULoginLog = ALoginLog;
             UMaintenanceLogonMessage = AMaintenanceLogonMessage;
-            UDelegateDBConnectionBroken = ADelegateDBConnectionBroken;
         }
 
         /// <summary>
