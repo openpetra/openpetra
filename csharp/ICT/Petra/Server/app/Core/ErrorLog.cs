@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    WriteTransaction.Commit();
                 }
             }
             catch (Exception Exc)
@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    WriteTransaction.Rollback();
                 }
 
                 throw;

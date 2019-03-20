@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -190,11 +190,11 @@ namespace Ict.Petra.Server.App.Core.Security
             {
                 if (SubmissionOK)
                 {
-                    DBConnectionObj.CommitTransaction();
+                    ATransaction.Commit();
                 }
                 else
                 {
-                    DBConnectionObj.RollbackTransaction();
+                    ATransaction.Rollback();
                 }
 
                 if (DBConnectionObj != null)

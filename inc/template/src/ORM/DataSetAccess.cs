@@ -56,7 +56,7 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
 
         if (NewTransaction)
         {
-            DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
+            SubmitChangesTransaction.Commit();
         }
     }
     catch (Exception e)
@@ -71,7 +71,7 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
             
         if (NewTransaction)
         {
-            DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
+            SubmitChangesTransaction.Rollback();
         }
 
         throw;
