@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Web;
 using System.Threading;
 using System.Web.SessionState;
 using Ict.Common;
+using Ict.Common.DB;
 
 namespace Ict.Common.Session
 {
@@ -36,6 +37,7 @@ namespace Ict.Common.Session
     /// we are using our own session handling,
     /// since the mono server cannot handle concurrent requests in one session
     /// see also http://serverfault.com/questions/324033/how-do-i-get-concurrent-asp-net-on-linux
+    /// and we want to store sessions in the database
     /// </summary>
     public class TSession
     {
@@ -44,16 +46,9 @@ namespace Ict.Common.Session
         [ThreadStaticAttribute]
         private static string FSessionID;
 
-        private static string FStandaloneSessionID = string.Empty;
-
         /// get the current session id. if it is not stored in the http context, check the thread
         private static string FindSessionID()
         {
-            if (TAppSettingsManager.GetBoolean("RunAsStandalone", false) == true)
-            {
-                return FStandaloneSessionID;
-            }
-
             if ((HttpContext.Current != null) && (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null))
             {
                 TLogging.LogAtLevel(4, "using session id from HttpContext");
@@ -102,7 +97,6 @@ namespace Ict.Common.Session
             TLogging.LogAtLevel(1, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
 
             FSessionID = ASessionID;
-            FStandaloneSessionID = ASessionID;
         }
 
         /// <summary>
