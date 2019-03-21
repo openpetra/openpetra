@@ -320,7 +320,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable, TDataBase ADataBase = null)
         {
             Boolean ReturnValue;
-            TDBTransaction ReadTransaction;
+            TDBTransaction ReadTransaction = null;
             Boolean NewTransaction = false;
             Boolean ReaderLockWasHeld;
             Boolean WriteLockTakenOut;
@@ -353,9 +353,9 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                 }
                 finally
                 {
-                    if (NewTransaction)
+                    if (NewTransaction && (ReadTransaction != null))
                     {
-                        DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
+                        ReadTransaction.Rollback();
                         TLogging.LogAtLevel(9, "TUserDefaults.LoadUserDefaultsTable: rolled back own transaction.");
                     }
                 }
@@ -794,7 +794,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                         if (NewTransaction)
                         {
-                            DBAccess.GDBAccessObj.CommitTransaction();
+                            WriteTransaction.Commit();
                         }
 
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
@@ -805,7 +805,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                         if (NewTransaction)
                         {
-                            DBAccess.GDBAccessObj.RollbackTransaction();
+                            WriteTransaction.Rollback();
                             TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
                         }
 
@@ -869,7 +869,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                 if (DefaultsDT.Rows.Count > 0)
                 {
+                    TDBTransaction Transaction = new TDBTransaction();
+
                     DBAccess.RunInTransaction(IsolationLevel.Serializable,
+                        ref Transaction,
                         "SaveUserDefaultsFromServerSide",
                         delegate
                         {

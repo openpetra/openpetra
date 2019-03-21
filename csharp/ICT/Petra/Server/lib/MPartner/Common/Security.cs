@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     {
                         if (NewTransaction)
                         {
-                            DBAccess.GDBAccessObj.CommitTransaction();
+                            ReadTransaction.Commit();
                             TLogging.LogAtLevel(8, "TSecurity.CanAccessPartnerByKey: committed own transaction.");
                         }
                     }
@@ -206,7 +206,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(8, "TSecurity.CanAccessPartnerByKey: committed own transaction.");
                     }
                 }

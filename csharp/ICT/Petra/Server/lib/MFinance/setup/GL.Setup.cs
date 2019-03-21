@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out DateTime ACalendarStartDate,
             out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             #region Validate Arguments
 
@@ -186,10 +186,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             try
             {
-                // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-                // Connection where a DB Transaction can be exectued (only if that should be needed).
-                DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                    "TGLSetupWebConnector.LoadLedgerSettings", out Transaction,
+                DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                     delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
@@ -472,13 +469,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static void GetActivatedSubsystems(Int32 ALedgerNumber,
             out bool AAccountsPayableSubsystemActivated, out bool AGiftProcessingSubsystemActivated)
         {
-            TDBTransaction DBTransaction = null;
+            TDBTransaction DBTransaction = new TDBTransaction();
             bool AccountsPayableSubsystemActivated = false;
             bool GiftProcessingSubsystemActivated = false;
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TGLSetupWebConnector.GetActivatedSubsystems", out DBTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref DBTransaction,
                 delegate
                 {
                     AccountsPayableSubsystemActivated = IsSubsystemActivated(ALedgerNumber,
@@ -2505,9 +2500,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                             if (acc.DebitCreditIndicator != prevDebitCredit)
                             {
-                                TDBTransaction transaction = null;
-                                Boolean submitThis = true;
-                                DBAccess.SimpleAutoTransactionWrapper("AccountTypeCorrection", out transaction, ref submitThis,
+                                TDBTransaction transaction = new TDBTransaction();
+                                DBAccess.GDBAccessObj.AutoTransaction(ref transaction, true,
                                     delegate
                                     {
                                         String query =
@@ -2669,7 +2663,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GDBAccessObj.AutoReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -3964,7 +3958,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TLogging.Log(ANumberOfAccountingPeriods.ToString());
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = new TDBTransaction(DBAccess.GDBAccessObj, IsolationLevel.Serializable);
 
             try
             {
@@ -4329,7 +4323,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 TLogging.Log("An Exception occured during the creation of a new Ledger:" + Environment.NewLine + Exc.ToString());
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                Transaction.Rollback();
 
                 throw;
             }
@@ -4337,7 +4331,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if (AllOK)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    Transaction.Commit();
 
                     //
                     // If the user has specified that ICH is an asset,
@@ -4349,7 +4343,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
                 else
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 
@@ -4364,9 +4358,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             bool Result = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     Result = (ATransactionAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
@@ -4382,6 +4376,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static bool DeleteLedger(Int32 ALedgerNumber, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Deleting ledger"),
@@ -4391,181 +4386,185 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 Catalog.GetString("Deleting ledger"),
                 20);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            try
-            {
-                OdbcParameter[] ledgerparameter = new OdbcParameter[] {
-                    new OdbcParameter("ledgernumber", OdbcType.Int)
-                };
-                ledgerparameter[0].Value = ALedgerNumber;
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
-                        SUserModuleAccessPermissionTable.GetTableDBName(),
-                        SUserModuleAccessPermissionTable.GetModuleIdDBName(),
-                        ALedgerNumber),
-                    Transaction);
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
-                        SModuleTable.GetTableDBName(),
-                        SModuleTable.GetModuleIdDBName(),
-                        ALedgerNumber),
-                    Transaction);
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format(
-                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
-                        AGeneralLedgerMasterPeriodTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
-                        AGeneralLedgerMasterPeriodTable.GetTableDBName(),
-                        AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
-                    Transaction, ledgerparameter);
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format(
-                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
-                        ABudgetPeriodTable.GetTableDBName(),
-                        ABudgetTable.GetTableDBName(),
-                        ABudgetTable.GetTableDBName(),
-                        ABudgetTable.GetBudgetSequenceDBName(),
-                        ABudgetPeriodTable.GetTableDBName(),
-                        ABudgetPeriodTable.GetBudgetSequenceDBName(),
-                        ABudgetTable.GetTableDBName(),
-                        ABudgetTable.GetLedgerNumberDBName()),
-                    Transaction, ledgerparameter);
-
-                // the following tables are not deleted at the moment as they are not in use
-                //      PFoundationProposalDetailTable.GetTableDBName(),
-                //      AEpTransactionTable.GetTableDBName(),
-                //      AEpStatementTable.GetTableDBName(),
-                //      AEpMatchTable.GetTableDBName(),
-                // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
-                //      (those are tables needed in the accounts receivable module that does not exist yet)
-
-
-                string[] tablenames = new string[] {
-                    AValidLedgerNumberTable.GetTableDBName(),
-                         AProcessedFeeTable.GetTableDBName(),
-                         AGeneralLedgerMasterTable.GetTableDBName(),
-                         AMotivationDetailFeeTable.GetTableDBName(),
-
-                         ABudgetTable.GetTableDBName(),
-                         ABudgetRevisionTable.GetTableDBName(),
-
-                         ARecurringGiftDetailTable.GetTableDBName(),
-                         ARecurringGiftTable.GetTableDBName(),
-                         ARecurringGiftBatchTable.GetTableDBName(),
-
-                         AGiftDetailTable.GetTableDBName(),
-                         AGiftTable.GetTableDBName(),
-                         AGiftBatchTable.GetTableDBName(),
-
-                         ATransAnalAttribTable.GetTableDBName(),
-                         ATransactionTable.GetTableDBName(),
-                         AJournalTable.GetTableDBName(),
-                         ABatchTable.GetTableDBName(),
-
-                         ARecurringTransAnalAttribTable.GetTableDBName(),
-                         ARecurringTransactionTable.GetTableDBName(),
-                         ARecurringJournalTable.GetTableDBName(),
-                         ARecurringBatchTable.GetTableDBName(),
-
-                         AEpDocumentPaymentTable.GetTableDBName(),
-                         AEpPaymentTable.GetTableDBName(),
-
-                         AApAnalAttribTable.GetTableDBName(),
-                         AApDocumentPaymentTable.GetTableDBName(),
-                         AApPaymentTable.GetTableDBName(),
-                         ACrdtNoteInvoiceLinkTable.GetTableDBName(),
-                         AApDocumentDetailTable.GetTableDBName(),
-                         AApDocumentTable.GetTableDBName(),
-
-                         AFreeformAnalysisTable.GetTableDBName(),
-
-                         AEpAccountTable.GetTableDBName(),
-                         ASuspenseAccountTable.GetTableDBName(),
-                         SGroupMotivationTable.GetTableDBName(),
-                         AIchStewardshipTable.GetTableDBName(),
-                         SGroupCostCentreTable.GetTableDBName(),
-                         AAnalysisAttributeTable.GetTableDBName(),
-
-                         AMotivationDetailTable.GetTableDBName(),
-                         AMotivationGroupTable.GetTableDBName(),
-                         AFeesReceivableTable.GetTableDBName(),
-                         AFeesPayableTable.GetTableDBName(),
-                         ACostCentreTable.GetTableDBName(),
-                         ATransactionTypeTable.GetTableDBName(),
-                         AAccountPropertyTable.GetTableDBName(),
-                         AAccountHierarchyDetailTable.GetTableDBName(),
-                         AAccountHierarchyTable.GetTableDBName(),
-                         AAccountTable.GetTableDBName(),
-                         ASystemInterfaceTable.GetTableDBName(),
-                         AAccountingSystemParameterTable.GetTableDBName(),
-                         ACostCentreTypesTable.GetTableDBName(),
-                         AAnalysisTypeTable.GetTableDBName(),
-
-                         ALedgerInitFlagTable.GetTableDBName(),
-                         ATaxTableTable.GetTableDBName(),
-
-                         AAccountingPeriodTable.GetTableDBName(),
-
-                         SGroupLedgerTable.GetTableDBName()
-                };
-
-                foreach (string table in tablenames)
+            TDBTransaction Transaction = new TDBTransaction();
+            TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("DeleteLedger");
+            bool Result = true;
+            db.AutoTransaction(ref Transaction,
+                ref SubmitChangesResult,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(
-                        String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
-                        Transaction, ledgerparameter);
-                }
+                    try
+                    {
+                        OdbcParameter[] ledgerparameter = new OdbcParameter[] {
+                            new OdbcParameter("ledgernumber", OdbcType.Int)
+                        };
+                        ledgerparameter[0].Value = ALedgerNumber;
 
-                ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
+                        db.ExecuteNonQuery(
+                            String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
+                                SUserModuleAccessPermissionTable.GetTableDBName(),
+                                SUserModuleAccessPermissionTable.GetModuleIdDBName(),
+                                ALedgerNumber),
+                            Transaction);
 
-                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
-                {
-                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    throw new Exception("Deletion of Ledger was cancelled by the user");
-                }
+                        db.ExecuteNonQuery(
+                            String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
+                                SModuleTable.GetTableDBName(),
+                                SModuleTable.GetModuleIdDBName(),
+                                ALedgerNumber),
+                            Transaction);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
+                        db.ExecuteNonQuery(
+                            String.Format(
+                                "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
+                                AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
+                                AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                                AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
+                                AGeneralLedgerMasterTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
+                            Transaction, ledgerparameter);
 
-                AVerificationResult = new TVerificationResultCollection();
+                        db.ExecuteNonQuery(
+                            String.Format(
+                                "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
+                                ABudgetPeriodTable.GetTableDBName(),
+                                ABudgetTable.GetTableDBName(),
+                                ABudgetTable.GetTableDBName(),
+                                ABudgetTable.GetBudgetSequenceDBName(),
+                                ABudgetPeriodTable.GetTableDBName(),
+                                ABudgetPeriodTable.GetBudgetSequenceDBName(),
+                                ABudgetTable.GetTableDBName(),
+                                ABudgetTable.GetLedgerNumberDBName()),
+                            Transaction, ledgerparameter);
 
-                if (TDBExceptionHelper.IsTransactionSerialisationException(e))
-                {
-                    AVerificationResult.Add(new TVerificationResult("DeleteLedger",
-                            ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
-                }
-                else
-                {
-                    AVerificationResult.Add(new TVerificationResult(
-                            "Problems deleting ledger " + ALedgerNumber.ToString(),
-                            e.Message,
-                            "Cannot delete ledger",
-                            string.Empty,
-                            TResultSeverity.Resv_Critical,
-                            Guid.Empty));
-                }
+                        // the following tables are not deleted at the moment as they are not in use
+                        //      PFoundationProposalDetailTable.GetTableDBName(),
+                        //      AEpTransactionTable.GetTableDBName(),
+                        //      AEpStatementTable.GetTableDBName(),
+                        //      AEpMatchTable.GetTableDBName(),
+                        // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
+                        //      (those are tables needed in the accounts receivable module that does not exist yet)
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return false;
-            }
-            finally
-            {
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-            }
 
-            return true;
+                        string[] tablenames = new string[] {
+                            AValidLedgerNumberTable.GetTableDBName(),
+                                 AProcessedFeeTable.GetTableDBName(),
+                                 AGeneralLedgerMasterTable.GetTableDBName(),
+                                 AMotivationDetailFeeTable.GetTableDBName(),
+
+                                 ABudgetTable.GetTableDBName(),
+                                 ABudgetRevisionTable.GetTableDBName(),
+
+                                 ARecurringGiftDetailTable.GetTableDBName(),
+                                 ARecurringGiftTable.GetTableDBName(),
+                                 ARecurringGiftBatchTable.GetTableDBName(),
+
+                                 AGiftDetailTable.GetTableDBName(),
+                                 AGiftTable.GetTableDBName(),
+                                 AGiftBatchTable.GetTableDBName(),
+
+                                 ATransAnalAttribTable.GetTableDBName(),
+                                 ATransactionTable.GetTableDBName(),
+                                 AJournalTable.GetTableDBName(),
+                                 ABatchTable.GetTableDBName(),
+
+                                 ARecurringTransAnalAttribTable.GetTableDBName(),
+                                 ARecurringTransactionTable.GetTableDBName(),
+                                 ARecurringJournalTable.GetTableDBName(),
+                                 ARecurringBatchTable.GetTableDBName(),
+
+                                 AEpDocumentPaymentTable.GetTableDBName(),
+                                 AEpPaymentTable.GetTableDBName(),
+
+                                 AApAnalAttribTable.GetTableDBName(),
+                                 AApDocumentPaymentTable.GetTableDBName(),
+                                 AApPaymentTable.GetTableDBName(),
+                                 ACrdtNoteInvoiceLinkTable.GetTableDBName(),
+                                 AApDocumentDetailTable.GetTableDBName(),
+                                 AApDocumentTable.GetTableDBName(),
+
+                                 AFreeformAnalysisTable.GetTableDBName(),
+
+                                 AEpAccountTable.GetTableDBName(),
+                                 ASuspenseAccountTable.GetTableDBName(),
+                                 SGroupMotivationTable.GetTableDBName(),
+                                 AIchStewardshipTable.GetTableDBName(),
+                                 SGroupCostCentreTable.GetTableDBName(),
+                                 AAnalysisAttributeTable.GetTableDBName(),
+
+                                 AMotivationDetailTable.GetTableDBName(),
+                                 AMotivationGroupTable.GetTableDBName(),
+                                 AFeesReceivableTable.GetTableDBName(),
+                                 AFeesPayableTable.GetTableDBName(),
+                                 ACostCentreTable.GetTableDBName(),
+                                 ATransactionTypeTable.GetTableDBName(),
+                                 AAccountPropertyTable.GetTableDBName(),
+                                 AAccountHierarchyDetailTable.GetTableDBName(),
+                                 AAccountHierarchyTable.GetTableDBName(),
+                                 AAccountTable.GetTableDBName(),
+                                 ASystemInterfaceTable.GetTableDBName(),
+                                 AAccountingSystemParameterTable.GetTableDBName(),
+                                 ACostCentreTypesTable.GetTableDBName(),
+                                 AAnalysisTypeTable.GetTableDBName(),
+
+                                 ALedgerInitFlagTable.GetTableDBName(),
+                                 ATaxTableTable.GetTableDBName(),
+
+                                 AAccountingPeriodTable.GetTableDBName(),
+
+                                 SGroupLedgerTable.GetTableDBName()
+                        };
+
+                        foreach (string table in tablenames)
+                        {
+                            db.ExecuteNonQuery(
+                                String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
+                                Transaction, ledgerparameter);
+                        }
+
+                        ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
+
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                        {
+                            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                            throw new Exception("Deletion of Ledger was cancelled by the user");
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log(e.ToString());
+
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(e))
+                        {
+                            VerificationResult.Add(new TVerificationResult("DeleteLedger",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                        }
+                        else
+                        {
+                            VerificationResult.Add(new TVerificationResult(
+                                    "Problems deleting ledger " + ALedgerNumber.ToString(),
+                                    e.Message,
+                                    "Cannot delete ledger",
+                                    string.Empty,
+                                    TResultSeverity.Resv_Critical,
+                                    Guid.Empty));
+                        }
+
+                        Result = false;
+                    }
+                    finally
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    }
+                });
+
+            AVerificationResult = VerificationResult;
+            return Result;
         }
 
         /// <summary>
@@ -4677,65 +4676,68 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if a AnalysisAttribute Row can be removed from an Account (not if it's in use!)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean CanDetachTypeCodeFromAccount(Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String Message)
+        public static Boolean CanDetachTypeCodeFromAccount(Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String AMessage)
         {
-            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            try
-            {
+            TDBTransaction ReadTrans = new TDBTransaction();
+            bool Result = true;
+            string Message = String.Empty;
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTrans,
+                delegate
                 {
-                    AApAnalAttribTable tbl = new AApAnalAttribTable();
-                    AApAnalAttribRow Template = tbl.NewRowTyped(false);
-                    Template.LedgerNumber = ALedgerNumber;
-                    Template.AccountCode = AAccountCode;
-                    Template.AnalysisTypeCode = ATypeCode;
-                    tbl = AApAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
-
-                    if (tbl.Rows.Count > 0)
+                    if (Result)
                     {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
-                                  String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
-                        return false;
+                        AApAnalAttribTable tbl = new AApAnalAttribTable();
+                        AApAnalAttribRow Template = tbl.NewRowTyped(false);
+                        Template.LedgerNumber = ALedgerNumber;
+                        Template.AccountCode = AAccountCode;
+                        Template.AnalysisTypeCode = ATypeCode;
+                        tbl = AApAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
+                        if (tbl.Rows.Count > 0)
+                        {
+                            Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                      String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
+                            Result = false;
+                        }
                     }
-                }
 
-                {
-                    ATransAnalAttribTable tbl = new ATransAnalAttribTable();
-                    ATransAnalAttribRow Template = tbl.NewRowTyped(false);
-                    Template.LedgerNumber = ALedgerNumber;
-                    Template.AccountCode = AAccountCode;
-                    Template.AnalysisTypeCode = ATypeCode;
-                    tbl = ATransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
-
-                    if (tbl.Rows.Count > 0)
+                    if (Result)
                     {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
-                                  String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
-                        return false;
-                    }
-                }
-                {
-                    ARecurringTransAnalAttribTable tbl = new ARecurringTransAnalAttribTable();
-                    ARecurringTransAnalAttribRow Template = tbl.NewRowTyped(false);
-                    Template.LedgerNumber = ALedgerNumber;
-                    Template.AccountCode = AAccountCode;
-                    Template.AnalysisTypeCode = ATypeCode;
-                    tbl = ARecurringTransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+                        ATransAnalAttribTable tbl = new ATransAnalAttribTable();
+                        ATransAnalAttribRow Template = tbl.NewRowTyped(false);
+                        Template.LedgerNumber = ALedgerNumber;
+                        Template.AccountCode = AAccountCode;
+                        Template.AnalysisTypeCode = ATypeCode;
+                        tbl = ATransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
 
-                    if (tbl.Rows.Count > 0)
-                    {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
-                                  String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
-                        return false;
+                        if (tbl.Rows.Count > 0)
+                        {
+                            Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                      String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
+                            Result = false;
+                        }
                     }
-                }
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-            Message = "";
-            return true;
+
+                    if (Result)
+                    {
+                        ARecurringTransAnalAttribTable tbl = new ARecurringTransAnalAttribTable();
+                        ARecurringTransAnalAttribRow Template = tbl.NewRowTyped(false);
+                        Template.LedgerNumber = ALedgerNumber;
+                        Template.AccountCode = AAccountCode;
+                        Template.AnalysisTypeCode = ATypeCode;
+                        tbl = ARecurringTransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
+                        if (tbl.Rows.Count > 0)
+                        {
+                            Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                      String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
+                            Result = false;
+                        }
+                    }
+                });
+
+            AMessage = Message;
+            return Result;
         }
 
         /// <summary>
@@ -5378,11 +5380,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String Msg = string.Empty;
             bool DBSuccess = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                     delegate
                     {
                         ACostCentreTable tempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);

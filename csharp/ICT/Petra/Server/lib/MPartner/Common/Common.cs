@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -150,7 +150,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (NewTransaction1)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ReadTransaction1.Commit();
 
                         if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                         {
@@ -170,7 +170,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     if (NewTransaction2)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        WriteTransaction.Commit();
                     }
                 }
                 catch (Exception Exc)
@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     if (NewTransaction2)
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        WriteTransaction.Rollback();
                     }
 
                     throw;
@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (NewTransaction3)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ReadTransaction2.Commit();
 
                         if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                         {
@@ -227,43 +227,46 @@ namespace Ict.Petra.Server.MPartner.Common
         public static System.Int64 ReservePartnerKeys(System.Int64 AFieldPartnerKey, ref Int32 ANumberOfKeys)
         {
             Int64 NextPartnerKey = -1;
+            Int32 NumberOfKeys = ANumberOfKeys;
 
             if (AFieldPartnerKey == -1)
             {
                 AFieldPartnerKey = DomainManager.GSiteKey;
             }
 
-            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            try
-            {
-                PPartnerLedgerTable PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadWriteTransaction);
-
-                NextPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
-
-                Int64 NextUsedKey =
-                    Convert.ToInt64(DBAccess.GDBAccessObj.ExecuteScalar("SELECT MIN(p_partner_key_n) FROM PUB_p_partner WHERE p_partner_key_n >= " +
-                            NextPartnerKey.ToString(), ReadWriteTransaction));
-
-                if (NextUsedKey < NextPartnerKey + ANumberOfKeys)
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
+            TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
+            
+            DBAccess.GDBAccessObj.AutoTransaction(ref ReadWriteTransaction,
+                ref SubmitChangesResult,
+                delegate
                 {
-                    ANumberOfKeys = Convert.ToInt32(NextUsedKey - NextPartnerKey);
-                }
+                    PPartnerLedgerTable PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadWriteTransaction);
 
-                PartnerLedgerDT[0].LastPartnerId = Convert.ToInt32((NextPartnerKey + ANumberOfKeys - 1) - PartnerLedgerDT[0].PartnerKey);
+                    NextPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
 
-                PPartnerLedgerAccess.SubmitChanges(PartnerLedgerDT, ReadWriteTransaction);
+                    Int64 NextUsedKey =
+                        Convert.ToInt64(DBAccess.GDBAccessObj.ExecuteScalar("SELECT MIN(p_partner_key_n) FROM PUB_p_partner WHERE p_partner_key_n >= " +
+                                NextPartnerKey.ToString(), ReadWriteTransaction));
 
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch (Exception Exc)
+                    if (NextUsedKey < NextPartnerKey + NumberOfKeys)
+                    {
+                        NumberOfKeys = Convert.ToInt32(NextUsedKey - NextPartnerKey);
+                    }
+
+                    PartnerLedgerDT[0].LastPartnerId = Convert.ToInt32((NextPartnerKey + NumberOfKeys - 1) - PartnerLedgerDT[0].PartnerKey);
+
+                    PPartnerLedgerAccess.SubmitChanges(PartnerLedgerDT, ReadWriteTransaction);
+
+                    SubmitChangesResult = TSubmitChangesResult.scrOK;
+                });
+
+            if (SubmitChangesResult != TSubmitChangesResult.scrOK)
             {
-                TLogging.Log("An Exception occured during the reservation of a PartnerKey:" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw;
+                throw new Exception("ReservePartnerKeys failed");
             }
+
+            ANumberOfKeys = NumberOfKeys;
 
             return NextPartnerKey;
         }

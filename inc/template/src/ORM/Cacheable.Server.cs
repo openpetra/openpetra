@@ -580,7 +580,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
         }
         finally
         {
-            DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
+            ReadTransaction.Rollback();
 
             // Close separate DB Connection if we opened one earlier
             if (SeparateDBConnectionEstablished)

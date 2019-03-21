@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "HasPartnerCostCentreLink: committed own transaction.");
                 }
             }

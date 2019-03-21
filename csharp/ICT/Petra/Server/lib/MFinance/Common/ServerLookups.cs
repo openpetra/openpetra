@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -230,11 +230,9 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             Int64 PartnerKey = 0;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     ACostCentreTable CostCentreTable;
@@ -273,12 +271,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         public static string GetLedgerBaseCurrency(Int32 ALedgerNumber)
         {
             string ReturnValue = "";
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                "TFinanceServerLookups.GetLedgerBaseCurrency", out ReadTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;
@@ -300,7 +297,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     AGeneralLedgerMasterTable glmTbl = new AGeneralLedgerMasterTable();

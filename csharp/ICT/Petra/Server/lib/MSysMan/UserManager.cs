@@ -188,6 +188,36 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         }
 
         /// <summary>
+        /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
+        /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
+        /// </summary>
+        private void CheckDatabaseVersion()
+        {
+            TDBTransaction ReadTransaction = null;
+            DataTable Tbl = null;
+
+            if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
+            {
+                // we want to upgrade the database, so don't check for the database version
+                return;
+            }
+
+            RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction, "CheckDatabaseVersion",
+                delegate
+                {
+                    // now check if the database is 'up to date'; otherwise run db patch against it
+                    Tbl = ReadTransaction.DataBaseObj.SelectDT(
+                        "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                        "Temp", ReadTransaction, new OdbcParameter[0], false);
+                });
+
+            if (Tbl.Rows.Count == 0)
+            {
+                return;
+            }
+        }
+
+        /// <summary>
         /// Authenticate a user.
         /// </summary>
         /// <param name="AUserID">User ID.</param>
@@ -212,6 +242,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             Int32 AProcessID = -1;
 
             ASystemEnabled = true;
+
+            CheckDatabaseVersion();
 
             string EmailAddress = AUserID;
 

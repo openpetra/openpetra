@@ -4538,7 +4538,7 @@ namespace Ict.Common.DB
         public void BeginAutoTransaction(IsolationLevel AIsolationLevel,
             ref TDBTransaction ATransaction, ref bool ASubmissionOK,
             Action AEncapsulatedDBAccessCode,
-            string ATransactionName, Int16 ARetryAfterXSecWhenUnsuccessful = -1)
+            string ATransactionName = "", Int16 ARetryAfterXSecWhenUnsuccessful = -1)
         {
             bool ExceptionThrown = true;
 

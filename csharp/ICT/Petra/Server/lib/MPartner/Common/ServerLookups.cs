@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,15 +75,12 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             Boolean AMergedPartners)
         {
             Boolean ReturnValue = false;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TStdPartnerStatusCode PartnerStatus = TStdPartnerStatusCode.spscACTIVE;
             String PartnerShortName = null;
             TPartnerClass PartnerClass = TPartnerClass.BANK;
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction,
-                AName : "TPartnerServerLookups.GetPartnerShortName",
+            DBAccess.GDBAccessObj.AutoReadTransaction(ATransaction : ref ReadTransaction,
                 AEncapsulatedDBAccessCode : delegate
                 {
                     ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName,
@@ -196,11 +193,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TPartnerClass PartnerClass = TPartnerClass.BANK;
             TStdPartnerStatusCode PartnerStatus = TStdPartnerStatusCode.spscACTIVE;
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "TPartnerServerLookups.VerifyPartner",
+            DBAccess.GDBAccessObj.AutoReadTransaction(ATransaction : ref ReadTransaction,
                 AEncapsulatedDBAccessCode : delegate
                 {
                     ReturnValue = PartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
@@ -242,13 +237,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         {
             Boolean IsActive = false;
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            TDBTransaction readTransaction = null;
+            TDBTransaction readTransaction = new TDBTransaction();
 
-            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out readTransaction,
-                AName : "TPartnerServerLookups.PartnerHasActiveStatus",
-                AEncapsulatedDBAccessCode : delegate
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref readTransaction,
+                delegate
                 {
                     PPartnerTable partnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
@@ -424,7 +416,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: committed own transaction.");
                     }
                 }
@@ -495,7 +487,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: committed own transaction.");
                     }
                 }
@@ -552,7 +544,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                 }
             }
 
@@ -712,7 +704,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "TPartnerServerLookups.MergedPartnerDetails: committed own transaction.");
                     }
                 }
@@ -848,7 +840,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 if (newTransaction)
                 {
-                    DBConnectionObj.RollbackTransaction();
+                    ReadTransaction.Rollback();
                 }
 
                 if (ASeparateDBConnection)
@@ -874,13 +866,11 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             out bool AEmailGiftStatement,
             out bool AAnonymousDonor)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             PPartnerTable PartnerTbl = null;
 
-            DBAccess.SimpleAutoReadTransactionWrapper(
-                IsolationLevel.ReadCommitted,
-                "GetPartnerReceiptingInfo",
-                out ReadTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(
+                ref ReadTransaction,
                 delegate
                 {
                     PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
@@ -914,7 +904,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean GetExtractDescription(String AExtractName, out String AExtractDescription)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             Boolean ReturnValue = false;
 
             AExtractDescription = "Can not retrieve description";
@@ -928,10 +918,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             MExtractMasterRow TemplateRow = TemplateExtractDT.NewRowTyped(false);
             TemplateRow.ExtractName = AExtractName;
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                "TPartnerServerLookups.GetExtractDescription", out ReadTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);
@@ -992,7 +979,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TPartnerServerLookups.GetPartnerFoundationStatus: committed own transaction.");
                 }
             }
@@ -1067,7 +1054,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TPartnerServerLookups.GetRecentUsedPartners: committed own transaction.");
                 }
             }
@@ -1098,7 +1085,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "TPartnerServerLookups.GetRecentUsedPartners: committed own transaction.");
                     }
                 }
@@ -1165,7 +1152,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                 }
             }
 
@@ -1199,7 +1186,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             if (NewTransaction)
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                ReadTransaction.Commit();
             }
 
             return CountryCode;
