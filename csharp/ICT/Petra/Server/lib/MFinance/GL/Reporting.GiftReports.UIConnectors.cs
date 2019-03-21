@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.AutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -140,7 +140,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.AutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -603,7 +603,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add("DonorKey", typeof(Int64));
 
             TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.AutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -666,7 +666,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(ref Transaction,
+            DbAdapter.FPrivateDatabaseObj.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     DateTime CurrentDate = DateTime.Today;

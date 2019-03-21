@@ -476,7 +476,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AIncludeNextYear,
             out String ADisplayMember, out String AValueMember)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             ALedgerTable LedgerTable = null;
 
             DataTable BatchYearTable = null;
@@ -504,10 +504,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ABatchTable.GetTableDBName(),
                     ABatchTable.GetLedgerNumberDBName());
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                "TAccountingPeriodsWebConnector.GetAvailableGLYears", out ReadTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,

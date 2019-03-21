@@ -289,7 +289,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadABatchAndRelatedTablesUsingPrivateDb(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            TDataBase dbConnection = TReportingDbAdapter.EstablishDBConnection(true, "LoadABatchAndRelatedTables");
+            TDataBase dbConnection = DBAccess.SimpleEstablishDBConnection("LoadABatchAndRelatedTables");
 
             GLBatchTDS tempTDS = LoadABatchAndRelatedTables(dbConnection, ALedgerNumber, ABatchNumber);
 
