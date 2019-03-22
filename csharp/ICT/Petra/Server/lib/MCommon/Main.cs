@@ -1077,6 +1077,19 @@ namespace Ict.Petra.Server.MCommon
         }
 
         /// <summary>
+        /// Constructor. It establishes a DB Connection for a FastReports Report.
+        /// </summary>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used by this instance of
+        /// <see cref="TReportingDbAdapter" /> (with the 'globally available' open DB Connection that exists for the
+        /// users' AppDomain).</param>
+        public TReportingDbAdapter(bool ASeparateDBConnection = true)
+        {
+            FPrivateDatabaseObj = EstablishDBConnection(false, "FastReports Report DB Connection");
+        }
+
+        /// <summary>
         /// Cancels any reporting query that's running right now, and effectively short-circuits any subsequent queries
         /// made using this object. This might take some time!
         /// </summary>
@@ -1105,6 +1118,32 @@ namespace Ict.Petra.Server.MCommon
             }
 
             FRunningQuery = false;
+        }
+
+        /// <summary>
+        /// Establishes a DB Connection for a FastReports Report.
+        /// </summary>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets returned by this Method (with the
+        /// 'globally available' open DB Connection that exists for the users' AppDomain).</param>
+        /// <param name="AConnectionName"></param>
+        /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
+        public static TDataBase EstablishDBConnection(bool ASeparateDBConnection = true, String AConnectionName = "")
+        {
+            TDataBase FDBAccessObj = DBAccess.SimpleEstablishDBConnection(
+                AConnectionName);
+            return FDBAccessObj;
+        }
+
+        /// <summary>
+        /// Call this to ensure that the DB Connection that got established for the Report gets closed. This only really
+        /// happens if <see cref="EstablishDBConnection" /> got called with Argument 'ASeparateDBConnection' set to
+        /// true, otherwise this Method does nothing.
+        /// </summary>
+        public void CloseConnection()
+        {
+            FPrivateDatabaseObj.CloseDBConnection();
         }
 
         /// <summary>

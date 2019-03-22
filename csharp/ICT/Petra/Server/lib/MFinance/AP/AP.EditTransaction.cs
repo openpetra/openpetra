@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, Tim Ingham
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,9 +64,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
         {
             ALedgerTable Tbl = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction);
@@ -852,9 +852,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List <String>AccountCodesCostCentres)
         {
             String ReportMsg = "";
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     foreach (String AccCostCentre in AccountCodesCostCentres)

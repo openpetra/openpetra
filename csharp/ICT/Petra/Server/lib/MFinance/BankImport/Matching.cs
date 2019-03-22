@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -285,7 +285,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             AMainDS.PBankingDetails.Constraints.Clear();
 
             DBAccess.GDBAccessObj.Select(AMainDS, stmt, AMainDS.PBankingDetails.TableName, transaction, parameters);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            transaction.Rollback();
 
             return true;
         }
@@ -362,7 +362,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
             AEpTransactionAccess.LoadViaAEpStatement(MatchDS, AStatementKey, dbtransaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            dbtransaction.Rollback();
 
             MatchDS.AEpMatch.AcceptChanges();
             MatchDS.AEpTransaction.AcceptChanges();

@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 
@@ -457,7 +457,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanP
+//       alanP, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             bool doneHeaderRow = (firstRowIsHeader == false);
 
             TDBTransaction transaction = null;
-            bool submissionOK = false;
+            TSubmitChangesResult submissionOK = TSubmitChangesResult.scrError;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, 3, ref transaction, ref submissionOK,
                 delegate
@@ -395,20 +395,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                         if (errorMessages.HasCriticalErrors)
                         {
-                            submissionOK = false;
+                            submissionOK = TSubmitChangesResult.scrError;
                             partnerTaxCodesImported.Clear();
                         }
                         else
                         {
                             PTaxAccess.SubmitChanges(taxTable, transaction);
-                            submissionOK = true;
+                            submissionOK = TSubmitChangesResult.scrOK;
                         }
 
                         // Now create the optional extract
-                        if (submissionOK && (partnerTaxCodesImported.Count > 0) && createExtract)
+                        if (submissionOK == TSubmitChangesResult.scrOK && (partnerTaxCodesImported.Count > 0) && createExtract)
                         {
                             // we have more server work to do so we reset submission OK to false
-                            submissionOK = false;
+                            submissionOK = TSubmitChangesResult.scrError;
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Creating new Extract ..."),
@@ -435,7 +435,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                 out extractKeyCount,
                                 out ignoredKeys);
 
-                            submissionOK = true;
+                            submissionOK = TSubmitChangesResult.scrOK;
                         }
                     }
                     catch (Exception ex)
@@ -472,7 +472,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             ADeletedCodeCount = partnerTaxCodesDeleted.Count;
             ATaxCodeMismatchCount = taxCodeMismatchCount;
 
-            return submissionOK;
+            return submissionOK == TSubmitChangesResult.scrOK;
         }
     }
 }

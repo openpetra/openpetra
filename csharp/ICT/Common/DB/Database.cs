@@ -2235,7 +2235,7 @@ namespace Ict.Common.DB
         /// </summary>
         /// <returns>The transaction.</returns>
         /// <param name="AIsolationLevel">Isolation level.</param>
-        public DbTransaction BeginTransaction(IsolationLevel AIsolationLevel)
+        public DbTransaction BeginDbTransaction(IsolationLevel AIsolationLevel)
         {
             return FSqlConnection.BeginTransaction(AIsolationLevel);
         }
@@ -4794,6 +4794,12 @@ namespace Ict.Common.DB
 
                 ATransaction.Rollback();
             }
+        }
+
+        /// overload. deprecated. no need for IsolationLevel
+        public void BeginAutoReadTransaction(IsolationLevel dummy, ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
+        {
+            AutoReadTransaction(ref ATransaction, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>

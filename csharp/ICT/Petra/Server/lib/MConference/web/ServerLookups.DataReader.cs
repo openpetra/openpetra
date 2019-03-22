@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(9, ADataTable.TableName + ": GetNonCacheableRecordReferenceCount: committed own transaction.");
                 }
             }
@@ -419,7 +419,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetConferenceApplications: commit own transaction.");
                 }
             }

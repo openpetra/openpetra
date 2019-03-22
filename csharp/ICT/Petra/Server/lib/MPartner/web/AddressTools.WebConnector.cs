@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
             return ResultValue;

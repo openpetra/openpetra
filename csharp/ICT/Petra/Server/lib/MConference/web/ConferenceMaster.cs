@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -162,14 +162,14 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     PcConferenceOptionTypeAccess.SubmitChanges(OptionTypeTable, Transaction);
                 }
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                Transaction.Commit();
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateOptionTypes: commit own transaction.");
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the creation of option types:" + Environment.NewLine + Exc.ToString());
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                Transaction.Rollback();
 
                 throw;
             }

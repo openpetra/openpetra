@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -94,7 +94,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
                 if (DBConnectionObj != null)
                 {
-                    DBConnectionObj.RollbackTransaction();
+                    ReadTransaction.Rollback();
 
                     DBConnectionObj.CloseDBConnection();
                 }

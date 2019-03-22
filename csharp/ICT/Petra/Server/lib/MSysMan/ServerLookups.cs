@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, berndr, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -112,7 +112,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Rollback();
                     TLogging.LogAtLevel(7, "TSysManServerLookups.GetInstalledPatches: committed own transaction.");
                 }
             }

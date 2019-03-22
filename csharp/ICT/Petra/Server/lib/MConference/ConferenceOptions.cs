@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetOutreachOptions: committed own transaction.");
                 }
             }
@@ -165,7 +165,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetConferences: committed own transaction.");
                 }
             }
@@ -243,7 +243,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetEarliestAndLatestDates: committed own transaction.");
                 }
             }
@@ -328,7 +328,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     /* Load data */
@@ -545,7 +545,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetFieldUnits: committed own transaction.");
                 }
             }
@@ -624,7 +624,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetSendingFieldsForOneConference: committed own transaction.");
                 }
             }
@@ -693,7 +693,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetAllSendingFields: committed own transaction.");
                 }
             }
@@ -741,7 +741,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFieldsForOneConference: committed own transaction.");
                 }
             }
@@ -798,7 +798,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFields: committed own transaction.");
                 }
             }
@@ -857,7 +857,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFieldFromPartnerTable: committed own transaction.");
                 }
             }
@@ -900,7 +900,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetReceivingFieldFromShortTermTable: committed own transaction.");
                 }
             }
@@ -993,7 +993,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TConferenceOptions.GetOutreachPrefix: committed own transaction.");
                 }
             }

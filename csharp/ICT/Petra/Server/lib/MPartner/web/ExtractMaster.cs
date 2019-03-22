@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -295,7 +295,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ReturnValue = ResultRow.ExtractId;
             }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            Transaction.Rollback();
 
             return ReturnValue;
         }
@@ -480,7 +480,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     object o = DBAccess.GDBAccessObj.ExecuteScalar(CountStmt, Transaction, parameterArray);
@@ -542,9 +542,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            TDataBase db = DBAccess.GDBAccessObj;
+            db.AutoTransaction(
                 ref Transaction,
-                ref SubmissionOK,
+                SubmissionOK,
                 delegate
                 {
                     // delete MExtractTable
@@ -552,29 +553,29 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         MExtractTable.GetTableDBName());
                     DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                         MExtractTable.GetTableDBName() + "." + MExtractTable.GetExtractIdDBName());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // delete MExtractParameterTable
                     DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
                         MExtractParameterTable.GetTableDBName());
                     DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                         MExtractParameterTable.GetTableDBName() + "." + MExtractParameterTable.GetExtractIdDBName());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // delete SGroupExtractTable
                     DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
                         SGroupExtractTable.GetTableDBName());
                     DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                         SGroupExtractTable.GetTableDBName() + "." + SGroupExtractTable.GetExtractIdDBName());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // delete MExtractMasterTable
                     DeleteStmt = "DELETE FROM pub_" + MExtractMasterTable.GetTableDBName() +
                                  " WHERE " + WhereStmtMaster;
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // commit whole transaction if successful
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    Transaction.Commit();
                     SubmissionOK = true;
                 });
 

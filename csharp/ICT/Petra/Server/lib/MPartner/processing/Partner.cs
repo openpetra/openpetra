@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -426,11 +426,12 @@ namespace Ict.Petra.Server.MPartner.Processing
             DataRowView PersonRowView;
             int Counter;
 
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
                 ReturnValue = GetAvailableFamilyID(AFamilyPartnerKey,
                     0,
                     0,
@@ -481,7 +482,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                     {
@@ -730,11 +731,11 @@ namespace Ict.Petra.Server.MPartner.Processing
             // initialize result
             ReturnValue = true;
 
+            ReadAndWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
             try
             {
-                ReadAndWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
                 if (!ANewPartner)
                 {
                     PartnerDT = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadAndWriteTransaction);
@@ -847,7 +848,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: We need to retry issuing SubmitChanges as the RDBMS suggested to do that when 'Predicate Locking' failed (PostgreSQL Error Code 40001).");
 
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: rolling back DB Transaction to allow further SQL Commands to succeed");
-                            DBAccess.GDBAccessObj.RollbackTransaction();
+                            ReadAndWriteTransaction.Rollback();
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: rolled back DB Transaction, now starting a new DB Transaction");
 
                             // Let the caller of this Method know that the Method has rolled back the DB Transaction that was started outside of this Method.
@@ -897,7 +898,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadAndWriteTransaction.Commit();
 
                     TLogging.LogAtLevel(4, "TRecentPartnersHandling.AddRecentlyUsedPartner: committed own transaction.");
                 }

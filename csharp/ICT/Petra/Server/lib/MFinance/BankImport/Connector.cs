@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Statements = AEpStatementAccess.LoadUsingTemplate(row, ReadTransaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            ReadTransaction.Rollback();
 
             if (Statements.Rows.Count == 0)
             {
@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             AEpStatementTable result = new AEpStatementTable();
             DBAccess.GDBAccessObj.SelectDT(result, SqlStmt, ReadTransaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            ReadTransaction.Rollback();
 
             return result;
         }
@@ -260,7 +260,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             AEpStatementAccess.LoadByPrimaryKey(MainDS, AEpStatementKey, Transaction);
             AEpTransactionAccess.LoadViaAEpStatement(MainDS, AEpStatementKey, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            Transaction.Rollback();
 
             foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
             {
@@ -433,7 +433,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 DataTable NotActiveRecipients = DBAccess.GDBAccessObj.SelectDT(sqlGetNotActiveRecipients, "notActiveRecipients", Transaction);
                 NotActiveRecipients.DefaultView.Sort = "PartnerKey";
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                Transaction.Rollback();
 
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
 
@@ -652,7 +652,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             {
                 TLogging.Log(e.GetType().ToString() + " in BankImport, GetBankStatementTransactionsAndMatches; " + e.Message);
                 TLogging.Log(e.StackTrace);
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                Transaction.Rollback();
                 throw;
             }
 
@@ -724,7 +724,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             DataTable RightCurrency = DBAccess.GDBAccessObj.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            Transaction.Rollback();
 
             string CurrencyCode = "N/A";
 
@@ -907,7 +907,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
                 if (NewTransaction)
                 {
-                    DBAccess.GetDBAccessObj(Transaction.DataBaseObj).CommitTransaction();
+                    Transaction.Commit();
                 }
 
                 return true;
@@ -918,7 +918,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
                 if (NewTransaction)
                 {
-                    DBAccess.GetDBAccessObj(Transaction.DataBaseObj).RollbackTransaction();
+                    Transaction.Rollback();
                 }
 
                 return false;
@@ -1179,7 +1179,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             String.Format(Catalog.GetString("Cannot create a gift for transaction {0} since there is no valid donor."),
                                 transactionRow.Description);
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        Transaction.Rollback();
                         TProgressTracker.FinishJob(MyClientID);
                         return false;
                     }
@@ -1204,7 +1204,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 MatchedGiftReference = bankTable[0].BranchCode + " " + stmt.Date.Day.ToString();
             }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            Transaction.Rollback();
 
             GiftBatchTDS GiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(
                 ALedgerNumber,
@@ -1396,7 +1396,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 AVerificationResult = new TVerificationResultCollection();
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating GL Batch"), msg, TResultSeverity.Resv_Critical));
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                Transaction.Rollback();
                 return false;
             }
 
@@ -1408,7 +1408,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            Transaction.Rollback();
 
             GLBatchTDS GLDS = TGLTransactionWebConnector.CreateABatch(ALedgerNumber);
 

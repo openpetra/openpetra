@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,18 +78,19 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             bool NewTransaction = false;
             bool ReturnValue = false;
 
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
                 ReturnValue = AApSupplierAccess.Exists(APartnerKey, ReadTransaction);
             }
             finally
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                 }
             }
             return ReturnValue;
@@ -105,9 +106,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
+            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
                 try
                 {
                     // Supplier
@@ -121,7 +123,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 }
                 catch (Exception Exp)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    ReadTransaction.Rollback();
+                    ReadTransaction = null;
                     TLogging.Log("TSupplierEditUIConnector.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                     TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
                     throw;
@@ -129,9 +132,9 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             }
             finally
             {
-                if (DBAccess.GDBAccessObj.Transaction != null)
+                if (ReadTransaction != null)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                 }
             }
 
@@ -176,13 +179,13 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 {
                     AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction);
 
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    SubmitChangesTransaction.Commit();
                 }
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the storing of the AP Supplier):" + Environment.NewLine + Exc.ToString());
 
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    SubmitChangesTransaction.Rollback();
 
                     throw;
                 }

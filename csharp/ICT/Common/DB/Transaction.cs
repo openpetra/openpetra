@@ -251,7 +251,7 @@ namespace Ict.Common.DB
             FTransactionIdentifier = System.Guid.NewGuid();
             FTransactionName = ATransactionName;
 
-            FWrappedTransaction = ADataBase.BeginTransaction(AIsolationLevel);
+            FWrappedTransaction = ADataBase.BeginDbTransaction(AIsolationLevel);
 
             FTDataBaseInstanceThatTransactionBelongsTo = ADataBase;
             FAppDomainThatTransactionWasStartedIn = AppDomain.CurrentDomain;

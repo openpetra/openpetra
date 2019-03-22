@@ -572,11 +572,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     if (SubmissionOK)
                     {
-                        ReadWriteTransaction.DataBaseObj.CommitTransaction();
+                        ReadWriteTransaction.Commit();
                     }
                     else
                     {
-                        ReadWriteTransaction.DataBaseObj.RollbackTransaction();
+                        ReadWriteTransaction.Rollback();
                     }
 
                     if (SeparateDBConnectionEstablished)
@@ -1060,7 +1060,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     TLogging.Log("SetNewPassword: invalid token for user " + AUserID);
                     return false;
                 } else {
-                    db.RollbackTransaction();
+                    Transaction.Rollback();
                     DBAccess.GDBAccessObj = db;
                     TPetraIdentity PetraIdentity = new TPetraIdentity(
                         AUserID, "", "", "", "",

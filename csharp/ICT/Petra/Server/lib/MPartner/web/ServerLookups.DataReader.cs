@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -317,14 +317,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             BankTDS ReturnValue = new BankTDS();
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(
-                IsolationLevel.ReadCommitted,
-                "TPartnerDataReaderWebConnector.GetPBankRecords",
-                out ReadTransaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(
+                ref ReadTransaction,
                 delegate
                 {
                     const string QUERY_BANKRECORDS = "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c, PUB_p_location.* " +

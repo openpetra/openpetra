@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             if (NewTransaction)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                ReadTransaction.Rollback();
             }
 
             // generate the report from the HTML template
