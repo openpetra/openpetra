@@ -183,8 +183,6 @@ namespace Tests.MFinance.Server.ICH
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
 
-            bool NewTransaction = false;
-
             // otherwise period 1 might have been closed already
             CommonNUnitFunctions.ResetDatabase();
 
@@ -232,11 +230,6 @@ namespace Tests.MFinance.Server.ICH
 
             Assert.IsTrue((DR.Length > 0),
                 "HOSA - Performing Export of gifts Failed to return any rows!");
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
         }
     }
 }

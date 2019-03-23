@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -162,20 +162,7 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         public static void ResetDatabase()
         {
-            if (TSrvSetting.RDMBSType == TDBType.SQLite)
-            {
-                DBAccess.GDBAccessObj.CloseDBConnection();
-            }
-
             nant("resetDatabase", false);
-
-            if (TSrvSetting.RDMBSType == TDBType.SQLite)
-            {
-                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "", "ResetDatabase DB Connection");
-            }
         }
 
         /// <summary>
@@ -215,14 +202,7 @@ namespace Ict.Testing.NUnitTools
             }
             else if (TSrvSetting.RDMBSType == TDBType.SQLite)
             {
-                DBAccess.GDBAccessObj.CloseDBConnection();
-
                 nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
-
-                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "", "CommonNUnitFunctions.LoadTestDataBase DB Connection");
             }
             else if (TSrvSetting.RDMBSType == TDBType.MySQL)
             {

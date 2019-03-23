@@ -80,7 +80,7 @@ namespace Tests.MFinance.Server.Gift
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
         }

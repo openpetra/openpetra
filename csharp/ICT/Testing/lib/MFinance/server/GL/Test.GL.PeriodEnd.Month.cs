@@ -423,9 +423,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             template.LedgerNumber = FLedgerNumber;
             template.BatchDescription = strTestDataBatchDescription;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
             ABatchTable batches = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     batches = ABatchAccess.LoadUsingTemplate(template, transaction);
@@ -447,9 +447,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strTestDataBatchDescription;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
@@ -482,9 +482,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
                 ParametersArray[1].Value = strAcount;
 
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
                 bool SubmissionOK = true;
-                DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+                DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
                     delegate
                     {
                         string strSQL = "INSERT INTO PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
@@ -512,9 +512,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strAcount;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";

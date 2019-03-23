@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -102,9 +102,9 @@ namespace Ict.Common.Data.Testing
             GiftBatchTDSAccess.SubmitChanges(MainDS);
 
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
             AGiftBatchTable batches = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     batches = AGiftBatchAccess.LoadByPrimaryKey(batch.LedgerNumber, batch.BatchNumber, transaction);

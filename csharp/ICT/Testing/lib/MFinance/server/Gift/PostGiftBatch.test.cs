@@ -210,7 +210,7 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreNotEqual(newCostCentre, giftdetails[0].CostCentreCode, "cost centre code should not match the one defined by the motivation detail");
             AGiftDetailAccess.SubmitChanges(giftdetails, Transaction);
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+            Transaction.Commit();
 
             Int32 generatedGlBatchNumber;
 
@@ -222,7 +222,7 @@ namespace Tests.MFinance.Server.Gift
             Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
             giftdetails = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, BatchNumber, 1, 1, null, Transaction);
             Assert.AreEqual(newCostCentre, giftdetails[0].CostCentreCode, "cost centre code should have been adjusted because of the motivation detail");
-            DBAccess.GDBAccessObj.CommitTransaction();
+            Transaction.Commit();
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace Tests.MFinance.Server.Gift
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 
@@ -299,7 +299,7 @@ namespace Tests.MFinance.Server.Gift
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 

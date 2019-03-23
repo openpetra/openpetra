@@ -124,11 +124,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private void PrepareTestCaseData()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool AccountTestCasesAvailable = false;
             bool CostCentreTestCasesAvailable = false;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     // Check if some special test data are available - otherwise load ...
