@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,91 +54,18 @@ namespace Ict.Common.DB.Testing
         Int32 FProgressUpdateCounter;
         Int32 FProgressUpdateNumber;
 
-        private void EstablishDBConnection(string AConnectionName = null)
+        private TDataBase EstablishDBConnection(string AConnectionName = null)
         {
-            DBAccess.GDBAccessObj = EstablishDBConnectionAndReturnIt(AConnectionName);
+            return DBAccess.SimpleEstablishDBConnection(AConnectionName);
         }
 
-        /// <summary>
-        /// modified version taken from Ict.Petra.Server.App.Main::TServerManager
-        /// </summary>
-        private TDataBase EstablishDBConnectionAndReturnIt(string AConnectionName = null, bool ALogNumberOfConnections = false)
+        private void CloseTestDBConnection(TDataBase ADBAccessObject, string AConnectionName = null)
         {
-            TDataBase ReturnValue;
-
-            if (ALogNumberOfConnections)
-            {
-                if (FDBType == TDBType.PostgreSQL)
-                {
-                    TLogging.Log("  EstablishDBConnectionAndReturnIt: Number of open DB Connections on PostgreSQL BEFORE Connecting to Database: " +
-                        TDataBase.GetNumberOfDBConnections(FDBType) + TDataBase.GetDBConnectionName(AConnectionName));
-                }
-            }
-
-            TLogging.Log("  EstablishDBConnectionAndReturnIt: Establishing connection to Database..." + TDataBase.GetDBConnectionName(AConnectionName));
-
-            ReturnValue = new TDataBase();
-
-            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 10);
-
-            try
-            {
-                ReturnValue.EstablishDBConnection(FDBType,
-                    TAppSettingsManager.GetValue("Server.DBHostOrFile"),
-                    TAppSettingsManager.GetValue("Server.DBPort"),
-                    TAppSettingsManager.GetValue("Server.DBName"),
-                    TAppSettingsManager.GetValue("Server.DBUserName"),
-                    TAppSettingsManager.GetValue("Server.DBPassword"),
-                    "", AConnectionName);
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("  EstablishDBConnectionAndReturnIt: Encountered Exception while trying to establish connection to Database " +
-                    TDataBase.GetDBConnectionName(AConnectionName) + Environment.NewLine +
-                    Exc.ToString());
-
-                throw;
-            }
-
-            TLogging.Log("  EstablishDBConnectionAndReturnIt: Connected to Database." + ReturnValue.GetDBConnectionIdentifier());
-
-            if (ALogNumberOfConnections)
-            {
-                if (FDBType == TDBType.PostgreSQL)
-                {
-                    TLogging.Log("  EstablishDBConnectionAndReturnIt: Number of open DB Connections on PostgreSQL AFTER  Connecting to Database: " +
-                        TDataBase.GetNumberOfDBConnections(FDBType) + ReturnValue.GetDBConnectionIdentifier());
-                }
-            }
-
-            return ReturnValue;
-        }
-
-        private void CloseTestDBConnection(TDataBase ADBAccessObject, string AConnectionName = null, bool ALogNumberOfConnections = false)
-        {
-            if (ALogNumberOfConnections)
-            {
-                if (FDBType == TDBType.PostgreSQL)
-                {
-                    TLogging.Log("  CloseTestDBConnection: Number of open DB Connections on PostgreSQL BEFORE closing Database connection: " +
-                        TDataBase.GetNumberOfDBConnections(FDBType) + ADBAccessObject.GetDBConnectionIdentifier());
-                }
-            }
-
             TLogging.Log("  CloseTestDBConnection: Closing connection to Database..." + ADBAccessObject.GetDBConnectionIdentifier());
 
             ADBAccessObject.CloseDBConnection();
 
             TLogging.Log("  CloseTestDBConnection: Database connection closed." + TDataBase.GetDBConnectionName(AConnectionName));
-
-            if (ALogNumberOfConnections)
-            {
-                if (FDBType == TDBType.PostgreSQL)
-                {
-                    TLogging.Log("  CloseTestDBConnection: Number of open DB Connections on PostgreSQL AFTER closing Database connection: " +
-                        TDataBase.GetNumberOfDBConnections(FDBType) + TDataBase.GetDBConnectionName(AConnectionName));
-                }
-            }
         }
 
         /// init
@@ -407,7 +334,7 @@ namespace Ict.Common.DB.Testing
             // Arrange
             //
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+            TDBTransaction trans = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
 
             // Guard Assert: Check that the new DB Transaction has been taken out
             Assert.That(NewTrans, Is.True);
@@ -426,7 +353,7 @@ namespace Ict.Common.DB.Testing
 
             // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
             // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            trans.Rollback();
         }
 
         /// <summary>
@@ -443,7 +370,7 @@ namespace Ict.Common.DB.Testing
             // Arrange
             //
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
 
             // Guard Assert: Check that the new DB Transaction has been taken out
             Assert.That(NewTrans, Is.True);
@@ -462,7 +389,7 @@ namespace Ict.Common.DB.Testing
 
             // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
             // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            transaction.Rollback();
         }
 
         #endregion
@@ -483,7 +410,7 @@ namespace Ict.Common.DB.Testing
             // Arrange
             //
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
 
             // Guard Assert: Check that the new DB Transaction has been taken out
             Assert.That(NewTrans, Is.True);
@@ -498,7 +425,7 @@ namespace Ict.Common.DB.Testing
 
             // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
             // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            transaction.Rollback();
         }
 
         /// <summary>
@@ -540,7 +467,7 @@ namespace Ict.Common.DB.Testing
             // Arrange
             //
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
 
             // Guard Assert: Check that the new DB Transaction has been taken out
             Assert.That(NewTrans, Is.True);
@@ -555,7 +482,7 @@ namespace Ict.Common.DB.Testing
 
             // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
             // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            transaction.Rollback();
         }
 
         /// <summary>
@@ -572,7 +499,7 @@ namespace Ict.Common.DB.Testing
             // Arrange
             //
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
 
             // Guard Assert: Check that the new DB Transaction has been taken out
             Assert.That(NewTrans, Is.True);
@@ -587,7 +514,7 @@ namespace Ict.Common.DB.Testing
 
             // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
             // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            transaction.Rollback();
         }
 
         /// <summary>
@@ -604,7 +531,7 @@ namespace Ict.Common.DB.Testing
             // Arrange
             //
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
 
             // Guard Assert: Check that the new DB Transaction has been taken out
             Assert.That(NewTrans, Is.True);
@@ -619,7 +546,7 @@ namespace Ict.Common.DB.Testing
 
             // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
             // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            transaction.Rollback();
         }
 
         #endregion
@@ -712,7 +639,7 @@ namespace Ict.Common.DB.Testing
                     DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 });
         }
-
+#if disabledAfterRefactoringDBAccess
         /// <summary>
         /// Tests the SelectUsingDataAdapterMulti Method, passing a single SQL Query Parameter for each of two Partners.
         /// Also, the AMultipleParamQueryProgressUpdateCallback Delegate is hooked up and the correct calling of this gets
@@ -968,7 +895,6 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         {
             TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
             TDBTransaction ReadTransaction = null;
-            int Result = 0;
 
             DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "NewTransaction",
                 ADatabase : RequestedConnection,
@@ -993,7 +919,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
 
             RequestedConnection.CloseDBConnection();
         }
-
+#endif
         /// <summary>
         /// Tests SimpleAutoDBConnAndReadTransactionSelector() will join an existing compatible transaction on a particular
         /// requested DB connection.
@@ -1007,80 +933,27 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
                 return;
             }
 
-            TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
-            TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(ATransactionName : "FirstTransaction");
-            TDBTransaction ReadTransaction = null;
-            int Result = 0;
+            TDataBase RequestedConnection = DBAccess.SimpleEstablishDBConnection("New DB Connection");
+            TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(IsolationLevel.ReadCommitted, -1, "FirstTransaction");
+            bool newTransaction;
 
-            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "NewTransaction",
-                ADatabase : RequestedConnection,
-                AEncapsulatedDBAccessCode : delegate
-                {
-                    Result =
-                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
-                                ReadTransaction));
+            TDBTransaction ReadTransaction = RequestedConnection.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                out newTransaction,
+                "NewTransaction");
 
-                    // Is this the expected connection?
-                    Assert.AreEqual("New DB Connection", ReadTransaction.DataBaseObj.ConnectionName);
-                });
+            Assert.AreEqual("New DB Connection", ReadTransaction.DataBaseObj.ConnectionName);
+
+            // Did we get not a new transaction
+            Assert.AreEqual(false, newTransaction);
 
             // Did we get the expected transaction?
             Assert.AreEqual("FirstTransaction", ReadTransaction.TransactionName);
 
-            // Check we get a result
-            Assert.AreEqual(1, Result);
-
             // Check the transaction we joined is left open
             Assert.True(ReadTransaction.Valid);
 
-            RequestedConnection.RollbackTransaction();
-            RequestedConnection.CloseDBConnection();
-        }
-
-        /// <summary>
-        /// Tests SimpleAutoDBConnAndReadTransactionSelector() will create a new DB connection and transaction if there is already an
-        /// existing incompatible transaction running on the requested DB connection.
-        /// </summary>
-        [Test]
-        public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnectionCantJoin()
-        {
-            if (FDBType == TDBType.SQLite)
-            {
-                // do not run this test with SQLite
-                return;
-            }
-
-            TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
-            TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(ATransactionName : "FirstTransaction");
-            TDBTransaction ReadTransaction = null;
-            int Result = 0;
-
-            var oink = new TSrvSetting();
-
-            Assert.NotNull(oink);
-
-            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "NewTransaction",
-                ADatabase : RequestedConnection, AIsolationLevel : IsolationLevel.Serializable,
-                AEncapsulatedDBAccessCode : delegate
-                {
-                    Result =
-                        Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM p_partner WHERE p_partner_key_n = 43005001",
-                                ReadTransaction));
-
-                    // Is this the expected connection?
-                    Assert.AreEqual("NewTransaction", ReadTransaction.DataBaseObj.ConnectionName);
-                });
-
-            // Did we get the expected transaction?
-            Assert.AreEqual("NewTransaction", ReadTransaction.TransactionName);
-
-            // Check we get a result
-            Assert.AreEqual(1, Result);
-
-            // Check the transaction we created is rolled back
-            Assert.False(ReadTransaction.Valid);
-
-            RequestedConnection.RollbackTransaction();
+            ReadTransaction.Rollback();
             RequestedConnection.CloseDBConnection();
         }
     }

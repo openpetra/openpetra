@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -74,7 +74,7 @@ namespace Ict.Common.DB.Testing
 
             ExecuteScalar
         }
-
+#if disabledAfterRefactoringDBAccess
         /// <summary>
         /// This Test asserts that if Thread 'A' starts a DB Transaction using GetNewOrExistingTransaction, *another* Thread 'B'
         /// isn't allowed to re-use that ('piggy-back' on) DB Transaction.
@@ -114,12 +114,10 @@ namespace Ict.Common.DB.Testing
             if (DBAccess.GDBAccessObj != null)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
-                DBAccess.GDBAccessObj = null;
             }
 
             // Create a separate instance of TDataBase and establish a separate DB connection on it
             TDataBase TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), false);
-            DBAccess.GDBAccessObj = TestDBInstance;
             FTestDBInstance1 = TestDBInstance;
 
             //
@@ -201,9 +199,10 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_Multithreading__GNoETransaction_throws_no_Exception()
         {
             bool NewTrans;
+            TDBTransaction transaction, transaction2;
 
             // Arrange
-            NewTrans = CallGetNewOrExistingTransaction(ATransactionName : "GNoETransaction_throws_no_Exception 1");
+            NewTrans = CallGetNewOrExistingTransaction(out transaction, ATransactionName : "GNoETransaction_throws_no_Exception 1");
 
             // Guard Assert: Check that the new DB Transaction has been taken out
             Assert.That(NewTrans, Is.True);
@@ -212,53 +211,15 @@ namespace Ict.Common.DB.Testing
             // work (and not throw an Exception as in Test Method 'TestDBAccess_Multithreading__GNoETransaction_throws_proper_ExceptionMultiThreaded')
             // as we are doing this from within the same Thread (the main Thread)!
             Assert.DoesNotThrow(delegate { NewTrans = CallGetNewOrExistingTransaction(
-ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
+                out transaction2,
+                ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
 
             // Guard Assert: Check that no new Transaction has been taken out (just for peace-of-mind).
             Assert.That(NewTrans, Is.False);
 
             // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
             // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            DBAccess.GDBAccessObj.RollbackTransaction();
-        }
-
-        /// <summary>
-        /// This Test asserts that (1) two independent DB Connections can be taked out on the same Thread and (2) that after
-        /// closing both DB Connections no more open DB Connections get reported by the RDBMS than there were open before the
-        /// two independent DB Transactions were openend.
-        /// </summary>
-        [Test]
-        public void TestDBAccess_MultiThreading__TwoDBConnectionsSingleThreaded()
-        {
-            int InitialNumberOfDBConnections;
-
-            // This test at present can only work out results when connected to PostgreSQL as at present the required Method
-            // TDataBase.GetNumberOfDBConnections() only is able to work with PostgreSQL...
-            if (FDBType != TDBType.PostgreSQL)
-            {
-                return;
-            }
-
-            TLogging.Log("--> Start of Test 'TestDBAccess_MultiThreading__TwoDBConnectionsSingleThreaded'.");
-
-            // Arrange: Clear Connection Pool and keep record of how many DB Connections are open before we open any of our own in this Method
-            InitialNumberOfDBConnections = TDataBase.ClearConnectionPoolAndGetNumberOfDBConnections(FDBType);
-
-            //
-            // Act
-            //
-
-            // Open two independent DB Connections (also independent of DBAccess.GDBAccessObj which automatically
-            // gets created for every Test in this TestFixture!)
-            TDataBase TestDBInstance1 = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), true);
-            TDataBase TestDBInstance2 = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 2), true);
-
-            // Assert: Happens only in Method CloseTestConnections - a comparison between InitialNumberOfDBConnections and
-            // open DB Connections after closing the Test Connections is done there and the Assert will fail if they are not
-            // the same.
-            CloseTestConnections(TestDBInstance1, TestDBInstance2, InitialNumberOfDBConnections);
-
-            TLogging.Log("<-- End of Test 'TestDBAccess_MultiThreading__TwoDBConnectionsSingleThreaded'.");
+            transaction.Rollback();
         }
 
         /// <summary>
@@ -297,13 +258,7 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
                 FTestDBInstance2 = null;
             }
 
-            if (DBAccess.GDBAccessObj != null)
-            {
-                DBAccess.GDBAccessObj.CloseDBConnection();
-                DBAccess.GDBAccessObj = null;
-            }
-
-            DBAccess.GDBAccessObj = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), true);
+            TDatabase db = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), true);
             InitialNumberOfDBConnections = TDataBase.ClearConnectionPoolAndGetNumberOfDBConnections(FDBType);
 
             // Create ManualResetEvents for signalling between the Thread this Test runs on and the two
@@ -493,6 +448,7 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
         private Action GetActionDelegateForGNoET(int AThreadNumber, bool ASimulateLongerRunningThread)
         {
             bool NewTransaction = false;
+            TDBTransaction transaction;
 
             return () =>
                    {
@@ -538,7 +494,8 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
                        try
                        {
                            NewTransaction = CallGetNewOrExistingTransaction(
-ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToString());
+                                out transaction,
+                                ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToString());
 
                            if (AThreadNumber == 1)
                            {
@@ -572,7 +529,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
                                FRollbackDBTransactionSignal1.Dispose();
 
                                // Roll back the DB Transaction that we have established earlier
-                               DBAccess.GDBAccessObj.RollbackTransaction();
+                               transaction.Rollback();
 
                                // Signal main Test Thread that we have successfully rolled back a DB Transaction!
                                FDBTransactionRolledbackSignal1.Set();
@@ -592,7 +549,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
                                FRollbackDBTransactionSignal2.Dispose();
 
                                // Roll back the DB Transaction that we have established earlier
-                               DBAccess.GDBAccessObj.RollbackTransaction();
+                               transaction.Rollback();
 
                                // Signal main Test Thread that we have successfully rolled back a DB Transaction!
                                FDBTransactionRolledbackSignal2.Set();
@@ -1112,8 +1069,8 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             RequestedConnection.RollbackTransaction();
             RequestedConnection.CloseDBConnection();
         }
-
         #endregion
+#endif
 
         #region Helper Methods
 
@@ -1146,7 +1103,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
                        {
                            // Open independent DB Connection (independent of DBAccess.GDBAccessObj which automatically
                            // gets created for every Test in this TestFixture!)
-                           TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, AThreadNumber), false);
+                           TestDBInstance = DBAccess.SimpleEstablishDBConnection(String.Format(TestConnectionName, AThreadNumber));
 
                            // Get a new DB Transaction on DB Connection
                            TestTransactionInstance = TestDBInstance.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out IsNewTransaction,
@@ -1239,9 +1196,9 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
                                }
                            }
 
-                           TestTransactionInstance.DataBaseObj.CommitTransaction();
+                           TestTransactionInstance.Commit();
 
-                           CloseTestDBConnection(TestTransactionInstance.DataBaseObj, String.Format(TestConnectionName, AThreadNumber), false);
+                           CloseTestDBConnection(TestTransactionInstance.DataBaseObj, String.Format(TestConnectionName, AThreadNumber));
                        }
                        catch (Exception Exc)
                        {
@@ -1439,33 +1396,8 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             // Note: If you look at the Log output you will see that closing these two DB Connections HAS NOT GOT AN
             // IMPACT on the number of open DB Connections that PostgreSQL reports - this is because of the Connection
             // Pooling that is going on and these DB Connections not having been 'released' by the Connection Pool...!
-            CloseTestDBConnection(ATestDBInstance1, String.Format(TestConnectionName, 1), true);
-            CloseTestDBConnection(ATestDBInstance2, String.Format(TestConnectionName, 2), true);
-
-            CleanUpAndPerformChecksAfterDisconnctingFromDB(AInitialNumberOfDBConnections);
-        }
-
-        private void CleanUpAndPerformChecksAfterDisconnctingFromDB(int AInitialNumberOfDBConnections)
-        {
-            TLogging.Log(
-                "  CleanUpAndPerformChecksAfterDisconnctingFromDB: Number of open DB Connections on PostgreSQL BEFORE clearing Connection Pool: " +
-                TDataBase.GetNumberOfDBConnections(FDBType));
-
-            TLogging.Log(
-                "  CleanUpAndPerformChecksAfterDisconnctingFromDB: Number of open DB Connections on PostgreSQL AFTER  clearing Connection Pool: " +
-                TDataBase.ClearConnectionPoolAndGetNumberOfDBConnections(FDBType));
-
-            // The following guard assert at present can only work out results when connected to PostgreSQL as at present the required Method
-            // TDataBase.GetNumberOfDBConnections() only is able to work with PostgreSQL...
-            if (false && FDBType == TDBType.PostgreSQL)
-            {
-                // Guard Assert: PostgreSQL must report no more open DB Connections than before we started opening and closing DB
-                // Connections in this Method!
-                Assert.AreEqual(AInitialNumberOfDBConnections, TDataBase.GetNumberOfDBConnections(FDBType),
-                    String.Format("After opening and closing two DB Connections, PostgreSQL reports that a difference exists " +
-                        "between the actual DB connections it has from us:  initially open DB connections: {0}, now open DB Connections: {1}",
-                        AInitialNumberOfDBConnections, TDataBase.GetNumberOfDBConnections(FDBType)));
-            }
+            CloseTestDBConnection(ATestDBInstance1, String.Format(TestConnectionName, 1));
+            CloseTestDBConnection(ATestDBInstance2, String.Format(TestConnectionName, 2));
         }
 
         private Thread GetTestingThread(string ATestName, ThreadStart AThreadStart)
@@ -1478,19 +1410,19 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             return TestingThread;
         }
 
-        private bool CallGetNewOrExistingTransaction(IsolationLevel AIsolationLevel = IsolationLevel.ReadCommitted,
+        private bool CallGetNewOrExistingTransaction(out TDBTransaction ATransaction, IsolationLevel AIsolationLevel = IsolationLevel.ReadCommitted,
             string ATransactionName = "")
         {
             bool NewTrans;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(AIsolationLevel, out NewTrans, ATransactionName);
+            ATransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(AIsolationLevel, out NewTrans, ATransactionName);
 
             return NewTrans;
         }
 
         private TDataBase CallEstablishDBConnection(string AConnectionName)
         {
-            return EstablishDBConnectionAndReturnIt(AConnectionName, false);
+            return DBAccess.SimpleEstablishDBConnection(AConnectionName);
         }
 
         #endregion

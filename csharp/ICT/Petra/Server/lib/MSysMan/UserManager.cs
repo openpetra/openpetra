@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
         /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
         /// </summary>
-        private void CheckDatabaseVersion()
+        private static void CheckDatabaseVersion()
         {
             TDBTransaction ReadTransaction = null;
             DataTable Tbl = null;
@@ -202,13 +202,13 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 return;
             }
 
-            RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction, "CheckDatabaseVersion",
+            DBAccess.RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction, "CheckDatabaseVersion",
                 delegate
                 {
                     // now check if the database is 'up to date'; otherwise run db patch against it
                     Tbl = ReadTransaction.DataBaseObj.SelectDT(
                         "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        "Temp", ReadTransaction, new OdbcParameter[0], false);
+                        "Temp", ReadTransaction, new OdbcParameter[0]);
                 });
 
             if (Tbl.Rows.Count == 0)
@@ -632,12 +632,14 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         [RequireModulePermission("NONE")]
         public static TPetraPrincipal ReloadCachedUserInfo()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TPetraPrincipal UserDetails = null;
 
             try
             {
-                DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "ReloadCachedUserInfo", out ReadTransaction, delegate
+                DBAccess.RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                    "ReloadCachedUserInfo",
+                    delegate
                     {
                         LoadUser(UserInfo.GUserInfo.UserID, out UserDetails, ReadTransaction);
                     });

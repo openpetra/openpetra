@@ -1061,7 +1061,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     return false;
                 } else {
                     Transaction.Rollback();
-                    DBAccess.GDBAccessObj = db;
                     TPetraIdentity PetraIdentity = new TPetraIdentity(
                         AUserID, "", "", "", "",
                         DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
@@ -1091,8 +1090,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         return false;
                     }
                 }
-
-                return false;
             }
             catch (Exception e)
             {
@@ -1149,8 +1146,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             // TODO: if user module access permissions have changed, automatically update the table access permissions?
-
-            DBAccess.SimpleAutoTransactionWrapper(IsolationLevel.Serializable, "SaveSUser", out SubmitChangesTransaction,
+            SubmitChangesTransaction = new TDBTransaction();
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
                 ref ReturnValue, delegate
                 {
                     if (SubmitDS.SUser != null)
