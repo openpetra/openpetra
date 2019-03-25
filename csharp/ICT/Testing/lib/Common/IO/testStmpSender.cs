@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,7 +58,7 @@ namespace Ict.Common.IO.Testing
         [Test]
         public void TestSendMail()
         {
-            if (TAppSettingsManager.GetValue("SmtpHost").
+            if (TAppSettingsManager.GetValue("SmtpHost", TSmtpSender.SMTP_HOST_DEFAULT).
                 EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
             {
                 TLogging.Log("for TestSendMail: need to configure SmptHost in the config file");
