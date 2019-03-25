@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -100,6 +100,15 @@ namespace Ict.Common
 
         #region Properties
         private static TSrvSetting USingletonSrvSetting = null;
+
+        /// check if settings have been initialized already
+        public static bool Initialized
+        {
+            get
+            {
+                return USingletonSrvSetting != null;
+            }
+        }
 
         /// Get a copy of the current values.
         public static TSrvSetting ServerSettings

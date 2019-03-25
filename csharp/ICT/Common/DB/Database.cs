@@ -932,7 +932,7 @@ namespace Ict.Common.DB
                         // throw Exception!
                         // Reason for that: Running DB Commands on a DB Transaction other than the currently running DB
                         // Transaction is not supported (because parallel DB Transactions are not supported)!
-                        if (FTransaction.TransactionIdentifier != ATransaction.TransactionIdentifier)
+                        if ((FTransaction != null) && FTransaction.Valid && (FTransaction.TransactionIdentifier != ATransaction.TransactionIdentifier))
                         {
                             var Exc4 = new
                                        EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException(
@@ -2294,7 +2294,7 @@ namespace Ict.Common.DB
                 }
 
                 // Guard against running into a 'Nested' DB Transaction (which are not supported!)
-                if (FTransaction != null)
+                if ((FTransaction != null) && (FTransaction.WrappedTransaction != null))
                 {
                     // Retry again if programmer wants that
                     if (ARetryAfterXSecWhenUnsuccessful != -1)
@@ -4796,9 +4796,11 @@ namespace Ict.Common.DB
             }
         }
 
-        /// overload. deprecated. no need for IsolationLevel
-        public void BeginAutoReadTransaction(IsolationLevel dummy, ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
+        /// start a transaction, and then run the code in it
+        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
+            ATransaction.BeginTransaction(this, AIsolationLevel, "AutoReadTransaction");
+
             AutoReadTransaction(ref ATransaction, AEncapsulatedDBAccessCode);
         }
 

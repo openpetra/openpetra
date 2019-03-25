@@ -143,6 +143,11 @@ namespace Ict.Common.DB
         {
             TDataBase DBAccessObj = new TDataBase();
 
+            if (!TSrvSetting.Initialized)
+            {
+                new TSrvSetting();
+            }
+
             DBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                 TSrvSetting.PostgreSQLServer,
                 TSrvSetting.PostgreSQLServerPort,
@@ -171,6 +176,11 @@ namespace Ict.Common.DB
             Action AEncapsulatedDBAccessCode)
         {
             TDataBase DBConnectionObj = SimpleEstablishDBConnection(AContext);
+
+            if (ATransaction == null)
+            {
+                ATransaction = new TDBTransaction();
+            }
 
             ATransaction.BeginTransaction(DBConnectionObj, AIsolationLevel, AContext);
 

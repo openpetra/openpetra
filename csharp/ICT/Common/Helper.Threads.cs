@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,6 +52,11 @@ namespace Ict.Common
         /// in case a Threads' Name is String.Empty - only its ManagedThreadId.</returns>
         public static string GetThreadIdentifier(Thread ATheThread)
         {
+            if (ATheThread == null)
+            {
+                return "No Thread specified";
+            }
+
             string ReturnValue = ATheThread.Name ?? String.Empty;
 
             if (ReturnValue.Length > 0)

@@ -37,22 +37,6 @@ namespace Ict.Common.DB
     /// to be used instead of concrete ADO.NET Transaction objects, eg. <see cref="OdbcTransaction" />
     /// or NpgsqlTransaction, etc. Effectively wraps ADO.NET Transaction objects.
     /// </summary>
-    /// <remarks>
-    /// <em>IMPORTANT:</em> This Transaction Class does not have Commit or
-    /// Rollback methods! This is so that the programmers are forced to use the
-    /// CommitTransaction and RollbackTransaction methods of the <see cref="TDataBase" /> Class.
-    /// <para>
-    /// The reasons for this:
-    /// <list type="bullet">
-    /// <item><see cref="TDataBase" /> can know whether a Transaction is
-    /// running (unbelievably, there is no way to find this out through ADO.NET!)</item>
-    /// <item><see cref="TDataBase" /> can log Commits and Rollbacks. Another benefit of using this
-    /// Class instead of a concrete implementation of ADO.NET Transaction Classes
-    /// (eg. <see cref="OdbcTransaction" />) is that it is not tied to a specific ADO.NET
-    /// provider, therefore making it easier to use a different ADO.NET provider than ODBC.</item>
-    /// </list>
-    /// </para>
-    /// </remarks>
     public class TDBTransaction : object, IDisposable
     {
         /// <summary>Holds the DbTransaction that we are wrapping inside this class.</summary>
@@ -89,6 +73,10 @@ namespace Ict.Common.DB
         {
             get
             {
+                if (FTDataBaseInstanceThatTransactionBelongsTo == null)
+                {
+                    throw new Exception("DataBaseObj is null in Transaction");
+                }
                 return FTDataBaseInstanceThatTransactionBelongsTo;
             }
         }

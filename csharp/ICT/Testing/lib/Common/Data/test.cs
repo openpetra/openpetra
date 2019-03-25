@@ -70,15 +70,17 @@ namespace Ict.Common.Data.Testing
         [Test]
         public void UpdateRecord()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("test");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            db.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                 delegate
                 {
                     ALedgerAccess.LoadAll(MainDS, ReadTransaction);
                 });
+            ReadTransaction.Rollback();
 
             MainDS.ALedger[0].LastGiftBatchNumber++;
 
@@ -104,7 +106,9 @@ namespace Ict.Common.Data.Testing
 
             TDBTransaction transaction = new TDBTransaction();
             AGiftBatchTable batches = null;
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.BeginAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                ref transaction,
                 delegate
                 {
                     batches = AGiftBatchAccess.LoadByPrimaryKey(batch.LedgerNumber, batch.BatchNumber, transaction);
@@ -122,12 +126,13 @@ namespace Ict.Common.Data.Testing
         [Test, Explicit]
         public void SpeedTestLoadIntoTypedTable()
         {
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("test");
             TDBTransaction ReadTransaction = null;
             DateTime before = DateTime.Now;
             DateTime after = DateTime.Now;
             GiftBatchTDS ds = new GiftBatchTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            db.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
@@ -138,7 +143,7 @@ namespace Ict.Common.Data.Testing
                                  "WHERE PUB_a_gift_detail.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i";
 
                     before = DateTime.Now;
-                    DataTable untyped = DBAccess.GDBAccessObj.SelectDT(sql, "test", ReadTransaction);
+                    DataTable untyped = db.SelectDT(sql, "test", ReadTransaction);
                     after = DateTime.Now;
 
                     TLogging.Log(String.Format("loading all {0} gift details into an untyped table took {1} milliseconds",
@@ -147,7 +152,7 @@ namespace Ict.Common.Data.Testing
 
                     GiftBatchTDSAGiftDetailTable typed = new GiftBatchTDSAGiftDetailTable();
                     before = DateTime.Now;
-                    DBAccess.GDBAccessObj.SelectDT(typed, sql, ReadTransaction, new OdbcParameter[0], 0, 0);
+                    db.SelectDT(typed, sql, ReadTransaction, new OdbcParameter[0], 0, 0);
                     after = DateTime.Now;
 
                     TLogging.Log(String.Format("loading all {0} gift details into a typed table took {1} milliseconds",
@@ -157,7 +162,7 @@ namespace Ict.Common.Data.Testing
                     AMotivationDetailAccess.LoadAll(ds, ReadTransaction);
 
                     before = DateTime.Now;
-                    DBAccess.GDBAccessObj.Select(ds, sql, ds.AGiftDetail.TableName, ReadTransaction);
+                    db.Select(ds, sql, ds.AGiftDetail.TableName, ReadTransaction);
                     after = DateTime.Now;
                 });
 
@@ -178,7 +183,8 @@ namespace Ict.Common.Data.Testing
         [Test]
         public void TestModifyGiftBatch()
         {
-            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("test");
+            TDBTransaction t = db.BeginTransaction(IsolationLevel.Serializable);
 
             GiftBatchTDS MainDS;
 
@@ -220,17 +226,17 @@ namespace Ict.Common.Data.Testing
             MainDS.AGiftDetail.Rows.Add(giftdetail);
 
             MainDS.SubmitChanges(t);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            t.Commit();
 
             // now delete the first gift, and fix the gift detail of the second gift
-            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            t = db.BeginTransaction(IsolationLevel.Serializable);
             MainDS.AGift.Rows.RemoveAt(0);
             MainDS.AGift[0].GiftTransactionNumber = 1;
             MainDS.AGiftDetail[0].GiftTransactionNumber = 1;
             MainDS.AGiftBatch[0].LastGiftNumber = 1;
 
             MainDS.SubmitChanges(t);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            g.Commit();
         }
 
 #endif
