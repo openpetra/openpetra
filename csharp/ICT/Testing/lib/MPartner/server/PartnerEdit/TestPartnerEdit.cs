@@ -820,7 +820,12 @@ namespace Tests.MPartner.Server.PartnerEdit
             BuildingRow.BuildingCode = "Test";
             BuildingTable.Rows.Add(BuildingRow);
 
-            PcBuildingAccess.SubmitChanges(BuildingTable, DBAccess.GDBAccessObj.Transaction);
+            TDBTransaction transaction = new TDBTransaction();
+            DBAccess.RunInTransaction(IsolationLevel.Serializable, ref transaction, "TestDeleteVenue",
+                delegate
+                {
+                    PcBuildingAccess.SubmitChanges(BuildingTable, transaction);
+                });
 
             // now deletion must not be possible since a building is linked to the venue
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(VenuePartnerRow.PartnerKey, out TextMessage);

@@ -2112,7 +2112,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             ref DataSet AResponseDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             PartnerAddressAggregateTDS TmpResponseDS = null;
             DataSet ResponseDS = AResponseDS;
@@ -2255,7 +2255,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // all tables in the dataset will be stored.
                             // there are exceptions: for example cascading delete of foundations, change of unique key of family id
                             // those tables need to have run AcceptChanges
-                            PartnerEditTDSAccess.SubmitChanges(InspectDS);
+                            PartnerEditTDSAccess.SubmitChanges(InspectDS, SubmitChangesTransaction.DataBaseObj);
                         }
 
                         if (SubmissionResult == TSubmitChangesResult.scrOK)

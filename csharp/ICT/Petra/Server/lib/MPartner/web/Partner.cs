@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -134,10 +134,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             param.Value = ABranchCode;
             PBankTable bank = new PBankTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBankBySortCode");
+            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
+                    db.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
                             param
                         }, -1, -1);
                 });
@@ -196,9 +197,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             String DisplayMessage = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CanPartnerBeDeleted");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
                 {
@@ -219,7 +221,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     // make sure we don't delete an active ledger
                     if (ResultValue
-                        && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                        && (Convert.ToInt32(db.ExecuteScalar(
                                     "SELECT COUNT(*) FROM PUB_" + ALedgerTable.GetTableDBName() +
                                     " WHERE " + ALedgerTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString(),
                                     Transaction)) > 0))
@@ -325,8 +327,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             String PartnerShortName = "";
 
             TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerStatisticsForDeletion");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
@@ -337,7 +339,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         DisplayMessage += Linebreak + Linebreak;
 
                         // count active subscription records
-                        Count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                        Count = Convert.ToInt32(db.ExecuteScalar(
                                 "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
                                 " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                                 " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN ('CANCELLED','EXPIRED')",
@@ -403,7 +405,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerStatisticsForDeletion");
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -640,7 +643,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                               " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                                               " AND " + PPartnerContactTable.GetContactLogIdDBName() + " = " + row.ContactLogId + ")";
 
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                                    db.ExecuteNonQuery(SqlStmt, Transaction);
                                 }
                                 catch (Exception Exc)
                                 {
@@ -850,13 +853,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerStatisticsForDeletion");
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try
                     {
-                        DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE " + PSubscriptionTable.GetTableDBName() +
+                        db.ExecuteNonQuery("UPDATE " + PSubscriptionTable.GetTableDBName() +
                             " SET " + PSubscriptionTable.GetDateCancelledDBName() + " = DATE(NOW()), " +
                             PSubscriptionTable.GetSubscriptionStatusDBName() + " = 'EXPIRED', " +
                             PSubscriptionTable.GetReasonSubsCancelledCodeDBName() + " = 'COMPLETE' " +
@@ -967,7 +971,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ADisplayMessage = "";
 
             // make sure we don't delete a key ministry
-            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+            if (Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar(
                         "SELECT COUNT(*) FROM PUB_" + PUnitTable.GetTableDBName() +
                         " WHERE " + PUnitTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                         " AND " + PUnitTable.GetUnitTypeCodeDBName() + " = 'KEY-MIN'",
@@ -1241,7 +1245,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 SqlStmt = "DELETE FROM pub_" + ATableName +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception Exc)
             {
@@ -1277,7 +1281,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                           " SET " + APartnerKeyColumnName + " = 0" +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception Exc)
             {
@@ -1672,10 +1676,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PPartnerRelationshipTable GetPartnerRelationships(Int64 APartnerRelationKey)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             PPartnerRelationshipTable ReturnValue = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerRelationships");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {

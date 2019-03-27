@@ -4799,6 +4799,11 @@ namespace Ict.Common.DB
         /// start a transaction, and then run the code in it
         public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
+            if (ATransaction == null)
+            {
+                ATransaction = new TDBTransaction();
+            }
+
             ATransaction.BeginTransaction(this, AIsolationLevel, "AutoReadTransaction");
 
             AutoReadTransaction(ref ATransaction, AEncapsulatedDBAccessCode);
