@@ -1,3 +1,3 @@
-http://dev.mysql.com/downloads/connector/net/6.1.html
+https://dev.mysql.com/downloads/connector/net/8.0.html
 
-mysql-connector-net-6.1.3-noinstall.zip
+mysql-connector-net-8.0.15-noinstall.zip
