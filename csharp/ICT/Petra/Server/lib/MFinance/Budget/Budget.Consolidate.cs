@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,8 +56,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             FBudgetTDS = new BudgetTDS();
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("Budget");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -81,7 +82,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     param.Value = FBudgetTDS.ALedger[0].CurrentFinancialYear + 1;
                     parameters.Add(param);
 
-                    DBAccess.GDBAccessObj.Select(FBudgetTDS, sqlLoadBudgetForThisAndNextYear, FBudgetTDS.ABudget.TableName, Transaction,
+                    db.Select(FBudgetTDS, sqlLoadBudgetForThisAndNextYear, FBudgetTDS.ABudget.TableName, Transaction,
                         parameters.ToArray());
 
                     string sqlLoadBudgetPeriodForThisAndNextYear =
@@ -92,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             ABudgetTable.GetLedgerNumberDBName(),
                             ABudgetTable.GetYearDBName());
 
-                    DBAccess.GDBAccessObj.Select(FBudgetTDS,
+                    db.Select(FBudgetTDS,
                         sqlLoadBudgetPeriodForThisAndNextYear,
                         FBudgetTDS.ABudgetPeriod.TableName,
                         Transaction,
@@ -128,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
                             AGeneralLedgerMasterTable.GetYearDBName());
 
-                    DBAccess.GDBAccessObj.Select(FGLPostingDS,
+                    db.Select(FGLPostingDS,
                         sqlLoadGLMPeriodForThisAndNextYear,
                         FGLPostingDS.AGeneralLedgerMasterPeriod.TableName,
                         Transaction,
@@ -148,10 +149,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-3")]
         public static void ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             Boolean SubmissionOK = false;
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("Budget");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     ALedgerRow LedgerRow = FBudgetTDS.ALedger[0];
@@ -237,8 +239,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
                 AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
 
-                TDBTransaction transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("Budget");
+                TDBTransaction transaction = new TDBTransaction();
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
                     delegate
