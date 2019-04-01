@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -326,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void InitBatchAndJournal(decimal AExchangeRate, string ACurrencyCode)
         {
-            F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum, false, true);
+            F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum, new TDBTransaction(), false);
             F_batch = F_GLDataset.ABatch[0];
             F_batch.BatchDescription = Catalog.GetString("Period end revaluations");
 
@@ -397,7 +397,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 F_batch.BatchDebitTotal = F_journal.JournalDebitTotal;
                 TVerificationResultCollection AVerifications;
                 blnReturnValue = (TGLTransactionWebConnector.SaveGLBatchTDS(
-                                      ref F_GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
+                                      ref F_GLDataset, out AVerifications, new TDBTransaction()) == TSubmitChangesResult.scrOK);
 
                 if (!blnReturnValue)
                 {

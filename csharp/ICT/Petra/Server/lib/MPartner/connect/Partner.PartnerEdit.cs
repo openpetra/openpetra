@@ -3029,7 +3029,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TStdPartnerStatusCode PartnerStatus;
 
-            return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+            TDBTransaction ReadTransaction;
+            bool NewTransaction;
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus, ReadTransaction);
         }
 
         private PSubscriptionTable GetSubscriptionsInternal(out Int32 ACount, Boolean ACountOnly)

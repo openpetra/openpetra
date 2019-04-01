@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm, alanP
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -225,10 +225,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.BeginAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -828,17 +829,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                 " SELECT * " +
                 "    FROM information_schema.tables " +
                 "    WHERE table_name = 'a_esr_default')";
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
             Boolean shouldCommit = true;
             DataTable Res = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 ref shouldCommit,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(InitQuery, Transaction);
-                    Res = DBAccess.GDBAccessObj.SelectDT("SELECT * FROM a_esr_default ORDER BY a_partner_key_n", "EsrDefault", Transaction);
+                    db.ExecuteNonQuery(InitQuery, Transaction);
+                    Res = db.SelectDT("SELECT * FROM a_esr_default ORDER BY a_partner_key_n", "EsrDefault", Transaction);
                 });
             return Res;
         }
@@ -850,10 +852,12 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <returns></returns>
         public static Boolean CommitEsrDefaults(DataTable AEsrDefaults)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
+           
             Boolean shouldCommit = true;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+            db.BeginAutoTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 ref shouldCommit,
                 delegate
@@ -863,12 +867,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         switch (Row.RowState)
                         {
                             case DataRowState.Deleted:
-                                DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM a_esr_default WHERE a_partner_key_n = " +
+                                db.ExecuteNonQuery("DELETE FROM a_esr_default WHERE a_partner_key_n = " +
                                 Convert.ToInt64(Row["a_partner_key_n", DataRowVersion.Original]), Transaction);
                                 break;
 
                             case DataRowState.Added:
-                                DBAccess.GDBAccessObj.ExecuteNonQuery("INSERT INTO a_esr_default " +
+                                db.ExecuteNonQuery("INSERT INTO a_esr_default " +
                                 "(a_partner_key_n, a_new_partner_key_n, a_motiv_group_s, a_motiv_detail_s) " +
                                 "VALUES (" +
                                 Convert.ToInt64(Row["a_partner_key_n"]) + "," +
@@ -880,7 +884,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             case DataRowState.Modified:
 
-                                DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE a_esr_default SET " +
+                                db.ExecuteNonQuery("UPDATE a_esr_default SET " +
                                 "a_partner_key_n=" + Convert.ToInt64(Row["a_partner_key_n"]) +
                                 ", a_new_partner_key_n = " + Convert.ToInt64(Row["a_new_partner_key_n"]) +
                                 ", a_motiv_group_s='" + Row["a_motiv_group_s"].ToString() +
@@ -952,11 +956,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
             bool SubmissionOK = false;
             Int32 RowNumber = 0;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.BeginAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

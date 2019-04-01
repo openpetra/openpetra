@@ -459,7 +459,8 @@ namespace Ict.Common.DB
                 {
                     // always log to console and log file, which database we are connecting to.
                     // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
-                    TLogging.Log("    Connecting to database " + ADataBaseType +
+                    TLogging.Log("    Connecting to database " + ADataBaseType + " " +
+                        AConnectionName + " " +
                         GetDBConnectionIdentifierInternal() + ": " +
                         TDBConnection.GetConnectionStringWithHiddenPwd(FConnectionString) + " " +
                         GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection());
@@ -2622,6 +2623,11 @@ namespace Ict.Common.DB
             finally
             {
                 ReleaseCoordinatedDBAccess();
+            }
+
+            if (FTransaction == null)
+            {
+                FTransaction = TheTransaction;
             }
 
             return TheTransaction;

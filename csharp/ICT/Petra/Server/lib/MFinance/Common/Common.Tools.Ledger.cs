@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -104,11 +104,12 @@ namespace Ict.Petra.Server.MFinance.Common
             Dictionary <int, string>LedgerCountryCodesDictBackup = null;
             Dictionary <int, string>LedgerBaseCurrencyDictBackup = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.GetDBAccessObj(ADataBase);
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -117,7 +118,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                         " FROM PUB_a_ledger, PUB_p_partner" +
                                         " WHERE PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n;";
 
-                        DataTable ledgerData = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", Transaction);
+                        DataTable ledgerData = db.SelectDT(strSql, "GetLedgerName_TempTable", Transaction);
 
                         #region Validate Data
 

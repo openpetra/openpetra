@@ -226,7 +226,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             string ABankAccountCode,
             out List <int>AGiftBatchNumbers)
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadUncommitted);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetGiftsByDate");
+            TDBTransaction transaction = db.BeginTransaction(IsolationLevel.ReadUncommitted);
 
             // first get all gifts, even those that have no bank account associated
             string stmt = TDataBase.ReadSqlFile("BankImport.GetDonationsByDate.sql");
@@ -239,7 +240,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             parameters[2] = new OdbcParameter("ABankAccountCode", OdbcType.VarChar);
             parameters[2].Value = ABankAccountCode;
 
-            DBAccess.GDBAccessObj.SelectDT(AMainDS.AGiftDetail, stmt, transaction, parameters, 0, 0);
+            db.SelectDT(AMainDS.AGiftDetail, stmt, transaction, parameters, 0, 0);
 
             // calculate the totals of gifts
             AMainDS.AGift.Clear();
@@ -284,7 +285,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             // There can be several donors with the same banking details
             AMainDS.PBankingDetails.Constraints.Clear();
 
-            DBAccess.GDBAccessObj.Select(AMainDS, stmt, AMainDS.PBankingDetails.TableName, transaction, parameters);
+            db.Select(AMainDS, stmt, AMainDS.PBankingDetails.TableName, transaction, parameters);
             transaction.Rollback();
 
             return true;
@@ -351,7 +352,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
         private static BankImportTDS LoadData(Int32 ALedgerNumber, Int32 AStatementKey)
         {
-            TDBTransaction dbtransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadData");
+            TDBTransaction dbtransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             BankImportTDS MatchDS = new BankImportTDS();
 

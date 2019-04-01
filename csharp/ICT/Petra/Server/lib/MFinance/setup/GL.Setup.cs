@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -317,7 +317,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             Boolean CalendarChangeAllowed = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -365,7 +365,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ALedgerTable LedgerTable = null;
             ALedgerRow LedgerRow = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -441,7 +441,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TemplateOperators = new StringCollection();
             TemplateOperators.Add("=");
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, ref Transaction,
@@ -529,7 +529,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -661,7 +661,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -768,7 +768,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             Boolean Result = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -895,7 +895,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             Boolean SubmissionOK = false;
 
             try
@@ -968,7 +968,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             System.Type TypeofTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1267,7 +1267,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1337,16 +1337,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ALedgerNumber,
                 ACostCentreTable.GetCostCentreTypeDBName());
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadLocalCostCentres");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
-                        ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", Transaction);
+                        ParentCostCentreTbl = db.SelectDT(SqlQuery, "ParentCostCentre", Transaction);
                     });
             }
             catch (Exception ex)
@@ -1395,16 +1396,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // Load Partners where PartnerType includes "COSTCENTRE":
             String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadCostCentrePartnerLinks");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
-                        PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+                        PartnerCostCentreTbl = db.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                         PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
 
@@ -1544,16 +1546,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // Load Partners where PartnerType includes "COSTCENTRE":
             String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CostCentrePartnerLinksExist");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
                     {
-                        PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+                        PartnerCostCentreTbl = db.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                         if (APartnerKey > 0)
                         {
@@ -1607,11 +1610,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String SqlQuery = string.Empty;
 
             DataTable ReturnTable = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CostCentrePartnerLinksExist");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1632,7 +1636,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 AEmailDestinationTable.GetEmailAddressDBName(),
                                 AEmailDestinationTable.GetFileCodeDBName());
 
-                            emailTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "HosaAddresses", Transaction);
+                            emailTbl = db.SelectDT(SqlQuery, "HosaAddresses", Transaction);
 
                             ReturnTable = emailTbl;
                         }
@@ -1666,7 +1670,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 ACostCentreFilter,
                                 AValidLedgerNumberTable.GetPartnerKeyDBName());
 
-                            partnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+                            partnerCostCentreTbl = db.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                             foreach (DataRow Row in partnerCostCentreTbl.Rows)
                             {
@@ -1720,7 +1724,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -1984,7 +1988,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DateTime CurrentCalendarStartDate;
             Boolean CreateCalendar = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             GLSetupTDS InspectDS = AInspectDS;
@@ -2378,7 +2382,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             AInspectDS.Merge(new AAccountPropertyTable());
 
                             GLSetupTDS inspectDS = AInspectDS;
-                            TDBTransaction transaction = null;
+                            TDBTransaction transaction = new TDBTransaction();
 
                             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                                 TEnforceIsolationLevel.eilMinimum,
@@ -2434,7 +2438,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             AInspectDS.Merge(new ASuspenseAccountTable());
 
                             GLSetupTDS inspectDS = AInspectDS;
-                            TDBTransaction transaction = null;
+                            TDBTransaction transaction = new TDBTransaction();
 
                             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                                 TEnforceIsolationLevel.eilMinimum,
@@ -2501,7 +2505,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             if (acc.DebitCreditIndicator != prevDebitCredit)
                             {
                                 TDBTransaction transaction = new TDBTransaction();
-                                DBAccess.GDBAccessObj.AutoTransaction(ref transaction, true,
+                                TDataBase db = DBAccess.SimpleEstablishDBConnection("db");
+                                db.AutoTransaction(ref transaction, true,
                                     delegate
                                     {
                                         String query =
@@ -2517,7 +2522,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                             " a_closing_period_actual_intl_n = - a_closing_period_actual_intl_n " +
                                             " WHERE a_ledger_number_i = " + ALedgerNumber +
                                             " AND a_account_code_c = '" + acc.AccountCode + "'";
-                                        DBAccess.GDBAccessObj.ExecuteNonQuery(query, transaction);
+                                        db.ExecuteNonQuery(query, transaction);
 
                                         query =
                                             "UPDATE a_general_ledger_master_period a set " +
@@ -2530,7 +2535,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                             " where a.a_glm_sequence_i = b.a_glm_sequence_i " +
                                             " AND a_ledger_number_i = " + ALedgerNumber +
                                             " AND a_account_code_c = '" + acc.AccountCode + "')";
-                                        DBAccess.GDBAccessObj.ExecuteNonQuery(query, transaction);
+                                        db.ExecuteNonQuery(query, transaction);
                                     });
                             }
                         }
@@ -2612,7 +2617,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_account_code_to_report_to_c = '" + AAccountCode + "';";
 
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, ATransaction);
+            object SqlResult = ATransaction.DataBaseObj.ExecuteScalar(QuerySql, ATransaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -2659,7 +2664,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool DbSuccess = true;
             string Msg = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2834,7 +2839,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             XmlDocument xmlDoc = TYml2Xml.CreateXmlDocument();
 
             GLSetupTDS MainDS = new GLSetupTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2973,7 +2978,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
             GLSetupTDS MainDS = new GLSetupTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -3241,7 +3246,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // if there are any existing posted transactions that reference this account, it can't be deleted.
                     ATransactionTable transTbl = null;
 
-                    TDBTransaction transaction = null;
+                    TDBTransaction transaction = new TDBTransaction();
                     DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         ref transaction,
@@ -3560,7 +3565,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 PPartnerTypeTable.GetPartnerKeyDBName(),
                 PPartnerTypeTable.GetTypeCodeDBName(),
                 ALedgerNumber * 1000000);
-            DataTable t = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ILTCostCentres", ATransaction);
+            DataTable t = ATransaction.DataBaseObj.SelectDT(SqlQuery, "ILTCostCentres", ATransaction);
 
             foreach (DataRow row in t.Rows)
             {
@@ -3876,7 +3881,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         private static void RewireIchIsAsset(Int32 ANewLedgerNumber)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
@@ -4054,7 +4059,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         // no location record exists yet: create new one
                         locationRow = MainDS.PLocation.NewRowTyped();
                         locationRow.SiteKey = 0;
-                        locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(
+                        locationRow.LocationKey = (int)Transaction.DataBaseObj.GetNextSequenceValue(
                             TSequenceNames.seq_location_number.ToString(), Transaction);
                         locationRow.StreetName = Catalog.GetString("No valid address on file");
                         locationRow.CountryCode = ACountryCode;
@@ -4578,7 +4583,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (action == "update")
             {
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
                 bool SubmissionOK = false;
 
                 try
@@ -4633,7 +4638,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Fields.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
             Fields.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -4653,7 +4658,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4748,7 +4753,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             int RetVal = 0;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4769,7 +4774,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             int RetVal = 0;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4807,7 +4812,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             StringCollection RetVal = new StringCollection();
             AAnalysisAttributeTable AnalAttribTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4859,7 +4864,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAnalysisAttributeTable AnalysisAttributeTable = null;
             bool AccountAnalysisAttributeExists = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -4919,7 +4924,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAnalysisAttributeTable AnalysisAttributeTable = null;
             bool AccountAnalysisAttributeExists = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -4979,7 +4984,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             bool AccountAnalysisAttributeValueRequired = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -5073,7 +5078,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 QuerySql += String.Format(" AND {0}={1}", ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber);
             }
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(QuerySql, ATransaction);
+            ATransaction.DataBaseObj.ExecuteNonQuery(QuerySql, ATransaction);
         }
 
         /// <summary>
@@ -5117,7 +5122,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TVerificationResultCollection VerificationResults = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -5334,7 +5339,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ACostCentreTable.GetCostCentreToReportToDBName(),
                 ACostCentreCode);
 
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, ATransaction);
+            object SqlResult = ATransaction.DataBaseObj.ExecuteScalar(QuerySql, ATransaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -5519,7 +5524,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -5648,7 +5653,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             bool ReturnValue = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -5683,7 +5688,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
                             AGeneralLedgerMasterPeriodTable.GetActualBaseDBName());
 
-                        DataTable dT = DBAccess.GDBAccessObj.SelectDT(Query, "DataTable", Transaction);
+                        DataTable dT = Transaction.DataBaseObj.SelectDT(Query, "DataTable", Transaction);
 
                         if ((dT != null) && (dT.Rows.Count > 0))
                         {
@@ -5728,7 +5733,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             bool ReturnValue = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -5785,7 +5790,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
@@ -5823,7 +5828,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             ACostCentreTable.GetPostingCostCentreFlagDBName());
 
                         AGeneralLedgerMasterTable GeneralLedgerMasterTable = new AGeneralLedgerMasterTable();
-                        DBAccess.GDBAccessObj.SelectDT(GeneralLedgerMasterTable, Query, Transaction);
+                        Transaction.DataBaseObj.SelectDT(GeneralLedgerMasterTable, Query, Transaction);
 
                         foreach (DataRow Row in GeneralLedgerMasterTable.Rows)
                         {

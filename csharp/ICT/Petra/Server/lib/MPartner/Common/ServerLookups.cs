@@ -72,23 +72,22 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         public static Boolean GetPartnerShortName(Int64 APartnerKey,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
-            Boolean AMergedPartners)
+            Boolean AMergedPartners = true)
         {
             Boolean ReturnValue = false;
-            TDBTransaction ReadTransaction = new TDBTransaction();
             TStdPartnerStatusCode PartnerStatus = TStdPartnerStatusCode.spscACTIVE;
-            String PartnerShortName = null;
-            TPartnerClass PartnerClass = TPartnerClass.BANK;
+            string PartnerShortName = String.Empty;
+            TPartnerClass PartnerClass = TPartnerClass.FAMILY;
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ATransaction : ref ReadTransaction,
-                AEncapsulatedDBAccessCode : delegate
+            TDBTransaction Transaction = new TDBTransaction();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
                     ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName,
-                        out PartnerClass, out PartnerStatus, ReadTransaction.DataBaseObj);
+                        out PartnerClass, out PartnerStatus, Transaction);
                 });
-
-            APartnerShortName = PartnerShortName;
-            APartnerClass = PartnerClass;
 
             if ((!AMergedPartners)
                 && (PartnerStatus == TStdPartnerStatusCode.spscMERGED))
@@ -96,20 +95,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 ReturnValue = false;
             }
 
-            return ReturnValue;
-        }
+            APartnerShortName = PartnerShortName;
+            APartnerClass = PartnerClass;
 
-        /// <summary>
-        /// Gets the ShortName of a Partner.
-        /// </summary>
-        /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
-        /// <param name="APartnerShortName">ShortName for the found Partner</param>
-        /// <param name="APartnerClass">Partner Class of the found Partner</param>
-        /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
-        public static Boolean GetPartnerShortName(Int64 APartnerKey, out String APartnerShortName, out TPartnerClass APartnerClass)
-        {
-            return GetPartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, true);
+            return ReturnValue;
         }
 
         /// <summary>
@@ -139,7 +128,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             DataTable GiftDestTable = null;
             string PartnerGiftDestinationTable = "PartnerGiftDestination";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -147,7 +136,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     try
                     {
-                        GiftDestTable = DBAccess.GDBAccessObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
+                        GiftDestTable = Transaction.DataBaseObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
 
                         if ((GiftDestTable != null) && (GiftDestTable.Rows.Count > 0))
                         {
@@ -195,7 +184,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ATransaction : ref ReadTransaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                ref ReadTransaction,
                 AEncapsulatedDBAccessCode : delegate
                 {
                     ReturnValue = PartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
@@ -239,7 +230,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             TDBTransaction readTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref readTransaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                ref readTransaction,
                 delegate
                 {
                     PPartnerTable partnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
@@ -275,7 +268,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                                    "WHERE a_ledger.p_partner_key_n = " + APartnerKey +
                                    " OR a_valid_ledger_number.p_partner_key_n = " + APartnerKey;
 
-                    if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(Query, ReadTransaction)) > 0)
+                    if (Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar(Query, ReadTransaction)) > 0)
                     {
                         Ret = true;
                     }
@@ -328,7 +321,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         PPartnerTypeTable.GetTypeCodeDBName(),
                         MPartnerConstants.PARTNERTYPE_COSTCENTRE);
 
-                    NumPartnerWithTypeCostCentre = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(sQL, Transaction));
+                    NumPartnerWithTypeCostCentre = Convert.ToInt32(Transaction.DataBaseObj.ExecuteScalar(sQL, Transaction));
 
                     if (APartnerKey > 0)
                     {
@@ -780,8 +773,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             // and a user double-clicks on a partner line in the Grid that is not the one for which the
             // Partner Info is currently displayed.
             TDataBase DBConnectionObj =
-                (ASeparateDBConnection) ? DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo")
-                : DBAccess.GDBAccessObj;
+                DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo");
             try
             {
                 ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
@@ -869,7 +861,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             PPartnerTable PartnerTbl = null;
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
                 ref ReadTransaction,
                 delegate
                 {
@@ -918,7 +911,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             MExtractMasterRow TemplateRow = TemplateExtractDT.NewRowTyped(false);
             TemplateRow.ExtractName = AExtractName;
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
                     ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);
@@ -991,7 +984,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 String PartnerShortName;
                 TPartnerClass PartnerClass;
 
-                if (MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass, out PartnerStatus))
+                if (MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass, out PartnerStatus, ReadTransaction))
                 {
                     // we have a partner but it's not an organisation
                     throw new EOPAppException(
@@ -1220,7 +1213,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         PPartnerTable.GetPartnerKeyDBName(),
                         PUnitTable.GetPartnerKeyDBName(),
                         APartnerKey);
-                    DataTable t = DBAccess.GDBAccessObj.SelectDT(sql, "UnitInfo", Transaction);
+                    DataTable t = Transaction.DataBaseObj.SelectDT(sql, "UnitInfo", Transaction);
 
                     if (t.Rows.Count > 0)
                     {

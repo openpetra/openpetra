@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.Verification;
 
 using Ict.Petra.Shared.MFinance;
@@ -85,7 +86,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void TCommonAccountingTool_(string ABatchDescription)
         {
-            FBatchTDS = TGLPosting.CreateABatch(FLedgerInfo.LedgerNumber);
+            FBatchTDS = TGLPosting.CreateABatch(FLedgerInfo.LedgerNumber, new TDBTransaction());
             FBaseCurrencyInfo = new TCurrencyInfo(FLedgerInfo.BaseCurrency);
             FBatchRow = FBatchTDS.ABatch[0];
             FBatchRow.BatchDescription = ABatchDescription;

@@ -226,7 +226,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber, short ALimit)
         {
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetImportedBankStatements");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             string SqlStmt = "SELECT * FROM PUB.a_ep_statement " +
                 "WHERE a_ledger_number_i = " + ALedgerNumber.ToString() + " " +
@@ -238,7 +239,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
 
             AEpStatementTable result = new AEpStatementTable();
-            DBAccess.GDBAccessObj.SelectDT(result, SqlStmt, ReadTransaction);
+            db.SelectDT(result, SqlStmt, ReadTransaction);
 
             ReadTransaction.Rollback();
 
@@ -352,7 +353,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBankStatementTransactionsAndMatches");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             BankImportTDS ResultDataset = new BankImportTDS();
             string MyClientID = DomainManager.GClientID.ToString();
@@ -400,7 +402,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     "AND pbd.p_banking_details_key_i = bd.p_banking_details_key_i " +
                     "AND p.p_partner_key_n = pbd.p_partner_key_n";
 
-                DataTable PartnerByBankAccount = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
+                DataTable PartnerByBankAccount = db.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
                 PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
 
                 // load all partner short names of matches
@@ -412,7 +414,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     "AND t.a_match_text_c = m.a_match_text_c " +
                     "AND m.p_donor_key_n = p.p_partner_key_n";
 
-                PartnerByDonorKey = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerName, "partnerByDonorKey", Transaction);
+                PartnerByDonorKey = db.SelectDT(sqlLoadPartnerName, "partnerByDonorKey", Transaction);
                 PartnerByDonorKey.DefaultView.Sort = "PartnerKey";
 
                 // get all recipients that have been merged
@@ -421,7 +423,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, p.p_status_code_c AS StatusCode FROM PUB_a_ep_match m, PUB_p_partner p " +
                         "WHERE (m.p_recipient_key_n = p.p_partner_key_n OR m.p_donor_key_n = p.p_partner_key_n) AND p.p_status_code_c = '{0}'",
                         MPartnerConstants.PARTNERSTATUS_MERGED);
-                DataTable MergedPartners = DBAccess.GDBAccessObj.SelectDT(sqlGetMergedRecipients, "mergedPartners", Transaction);
+                DataTable MergedPartners = db.SelectDT(sqlGetMergedRecipients, "mergedPartners", Transaction);
                 MergedPartners.DefaultView.Sort = "PartnerKey";
 
                 // get all recipients that are not active anymore
@@ -430,10 +432,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, p.p_status_code_c AS StatusCode FROM PUB_a_ep_match m, PUB_p_partner p " +
                         "WHERE m.p_recipient_key_n = p.p_partner_key_n AND p.p_status_code_c <> '{0}'",
                         MPartnerConstants.PARTNERSTATUS_ACTIVE);
-                DataTable NotActiveRecipients = DBAccess.GDBAccessObj.SelectDT(sqlGetNotActiveRecipients, "notActiveRecipients", Transaction);
+                DataTable NotActiveRecipients = db.SelectDT(sqlGetNotActiveRecipients, "notActiveRecipients", Transaction);
                 NotActiveRecipients.DefaultView.Sort = "PartnerKey";
-
-                Transaction.Rollback();
 
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
 
@@ -592,7 +592,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             string optionShortName1 = names[0] + ", " + names[1];
                             string optionShortName2 = names[1] + ", " + names[0];
 
-                            DataTable partner = DBAccess.GDBAccessObj.SelectDT(String.Format(sql,
+                            DataTable partner = db.SelectDT(String.Format(sql,
                                     optionShortName1,
                                     optionShortName2), "partner", Transaction);
 
@@ -646,7 +646,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
                 TempDataset.ThrowAwayAfterSubmitChanges = true;
                 // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
-                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true));
+                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true), db);
             }
             catch (Exception e)
             {
@@ -668,7 +668,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             OdbcParameter paramLedgerNumber = new OdbcParameter("ledgerNumber", OdbcType.Int);
             paramLedgerNumber.Value = ALedgerNumber;
 
-            DBAccess.GDBAccessObj.SelectDT(ResultDataset.AEpMatch,
+            db.SelectDT(ResultDataset.AEpMatch,
                 sqlLoadMatchesOfStatement,
                 null,
                 new OdbcParameter[] { param, paramLedgerNumber }, -1, -1);
@@ -722,8 +722,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 "WHERE l.a_base_currency_c = ac.a_currency_code_c " +
                 "AND l.a_ledger_number_i = " + ALedgerNumber.ToString();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            DataTable RightCurrency = DBAccess.GDBAccessObj.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBaseCurrencyCode");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            DataTable RightCurrency = db.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
             Transaction.Rollback();
 
             string CurrencyCode = "N/A";
@@ -1129,7 +1130,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             DateTime BatchDateEffective = stmt.Date;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateGiftBatch");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             if (!TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref BatchDateEffective, out DateEffectiveYearNumber,
                     out DateEffectivePeriodNumber,
@@ -1199,7 +1201,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 param.Value = stmt.BankAccountKey;
 
                 PBankTable bankTable = new PBankTable();
-                DBAccess.GDBAccessObj.SelectDT(bankTable, sqlGetBankSortCode, Transaction, new OdbcParameter[] { param }, 0, 0);
+                db.SelectDT(bankTable, sqlGetBankSortCode, Transaction, new OdbcParameter[] { param }, 0, 0);
 
                 MatchedGiftReference = bankTable[0].BranchCode + " " + stmt.Date.Day.ToString();
             }
@@ -1385,7 +1387,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             AVerificationResult = null;
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateGLBatch");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
                     Transaction))
@@ -1409,8 +1412,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
             Transaction.Rollback();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
-            GLBatchTDS GLDS = TGLTransactionWebConnector.CreateABatch(ALedgerNumber);
+            GLBatchTDS GLDS = TGLPosting.CreateABatch(ALedgerNumber, Transaction, true);
 
             ABatchRow glbatchRow = GLDS.ABatch[0];
             glbatchRow.BatchPeriod = BatchPeriod;
@@ -1520,7 +1524,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             TVerificationResultCollection VerificationResult;
 
             TSubmitChangesResult result = TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDS,
-                out VerificationResult);
+                out VerificationResult, Transaction);
 
             if (result == TSubmitChangesResult.scrOK)
             {

@@ -621,7 +621,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ref AccountsPayableTDS APDataset)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, false, true);
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, new TDBTransaction(), false);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -1135,7 +1135,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, false, true);
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, new TDBTransaction(), false);
 
             ABatchRow batch = GLDataset.ABatch[0];
 

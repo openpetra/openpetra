@@ -60,60 +60,6 @@ namespace Ict.Petra.Server.MCommon
         /// <param name="APartnerShortName">Returns the ShortName.</param>
         /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
         /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
-        /// <returns>True if partner was found, otherwise false.</returns>
-        public static Boolean RetrievePartnerShortName(Int64 APartnerKey,
-            out String APartnerShortName,
-            out TPartnerClass APartnerClass,
-            out TStdPartnerStatusCode APartnerStatus,
-            TDataBase ADataBase = null)
-        {
-            bool Result = false;
-
-            TPartnerClass tmpPartnerClass = new TPartnerClass();
-            TStdPartnerStatusCode tmpPartnerStatus = new TStdPartnerStatusCode();
-            string tmpPartnerShortName = "";
-
-            if (APartnerKey != 0)
-            {
-                TDBTransaction ReadTransaction = null;
-
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref ReadTransaction,
-                    delegate
-                    {
-                        Result = RetrievePartnerShortName(APartnerKey,
-                            out tmpPartnerShortName,
-                            out tmpPartnerClass,
-                            out tmpPartnerStatus,
-                            ReadTransaction);
-                    });
-            }
-            else
-            {
-                APartnerClass = new TPartnerClass();
-
-                Result = true;                //partner key key 0 should be valid
-            }
-
-            APartnerShortName = tmpPartnerShortName;
-            APartnerClass = tmpPartnerClass;
-            APartnerStatus = tmpPartnerStatus;
-
-            return Result;
-        }
-
-        /// <summary>
-        /// Retrieves the Partner ShortName, the PartnerClass and PartnerStatus.
-        /// </summary>
-        /// <param name="APartnerKey">PartnerKey to identify the Partner.</param>
-        /// <param name="APartnerShortName">Returns the ShortName.</param>
-        /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
-        /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
         /// <param name="ATransaction">Open DB Transaction.</param>
         /// <returns>True if partner was found, otherwise false.</returns>
         public static Boolean RetrievePartnerShortName(Int64 APartnerKey,

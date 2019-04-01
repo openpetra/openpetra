@@ -58,20 +58,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            return TGLPosting.CreateABatch(ALedgerNumber, true, true);
-        }
-
-        /// <summary>
-        /// create a new batch with a consecutive batch number in the ledger,
-        /// and immediately store the batch and the new number in the database
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ACommitTransaction"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction)
-        {
-            return TGLPosting.CreateABatch(ALedgerNumber, true, ACommitTransaction);
+            return TGLPosting.CreateABatch(ALedgerNumber, new TDBTransaction(), true);
         }
 
         /// <summary>
@@ -112,11 +99,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -186,7 +174,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 ABatchTable.GetTableDBName(),
                                 ABatchTable.GetLedgerNumberDBName(),
                                 ALedgerNumber);
-                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
+                        db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
                             MainDS.ABatch.TableName, Transaction);
                     });
 
@@ -230,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -317,7 +305,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -408,7 +396,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -482,7 +470,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -556,7 +544,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -621,7 +609,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -679,7 +667,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -760,7 +748,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -825,7 +813,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -890,7 +878,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -971,7 +959,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1045,7 +1033,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1120,7 +1108,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1194,7 +1182,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1261,7 +1249,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1333,7 +1321,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1407,7 +1395,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1465,7 +1453,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1523,7 +1511,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1575,7 +1563,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1626,7 +1614,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1678,7 +1666,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string AnalysisAttrList = string.Empty;
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1751,7 +1739,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1922,7 +1910,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -1974,7 +1962,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2031,7 +2019,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2075,7 +2063,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLSetupTDS MainDS = new GLSetupTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2139,7 +2127,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2199,11 +2187,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringBatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2243,7 +2232,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         //    // FilterByBatchStatus is empty
                         //}
 
-                        DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus,
+                        db.Select(MainDS, SelectClause + FilterByBatchStatus,
                             MainDS.ARecurringBatch.TableName, Transaction);
                     });
 
@@ -2287,7 +2276,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2372,7 +2361,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2430,7 +2419,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2489,7 +2478,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string AnalysisAttrList = string.Empty;
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2600,7 +2589,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2656,7 +2645,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2714,7 +2703,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
@@ -2740,12 +2729,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// this will store all new and modified batches, journals, transactions
         /// </summary>
-        /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult, TDBTransaction ATransaction)
         {
             AVerificationResult = new TVerificationResultCollection();
             TVerificationResultCollection VerificationResult = AVerificationResult;
@@ -2803,11 +2789,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             List <Int32>ListAllGLBatchesToProcess = new List <int>();
             Int32 LedgerNumber = -1;
 
-            TDBTransaction Transaction = null;
+            TDataBase db;
+            TDBTransaction Transaction;
+            if (ATransaction.Valid)
+            {
+                Transaction = ATransaction;
+                db = ATransaction.DataBaseObj;
+            }
+            else
+            {
+                db = DBAccess.SimpleEstablishDBConnection("SaveGLBatchTDS");
+                Transaction = new TDBTransaction();
+            }
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     delegate
                     {
@@ -3049,7 +3046,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                             GLBatchTDS BatchDS = new GLBatchTDS();
 
-                            DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
+                            db.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
 
                             foreach (ABatchRow batch in BatchDS.ABatch.Rows)
                             {
@@ -3088,7 +3085,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             if (AllValidationsOK)
             {
                 //Need to save changes before deleting any transactions
-                GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                GLBatchTDSAccess.SubmitChanges(AInspectDS, db);
 
                 SubmissionResult = TSubmitChangesResult.scrOK;
             }
@@ -3138,7 +3135,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
                 }
                 catch (Exception)
                 {
@@ -3206,7 +3203,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
                 }
                 catch (Exception)
                 {
@@ -3235,7 +3232,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
                 }
                 catch (Exception)
                 {
@@ -3260,7 +3257,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult);
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
                 }
                 catch (Exception)
                 {
@@ -3347,7 +3344,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.Merge(AMainDS);
             SubmitDS.AcceptChanges();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -3575,7 +3572,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.Merge(AMainDS);
             SubmitDS.AcceptChanges();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -3851,7 +3848,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.Merge(AMainDS);
             SubmitDS.AcceptChanges();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -4101,7 +4098,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             // not go down the number of levels needed).
 
             GLBatchTDS InspectDS = AInspectDS;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
                 ref Transaction,
@@ -4369,7 +4366,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             int BatchPeriod = -1;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
             bool Success = false;
             ResultingBalances = String.Empty;
@@ -4616,7 +4613,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int PeriodNumber, YearNr;
             bool TransactionInIntlCurrency = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             try
@@ -4871,14 +4868,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                " GROUP BY " + bBatchNumber + ";";
 
                 GLBatchTDS GLBatch = AGLBatch;
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateRecurringGLBatchJournalNumbering");
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
                     delegate
                     {
-                        DBAccess.GDBAccessObj.Select(GLBatch, SQLStatement, TempTableName, transaction);
+                        db.Select(GLBatch, SQLStatement, TempTableName, transaction);
                     });
 
                 //As long as Batches exist, rows will be returned
@@ -5057,7 +5055,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                " GROUP BY " + jBatchNumber + ", " + jJournalNumber + ";";
 
                 GLBatchTDS GLBatch = AGLBatch;
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
 
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -5378,7 +5376,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable NewTable = new DataTable("NewTable");
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,

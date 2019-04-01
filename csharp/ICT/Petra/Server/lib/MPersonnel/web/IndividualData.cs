@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         if (!ShortTermRow.IsStConfirmedOptionNull())
                         {
                             Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
-                                (ShortTermRow.StConfirmedOption, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                                (ShortTermRow.StConfirmedOption, out EventOrFieldName, out PartnerClass, out PartnerStatus, AReadTransaction);
                             GenAppRow.EventOrFieldName = EventOrFieldName;
                         }
                     }
@@ -255,7 +255,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         if (!GenAppRow.IsGenAppPossSrvUnitKeyNull())
                         {
                             Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
-                                (GenAppRow.GenAppPossSrvUnitKey, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                                (GenAppRow.GenAppPossSrvUnitKey, out EventOrFieldName, out PartnerClass, out PartnerStatus, AReadTransaction);
                             GenAppRow.EventOrFieldName = EventOrFieldName;
                         }
                     }
