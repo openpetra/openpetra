@@ -3453,12 +3453,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     delegate
                     {
                         MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, Transaction, out ChangesToCommit, AExcludeBatchRow);
-                    });
 
-                if (ChangesToCommit)
-                {
-                    GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
-                }
+                        if (ChangesToCommit)
+                        {
+                            GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
+                        }
+
+                    });
 
                 MainDS.AcceptChanges();
             }
