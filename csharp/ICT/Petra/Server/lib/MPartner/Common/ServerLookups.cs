@@ -80,7 +80,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TPartnerClass PartnerClass = TPartnerClass.FAMILY;
 
             TDBTransaction Transaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerShortName");
+
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -129,14 +131,16 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             string PartnerGiftDestinationTable = "PartnerGiftDestination";
 
             TDBTransaction Transaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerGiftDestination");
+
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
                     try
                     {
-                        GiftDestTable = Transaction.DataBaseObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
+                        GiftDestTable = db.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
 
                         if ((GiftDestTable != null) && (GiftDestTable.Rows.Count > 0))
                         {
@@ -183,8 +187,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TStdPartnerStatusCode PartnerStatus = TStdPartnerStatusCode.spscACTIVE;
 
             TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("VerifyPartner");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            db.BeginAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 ref ReadTransaction,
                 AEncapsulatedDBAccessCode : delegate
@@ -229,8 +234,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             Boolean IsActive = false;
 
             TDBTransaction readTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("PartnerHasActiveStatus");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            db.BeginAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 ref readTransaction,
                 delegate
@@ -257,10 +263,11 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerIsLinkedToCC(Int64 APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("PartnerIsLinkedToCC");
             Boolean Ret = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
                 delegate
                 {
@@ -268,7 +275,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                                    "WHERE a_ledger.p_partner_key_n = " + APartnerKey +
                                    " OR a_valid_ledger_number.p_partner_key_n = " + APartnerKey;
 
-                    if (Convert.ToInt32(ReadTransaction.DataBaseObj.ExecuteScalar(Query, ReadTransaction)) > 0)
+                    if (Convert.ToInt32(db.ExecuteScalar(Query, ReadTransaction)) > 0)
                     {
                         Ret = true;
                     }
@@ -294,9 +301,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             AValidLedgerNumberTable LinksTbl = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("PartnerOfTypeCCIsLinked");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
@@ -321,7 +329,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         PPartnerTypeTable.GetTypeCodeDBName(),
                         MPartnerConstants.PARTNERTYPE_COSTCENTRE);
 
-                    NumPartnerWithTypeCostCentre = Convert.ToInt32(Transaction.DataBaseObj.ExecuteScalar(sQL, Transaction));
+                    NumPartnerWithTypeCostCentre = Convert.ToInt32(db.ExecuteScalar(sQL, Transaction));
 
                     if (APartnerKey > 0)
                     {
@@ -397,8 +405,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 RequiredColumns.Add(PPartnerTable.GetRestrictedDBName());
                 RequiredColumns.Add(PPartnerTable.GetUserIdDBName());
                 RequiredColumns.Add(PPartnerTable.GetGroupIdDBName());
-
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("VerifyPartnerAndGetDetails");
+                ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 try
@@ -465,11 +473,12 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             Boolean NewTransaction;
             PPartnerTable PartnerTable;
             Boolean ReturnValue = true;
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("VerifyPartner");
 
             // initialise outout Arguments
             if (APartnerKey != 0)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 try
@@ -523,7 +532,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             PPartnerLocationTable PartnerLocationTable;
             Boolean ReturnValue = true;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("VerifyPartnerAtLocation");
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
             try
@@ -626,7 +636,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 RequiredColumns.Add(PPartnerTable.GetStatusCodeDBName());
                 RequiredColumns.Add(PPartnerTable.GetPartnerClassDBName());
 
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("MergedPartnerDetails");
+                ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -859,9 +870,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             out bool AAnonymousDonor)
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerReceiptingInfo");
             PPartnerTable PartnerTbl = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            db.BeginAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 ref ReadTransaction,
                 delegate
@@ -911,7 +923,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             MExtractMasterRow TemplateRow = TemplateExtractDT.NewRowTyped(false);
             TemplateRow.ExtractName = AExtractName;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetExtractDescription");
+            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
                     ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);
@@ -958,8 +971,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TLogging.LogAtLevel(9, "TPartnerServerLookups.GetPartnerFoundationStatus called!");
 
             POrganisationTable OrganisationDT = new POrganisationTable();
-
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerFoundationStatus");
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -1033,8 +1046,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TLogging.LogAtLevel(9, "TPartnerServerLookups.GetRecentlyUsedPartner called!");
 
             PRecentPartnersTable RecentPartnersDT = new PRecentPartnersTable();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetRecentlyUsedPartners");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -1064,7 +1078,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 PRecentPartnersRow RecentPartnerRow = (PRecentPartnersRow)RecentPartnerRows[Counter];
 
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                ReadTransaction = db.GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
@@ -1130,8 +1144,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             Int64 ReturnValue = 0;
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetFamilyKeyForPerson");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -1171,7 +1186,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         public static string GetCountryCodeFromSiteLedger()
         {
             bool NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCountryCodeFromSiteLedger");
+            TDBTransaction ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -1197,9 +1213,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         {
             string PartnerShortName = null;
             string CountryCode = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetUnitNameAndCountryCodeFromPartnerKey");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
@@ -1213,7 +1230,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         PPartnerTable.GetPartnerKeyDBName(),
                         PUnitTable.GetPartnerKeyDBName(),
                         APartnerKey);
-                    DataTable t = Transaction.DataBaseObj.SelectDT(sql, "UnitInfo", Transaction);
+                    DataTable t = db.SelectDT(sql, "UnitInfo", Transaction);
 
                     if (t.Rows.Count > 0)
                     {

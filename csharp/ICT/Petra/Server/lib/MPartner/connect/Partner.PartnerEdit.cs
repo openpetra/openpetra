@@ -1757,8 +1757,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
 
             PartnerTypeFamilyMembersDT = new PartnerEditTDSFamilyMembersTable();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetFamilyMembersInternal");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
@@ -1769,7 +1770,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (ACountOnly)
                 {
-                    ACount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                    ACount = Convert.ToInt32(db.ExecuteScalar(
                             "SELECT COUNT(*) " +
                             "FROM PUB_" + PPersonTable.GetTableDBName() +
                             " INNER JOIN " + "PUB_" + PPartnerTable.GetTableDBName() +
@@ -1792,7 +1793,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TmpDS = new DataSet();
                     FamilyPersonsDT = new PPersonTable();
                     TmpDS.Tables.Add(FamilyPersonsDT);
-                    DBAccess.GDBAccessObj.Select(TmpDS,
+                    db.Select(TmpDS,
                         "SELECT " + "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                         PPartnerTable.GetPartnerKeyDBName() + ", " +
                         PPersonTable.GetFamilyNameDBName() + ", " +

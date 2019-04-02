@@ -721,12 +721,12 @@ namespace Tests.MFinance.Server.Gift
             // Assert
             //
 
-            // Primary Assert: Chaeck that the RecurringGiftDetail and the newly created GiftDetail have the correct RecipientLedgerNumber
-            TDBTransaction Transaction = null;
+            // Primary Assert: Check that the RecurringGiftDetail and the newly created GiftDetail have the correct RecipientLedgerNumber
+            TDBTransaction Transaction = new TDBTransaction();
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
             AGiftDetailRow GiftDetailRow = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -736,6 +736,8 @@ namespace Tests.MFinance.Server.Gift
 
                     GiftBatchNumber = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction)[0].LastGiftBatchNumber;
                     GiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
+
+                    Transaction.Rollback();
                 });
 
             Assert.IsNotNull(
@@ -751,7 +753,7 @@ namespace Tests.MFinance.Server.Gift
             // Cleanup: Delete test records
 
             bool SubmissionOK = true;
-
+            Transaction = new TDBTransaction();
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -760,6 +762,7 @@ namespace Tests.MFinance.Server.Gift
                 {
                     AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, GiftDetailRow, Transaction);
                     ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
+                    Transaction.Commit();
                 });
 
             DataTable PartnerCostCentreTbl = null;

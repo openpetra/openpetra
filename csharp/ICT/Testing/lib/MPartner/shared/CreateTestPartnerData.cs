@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -178,16 +178,19 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewChurchPartner");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
-            // make sure denomation "UNKNOWN" exists as this is the default value
-            if (!PDenominationAccess.Exists("UNKNOWN", DBAccess.GDBAccessObj.Transaction))
+            // make sure denomination "UNKNOWN" exists as this is the default value
+            if (!PDenominationAccess.Exists("UNKNOWN", Transaction))
             {
                 PDenominationTable DenominationTable = new PDenominationTable();
                 PDenominationRow DenominationRow = DenominationTable.NewRowTyped();
                 DenominationRow.DenominationCode = "UNKNOWN";
                 DenominationRow.DenominationName = "Unknown";
                 DenominationTable.Rows.Add(DenominationRow);
-                PDenominationAccess.SubmitChanges(DenominationTable, DBAccess.GDBAccessObj.Transaction);
+                PDenominationAccess.SubmitChanges(DenominationTable, Transaction);
+                Transaction.Commit();
             }
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_CHURCH;
@@ -319,7 +322,10 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new gift info
         public static AGiftBatchRow CreateNewGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
         {
-            ALedgerAccess.LoadAll(AGiftDS, DBAccess.GDBAccessObj.Transaction);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewGiftInfo");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadAll(AGiftDS, Transaction);
 
             AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch");
 
@@ -359,7 +365,10 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new recurring gift info
         public static ARecurringGiftBatchRow CreateNewRecurringGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
         {
-            ALedgerAccess.LoadAll(AGiftDS, DBAccess.GDBAccessObj.Transaction);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewRecurringGiftInfo");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadAll(AGiftDS, Transaction);
 
             AGiftDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(AGiftDS.ALedger[0].LedgerNumber);
 
@@ -393,7 +402,10 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new AP info
         public static AApDocumentRow CreateNewAPInfo(Int64 APartnerKey, ref AccountsPayableTDS AMainDS)
         {
-            ALedgerTable LedgerTable = ALedgerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewAPInfo");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerTable LedgerTable = ALedgerAccess.LoadAll(Transaction);
 
             AMainDS = TAPTransactionWebConnector.CreateAApDocument(((ALedgerRow)LedgerTable.Rows[0]).LedgerNumber, APartnerKey, true);
 
@@ -419,8 +431,11 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new PM data
         public static PDataLabelTable CreateNewPMData(long AFromPartnerKey, long AToPartnerKey, IndividualDataTDS AMainDS)
         {
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewPMData");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Create a new DataLabel record
-            PDataLabelTable AllDataLabelTable = PDataLabelAccess.LoadAll(DBAccess.GDBAccessObj.Transaction);
+            PDataLabelTable AllDataLabelTable = PDataLabelAccess.LoadAll(Transaction);
             PDataLabelTable DataLabelTable = new PDataLabelTable();
             PDataLabelRow DataLabelRow = DataLabelTable.NewRowTyped();
 

@@ -287,6 +287,27 @@ namespace Ict.Common.DB
             }
         }
 
+        /// if we commit or rollback a transaction, make sure we drop the default transaction of the connection as well
+        public bool ClearTransaction(TDBTransaction ToClear)
+        {
+            WaitForCoordinatedDBAccess();
+
+            try
+            {
+                if (FTransaction != null && ToClear.TransactionIdentifier == FTransaction.TransactionIdentifier)
+                {
+                    FTransaction = null;
+                    return true;
+                }
+            }
+            finally
+            {
+                ReleaseCoordinatedDBAccess();
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// The current Transaction, if there is any.  <em>WARNING: Must only ever be inquired from a code block that
         /// called <see cref="WaitForCoordinatedDBAccess"/> as otherwise the value is unreliable!!!</em>

@@ -397,6 +397,11 @@ namespace Ict.Common.DB
         /// false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool ADisposing)
         {
+            if (FTDataBaseInstanceThatTransactionBelongsTo != null)
+            {
+                FTDataBaseInstanceThatTransactionBelongsTo.ClearTransaction(this);
+            }
+
             if (ADisposing)
             {
                 if (FWrappedTransaction != null)

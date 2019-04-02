@@ -77,9 +77,10 @@ namespace Ict.Petra.Server.MPartner.Common
                 AFieldPartnerKey = DomainManager.GSiteKey;
             }
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetNewPartnerKey");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                 delegate
                 {
@@ -110,27 +111,25 @@ namespace Ict.Petra.Server.MPartner.Common
         public static bool SubmitNewPartnerKey(System.Int64 AFieldPartnerKey, System.Int64 AOriginalDefaultKey, ref System.Int64 ANewPartnerKey)
         {
             bool ReturnValue = true;
-            TDBTransaction ReadTransaction1;
-            TDBTransaction ReadTransaction2;
+            TDBTransaction ReadTransaction;
             TDBTransaction WriteTransaction;
-            Boolean NewTransaction1;
-            Boolean NewTransaction2;
-            Boolean NewTransaction3;
+            Boolean NewTransaction;
             PPartnerLedgerTable PartnerLedgerDT;
 
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("SubmitNewPartnerKey");
             System.Int64 CurrentDefaultPartnerKey;
 
             if (ANewPartnerKey == AOriginalDefaultKey)
             {
                 // The user has selected the default
-                ReadTransaction1 = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction1);
+                ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 try
                 {
                     // Fetch the partner ledger record to update the last key
 
-                    PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction1);
+                    PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
                     CurrentDefaultPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
 
                     if (ANewPartnerKey != CurrentDefaultPartnerKey)
@@ -141,34 +140,34 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     // Now check that this does not exist, and increment until we
                     // find one which does not
-                    while (PPartnerAccess.Exists(ANewPartnerKey, ReadTransaction1))
+                    while (PPartnerAccess.Exists(ANewPartnerKey, ReadTransaction))
                     {
                         ANewPartnerKey = ANewPartnerKey + 1;
                     }
                 }
                 finally
                 {
-                    if (NewTransaction1)
+                    if (NewTransaction)
                     {
-                        ReadTransaction1.Commit();
+                        ReadTransaction.Rollback();
 
                         if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                         {
-                            Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: committed own transaction.");
+                            Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: rolled back own transaction.");
                         }
                     }
                 }
 
                 PartnerLedgerDT[0].LastPartnerId = (int)(ANewPartnerKey - PartnerLedgerDT[0].PartnerKey);
 
-                WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction2);
+                WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 try
                 {
                     PPartnerLedgerAccess.SubmitChanges(PartnerLedgerDT, WriteTransaction);
 
-                    if (NewTransaction2)
+                    if (NewTransaction)
                     {
                         WriteTransaction.Commit();
                     }
@@ -177,7 +176,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     TLogging.Log("An Exception occured during the submission of a new PartnerKey:" + Environment.NewLine + Exc.ToString());
 
-                    if (NewTransaction2)
+                    if (NewTransaction)
                     {
                         WriteTransaction.Rollback();
                     }
@@ -188,13 +187,13 @@ namespace Ict.Petra.Server.MPartner.Common
             // end of: The user has selected the default
             else
             {
-                ReadTransaction2 = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction3);
+                ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 try
                 {
                     // check if the Partner Key is already being used
-                    if (PPartnerAccess.Exists(ANewPartnerKey, ReadTransaction2))
+                    if (PPartnerAccess.Exists(ANewPartnerKey, ReadTransaction))
                     {
                         ANewPartnerKey = -1;
                         ReturnValue = false;
@@ -202,13 +201,13 @@ namespace Ict.Petra.Server.MPartner.Common
                 }
                 finally
                 {
-                    if (NewTransaction3)
+                    if (NewTransaction)
                     {
-                        ReadTransaction2.Commit();
+                        ReadTransaction.Rollback();
 
                         if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                         {
-                            Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: committed own transaction.");
+                            Console.WriteLine("TNewPartnerKey.SubmitNewPartnerKey: rolled back own transaction.");
                         }
                     }
                 }
@@ -235,9 +234,10 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ReservePartnerKeys");
             TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
             
-            DBAccess.GDBAccessObj.AutoTransaction(ref ReadWriteTransaction,
+            db.AutoTransaction(ref ReadWriteTransaction,
                 ref SubmitChangesResult,
                 delegate
                 {
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     NextPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
 
                     Int64 NextUsedKey =
-                        Convert.ToInt64(DBAccess.GDBAccessObj.ExecuteScalar("SELECT MIN(p_partner_key_n) FROM PUB_p_partner WHERE p_partner_key_n >= " +
+                        Convert.ToInt64(db.ExecuteScalar("SELECT MIN(p_partner_key_n) FROM PUB_p_partner WHERE p_partner_key_n >= " +
                                 NextPartnerKey.ToString(), ReadWriteTransaction));
 
                     if (NextUsedKey < NextPartnerKey + NumberOfKeys)
