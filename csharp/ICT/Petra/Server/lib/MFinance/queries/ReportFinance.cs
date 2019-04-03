@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -212,13 +212,14 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                          " AND motive.a_receipt_l=true");
             DataTable tempTbl = null;
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TotalGiftsThroughFieldMonth");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-                    tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                    tempTbl = db.SelectDT(SqlQuery, "result", Transaction);
                 });
 
             DataTable resultTable = new DataTable();
@@ -350,13 +351,14 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_receipt_l=true");
 
             DataTable tempTbl = null;
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TotalGiftsThroughFieldYear");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-                    tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                    tempTbl = db.SelectDT(SqlQuery, "result", Transaction);
                 });
 
             DataTable resultTable = new DataTable();
@@ -542,13 +544,14 @@ namespace Ict.Petra.Server.MFinance.queries
                     +
                     "ORDER BY recipient.p_partner_short_name_c");
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("SelectGiftRecipients");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-                    TotalGiftsPerRecipient = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                    TotalGiftsPerRecipient = db.SelectDT(SqlQuery, "result", Transaction);
                 });
 
             //

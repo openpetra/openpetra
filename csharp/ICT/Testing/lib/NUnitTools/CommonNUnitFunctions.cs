@@ -132,14 +132,15 @@ namespace Ict.Testing.NUnitTools
                 else if (line == "\\.")
                 {
                     sw.Close();
-                    TDBTransaction LoadTransaction = null;
+                    TDBTransaction LoadTransaction = new TDBTransaction();
+                    TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadTestDataMySQL");
                     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
-                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref LoadTransaction,
+                    db.BeginAutoTransaction(IsolationLevel.Serializable, ref LoadTransaction,
                         ref SubmissionResult,
                         delegate
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery("LOAD DATA LOCAL INFILE '" + tempfile + "' INTO TABLE " + currenttable,
+                            db.ExecuteNonQuery("LOAD DATA LOCAL INFILE '" + tempfile + "' INTO TABLE " + currenttable,
                                 LoadTransaction);
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         });
@@ -221,15 +222,17 @@ namespace Ict.Testing.NUnitTools
         /// <returns>ledgernumber of new ledger</returns>
         public static int CreateNewLedger(DateTime? AStartDate = null)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("NUnitFunctions.CreateNewLedger");
             ALedgerTable ledgers = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            db.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                 delegate
                 {
                     ledgers = ALedgerAccess.LoadAll(ReadTransaction);
                 });
+            db.CloseDBConnection();
 
             ledgers.DefaultView.Sort = ALedgerTable.GetLedgerNumberDBName() + " DESC";
             int newLedgerNumber = ((ALedgerRow)ledgers.DefaultView[0].Row).LedgerNumber + 1;

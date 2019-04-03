@@ -4832,7 +4832,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 Catalog.GetString("Posting gift batches"),
                 AGiftBatchNumbers.Count * 3 + 1);
 
-            TDataBase db = DBAccess.GetDBAccessObj(ADataBase);
+            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "PostGiftBatches");
 
             try
             {

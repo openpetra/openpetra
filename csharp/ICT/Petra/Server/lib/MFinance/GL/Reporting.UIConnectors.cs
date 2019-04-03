@@ -2711,7 +2711,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                        " AND PUB_a_account.a_account_code_c = PUB_a_account_hierarchy_detail.a_reporting_account_code_c" +
                                        " AND PUB_a_account.a_posting_status_l";
 
-                        DataTable NewTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "NewTable", ATransaction);
+                        DataTable NewTable = ATransaction.DataBaseObj.SelectDT(Query, "NewTable", ATransaction);
 
                         // if posting accounts found
                         if (NewTable.Rows.Count > 0)
@@ -4263,17 +4263,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="APrivateDB"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string GetTransactionCurrency(int ALedgerNumber, int ABatchNumber, Boolean APrivateDB)
+        public static string GetTransactionCurrency(int ALedgerNumber, int ABatchNumber)
         {
-            TDBTransaction Transaction = null;
-            TDataBase dbConnection = APrivateDB ? TReportingDbAdapter.EstablishDBConnection(APrivateDB, "GetTransactionCurrency")
-                                     : DBAccess.GDBAccessObj;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetTransactionCurrency");
             string ReturnValue = "";
 
-            dbConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
@@ -4285,10 +4283,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
                 }); // Get NewOrExisting AutoReadTransaction
 
-            if (APrivateDB)
-            {
-                dbConnection.CloseDBConnection();
-            }
+            db.CloseDBConnection();
 
             return ReturnValue;
         } // Get Transaction Currency

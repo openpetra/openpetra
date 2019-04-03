@@ -113,6 +113,13 @@ namespace Ict.Common.DB
             return ATransaction != null ? ATransaction.DataBaseObj : GDBAccessObj;
         }
 
+        /// reuse or create a new database connection
+        /// should replace GetDBAccessObj
+        public static TDataBase ReuseOrNewDBConnection(TDataBase ADataBase, string AName)
+        {
+            return ADataBase != null ? ADataBase : SimpleEstablishDBConnection(AName);
+        }
+
         /// <summary>
         /// Gets the <see cref="TDataBase"/> instance that gets passed in with Argument <paramref name="ADataBase"/>, or
         /// a new database instance in case <paramref name="ADataBase"/>

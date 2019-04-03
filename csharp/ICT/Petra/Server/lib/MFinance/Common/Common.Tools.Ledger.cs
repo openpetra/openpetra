@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MFinance.Common
             Dictionary <int, string>LedgerBaseCurrencyDictBackup = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.GetDBAccessObj(ADataBase);
+            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "PopulateLedgerDictionaries");
 
             try
             {
@@ -218,9 +218,10 @@ namespace Ict.Petra.Server.MFinance.Common
             #endregion Validate Arguments
 
             String ReturnValue = string.Empty;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "GetLedgerName");
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
                 "GetLedgerName",
@@ -228,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
                                     ALedgerNumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-                    DataTable tab = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
+                    DataTable tab = db.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
 
                     if (tab.Rows.Count > 0)
                     {
@@ -372,11 +373,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// instance, otherwise with the instance that gets passed in with this Argument!</param>
         private void GetDataRow(TDataBase ADataBase = null)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "GetDataRow");
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -422,12 +424,13 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void CommitLedgerChange(TDataBase ADataBase = null)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "CommitLedgerChange");
             Boolean SubmissionOK = false;
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -663,11 +666,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (BankAccountCode.Length == 0)
             {
-                TDBTransaction readTransaction = null;
+                TDBTransaction readTransaction = new TDBTransaction();
+                TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "GetDefaultBankAccount");
 
                 try
                 {
-                    DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum, ref readTransaction,
                         delegate
                         {
@@ -692,7 +696,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                                   " LIMIT 1;";
 
                                 DataTable latestAccountCode =
-                                    DBAccess.GetDBAccessObj(ADataBase).SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
+                                    db.SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
 
                                 // use the Bank Account of the previous Gift Batch
                                 if ((latestAccountCode != null) && (latestAccountCode.Rows.Count > 0))
@@ -892,11 +896,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private static ALedgerInitFlagRow FindRecord(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "FindRecord");
             ALedgerInitFlagTable LedgerInitFlagTable = null;
             ALedgerInitFlagRow Ret = null;
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                 delegate
                 {
@@ -920,10 +925,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADataBase"></param>
         public static void SetFlagValue(int ALedgerNumber, String AFlag, String AValue, TDataBase ADataBase = null)
         {
-            TDBTransaction ReadWriteTransaction = null;
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "SetFlagValue");
             Boolean SubmissionOK = false;
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadWriteTransaction,
                 ref SubmissionOK,
@@ -953,10 +959,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private static void DeleteFlag(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "DeleteFlag");
             Boolean SubmissionOK = true;
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 ref SubmissionOK,

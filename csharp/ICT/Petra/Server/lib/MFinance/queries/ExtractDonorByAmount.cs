@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,9 +79,10 @@ namespace Ict.Petra.Server.MFinance.queries
         {
             Boolean ReturnValue = false;
             Int32 ExtractId = -1;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("RunSpecialTreatment");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
                 delegate
                 {
                     DataTable giftdetails;
@@ -101,7 +102,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
                     // now run the database query
                     TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
-                    giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
+                    giftdetails = db.SelectDT(SqlStmt, "partners", Transaction,
                         SqlParameterList.ToArray());
 
                     // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button

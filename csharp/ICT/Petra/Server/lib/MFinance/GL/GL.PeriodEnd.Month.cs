@@ -84,10 +84,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 if (!res && !AInfoMode)
                 {
-                    TDBTransaction Transaction = null;
+                    TDBTransaction Transaction = new TDBTransaction();
+                    TDataBase db = DBAccess.SimpleEstablishDBConnection("PeriodMonthEnd");
                     AAccountingPeriodTable PeriodTbl = null;
 
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                    db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         ref Transaction,
                         delegate
@@ -194,7 +195,8 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         private void NoteForexRevalRequired(Int32 ALedgerNumber, Int32 AYear, Int32 ABatchPeriod)
         {
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("NoteForexRevalRequired");
             Boolean submissionOK = true;
 
             if (ABatchPeriod == FledgerInfo.NumberOfAccountingPeriods)
@@ -211,7 +213,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 ref transaction,
                 ref submissionOK,
                 delegate
@@ -227,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     " AND GLMP.a_glm_sequence_i=GLM.a_glm_sequence_i" +
                                     " AND GLMP.a_period_number_i=" + ABatchPeriod +
                                     " GROUP BY Account.a_account_code_c";
-                    DataTable Balance = DBAccess.GDBAccessObj.SelectDT(strSQL, "Balance", transaction);
+                    DataTable Balance = db.SelectDT(strSQL, "Balance", transaction);
 
                     foreach (DataRow Row in Balance.Rows)
                     {
@@ -278,8 +280,10 @@ namespace Ict.Petra.Server.MFinance.GL
             if (AInfoMode)
             {
                 AAccountingPeriodTable PeriodTbl = null;
-                TDBTransaction Transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                TDBTransaction Transaction = new TDBTransaction();
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("RunMonthEnd");
+                
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -597,8 +601,10 @@ namespace Ict.Petra.Server.MFinance.GL
             ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[2].Value = MFinanceConstants.BATCH_UNPOSTED;
 
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetUnpostedGiftInfo");
+
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
@@ -609,7 +615,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     " AND " + AGiftBatchTable.GetBatchStatusDBName() + " = ? " +
                                     " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName();
 
-                    FDataTable = DBAccess.GDBAccessObj.SelectDT(
+                    FDataTable = db.SelectDT(
                         strSQL, AAccountingPeriodTable.GetTableDBName(), transaction, ParametersArray);
                 });
         }
@@ -654,9 +660,10 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">the ledger Number</param>
         public GetSuspenseAccountInfo(int ALedgerNumber)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetSuspenseAccountInfo");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -726,9 +733,10 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public GetBatchInfo(Int32 ALedgerNumber, Int32 AYear, Int32 ABatchPeriod)
         {
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBatchInfo");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
@@ -740,7 +748,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     " AND a_batch_status_c <> '" + MFinanceConstants.BATCH_POSTED + "'" +
                                     " AND a_batch_status_c <> '" + MFinanceConstants.BATCH_CANCELLED + "'" +
                                     " ORDER BY a_batch_number_i";
-                    DBAccess.GDBAccessObj.SelectDT(Fbatches, strSQL, transaction);
+                    db.SelectDT(Fbatches, strSQL, transaction);
                 });
         }
 
