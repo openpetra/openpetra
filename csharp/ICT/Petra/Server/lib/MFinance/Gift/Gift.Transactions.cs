@@ -4410,7 +4410,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (ChangesToCommit)
             {
-                GiftBatchTDSAccess.SubmitChanges(MainDS);
+                GiftBatchTDSAccess.SubmitChanges(MainDS, ATransaction.DataBaseObj);
             }
 
             AGiftBatchRow GiftBatchRow = MainDS.AGiftBatch[0];
