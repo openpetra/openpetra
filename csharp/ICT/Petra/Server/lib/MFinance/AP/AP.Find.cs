@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -326,9 +326,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             Decimal PaidAmount = 0m;
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartPaidAmount");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
                 delegate

@@ -91,8 +91,10 @@ namespace Ict.Petra.Server.MFinance.Common
             intBaseCurrencyDigits = DIGIT_INIT_VALUE;
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
 
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadDatabase");
+
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
@@ -480,10 +482,11 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // Query the database using the specific period ...
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetDailyExchangeRate");
             ExchangeRateTDS allRates = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
@@ -552,7 +555,8 @@ namespace Ict.Petra.Server.MFinance.Common
             AExchangeRateToFind = decimal.MinValue;
             decimal ExchangeRateToFind = AExchangeRateToFind;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCorporateExchangeRate");
 
             ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
             ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
@@ -560,7 +564,7 @@ namespace Ict.Petra.Server.MFinance.Common
             templateRow.FromCurrencyCode = ACurrencyFrom;
             templateRow.ToCurrencyCode = ACurrencyTo;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {

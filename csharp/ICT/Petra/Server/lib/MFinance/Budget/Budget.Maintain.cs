@@ -84,11 +84,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             #endregion Validate Arguments
 
             BudgetTDS MainDS = new BudgetTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAllBudgetsForExport");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -173,11 +174,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             #endregion Validate Arguments
 
             BudgetTDS MainDS = new BudgetTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadBudgetsForYear");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -312,7 +314,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 bBudgetStatus + ", " + bComment + ", " + bDateCreated + ", " + bCreatedBy + ", " +
                 bDateModified + ", " + bModifiedBy + ", " + bModificationId + ";";
 
-            DBAccess.GDBAccessObj.Select(AMainDS, SQLStatement, AMainDS.ABudget.TableName, ATransaction);
+            ATransaction.DataBaseObj.Select(AMainDS, SQLStatement, AMainDS.ABudget.TableName, ATransaction);
         }
 
         /// <summary>
@@ -403,12 +405,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             ABudgetTable BudgetTableExistingAndImported = new ABudgetTable();
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportBudgets");
 
             // Go round a loop reading the file line by line
             string ImportLine = sr.ReadLine();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
@@ -803,11 +806,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ALedgerTable LedgerTable = null;
             AAccountingPeriodTable AccPeriodTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBudgetYearNumber");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -848,7 +852,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 DateTime currentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
                     ledgerRow.CurrentFinancialYear,
                     0,
-                    ledgerRow.NumberOfAccountingPeriods, DBAccess.GDBAccessObj);
+                    ledgerRow.NumberOfAccountingPeriods, db);
 
                 RetVal = (BudgetYear - currentYearEnd.Year + ledgerRow.CurrentFinancialYear);
             }
@@ -869,11 +873,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ALedgerTable LedgerTable = null;
             AAccountingPeriodTable AccPeriodTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("BudgetRevisionYearName");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate

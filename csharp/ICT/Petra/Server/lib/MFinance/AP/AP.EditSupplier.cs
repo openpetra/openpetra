@@ -77,8 +77,9 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             TDBTransaction ReadTransaction;
             bool NewTransaction = false;
             bool ReturnValue = false;
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CanFindSupplier");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -105,8 +106,9 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetData");
 
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
+            ReadTransaction = db.BeginTransaction(IsolationLevel.RepeatableRead, 5);
 
             try
             {
@@ -173,7 +175,9 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     AInspectDS.AApSupplier[0].DefaultDiscountPercentage = 0;
                 }
 
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("SubmitChanges");
+
+                SubmitChangesTransaction = db.BeginTransaction(IsolationLevel.Serializable);
 
                 try
                 {

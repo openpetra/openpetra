@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -235,13 +235,14 @@ namespace Ict.Petra.Server.MFinance.Gift
             LastGiftDS.Tables.Add(new ACurrencyTable());
             LastGiftDS.Tables.Add(new PPartnerTable());
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetLastGiftDetails");
             bool SubmissionOK = true;
 
             // Important: The IsolationLevel here needs to correspond with the IsolationLevel in the
             // Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector.LoadData Method
             // as otherwise the attempt of taking-out of a DB Transaction here will lead to Bug #4167!
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, ref Transaction, ref SubmissionOK,
                 delegate
                 {

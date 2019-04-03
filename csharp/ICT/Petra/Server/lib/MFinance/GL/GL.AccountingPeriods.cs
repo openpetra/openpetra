@@ -66,10 +66,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool GetCurrentPeriodDates(Int32 ALedgerNumber, out DateTime AStartDate, out DateTime AEndDate)
         {
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCurrentPeriodDates");
             AAccountingPeriodTable AccountingPeriodTable = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, ref transaction,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -157,9 +158,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static Int32 GetNumberOfPeriods(Int32 ALedgerNumber)
         {
             Int32 returnValue = 0;
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetNumberOfPeriods");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -284,9 +286,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             DateTime StartDatePeriod = new DateTime();
             DateTime EndDatePeriod = new DateTime();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPeriodDates");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -341,9 +344,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 yearDateBelongsTo = 99;
             DateTime yearStartDate = DateTime.Today;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("FindFinancialYearByDate");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -427,8 +431,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             Int32 PeriodNumber = 0;
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportBudgets");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -504,7 +509,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ABatchTable.GetTableDBName(),
                     ABatchTable.GetLedgerNumberDBName());
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAvailableGLYears");
+            db.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
@@ -519,7 +525,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ADiffPeriod,
                         LedgerTable[0].NumberOfAccountingPeriods, ReadTransaction.DataBaseObj);
 
-                    BatchYearTable = DBAccess.GetDBAccessObj(ReadTransaction).SelectDT(sql, "BatchYearTable", ReadTransaction);
+                    BatchYearTable = db.SelectDT(sql, "BatchYearTable", ReadTransaction);
                 });
 
             foreach (DataRow row in BatchYearTable.Rows)
@@ -690,11 +696,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             AValueMember = "YearNumber";
             ADisplayMember = "YearEndDate";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAvailableGLYearEnds");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -775,7 +782,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 ALedgerNumber,
                                 yearNumber);
 
-                        DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
+                        DataTable BatchYearTable = db.SelectDT(sql, "BatchYearTable", Transaction);
 
                         BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
 
@@ -845,8 +852,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ADescriptionMember = "YearEndDateLong";
 
             DataTable BatchTable = null;
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAvailableGLYearsHOSA");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
@@ -899,7 +907,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             ALedgerNumber,
                             YearNumber);
 
-                    DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", transaction);
+                    DataTable BatchYearTable = db.SelectDT(sql, "BatchYearTable", transaction);
 
                     BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
 
@@ -971,11 +979,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetFirstDayOfAccountingPeriod");
             DateTime Result = DateTime.MinValue;
 
             // Used by importing so the isolation level is serializable
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
                 delegate
                 {
                     // Get the accounting periods for this ledger.  The table will contain more than 12 rows.

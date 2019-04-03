@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,9 +80,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string motivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
                 string motivationDetail = AMotivationDetail;
 
-                TDBTransaction readTransaction = null;
+                TDBTransaction readTransaction = new TDBTransaction();
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("GetMotivationGroupAndDetailForPartner");
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref readTransaction,
                     delegate

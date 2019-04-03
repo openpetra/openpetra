@@ -66,8 +66,9 @@ namespace Ict.Petra.Server.MFinance.Common
             if (ASequence != -1)
             {
                 TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadBySequence");
 
-                DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+                db.AutoReadTransaction(ref transaction,
                     delegate
                     {
                         FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(ASequence, APeriod, transaction);
@@ -88,13 +89,14 @@ namespace Ict.Petra.Server.MFinance.Common
             Boolean LoadedOk = false;
 
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadByCostCentreAccountPeriod");
 
             FGLMpTable = new AGeneralLedgerMasterPeriodTable();
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.AutoReadTransaction(ref transaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.SelectDT(
+                    db.SelectDT(
                         FGLMpTable,
                         "SELECT a_general_ledger_master_period.* FROM" +
                         " a_general_ledger_master_period, a_general_ledger_master" +
@@ -130,8 +132,9 @@ namespace Ict.Petra.Server.MFinance.Common
         public void LoadByYear(Int32 AYear)
         {
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadByYear");
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     AGeneralLedgerMasterTable GLMTemplateTbl = new AGeneralLedgerMasterTable();
@@ -172,8 +175,9 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
         {
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TGet_GLM_Info");
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     FGLMTbl = new AGeneralLedgerMasterTable();
@@ -197,8 +201,9 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
         {
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TGet_GLM_Info");
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     FGLMTbl = new AGeneralLedgerMasterTable();
@@ -299,8 +304,9 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGlmInfo(int ALedgerNumber, int ACurrentFinancialYear, string AAccountCode)
         {
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TGlmInfo");
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     FGLMTbl = new AGeneralLedgerMasterTable();

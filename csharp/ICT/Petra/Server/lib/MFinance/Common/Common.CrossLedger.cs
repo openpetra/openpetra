@@ -67,9 +67,10 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                 if ((DateTime.UtcNow - PreviousDailyExchangeRateCleanTime).TotalHours > 24)
                 {
                     // It is more than 24 hours since our last clean
-                    TDBTransaction t = null;
+                    TDBTransaction t = new TDBTransaction();
+                    TDataBase db = DBAccess.SimpleEstablishDBConnection("DoDailyExchangeRateClean");
                     bool bSubmissionOk = false;
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref t, ref bSubmissionOk,
+                    db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref t, ref bSubmissionOk,
                         delegate
                         {
                             string logMsg = String.Empty;
@@ -97,7 +98,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                                     criticalDate,
                                     ADailyExchangeRateTable.GetDateCreatedDBName(),
                                     ADailyExchangeRateTable.GetDateModifiedDBName());
-                                affectedRowCount = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                                affectedRowCount = db.ExecuteNonQuery(sql, t);
                                 bSubmissionOk = true;
                                 PreviousDailyExchangeRateCleanTime = DateTime.UtcNow;
                             }
@@ -183,9 +184,10 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
 
             ExchangeRateTDS WorkingDS = new ExchangeRateTDS();
             WorkingDS.EnforceConstraints = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadDailyExchangeRateData");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -363,7 +365,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     strSQL += "  a_date_effective_from_d DESC, ";
                     strSQL += "  a_time_effective_from_i DESC ";
 
-                    DBAccess.GDBAccessObj.Select(WorkingDS, strSQL, WorkingDS.ADailyExchangeRate.TableName, Transaction);
+                    db.Select(WorkingDS, strSQL, WorkingDS.ADailyExchangeRate.TableName, Transaction);
 
 
                     // Now populate the ExchangeRateTDSADailyExchangerateUsage table
@@ -467,7 +469,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
 
                     strSQL += "ORDER BY usage.a_date_effective_from_d DESC, usage.a_time_effective_from_i DESC ";
 
-                    DBAccess.GDBAccessObj.Select(WorkingDS, strSQL, WorkingDS.ADailyExchangeRateUsage.TableName, Transaction);
+                    db.Select(WorkingDS, strSQL, WorkingDS.ADailyExchangeRateUsage.TableName, Transaction);
 
                     // Now we start a tricky bit to resolve potential primary key conflicts when the constraints are turned on.
                     // By combining the Journal and Gift Batch data that is not referenced in the exchange rate table we can easily
@@ -576,7 +578,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                         // Note: April 2015.  The MissingSchemaAction was added because SQLite gave a mismatched DataType on a_effective_time_i.
                         //   As a result the GUI tests failed on SQLite - as well as the screen not loading(!)
                         //   There should be no difference with PostgreSQL, which worked fine without the parameter.
-                        WorkingDS.ARawDailyExchangeRate.Merge(DBAccess.GDBAccessObj.SelectDT("SELECT *, 0 AS Unused FROM PUB_a_daily_exchange_rate",
+                        WorkingDS.ARawDailyExchangeRate.Merge(db.SelectDT("SELECT *, 0 AS Unused FROM PUB_a_daily_exchange_rate",
                                 "a_raw_daily_exchange_rate",
                                 Transaction), false, MissingSchemaAction.Ignore);
 
@@ -611,7 +613,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                             "ON ldg.a_ledger_number_i=pd.a_ledger_number_i and (ldg.a_current_period_i + a_number_fwd_posting_periods_i)=pd.a_accounting_period_number_i ";
                         strSQL += ") AS all_info ";
                         strSQL += "GROUP BY a_ledger_number_i, a_ledger_status_l ";
-                        DBAccess.GDBAccessObj.Select(WorkingDS, strSQL, WorkingDS.ALedgerInfo.TableName, Transaction);
+                        db.Select(WorkingDS, strSQL, WorkingDS.ALedgerInfo.TableName, Transaction);
                     }
                 });
 

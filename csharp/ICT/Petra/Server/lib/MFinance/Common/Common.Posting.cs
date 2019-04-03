@@ -294,10 +294,11 @@ namespace Ict.Petra.Server.MFinance.Common
             TVerificationResultCollection Verifications = AVerifications;
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadGLBatchData");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -417,10 +418,11 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS PostingDS = new GLPostingTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadGLDataForPosting");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -672,8 +674,9 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDS GLBatchDS = AGLBatchDS;
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateGLBatchAndTransactions");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -2115,11 +2118,12 @@ namespace Ict.Petra.Server.MFinance.Common
             TVerificationResultCollection Verifications = new TVerificationResultCollection();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ReverseBatch");
             bool SubmissionOK = true;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                     ref Transaction, ref SubmissionOK,
                     delegate
                     {
@@ -3152,11 +3156,12 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDS TempDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateARecurringBatch");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     ref SubmissionOK,

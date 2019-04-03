@@ -219,10 +219,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -264,7 +265,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadABatchAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            return LoadABatchAndRelatedTables(DBAccess.GDBAccessObj, ALedgerNumber, ABatchNumber);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAndRelatedTables");
+            
+            return LoadABatchAndRelatedTables(db, ALedgerNumber, ABatchNumber);
         }
 
         /// <summary>
@@ -397,10 +400,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAJournalATransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -471,10 +475,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringBatchARecurJournalARecurTransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -545,10 +550,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -610,10 +616,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -668,10 +675,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -749,10 +757,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -814,10 +823,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalATransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -879,10 +889,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalAndRelatedTablesForBatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -960,10 +971,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalAndRelatedTables");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1034,10 +1046,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournalAndRelatedTablesForBatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1109,10 +1122,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransactionAndRelatedTablesForBatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1183,10 +1197,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalATransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1250,10 +1265,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournalARecurringTransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1322,10 +1338,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournalARecurringTransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1396,10 +1413,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionForJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1454,10 +1472,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1512,10 +1531,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransactionAndRelatedTablesForJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1564,10 +1584,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionForBatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1615,10 +1636,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1667,10 +1689,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionAndRelatedTablesForBatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1740,10 +1763,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionAndRelatedTablesForJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1911,10 +1935,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransAnalAttribForTransaction");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -1963,10 +1988,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGLBatches");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2020,10 +2046,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransAnalAttribForJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2064,10 +2091,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAAnalysisAttributes");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2128,10 +2156,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadALedgerTable");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2277,10 +2306,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringBatchAndRelatedTables");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2362,10 +2392,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2420,10 +2451,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2479,10 +2511,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransactionARecurringTransAnalAttrib");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2590,10 +2623,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransAnalAttrib");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2646,10 +2680,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransAnalAttribForBatch");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -2704,10 +2739,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransAnalAttribForJournal");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -3345,11 +3381,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.AcceptChanges();
 
             TDBTransaction Transaction = new TDBTransaction();
-            bool SubmissionOK = false;
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ProcessTransAndAttributesForDeletion");
+            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.BeginAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3386,7 +3423,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         }
 
                         //Need to save changes before deleting any transactions
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
 
 
                         //Remove unaffected attributes and transactions from SubmitDS
@@ -3420,7 +3457,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             tranRow.Delete();
                         }
 
-                        //GLBatchTDSAccess.SubmitChanges(MainDS);
+                        //GLBatchTDSAccess.SubmitChanges(MainDS, db);
                         SubmitDS.AcceptChanges();
 
 
@@ -3475,7 +3512,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             tranRow.SetAdded();
                         }
 
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
 
 
                         MainDSCopy.Merge(SubmitDS.ATransAnalAttrib);
@@ -3497,10 +3534,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             attrRow.SetAdded();
                         }
 
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
                         MainDSCopy.AcceptChanges();
 
-                        SubmissionOK = true;
+                        SubmissionOK = TSubmitChangesResult.scrOK;
                     });
             }
             catch (Exception ex)
@@ -3573,11 +3610,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.AcceptChanges();
 
             TDBTransaction Transaction = new TDBTransaction();
-            bool SubmissionOK = false;
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ProcessRecurrJrnlTransAttribForDeletion");
+            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.BeginAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3623,7 +3661,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         }
 
                         //Need to save changes before deleting any transactions
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
 
 
                         //Remove unaffected attributes and transactions and journals from SubmitDS
@@ -3728,7 +3766,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             jrnlRow.SetAdded();
                         }
 
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
 
 
                         MainDSCopy.Merge(SubmitDS.ARecurringTransaction);
@@ -3747,7 +3785,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             tranRow.SetAdded();
                         }
 
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
 
 
                         MainDSCopy.Merge(SubmitDS.ARecurringTransAnalAttrib);
@@ -3766,10 +3804,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             attrRow.SetAdded();
                         }
 
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
                         MainDSCopy.AcceptChanges();
 
-                        SubmissionOK = true;
+                        SubmissionOK = TSubmitChangesResult.scrOK;
                     });
             }
             catch (Exception ex)
@@ -3849,11 +3887,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.AcceptChanges();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("ProcessRecurringTransAndAttributesForDeletion");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.BeginAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3890,7 +3929,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         }
 
                         //Need to save changes before deleting any transactions
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
 
                         //Remove unaffected attributes and transactions from SubmitDS
                         DataView attributesDV1 = new DataView(SubmitDS.ARecurringTransAnalAttrib);
@@ -3921,7 +3960,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             transDRV.Delete();
                         }
 
-                        //GLBatchTDSAccess.SubmitChanges(MainDS);
+                        //GLBatchTDSAccess.SubmitChanges(MainDS, db);
                         SubmitDS.AcceptChanges();
 
                         //Renumber the transactions and attributes in SubmitDS
@@ -3974,7 +4013,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         }
 
                         //Need to save changes before deleting any transactions
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
 
                         MainDSCopy.Merge(SubmitDS.ARecurringTransAnalAttrib);
                         MainDSCopy.AcceptChanges();
@@ -3995,7 +4034,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         }
 
                         //Need to save changes before deleting any transactions
-                        GLBatchTDSAccess.SubmitChanges(MainDSCopy);
+                        GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
                         MainDSCopy.AcceptChanges();
 
                         SubmissionOK = true;
@@ -4099,8 +4138,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS InspectDS = AInspectDS;
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveRecurringGLBatchTDS");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 delegate
                 {
@@ -4224,7 +4264,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 });
 
             // now submit the changes
-            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+            GLBatchTDSAccess.SubmitChanges(AInspectDS, db);
 
             SubmissionResult = TSubmitChangesResult.scrOK;
 
@@ -4272,7 +4312,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
 
                             //save changes
-                            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                            GLBatchTDSAccess.SubmitChanges(AInspectDS, db);
 
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
@@ -4367,13 +4407,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int BatchPeriod = -1;
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestPostGLBatch");
             bool SubmissionOK = false;
             bool Success = false;
             ResultingBalances = String.Empty;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.BeginAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -4614,11 +4655,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool TransactionInIntlCurrency = false;
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("SubmitRecurringGLBatch");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                     ref Transaction, ref SubmissionOK,
                     delegate
                     {
@@ -5056,13 +5098,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 GLBatchTDS GLBatch = AGLBatch;
                 TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateRecurringGLJournalTransactionNumbering");
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
                     delegate
                     {
-                        DBAccess.GDBAccessObj.Select(GLBatch, SQLStatement, TempTableName, transaction);
+                        db.Select(GLBatch, SQLStatement, TempTableName, transaction);
                     });
 
 
@@ -5377,9 +5420,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAccountsForReallocationJournal");
             DataTable NewTable = new DataTable("NewTable");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 delegate
                 {
@@ -5406,7 +5450,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         "PUB_a_general_ledger_master_period.a_glm_sequence_i = PUB_a_general_ledger_master.a_glm_sequence_i AND " +
                         "PUB_a_general_ledger_master_period.a_period_number_i = " + APeriodNumber;
 
-                    NewTable = DBAccess.GDBAccessObj.SelectDT(sqlQuery, "NewTable", Transaction);
+                    NewTable = db.SelectDT(sqlQuery, "NewTable", Transaction);
                 });
 
             // create a new description

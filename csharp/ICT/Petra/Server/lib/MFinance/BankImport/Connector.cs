@@ -118,7 +118,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         public static bool TrainBankStatement(Int32 ALedgerNumber, DateTime ADateOfStatement, string ABankAccountCode)
         {
             // get the statement keys
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TrainBankStatement");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             AEpStatementTable Statements = new AEpStatementTable();
             AEpStatementRow row = Statements.NewRowTyped(false);
@@ -254,7 +255,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool DropBankStatement(Int32 AEpStatementKey)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("DropBankStatement");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             BankImportTDS MainDS = new BankImportTDS();
 

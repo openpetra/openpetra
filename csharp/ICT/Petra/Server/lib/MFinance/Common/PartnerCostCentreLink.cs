@@ -60,7 +60,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             RequiredColumns = new StringCollection();
             RequiredColumns.Add(AValidLedgerNumberTable.GetCostCentreCodeDBName());
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("HasPartnerCostCentreLink");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
             try

@@ -83,7 +83,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             // reset the database, so that there is no consolidated budget
             CommonNUnitFunctions.ResetDatabase();
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("BudgetTest");
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("T0_Consolidation");
 
             string budgetTestFile = TAppSettingsManager.GetValue("GiftBatch.file",
                 CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/BudgetImport-All.csv");
@@ -114,7 +114,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "ImportBudgets has critical errors:");
 
-            BudgetTDSAccess.SubmitChanges(ImportDS);
+            BudgetTDSAccess.SubmitChanges(ImportDS, db);
 
             // check for value in budget table
             string sqlQueryBudget =

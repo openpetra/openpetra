@@ -64,9 +64,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             DateTime startDate = new DateTime();
             DateTime endDate = new DateTime();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCurrentPeriodDates");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -112,9 +113,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             DateTime StartDateCurrentPeriod = new DateTime();
             DateTime EndDateLastForwardingPeriod = new DateTime();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCurrentPostingRangeDates");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -203,9 +205,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         public static Boolean HasSuspenseAccounts(Int32 ALedgerNumber)
         {
             Boolean ReturnValue = false;
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("HasSuspenseAccounts");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
                 delegate
@@ -231,8 +234,9 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             Int64 PartnerKey = 0;
 
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerKeyForForeignCostCentreCode");
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     ACostCentreTable CostCentreTable;
@@ -272,10 +276,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             string ReturnValue = "";
             TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetLedgerBaseCurrency");
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref ReadTransaction,
+            db.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;
@@ -295,9 +300,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             DataTable ForeignCurrencyAccounts = AForeignCurrencyAccounts;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetForeignCurrencyAccountActuals");
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
+            db.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     AGeneralLedgerMasterTable glmTbl = new AGeneralLedgerMasterTable();
@@ -351,9 +357,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Language = Language.Substring(Language.Length - 2).ToUpper();
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCurrencyLanguage");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -381,10 +388,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
             DataTable result = new DataTable();
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TypeAheadAccountCode");
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -405,7 +412,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
 
             AResult = result;
@@ -425,10 +432,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TypeAheadCostCentreCode");
             DataTable result = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -447,7 +455,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
 
             AResult = result;
@@ -462,10 +470,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TypeAheadMotivationGroup");
             DataTable result = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -482,7 +491,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
 
             AResult = result;
@@ -497,10 +506,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.SimpleEstablishDBConnection("TypeAheadMotivationDetail");
             DataTable result = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -517,7 +527,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
 
             AResult = result;
