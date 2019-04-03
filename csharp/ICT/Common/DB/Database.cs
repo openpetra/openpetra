@@ -3078,32 +3078,23 @@ namespace Ict.Common.DB
         {
             object ReturnValue = null;
 
-            WaitForCoordinatedDBAccess();
-
-            try
+            if (ConnectionReady(false))
             {
-                if (ConnectionReady(false))
+                using (TDBTransaction EnclosingTransaction = BeginTransaction(AIsolationLevel, false))
                 {
-                    using (TDBTransaction EnclosingTransaction = BeginTransaction(AIsolationLevel, false))
+                    try
                     {
-                        try
-                        {
-                            ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, false, AParametersArray);
-                        }
-                        finally
-                        {
-                            EnclosingTransaction.Commit();
-                        }
+                        ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, false, AParametersArray);
+                    }
+                    finally
+                    {
+                        EnclosingTransaction.Commit();
                     }
                 }
-                else
-                {
-                    throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
-                }
             }
-            finally
+            else
             {
-                ReleaseCoordinatedDBAccess();
+                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
             }
 
             return ReturnValue;
