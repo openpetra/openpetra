@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static bool GetCurrentPeriodDates(Int32 ALedgerNumber, out DateTime AStartDate, out DateTime AEndDate)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCurrentPeriodDates");
+            TDataBase db = DBAccess.Connect("GetCurrentPeriodDates");
             AAccountingPeriodTable AccountingPeriodTable = null;
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, ref transaction,
@@ -159,7 +159,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             Int32 returnValue = 0;
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetNumberOfPeriods");
+            TDataBase db = DBAccess.Connect("GetNumberOfPeriods");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
                 delegate
@@ -287,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DateTime StartDatePeriod = new DateTime();
             DateTime EndDatePeriod = new DateTime();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPeriodDates");
+            TDataBase db = DBAccess.Connect("GetPeriodDates");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -345,7 +345,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DateTime yearStartDate = DateTime.Today;
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("FindFinancialYearByDate");
+            TDataBase db = DBAccess.Connect("FindFinancialYearByDate");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
                 delegate
@@ -432,7 +432,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 PeriodNumber = 0;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportBudgets");
+            TDataBase db = DBAccess.Connect("ImportBudgets");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
                 delegate
                 {
@@ -509,7 +509,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ABatchTable.GetTableDBName(),
                     ABatchTable.GetLedgerNumberDBName());
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAvailableGLYears");
+            TDataBase db = DBAccess.Connect("GetAvailableGLYears");
             db.AutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
@@ -697,7 +697,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ADisplayMember = "YearEndDate";
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAvailableGLYearEnds");
+            TDataBase db = DBAccess.Connect("GetAvailableGLYearEnds");
 
             try
             {
@@ -853,7 +853,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             DataTable BatchTable = null;
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAvailableGLYearsHOSA");
+            TDataBase db = DBAccess.Connect("GetAvailableGLYearsHOSA");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
@@ -980,7 +980,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetFirstDayOfAccountingPeriod");
+            TDataBase db = DBAccess.Connect("GetFirstDayOfAccountingPeriod");
             DateTime Result = DateTime.MinValue;
 
             // Used by importing so the isolation level is serializable

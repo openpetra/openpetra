@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MFinance.Common
             RequiredColumns = new StringCollection();
             RequiredColumns.Add(AValidLedgerNumberTable.GetCostCentreCodeDBName());
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("HasPartnerCostCentreLink");
+            TDataBase db = DBAccess.Connect("HasPartnerCostCentreLink");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

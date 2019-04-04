@@ -236,7 +236,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             LastGiftDS.Tables.Add(new PPartnerTable());
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetLastGiftDetails");
+            TDataBase db = DBAccess.Connect("GetLastGiftDetails");
             bool SubmissionOK = true;
 
             // Important: The IsolationLevel here needs to correspond with the IsolationLevel in the

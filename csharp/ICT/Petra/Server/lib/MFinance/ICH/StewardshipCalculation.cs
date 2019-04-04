@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             TVerificationResultCollection VerificationResult = AVerificationResult;
 
             TDBTransaction DBTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("PerformStewardshipCalculation");
+            TDataBase db = DBAccess.Connect("PerformStewardshipCalculation");
             bool SubmissionOK = false;
 
             try
@@ -517,7 +517,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     TGLPosting.DeleteGLBatch(
                         ALedgerNumber,
                         batchRow.BatchNumber,
-                        out batchCancelResult);
+                        out batchCancelResult,
+                        ADBTransaction.DataBaseObj);
 
                     AVerificationResults.AddCollection(batchCancelResult);
                     IsSuccessful = true;
@@ -1061,7 +1062,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     TGLPosting.DeleteGLBatch(
                         ALedgerNumber,
                         AglBatchNumber,
-                        out batchCancelResult);
+                        out batchCancelResult,
+                        ADBTransaction.DataBaseObj);
                     AglBatchNumber = -1;
                     AVerificationResults.AddCollection(batchCancelResult);
                 }
@@ -1137,7 +1139,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         TGLPosting.DeleteGLBatch(
                             ALedgerNumber,
                             AglBatchNumber,
-                            out BatchCancelResult);
+                            out BatchCancelResult,
+                            ADBTransaction.DataBaseObj);
                         AglBatchNumber = -1;
                         AVerificationResults.AddCollection(BatchCancelResult);
 
@@ -1234,7 +1237,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         {
             Boolean Ret = false;
             TDBTransaction DBTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SelectedPeriodRequiresStewardshipRun");
+            TDataBase db = DBAccess.Connect("SelectedPeriodRequiresStewardshipRun");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
                 ref DBTransaction,

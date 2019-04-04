@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 (IncludeUnposted) ? " AND (PUB_a_gift_batch.a_batch_status_c = 'Posted' OR PUB_a_gift_batch.a_batch_status_c = 'Unposted')"
                 : " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'";
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ExportAllGiftBatchData");
+            TDataBase db = DBAccess.Connect("ExportAllGiftBatchData");
 
             try
             {
@@ -412,7 +412,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 PPartnerTable pt = null;
 
                 TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("PartnerShortName");
+                TDataBase db = DBAccess.Connect("PartnerShortName");
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,

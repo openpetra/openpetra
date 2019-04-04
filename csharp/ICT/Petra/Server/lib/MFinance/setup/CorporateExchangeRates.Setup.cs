@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveCorporateExchangeSetupTDS");
+            TDataBase db = DBAccess.Connect("SaveCorporateExchangeSetupTDS");
             bool SubmissionOK = true;
             CorporateExchangeSetupTDS InspectDS = AInspectDS;
 
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             bool ReturnValue = true;
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CanDeleteCorporateExchangeRate");
+            TDataBase db = DBAccess.Connect("CanDeleteCorporateExchangeRate");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

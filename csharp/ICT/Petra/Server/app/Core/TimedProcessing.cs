@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.App.Core
 
             try
             {
-                FDBAccessObj = DBAccess.SimpleEstablishDBConnection("Servers's DB Connection for TimedProcessing");
+                FDBAccessObj = DBAccess.Connect("Servers's DB Connection for TimedProcessing");
             }
             catch (Exception Exc)
             {

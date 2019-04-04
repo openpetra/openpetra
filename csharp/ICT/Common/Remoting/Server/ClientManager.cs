@@ -1022,7 +1022,7 @@ namespace Ict.Common.Remoting.Server
                     try
                     {
                         // Open a separate DB Connection for the client login...
-                        DBConnectionObj = DBAccess.SimpleEstablishDBConnection("ConnectClient (User Login)");
+                        DBConnectionObj = DBAccess.Connect("ConnectClient (User Login)");
 
                         // ...and start a DB Transaction on that separate DB Connection
                         ReadWriteTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable, 0, "ConnectClient (User Login)");

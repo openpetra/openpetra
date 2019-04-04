@@ -263,13 +263,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the batch and all associated tables into the typed dataset
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
         public static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -294,7 +291,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TVerificationResultCollection Verifications = AVerifications;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadGLBatchData");
+            TDataBase db = DBAccess.Connect("LoadGLBatchData", ADataBase);
 
             try
             {
@@ -418,7 +415,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS PostingDS = new GLPostingTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadGLDataForPosting");
+            TDataBase db = DBAccess.Connect("LoadGLDataForPosting");
 
             try
             {
@@ -523,7 +520,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS GLPostingDS = AGLPostingDS;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadGLMData");
+            TDataBase db = DBAccess.Connect("LoadGLMData");
 
             try
             {
@@ -674,7 +671,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDS GLBatchDS = AGLBatchDS;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateGLBatchAndTransactions");
+            TDataBase db = DBAccess.Connect("ValidateGLBatchAndTransactions");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -894,7 +891,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 //Create temp table to check veracity of Journal numbering
                 GLBatchTDS gLBatch = AGLBatch;
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateGLBatchJournalNumbering");
+                TDataBase db = DBAccess.Connect("ValidateGLBatchJournalNumbering");
 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -1082,7 +1079,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 //Create temp table to check veracity of Transaction numbering
                 GLBatchTDS gLBatch = AGLBatch;
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateGLJournalTransactionNumbering");
+                TDataBase db = DBAccess.Connect("ValidateGLJournalTransactionNumbering");
 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -2118,7 +2115,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TVerificationResultCollection Verifications = new TVerificationResultCollection();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ReverseBatch");
+            TDataBase db = DBAccess.Connect("ReverseBatch");
             bool SubmissionOK = true;
 
             try
@@ -2334,7 +2331,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TVerificationResultCollection SingleVerificationResultCollection;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "PostGLBatches");
+            TDataBase db = DBAccess.Connect("PostGLBatches", ADataBase);
             bool SubmissionOK = false;
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
@@ -2674,14 +2671,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Tell me whether this Batch can be cancelled
         /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
         public static bool GLBatchCanBeCancelled(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -2703,7 +2697,7 @@ namespace Ict.Petra.Server.MFinance.Common
             bool RetVal = false;
             string BatchStatus = string.Empty;
 
-            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, out AVerifications);
+            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, out AVerifications, ADataBase);
 
             // get the data from the database into the MainDS
             ABatchRow Batch = AMainDS.ABatch[0];
@@ -2777,14 +2771,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// If a Batch has been created then found to be not required, it can be deleted here.
         /// (This was added for ICH and Stewardship calculations, which can otherwise leave empty batches in the ledger.)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
         /// <returns></returns>
         public static bool DeleteGLBatch(
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -2807,7 +2799,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                if (!GLBatchCanBeCancelled(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+                if (!GLBatchCanBeCancelled(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications, ADataBase))
                 {
                     return false;
                 }
@@ -2847,7 +2839,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         row.Delete();
                     }
 
-                    GLBatchTDSAccess.SubmitChanges(MainDS);
+                    GLBatchTDSAccess.SubmitChanges(MainDS, ADataBase);
                 }
             }
             catch (Exception ex)
@@ -2891,7 +2883,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (!ATransaction.Valid)
             {
-                db = DBAccess.SimpleEstablishDBConnection("CreateABatch");
+                db = DBAccess.Connect("CreateABatch");
                 CommitTransaction = true;
             }
             else
@@ -2988,7 +2980,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "CreateABatch");
+            TDataBase db = DBAccess.Connect("CreateABatch", ADataBase);
             bool SubmissionOK = false;
 
             try
@@ -3072,7 +3064,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDS TempDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateARecurringBatch");
+            TDataBase db = DBAccess.Connect("CreateARecurringBatch");
             bool SubmissionOK = false;
 
             try

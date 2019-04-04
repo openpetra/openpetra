@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             FBudgetTDS = new BudgetTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("Budget");
+            TDataBase db = DBAccess.Connect("Budget");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -151,7 +151,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             TDBTransaction Transaction = new TDBTransaction();
             Boolean SubmissionOK = false;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("Budget");
+            TDataBase db = DBAccess.Connect("Budget");
 
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
                 delegate
@@ -239,7 +239,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
                 AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
 
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("Budget");
+                TDataBase db = DBAccess.Connect("Budget");
                 TDBTransaction transaction = new TDBTransaction();
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,

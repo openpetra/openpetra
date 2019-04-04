@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         public static BudgetTDS LoadBudgetForAutoGenerate(Int32 ALedgerNumber)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadBudgetForAutoGenerate");
+            TDataBase db = DBAccess.Connect("LoadBudgetForAutoGenerate");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

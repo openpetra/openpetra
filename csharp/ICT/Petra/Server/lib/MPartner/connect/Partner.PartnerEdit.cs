@@ -1757,7 +1757,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
 
             PartnerTypeFamilyMembersDT = new PartnerEditTDSFamilyMembersTable();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetFamilyMembersInternal");
+            TDataBase db = DBAccess.Connect("GetFamilyMembersInternal");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);

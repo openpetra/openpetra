@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatch");
+            TDataBase db = DBAccess.Connect("LoadABatch");
 
             try
             {
@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatch");
+            TDataBase db = DBAccess.Connect("LoadABatch");
 
             try
             {
@@ -265,7 +265,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadABatchAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAndRelatedTables");
+            TDataBase db = DBAccess.Connect("LoadABatchAndRelatedTables");
             
             return LoadABatchAndRelatedTables(db, ALedgerNumber, ABatchNumber);
         }
@@ -280,7 +280,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadABatchAndRelatedTablesUsingPrivateDb(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            TDataBase dbConnection = DBAccess.SimpleEstablishDBConnection("LoadABatchAndRelatedTables");
+            TDataBase dbConnection = DBAccess.Connect("LoadABatchAndRelatedTables");
 
             GLBatchTDS tempTDS = LoadABatchAndRelatedTables(dbConnection, ALedgerNumber, ABatchNumber);
 
@@ -400,7 +400,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAJournalATransaction");
+            TDataBase db = DBAccess.Connect("LoadABatchAJournalATransaction");
 
             try
             {
@@ -475,7 +475,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringBatchARecurJournalARecurTransaction");
+            TDataBase db = DBAccess.Connect("LoadARecurringBatchARecurJournalARecurTransaction");
 
             try
             {
@@ -550,7 +550,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAJournal");
+            TDataBase db = DBAccess.Connect("LoadABatchAJournal");
 
             try
             {
@@ -616,7 +616,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournal");
+            TDataBase db = DBAccess.Connect("LoadAJournal");
 
             try
             {
@@ -675,7 +675,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadABatchAJournal");
+            TDataBase db = DBAccess.Connect("LoadABatchAJournal");
 
             try
             {
@@ -757,7 +757,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournal");
+            TDataBase db = DBAccess.Connect("LoadAJournal");
 
             try
             {
@@ -823,7 +823,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalATransaction");
+            TDataBase db = DBAccess.Connect("LoadAJournalATransaction");
 
             try
             {
@@ -889,7 +889,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalAndRelatedTablesForBatch");
+            TDataBase db = DBAccess.Connect("LoadAJournalAndRelatedTablesForBatch");
 
             try
             {
@@ -971,7 +971,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalAndRelatedTables");
+            TDataBase db = DBAccess.Connect("LoadAJournalAndRelatedTables");
 
             try
             {
@@ -1046,7 +1046,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournalAndRelatedTablesForBatch");
+            TDataBase db = DBAccess.Connect("LoadARecurringJournalAndRelatedTablesForBatch");
 
             try
             {
@@ -1122,7 +1122,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransactionAndRelatedTablesForBatch");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransactionAndRelatedTablesForBatch");
 
             try
             {
@@ -1197,7 +1197,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAJournalATransaction");
+            TDataBase db = DBAccess.Connect("LoadAJournalATransaction");
 
             try
             {
@@ -1265,7 +1265,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournalARecurringTransaction");
+            TDataBase db = DBAccess.Connect("LoadARecurringJournalARecurringTransaction");
 
             try
             {
@@ -1338,7 +1338,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournalARecurringTransaction");
+            TDataBase db = DBAccess.Connect("LoadARecurringJournalARecurringTransaction");
 
             try
             {
@@ -1413,7 +1413,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionForJournal");
+            TDataBase db = DBAccess.Connect("LoadATransactionForJournal");
 
             try
             {
@@ -1472,7 +1472,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransaction");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransaction");
 
             try
             {
@@ -1531,7 +1531,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransactionAndRelatedTablesForJournal");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransactionAndRelatedTablesForJournal");
 
             try
             {
@@ -1584,7 +1584,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionForBatch");
+            TDataBase db = DBAccess.Connect("LoadATransactionForBatch");
 
             try
             {
@@ -1636,7 +1636,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransaction");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransaction");
 
             try
             {
@@ -1689,7 +1689,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionAndRelatedTablesForBatch");
+            TDataBase db = DBAccess.Connect("LoadATransactionAndRelatedTablesForBatch");
 
             try
             {
@@ -1763,7 +1763,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransactionAndRelatedTablesForJournal");
+            TDataBase db = DBAccess.Connect("LoadATransactionAndRelatedTablesForJournal");
 
             try
             {
@@ -1935,7 +1935,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransAnalAttribForTransaction");
+            TDataBase db = DBAccess.Connect("LoadATransAnalAttribForTransaction");
 
             try
             {
@@ -1988,7 +1988,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGLBatches");
+            TDataBase db = DBAccess.Connect("ImportGLBatches");
 
             try
             {
@@ -2046,7 +2046,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadATransAnalAttribForJournal");
+            TDataBase db = DBAccess.Connect("LoadATransAnalAttribForJournal");
 
             try
             {
@@ -2091,7 +2091,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAAnalysisAttributes");
+            TDataBase db = DBAccess.Connect("LoadAAnalysisAttributes");
 
             try
             {
@@ -2156,7 +2156,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadALedgerTable");
+            TDataBase db = DBAccess.Connect("LoadALedgerTable");
 
             try
             {
@@ -2217,7 +2217,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringBatch");
+            TDataBase db = DBAccess.Connect("LoadARecurringBatch");
 
             try
             {
@@ -2306,7 +2306,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringBatchAndRelatedTables");
+            TDataBase db = DBAccess.Connect("LoadARecurringBatchAndRelatedTables");
 
             try
             {
@@ -2392,7 +2392,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournal");
+            TDataBase db = DBAccess.Connect("LoadARecurringJournal");
 
             try
             {
@@ -2451,7 +2451,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringJournal");
+            TDataBase db = DBAccess.Connect("LoadARecurringJournal");
 
             try
             {
@@ -2511,7 +2511,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransactionARecurringTransAnalAttrib");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransactionARecurringTransAnalAttrib");
 
             try
             {
@@ -2623,7 +2623,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransAnalAttrib");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransAnalAttrib");
 
             try
             {
@@ -2680,7 +2680,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransAnalAttribForBatch");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransAnalAttribForBatch");
 
             try
             {
@@ -2739,7 +2739,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             GLBatchTDS MainDS = new GLBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadARecurringTransAnalAttribForJournal");
+            TDataBase db = DBAccess.Connect("LoadARecurringTransAnalAttribForJournal");
 
             try
             {
@@ -2834,7 +2834,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
             else
             {
-                db = DBAccess.SimpleEstablishDBConnection("SaveGLBatchTDS");
+                db = DBAccess.Connect("SaveGLBatchTDS");
                 Transaction = new TDBTransaction();
             }
 
@@ -3381,7 +3381,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.AcceptChanges();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ProcessTransAndAttributesForDeletion");
+            TDataBase db = DBAccess.Connect("ProcessTransAndAttributesForDeletion");
             TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
 
             try
@@ -3610,7 +3610,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.AcceptChanges();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ProcessRecurrJrnlTransAttribForDeletion");
+            TDataBase db = DBAccess.Connect("ProcessRecurrJrnlTransAttribForDeletion");
             TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
 
             try
@@ -3887,7 +3887,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             SubmitDS.AcceptChanges();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ProcessRecurringTransAndAttributesForDeletion");
+            TDataBase db = DBAccess.Connect("ProcessRecurringTransAndAttributesForDeletion");
             bool SubmissionOK = false;
 
             try
@@ -4138,7 +4138,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             GLBatchTDS InspectDS = AInspectDS;
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveRecurringGLBatchTDS");
+            TDataBase db = DBAccess.Connect("SaveRecurringGLBatchTDS");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
                 ref Transaction,
@@ -4407,7 +4407,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int BatchPeriod = -1;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestPostGLBatch");
+            TDataBase db = DBAccess.Connect("TestPostGLBatch");
             bool SubmissionOK = false;
             bool Success = false;
             ResultingBalances = String.Empty;
@@ -4655,7 +4655,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool TransactionInIntlCurrency = false;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SubmitRecurringGLBatch");
+            TDataBase db = DBAccess.Connect("SubmitRecurringGLBatch");
             bool SubmissionOK = false;
 
             try
@@ -4911,7 +4911,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 GLBatchTDS GLBatch = AGLBatch;
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateRecurringGLBatchJournalNumbering");
+                TDataBase db = DBAccess.Connect("ValidateRecurringGLBatchJournalNumbering");
 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -5098,7 +5098,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 GLBatchTDS GLBatch = AGLBatch;
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("ValidateRecurringGLJournalTransactionNumbering");
+                TDataBase db = DBAccess.Connect("ValidateRecurringGLJournalTransactionNumbering");
 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -5420,7 +5420,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAccountsForReallocationJournal");
+            TDataBase db = DBAccess.Connect("GetAccountsForReallocationJournal");
             DataTable NewTable = new DataTable("NewTable");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,

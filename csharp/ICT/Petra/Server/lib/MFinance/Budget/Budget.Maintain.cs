@@ -85,7 +85,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             BudgetTDS MainDS = new BudgetTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAllBudgetsForExport");
+            TDataBase db = DBAccess.Connect("LoadAllBudgetsForExport");
 
             try
             {
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             BudgetTDS MainDS = new BudgetTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadBudgetsForYear");
+            TDataBase db = DBAccess.Connect("LoadBudgetsForYear");
 
             try
             {
@@ -406,7 +406,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ABudgetTable BudgetTableExistingAndImported = new ABudgetTable();
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportBudgets");
+            TDataBase db = DBAccess.Connect("ImportBudgets");
 
             // Go round a loop reading the file line by line
             string ImportLine = sr.ReadLine();
@@ -807,7 +807,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             AAccountingPeriodTable AccPeriodTable = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBudgetYearNumber");
+            TDataBase db = DBAccess.Connect("GetBudgetYearNumber");
 
             try
             {
@@ -874,7 +874,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             AAccountingPeriodTable AccPeriodTable = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("BudgetRevisionYearName");
+            TDataBase db = DBAccess.Connect("BudgetRevisionYearName");
 
             try
             {

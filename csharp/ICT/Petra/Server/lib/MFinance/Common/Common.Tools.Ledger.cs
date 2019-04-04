@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MFinance.Common
             Dictionary <int, string>LedgerBaseCurrencyDictBackup = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "PopulateLedgerDictionaries");
+            TDataBase db = DBAccess.Connect("PopulateLedgerDictionaries", ADataBase);
 
             try
             {
@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             String ReturnValue = string.Empty;
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "GetLedgerName");
+            TDataBase db = DBAccess.Connect("GetLedgerName", ADataBase);
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public static string GetLedgerNameUsingSeparateDb(Int32 ALedgerNumber)
         {
-            TDataBase dataBase = DBAccess.SimpleEstablishDBConnection("GetLedgerName");
+            TDataBase dataBase = DBAccess.Connect("GetLedgerName");
 
             String ledgerName = GetLedgerName(ALedgerNumber, dataBase);
 
@@ -377,7 +377,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "GetDataRow");
+                TDataBase db = DBAccess.Connect("GetDataRow", ADataBase);
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
@@ -425,7 +425,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private void CommitLedgerChange(TDataBase ADataBase = null)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "CommitLedgerChange");
+            TDataBase db = DBAccess.Connect("CommitLedgerChange", ADataBase);
             Boolean SubmissionOK = false;
 
             try
@@ -667,7 +667,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (BankAccountCode.Length == 0)
             {
                 TDBTransaction readTransaction = new TDBTransaction();
-                TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "GetDefaultBankAccount");
+                TDataBase db = DBAccess.Connect("GetDefaultBankAccount", ADataBase);
 
                 try
                 {
@@ -897,7 +897,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private static ALedgerInitFlagRow FindRecord(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "FindRecord");
+            TDataBase db = DBAccess.Connect("FindRecord", ADataBase);
             ALedgerInitFlagTable LedgerInitFlagTable = null;
             ALedgerInitFlagRow Ret = null;
 
@@ -926,7 +926,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public static void SetFlagValue(int ALedgerNumber, String AFlag, String AValue, TDataBase ADataBase = null)
         {
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "SetFlagValue");
+            TDataBase db = DBAccess.Connect("SetFlagValue", ADataBase);
             Boolean SubmissionOK = false;
 
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -960,7 +960,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private static void DeleteFlag(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "DeleteFlag");
+            TDataBase db = DBAccess.Connect("DeleteFlag", ADataBase);
             Boolean SubmissionOK = true;
 
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,

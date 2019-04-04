@@ -56,7 +56,7 @@ namespace Ict.Common.DB.Testing
 
         private TDataBase EstablishDBConnection(string AConnectionName = null)
         {
-            return DBAccess.SimpleEstablishDBConnection(AConnectionName);
+            return DBAccess.Connect(AConnectionName);
         }
 
         private void CloseTestDBConnection(TDataBase ADBAccessObject, string AConnectionName = null)
@@ -119,7 +119,7 @@ namespace Ict.Common.DB.Testing
         {
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = true;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("Test");
+            TDataBase db = DBAccess.Connect("Test");
             string sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
                          "VALUES(43, 99999999, 1)";
 
@@ -159,7 +159,7 @@ namespace Ict.Common.DB.Testing
         {
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = true;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("Test");
+            TDataBase db = DBAccess.Connect("Test");
 
             // setup test scenario: a gift batch, with 2 gifts, each with 2 gift details
             db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
@@ -210,7 +210,7 @@ namespace Ict.Common.DB.Testing
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = true;
             string sql;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestInsertMultipleRows");
+            TDataBase db = DBAccess.Connect("TestInsertMultipleRows");
 
             db.BeginAutoTransaction(
                 IsolationLevel.Serializable,
@@ -242,7 +242,7 @@ namespace Ict.Common.DB.Testing
         public void TestSequence()
         {
             TDBTransaction t = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestInsertMultipleRows");
+            TDataBase db = DBAccess.Connect("TestInsertMultipleRows");
 
             db.BeginAutoReadTransaction(IsolationLevel.Serializable, ref t,
                 delegate
@@ -267,7 +267,7 @@ namespace Ict.Common.DB.Testing
         public void TestTimeStamp()
         {
             TDBTransaction t = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("Test");
+            TDataBase db = DBAccess.Connect("Test");
 
             db.BeginAutoReadTransaction(IsolationLevel.Serializable, ref t,
                 delegate
@@ -332,7 +332,7 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_GNoETransaction_throws_proper_ExceptionOnWrongExactIsolationLevel()
         {
             bool NewTrans;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             //
             // Arrange
@@ -369,7 +369,7 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_GNoETransaction_throws_proper_ExceptionOnWrongMinimumIsolationLevel()
         {
             bool NewTrans;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             //
             // Arrange
@@ -410,7 +410,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             //
             // Arrange
@@ -442,7 +442,7 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectEDBNullTransactionException()
         {
             bool Result;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             // Guard Assert
             Assert.IsNull(db.Transaction);
@@ -469,7 +469,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             //
             // Arrange
@@ -502,7 +502,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             //
             // Arrange
@@ -535,7 +535,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             //
             // Arrange
@@ -575,7 +575,7 @@ namespace Ict.Common.DB.Testing
             TDBTransaction t = null;
             bool SubmissionOK = true;
             string sql;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             try
             {
@@ -663,7 +663,7 @@ namespace Ict.Common.DB.Testing
             const string TestReadQuery1 = "SELECT * from p_partner where p_partner_key_n = :APartnerKey;";
             DataTable TmpDT = new DataTable();
             TDataAdapterCanceller TmpDac;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             OdbcParameter[] ParametersArray = new OdbcParameter[1];
             List <object[]>ParameterValuesList = new List <object[]>();
@@ -721,7 +721,7 @@ namespace Ict.Common.DB.Testing
                 "SELECT * from p_partner where p_partner_key_n = :APartnerKey and p_partner_short_name_c LIKE :APartnerShortName;";
             DataTable TmpDT = new DataTable();
             TDataAdapterCanceller TmpDac;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess");
 
             OdbcParameter[] ParametersArray;
             List <object[]>ParameterValuesList = new List <object[]>();
@@ -789,7 +789,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
             TDBTransaction ReadTransaction = null;
             int Result = 0;
 
-            // Initialize TSrvSetting; needed by DBAccess.SimpleEstablishDBConnection()
+            // Initialize TSrvSetting; needed by DBAccess.Connect()
             var oink = new TSrvSetting();
 
             Assert.NotNull(oink);
@@ -822,7 +822,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_JoinExistingTransaction()
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("Test");
+            TDataBase db = DBAccess.Connect("Test");
             TDBTransaction FirstTransaction = db.BeginTransaction(ATransactionName : "FirstTransaction");
             TDBTransaction ReadTransaction = null;
             int Result = 0;
@@ -868,7 +868,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
             TDBTransaction ReadTransaction = null;
             int Result = 0;
 
-            // Initialize TSrvSetting; needed by DBAccess.SimpleEstablishDBConnection()
+            // Initialize TSrvSetting; needed by DBAccess.Connect()
             var oink = new TSrvSetting();
 
             Assert.NotNull(oink);
@@ -947,7 +947,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
                 return;
             }
 
-            TDataBase RequestedConnection = DBAccess.SimpleEstablishDBConnection("New DB Connection");
+            TDataBase RequestedConnection = DBAccess.Connect("New DB Connection");
             TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(IsolationLevel.ReadCommitted, -1, "FirstTransaction");
             bool newTransaction;
 

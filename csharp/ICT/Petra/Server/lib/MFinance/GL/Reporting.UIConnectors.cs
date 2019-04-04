@@ -4268,7 +4268,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static string GetTransactionCurrency(int ALedgerNumber, int ABatchNumber)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetTransactionCurrency");
+            TDataBase db = DBAccess.Connect("GetTransactionCurrency");
             string ReturnValue = "";
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,

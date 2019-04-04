@@ -251,7 +251,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                                    " WHERE LENGTH(p_unit.p_outreach_code_c) = 13" +
                                    " AND SUBSTRING(p_unit.p_outreach_code_c,1,5) = '" + OutreachPrefixCode + "'";
 
-                    DBAccess.GDBAccessObj.SelectDT(Table, Query, ReadTransaction);
+                    ReadTransaction.DataBaseObj.SelectDT(Table, Query, ReadTransaction);
                 });
 
             return Table;

@@ -78,7 +78,7 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetNewPartnerKey");
+            TDataBase db = DBAccess.Connect("GetNewPartnerKey");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
@@ -116,7 +116,7 @@ namespace Ict.Petra.Server.MPartner.Common
             Boolean NewTransaction;
             PPartnerLedgerTable PartnerLedgerDT;
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SubmitNewPartnerKey");
+            TDataBase db = DBAccess.Connect("SubmitNewPartnerKey");
             System.Int64 CurrentDefaultPartnerKey;
 
             if (ANewPartnerKey == AOriginalDefaultKey)
@@ -234,7 +234,7 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ReservePartnerKeys");
+            TDataBase db = DBAccess.Connect("ReservePartnerKeys");
             TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
             
             db.AutoTransaction(ref ReadWriteTransaction,

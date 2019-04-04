@@ -765,7 +765,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
                 ParametersArray = new OdbcParameter[0];
 
-                DataSet TmpDS = DBAccess.GDBAccessObj.Select(
+                DataSet TmpDS = ReadTransaction.DataBaseObj.Select(
                     "SELECT PUB_" + PUnitTable.GetTableDBName() + '.' + PUnitTable.GetPartnerKeyDBName() +
                     ", PUB_" + PUnitTable.GetTableDBName() + '.' + PUnitTable.GetUnitNameDBName() +
                     " FROM PUB_" + PUnitTable.GetTableDBName() +

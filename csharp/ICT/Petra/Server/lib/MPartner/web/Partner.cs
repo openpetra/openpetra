@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             param.Value = ABranchCode;
             PBankTable bank = new PBankTable();
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBankBySortCode");
+            TDataBase db = DBAccess.Connect("GetBankBySortCode");
             db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
@@ -198,7 +198,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             String DisplayMessage = "";
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CanPartnerBeDeleted");
+            TDataBase db = DBAccess.Connect("CanPartnerBeDeleted");
 
             db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -327,7 +327,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             String PartnerShortName = "";
 
             TDBTransaction Transaction = null;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerStatisticsForDeletion");
+            TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
@@ -405,7 +405,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerStatisticsForDeletion");
+            TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
@@ -853,7 +853,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerStatisticsForDeletion");
+            TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
@@ -1679,7 +1679,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             PPartnerRelationshipTable ReturnValue = null;
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartnerRelationships");
+            TDataBase db = DBAccess.Connect("GetPartnerRelationships");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate

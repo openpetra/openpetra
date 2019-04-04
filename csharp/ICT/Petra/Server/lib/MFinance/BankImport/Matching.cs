@@ -226,7 +226,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             string ABankAccountCode,
             out List <int>AGiftBatchNumbers)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetGiftsByDate");
+            TDataBase db = DBAccess.Connect("GetGiftsByDate");
             TDBTransaction transaction = db.BeginTransaction(IsolationLevel.ReadUncommitted);
 
             // first get all gifts, even those that have no bank account associated
@@ -352,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
         private static BankImportTDS LoadData(Int32 ALedgerNumber, Int32 AStatementKey)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadData");
+            TDataBase db = DBAccess.Connect("LoadData");
             TDBTransaction dbtransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             BankImportTDS MatchDS = new BankImportTDS();

@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.App.Core
                 }
             }
 
-            FDBConnectionCheckAccessObj = DBAccess.SimpleEstablishDBConnection("Server's DB Polling Connection");
+            FDBConnectionCheckAccessObj = DBAccess.Connect("Server's DB Polling Connection");
 
             FDBReconnectionAttemptsCounter = 0;
 

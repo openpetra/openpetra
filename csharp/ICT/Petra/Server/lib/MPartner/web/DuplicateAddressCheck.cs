@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                                    " OR (p_location.p_street_name_c is NOT NULL AND p_location.p_street_name_c <> '')" +
                                    " OR (p_location.p_address_3_c is NOT NULL AND p_location.p_address_3_c <> '')";
 
-                    DBAccess.GDBAccessObj.SelectDT(Locations, Query, Transaction);
+                    Transaction.DataBaseObj.SelectDT(Locations, Query, Transaction);
 
                     // create a list of tables grouped by country codes
                     List <DataTable>LocationDataTables = Locations.AsEnumerable()

@@ -133,7 +133,7 @@ namespace Ict.Testing.NUnitTools
                 {
                     sw.Close();
                     TDBTransaction LoadTransaction = new TDBTransaction();
-                    TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadTestDataMySQL");
+                    TDataBase db = DBAccess.Connect("LoadTestDataMySQL");
                     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
                     db.BeginAutoTransaction(IsolationLevel.Serializable, ref LoadTransaction,
@@ -223,7 +223,7 @@ namespace Ict.Testing.NUnitTools
         public static int CreateNewLedger(DateTime? AStartDate = null)
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("NUnitFunctions.CreateNewLedger");
+            TDataBase db = DBAccess.Connect("NUnitFunctions.CreateNewLedger");
             ALedgerTable ledgers = null;
 
             db.GetNewOrExistingAutoReadTransaction(

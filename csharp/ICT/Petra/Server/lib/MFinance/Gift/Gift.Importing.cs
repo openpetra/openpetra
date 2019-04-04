@@ -226,7 +226,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
+            TDataBase db = DBAccess.Connect("ImportGiftBatches");
             bool SubmissionOK = false;
 
             db.BeginAutoTransaction(IsolationLevel.Serializable,
@@ -830,7 +830,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 "    FROM information_schema.tables " +
                 "    WHERE table_name = 'a_esr_default')";
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
+            TDataBase db = DBAccess.Connect("ImportGiftBatches");
             Boolean shouldCommit = true;
             DataTable Res = new DataTable();
 
@@ -853,7 +853,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         public static Boolean CommitEsrDefaults(DataTable AEsrDefaults)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
+            TDataBase db = DBAccess.Connect("ImportGiftBatches");
            
             Boolean shouldCommit = true;
 
@@ -957,7 +957,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGiftBatches");
+            TDataBase db = DBAccess.Connect("ImportGiftBatches");
             bool SubmissionOK = false;
             Int32 RowNumber = 0;
 

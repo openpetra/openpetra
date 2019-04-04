@@ -178,7 +178,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewChurchPartner");
+            TDataBase db = DBAccess.Connect("CreateNewChurchPartner");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // make sure denomination "UNKNOWN" exists as this is the default value
@@ -322,7 +322,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new gift info
         public static AGiftBatchRow CreateNewGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewGiftInfo");
+            TDataBase db = DBAccess.Connect("CreateNewGiftInfo");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadAll(AGiftDS, Transaction);
@@ -365,7 +365,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new recurring gift info
         public static ARecurringGiftBatchRow CreateNewRecurringGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewRecurringGiftInfo");
+            TDataBase db = DBAccess.Connect("CreateNewRecurringGiftInfo");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadAll(AGiftDS, Transaction);
@@ -402,7 +402,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new AP info
         public static AApDocumentRow CreateNewAPInfo(Int64 APartnerKey, ref AccountsPayableTDS AMainDS)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewAPInfo");
+            TDataBase db = DBAccess.Connect("CreateNewAPInfo");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadAll(Transaction);
@@ -431,7 +431,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create new PM data
         public static PDataLabelTable CreateNewPMData(long AFromPartnerKey, long AToPartnerKey, IndividualDataTDS AMainDS)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewPMData");
+            TDataBase db = DBAccess.Connect("CreateNewPMData");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Create a new DataLabel record

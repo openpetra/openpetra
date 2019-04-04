@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MFinance.queries
             Boolean ReturnValue = false;
             Int32 ExtractId = -1;
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RunSpecialTreatment");
+            TDataBase db = DBAccess.Connect("RunSpecialTreatment");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
                 delegate

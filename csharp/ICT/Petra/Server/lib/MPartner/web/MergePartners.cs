@@ -1326,11 +1326,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             Parameters[0] = new OdbcParameter("PartnerKey", OdbcType.Int);
             Parameters[0].Value = AFromPartnerKey;
 
-            DBAccess.GDBAccessObj.SelectDT(FromContactDetails, Query, ATransaction, Parameters);
+            ATransaction.DataBaseObj.SelectDT(FromContactDetails, Query, ATransaction, Parameters);
 
             Parameters[0].Value = AToPartnerKey;
 
-            DBAccess.GDBAccessObj.SelectDT(ToContactDetails, Query, ATransaction, Parameters);
+            ATransaction.DataBaseObj.SelectDT(ToContactDetails, Query, ATransaction, Parameters);
 
             // get max sequence numbers for each attribute
             List <string[]>MaxSequenceNumbers = new List <string[]>();

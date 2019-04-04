@@ -59,7 +59,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadMotivationDetails");
+            TDataBase db = DBAccess.Connect("LoadMotivationDetails");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

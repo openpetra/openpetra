@@ -85,7 +85,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 if (!res && !AInfoMode)
                 {
                     TDBTransaction Transaction = new TDBTransaction();
-                    TDataBase db = DBAccess.SimpleEstablishDBConnection("PeriodMonthEnd");
+                    TDataBase db = DBAccess.Connect("PeriodMonthEnd");
                     AAccountingPeriodTable PeriodTbl = null;
 
                     db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
@@ -196,7 +196,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private void NoteForexRevalRequired(Int32 ALedgerNumber, Int32 AYear, Int32 ABatchPeriod)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("NoteForexRevalRequired");
+            TDataBase db = DBAccess.Connect("NoteForexRevalRequired");
             Boolean submissionOK = true;
 
             if (ABatchPeriod == FledgerInfo.NumberOfAccountingPeriods)
@@ -281,7 +281,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 AAccountingPeriodTable PeriodTbl = null;
                 TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("RunMonthEnd");
+                TDataBase db = DBAccess.Connect("RunMonthEnd");
                 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -602,7 +602,7 @@ namespace Ict.Petra.Server.MFinance.GL
             ParametersArray[2].Value = MFinanceConstants.BATCH_UNPOSTED;
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetUnpostedGiftInfo");
+            TDataBase db = DBAccess.Connect("GetUnpostedGiftInfo");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -661,7 +661,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public GetSuspenseAccountInfo(int ALedgerNumber)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetSuspenseAccountInfo");
+            TDataBase db = DBAccess.Connect("GetSuspenseAccountInfo");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -734,7 +734,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public GetBatchInfo(Int32 ALedgerNumber, Int32 AYear, Int32 ABatchPeriod)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBatchInfo");
+            TDataBase db = DBAccess.Connect("GetBatchInfo");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MFinance.Common
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TGetAccountHierarchyDetailInfo");
+            TDataBase db = DBAccess.Connect("TGetAccountHierarchyDetailInfo");
 
             try
             {
@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MFinance.Common
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("THandleAccountPropertyInfo");
+            TDataBase db = DBAccess.Connect("THandleAccountPropertyInfo");
 
             try
             {
@@ -498,7 +498,7 @@ namespace Ict.Petra.Server.MFinance.Common
             else
             {
                 TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("TAccountInfo.LoadData");
+                TDataBase db = DBAccess.Connect("TAccountInfo.LoadData");
 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -724,7 +724,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private void LoadData()
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TAccountPeriodInfo.LoadData");
+            TDataBase db = DBAccess.Connect("TAccountPeriodInfo.LoadData");
 
             try
             {

@@ -118,7 +118,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         public static bool TrainBankStatement(Int32 ALedgerNumber, DateTime ADateOfStatement, string ABankAccountCode)
         {
             // get the statement keys
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TrainBankStatement");
+            TDataBase db = DBAccess.Connect("TrainBankStatement");
             TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             AEpStatementTable Statements = new AEpStatementTable();
@@ -227,7 +227,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber, short ALimit)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetImportedBankStatements");
+            TDataBase db = DBAccess.Connect("GetImportedBankStatements");
             TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             string SqlStmt = "SELECT * FROM PUB.a_ep_statement " +
@@ -255,7 +255,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool DropBankStatement(Int32 AEpStatementKey)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("DropBankStatement");
+            TDataBase db = DBAccess.Connect("DropBankStatement");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             BankImportTDS MainDS = new BankImportTDS();
@@ -355,7 +355,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBankStatementTransactionsAndMatches");
+            TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             BankImportTDS ResultDataset = new BankImportTDS();
@@ -724,7 +724,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 "WHERE l.a_base_currency_c = ac.a_currency_code_c " +
                 "AND l.a_ledger_number_i = " + ALedgerNumber.ToString();
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBaseCurrencyCode");
+            TDataBase db = DBAccess.Connect("GetBaseCurrencyCode");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
             DataTable RightCurrency = db.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
             Transaction.Rollback();
@@ -1132,7 +1132,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             DateTime BatchDateEffective = stmt.Date;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateGiftBatch");
+            TDataBase db = DBAccess.Connect("CreateGiftBatch");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             if (!TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref BatchDateEffective, out DateEffectiveYearNumber,
@@ -1389,7 +1389,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             AVerificationResult = null;
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateGLBatch");
+            TDataBase db = DBAccess.Connect("CreateGLBatch");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,

@@ -256,13 +256,8 @@ namespace {#NAMESPACE}
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
-        /// gets passed then the Method executes DB commands with the 'globally available' 
-        /// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
-        /// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
-        /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
-        /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
-        /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-        /// separate DB Connection (needlessly)!</param>
+        /// gets passed then a separate 
+        /// DB Connection will be established automatically and get closed automatically after it got used.</param>
         /// <returns>
         /// DataTable If the Hash that got passed in AHashCode doesn't fit the
         /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
@@ -290,7 +285,7 @@ namespace {#NAMESPACE}
                     if (DBConnectionObj == null)
                     {
                         // Open a separate DB Connection
-                        DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+                        DBConnectionObj =  DBAccess.Connect(StrDBConnName);
                         SeparateDBConnectionEstablished = true;
 
                         // ...and start a DB Transction on that separate DB Connection                                
@@ -347,13 +342,8 @@ namespace {#NAMESPACE}
         /// <param name="AVerificationResult">Will be filled with any
         /// VerificationResults if errors occur.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
-        /// gets passed then the Method executes DB commands with the 'globally available' 
-        /// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
-        /// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
-        /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
-        /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
-        /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-        /// separate DB Connection (needlessly)!</param>
+        /// gets passed then a separate 
+        /// DB Connection will be established automatically and get closed automatically after it got used.</param>
         /// <returns>Status of the operation.</returns>
         public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
             ref TTypedDataTable ASubmitTable,
@@ -387,7 +377,7 @@ namespace {#NAMESPACE}
                         if (ADataBase == null)
                         {
                             // Open a separate DB Connection
-                            DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+                            DBConnectionObj =  DBAccess.Connect(StrDBConnName);
                             SeparateDBConnectionEstablished = true;
 
                             // ...and start a DB Transction on that separate DB Connection
@@ -500,13 +490,8 @@ namespace {#NAMESPACE}
 /// <param name="ALedgerNumber">The LedgerNumber that the rows that should be stored in
 /// the Cache need to match.</param>
 /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
-/// gets passed then the Method executes DB commands with the 'globally available' 
-/// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
-/// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
-/// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
-/// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
-/// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-/// separate DB Connection (needlessly)!</param>
+/// gets passed then a separate 
+/// DB Connection will be established automatically and get closed automatically after it got used.</param>
 /// <returns>
 /// DataTable If the Hash that got passed in AHashCode doesn't fit the
 /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
@@ -553,7 +538,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
             if (DBConnectionObj == null)
             {
                 // Open a separate DB Connection
-                DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+                DBConnectionObj =  DBAccess.Connect(StrDBConnName);
                 SeparateDBConnectionEstablished = true;
 
                 // ...and start a DB Transction on that separate DB Connection
@@ -617,13 +602,8 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
 /// <param name="AVerificationResult">Will be filled with any
 /// VerificationResults if errors occur.</param>
 /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
-/// gets passed then the Method executes DB commands with the 'globally available' 
-/// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
-/// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
-/// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
-/// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
-/// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
-/// separate DB Connection (needlessly)!</param>
+/// gets passed then a separate 
+/// DB Connection will be established automatically and get closed automatically after it got used.</param>
 /// <returns>Status of the operation.</returns>
 public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
     ref TTypedDataTable ASubmitTable,
@@ -659,7 +639,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
                 if (DBConnectionObj == null)
                 {
                     // Open a separate DB Connection
-                    DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+                    DBConnectionObj =  DBAccess.Connect(StrDBConnName);
 
                     // ...and start a DB Transction on that separate DB Connection
                     SubmitChangesTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable,

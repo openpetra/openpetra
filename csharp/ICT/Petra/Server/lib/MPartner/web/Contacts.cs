@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PContactLogTable AContactLogTable,
             PPartnerContactAttributeTable APartnerContactAttributeTable)
         {
-            TDBTransaction WriteTransaction = null;
+            TDBTransaction WriteTransaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -107,7 +107,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     var extractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, WriteTransaction).AsEnumerable();
                     var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
 
-                    long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
+                    long ContactLogId = WriteTransaction.DataBaseObj.GetNextSequenceValue("seq_contact", WriteTransaction);
 
                     AContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
 
@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AModuleID,
             string AMailingCode)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     PContactLogTable contacts = new PContactLogTable();
                     PContactLogRow contact = contacts.NewRowTyped();
-                    contact.ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", Transaction);
+                    contact.ContactLogId = Transaction.DataBaseObj.GetNextSequenceValue("seq_contact", Transaction);
                     contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
                     //contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
                     contact.ContactCode = AMethodOfContact;
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     Query = Query.Substring(0, Query.Length - 3) + "))";
                 }
 
-                DBAccess.GDBAccessObj.SelectDT(Contacts, Query, WriteTransaction);
+                WriteTransaction.DataBaseObj.SelectDT(Contacts, Query, WriteTransaction);
 
                 Contacts.PrimaryKey = new DataColumn[] {
                     Contacts.Columns["p_partner_key_n"], Contacts.Columns["p_contact_log_id_i"]

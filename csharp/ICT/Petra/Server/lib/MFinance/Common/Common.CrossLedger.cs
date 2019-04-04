@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                 {
                     // It is more than 24 hours since our last clean
                     TDBTransaction t = new TDBTransaction();
-                    TDataBase db = DBAccess.SimpleEstablishDBConnection("DoDailyExchangeRateClean");
+                    TDataBase db = DBAccess.Connect("DoDailyExchangeRateClean");
                     bool bSubmissionOk = false;
                     db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref t, ref bSubmissionOk,
                         delegate
@@ -185,7 +185,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
             ExchangeRateTDS WorkingDS = new ExchangeRateTDS();
             WorkingDS.EnforceConstraints = false;
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadDailyExchangeRateData");
+            TDataBase db = DBAccess.Connect("LoadDailyExchangeRateData");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PPartnerTable.GetPartnerShortNameDBName();
 
-                    Events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
+                    Events = Transaction.DataBaseObj.SelectDT(SqlStmt, "events",
                         Transaction, SqlParameterList.ToArray());
 
                     Key[0] = Events.Columns[PPartnerTable.GetPartnerKeyDBName()];
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                    DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "fields", Transaction);
+                    DataTable events = Transaction.DataBaseObj.SelectDT(SqlStmt, "fields", Transaction);
 
                     foreach (DataRow eventRow in events.Rows)
                     {
@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                    DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "ledgers", Transaction);
+                    DataTable events = Transaction.DataBaseObj.SelectDT(SqlStmt, "ledgers", Transaction);
 
                     foreach (DataRow eventRow in events.Rows)
                     {
@@ -394,7 +394,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static long GetUnitHierarchyRootUnitKey()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable dt = new DataTable();
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -402,7 +402,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 delegate
                 {
                     String Query = "SELECT p_partner_key_n FROM p_unit WHERE u_unit_type_code_c = 'R'";
-                    dt = DBAccess.GDBAccessObj.SelectDT(Query, "UnitKey", Transaction);
+                    dt = Transaction.DataBaseObj.SelectDT(Query, "UnitKey", Transaction);
                 });
 
             long returnvalue = 0;

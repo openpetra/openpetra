@@ -327,7 +327,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             Decimal PaidAmount = 0m;
 
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetPartPaidAmount");
+            TDataBase db = DBAccess.Connect("GetPartPaidAmount");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

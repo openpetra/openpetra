@@ -98,7 +98,7 @@ namespace Ict.Testing.NUnitPetraServer
             Catalog.Init();
             TServerManager.TheServerManager = new TServerManager();
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection(
+            TDataBase db = DBAccess.Connect(
                 "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
 
             LoginTransaction = db.BeginTransaction(IsolationLevel.RepeatableRead,

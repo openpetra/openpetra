@@ -40,7 +40,7 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
     }
 
     bool NewTransaction;
-    TDBTransaction SubmitChangesTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+    TDBTransaction SubmitChangesTransaction = DBAccess.Connect("{#DATASETNAME}SubmitChanges", ADataBase).GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
     string SavingOperation = "No action taken yet!";
 
     try

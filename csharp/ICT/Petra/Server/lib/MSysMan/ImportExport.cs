@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             try
             {
                 // Open a separate DB Connection for the exporting of the data...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("ExportAllTables");
+                DBConnectionObj = DBAccess.Connect("ExportAllTables");
 
                 // ...and start a DB Transaction on that separate DB Connection
                 ReadTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable, 0, "ExportAllTables");
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             try
             {
                 // Open a separate DB Connection for the importing of the data...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("ExportAllTables");
+                DBConnectionObj = DBAccess.Connect("ExportAllTables");
 
                 // ...and start a DB Transaction on that separate DB Connection
                 DBConnectionObj.BeginAutoTransaction(IsolationLevel.Serializable, ref ReadWriteTransaction, ref SubmissionResult, delegate

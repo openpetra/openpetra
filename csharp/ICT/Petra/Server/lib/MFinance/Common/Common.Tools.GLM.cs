@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (ASequence != -1)
             {
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadBySequence");
+                TDataBase db = DBAccess.Connect("LoadBySequence");
 
                 db.AutoReadTransaction(ref transaction,
                     delegate
@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MFinance.Common
             Boolean LoadedOk = false;
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadByCostCentreAccountPeriod");
+            TDataBase db = DBAccess.Connect("LoadByCostCentreAccountPeriod");
 
             FGLMpTable = new AGeneralLedgerMasterPeriodTable();
 
@@ -132,7 +132,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public void LoadByYear(Int32 AYear)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadByYear");
+            TDataBase db = DBAccess.Connect("LoadByYear");
 
             db.AutoReadTransaction(ref transaction,
                 delegate
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TGet_GLM_Info");
+            TDataBase db = DBAccess.Connect("TGet_GLM_Info");
 
             db.AutoReadTransaction(ref transaction,
                 delegate
@@ -201,7 +201,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TGet_GLM_Info");
+            TDataBase db = DBAccess.Connect("TGet_GLM_Info");
 
             db.AutoReadTransaction(ref transaction,
                 delegate
@@ -304,7 +304,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGlmInfo(int ALedgerNumber, int ACurrentFinancialYear, string AAccountCode)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TGlmInfo");
+            TDataBase db = DBAccess.Connect("TGlmInfo");
 
             db.AutoReadTransaction(ref transaction,
                 delegate

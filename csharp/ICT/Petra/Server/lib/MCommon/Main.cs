@@ -1077,7 +1077,7 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
         public static TDataBase EstablishDBConnection(bool ASeparateDBConnection = true, String AConnectionName = "")
         {
-            TDataBase FDBAccessObj = DBAccess.SimpleEstablishDBConnection(
+            TDataBase FDBAccessObj = DBAccess.Connect(
                 AConnectionName);
             return FDBAccessObj;
         }

@@ -72,7 +72,7 @@ namespace Ict.Common.Data.Testing
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("test");
+            TDataBase db = DBAccess.Connect("test");
 
             db.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
@@ -126,7 +126,7 @@ namespace Ict.Common.Data.Testing
         [Test, Explicit]
         public void SpeedTestLoadIntoTypedTable()
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("test");
+            TDataBase db = DBAccess.Connect("test");
             TDBTransaction ReadTransaction = null;
             DateTime before = DateTime.Now;
             DateTime after = DateTime.Now;
@@ -183,7 +183,7 @@ namespace Ict.Common.Data.Testing
         [Test]
         public void TestModifyGiftBatch()
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("test");
+            TDataBase db = DBAccess.Connect("test");
             TDBTransaction t = db.BeginTransaction(IsolationLevel.Serializable);
 
             GiftBatchTDS MainDS;

@@ -1030,7 +1030,7 @@ namespace Ict.Common.DB.Testing
                 TDBTransaction ReadTransaction = null;
                 int Result = 0;
 
-                // Need to instantiate a TSrvSetting for DBAccess.SimpleEstablishDBConnection() to create a new connection for us.
+                // Need to instantiate a TSrvSetting for DBAccess.Connect() to create a new connection for us.
                 var oink = new TSrvSetting();
                 Assert.NotNull(oink);
 
@@ -1098,7 +1098,7 @@ namespace Ict.Common.DB.Testing
                        {
                            // Open independent DB Connection (independent of DBAccess.GDBAccessObj which automatically
                            // gets created for every Test in this TestFixture!)
-                           TestDBInstance = DBAccess.SimpleEstablishDBConnection(String.Format(TestConnectionName, AThreadNumber));
+                           TestDBInstance = DBAccess.Connect(String.Format(TestConnectionName, AThreadNumber));
 
                            // Get a new DB Transaction on DB Connection
                            TestTransactionInstance = TestDBInstance.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out IsNewTransaction,
@@ -1417,7 +1417,7 @@ namespace Ict.Common.DB.Testing
 
         private TDataBase CallEstablishDBConnection(string AConnectionName)
         {
-            return DBAccess.SimpleEstablishDBConnection(AConnectionName);
+            return DBAccess.Connect(AConnectionName);
         }
 
         #endregion

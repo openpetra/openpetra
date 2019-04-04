@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetGiftsForReverseAdjust");
+            TDataBase db = DBAccess.Connect("GetGiftsForReverseAdjust");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -125,7 +125,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AMessages)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetGiftsForFieldChangeAdjustment");
+            TDataBase db = DBAccess.Connect("GetGiftsForFieldChangeAdjustment");
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             AMessages = new TVerificationResultCollection();
@@ -251,7 +251,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ReversedGiftReset");
+            TDataBase db = DBAccess.Connect("ReversedGiftReset");
             bool SubmissionOK = false;
 
             try
@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ANewBatchNumber = (BatchSelected ? (Int32)requestParams["NewBatchNumber"] : 0);
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GiftRevertAdjust");
+            TDataBase db = DBAccess.Connect("GiftRevertAdjust");
             bool SubmissionOK = false;
 
             try

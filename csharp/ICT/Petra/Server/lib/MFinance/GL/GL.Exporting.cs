@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.MFinance.GL
             SortedDictionary <String, AJournalSummaryRow>sdSummary = new SortedDictionary <String, AJournalSummaryRow>();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ExportAllGLBatchData");
+            TDataBase db = DBAccess.Connect("ExportAllGLBatchData");
             db.AutoReadTransaction(ref Transaction,
                 delegate
                 {

@@ -536,7 +536,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             template.BatchDescription = strTestDataBatchDescription;
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetBatchInfo");
+            TDataBase db = DBAccess.Connect("GetBatchInfo");
             ABatchTable batches = null;
             db.AutoReadTransaction(ref transaction,
                 delegate

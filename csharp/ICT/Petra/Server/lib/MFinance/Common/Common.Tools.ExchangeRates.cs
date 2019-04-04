@@ -92,7 +92,7 @@ namespace Ict.Petra.Server.MFinance.Common
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadDatabase");
+            TDataBase db = DBAccess.Connect("LoadDatabase");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -483,7 +483,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             // Query the database using the specific period ...
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetDailyExchangeRate");
+            TDataBase db = DBAccess.Connect("GetDailyExchangeRate");
             ExchangeRateTDS allRates = null;
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -556,7 +556,7 @@ namespace Ict.Petra.Server.MFinance.Common
             decimal ExchangeRateToFind = AExchangeRateToFind;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCorporateExchangeRate");
+            TDataBase db = DBAccess.Connect("GetCorporateExchangeRate");
 
             ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
             ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);

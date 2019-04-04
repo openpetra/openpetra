@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " = pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetUserIdDBName() +
                               " ORDER BY " + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName();
 
-                    DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, null, -1, -1);
+                    Transaction.DataBaseObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, null, -1, -1);
                 });
 
             return ExtractMasterDT;
@@ -223,13 +223,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                            " < ?";
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction,
+                    Transaction.DataBaseObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction,
                         SqlParameterList.ToArray(), -1, -1);
                 });
 
@@ -248,7 +248,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractMasterRow TemplateRow;
             Boolean ReturnValue = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -478,12 +478,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             parameterArray[1] = new OdbcParameter("Date", OdbcType.Date);
             parameterArray[1].Value = ((object)PurgeDate);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
                 delegate
                 {
-                    object o = DBAccess.GDBAccessObj.ExecuteScalar(CountStmt, Transaction, parameterArray);
+                    object o = Transaction.DataBaseObj.ExecuteScalar(CountStmt, Transaction, parameterArray);
 
                     if (o != null)
                     {
@@ -611,7 +611,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
                               " ORDER BY " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName();
 
-                    DBAccess.GDBAccessObj.SelectDT(ExtractDT, SqlStmt, Transaction, null, -1, -1);
+                    Transaction.DataBaseObj.SelectDT(ExtractDT, SqlStmt, Transaction, null, -1, -1);
                 });
 
             return ExtractDT;
@@ -997,7 +997,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
                               " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
@@ -1058,7 +1058,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                   " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
                                   " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + ATypeCode + "'";
 
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                        Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
                     }
 
                     SubmissionOK = true;
@@ -1107,7 +1107,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
                               " AND " + PPartnerTable.GetNoSolicitationsDBName() + " <> " + NoSolicitationsValue;
 
-                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    nRowsAffected = Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
@@ -1158,7 +1158,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
                               " AND " + PPartnerTable.GetEmailGiftStatementDBName() + " <> " + EmailGiftStatementValue;
 
-                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    nRowsAffected = Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
@@ -1234,7 +1234,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
                               " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });

@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadLedgerInfo");
+            TDataBase db = DBAccess.Connect("LoadLedgerInfo");
 
             try
             {
@@ -164,7 +164,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadLedgerSettings");
+            TDataBase db = DBAccess.Connect("LoadLedgerSettings");
 
             #region Validate Arguments
 
@@ -322,7 +322,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Boolean CalendarChangeAllowed = true;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "IsCalendarChangeAllowed");
+            TDataBase db = DBAccess.Connect("IsCalendarChangeAllowed", ADataBase);
 
             try
             {
@@ -371,7 +371,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ALedgerRow LedgerRow = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("NumberOfAccountingPeriods");
+            TDataBase db = DBAccess.Connect("NumberOfAccountingPeriods");
 
             try
             {
@@ -448,7 +448,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TemplateOperators.Add("=");
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "IsSubsystemActivated");
+            TDataBase db = DBAccess.Connect("IsSubsystemActivated", ADataBase);
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, ref Transaction,
@@ -477,7 +477,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out bool AAccountsPayableSubsystemActivated, out bool AGiftProcessingSubsystemActivated)
         {
             TDBTransaction DBTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetActivatedSubsystems");
+            TDataBase db = DBAccess.Connect("GetActivatedSubsystems");
             bool AccountsPayableSubsystemActivated = false;
             bool GiftProcessingSubsystemActivated = false;
 
@@ -536,7 +536,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.ReuseOrNewDBConnection(ADataBase, "ActivateGiftProcessingSubsystem");
+            TDataBase db = DBAccess.Connect("ActivateGiftProcessingSubsystem", ADataBase);
             bool SubmissionOK = false;
 
             try
@@ -668,7 +668,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ActivateAccountsPayableSubsystem");
+            TDataBase db = DBAccess.Connect("ActivateAccountsPayableSubsystem");
             bool SubmissionOK = false;
 
             try
@@ -776,7 +776,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Boolean Result = false;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CanSubsystemBeDeactivated");
+            TDataBase db = DBAccess.Connect("CanSubsystemBeDeactivated");
 
             try
             {
@@ -904,7 +904,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("DeactivateSubsystem");
+            TDataBase db = DBAccess.Connect("DeactivateSubsystem");
             Boolean SubmissionOK = false;
 
             try
@@ -978,7 +978,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             System.Type TypeofTable = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAccountHierarchies");
+            TDataBase db = DBAccess.Connect("LoadAccountHierarchies");
 
             try
             {
@@ -1278,7 +1278,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadCostCentreHierarchy");
+            TDataBase db = DBAccess.Connect("LoadCostCentreHierarchy");
 
             try
             {
@@ -1349,7 +1349,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ACostCentreTable.GetCostCentreTypeDBName());
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadLocalCostCentres");
+            TDataBase db = DBAccess.Connect("LoadLocalCostCentres");
 
             try
             {
@@ -1408,7 +1408,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadCostCentrePartnerLinks");
+            TDataBase db = DBAccess.Connect("LoadCostCentrePartnerLinks");
 
             try
             {
@@ -1558,7 +1558,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CostCentrePartnerLinksExist");
+            TDataBase db = DBAccess.Connect("CostCentrePartnerLinksExist");
 
             try
             {
@@ -1622,7 +1622,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             DataTable ReturnTable = null;
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CostCentrePartnerLinksExist");
+            TDataBase db = DBAccess.Connect("CostCentrePartnerLinksExist");
 
             try
             {
@@ -1736,7 +1736,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveCostCentrePartnerLinks");
+            TDataBase db = DBAccess.Connect("SaveCostCentrePartnerLinks");
             bool SubmissionOK = false;
 
             try
@@ -2001,7 +2001,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Boolean CreateCalendar = false;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveLedgerSettings");
+            TDataBase db = DBAccess.Connect("SaveLedgerSettings");
             bool SubmissionOK = false;
 
             GLSetupTDS InspectDS = AInspectDS;
@@ -2396,7 +2396,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                             GLSetupTDS inspectDS = AInspectDS;
                             TDBTransaction transaction = new TDBTransaction();
-                            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveGLSetupTDS");
+                            TDataBase db = DBAccess.Connect("SaveGLSetupTDS");
 
                             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                                 TEnforceIsolationLevel.eilMinimum,
@@ -2453,7 +2453,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                             GLSetupTDS inspectDS = AInspectDS;
                             TDBTransaction transaction = new TDBTransaction();
-                            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveGLSetupTDS");
+                            TDataBase db = DBAccess.Connect("SaveGLSetupTDS");
 
                             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                                 TEnforceIsolationLevel.eilMinimum,
@@ -2520,7 +2520,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             if (acc.DebitCreditIndicator != prevDebitCredit)
                             {
                                 TDBTransaction transaction = new TDBTransaction();
-                                TDataBase db = DBAccess.SimpleEstablishDBConnection("db");
+                                TDataBase db = DBAccess.Connect("db");
                                 db.AutoTransaction(ref transaction, true,
                                     delegate
                                     {
@@ -2574,7 +2574,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("db");
+                TDataBase db = DBAccess.Connect("db");
                 TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
                 GLSetupTDSAccess.SubmitChanges(AInspectDS, transaction.DataBaseObj);
@@ -2685,7 +2685,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             string Msg = "";
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAccountCodeAttributes");
+            TDataBase db = DBAccess.Connect("GetAccountCodeAttributes");
 
             try
             {
@@ -2862,7 +2862,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ExportAccountHierarchy");
+            TDataBase db = DBAccess.Connect("ExportAccountHierarchy");
 
             try
             {
@@ -3002,7 +3002,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ExportCostCentreHierarchy");
+            TDataBase db = DBAccess.Connect("ExportCostCentreHierarchy");
 
             try
             {
@@ -3271,7 +3271,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     ATransactionTable transTbl = null;
 
                     TDBTransaction transaction = new TDBTransaction();
-                    TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportAccountHierarchy");                    
+                    TDataBase db = DBAccess.Connect("ImportAccountHierarchy");                    
                     db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         ref transaction,
@@ -3907,7 +3907,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         private static void RewireIchIsAsset(Int32 ANewLedgerNumber)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RewireIchIsAsset");
+            TDataBase db = DBAccess.Connect("RewireIchIsAsset");
             bool SubmissionOK = false;
 
             db.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
@@ -3987,7 +3987,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AVerificationResult = null;
             bool AllOK = false;
 
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateNewLedger");
+            TDataBase db = DBAccess.Connect("CreateNewLedger");
 
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
@@ -4389,7 +4389,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool Result = true;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ContainsTransactions");
+            TDataBase db = DBAccess.Connect("ContainsTransactions");
 
             db.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
@@ -4421,7 +4421,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("DeleteLedger");
+            TDataBase db = DBAccess.Connect("DeleteLedger");
             bool Result = true;
             db.AutoTransaction(ref Transaction,
                 ref SubmitChangesResult,
@@ -4612,7 +4612,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (action == "update")
             {
                 TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("MaintainLedger");
+                TDataBase db = DBAccess.Connect("MaintainLedger");
                 bool SubmissionOK = false;
 
                 try
@@ -4668,7 +4668,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Fields.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetAvailableLedgers");
+            TDataBase db = DBAccess.Connect("GetAvailableLedgers");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -4689,7 +4689,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAFreeformAnalysis");
+            TDataBase db = DBAccess.Connect("LoadAFreeformAnalysis");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4715,7 +4715,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static Boolean CanDetachTypeCodeFromAccount(Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String AMessage)
         {
             TDBTransaction ReadTrans = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CanDetachTypeCodeFromAccount");
+            TDataBase db = DBAccess.Connect("CanDetachTypeCodeFromAccount");
             bool Result = true;
             string Message = String.Empty;
             db.GetNewOrExistingAutoReadTransaction(
@@ -4788,7 +4788,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             int RetVal = 0;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CheckDeleteAFreeformAnalysis");
+            TDataBase db = DBAccess.Connect("CheckDeleteAFreeformAnalysis");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4810,7 +4810,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             int RetVal = 0;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CheckDeleteAAnalysisType");
+            TDataBase db = DBAccess.Connect("CheckDeleteAAnalysisType");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4849,7 +4849,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAnalysisAttributeTable AnalAttribTable = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RequiredAnalysisAttributesForAccount");
+            TDataBase db = DBAccess.Connect("RequiredAnalysisAttributesForAccount");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -4902,7 +4902,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool AccountAnalysisAttributeExists = false;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("AccountHasAnalysisAttributes");
+            TDataBase db = DBAccess.Connect("AccountHasAnalysisAttributes");
 
             try
             {
@@ -4963,7 +4963,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool AccountAnalysisAttributeExists = false;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("AccountHasAnalysisAttributes");
+            TDataBase db = DBAccess.Connect("AccountHasAnalysisAttributes");
 
             try
             {
@@ -5024,7 +5024,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool AccountAnalysisAttributeValueRequired = false;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("AccountAnalysisAttributeRequiresValues");
+            TDataBase db = DBAccess.Connect("AccountAnalysisAttributeRequiresValues");
 
             try
             {
@@ -5163,7 +5163,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TVerificationResultCollection VerificationResults = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RenameAccountCode");
+            TDataBase db = DBAccess.Connect("RenameAccountCode");
             bool SubmissionOK = false;
 
             try
@@ -5427,7 +5427,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool DBSuccess = true;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetCostCentreAttributes");
+            TDataBase db = DBAccess.Connect("GetCostCentreAttributes");
 
             try
             {
@@ -5567,7 +5567,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RenameCostCentreCode");
+            TDataBase db = DBAccess.Connect("RenameCostCentreCode");
             bool SubmissionOK = false;
 
             try
@@ -5697,7 +5697,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool ReturnValue = true;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CheckAccountCanBeMadeForeign");
+            TDataBase db = DBAccess.Connect("CheckAccountCanBeMadeForeign");
 
             try
             {
@@ -5778,7 +5778,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool ReturnValue = false;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CheckForeignAccountHasBalances");
+            TDataBase db = DBAccess.Connect("CheckForeignAccountHasBalances");
 
             try
             {
@@ -5836,7 +5836,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ZeroForeignCurrencyBalances");
+            TDataBase db = DBAccess.Connect("ZeroForeignCurrencyBalances");
             bool SubmissionOK = false;
 
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,

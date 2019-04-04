@@ -548,7 +548,7 @@ namespace Ict.Petra.Server.App.Core
             try
             {
                 // Open a separate DB Connection...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("SetSystemDefault");
+                DBConnectionObj = DBAccess.Connect("SetSystemDefault");
 
                 // ...and start a DB Transaction on that separate DB Connection
                 DBConnectionObj.BeginAutoTransaction(IsolationLevel.ReadCommitted, ref WriteTransaction, ref SubmissionOK,

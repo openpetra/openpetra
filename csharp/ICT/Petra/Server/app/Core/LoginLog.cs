@@ -159,7 +159,7 @@ namespace Ict.Petra.Server.App.Core.Security
             {
                 // Open a separate DB Connection (necessary because this Method gets executed in the Server's (Main) AppDomain
                 // which hasn't got an instance of DBAccess.GDBAccess!) ...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("RecordUserLogout");
+                DBConnectionObj = DBAccess.Connect("RecordUserLogout");
 
                 // ...and start a DB Transaction on that separate DB Connection
                 WriteTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.RepeatableRead, 0, "RecordUserLogout");

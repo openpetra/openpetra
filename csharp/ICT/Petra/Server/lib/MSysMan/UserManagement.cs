@@ -435,7 +435,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (DBConnectionObj == null)
             {
                 // ATransaction was null and GDBAccess is also null: we need to establish a DB Connection manually here!
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("CreateUser");
+                DBConnectionObj = DBAccess.Connect("CreateUser");
 
                 SeparateDBConnectionEstablished = true;
             }
@@ -895,7 +895,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [NoRemoting]
         public static bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("InitialSysadminEmail");
+            TDataBase db = DBAccess.Connect("InitialSysadminEmail");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "InitialSysadminEmail");
 
             try
@@ -960,7 +960,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [NoRemoting]
         public static bool RequestNewPassword(string AEmailAddress)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RequestNewPassword");
+            TDataBase db = DBAccess.Connect("RequestNewPassword");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "RequireNewPassword");
 
             try
@@ -1030,7 +1030,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [NoRemoting]
         public static bool SetNewPassword(string AUserID, string AToken, string ANewPassword, out TVerificationResultCollection AVerificationResult)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RequestNewPassword");
+            TDataBase db = DBAccess.Connect("RequestNewPassword");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SetNewPassword1");
             AVerificationResult = new TVerificationResultCollection();
 

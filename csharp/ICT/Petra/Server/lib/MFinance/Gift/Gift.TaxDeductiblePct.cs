@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataTable Table = new DataTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("IsPartnerARecipient");
+            TDataBase db = DBAccess.Connect("IsPartnerARecipient");
 
             db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static void UpdateUnpostedGiftsTaxDeductiblePct(Int64 ARecipientKey, decimal ANewPct, DateTime ADateFrom)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("UpdateUnpostedGiftsTaxDeductiblePct");
+            TDataBase db = DBAccess.Connect("UpdateUnpostedGiftsTaxDeductiblePct");
             bool SubmissionOK = false;
 
             db.BeginAutoTransaction(IsolationLevel.ReadCommitted,
@@ -161,7 +161,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AMessages)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetGiftsForTaxDeductiblePctAdjustment");
+            TDataBase db = DBAccess.Connect("GetGiftsForTaxDeductiblePctAdjustment");
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             AMessages = new TVerificationResultCollection();

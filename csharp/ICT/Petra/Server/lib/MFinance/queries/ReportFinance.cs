@@ -213,7 +213,7 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_receipt_l=true");
             DataTable tempTbl = null;
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TotalGiftsThroughFieldMonth");
+            TDataBase db = DBAccess.Connect("TotalGiftsThroughFieldMonth");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -352,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
             DataTable tempTbl = null;
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("TotalGiftsThroughFieldYear");
+            TDataBase db = DBAccess.Connect("TotalGiftsThroughFieldYear");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -545,7 +545,7 @@ namespace Ict.Petra.Server.MFinance.queries
                     "ORDER BY recipient.p_partner_short_name_c");
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SelectGiftRecipients");
+            TDataBase db = DBAccess.Connect("SelectGiftRecipients");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,

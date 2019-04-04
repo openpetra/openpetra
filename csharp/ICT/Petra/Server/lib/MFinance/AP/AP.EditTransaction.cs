@@ -65,7 +65,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             ALedgerTable Tbl = null;
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetLedgerInfo");
+            TDataBase db = DBAccess.Connect("GetLedgerInfo");
 
             db.AutoReadTransaction(ref ReadTransaction,
                 delegate
@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAApSupplier");
+            TDataBase db = DBAccess.Connect("LoadAApSupplier");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -132,7 +132,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAApDocument");
+            TDataBase db = DBAccess.Connect("LoadAApDocument");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -193,7 +193,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.LastDetailNumber = 0;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CreateAApDocument");
+            TDataBase db = DBAccess.Connect("CreateAApDocument");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -292,7 +292,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("SaveAApDocument");
+            TDataBase db = DBAccess.Connect("SaveAApDocument");
             Boolean SubmissionOK = false;
             TSubmitChangesResult result = TSubmitChangesResult.scrError;
 
@@ -526,7 +526,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             Boolean MustBeApproved = false;
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadDocumentsAndCheck");
+            TDataBase db = DBAccess.Connect("LoadDocumentsAndCheck");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
@@ -859,7 +859,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             String ReportMsg = "";
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CheckAccountsAndCostCentres");
+            TDataBase db = DBAccess.Connect("CheckAccountsAndCostCentres");
 
             db.AutoReadTransaction(ref ReadTransaction,
                 delegate
@@ -940,7 +940,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ApproveAPDocuments");
+            TDataBase db = DBAccess.Connect("ApproveAPDocuments");
             Boolean submissionOk = true;
             db.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOk,
                 delegate
@@ -998,7 +998,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             Boolean submissionOK = true;
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CancelAPDocuments");
+            TDataBase db = DBAccess.Connect("CancelAPDocuments");
             db.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOK,
                 delegate
                 {
@@ -1036,7 +1036,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TVerificationResultCollection ResultsCollection = new TVerificationResultCollection();
 
             TDBTransaction HighLevelTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("PostAPDocuments");
+            TDataBase db = DBAccess.Connect("PostAPDocuments");
             Boolean WillCommit = true;
             Boolean MustBeApproved;
 
@@ -1081,7 +1081,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             TGLPosting.DeleteGLBatch(
                                 ALedgerNumber,
                                 GLDataset.ABatch[0].BatchNumber,
-                                out MoreResults);
+                                out MoreResults,
+                                db);
                             ResultsCollection.AddCollection(MoreResults);
                         }
                         catch (Exception)
@@ -1661,7 +1662,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("PostAPPayments");
+            TDataBase db = DBAccess.Connect("PostAPPayments");
             Boolean PostingWorkedOk = false;
             Boolean SubmissionOK = false;
             ABatchRow batch = null;
@@ -1771,7 +1772,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             TGLPosting.DeleteGLBatch(
                                 MainDS.AApPayment[0].LedgerNumber,
                                 batch.BatchNumber,
-                                out MoreResults);
+                                out MoreResults,
+                                db);
                             VerificationResult.AddCollection(MoreResults);
                         }
                         catch (Exception)
@@ -1814,7 +1816,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             AccountsPayableTDS MainDs = new AccountsPayableTDS();
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("LoadAPPayment");
+            TDataBase db = DBAccess.Connect("LoadAPPayment");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -1921,7 +1923,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AVerifications = Verifications;
 
             TDBTransaction ReversalTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ReversePayment");
+            TDataBase db = DBAccess.Connect("ReversePayment");
             Boolean SubmissionOK = false;
             db.BeginAutoTransaction(IsolationLevel.Serializable, ref ReversalTransaction, ref SubmissionOK,
                 delegate

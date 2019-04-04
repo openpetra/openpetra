@@ -108,7 +108,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string BaseCurrency = LedgerTable[0].BaseCurrency;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("AnnualGiftReceipts");
+            TDataBase db = DBAccess.Connect("AnnualGiftReceipts");
 
             db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -709,7 +709,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataTable GiftsTbl = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetUnreceiptedGifts");
+            TDataBase db = DBAccess.Connect("GetUnreceiptedGifts");
 
             db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -966,7 +966,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string HtmlDoc = string.Empty;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("PrintGiftReceipt");
+            TDataBase db = DBAccess.Connect("PrintGiftReceipt");
 
             try
             {
@@ -1018,7 +1018,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             SortedList <Int64, TempDonorInfo>DonorInfo = new SortedList <Int64, TempDonorInfo>();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("PrintReceipts");
+            TDataBase db = DBAccess.Connect("PrintReceipts");
 
             db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -1114,7 +1114,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftTable Tbl = new AGiftTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("MarkReceiptsPrinted");
+            TDataBase db = DBAccess.Connect("MarkReceiptsPrinted");
             bool SubmissionOK = false;
 
             db.BeginAutoTransaction(IsolationLevel.Serializable,
@@ -1154,7 +1154,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftTable Tbl = new AGiftTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("MarkReceiptsPrinted");
+            TDataBase db = DBAccess.Connect("MarkReceiptsPrinted");
             bool SubmissionOK = false;
 
             db.BeginAutoTransaction(IsolationLevel.Serializable,
@@ -1200,7 +1200,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ALedgerTable LedgerTbl = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetLastReceiptNumber");
+            TDataBase db = DBAccess.Connect("GetLastReceiptNumber");
 
             db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -1237,7 +1237,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ALedgerTable LedgerTbl = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetLastReceiptNumber");
+            TDataBase db = DBAccess.Connect("GetLastReceiptNumber");
             bool SubmissionOK = false;
 
             db.BeginAutoTransaction(IsolationLevel.Serializable,

@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MFinance.Common
             AGeneralLedgerMasterTable GeneralLedgerMasterTable = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetGLMSequenceForBudget");
+            TDataBase db = DBAccess.Connect("GetGLMSequenceForBudget");
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             bool newTransaction = false;
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("GetActualInternal");
+            TDataBase db = DBAccess.Connect("GetActualInternal");
             TDBTransaction dBTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
 
             AGeneralLedgerMasterTable generalLedgerMasterTable = null;
@@ -374,7 +374,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("CalculateBudget");
+            TDataBase db = DBAccess.Connect("CalculateBudget");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,

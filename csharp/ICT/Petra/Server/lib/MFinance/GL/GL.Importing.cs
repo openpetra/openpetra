@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             // Get a new transaction
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGLBatches");
+            TDataBase db = DBAccess.Connect("ImportGLBatches");
             Boolean submissionOK = false;
             db.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOK,
                 delegate
@@ -890,7 +890,7 @@ namespace Ict.Petra.Server.MFinance.GL
             int transactionsAdded = 0;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("ImportGLTransactions");
+            TDataBase db = DBAccess.Connect("ImportGLTransactions");
 
             try
             {

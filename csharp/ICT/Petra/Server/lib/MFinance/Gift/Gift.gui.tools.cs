@@ -81,7 +81,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string motivationDetail = AMotivationDetail;
 
                 TDBTransaction readTransaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("GetMotivationGroupAndDetailForPartner");
+                TDataBase db = DBAccess.Connect("GetMotivationGroupAndDetailForPartner");
 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,

@@ -89,35 +89,17 @@ namespace Ict.Common.DB
             get
             {
                 TLogging.LogAtLevel(10, "Deprecated call to GDBAccessObj");
-                return SimpleEstablishDBConnection("GDBAccessObj");
+                return Connect("GDBAccessObj");
             }
         }
 
         /// <summary>
-        /// Gets the <see cref="TDataBase"/> instance that <paramref name="ATransaction"/> got started with, or
-        /// a new database connection instance in case <paramref name="ATransaction"/>
-        /// is null.
-        /// <para>
-        /// This is needed for some generated code to be able to work with a (custom) reference to a TDataBase instance, is
-        /// helpful for static Methods (which might not have a means to get a reference to a custom <see cref="TDataBase" />
-        /// instance easily), and can be neat for other scenarios, too.
-        /// </para>
+        /// Deprecated: use Transaction.DataBaseObj instead
         /// </summary>
-        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />, or null.</param>
-        /// <returns><see cref="TDataBase"/> instance that <paramref name="ATransaction"/> got started with, or
-        /// a new database connection instance in case <paramref name="ATransaction"/>
-        /// is null.
-        /// </returns>
         public static TDataBase GetDBAccessObj(TDBTransaction ATransaction)
         {
+            TLogging.Log("GetDBAccessObj is deprecated, use Transaction.DataBaseObj instead");
             return ATransaction != null ? ATransaction.DataBaseObj : GDBAccessObj;
-        }
-
-        /// reuse or create a new database connection
-        /// should replace GetDBAccessObj
-        public static TDataBase ReuseOrNewDBConnection(TDataBase ADataBase, string AName)
-        {
-            return ADataBase != null ? ADataBase : SimpleEstablishDBConnection(AName);
         }
 
         /// <summary>
@@ -145,9 +127,15 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AConnectionName">Name of the DB Connection (optional). It gets logged and hence can aid debugging
         /// (also useful for Unit Testing).</param>
-        /// <returns>New <see cref="TDataBase"/> instance with an open DB Connection.</returns>
-        public static TDataBase SimpleEstablishDBConnection(string AConnectionName)
+        /// <param name="ADataBase">if this is not null, no new Connection is opened, but this connection is reused</param>
+        /// <returns><see cref="TDataBase"/> instance with an open DB Connection.</returns>
+        public static TDataBase Connect(string AConnectionName, TDataBase ADataBase = null)
         {
+            if (ADataBase != null)
+            {
+                return ADataBase;
+            }
+
             TDataBase DBAccessObj = new TDataBase();
 
             if (!TSrvSetting.Initialized)
@@ -182,7 +170,7 @@ namespace Ict.Common.DB
         public static void RunInTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, string AContext,
             Action AEncapsulatedDBAccessCode)
         {
-            TDataBase DBConnectionObj = SimpleEstablishDBConnection(AContext);
+            TDataBase DBConnectionObj = Connect(AContext);
 
             if (ATransaction == null)
             {

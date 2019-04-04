@@ -161,7 +161,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 F_AccountingPeriod = ledger.CurrentPeriod;
 
                 TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("RunRevaluation");
+                TDataBase db = DBAccess.Connect("RunRevaluation");
 
                 AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
                 AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
@@ -234,7 +234,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 AGeneralLedgerMasterPeriodTable glmpTbl = null;
 
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.SimpleEstablishDBConnection("RevaluateAccount");
+                TDataBase db = DBAccess.Connect("RevaluateAccount");
 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,

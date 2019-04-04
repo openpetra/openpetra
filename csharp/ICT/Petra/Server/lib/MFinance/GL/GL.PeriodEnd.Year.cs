@@ -5,7 +5,7 @@
 //       wolfgangu, timop
 //       Tim Ingham
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 Query = "UPDATE a_processed_fee SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
                         " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
-                DBAccess.GDBAccessObj.ExecuteNonQuery(Query, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(Query, ATransaction);
             }
         }
 
@@ -198,7 +198,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TPeriodEndOperations.FwasCancelled = false;
             Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RunYearEnd");
             bool SubmissionOK = false;
 
 /*
@@ -210,7 +211,8 @@ namespace Ict.Petra.Server.MFinance.GL
  *              MessageBox.Show("I'm about to begin YearEnd.");
  *          }
  */
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+ 
+            db.GetNewOrExistingAutoTransaction(
                 IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
@@ -493,7 +495,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                +
                                " ORDER BY a_general_ledger_master.a_account_code_c";
 
-                accountBalanceTable = DBAccess.GDBAccessObj.SelectDT(Query, "AccountBalance", FTransaction);
+                accountBalanceTable = FTransaction.DataBaseObj.SelectDT(Query, "AccountBalance", FTransaction);
 
                 String DestCC = StandardCostCentre;                                                     // Roll-up to the standard Cost Centre, unless...
                 CCRollupStyleEnum RollupStyle = CCRollupStyleEnum.Always;
@@ -745,7 +747,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             " ORDER BY a_account_code_c,a_cost_centre_code_c";
 
 
-            DBAccess.GDBAccessObj.SelectDT(typedTable, strSQL, ATransaction);
+            ATransaction.DataBaseObj.SelectDT(typedTable, strSQL, ATransaction);
 
             return typedTable;
         }
@@ -771,7 +773,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             " ORDER BY PUB_a_general_ledger_master_period.a_period_number_i;";
 
-            DBAccess.GDBAccessObj.SelectDT(typedTable, strSQL, ATransaction);
+            FTransaction.DataBaseObj.SelectDT(typedTable, strSQL, ATransaction);
 
             return typedTable;
         }
@@ -1053,7 +1055,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
                     " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                 AJournalTable JournalTbl = new AJournalTable();
-                DBAccess.GDBAccessObj.SelectDT(JournalTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(JournalTbl, Query, FTransaction);
 
                 if (JournalTbl.Rows.Count > 0)
                 {
@@ -1074,7 +1076,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND a_batch_year_i=" + FOldYearNum +
                     " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                 ABatchTable BatchTbl = new ABatchTable();
-                DBAccess.GDBAccessObj.SelectDT(BatchTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(BatchTbl, Query, FTransaction);
 
                 if (BatchTbl.Rows.Count > 0)
                 {
@@ -1098,7 +1100,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND a_batch_year_i=" + FOldYearNum +
                     " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                 AGiftBatchTable GiftBatchTbl = new AGiftBatchTable();
-                DBAccess.GDBAccessObj.SelectDT(GiftBatchTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(GiftBatchTbl, Query, FTransaction);
 
                 if (GiftBatchTbl.Rows.Count > 0)
                 {
@@ -1181,7 +1183,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND (a_year_i=" + FoldYearNum +
                     " OR a_year_i=0)";         // a_year_i may be zero because previously we didn't have a_year, but now we do.
 
-                DBAccess.GDBAccessObj.SelectDT(StewardshipTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(StewardshipTbl, Query, FTransaction);
 
                 if (StewardshipTbl.Rows.Count > 0)
                 {
