@@ -68,9 +68,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             ACurrencyTable currencyTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadTestTata");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate

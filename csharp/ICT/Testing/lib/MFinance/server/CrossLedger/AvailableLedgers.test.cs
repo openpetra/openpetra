@@ -76,8 +76,9 @@ namespace Tests.MFinance.Server.CrossLedger
 
             try
             {
-                TDBTransaction transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("Init");
+                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
                     delegate

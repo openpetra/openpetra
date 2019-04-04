@@ -162,10 +162,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
 
             List <Int32>glBatches = new List <int>();
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("Test_YearEnd");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+            db.GetNewOrExistingAutoTransaction(
                 IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
@@ -296,10 +297,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     }
                 }
 
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("Test_2YearEnds");
                 bool SubmissionOK = false;
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+                db.GetNewOrExistingAutoTransaction(
                     IsolationLevel.Serializable,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
@@ -470,10 +472,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // create new ledger which is in year 2010
             int intLedgerNumber2010 = CommonNUnitFunctions.CreateNewLedger(new DateTime(2010, 1, 1));
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("Test_TAccountPeriodToNewYear");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
+            db.GetNewOrExistingAutoTransaction(
                 IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 ref transaction,
@@ -560,12 +563,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TDBTransaction transaction = new TDBTransaction();
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
+            TDataBase db = DBAccess.Connect("UnloadTestData_GetBatchInfo");
+            db.AutoTransaction(ref transaction, SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
                     strSQL += "WHERE " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    db.ExecuteNonQuery(
                         strSQL, transaction, ParametersArray);
                 });
         }

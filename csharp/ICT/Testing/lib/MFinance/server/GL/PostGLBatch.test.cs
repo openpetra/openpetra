@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//      peters
+//      peters, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -308,7 +308,8 @@ namespace Tests.MFinance.Server.GL
                 Assert.Fail(Message);
             }
 
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.Connect("TestLoadGLBatchDataArgumentValidation");
+            Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             Message = "Validation failed for LoadGLBatchData with null VerificationResult.";
 

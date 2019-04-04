@@ -128,7 +128,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             bool AccountTestCasesAvailable = false;
             bool CostCentreTestCasesAvailable = false;
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
+            TDataBase db = DBAccess.Connect("PrepareTestCaseData");
+            db.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     // Check if some special test data are available - otherwise load ...

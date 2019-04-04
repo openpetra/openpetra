@@ -424,8 +424,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             template.BatchDescription = strTestDataBatchDescription;
 
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadTestData_GetBatchInfo");
             ABatchTable batches = null;
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref transaction,
+            db.AutoReadTransaction(ref transaction,
                 delegate
                 {
                     batches = ABatchAccess.LoadUsingTemplate(template, transaction);
@@ -448,6 +449,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1].Value = strTestDataBatchDescription;
 
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("UnloadTestData_GetBatchInfo");
             bool SubmissionOK = true;
             DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
                 delegate
@@ -455,7 +457,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
                     strSQL += "WHERE " + ABatchTable.GetLedgerNumberDBName() + " = ? " +
                               "AND " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    db.ExecuteNonQuery(
                         strSQL, transaction, ParametersArray);
                 });
         }
@@ -483,8 +485,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ParametersArray[1].Value = strAcount;
 
                 TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("Suspense");
                 bool SubmissionOK = true;
-                DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
+                db.AutoTransaction(ref transaction, SubmissionOK,
                     delegate
                     {
                         string strSQL = "INSERT INTO PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
@@ -492,7 +495,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                         strSQL += "," + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + ") ";
                         strSQL += "VALUES ( ? , ? )";
 
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                        db.ExecuteNonQuery(strSQL, transaction, ParametersArray);
                     });
             }
             catch (Exception)
@@ -513,15 +516,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1].Value = strAcount;
 
             TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("Unsuspense");
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
+            db.AutoTransaction(ref transaction, SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
                     strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
                     strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                    db.ExecuteNonQuery(strSQL, transaction, ParametersArray);
                 });
         }
     }

@@ -116,9 +116,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PrepareTestCaseData");
             bool CostCentreTestCasesAvailable = false;
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
+            db.AutoReadTransaction(ref Transaction,
                 delegate
                 {
                     // Check if some special test data are available - otherwise load ...

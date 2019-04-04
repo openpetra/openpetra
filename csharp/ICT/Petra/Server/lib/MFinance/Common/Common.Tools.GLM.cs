@@ -306,7 +306,9 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("TGlmInfo");
 
-            db.AutoReadTransaction(ref transaction,
+            db.BeginAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                ref transaction,
                 delegate
                 {
                     FGLMTbl = new AGeneralLedgerMasterTable();
