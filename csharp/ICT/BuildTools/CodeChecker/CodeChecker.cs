@@ -341,15 +341,15 @@ namespace Ict.Tools.CodeChecker
                                                                                                                             // + "'", ReadTransaction,\r\n
                                                                                                                             //                            ParametersArray)) in file
                                                                                                                             // \Server\lib\MPartner\connect\Partner.PartnerEdit.cs
-            // DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch Method
+            // DBAccess.GDBAccessObj.ExecuteNonQuery Method
             ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch (no Argument after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null\)");                               // would match for example (*if* the DB Transaction would be null):
+                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery[\s]*\(([^;]*)[\s]*null\)");                               // would match for example (*if* the DB Transaction would be null):
                                                                                                                             // DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE
                                                                                                                             // FROM pub_" + table, Transaction);    in
                                                                                                                             // file
                                                                                                                             // \Server\lib\MSysMan\ImportExport.cs
-            ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch (n Arguments after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                  // would match for example (*if* the DB Transaction would be null):
+            ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery (n Arguments after DB Transaction)",
+                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                  // would match for example (*if* the DB Transaction would be null):
                                                                                                                             // DBAccess.GDBAccessObj.ExecuteNonQuery(\r\nstrSQL,
                                                                                                                             // transaction,
                                                                                                                             // ParametersArray)    in file

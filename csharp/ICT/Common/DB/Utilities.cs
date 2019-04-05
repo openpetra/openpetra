@@ -57,59 +57,6 @@ namespace Ict.Common.DB
 
     #endregion
 
-    #region TSQLBatchStatementEntry
-
-    /// <summary>
-    /// Represents the Value of an entry in a HashTable for use in calls to one of the
-    /// <c>TDataBase.ExecuteNonQueryBatch</c> Methods.
-    /// </summary>
-    /// <remarks>Once instantiated, Batch Statment Entry values can
-    /// only be read!</remarks>
-    public class TSQLBatchStatementEntry
-    {
-        /// <summary>Holds the SQL Statement for one Batch Statement Entry</summary>
-        private string FSQLStatement;
-
-        /// <summary>Holds the Parameters for a Batch Entry (optional)</summary>
-        private DbParameter[] FParametersArray;
-
-        /// <summary>
-        /// SQL Statement for one Batch Entry.
-        /// </summary>
-        public String SQLStatement
-        {
-            get
-            {
-                return FSQLStatement;
-            }
-        }
-
-        /// <summary>
-        /// Parameters for a Batch Entry (optional).
-        /// </summary>
-        public DbParameter[] Parameters
-        {
-            get
-            {
-                return FParametersArray;
-            }
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="ASQLStatement">SQL Statement for one Batch Entry.</param>
-        /// <param name="AParametersArray">Parameters for the SQL Statement (can be null).</param>
-        /// <returns>void</returns>
-        public TSQLBatchStatementEntry(String ASQLStatement, DbParameter[] AParametersArray)
-        {
-            FSQLStatement = ASQLStatement;
-            FParametersArray = AParametersArray;
-        }
-    }
-
-    #endregion
-
     /// <summary>
     /// A list of parameters which should be expanded into an `IN (?)' context.
     /// </summary>

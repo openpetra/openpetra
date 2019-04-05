@@ -290,15 +290,6 @@ namespace Ict.Common.Remoting.Server
             // release all UIConnector objects
             ClientStillAliveCheck.TClientStillAliveCheck.StopClientStillAliveCheckThread();
 
-            TLogging.Log("EndSession (for client '" + this.ClientName + "'): Checking whether there is a DB connection");
-
-            // close db connection
-            if (DBAccess.GDBAccessObj != null)
-            {
-                TLogging.Log("EndSession (for client '" + this.ClientName + "'): Closing DB connection");
-                DBAccess.GDBAccessObj.CloseDBConnection(true);
-            }
-
             TLogging.Log("EndSession (for client '" + this.ClientName + "'): Checking whether there is a HttpSession.Current object");
 
             // clear the session object

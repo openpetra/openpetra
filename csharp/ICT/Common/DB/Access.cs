@@ -88,7 +88,8 @@ namespace Ict.Common.DB
         {
             get
             {
-                TLogging.LogAtLevel(10, "Deprecated call to GDBAccessObj");
+                TLogging.LogAtLevel(0, "Deprecated call to GDBAccessObj");
+                //TLogging.LogStackTrace();
                 return Connect("GDBAccessObj");
             }
         }
@@ -99,6 +100,7 @@ namespace Ict.Common.DB
         public static TDataBase GetDBAccessObj(TDBTransaction ATransaction)
         {
             TLogging.Log("GetDBAccessObj is deprecated, use Transaction.DataBaseObj instead");
+            //TLogging.LogStackTrace();
             return ATransaction != null ? ATransaction.DataBaseObj : GDBAccessObj;
         }
 

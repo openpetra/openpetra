@@ -451,7 +451,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("UnloadTestData_GetBatchInfo");
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.WriteTransaction(ref transaction, ref SubmissionOK,
+            db.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
