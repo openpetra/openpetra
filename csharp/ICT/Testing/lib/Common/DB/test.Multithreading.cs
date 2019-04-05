@@ -1027,7 +1027,7 @@ namespace Ict.Common.DB.Testing
 
             ThreadStart StartConnection = delegate
             {
-                TDBTransaction ReadTransaction = null;
+                TDBTransaction ReadTransaction = new TDBTransaction();
                 int Result = 0;
 
                 // Need to instantiate a TSrvSetting for DBAccess.Connect() to create a new connection for us.

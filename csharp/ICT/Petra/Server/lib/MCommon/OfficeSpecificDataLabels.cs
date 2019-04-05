@@ -324,7 +324,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             // create the FOfficeSpecificDataLabelsTDS DataSet that will later be passed to the Client
             FOfficeSpecificDataLabelsTDS = new OfficeSpecificDataLabelsTDS("OfficeSpecificDataLabels");
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

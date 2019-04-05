@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MPartner.Common
             string EmailAddress = String.Empty;
             PLocationTable Address = null;
             string CountryNameLocal = "";
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool FoundBestAddress = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,

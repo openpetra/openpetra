@@ -188,7 +188,7 @@ namespace Tests.MFinance.Server.GL
         public void TestPrepareGLBatchForPostingArgumentValidation()
         {
             TVerificationResultCollection VerificationResult = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             GLBatchTDS MainDS = null;
             int BatchPeriod = -1;
 
@@ -253,7 +253,7 @@ namespace Tests.MFinance.Server.GL
         public void TestLoadGLBatchDataArgumentValidation()
         {
             TVerificationResultCollection VerificationResult = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             // Load GL Batch with ledger number less than 1
             string Message = "Validation failed for LoadGLBatchData with ledger number less than 1.";

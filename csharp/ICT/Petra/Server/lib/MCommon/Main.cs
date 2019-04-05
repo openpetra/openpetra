@@ -371,7 +371,7 @@ namespace Ict.Petra.Server.MCommon
         private void ExecuteFullQuery(string AContext = null, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             bool SeparateDBConnectionEstablished = false;
 
             if (FFindParameters.FParametersGivenSeparately)

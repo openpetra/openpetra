@@ -189,8 +189,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("VerifyPartner");
 
-            db.BeginAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 AEncapsulatedDBAccessCode : delegate
                 {
@@ -236,8 +235,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction readTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("PartnerHasActiveStatus");
 
-            db.BeginAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref readTransaction,
                 delegate
                 {
@@ -773,7 +771,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             const string DATASET_NAME = "PartnerInfo";
 
             Boolean ReturnValue = false;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             APartnerInfoDS = new PartnerInfoTDS(DATASET_NAME);
             Boolean newTransaction = false;
@@ -873,8 +871,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDataBase db = DBAccess.Connect("GetPartnerReceiptingInfo");
             PPartnerTable PartnerTbl = null;
 
-            db.BeginAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -924,7 +921,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TemplateRow.ExtractName = AExtractName;
 
             TDataBase db = DBAccess.Connect("GetExtractDescription");
-            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            db.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);

@@ -38,7 +38,7 @@ namespace GenerateSQL
         public static bool LoadData(string AHostname, string ADatabaseName, string AUsername, string APassword, string ALoadSQLFileName)
         {
             StreamReader sr = null;
-            TDBTransaction WriteTransaction = null;
+            TDBTransaction WriteTransaction = new TDBTransaction();
             bool SubmissionResult = false;
 
             TDataBase DBAccessObj = new TDataBase(TDBType.MySQL);

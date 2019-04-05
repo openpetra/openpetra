@@ -135,7 +135,7 @@ namespace Ict.Petra.Server.App.Core.Security
         public void RecordUserLogout(String AUserID, int AProcessID, TDBTransaction ATransaction)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction WriteTransaction = null;
+            TDBTransaction WriteTransaction = new TDBTransaction();
             SLoginTable LoginTable = new SLoginTable();
             SLoginRow NewLoginRow = LoginTable.NewRowTyped(false);
             bool SubmissionOK = false;

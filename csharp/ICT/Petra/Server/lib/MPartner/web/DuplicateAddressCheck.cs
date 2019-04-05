@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static void FindAddressDuplicates(ref DataTable ADuplicateAddresses, bool AExactMatchNumber)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable ReturnTable = ADuplicateAddresses.Clone();
             PLocationTable Locations = new PLocationTable();
 

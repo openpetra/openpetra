@@ -272,7 +272,7 @@ namespace {#NAMESPACE}
             const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
             const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
             TDataBase DBConnectionObj = ADataBase;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             String TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
             bool SeparateDBConnectionEstablished = false;
 
@@ -353,7 +353,7 @@ namespace {#NAMESPACE}
             const string StrDBTransName = "Cacheable DataTable (saving) DB Transaction";
             const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
             TDataBase DBConnectionObj = ADataBase;
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
             TTypedDataTable SubmitTable = ASubmitTable;
@@ -507,7 +507,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
     const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
     TDataBase DBConnectionObj = ADataBase;
-    TDBTransaction ReadTransaction = null;
+    TDBTransaction ReadTransaction = new TDBTransaction();
     string TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
     bool SeparateDBConnectionEstablished = false;
 
@@ -614,7 +614,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     const string StrDBTransName = "Cacheable DataTable (saving) DB Transaction";
     const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
     TDataBase DBConnectionObj = ADataBase;
-    TDBTransaction SubmitChangesTransaction = null;
+    TDBTransaction SubmitChangesTransaction = new TDBTransaction();
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
     TTypedDataTable SubmitTable = ASubmitTable;

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       AlanP
+//       AlanP, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -66,7 +66,7 @@ namespace Tests.MPartner.Server.AddressTools
             TestPartnerKey = Partner1.PartnerKey;
 
             //Guard assert: ensure database has been properly reset
-            TDBTransaction ATransaction = null;
+            TDBTransaction ATransaction = new TDBTransaction();
             DataTable ResultTable = null;
             string Query = string.Format("SELECT * FROM p_location WHERE p_site_key_n = {0} AND p_location_key_i = {1}",
                 DomainManager.GSiteKey,
@@ -211,7 +211,7 @@ namespace Tests.MPartner.Server.AddressTools
         {
             string ACountryName;
             PLocationTable AAddress = null;
-            TDBTransaction ATransaction = null;
+            TDBTransaction ATransaction = new TDBTransaction();
             DataTable DonorAddresses = null;
 
             // Act

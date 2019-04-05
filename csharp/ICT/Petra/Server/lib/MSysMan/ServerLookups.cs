@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Boolean GetDBVersion(out System.String APetraDBVersion)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             APetraDBVersion = "Cannot retrieve DB version";
             TLogging.LogAtLevel(9, "TSysManServerLookups.GetDatabaseVersion called!");

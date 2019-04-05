@@ -392,7 +392,7 @@ namespace Tests.MFinance.Server.Gift
                 "TestBatchPostingRecalculations fail: Posting GiftBatch failed: " + VerificationResult.BuildVerificationResultString());
 
             // Primary Assert: Chaeck that the gifts have the correct RecipientLedgerNumber, CostCentreCode and Account
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             AGiftDetailRow PositiveGiftDetailRow = null;
             AGiftDetailRow NegativeGiftDetailRow = null;
             ATransactionRow TransactionRow = null;
@@ -489,7 +489,7 @@ namespace Tests.MFinance.Server.Gift
             Assert.IsNotNull(GiftBatchDS.AGiftDetail, "TestBatchLoadingRecalculations fail: Loading GiftBatch failed");
 
             // Primary Assert: Chaeck that the gift has the correct RecipientLedgerNumber and CostCentreCode
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             AGiftDetailRow PositiveGiftDetailRow = null;
             AGiftDetailRow NegativeGiftDetailRow = null;
 
@@ -808,7 +808,7 @@ namespace Tests.MFinance.Server.Gift
             Assert.IsNotNull(GiftBatchDS.ARecurringGiftDetail, "TestRecurringBatchLoadingRecalculations fail: Loading GiftBatch failed");
 
             // Primary Assert: Chaeck that the gift has the correct RecipientLedgerNumber
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -1062,7 +1062,7 @@ namespace Tests.MFinance.Server.Gift
         public void TestPrepareGiftBatchForPostingArgumentValidation()
         {
             TVerificationResultCollection VerificationResult = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             string Message = "Validation failed for PrepareGiftBatchForPosting with ledger number less than 1.";
 
@@ -1125,7 +1125,7 @@ namespace Tests.MFinance.Server.Gift
         public void TestLoadAGiftBatchAndRelatedDataArgumentValidation()
         {
             bool ChangesToCommit;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             // Load Gift Batch with ledger number less than 1
             string Message = "Validation failed for LoadAGiftBatchAndRelatedData with ledger number less than 1.";

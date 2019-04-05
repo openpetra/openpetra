@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             try
             {
-                db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.ReadTransaction(
                     ref FTransaction,
                     delegate
                     {

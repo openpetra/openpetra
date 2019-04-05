@@ -627,7 +627,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <returns></returns>
         public static PartnerImportExportTDS ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TVerificationResultCollection VerificationResult;
 
             VerificationResult = new TVerificationResultCollection();
@@ -668,7 +668,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// </param>
         private static void LoadDataFromDB(ref PartnerEditTDS AMainDS)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 

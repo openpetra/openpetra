@@ -98,7 +98,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
-                TDBTransaction SubmitChangesTransaction = null;
+                TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                 bool SubmissionResult = false;
                 TPetraPrincipal tempPrincipal;
 
@@ -231,7 +231,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
                 TPetraPrincipal tempPrincipal;
-                TDBTransaction SubmitChangesTransaction = null;
+                TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                 bool SubmissionResult = false;
 
                 DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
@@ -411,7 +411,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string AModulePermissions, string AClientComputerName, string AClientIPAddress, TDBTransaction ATransaction = null)
         {
             TDataBase DBConnectionObj = DBAccess.GetDBAccessObj(ATransaction);
-            TDBTransaction ReadWriteTransaction = null;
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
             bool SeparateDBConnectionEstablished = false;
             bool NewTransaction;
             bool SubmissionOK = false;
@@ -619,7 +619,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS LoadUsersAndModulePermissions()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -653,7 +653,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS CreateUserWithInitialPermissions()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -693,7 +693,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS LoadUserAndModulePermissions(string AUserId)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -848,7 +848,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 }
                 else if (NewUser && ASendMail)
                 {
-                    TDBTransaction SubmitChangesTransaction = null;
+                    TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                     bool SubmissionResult = false;
 
                     DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
@@ -1110,7 +1110,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string AClientComputerName, string AClientIPAddress)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             bool CanCreateUser;
             bool CanChangePassword;
             bool CanChangePermissions;

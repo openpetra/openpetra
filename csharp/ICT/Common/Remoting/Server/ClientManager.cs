@@ -913,7 +913,7 @@ namespace Ict.Common.Remoting.Server
             out IPrincipal AUserInfo)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction ReadWriteTransaction = null;
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
             bool CommitLoginTransaction = false;
 
             TConnectedClient ConnectedClient = null;

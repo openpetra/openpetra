@@ -93,9 +93,9 @@ namespace Ict.Tools.SQLiteConsole
                     SQLCommand += " " + line.Trim();
                 }
 
-                TDBTransaction transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
                 DataTable result = null;
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref transaction,
+                DBAccess.GDBAccessObj.ReadTransaction(ref transaction,
                     delegate
                     {
                         result = DBAccess.GDBAccessObj.SelectDT(SQLCommand, "temp", transaction);

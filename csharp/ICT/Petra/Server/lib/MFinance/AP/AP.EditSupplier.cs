@@ -126,7 +126,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 catch (Exception Exp)
                 {
                     ReadTransaction.Rollback();
-                    ReadTransaction = null;
+                    ReadTransaction = new TDBTransaction();
                     TLogging.Log("TSupplierEditUIConnector.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                     TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
                     throw;

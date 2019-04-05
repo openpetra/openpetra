@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -211,7 +211,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             Calculations.TOverallContSettingKind AOverallContSettingKind, out PPartnerAttributeTable APartnerAttributeDT)
         {
             Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             PPartnerAttributeTable PartnerAttributeDT = null;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         public static PPartnerAttributeTable GetPartnersContactDetailAttributes(Int64 APartnerKey)
         {
             PPartnerAttributeTable ReturnValue = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,8 +59,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             StringBuilder sb = new StringBuilder();
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            TDBTransaction Transaction = new TDBTransaction();
+            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
                 delegate
                 {
                     // get all posted or paid ap_documents by their date issued

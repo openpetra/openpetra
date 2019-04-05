@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -107,13 +107,13 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             Console.WriteLine("Writing file: " + filename);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             ATransactionTable transactions = new ATransactionTable();
             ATransAnalAttribTable TransAnalAttrib = new ATransAnalAttribTable();
             ATransactionTable allTransactionsInJournal = new ATransactionTable();
             AGiftBatchTable giftbatches = new AGiftBatchTable();
             AAccountTable accounts = new AAccountTable();
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
                 delegate
                 {
                     string sql =

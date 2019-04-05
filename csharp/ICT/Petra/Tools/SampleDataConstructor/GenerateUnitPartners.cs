@@ -66,7 +66,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             PCountryTable CountryTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

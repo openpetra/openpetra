@@ -106,8 +106,7 @@ namespace Ict.Common.Data.Testing
 
             TDBTransaction transaction = new TDBTransaction();
             AGiftBatchTable batches = null;
-            db.BeginAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -127,7 +126,7 @@ namespace Ict.Common.Data.Testing
         public void SpeedTestLoadIntoTypedTable()
         {
             TDataBase db = DBAccess.Connect("test");
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             DateTime before = DateTime.Now;
             DateTime after = DateTime.Now;
             GiftBatchTDS ds = new GiftBatchTDS();

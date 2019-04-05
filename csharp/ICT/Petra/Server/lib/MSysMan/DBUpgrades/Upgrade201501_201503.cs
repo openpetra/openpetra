@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
             // a_gift_detail: new field a_account_code_c, new field a_tax_deductible_account_code_c
             // and new foreign keys for the fields
 
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,

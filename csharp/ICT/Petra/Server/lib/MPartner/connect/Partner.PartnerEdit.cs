@@ -392,7 +392,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PartnerEditTDS GetDataAddresses()
         {
             PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataAddresses called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
@@ -419,7 +419,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PartnerEditTDS GetDataFoundation(Boolean ABaseTableOnly)
         {
             PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataFoundation called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
@@ -481,7 +481,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PLocationTable GetDataLocation(Int64 ASiteKey, Int32 ALocationKey)
         {
             PLocationTable ReturnValue = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
@@ -495,7 +495,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private void LoadData(Boolean ADelayedDataLoading, TPartnerEditTabPageEnum ATabPage)
         {
-            TDBTransaction ReadAndWriteTransaction = null;
+            TDBTransaction ReadAndWriteTransaction = new TDBTransaction();
             bool SubmissionOK = false;
             PartnerEditTDSMiscellaneousDataTable MiscellaneousDataDT;
             PartnerEditTDSMiscellaneousDataRow MiscellaneousDataDR;
@@ -1056,7 +1056,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 AFamilyLocationKey,
             out String ASiteCountryCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             PPartnerRow PartnerRow;
             PartnerEditTDSPPersonRow PersonRow;
             PartnerEditTDSPFamilyRow FamilyRow;
@@ -1112,7 +1112,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FPartnerKey = FNewPartnerPartnerKey;
             FPartnerClass = FNewPartnerPartnerClass;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.GDBAccessObj.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     //
@@ -3126,7 +3126,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private void GetPartnerContactDetailsInternal(out Int32 ACount)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             int NonPartnerContactAttributesCount;
 
             // Partner Contact Details are kept in PPartnerAttribute, among other attributes (!), so we need to ensure that

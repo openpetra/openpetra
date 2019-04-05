@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             if (FSearchTransactions)
             {
-                if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                if (DBAccess.DBType == TDBType.SQLite)
                 {
                     // Fix for SQLite: it does not support the 'to_char' Function
                     PaymentNumberSQLPart = "PUB_a_ap_payment.a_payment_number_i as InvNum, ";
@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     {
                         PaidAmount += PrevPaymentRow.Amount;
                     }
-                }); // End of BeginAutoReadTransaction
+                }); // End of ReadTransaction
 
             return PaidAmount;
         }

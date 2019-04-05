@@ -137,7 +137,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Merging Partners"), 100);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out Int32 ANewExtractId,
             out Boolean AExtractAlreadyExists)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             Boolean ReturnValue = false;
             bool SubmissionOK = false;
             MExtractMasterTable NewExtractMasterDT = null;
@@ -146,7 +146,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out bool AExtractNotDeletable,
             out TVerificationResult AVerificationResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
             MExtractMasterTable ExtractMasterDT;
             Boolean ExtractNotDeletable = false;
@@ -195,7 +195,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// otherwise false.</returns>
         public static bool CheckExtractExists(string AExtractName)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             Boolean ReturnValue = false;
             MExtractMasterRow TemplateRow;
 
@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// Extract Id doesn't exist.</returns>
         public static Int32 GetExtractKeyCount(int AExtractId)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             Int32 KeyCount = 0;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -278,7 +278,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         public static bool UpdateExtractKeyCount(int AExtractId, int ACount,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
             TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
@@ -346,7 +346,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         public static bool AddPartnerToExtract(Int64 APartnerKey,
             TLocationPK ALocationPK, int AExtractId)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
             MExtractTable TemplateTable;
             MExtractRow TemplateRow;
@@ -603,7 +603,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             List <long>ignoredKeyList = new List <long>();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,

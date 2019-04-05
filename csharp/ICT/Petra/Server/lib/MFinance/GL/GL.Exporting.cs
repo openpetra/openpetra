@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ExportAllGLBatchData");
-            db.AutoReadTransaction(ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     UInt32 progressCounter = 0;

@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     ABudgetAccess.SubmitChanges(FBudgetTDS.ABudget, Transaction);
 
                     FGLPostingDS.ThrowAwayAfterSubmitChanges = true;
-                    GLPostingTDSAccess.SubmitChanges(FGLPostingDS);
+                    GLPostingTDSAccess.SubmitChanges(FGLPostingDS, Transaction.DataBaseObj);
                     FGLPostingDS.Clear();
 
                     SubmissionOK = true;

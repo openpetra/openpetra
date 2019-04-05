@@ -195,14 +195,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // first run in info mode
             TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, true,
                 out glBatches,
-                out verificationResult);
+                out verificationResult, db);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd test should not have critical errors");
 
             // now run for real
             TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, false,
                 out glBatches,
-                out verificationResult);
+                out verificationResult, db);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd should not have critical errors");
 
@@ -217,26 +217,26 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // also check the glm period records
             CheckGLMPeriodEntry(intLedgerNumber, intYear, 1, strAccountBank,
-                -50, 50, 100);
+                -50, 50, 100, db);
             CheckGLMPeriodEntry(intLedgerNumber, intYear, 1, strAccountExpense,
-                0, 0, 0);
+                0, 0, 0, db);
             CheckGLMPeriodEntry(intLedgerNumber, intYear, 1, strAccountGift,
-                0, 0, 0);
+                0, 0, 0, db);
 
             // 9700 is the account that the expenses and income from last year is moved to
-            TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber, intYear, "9700");
+            TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber, intYear, "9700", db);
             glmInfo.Reset();
             Assert.IsTrue(glmInfo.MoveNext(), "9700 account not found");
 
             Assert.AreEqual(100, glmInfo.YtdActualBase);
             Assert.AreEqual(0, glmInfo.ClosingPeriodActualBase);
 
-            LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            LedgerInfo = new TLedgerInfo(intLedgerNumber, db);
             Assert.AreEqual(1, LedgerInfo.CurrentFinancialYear, "After YearEnd, we are in a new financial year");
             Assert.AreEqual(1, LedgerInfo.CurrentPeriod, "After YearEnd, we are in Period 1");
             Assert.AreEqual(false, LedgerInfo.ProvisionalYearEndFlag, "After YearEnd, ProvisionalYearEnd flag should not be set");
 
-            periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
+            periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1, db);
             Assert.AreEqual(new DateTime(DateTime.Now.Year + 1,
                     1,
                     1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
@@ -404,9 +404,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         void CheckGLMPeriodEntry(int ALedgerNumber, int AYear, int APeriodNr, string AAccount,
             decimal cc1Base,
             decimal cc2Base,
-            decimal cc3Base)
+            decimal cc3Base,
+            TDataBase ADataBase)
         {
-            TGlmInfo glmInfo = new TGlmInfo(ALedgerNumber, AYear, AAccount);
+            TGlmInfo glmInfo = new TGlmInfo(ALedgerNumber, AYear, AAccount, ADataBase);
 
             glmInfo.Reset();
             int intCnt = 0;
@@ -426,7 +427,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             {
 //              TLogging.Log("glmInfo.CostCentreCode: " + glmInfo.CostCentreCode);
 
-                TGlmpInfo glmpInfo = new TGlmpInfo(ALedgerNumber);
+                TGlmpInfo glmpInfo = new TGlmpInfo(ALedgerNumber, ADataBase);
                 glmpInfo.LoadBySequence(glmInfo.GlmSequence, APeriodNr);
 
                 Assert.AreEqual(true,
@@ -541,7 +542,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetBatchInfo");
             ABatchTable batches = null;
-            db.AutoReadTransaction(ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     batches = ABatchAccess.LoadUsingTemplate(template, transaction);

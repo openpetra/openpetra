@@ -193,7 +193,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// </summary>
         private static void CheckDatabaseVersion()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             DataTable Tbl = null;
 
             if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")

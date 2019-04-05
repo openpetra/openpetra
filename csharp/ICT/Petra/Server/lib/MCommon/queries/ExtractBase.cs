@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MCommon.queries
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults, out int AExtractId)
         {
             Boolean ReturnValue = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
@@ -519,7 +519,7 @@ namespace Ict.Petra.Server.MCommon.queries
             // Regions datatable should only be loaded once per extract generation
             if (FPostalRegion != APostalRegion)
             {
-                TDBTransaction ReadTransaction = null;
+                TDBTransaction ReadTransaction = new TDBTransaction();
 
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
                     MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,

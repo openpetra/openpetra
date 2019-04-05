@@ -326,9 +326,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions called!");
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
                 delegate
                 {
                     /* Load data */

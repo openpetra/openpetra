@@ -236,7 +236,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetPartnerKeyForForeignCostCentreCode");
 
-            db.AutoReadTransaction(ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ACostCentreTable CostCentreTable;
@@ -280,7 +280,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            db.AutoReadTransaction(ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetForeignCurrencyAccountActuals");
 
-            db.AutoReadTransaction(ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     AGeneralLedgerMasterTable glmTbl = new AGeneralLedgerMasterTable();

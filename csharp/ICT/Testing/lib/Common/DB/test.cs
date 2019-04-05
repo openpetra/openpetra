@@ -244,7 +244,7 @@ namespace Ict.Common.DB.Testing
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("TestInsertMultipleRows");
 
-            db.BeginAutoReadTransaction(IsolationLevel.Serializable, ref t,
+            db.WriteTransaction(ref t,
                 delegate
                 {
                     Int64 PreviousSequence = db.GetNextSequenceValue("seq_statement_number", t);
@@ -269,7 +269,7 @@ namespace Ict.Common.DB.Testing
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("Test");
 
-            db.BeginAutoReadTransaction(IsolationLevel.Serializable, ref t,
+            db.WriteTransaction(ref t,
                 delegate
                 {
                     string countSql = "SELECT COUNT(*) FROM PUB_s_system_defaults";
@@ -659,7 +659,7 @@ namespace Ict.Common.DB.Testing
         [Test]
         public void TestDBAccess_SelectUsingDataAdapterMulti1()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             const string TestReadQuery1 = "SELECT * from p_partner where p_partner_key_n = :APartnerKey;";
             DataTable TmpDT = new DataTable();
             TDataAdapterCanceller TmpDac;
@@ -672,7 +672,7 @@ namespace Ict.Common.DB.Testing
             ParameterValuesList.Add(new object[] { 43005001 });
             ParameterValuesList.Add(new object[] { 43005002 });
 
-            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     // Act AND Asserts # 1 - Prepared Parametrised Query
@@ -716,7 +716,7 @@ namespace Ict.Common.DB.Testing
         [Test]
         public void TestDBAccess_SelectUsingDataAdapterMulti2()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             const string TestReadQuery1 =
                 "SELECT * from p_partner where p_partner_key_n = :APartnerKey and p_partner_short_name_c LIKE :APartnerShortName;";
             DataTable TmpDT = new DataTable();
@@ -733,7 +733,7 @@ namespace Ict.Common.DB.Testing
             ParameterValuesList.Add(new object[] { 43005001, "z%" });
             ParameterValuesList.Add(new object[] { 43005002, "T%" });
 
-            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     // Act AND Assert #1 - Prepared Parametrised Query
@@ -755,7 +755,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_DefaultConnection()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             int Result = 0;
 
 
@@ -786,7 +786,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_NewConnection()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             int Result = 0;
 
             // Initialize TSrvSetting; needed by DBAccess.Connect()
@@ -824,7 +824,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         {
             TDataBase db = DBAccess.Connect("Test");
             TDBTransaction FirstTransaction = db.BeginTransaction(ATransactionName : "FirstTransaction");
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             int Result = 0;
 
             DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "SecondTransaction",
@@ -865,7 +865,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
             }
 
             TDBTransaction FirstTransaction = DBAccess.GDBAccessObj.BeginTransaction(ATransactionName : "FirstTransaction");
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             int Result = 0;
 
             // Initialize TSrvSetting; needed by DBAccess.Connect()
@@ -908,7 +908,7 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnection()
         {
             TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "NewTransaction",
                 ADatabase : RequestedConnection,

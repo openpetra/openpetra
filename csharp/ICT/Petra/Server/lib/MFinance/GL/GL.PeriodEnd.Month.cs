@@ -277,11 +277,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 return true;
             }
 
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RunMonthEnd");
+
             if (AInfoMode)
             {
                 AAccountingPeriodTable PeriodTbl = null;
-                TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("RunMonthEnd");
                 
                 db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
@@ -302,7 +303,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), FverificationResults);
+            RunPeriodEndCheck(new RunMonthEndChecks(db, FledgerInfo), FverificationResults);
 
             if (!AInfoMode)
             {
@@ -353,13 +354,15 @@ namespace Ict.Petra.Server.MFinance.GL
 
     class RunMonthEndChecks : AbstractPeriodEndOperation
     {
+        TDataBase FDataBase = null;
         TLedgerInfo FledgerInfo;
 
         GetSuspenseAccountInfo suspenseAccountInfo = null;
 
-        public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
+        public RunMonthEndChecks(TDataBase ADataBase, TLedgerInfo ALedgerInfo)
         {
             FledgerInfo = ALedgerInfo;
+            FDataBase = ADataBase;
         }
 
         public override int GetJobSize()
@@ -369,7 +372,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            return new RunMonthEndChecks(FledgerInfo);
+            return new RunMonthEndChecks(FDataBase, FledgerInfo);
         }
 
         public override Int32 RunOperation()
@@ -517,11 +520,11 @@ namespace Ict.Petra.Server.MFinance.GL
                         aSuspenseAccountRow = suspenseAccountInfo.Row(i);
                         TGet_GLM_Info get_GLM_Info = new TGet_GLM_Info(FledgerInfo.LedgerNumber,
                             aSuspenseAccountRow.SuspenseAccountCode,
-                            FledgerInfo.CurrentFinancialYear);
+                            FledgerInfo.CurrentFinancialYear, FDataBase);
 
                         if (get_GLM_Info.GLMExists)
                         {
-                            TGlmpInfo get_GLMp_Info = new TGlmpInfo(FledgerInfo.LedgerNumber);
+                            TGlmpInfo get_GLMp_Info = new TGlmpInfo(FledgerInfo.LedgerNumber, FDataBase);
                             get_GLMp_Info.LoadBySequence(get_GLM_Info.Sequence, FledgerInfo.CurrentPeriod);
 
                             if (get_GLMp_Info.RowExists && (get_GLMp_Info.ActualBase != 0))

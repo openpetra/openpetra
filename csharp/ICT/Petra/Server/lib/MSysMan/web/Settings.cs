@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static DataTable GetAvailableSites()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DataTable SitesTable = new DataTable();
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static bool SaveSiteKeys(List <Int64>ASiteKeysSetUpForUse, List <Int64>ASiteKeysToRemove)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
             PPartnerLedgerTable PartnerLedgerTable = new PPartnerLedgerTable();
             PPartnerLedgerRow PartnerLedgerRow;

@@ -56,9 +56,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             ArrayList Ret = new ArrayList();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
                 delegate
                 {
                     PPartnerTable PartnerTbl = PPartnerAccess.LoadViaPPartnerClasses("UNIT", Transaction);
@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             // the existing UmUnitStructure table.
             // I'll delete the whole content before calling SubmitChanges with my new data.
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction,

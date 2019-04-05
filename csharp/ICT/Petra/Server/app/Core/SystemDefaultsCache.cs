@@ -468,7 +468,7 @@ namespace Ict.Petra.Server.App.Core
         private void LoadSystemDefaultsTable()
         {
             TDataBase DBAccessObj = new Ict.Common.DB.TDataBase();
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
             FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
@@ -540,7 +540,7 @@ namespace Ict.Petra.Server.App.Core
         public void SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction WriteTransaction = null;
+            TDBTransaction WriteTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
             SSystemDefaultsTable SystemDefaultsDT;
             Boolean Added = false;

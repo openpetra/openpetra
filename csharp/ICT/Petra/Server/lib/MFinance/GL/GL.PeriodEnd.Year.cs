@@ -71,20 +71,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AIsInInfoMode">True means: no calculation is done, only verification result messages are collected</param>
         /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if there's no problem</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool PeriodYearEnd(
             int ALedgerNum,
             bool AIsInInfoMode,
             out List <Int32>AglBatchNumbers,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             try
             {
-                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum);
+                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum, ADataBase);
                 bool res = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode,
                     out AglBatchNumbers,
-                    out AVerificationResult);
+                    out AVerificationResult,
+                    ADataBase);
 
                 if (!res)
                 {
@@ -158,7 +161,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 String Query = "DELETE FROM a_processed_fee WHERE" +
                                " a_ledger_number_i=" + FledgerInfo.LedgerNumber +
                                " AND a_period_number_i<=" + FledgerInfo.NumberOfAccountingPeriods;
-                DBAccess.GDBAccessObj.ExecuteNonQuery(Query, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(Query, ATransaction);
 
                 Query = "UPDATE a_processed_fee SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
                         " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
@@ -172,11 +175,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AInfoMode"></param>
         /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVRCollection"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if an error occurred</returns>
         public bool RunYearEnd(
             bool AInfoMode,
             out List <Int32>AglBatchNumbers,
-            out TVerificationResultCollection AVRCollection)
+            out TVerificationResultCollection AVRCollection,
+            TDataBase ADataBase = null)
         {
             FInfoMode = AInfoMode;
             AVRCollection = new TVerificationResultCollection();
@@ -199,7 +204,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TPeriodEndOperations.FwasCancelled = false;
             Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("RunYearEnd");
+            TDataBase db = DBAccess.Connect("RunYearEnd", ADataBase);
             bool SubmissionOK = false;
 
 /*
@@ -580,7 +585,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (DoExecuteableCode && transactionsWereAdded)
             {
-                Boolean PostedOk = yearEndBatch.CloseSaveAndPost(FverificationResults);
+                Boolean PostedOk = yearEndBatch.CloseSaveAndPost(FverificationResults, FTransaction.DataBaseObj);
 
                 if (PostedOk)
                 {
@@ -939,7 +944,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TLogging.LogAtLevel(1,
                     "TGlmNewYearInit: New GLMP (" + FLedgerInfo.LedgerNumber + ") for year " + FNewYearNum + " has " +
                     GlmTDS.AGeneralLedgerMasterPeriod.Rows.Count + " Rows.");
-                GLPostingTDSAccess.SubmitChanges(GlmTDS);
+                GLPostingTDSAccess.SubmitChanges(GlmTDS, FTransaction.DataBaseObj);
 
                 FGlmpFrom.ThrowAwayAfterSubmitChanges = true;
 

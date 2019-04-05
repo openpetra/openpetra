@@ -146,7 +146,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         private static bool UploadFormTemplate(String AFormCode, String AFormName, String ALanguageCode, String ATemplateText,
             String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
 
             string strSQL = String.Format("UPDATE PUB_{0} SET ", PFormTable.GetTableDBName());
@@ -237,7 +237,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         /// </summary>
         private static PFormTable DownloadFormTemplate(String AFormCode, String AFormName, String ALanguageCode)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             PFormTable ReturnValue = new PFormTable();
             TSubmitChangesResult result = TSubmitChangesResult.scrError;
 
@@ -325,7 +325,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
                     TemplateRow.FormTypeCode = AFormTypeCode;
                 }
 
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
 
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,

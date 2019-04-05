@@ -417,9 +417,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="AVerifications">A TVerificationResultCollection can defined to
         /// accept the error messages and warnings - if necessary.</param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if it seemed to work</returns>
 
-        public Boolean CloseSaveAndPost(TVerificationResultCollection AVerifications = null)
+        public Boolean CloseSaveAndPost(TVerificationResultCollection AVerifications = null, TDataBase ADataBase = null)
         {
             if (FJournalCount != 0)
             {
@@ -431,7 +432,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDSAccess.SubmitChanges(FBatchTDS);
 
             Boolean PostedOk = TGLPosting.PostGLBatch(
-                FLedgerInfo.LedgerNumber, FBatchNumber, out AVerifications);
+                FLedgerInfo.LedgerNumber, FBatchNumber, out AVerifications, ADataBase);
 
             // Make sure that this object cannot be used for another posting ...
             FBatchTDS = null;

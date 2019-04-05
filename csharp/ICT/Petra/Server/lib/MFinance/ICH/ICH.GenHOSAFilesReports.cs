@@ -4,7 +4,7 @@
 // @Authors:
 //       christophert, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
             AVerificationResult = VerificationResult;
 
-            TDBTransaction DBTransaction = null;
+            TDBTransaction DBTransaction = new TDBTransaction();
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref DBTransaction,
@@ -419,7 +419,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
             //Find and total each gift transaction
 
-            TDBTransaction DBTransaction = null;
+            TDBTransaction DBTransaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
@@ -660,7 +660,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
          *  string ACurrencySelect
          *  )
          * {
-         *  TDBTransaction DBTransaction = null;
+         *  TDBTransaction DBTransaction = new TDBTransaction();
          *  DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref DBTransaction,
          *      delegate
          *      {

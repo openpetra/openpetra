@@ -2057,12 +2057,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Write all changes to the database; on failure the whole transaction will be rolled back
         /// </summary>
-        /// <param name="AMainDS"></param>
-
-        private static void SubmitChanges(GLPostingTDS AMainDS)
+        private static void SubmitChanges(GLPostingTDS AMainDS, TDataBase ADataBase)
         {
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SubmitChanges...");
-            GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true));
+            GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), ADataBase);
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Finished...");
         }
 
@@ -2239,7 +2237,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             // Calculate the credit and debit totals
                             GLRoutines.UpdateBatchTotals(ref MainDS, ref newBatchRow);
 
-                            GLBatchTDSAccess.SubmitChanges(MainDS);
+                            GLBatchTDSAccess.SubmitChanges(MainDS, db);
 
                             ReversalBatchNumber = newBatchRow.BatchNumber;
 
@@ -2266,15 +2264,13 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// post a GL Batch
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             List <Int32>BatchNumbers = new List <int>();
             BatchNumbers.Add(ABatchNumber);
 
-            return PostGLBatches(ALedgerNumber, BatchNumbers, out AVerifications);
+            return PostGLBatches(ALedgerNumber, BatchNumbers, out AVerifications, ADataBase);
         }
 
         /// <summary>
@@ -2382,7 +2378,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             SummarizeInternal(ALedgerNumber, postingDS, PostingLevel, BatchPeriod, false); // No summarisation is performed, from April 2015, Tim Ingham
 
                             postingDS.ThrowAwayAfterSubmitChanges = true;
-                            SubmitChanges(postingDS);
+                            SubmitChanges(postingDS, db);
                         }  // foreach
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -3115,7 +3111,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         TempDS.RejectChanges();
 
                         //Submit changes to MainDS
-                        GLBatchTDSAccess.SubmitChanges(MainDS);
+                        GLBatchTDSAccess.SubmitChanges(MainDS, db);
 
                         SubmissionOK = true;
                     });

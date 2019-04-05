@@ -117,7 +117,7 @@ namespace Ict.Petra.Server.MFinance.queries
          *  string SqlStmt = TDataBase.ReadSqlFile("ICH.HOSAReportGiftSummary.sql", Defines);
          *  DataTable resultTable = null;
          *
-         *  TDBTransaction Transaction = null;
+         *  TDBTransaction Transaction = new TDBTransaction();
          *  DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
          *      delegate
          *      {

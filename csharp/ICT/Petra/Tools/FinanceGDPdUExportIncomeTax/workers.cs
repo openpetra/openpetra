@@ -63,8 +63,8 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
 			PPersonTable persons = new PPersonTable();
 			persons.Constraints.Clear();
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            TDBTransaction Transaction = new TDBTransaction();
+            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
                 delegate
                 {
                     // get all partners with a commitment period for this date range

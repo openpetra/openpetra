@@ -38,7 +38,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         public static bool UpgradeDatabase201610_201612()
         {
             // there are various changes to the database structure
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,

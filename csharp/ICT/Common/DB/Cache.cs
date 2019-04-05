@@ -77,7 +77,7 @@ namespace Ict.Common.DB.DBCaching
         public DataSet GetDataSet(String sql, OdbcParameter[] AParameters, DataTable ATable, TDataBase ADataBase = null)
         {
             TDataBase DBAccessObj = DBAccess.GetDBAccessObj(ADataBase);
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             Boolean NewTransaction = false;
             DataSet newDataSet;
 

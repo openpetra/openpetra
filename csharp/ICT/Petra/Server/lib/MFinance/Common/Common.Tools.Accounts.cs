@@ -687,6 +687,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private int FLedgerNumber;
         private AAccountingPeriodTable FPeriodTable = null;
         private AAccountingPeriodRow FPeriodRow = null;
+        private TDataBase FDataBase = null;
 
 
         /// <summary>
@@ -702,9 +703,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Constructor needs a valid ledger number.
         /// </summary>
         /// <param name="ALedgerNumber">Ledger number</param>
-        public TAccountPeriodInfo(int ALedgerNumber)
+        /// <param name="ADataBase"></param>
+        public TAccountPeriodInfo(int ALedgerNumber, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FDataBase = ADataBase;
             LoadData();
         }
 
@@ -713,10 +716,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ACurrentPeriod">the current accounting period</param>
-
-        public TAccountPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
+        /// <param name="ADataBase"></param>
+        public TAccountPeriodInfo(int ALedgerNumber, int ACurrentPeriod, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FDataBase = ADataBase;
             LoadData();
             AccountingPeriodNumber = ACurrentPeriod;
         }
@@ -724,7 +728,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private void LoadData()
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("TAccountPeriodInfo.LoadData");
+            TDataBase db = DBAccess.Connect("TAccountPeriodInfo.LoadData", FDataBase);
 
             try
             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -173,9 +173,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             GiftBatchTDS MainDS = new GiftBatchTDS();
             ALedgerTable LedgerTable = null;
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.GDBAccessObj.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     // get a list of potential donors (all class FAMILY)
@@ -346,7 +346,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             // need to save the last gift batch number in a_ledger
             if (LedgerTable != null)
             {
-                TDBTransaction WriteTransaction = null;
+                TDBTransaction WriteTransaction = new TDBTransaction();
                 bool SubmissionOk = false;
                 DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction, ref SubmissionOk,
                     delegate

@@ -103,9 +103,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             location.LocationKey = -1;
             MainDS.PLocation.Rows.Add(location);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.ReadTransaction( ref Transaction,
                 delegate
                 {
                     PCountryAccess.LoadAll(MainDS, Transaction);
@@ -142,9 +142,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string DefaultPhoneMobile = String.Empty;
             string DefaultPhoneLandline = String.Empty;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.ReadTransaction( ref Transaction,
                 delegate
                 {
                     PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
@@ -276,12 +276,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static void ImportPartner(PartnerEditTDS AMainDS)
         {
-            TDBTransaction ReadTransaction = null;
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             bool SubmissionOK = false;
             bool ImportDefaultAcquCodeExists = false;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.GDBAccessObj.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     ImportDefaultAcquCodeExists = PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT,
@@ -527,10 +527,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return false;
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool WrongCountryCode = false;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.ReadTransaction( ref Transaction,
                 delegate
                 {
                     WrongCountryCode = !PCountryAccess.Exists(SaveDS.PLocation[0].CountryCode, Transaction);

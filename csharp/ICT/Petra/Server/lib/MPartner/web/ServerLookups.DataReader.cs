@@ -68,9 +68,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Console.WriteLine("GetEventUnits called!");
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -140,9 +140,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetActiveFieldUnits called!");
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -187,9 +187,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetLedgerUnits called!");
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -227,9 +227,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static Boolean IsPUnitAConference(Int64 APartnerKey)
         {
             Boolean ReturnValue = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -258,9 +258,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             PBankingDetailsTable ReturnRow = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -281,9 +281,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             PPartnerTable PartnerTable = new PPartnerTable();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -319,7 +319,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.AutoReadTransaction(
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -397,7 +397,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             DataTable dt = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

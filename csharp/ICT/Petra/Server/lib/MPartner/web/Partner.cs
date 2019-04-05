@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Int64 GetBankBySortCode(string ABranchCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             string sqlFindBankBySortCode =
                 String.Format("SELECT * FROM PUB_{0} WHERE {1}=?",
                     PBankTable.GetTableDBName(),
@@ -135,7 +135,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PBankTable bank = new PBankTable();
 
             TDataBase db = DBAccess.Connect("GetBankBySortCode");
-            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            db.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     db.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
@@ -200,7 +200,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("CanPartnerBeDeleted");
 
-            db.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -326,7 +326,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             String DisplayMessage = "";
             String PartnerShortName = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -402,7 +402,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             AVerificationResult = null;
             ResultValue = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
@@ -843,7 +843,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CancelExpiredSubscriptions()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             //Error handling

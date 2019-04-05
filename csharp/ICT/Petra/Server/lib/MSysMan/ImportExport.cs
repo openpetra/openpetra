@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         public static bool ExportAllTables(out string ADataYmlGzBase64)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             XmlDocument OpenPetraData = TYml2Xml.CreateXmlDocument();
             XmlNode rootNode = OpenPetraData.FirstChild.NextSibling;
 
@@ -260,7 +260,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             List <string>tables = TTableList.GetDBNames();
             bool SubmissionResult = false;
-            TDBTransaction ReadWriteTransaction = null;
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
 
             string ClientID = "ClientID";
 
@@ -469,8 +469,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (count != 1)
                 {
-                    if ((CommonTypes.ParseDBType(AReadWriteTransaction.DataBaseObj.DBType) == TDBType.SQLite)
-                       || (CommonTypes.ParseDBType(AReadWriteTransaction.DataBaseObj.DBType) == TDBType.MySQL)
+                    if ((DBAccess.DBType == TDBType.SQLite)
+                       || (DBAccess.DBType == TDBType.MySQL)
                        || ((count % 500) == 0))
                     {
                         // SQLite does not support INSERT of several rows at the same time

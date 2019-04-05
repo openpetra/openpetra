@@ -320,7 +320,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable, TDataBase ADataBase = null)
         {
             Boolean ReturnValue;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             Boolean NewTransaction = false;
             Boolean ReaderLockWasHeld;
             Boolean WriteLockTakenOut;
@@ -855,7 +855,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         public static void SaveUserDefaultsFromServerSide(
             Boolean ASendUpdateInfoToClient = true)
         {
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
 
             TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
 

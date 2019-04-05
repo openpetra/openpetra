@@ -5431,7 +5431,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             try
             {
-                db.AutoReadTransaction(ref Transaction,
+                db.ReadTransaction(ref Transaction,
                     delegate
                     {
                         ACostCentreTable tempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
@@ -5510,7 +5510,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 CanBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
                             }
                         }
-                    }); // End of BeginAutoReadTransaction with anonymous function
+                    }); // End of ReadTransaction with anonymous function
             }
             catch (Exception ex)
             {

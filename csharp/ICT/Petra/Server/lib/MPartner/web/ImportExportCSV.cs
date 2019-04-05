@@ -88,9 +88,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             TPartnerImportCSV.FLocationKey = -1;
             ResultsCol = AReferenceResults;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable, ref ReadTransaction,
+            DBAccess.GDBAccessObj.WriteTransaction(ref Transaction,
                 delegate
                 {
                     while (ANode != null)
@@ -118,8 +118,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         {
                             Boolean FamilyForPerson = (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON);
                             ResultsContext = "CSV Import Family";
-                            PartnerKey = CreateNewFamily(ANode, FamilyForPerson, out LocationKey, ref ResultDS, ReadTransaction);
-                            CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS, ReadTransaction);
+                            PartnerKey = CreateNewFamily(ANode, FamilyForPerson, out LocationKey, ref ResultDS, Transaction);
+                            CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS, Transaction);
                             CreateOutputData(ANode, PartnerKey, MPartnerConstants.PARTNERCLASS_FAMILY,
                                 (PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY), ref ResultDS);
                         }
@@ -127,21 +127,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                         {
                             ResultsContext = "CSV Import Person";
-                            Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ADateFormat, ref ResultDS, ReadTransaction);
-                            CreateShortTermApplication(ANode, PersonKey, ADateFormat, ref ResultDS, ReadTransaction);
-                            CreateSpecialTypes(ANode, PersonKey, ref ResultDS, ReadTransaction);
-                            CreateSubscriptions(ANode, PersonKey, ref ResultDS, ReadTransaction);
-                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_1", ReadTransaction);
-                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_2", ReadTransaction);
-                            CreatePassport(ANode, PersonKey, ADateFormat, ref ResultDS, ReadTransaction);
-                            CreateSpecialNeeds(ANode, PersonKey, ref ResultDS, ReadTransaction);
+                            Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ADateFormat, ref ResultDS, Transaction);
+                            CreateShortTermApplication(ANode, PersonKey, ADateFormat, ref ResultDS, Transaction);
+                            CreateSpecialTypes(ANode, PersonKey, ref ResultDS, Transaction);
+                            CreateSubscriptions(ANode, PersonKey, ref ResultDS, Transaction);
+                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_1", Transaction);
+                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_2", Transaction);
+                            CreatePassport(ANode, PersonKey, ADateFormat, ref ResultDS, Transaction);
+                            CreateSpecialNeeds(ANode, PersonKey, ref ResultDS, Transaction);
                             CreateOutputData(ANode, PersonKey, PartnerClass, true, ref ResultDS);
                         }
 
                         ANode = ANode.NextSibling;
                     }
 
-                    CreatePartnerAttributes(ref ResultDS, ReadTransaction);
+                    CreatePartnerAttributes(ref ResultDS, Transaction);
                 });
 
             return ResultDS;

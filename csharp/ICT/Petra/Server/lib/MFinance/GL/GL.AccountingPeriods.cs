@@ -510,7 +510,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ABatchTable.GetLedgerNumberDBName());
 
             TDataBase db = DBAccess.Connect("GetAvailableGLYears");
-            db.AutoReadTransaction(ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,

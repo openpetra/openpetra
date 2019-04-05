@@ -62,7 +62,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             ConferenceSetupTDS MainDS = new ConferenceSetupTDS();
             string ConferenceName = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

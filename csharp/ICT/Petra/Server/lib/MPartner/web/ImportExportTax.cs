@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             bool cancelledByUser = false;
             bool doneHeaderRow = (firstRowIsHeader == false);
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
             TSubmitChangesResult submissionOK = TSubmitChangesResult.scrError;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, 3, ref transaction, ref submissionOK,

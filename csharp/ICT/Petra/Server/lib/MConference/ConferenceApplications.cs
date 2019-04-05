@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MConference.Applications
             string ARole,
             bool AClearJSONData)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(

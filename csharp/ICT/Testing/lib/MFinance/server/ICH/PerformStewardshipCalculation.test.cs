@@ -169,7 +169,7 @@ namespace Tests.MFinance.Server.ICH
             AFeesPayableTable FeesPayableTable = null;
             AFeesReceivableTable FeesReceivableTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
@@ -211,7 +211,7 @@ namespace Tests.MFinance.Server.ICH
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {

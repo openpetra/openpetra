@@ -938,7 +938,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             Int32 NewFamilyID;
             string ProblemMessage = string.Empty;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,

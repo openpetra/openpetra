@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         public static IndividualDataTDS GetData(Int64 APartnerKey, TIndividualDataItemEnum AIndivDataItem)
         {
             IndividualDataTDS ReturnValue = new IndividualDataTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -276,7 +276,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static bool GetSummaryData(Int64 APartnerKey, ref IndividualDataTDS AIndividualDataDS)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             IndividualDataTDS IndividualDataDS = new IndividualDataTDS();
 
             IndividualDataDS.Merge(AIndividualDataDS);

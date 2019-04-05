@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetLedgerInfo");
 
-            db.AutoReadTransaction(ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction);
@@ -861,7 +861,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("CheckAccountsAndCostCentres");
 
-            db.AutoReadTransaction(ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     foreach (String AccCostCentre in AccountCodesCostCentres)
@@ -890,7 +890,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             }
                         }
                     }
-                }); // End of BeginAutoReadTransaction
+                }); // End of ReadTransaction
             return ReportMsg;
         }
 

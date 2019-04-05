@@ -64,7 +64,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             List <int>attributeCode,
             List <int>attributeDetailCode)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -309,7 +309,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             PartnerEditTDS ReturnDS = new PartnerEditTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, ref Transaction,
@@ -339,7 +339,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool IsContactLogAssociatedWithMoreThanOnePartner(long AContactLogId)
         {
             bool returnValue = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -372,7 +372,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static void DeleteContacts(
             DataTable AContactLogs)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,

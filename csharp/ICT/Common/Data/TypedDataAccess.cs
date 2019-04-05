@@ -148,7 +148,7 @@ namespace Ict.Common.Data
                     SqlString = SqlString + " AND ";
                 }
 
-                if ((CommonTypes.ParseDBType(db.DBType) == TDBType.SQLite)
+                if ((DBAccess.DBType == TDBType.SQLite)
                     && ADataRow[PrimKeyOrd, WhichVersion] is DateTime)
                 {
                     SqlString = SqlString + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";
@@ -1663,7 +1663,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + " AND ";
                 }
 
-                if ((CommonTypes.ParseDBType(ATransaction.DataBaseObj.DBType) == TDBType.SQLite)
+                if ((DBAccess.DBType == TDBType.SQLite)
                     && ADataRow[PrimKeyOrd, DataRowVersion.Original] is DateTime)
                 {
                     ReturnValue = ReturnValue + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";

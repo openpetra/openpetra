@@ -296,7 +296,7 @@ namespace Ict.Common.DB
             {
                 if (FTransaction != null && ToClear.TransactionIdentifier == FTransaction.TransactionIdentifier)
                 {
-                    FTransaction = null;
+                    FTransaction = new TDBTransaction();
                     return true;
                 }
             }
@@ -2551,7 +2551,7 @@ namespace Ict.Common.DB
 
                 FDataBaseRDBMS.AdjustIsolationLevel(ref ADesiredIsolationLevel);
 
-                if (TheTransaction != null)
+                if ((TheTransaction != null) && TheTransaction.Valid)
                 {
                     // Multi-threading and multi-connection 'Sanity Check':
                     // Check if the current Thread is the same Thread that the currently running DB Transaction was started on:
@@ -2600,7 +2600,7 @@ namespace Ict.Common.DB
                     }
                 }
 
-                if (TheTransaction == null)
+                if (TheTransaction == null || !TheTransaction.Valid)
                 {
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
@@ -4814,30 +4814,16 @@ namespace Ict.Common.DB
             }
         }
 
-        /// start a transaction, and then run the code in it
-        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
+        /// start a read transaction, and then run the code in it
+        public void ReadTransaction(ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
             if (ATransaction == null)
             {
                 ATransaction = new TDBTransaction();
             }
 
-            ATransaction.BeginTransaction(this, AIsolationLevel, "AutoReadTransaction");
+            ATransaction.BeginTransaction(this, IsolationLevel.ReadCommitted, "ReadTransaction");
 
-            AutoReadTransaction(ref ATransaction, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction
-        /// in Argument <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
-        /// whether an Exception occured, or not!
-        /// </summary>
-        /// <param name="ATransaction">Instance of a running DB Transaction.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void AutoReadTransaction(ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
-        {
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
@@ -4853,6 +4839,20 @@ namespace Ict.Common.DB
                 // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
                 ATransaction.Rollback();
             }
+        }
+
+        /// start a write transaction, and then run the code in it
+        public void WriteTransaction(ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
+        {
+            if (ATransaction == null)
+            {
+                ATransaction = new TDBTransaction();
+            }
+
+            ATransaction.BeginTransaction(this, IsolationLevel.Serializable, "WriteTransaction");
+
+            // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
+            AEncapsulatedDBAccessCode();
         }
 
         #endregion

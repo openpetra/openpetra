@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, petrih, andreww
+//       christiank, petrih, andreww, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MPartner.Common
         public static void GetLastContactDate(Int64 APartnerKey, out DateTime ALastContactDate,
             TDataBase ADataBase = null)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DataSet LastContactDS;
             PContactLogRow ContactDR;

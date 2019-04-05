@@ -129,7 +129,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             bool CostCentreTestCasesAvailable = false;
 
             TDataBase db = DBAccess.Connect("PrepareTestCaseData");
-            db.AutoReadTransaction(ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     // Check if some special test data are available - otherwise load ...

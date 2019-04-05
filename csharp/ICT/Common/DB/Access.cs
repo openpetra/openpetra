@@ -102,6 +102,21 @@ namespace Ict.Common.DB
             return ATransaction != null ? ATransaction.DataBaseObj : GDBAccessObj;
         }
 
+        /// <summary>Returns the type of the RDBMS that is defined in the config file</summary>
+        public static TDBType DBType
+        {
+            get
+            {
+                if (!TSrvSetting.Initialized)
+                {
+                    new TSrvSetting();
+                }
+
+                return TSrvSetting.RDMBSType;
+            }
+        }
+
+
         /// <summary>
         /// Gets the <see cref="TDataBase"/> instance that gets passed in with Argument <paramref name="ADataBase"/>, or
         /// a new database instance in case <paramref name="ADataBase"/>

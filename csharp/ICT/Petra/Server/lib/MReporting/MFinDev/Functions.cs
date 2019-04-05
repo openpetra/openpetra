@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, berndr
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -537,7 +537,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
                      " WHERE " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDonorKeyDBName() + " = " + DonorKey.ToString() +
                      " ORDER BY " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName() + " DESC";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable tempTbl = new DataTable();
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

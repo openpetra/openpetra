@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean GetCurrency(Int64 APartnerKey, out string ACurrencyCode, out string ACurrencyName)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             PcConferenceTable ConferenceTable;
             ACurrencyTable CurrencyTable;
@@ -104,7 +104,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DateTime GetStartDate(Int64 APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             PcConferenceTable ConferenceTable;
             DateTime ConferenceStartDate = new DateTime();
@@ -132,7 +132,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DateTime GetEndDate(Int64 APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             PcConferenceTable ConferenceTable;
             DateTime ConferenceEndDate = new DateTime();
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CheckDiscountCriteriaCodeExists(string[] ADiscountCriteriaCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             Boolean CriteriaCodeExists = true;
 
@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CheckCostTypeExists(string ACostTypeCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             Boolean RowExists = false;
 
@@ -211,10 +211,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean ConferenceExists(long APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             Boolean Exists = false;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.GDBAccessObj.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     Exists = PcConferenceAccess.Exists(APartnerKey, ReadTransaction);
@@ -231,11 +231,11 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DataTable GetOutreachTypes(long APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DataTable Table = new PUnitTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.GDBAccessObj.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     string OutreachPrefixCode =
