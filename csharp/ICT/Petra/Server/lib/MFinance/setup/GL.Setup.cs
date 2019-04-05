@@ -2521,7 +2521,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             {
                                 TDBTransaction transaction = new TDBTransaction();
                                 TDataBase db = DBAccess.Connect("db");
-                                db.AutoTransaction(ref transaction, true,
+                                bool SubmitOK = true;
+                                db.WriteTransaction(ref transaction, ref SubmitOK,
                                     delegate
                                     {
                                         String query =
@@ -4421,10 +4422,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
+            bool SubmitOK = false;
             TDataBase db = DBAccess.Connect("DeleteLedger");
             bool Result = true;
-            db.AutoTransaction(ref Transaction,
-                ref SubmitChangesResult,
+            db.WriteTransaction(ref Transaction,
+                ref SubmitOK,
                 delegate
                 {
                     try
@@ -4594,6 +4596,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     {
                         TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     }
+
+                    SubmitOK = SubmitChangesResult == TSubmitChangesResult.scrOK;
                 });
 
             AVerificationResult = VerificationResult;

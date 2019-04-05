@@ -89,8 +89,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             TPartnerImportCSV.FLocationKey = -1;
             ResultsCol = AReferenceResults;
             TDBTransaction Transaction = new TDBTransaction();
+            bool SubmissionOK = true;
 
             DBAccess.GDBAccessObj.WriteTransaction(ref Transaction,
+                ref SubmissionOK,
                 delegate
                 {
                     while (ANode != null)

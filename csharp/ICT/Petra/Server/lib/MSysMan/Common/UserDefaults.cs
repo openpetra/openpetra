@@ -869,11 +869,12 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                 if (DefaultsDT.Rows.Count > 0)
                 {
-                    TDBTransaction Transaction = new TDBTransaction();
+                    TDataBase db = DBAccess.Connect("SaveUserDefaultsFromServerSide");
+                    bool SubmitOK = true;
 
-                    DBAccess.RunInTransaction(IsolationLevel.Serializable,
-                        ref Transaction,
-                        "SaveUserDefaultsFromServerSide",
+                    db.WriteTransaction(
+                        ref SubmitChangesTransaction,
+                        ref SubmitOK,
                         delegate
                         {
                             TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,

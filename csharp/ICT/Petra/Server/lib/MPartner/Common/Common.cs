@@ -235,10 +235,10 @@ namespace Ict.Petra.Server.MPartner.Common
 
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ReservePartnerKeys");
-            TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
-            
-            db.AutoTransaction(ref ReadWriteTransaction,
-                ref SubmitChangesResult,
+            bool SubmissionOK = true;
+
+            db.WriteTransaction(ref ReadWriteTransaction,
+                ref SubmissionOK,
                 delegate
                 {
                     PPartnerLedgerTable PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadWriteTransaction);
@@ -258,10 +258,10 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     PPartnerLedgerAccess.SubmitChanges(PartnerLedgerDT, ReadWriteTransaction);
 
-                    SubmitChangesResult = TSubmitChangesResult.scrOK;
+                    SubmissionOK = true;
                 });
 
-            if (SubmitChangesResult != TSubmitChangesResult.scrOK)
+            if (!SubmissionOK)
             {
                 throw new Exception("ReservePartnerKeys failed");
             }

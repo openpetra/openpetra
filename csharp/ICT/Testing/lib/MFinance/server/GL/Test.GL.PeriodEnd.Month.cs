@@ -451,7 +451,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("UnloadTestData_GetBatchInfo");
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.AutoTransaction(ref transaction, SubmissionOK,
+            DBAccess.GDBAccessObj.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
@@ -487,7 +487,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 TDBTransaction transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("Suspense");
                 bool SubmissionOK = true;
-                db.AutoTransaction(ref transaction, SubmissionOK,
+                db.WriteTransaction(ref transaction, ref SubmissionOK,
                     delegate
                     {
                         string strSQL = "INSERT INTO PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
@@ -518,7 +518,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("Unsuspense");
             bool SubmissionOK = true;
-            db.AutoTransaction(ref transaction, SubmissionOK,
+            db.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";

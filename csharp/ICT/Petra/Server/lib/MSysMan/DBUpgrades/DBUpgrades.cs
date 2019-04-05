@@ -55,13 +55,15 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         private static bool SetCurrentDBVersion(TFileVersionInfo ANewVersion)
         {
             TDBTransaction transaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.AutoTransaction(ref transaction, true,
+            TDataBase db = DBAccess.Connect("TDBUpgrades_SetCurrentDBVersion");
+            bool SubmitOK = true;
+            db.WriteTransaction(ref transaction, ref SubmitOK,
                 delegate
                 {
                     string newVersionSql =
                         String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
                             ANewVersion.ToStringDotsHyphen());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
+                    db.ExecuteNonQuery(newVersionSql, transaction);
                 });
 
             return true;

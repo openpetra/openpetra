@@ -170,38 +170,5 @@ namespace Ict.Common.DB
 
             return DBAccessObj;
         }
-
-        /// <summary>
-        /// Starts a DB Transaction on a new TDataBase instance and executes code that is passed in via a C# Delegate in
-        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction gets committed 
-        /// and the DB Connection gets closed.
-        /// </summary>
-        /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" />.</param>
-        /// <param name="ATransaction">Transaction to be used in the encapsulated action code.</param>
-        /// <param name="AContext">Context in which the Method runs (passed as Name to the newly established DB Connection
-        /// and as Name to the DB Transaction, too.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public static void RunInTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, string AContext,
-            Action AEncapsulatedDBAccessCode)
-        {
-            TDataBase DBConnectionObj = Connect(AContext);
-
-            if (ATransaction == null)
-            {
-                ATransaction = new TDBTransaction();
-            }
-
-            ATransaction.BeginTransaction(DBConnectionObj, AIsolationLevel, AContext);
-
-            try
-            {
-                DBConnectionObj.AutoTransaction(ref ATransaction, true, AEncapsulatedDBAccessCode);
-            }
-            finally
-            {
-                DBConnectionObj.CloseDBConnection();
-            }
-        }
     }
 }

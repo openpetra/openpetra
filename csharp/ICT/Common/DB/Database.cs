@@ -4714,75 +4714,6 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction
-        /// in Argument <paramref name="ATransaction"/> and handles the Committing / Rolling Back
-        /// of that DB Transaction automatically, depending whether an Exception occured (Rollback always issued!)
-        /// and on the value of <paramref name="ASubmissionOK"/>.
-        /// </summary>
-        /// <param name="ATransaction">Instance of a running DB Transaction.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void AutoTransaction(ref TDBTransaction ATransaction, bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
-        {
-            bool ExceptionThrown = true;
-
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-
-                // Once execution gets to here we know that no unhandled Exception was thrown
-                ExceptionThrown = false;
-            }
-            finally
-            {
-                // We can get to here in two ways:
-                //   1) no unhandled Exception was thrown;
-                //   2) an unhandled Exception was thrown.
-
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
-                // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmissionOK);
-            }
-        }
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction
-        /// in Argument <paramref name="ATransaction"/> and handles the Committing / Rolling Back
-        /// of that DB Transaction automatically, depending whether an Exception occured (Rollback always issued!)
-        /// and on the value of <paramref name="ASubmitChangesResult"/>.
-        /// </summary>
-        /// <param name="ATransaction">Instance of a running DB Transaction.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
-        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void AutoTransaction(ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
-        {
-            bool ExceptionThrown = true;
-
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-
-                // Once execution gets to here we know that no unhandled Exception was thrown
-                ExceptionThrown = false;
-            }
-            finally
-            {
-                // We can get to here in two ways:
-                //   1) no unhandled Exception was thrown;
-                //   2) an unhandled Exception was thrown.
-
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
-                // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ref ATransaction, ExceptionThrown, ASubmitChangesResult == TSubmitChangesResult.scrOK, true);
-            }
-        }
-
-        /// <summary>
         /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction
         /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured
         /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of
@@ -4817,42 +4748,75 @@ namespace Ict.Common.DB
         /// start a read transaction, and then run the code in it
         public void ReadTransaction(ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
-            if (ATransaction == null)
-            {
-                ATransaction = new TDBTransaction();
-            }
-
-            ATransaction.BeginTransaction(this, IsolationLevel.ReadCommitted, "ReadTransaction");
-
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-            }
-            finally
-            {
-                // A DB Transaction Rollback is issued regardless of whether an unhandled Exception was thrown, or not!
-                //
-                // Reasoning as to why we don't Commit the DB Transaction:
-                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
-                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
-                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
-                ATransaction.Rollback();
-            }
+            bool SubmitOK = true;
+            TransactionInner(ref ATransaction, IsolationLevel.ReadCommitted, ref SubmitOK, AEncapsulatedDBAccessCode, "ReadTransaction");
         }
 
         /// start a write transaction, and then run the code in it
-        public void WriteTransaction(ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
+        public void WriteTransaction(ref TDBTransaction ATransaction, ref bool ASubmitOK, Action AEncapsulatedDBAccessCode)
+        {
+            TransactionInner(ref ATransaction, IsolationLevel.Serializable, ref ASubmitOK, AEncapsulatedDBAccessCode, "WriteTransaction");
+        }
+
+        private void TransactionInner(ref TDBTransaction ATransaction, IsolationLevel AIsolationLevel, ref bool ASubmitOK, Action AEncapsulatedDBAccessCode, string AContext)
         {
             if (ATransaction == null)
             {
                 ATransaction = new TDBTransaction();
             }
 
-            ATransaction.BeginTransaction(this, IsolationLevel.Serializable, "WriteTransaction");
+            if (AIsolationLevel != IsolationLevel.Serializable && 
+                AIsolationLevel != IsolationLevel.ReadCommitted)
+            {
+                throw new Exception("TransactionInner: unsupported IsolationLevel " + AIsolationLevel.ToString());
+            }
 
-            // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-            AEncapsulatedDBAccessCode();
+            bool NewTransaction = !ATransaction.Valid;
+
+            if (ATransaction.Valid)
+            {
+                // check IsolationLevel compatibility
+                if (AIsolationLevel == IsolationLevel.Serializable && 
+                    ATransaction.IsolationLevel == IsolationLevel.ReadCommitted)
+                {
+                    throw new Exception("TransactionInner: trying to open a write transaction inside a read transaction");
+                }
+            }
+            else
+            {
+                ATransaction.BeginTransaction(this, AIsolationLevel, AContext);
+            }
+
+            bool ExceptionThrown = true;
+
+            try
+            {
+                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
+                AEncapsulatedDBAccessCode();
+                ExceptionThrown = false;
+            }
+            finally
+            {
+                // commit or rollback a new transaction
+                if (NewTransaction)
+                {
+                    if (AIsolationLevel == IsolationLevel.Serializable)
+                    {
+                        if (ASubmitOK && !ExceptionThrown)
+                        {
+                            ATransaction.Commit();
+                        }
+                        else
+                        {
+                            ATransaction.Rollback();
+                        }
+                    }
+                    else if (AIsolationLevel == IsolationLevel.ReadCommitted)
+                    {
+                        ATransaction.Rollback();
+                    }
+                }
+            }
         }
 
         #endregion

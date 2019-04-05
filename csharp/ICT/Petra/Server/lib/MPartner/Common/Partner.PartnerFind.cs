@@ -1360,9 +1360,10 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                  * Add all Partners to the desired Extract
                  */
                 TDBTransaction transaction = new TDBTransaction();
-                TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
-                DBAccess.GDBAccessObj.AutoTransaction(ref transaction,
-                    ref SubmitChangesResult,
+                TDataBase db = DBAccess.Connect("AddAllFoundPartnersToExtract");
+                bool SubmitOK = false;
+                db.WriteTransaction(ref transaction,
+                    ref SubmitOK,
                     delegate
                     {
                         int keyCount;
@@ -1382,7 +1383,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                         AddedPartners = TExtractsHandling.GetExtractKeyCount(AExtractID);
 
-                        SubmitChangesResult = TSubmitChangesResult.scrOK;
+                        SubmitOK = true;
                     });
 
                     return AddedPartners;

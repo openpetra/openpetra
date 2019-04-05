@@ -243,8 +243,10 @@ namespace Ict.Common.DB.Testing
         {
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("TestInsertMultipleRows");
+            bool SubmissionOK = true;
 
             db.WriteTransaction(ref t,
+                ref SubmissionOK,
                 delegate
                 {
                     Int64 PreviousSequence = db.GetNextSequenceValue("seq_statement_number", t);
@@ -268,8 +270,10 @@ namespace Ict.Common.DB.Testing
         {
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("Test");
+            bool SubmissionOK = true;
 
             db.WriteTransaction(ref t,
+                ref SubmissionOK,
                 delegate
                 {
                     string countSql = "SELECT COUNT(*) FROM PUB_s_system_defaults";

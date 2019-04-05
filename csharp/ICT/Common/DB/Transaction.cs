@@ -231,7 +231,6 @@ namespace Ict.Common.DB
         }
 
         /// to begin a transaction on an existing TDBTransaction object.
-        /// this is useful for RunInTransaction to have access to the transaction object
         public void BeginTransaction(TDataBase ADataBase,
             IsolationLevel AIsolationLevel,
             string ATransactionName = "")

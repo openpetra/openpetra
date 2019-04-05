@@ -821,7 +821,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             BuildingTable.Rows.Add(BuildingRow);
 
             TDBTransaction transaction = new TDBTransaction();
-            DBAccess.RunInTransaction(IsolationLevel.Serializable, ref transaction, "TestDeleteVenue",
+            TDataBase db = DBAccess.Connect("TestDeleteVenue");
+            bool submitOK = true;
+            db.WriteTransaction(ref transaction, ref submitOK,
                 delegate
                 {
                     PcBuildingAccess.SubmitChanges(BuildingTable, transaction);

@@ -350,11 +350,11 @@ namespace {#NAMESPACE}
             out TVerificationResultCollection AVerificationResult, 
             TDataBase ADataBase = null)
         {
-            const string StrDBTransName = "Cacheable DataTable (saving) DB Transaction";
             const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
             TDataBase DBConnectionObj = ADataBase;
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            bool SubmitOK = false;
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
             TTypedDataTable SubmitTable = ASubmitTable;
             TVerificationResultCollection VerificationResult;
@@ -379,19 +379,10 @@ namespace {#NAMESPACE}
                             // Open a separate DB Connection
                             DBConnectionObj =  DBAccess.Connect(StrDBConnName);
                             SeparateDBConnectionEstablished = true;
-
-                            // ...and start a DB Transction on that separate DB Connection
-                            SubmitChangesTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable,
-                                ATransactionName: StrDBTransName);
-                        }
-                        else
-                        {
-                            SubmitChangesTransaction = ADataBase.BeginTransaction(IsolationLevel.Serializable,
-                                ATransactionName: StrDBTransName);
                         }
                         
                         // Automatic handling of a (write) DB Transaction
-                        DBConnectionObj.AutoTransaction(ref SubmitChangesTransaction, ref SubmissionResult,
+                        DBConnectionObj.WriteTransaction(ref SubmitChangesTransaction, ref SubmitOK,
                             delegate
                             {
                                 switch (ACacheableTable)
@@ -403,6 +394,8 @@ namespace {#NAMESPACE}
                                         throw new EOPException(
                                         "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
                                 }
+
+                                SubmitOK = SubmissionResult == TSubmitChangesResult.scrOK;
                             });
                     }
                     catch (Exception e)
@@ -418,7 +411,7 @@ namespace {#NAMESPACE}
                     // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
                     // Cache and inform all other Clients that they need to reload this Cacheable DataTable
                     // the next time something in the Client accesses it.
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    if (SubmitOK)
                     {
                         Type TmpType;
                         GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType, DBConnectionObj);
@@ -616,6 +609,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     TDataBase DBConnectionObj = ADataBase;
     TDBTransaction SubmitChangesTransaction = new TDBTransaction();
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+    bool SubmitOK = false;
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
     TTypedDataTable SubmitTable = ASubmitTable;
     TVerificationResultCollection VerificationResult;    
@@ -652,7 +646,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
                 }
 
                 // Automatic handling of a (write) DB Transaction
-                DBConnectionObj.AutoTransaction(ref SubmitChangesTransaction, ref SubmissionResult,
+                DBConnectionObj.WriteTransaction(ref SubmitChangesTransaction, ref SubmitOK,
                     delegate
                     {        
                         switch (ACacheableTable)
@@ -664,6 +658,8 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
                                 throw new EOPException(
                                 "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
                         }
+
+                        SubmitOK = SubmissionResult == TSubmitChangesResult.scrOK;
                     });
             }
             catch (Exception e)

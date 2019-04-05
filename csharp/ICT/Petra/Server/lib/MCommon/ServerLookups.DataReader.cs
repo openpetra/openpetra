@@ -74,10 +74,11 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         {
             TTypedDataTable ResultTable = null;
             TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetData");
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction, "TCommonDataReader.GetData",
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     GetData(ATablename, ASearchCriteria, out ResultTable, ReadTransaction);
@@ -274,18 +275,20 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             TTypedDataTable SubmitTable = null;
             TVerificationResultCollection VerificationResult = null;
             TDBTransaction WriteTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SaveData");
 
             SubmitTable = ASubmitTable;
+            bool submitOK = true;
 
             // Automatic handling of a DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.RunInTransaction(
-                IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref WriteTransaction,
-                "genericSaveData",
+                ref submitOK,
                 delegate
                 {
                     ReturnValue = SaveData(ATablename, ref SubmitTable, out VerificationResult, WriteTransaction);
+                    submitOK = ReturnValue == TSubmitChangesResult.scrOK; 
                 });
 
             if ((ATablename == SSystemDefaultsTable.GetTableDBName()) && (ReturnValue == TSubmitChangesResult.scrOK))

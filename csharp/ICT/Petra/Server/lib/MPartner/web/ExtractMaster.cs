@@ -543,9 +543,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             bool SubmissionOK = false;
 
             TDataBase db = DBAccess.GDBAccessObj;
-            db.AutoTransaction(
+            db.WriteTransaction(
                 ref Transaction,
-                SubmissionOK,
+                ref SubmissionOK,
                 delegate
                 {
                     // delete MExtractTable

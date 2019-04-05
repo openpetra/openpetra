@@ -202,7 +202,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 return;
             }
 
-            DBAccess.RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction, "CheckDatabaseVersion",
+            TDataBase db = DBAccess.Connect("CheckDatabaseVersion");
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     // now check if the database is 'up to date'; otherwise run db patch against it
@@ -633,12 +634,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         public static TPetraPrincipal ReloadCachedUserInfo()
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ReloadCachedUserInfo");
             TPetraPrincipal UserDetails = null;
 
             try
             {
-                DBAccess.RunInTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-                    "ReloadCachedUserInfo",
+                db.ReadTransaction(ref ReadTransaction,
                     delegate
                     {
                         LoadUser(UserInfo.GUserInfo.UserID, out UserDetails, ReadTransaction);
