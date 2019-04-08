@@ -69,7 +69,10 @@ namespace Ict.Common.DB
         public const Int32 DB_DEBUGLEVEL_QUERY = 3;
 
         /// <summary>DebugLevel for logging information about DB Transactions.</summary>
-        public const Int32 DB_DEBUGLEVEL_TRANSACTION = 10;
+        public const Int32 DB_DEBUGLEVEL_TRANSACTION = 2;
+
+        /// <summary>DebugLevel for logging information about DB Transactions.</summary>
+        public const Int32 DB_DEBUGLEVEL_TRANSACTION_DETAIL = 10;
 
         /// <summary>DebugLevel for logging results from DB queries: is 6 (was 4 before).</summary>
         public const Int32 DB_DEBUGLEVEL_RESULT = 6;
@@ -99,7 +102,7 @@ namespace Ict.Common.DB
         /// </summary>
         public static TDataBase GetDBAccessObj(TDBTransaction ATransaction)
         {
-            TLogging.Log("GetDBAccessObj is deprecated, use Transaction.DataBaseObj instead");
+            TLogging.LogAtLevel(0, "GetDBAccessObj is deprecated, use Transaction.DataBaseObj instead");
             //TLogging.LogStackTrace();
             return ATransaction != null ? ATransaction.DataBaseObj : GDBAccessObj;
         }

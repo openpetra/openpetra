@@ -1848,7 +1848,8 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 ALedgerNumber,
             GLPostingTDS APostingDS,
             Int32 AFromPeriod,
-            ref SortedList <string, TAmount>APostingLevel)
+            ref SortedList <string, TAmount>APostingLevel,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -1942,7 +1943,9 @@ namespace Ict.Petra.Server.MFinance.Common
                         gLMRow.YtdActualForeign += postingLevelElement.TransAmount;
                     }
 
-                    TLedgerInitFlag.SetFlagComponent(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, accountRow.AccountCode);
+                    TLedgerInitFlag flag = new TLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL,
+                        ADataBase);
+                    flag.SetFlagComponent(MFinanceConstants.LEDGER_INIT_FLAG_REVAL, accountRow.AccountCode);
                 }
 
                 if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
@@ -2010,7 +2013,8 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS APostingDS,
             SortedList <string, TAmount>APostingLevel,
             Int32 AFromPeriod,
-            bool ACalculatePostingTree)
+            bool ACalculatePostingTree,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -2050,7 +2054,7 @@ namespace Ict.Petra.Server.MFinance.Common
             else
             {
                 TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SummarizeDataSimple...");
-                SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel);
+                SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel, ADataBase);
             }
         }
 
@@ -2375,7 +2379,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             mainDS.ThrowAwayAfterSubmitChanges = true;
                             GLBatchTDSAccess.SubmitChanges(mainDS, db);
 
-                            SummarizeInternal(ALedgerNumber, postingDS, PostingLevel, BatchPeriod, false); // No summarisation is performed, from April 2015, Tim Ingham
+                            SummarizeInternal(ALedgerNumber, postingDS, PostingLevel, BatchPeriod, false, db); // No summarisation is performed, from April 2015, Tim Ingham
 
                             postingDS.ThrowAwayAfterSubmitChanges = true;
                             SubmitChanges(postingDS, db);
@@ -2495,7 +2499,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if ((MainDS != null) && (APostingDS != null))
                 {
-                    SummarizeInternal(ALedgerNumber, APostingDS, PostingLevel, ABatchPeriod, false);
+                    SummarizeInternal(ALedgerNumber, APostingDS, PostingLevel, ABatchPeriod, false, ATransaction.DataBaseObj);
                     RetVal = true;
                 }
             }
@@ -2859,7 +2863,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, TDBTransaction ATransaction, Boolean AWithGLJournal = false)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, TDataBase ADataBase, Boolean AWithGLJournal = false)
         {
             #region Validate Arguments
 
@@ -2870,35 +2874,22 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
 
-            bool CommitTransaction = false;
-
             #endregion Validate Arguments
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDataBase db;
-
-            if (!ATransaction.Valid)
-            {
-                db = DBAccess.Connect("CreateABatch");
-                CommitTransaction = true;
-            }
-            else
-            {
-                db = ATransaction.DataBaseObj;
-            }
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CreateABatch", ADataBase);
 
             bool SubmissionOK = false;
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref ATransaction,
+                db.WriteTransaction(
+                    ref Transaction,
                     ref SubmissionOK,
-                    CommitTransaction,
                     delegate
                     {
-                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
                         #region Validate Data
 
@@ -2935,7 +2926,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         MainDS.ABatch.Rows.Add(NewRow);
 
-                        GLBatchTDSAccess.SubmitChanges(MainDS, ATransaction.DataBaseObj);
+                        GLBatchTDSAccess.SubmitChanges(MainDS, db);
                         SubmissionOK = true;
                     });
 

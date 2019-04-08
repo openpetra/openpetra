@@ -480,7 +480,7 @@ namespace Ict.Common.DB
                 {
                     // always log to console and log file, which database we are connecting to.
                     // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
-                    TLogging.Log("    Connecting to database " + ADataBaseType + " " +
+                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO, "    Connecting to database " + ADataBaseType + " " +
                         AConnectionName + " " +
                         GetDBConnectionIdentifierInternal() + ": " +
                         TDBConnection.GetConnectionStringWithHiddenPwd(FConnectionString) + " " +
@@ -2365,7 +2365,7 @@ namespace Ict.Common.DB
 
                         ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
                                 "DB Transaction{0} with IsolationLevel '{1}' got started", FTransaction.GetDBTransactionIdentifier(),
-                                AIsolationLevel), DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
+                                AIsolationLevel), DBAccess.DB_DEBUGLEVEL_TRANSACTION_DETAIL, true);
                     }
                 }
                 catch (Exception Exc)
@@ -2628,7 +2628,7 @@ namespace Ict.Common.DB
                         throw Exc4;
                     }
 
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION_DETAIL)
                     {
                         ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
                                 "GetNewOrExistingTransaction: Re-using (='piggy-backing on') existing DB Transaction{0} with IsolationLevel '{1}'{2} "
@@ -4560,7 +4560,7 @@ namespace Ict.Common.DB
         {
             if (ATransaction == null)
             {
-                ATransaction = new TDBTransaction();
+                throw new Exception("TransactionInner: requires at least an empty new TDBTransaction object");
             }
 
             if (AIsolationLevel != IsolationLevel.Serializable && 
@@ -4580,9 +4580,24 @@ namespace Ict.Common.DB
                     throw new Exception("TransactionInner: trying to open a write transaction inside a read transaction");
                 }
             }
+            else if (FTransaction != null && FTransaction.Valid)
+            {
+                // can we reuse the existing Transaction of this db connection
+                // we don't support nested transactions anyway
+                // check IsolationLevel compatibility
+                if (AIsolationLevel == IsolationLevel.Serializable && 
+                    FTransaction.IsolationLevel == IsolationLevel.ReadCommitted)
+                {
+                    throw new Exception("TransactionInner: trying to open a write transaction inside an existing read transaction");
+                }
+
+                ATransaction.CopyFrom(FTransaction);
+                NewTransaction = false;
+            }
             else
             {
                 ATransaction.BeginTransaction(this, AIsolationLevel, AContext);
+                FTransaction = ATransaction;
             }
 
             bool ExceptionThrown = true;

@@ -238,12 +238,24 @@ namespace Ict.Common.DB
             FTransactionIdentifier = System.Guid.NewGuid();
             FTransactionName = ATransactionName;
 
+            TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "Begin Transaction " + ATransactionName + " in Connection " + ADataBase.ConnectionName + " with level " + AIsolationLevel.ToString("G"));
             FWrappedTransaction = ADataBase.BeginDbTransaction(AIsolationLevel);
 
             FTDataBaseInstanceThatTransactionBelongsTo = ADataBase;
             FAppDomainThatTransactionWasStartedIn = AppDomain.CurrentDomain;
             FThreadThatTransactionWasStartedOn = Thread.CurrentThread;
             FStackTraceAtPointOfTransactionStart = new StackTrace(true);
+        }
+
+        /// copy all data from existing transaction
+        public void CopyFrom(TDBTransaction AOther)
+        {
+            this.FTransactionIdentifier = AOther.FTransactionIdentifier;
+            this.FTransactionName = AOther.FTransactionName;
+            this.FTDataBaseInstanceThatTransactionBelongsTo = AOther.FTDataBaseInstanceThatTransactionBelongsTo;
+            this.FAppDomainThatTransactionWasStartedIn = AOther.FAppDomainThatTransactionWasStartedIn;
+            this.FThreadThatTransactionWasStartedOn = AOther.FThreadThatTransactionWasStartedOn;
+            this.FWrappedTransaction = AOther.FWrappedTransaction;
         }
 
         /// <summary>
@@ -283,7 +295,7 @@ namespace Ict.Common.DB
                     throw Exc1;
                 }
 
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION_DETAIL)
                 {
                     // Gather information for logging
                     TransactionIdentifier = GetDBTransactionIdentifier();
@@ -293,10 +305,12 @@ namespace Ict.Common.DB
 
                 WrappedTransaction.Commit();
 
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "       Transaction " + FTransactionName + " committed");
+
                 // Commit was OK, now clean up.
                 Dispose();
 
-                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, String.Format(
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION_DETAIL, String.Format(
                         "DB Transaction{0} got rolled back.  Before that, its DB Transaction Properties were: Valid: {1}, " +
                         "IsolationLevel: {2} (it got started on Thread {3} in AppDomain '{4}').", TransactionIdentifier,
                         TransactionValid, TransactionIsolationLevel, ThreadThatTransactionWasStartedOn,
@@ -340,7 +354,7 @@ namespace Ict.Common.DB
                     throw Exc1;
                 }
 
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION_DETAIL)
                 {
                     // Gather information for logging
                     TransactionIdentifier = GetDBTransactionIdentifier();
@@ -350,10 +364,12 @@ namespace Ict.Common.DB
 
                 WrappedTransaction.Rollback();
 
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "       Transaction " + FTransactionName + " rolled back");
+
                 // Rollback was OK, now clean up.
                 Dispose();
 
-                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, String.Format(
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION_DETAIL, String.Format(
                         "DB Transaction{0} got rolled back.  Before that, its DB Transaction Properties were: Valid: {1}, " +
                         "IsolationLevel: {2} (it got started on Thread {3} in AppDomain '{4}').", TransactionIdentifier,
                         TransactionValid, TransactionIsolationLevel, ThreadThatTransactionWasStartedOn,

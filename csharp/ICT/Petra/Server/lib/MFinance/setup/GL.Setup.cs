@@ -2281,15 +2281,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         // current period (start of ledger date): CURRENT-PERIOD
                         // calendar settings: CAL
                         // (Apparently no-one currently looks for the presence of any of these flags?)
-
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_SUSP_ACC, LedgerRow.SuspenseAccountFlag);
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_BUDGET, LedgerRow.BudgetControlFlag);
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENCY, !LedgerRow.IsBaseCurrencyNull());
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_INTL_CURRENCY,
+                        TLedgerInitFlag flag = new TLedgerInitFlag(ALedgerNumber, "", Transaction.DataBaseObj);
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_SUSP_ACC, LedgerRow.SuspenseAccountFlag);
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_BUDGET, LedgerRow.BudgetControlFlag);
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_CURRENCY, !LedgerRow.IsBaseCurrencyNull());
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_INTL_CURRENCY,
                             !LedgerRow.IsIntlCurrencyNull());
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENT_PERIOD,
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_CURRENT_PERIOD,
                             !LedgerRow.IsCurrentPeriodNull());
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CAL,
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_CAL,
                             !LedgerRow.IsNumberOfAccountingPeriodsNull());
 
                         GLSetupTDSAccess.SubmitChanges(InspectDS, Transaction.DataBaseObj);
@@ -3645,7 +3645,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         private static void CreateMotivationDetail(ref GLSetupTDS AMainDS,
             Int32 ALedgerNumber,
             XmlNode ACurrentNode,
-            string AMotivationGroupCode)
+            string AMotivationGroupCode,
+            TDataBase ADataBase)
         {
             AMotivationDetailRow newMotivationDetail = null;
 
@@ -3697,7 +3698,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         private static void CreateMotivationGroup(ref GLSetupTDS AMainDS,
             Int32 ALedgerNumber,
-            XmlNode ACurrentNode)
+            XmlNode ACurrentNode,
+            TDataBase ADataBase)
         {
             AMotivationGroupRow newMotivationGroup = null;
 
@@ -3742,12 +3744,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
-                CreateMotivationDetail(ref AMainDS, ALedgerNumber, child, newMotivationGroup.MotivationGroupCode);
+                CreateMotivationDetail(ref AMainDS, ALedgerNumber, child, newMotivationGroup.MotivationGroupCode, ADataBase);
             }
         }
 
         /// import motivation groups, details into an empty new ledger
-        private static void ImportDefaultMotivations(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        private static void ImportDefaultMotivations(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, TDataBase ADataBase)
         {
             XmlDocument doc;
             TYml2Xml ymlFile;
@@ -3774,7 +3776,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in root)
             {
-                CreateMotivationGroup(ref AMainDS, ALedgerNumber, child);
+                CreateMotivationGroup(ref AMainDS, ALedgerNumber, child, ADataBase);
             }
         }
 
@@ -4298,7 +4300,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     SetupILTCostCentreHierarchy(ref MainDS, ANewLedgerNumber, Transaction);
                 }
 
-                ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
+                ImportDefaultMotivations(ref MainDS, ANewLedgerNumber, Transaction.DataBaseObj);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
                 // TODO: modify UI navigation yml file etc?

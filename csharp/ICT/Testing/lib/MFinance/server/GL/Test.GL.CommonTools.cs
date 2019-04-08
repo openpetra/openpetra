@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -46,25 +46,26 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_01_TLedgerInitFlagHandler()
         {
             bool blnOld = new TLedgerInitFlag(43, "RevalTest").IsSet;
+            TLedgerInitFlag flag = new TLedgerInitFlag(FLedgerNumber, "");
 
             new TLedgerInitFlag(FLedgerNumber, "RevalTest").IsSet = true;
             Assert.IsTrue(new TLedgerInitFlag(
                     FLedgerNumber, "RevalTest").IsSet, "Flag was set a line before");
-            TLedgerInitFlag.SetOrRemoveFlag(FLedgerNumber, "RevalTest", true);
+            flag.SetOrRemoveFlag("RevalTest", true);
             Assert.IsTrue(new TLedgerInitFlag(
                     FLedgerNumber, "RevalTest").IsSet, "Flag was set a line before");
             new TLedgerInitFlag(FLedgerNumber, "RevalTest").IsSet = false;
             Assert.IsFalse(new TLedgerInitFlag(
                     FLedgerNumber, "RevalTest").IsSet, "Flag was reset a line before");
-            TLedgerInitFlag.SetOrRemoveFlag(FLedgerNumber, "RevalTest", false);
+            flag.SetOrRemoveFlag("RevalTest", false);
             Assert.IsFalse(new TLedgerInitFlag(
                     FLedgerNumber, "RevalTest").IsSet, "Flag was reset a line before");
 
-            TLedgerInitFlag.SetFlagComponent(FLedgerNumber, "RevalTest", "A");
-            TLedgerInitFlag.SetFlagComponent(FLedgerNumber, "RevalTest", "B");
-            TLedgerInitFlag.SetFlagComponent(FLedgerNumber, "RevalTest", "C");
-            TLedgerInitFlag.RemoveFlagComponent(FLedgerNumber, "RevalTest", "B");
-            String NewVal = TLedgerInitFlag.GetFlagValue(FLedgerNumber, "RevalTest");
+            flag.SetFlagComponent("RevalTest", "A");
+            flag.SetFlagComponent("RevalTest", "B");
+            flag.SetFlagComponent("RevalTest", "C");
+            flag.RemoveFlagComponent("RevalTest", "B");
+            String NewVal = flag.GetFlagValue("RevalTest");
             Assert.IsTrue(NewVal == "A,C", "Flag Value of 'RevalTest' should be 'A,C' but is '" + NewVal + "'");
             new TLedgerInitFlag(FLedgerNumber, "RevalTest").IsSet = blnOld;
         }

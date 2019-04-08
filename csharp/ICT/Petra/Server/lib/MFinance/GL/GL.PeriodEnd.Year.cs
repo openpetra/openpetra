@@ -463,7 +463,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (DoExecuteableCode)
             {
                 yearEndBatch = new TCommonAccountingTool(FledgerInfo,
-                    Catalog.GetString("Financial year end processing"));
+                    Catalog.GetString("Financial year end processing"), FTransaction.DataBaseObj);
                 yearEndBatch.AddBaseCurrencyJournal();
                 yearEndBatch.JournalDescription = Catalog.GetString("YearEnd revaluations");
                 yearEndBatch.SubSystemCode = CommonAccountingSubSystemsEnum.GL;

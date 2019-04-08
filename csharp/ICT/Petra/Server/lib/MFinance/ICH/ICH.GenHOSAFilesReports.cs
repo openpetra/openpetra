@@ -78,6 +78,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="ACurrencySelect">Currency: B = base I = intl</param>
         /// <param name="AFileName">File name</param>
         /// <param name="AVerificationResult">Error messaging</param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if successful</returns>
         [RequireModulePermission("FINANCE-2")]
         public static bool GenerateHOSAFiles(int ALedgerNumber,
@@ -86,8 +87,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             string ACostCentre,
             String ACurrencySelect,
             string AFileName,
-            out TVerificationResultCollection AVerificationResult
-            )
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase)
         {
             bool Successful = false;
 
@@ -97,8 +98,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
             AVerificationResult = VerificationResult;
 
+            TDataBase db = DBAccess.Connect("GenerateHOSAFiles", ADataBase);
             TDBTransaction DBTransaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref DBTransaction,
                 delegate
@@ -133,9 +135,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     TableForExport.Columns.Add("IndividualDebitTotal", typeof(decimal));
                     TableForExport.Columns.Add("IndividualCreditTotal", typeof(decimal));
 
+                    TLedgerInfo info = new TLedgerInfo(ALedgerNumber, db);
+
                     string TableForExportHeader = "/** Header **" + "," +
                                                   APeriodNumber.ToString() + "," +
-                                                  TLedgerInfo.GetStandardCostCentre(ALedgerNumber) + "," +
+                                                  info.GetStandardCostCentre() + "," +
                                                   ACostCentre + "," +
                                                   DateTime.Today.ToShortDateString() + "," +
                                                   Currency;
@@ -157,7 +161,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     parameter.Value = ACostCentre;
                     parameters.Add(parameter);
 
-                    DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(strSql, "table", DBTransaction, parameters.ToArray());
+                    DataTable TmpTable = db.SelectDT(strSql, "table", DBTransaction, parameters.ToArray());
 
                     foreach (DataRow untypedTransRow in TmpTable.Rows)
                     {
@@ -183,7 +187,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 ACurrencySelect,
                                 AIchNumber,
                                 TableForExport,
-                                VerificationResult);
+                                VerificationResult,
+                                db);
                         }
 
                         /* Then see if there are any GL transactions to export */
@@ -202,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                          *      new OdbcParameter("ICHNumber2", (Int32)AIchNumber),
                          *      new OdbcParameter("PeriodNumber", (Int32)APeriodNumber)
                          *  };
-                         * DataTable TmpTransTable = DBAccess.GDBAccessObj.SelectDT(strSql, "Transactions", DBTransaction, SqlParams);
+                         * DataTable TmpTransTable = db.SelectDT(strSql, "Transactions", DBTransaction, SqlParams);
                          */
 
                         strSql = "SELECT Trans.a_ledger_number_i, Trans.a_batch_number_i, Trans.a_journal_number_i, Trans.a_transaction_number_i, " +
@@ -227,7 +232,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             APeriodNumber
                             );
 
-                        DataTable TmpTransTable = DBAccess.GDBAccessObj.SelectDT(strSql, "Transactions", DBTransaction);
+                        DataTable TmpTransTable = db.SelectDT(strSql, "Transactions", DBTransaction);
 
                         foreach (DataRow untypedTransactRow in TmpTransTable.Rows)
                         {
@@ -389,6 +394,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="AIchNumber">If !=0, only get gifts for this run number</param>
         /// <param name="AExportDataTable"></param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         [NoRemoting]
         [RequireModulePermission("FINANCE-2")]
         public static void ExportGifts(int ALedgerNumber,
@@ -401,7 +407,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             string ACurrencySelect,
             int AIchNumber,
             DataTable AExportDataTable,
-            TVerificationResultCollection AVerificationResult)
+            TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase)
         {
             /* Define local variables */
             bool FirstLoopFlag = true;
@@ -420,10 +427,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             //Find and total each gift transaction
 
             TDBTransaction DBTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ExportGifts", ADataBase);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref DBTransaction,
+            db.ReadTransaction(ref DBTransaction,
                 delegate
                 {
                     String IchNumberFilter = "";
@@ -473,7 +479,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                    " GiftDetail.a_motivation_detail_code_c ASC;";
 
 
-                    DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(Query, "table", DBTransaction);
+                    DataTable TmpTable = db.SelectDT(Query, "table", DBTransaction);
 
                     foreach (DataRow Row in TmpTable.Rows)
                     {
@@ -679,7 +685,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
          *                                " AND PUB_a_batch.a_ledger_number_i = PUB_a_journal.a_ledger_number_i" +
          *                                " AND PUB_a_batch.a_batch_number_i = PUB_a_journal.a_batch_number_i";
          *
-         *          DBAccess.GDBAccessObj.SelectDT(AJournal, JournalQuery, DBTransaction);
+         *          db.SelectDT(AJournal, JournalQuery, DBTransaction);
          *
          *          String TransactionQuery = "SELECT PUB_a_transaction.* FROM PUB_a_batch, PUB_a_transaction WHERE " +
          *                                    "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
@@ -689,7 +695,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
          *                                    " AND PUB_a_batch.a_ledger_number_i = PUB_a_transaction.a_ledger_number_i" +
          *                                    " AND PUB_a_batch.a_batch_number_i = PUB_a_transaction.a_batch_number_i";
          *
-         *          DBAccess.GDBAccessObj.SelectDT(ATransaction, TransactionQuery, DBTransaction);
+         *          db.SelectDT(ATransaction, TransactionQuery, DBTransaction);
          *
          *          String CostCentreQuery = "SELECT * FROM a_cost_centre WHERE " +
          *                                   ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber +
@@ -697,7 +703,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
          *                                   " AND " + ACostCentreTable.GetCostCentreTypeDBName() + " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
          *                                   " ORDER BY " + ACostCentreTable.GetCostCentreCodeDBName();
          *
-         *          DBAccess.GDBAccessObj.SelectDT(ACostCentre, CostCentreQuery, DBTransaction);
+         *          db.SelectDT(ACostCentre, CostCentreQuery, DBTransaction);
          *
          *          //Iterate through the cost centres
          *          foreach (ACostCentreRow CostCentreRow in ACostCentre.Rows)

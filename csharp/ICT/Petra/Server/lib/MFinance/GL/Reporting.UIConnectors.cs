@@ -387,7 +387,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string GetLedgerName(int ALedgerNumber)
         {
-            return TLedgerInfo.GetLedgerNameUsingSeparateDb(ALedgerNumber);
+            TLedgerInfo info = new TLedgerInfo(ALedgerNumber);
+            return info.GetLedgerName();
         }
 
         /// <summary>
@@ -1383,7 +1384,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String PeriodFilter = " AND glmp.a_period_number_i<=" + LastPeriod;
                     String isEndPeriod = "Period=" + ReportPeriodEnd;
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
-                    String is12MothsBeforeEnd = "Period=" + (ReportPeriodEnd - 12);
                     String isLastPeriod = "Period=" + NumberOfAccountingPeriods;
 
                     String ActualYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND " + isEndPeriod + " THEN ActualGLM ELSE 0 END) AS ActualTemp, ";

@@ -1416,7 +1416,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             Transaction.Rollback();
             Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
-            GLBatchTDS GLDS = TGLPosting.CreateABatch(ALedgerNumber, Transaction, true);
+            GLBatchTDS GLDS = TGLPosting.CreateABatch(ALedgerNumber, db, true);
 
             ABatchRow glbatchRow = GLDS.ABatch[0];
             glbatchRow.BatchPeriod = BatchPeriod;
@@ -1526,7 +1526,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             TVerificationResultCollection VerificationResult;
 
             TSubmitChangesResult result = TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDS,
-                out VerificationResult, Transaction);
+                out VerificationResult, db);
 
             if (result == TSubmitChangesResult.scrOK)
             {

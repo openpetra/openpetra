@@ -67,8 +67,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_YearEnd()
         {
             intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            TDataBase db = DBAccess.Connect("Test_YearEnd");
+            TDBTransaction OverallTransaction = db.BeginTransaction(IsolationLevel.Serializable);
 
-            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber, db);
             Assert.AreEqual(0, LedgerInfo.CurrentFinancialYear, "Before YearEnd, we should be in year 0");
 
             TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
@@ -79,7 +81,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
 
             TCommonAccountingTool commonAccountingTool =
-                new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+                new TCommonAccountingTool(intLedgerNumber, "NUNIT", db);
             commonAccountingTool.AddBaseCurrencyJournal();
             commonAccountingTool.JournalDescription = "Test Data accounts";
             string strAccountGift = "0200";
@@ -118,10 +120,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountBank, "4303", "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 200);
 
-            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
-
-
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+
+            commonAccountingTool.CloseSaveAndPost(verificationResult, db); // returns true if posting seemed to work
 
             bool blnLoop = true;
 
@@ -141,7 +142,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                         intLedgerNumber, false,
                         out glBatchNumbers,
                         out stewardshipBatch,
-                        out VerificationResult);
+                        out VerificationResult,
+                        db);
                     CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                         "Running MonthEnd gave critical error");
                 }
@@ -163,12 +165,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             List <Int32>glBatches = new List <int>();
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("Test_YearEnd");
             bool SubmissionOK = false;
 
-            db.GetNewOrExistingAutoTransaction(
-                IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref transaction,
                 ref SubmissionOK,
                 delegate
@@ -205,6 +204,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 out verificationResult, db);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd should not have critical errors");
+
+            OverallTransaction.Commit();
+            OverallTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ++intYear;
             // check after year end that income and expense accounts are 0, bank account remains
@@ -250,31 +252,37 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
-            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            TDataBase db = DBAccess.Connect("Test_2YearEnds");
 
             for (int countYear = 0; countYear < 2; countYear++)
             {
                 TLogging.Log("preparing year number " + countYear.ToString());
 
+                TDBTransaction TestBatchTransaction = db.BeginTransaction(IsolationLevel.Serializable, -1, "Test_2YearEnds.PeriodEnd");
+
                 // accounting one gift
                 string strAccountGift = "0200";
                 string strAccountBank = "6200";
                 TCommonAccountingTool commonAccountingTool =
-                    new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+                    new TCommonAccountingTool(intLedgerNumber, "NUNIT", db);
                 commonAccountingTool.AddBaseCurrencyJournal();
                 commonAccountingTool.JournalDescription = "Test Data accounts";
                 commonAccountingTool.AddBaseCurrencyTransaction(
                     strAccountBank, "4301", "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
                 commonAccountingTool.AddBaseCurrencyTransaction(
                     strAccountGift, "4301", "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
-                Boolean PostedOk = commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
+                TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+                Boolean PostedOk = commonAccountingTool.CloseSaveAndPost(verificationResult, db); // returns true if posting seemed to work
                 Assert.AreEqual(true, PostedOk, "Test batch can't be posted");
+
+                TestBatchTransaction.Commit();
 
                 bool blnLoop = true;
 
                 while (blnLoop)
                 {
-                    //                  System.Windows.Forms.MessageBox.Show(LedgerInfo.CurrentPeriod.ToString(), "MonthEnd Period");
+                    TDBTransaction PeriodEndTransaction = db.BeginTransaction(IsolationLevel.Serializable, -1, "Test_2YearEnds.PeriodEnd");
+                    TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber, db);
 
                     if (LedgerInfo.ProvisionalYearEndFlag)
                     {
@@ -291,27 +299,31 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                             false,
                             out glBatchNumbers,
                             out stewardshipBatch,
-                            out VerificationResult);
+                            out VerificationResult,
+                            db);
                         CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                             "MonthEnd gave critical error at Period" + LedgerInfo.CurrentPeriod + ":\r\n");
                     }
+
+                    PeriodEndTransaction.Commit();
                 }
 
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("Test_2YearEnds");
                 bool SubmissionOK = false;
 
-                db.GetNewOrExistingAutoTransaction(
-                    IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref transaction,
                     ref SubmissionOK,
                     delegate
                     {
+                        TLogging.Log("before problem");
+                        TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber, db);
+                        TLogging.Log("after problem");
+
                         TLogging.Log("Closing year number " + countYear.ToString());
                         List <Int32>glBatches = new List <int>();
                         TReallocation reallocation = new TReallocation(LedgerInfo, glBatches, transaction);
-                        TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+                        verificationResult = new TVerificationResultCollection();
                         reallocation.VerificationResultCollection = verificationResult;
                         reallocation.IsInInfoMode = false;
                         //                Assert.AreEqual(1, reallocation.GetJobSize(), "Check 1 reallocation job is required"); // No job size is published by Reallocation
@@ -328,7 +340,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     });
             }
 
-            Assert.AreEqual(2, LedgerInfo.CurrentFinancialYear, "After YearEnd, Ledger is in year 2");
+            TLedgerInfo LedgerInfo2 = new TLedgerInfo(intLedgerNumber, db);
+            Assert.AreEqual(2, LedgerInfo2.CurrentFinancialYear, "After YearEnd, Ledger is in year 2");
 
             TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
             Assert.AreEqual(new DateTime(DateTime.Now.Year + 2,

@@ -317,12 +317,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Int32 forexBatchNumber;
             List <Int32>glBatchNumbers;
             Boolean stewardshipBatch;
+            TLedgerInfo ledgerinfo = new TLedgerInfo(FLedgerNumber);
 
             Boolean revalueOk = TRevaluationWebConnector.Revaluate(FLedgerNumber,
                 new string[] { strAccountGift },
                 new string[] { "GBP" },
                 new decimal[] { 1.2m },
-                TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
+                ledgerinfo.GetStandardCostCentre(),
                 out forexBatchNumber,
                 out verificationResult);
 

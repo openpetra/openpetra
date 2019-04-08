@@ -2870,10 +2870,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// creates the GL batch needed for posting the gift batch
         /// </summary>
-        private static GLBatchTDS CreateGLBatchAndTransactionsForPostingGifts(Int32 ALedgerNumber, ref GiftBatchTDS AGiftDataset, TDBTransaction ATransaction)
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPostingGifts(Int32 ALedgerNumber, ref GiftBatchTDS AGiftDataset, TDataBase ADataBase = null)
         {
             // create one GL batch without a journal
-            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ATransaction, false);
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ADataBase, false);
 
             ABatchRow batch = GLDataset.ABatch[0];
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
@@ -4276,13 +4276,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
-            string LedgerBaseCurrency = TLedgerInfo.GetLedgerBaseCurrency(ALedgerNumber);
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TLedgerInfo info = new TLedgerInfo(ALedgerNumber, db);
+            string LedgerBaseCurrency = info.GetLedgerBaseCurrency();
             int NumDecPlaces = 2;
 
             try
             {
-                TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("GiftTransactions");
                 //Round AFeeAmount
 
                 /* 0003 Finds for ledger base currency format, for report currency format */
@@ -4826,7 +4827,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //TVerificationResultCollection VerificationResult = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
+            bool SubmissionOK = false;
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Posting gift batches"),
@@ -4836,7 +4837,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                db.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -4868,7 +4869,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 AGiftBatchNumbers.IndexOf(BatchNumber) * 3 + 1);
 
                             // create GL batch
-                            GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS, Transaction);
+                            GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS, db);
 
                             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -4889,7 +4890,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             // save the batch (or delete if it is not actually needed)
                             if (GLBatchNotRequired || (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                                                           out SingleVerificationResultCollection, Transaction) == TSubmitChangesResult.scrOK))
+                                                           out SingleVerificationResultCollection, db) == TSubmitChangesResult.scrOK))
                             {
                                 if (!GLBatchNotRequired)  // i.e. GL batch is required and saved OK
                                 {
@@ -4947,12 +4948,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
                             // Transaction will be rolled back, no open GL batch flying around
-                            SubmissionOK = TSubmitChangesResult.scrOK;
+                            SubmissionOK = true;
                         }
                         else
                         {
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
-                            SubmissionOK = TSubmitChangesResult.scrOK;
+                            SubmissionOK = true;
 
                             //
                             // I previously used "Client Tasks" to print the Batch Detail report on the client,
@@ -5002,7 +5003,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AVerifications = VerificationResult;
 
-            return SubmissionOK == TSubmitChangesResult.scrOK;
+            return SubmissionOK;
         }
 
         /// <summary>

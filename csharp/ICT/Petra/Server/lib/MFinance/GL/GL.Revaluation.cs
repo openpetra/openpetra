@@ -96,6 +96,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class CLSRevaluation
     {
+        private TDataBase FDataBase = null;
         private int F_LedgerNum;
         private int F_AccountingPeriod;
         private string[] F_ForeignAccount;
@@ -123,7 +124,8 @@ namespace Ict.Petra.Server.MFinance.GL
             string[] AForeignAccount,
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate,
-            String ACostCentre)
+            String ACostCentre,
+            TDataBase ADataBase = null)
         {
             F_LedgerNum = ALedgerNum;
             F_ForeignAccount = AForeignAccount;
@@ -131,6 +133,7 @@ namespace Ict.Petra.Server.MFinance.GL
             F_ExchangeRate = ANewExchangeRate;
             F_CostCentre = ACostCentre;
             FVerificationCollection = new TVerificationResultCollection();
+            FDataBase = ADataBase;
         }
 
         /// <summary>
@@ -153,7 +156,7 @@ namespace Ict.Petra.Server.MFinance.GL
             glBatchNumber = -1;
             try
             {
-                TLedgerInfo ledger = new TLedgerInfo(F_LedgerNum);
+                TLedgerInfo ledger = new TLedgerInfo(F_LedgerNum, FDataBase);
                 F_BaseCurrency = ledger.BaseCurrency;
                 F_BaseCurrencyDigits = new TCurrencyInfo(F_BaseCurrency).digits;
                 F_RevaluationAccCode = ledger.RevaluationAccount;
@@ -161,7 +164,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 F_AccountingPeriod = ledger.CurrentPeriod;
 
                 TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("RunRevaluation");
+                FDataBase = DBAccess.Connect("RunRevaluation", FDataBase);
 
                 AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
                 AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
@@ -173,7 +176,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
                 {
                     glmTemplate.AccountCode = F_ForeignAccount[i];
-                    db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    FDataBase.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         ref Transaction,
                         delegate
                         {
@@ -203,9 +206,10 @@ namespace Ict.Petra.Server.MFinance.GL
                                 TResultSeverity.Resv_Status));
                     }
 
+                    TLedgerInitFlag flag = new TLedgerInitFlag(F_LedgerNum, "", FDataBase);
                     for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
                     {
-                        TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
+                        flag.RemoveFlagComponent(MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
                     }
                 }
                 else
@@ -228,15 +232,15 @@ namespace Ict.Petra.Server.MFinance.GL
         private Boolean RevaluateAccount(AGeneralLedgerMasterTable AGlmTbl, decimal AExchangeRate, string ACurrencyCode)
         {
             Boolean transactionsWereCreated = false;
+            TDBTransaction transaction = new TDBTransaction();
+            FDataBase = DBAccess.Connect("RevaluateAccount", FDataBase);
+            TLedgerInitFlag flag = new TLedgerInitFlag(F_LedgerNum, "", FDataBase);
 
             foreach (AGeneralLedgerMasterRow glmRow in AGlmTbl.Rows)
             {
                 AGeneralLedgerMasterPeriodTable glmpTbl = null;
 
-                TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("RevaluateAccount");
-
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                FDataBase.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
                     delegate
@@ -282,7 +286,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             AExchangeRate);
                         FVerificationCollection.Add(new TVerificationResult(
                                 strStatusContent, strMessage, TResultSeverity.Resv_Status));
-                        TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, glmRow.AccountCode);
+                        flag.RemoveFlagComponent(MFinanceConstants.LEDGER_INIT_FLAG_REVAL, glmRow.AccountCode);
                     }
                 }
                 catch (EVerificationException terminate)
@@ -328,7 +332,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void InitBatchAndJournal(decimal AExchangeRate, string ACurrencyCode)
         {
-            F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum, new TDBTransaction(), false);
+            F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum, FDataBase, false);
             F_batch = F_GLDataset.ABatch[0];
             F_batch.BatchDescription = Catalog.GetString("Period end revaluations");
 
@@ -399,7 +403,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 F_batch.BatchDebitTotal = F_journal.JournalDebitTotal;
                 TVerificationResultCollection AVerifications;
                 blnReturnValue = (TGLTransactionWebConnector.SaveGLBatchTDS(
-                                      ref F_GLDataset, out AVerifications, new TDBTransaction()) == TSubmitChangesResult.scrOK);
+                                      ref F_GLDataset, out AVerifications, FDataBase) == TSubmitChangesResult.scrOK);
 
                 if (!blnReturnValue)
                 {
@@ -408,8 +412,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 F_GLDataset.AcceptChanges();
 
-                blnReturnValue = (TGLTransactionWebConnector.PostGLBatch(
-                                      F_batch.LedgerNumber, F_batch.BatchNumber, out AVerifications));
+                blnReturnValue = (TGLPosting.PostGLBatch(
+                                      F_batch.LedgerNumber, F_batch.BatchNumber, out AVerifications, FDataBase));
 
                 if (blnReturnValue)
                 {

@@ -41,6 +41,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TCommonAccountingTool
     {
+        private TDataBase FDataBase = null;
         private GLBatchTDS FBatchTDS = null;
         private ABatchRow FBatchRow;
         Int32 FBatchNumber;
@@ -65,10 +66,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ABatchDescription">a batch description text</param>
+        /// <param name="ADataBase"></param>
         public TCommonAccountingTool(int ALedgerNumber,
-            string ABatchDescription)
+            string ABatchDescription, TDataBase ADataBase = null)
         {
             FLedgerInfo = new TLedgerInfo(ALedgerNumber);
+            FDataBase = ADataBase;
             TCommonAccountingTool_(ABatchDescription);
         }
 
@@ -78,15 +81,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerInfo">The ledger-info object</param>
         /// <param name="ABatchDescription">the description text ...</param>
-        public TCommonAccountingTool(TLedgerInfo ALedgerInfo, string ABatchDescription)
+        /// <param name="ADataBase"></param>
+        public TCommonAccountingTool(TLedgerInfo ALedgerInfo, string ABatchDescription, TDataBase ADataBase = null)
         {
             FLedgerInfo = ALedgerInfo;
+            FDataBase = ADataBase;
             TCommonAccountingTool_(ABatchDescription);
         }
 
         private void TCommonAccountingTool_(string ABatchDescription)
         {
-            FBatchTDS = TGLPosting.CreateABatch(FLedgerInfo.LedgerNumber, new TDBTransaction());
+            FBatchTDS = TGLPosting.CreateABatch(FLedgerInfo.LedgerNumber, FDataBase);
             FBaseCurrencyInfo = new TCurrencyInfo(FLedgerInfo.BaseCurrency);
             FBatchRow = FBatchTDS.ABatch[0];
             FBatchRow.BatchDescription = ABatchDescription;
@@ -429,7 +434,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             FBatchTDS.ThrowAwayAfterSubmitChanges = true;
-            GLBatchTDSAccess.SubmitChanges(FBatchTDS);
+            GLBatchTDSAccess.SubmitChanges(FBatchTDS, ADataBase);
 
             Boolean PostedOk = TGLPosting.PostGLBatch(
                 FLedgerInfo.LedgerNumber, FBatchNumber, out AVerifications, ADataBase);

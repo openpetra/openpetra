@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
-            return TGLPosting.CreateABatch(ALedgerNumber, new TDBTransaction(), true);
+            return TGLPosting.CreateABatch(ALedgerNumber, DBAccess.Connect("CreateABatch"), true);
         }
 
         /// <summary>
@@ -2767,7 +2767,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult, TDBTransaction ATransaction)
+            out TVerificationResultCollection AVerificationResult, TDataBase ADataBase)
         {
             AVerificationResult = new TVerificationResultCollection();
             TVerificationResultCollection VerificationResult = AVerificationResult;
@@ -2825,23 +2825,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             List <Int32>ListAllGLBatchesToProcess = new List <int>();
             Int32 LedgerNumber = -1;
 
-            TDataBase db;
-            TDBTransaction Transaction;
-            if (ATransaction.Valid)
-            {
-                Transaction = ATransaction;
-                db = ATransaction.DataBaseObj;
-            }
-            else
-            {
-                db = DBAccess.Connect("SaveGLBatchTDS");
-                Transaction = new TDBTransaction();
-            }
+            TDataBase db = DBAccess.Connect("SaveGLBatchTDS", ADataBase);
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmitOK = false;
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
+                    ref SubmitOK,
                     delegate
                     {
                         if (GLBatchTableInDataSet)
@@ -3096,6 +3088,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 }
                             }
                         }
+                        SubmitOK = true;
                     });
             }
             catch (Exception ex)
@@ -3146,7 +3139,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ABatchStatus,
             Decimal ABatchCreditTotal,
             Decimal ABatchDebitTotal,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             GLBatchTDS MainDS;
 
@@ -3171,7 +3165,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
                 }
                 catch (Exception)
                 {
@@ -3211,7 +3205,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool ADebitCreditIndicator,
             string AAccountCode,
             string ACostCentreCode,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             GLBatchTDS MainDS;
             AVerificationResult = new TVerificationResultCollection();
@@ -3239,7 +3234,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
                 }
                 catch (Exception)
                 {
@@ -3268,7 +3263,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
                 }
                 catch (Exception)
                 {
@@ -3293,7 +3288,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 try
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, new TDBTransaction());
+                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
                 }
                 catch (Exception)
                 {
@@ -5239,7 +5234,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string GetStandardCostCentre(Int32 ALedgerNumber)
         {
-            return TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+            TLedgerInfo info = new TLedgerInfo(ALedgerNumber, null);
+            return info.GetStandardCostCentre();
         }
 
         /// <summary>

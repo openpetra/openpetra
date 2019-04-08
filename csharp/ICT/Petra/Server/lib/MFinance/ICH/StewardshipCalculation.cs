@@ -72,12 +72,14 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="AgeneratedBatches">The Client should print these batches.</param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if calculation succeeded, otherwise false.</returns>
         [RequireModulePermission("FINANCE-2")]
         public static bool PerformStewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
             out List <Int32>AgeneratedBatches,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             /*
              *          if (TLogging.DL >= 9)
@@ -93,7 +95,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             TVerificationResultCollection VerificationResult = AVerificationResult;
 
             TDBTransaction DBTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("PerformStewardshipCalculation");
+            TDataBase db = DBAccess.Connect("PerformStewardshipCalculation", ADataBase);
             bool SubmissionOK = false;
 
             try
@@ -595,7 +597,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 string incomeAccounts = string.Empty;
                 string expenseAccounts = string.Empty;
 
-                string standardCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+                TLedgerInfo info = new TLedgerInfo(ALedgerNumber, ADBTransaction.DataBaseObj);
+                string standardCostCentre = info.GetStandardCostCentre();
 
                 int currentFinancialYear = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ADBTransaction)[0].CurrentFinancialYear;
                 DateTime periodStartDate;

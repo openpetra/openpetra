@@ -134,7 +134,8 @@ namespace Tests.MFinance.Server.ICH
                 CostCentre,
                 CurrencySelect,
                 FileName,
-                out VerificationResults);
+                out VerificationResults,
+                DBAccess.Connect("TestGenerateHOSAFiles"));
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "HOSA File Generation Failed!");
@@ -219,7 +220,8 @@ namespace Tests.MFinance.Server.ICH
                 Base,
                 IchNumber,
                 TableForExport,
-                VerificationResults);
+                VerificationResults,
+                DBAccess.Connect("TestGenerateHOSAFiles"));
 
             TableForExport.AcceptChanges();
 

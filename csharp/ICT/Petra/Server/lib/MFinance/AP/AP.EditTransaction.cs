@@ -619,15 +619,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="APostingDate"></param>
         /// <param name="Reversal"></param>
         /// <param name="APDataset"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>Batch for posting</returns>
         private static GLBatchTDS CreateGLBatchAndTransactionsForPosting(
             Int32 ALedgerNumber,
             DateTime APostingDate,
             Boolean Reversal,
-            ref AccountsPayableTDS APDataset)
+            ref AccountsPayableTDS APDataset,
+            TDataBase ADataBase = null)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, new TDBTransaction(), false);
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ADataBase, false);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -1040,7 +1042,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             Boolean WillCommit = true;
             Boolean MustBeApproved;
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref HighLevelTransaction, ref WillCommit,
+            db.WriteTransaction(ref HighLevelTransaction, ref WillCommit,
                 delegate
                 {
                     AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal,
@@ -1053,13 +1055,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         return; // This is returning from the AutoTransaction, not from the whole method.
                     }
 
-                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS);
+                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS, db);
 
                     batch = GLDataset.ABatch[0];
 
                     // save the batch
                     if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                            out ResultsCollection, HighLevelTransaction) != TSubmitChangesResult.scrOK)
+                            out ResultsCollection, db) != TSubmitChangesResult.scrOK)
                     {
                         PostingWorkedOk = false;
                     }
@@ -1142,11 +1144,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APostingDate"></param>
         /// <param name="APDataset"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset, TDataBase ADataBase = null)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, new TDBTransaction(), false);
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ADataBase, false);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -1210,7 +1213,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             // Add a journal for each currency/exchangeRate, and the transactions.
             // Most likely only one currency/exchangeRate will be used!
-
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
             {
                 String StandardCostCentre = TLedgerInfo.GetStandardCostCentre(batch.LedgerNumber);
@@ -1747,19 +1749,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     // create GL batch
                     GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPaying(MainDS.AApPayment[0].LedgerNumber,
                         APostingDate,
-                        ref MainDS);
+                        ref MainDS,
+                        db);
 
                     batch = GLDataset.ABatch[0];
 
                     // save the batch
                     PostingWorkedOk = (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                                           out VerificationResult, transaction) == TSubmitChangesResult.scrOK);
+                                           out VerificationResult, db) == TSubmitChangesResult.scrOK);
 
                     if (PostingWorkedOk)
                     {
                         // post the batch
                         PostingWorkedOk = TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
-                            out VerificationResult);
+                            out VerificationResult, db);
                     }
 
                     if (!PostingWorkedOk)
