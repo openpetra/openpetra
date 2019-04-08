@@ -68,7 +68,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TDataBase db = DBAccess.Connect("Test_YearEnd");
-            TDBTransaction OverallTransaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber, db);
             Assert.AreEqual(0, LedgerInfo.CurrentFinancialYear, "Before YearEnd, we should be in year 0");
@@ -79,6 +78,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     1), periodInfo.PeriodStartDate, "Calendar from base database should start with January 1st of this year");
 
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
+
+            TDBTransaction TestBatchTransaction = db.BeginTransaction(IsolationLevel.Serializable, -1, "Test_YearEnd.PrepareBatches");
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(intLedgerNumber, "NUNIT", db);
@@ -124,11 +125,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             commonAccountingTool.CloseSaveAndPost(verificationResult, db); // returns true if posting seemed to work
 
+            TestBatchTransaction.Commit();
+
             bool blnLoop = true;
 
             while (blnLoop)
             {
-                if (LedgerInfo.ProvisionalYearEndFlag)
+                TDBTransaction PeriodEndTransaction = db.BeginTransaction(IsolationLevel.Serializable, -1, "Test_2YearEnds.PeriodEnd");
+                TLedgerInfo LedgerInfo2 = new TLedgerInfo(intLedgerNumber, db);
+
+                if (LedgerInfo2.ProvisionalYearEndFlag)
                 {
                     blnLoop = false;
                 }
@@ -147,6 +153,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                         "Running MonthEnd gave critical error");
                 }
+
+                PeriodEndTransaction.Commit();
             }
 
             // check before year end that income and expense accounts are not 0
@@ -159,7 +167,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 100, 0, 200, 0, 300, 0);
 
             // test that we cannot post to period 12 anymore, all periods are closed?
-            LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            LedgerInfo = new TLedgerInfo(intLedgerNumber, db);
             Assert.AreEqual(true, LedgerInfo.ProvisionalYearEndFlag, "Provisional YearEnd flag should be set");
 
 
@@ -198,6 +206,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd test should not have critical errors");
 
+            transaction = db.BeginTransaction(IsolationLevel.Serializable);
             // now run for real
             TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, false,
                 out glBatches,
@@ -205,8 +214,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd should not have critical errors");
 
-            OverallTransaction.Commit();
-            OverallTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            transaction.Commit();
+            transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ++intYear;
             // check after year end that income and expense accounts are 0, bank account remains
@@ -242,6 +251,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(new DateTime(DateTime.Now.Year + 1,
                     1,
                     1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
+            transaction.Rollback();
         }
 
         /// <summary>
@@ -258,7 +268,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             {
                 TLogging.Log("preparing year number " + countYear.ToString());
 
-                TDBTransaction TestBatchTransaction = db.BeginTransaction(IsolationLevel.Serializable, -1, "Test_2YearEnds.PeriodEnd");
+                TDBTransaction TestBatchTransaction = db.BeginTransaction(IsolationLevel.Serializable, -1, "Test_2YearEnds.PrepareBatches");
 
                 // accounting one gift
                 string strAccountGift = "0200";
@@ -489,39 +499,46 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("Test_TAccountPeriodToNewYear");
             bool SubmissionOK = false;
+            TAccountPeriodToNewYear accountPeriodToNewYear = null;
 
-            db.GetNewOrExistingAutoTransaction(
-                IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref transaction,
                 ref SubmissionOK,
                 delegate
                 {
                     // We are in 2010 and this and 2011 is not a leap year
                     TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-                    TAccountPeriodToNewYear accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010, transaction);
+                    accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010, transaction);
 
                     accountPeriodToNewYear.VerificationResultCollection = verificationResult;
                     accountPeriodToNewYear.IsInInfoMode = false;
 
                     // RunEndOfPeriodOperation ...
                     accountPeriodToNewYear.RunOperation();
+                    SubmissionOK = true;
+                });
 
-                    TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
-                    accountPeriodInfo.AccountingPeriodNumber = 2;
-                    Assert.AreEqual(2011, accountPeriodInfo.PeriodStartDate.Year, "Test of the year");
-                    Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
+            TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
+            accountPeriodInfo.AccountingPeriodNumber = 2;
+            Assert.AreEqual(2011, accountPeriodInfo.PeriodStartDate.Year, "Test of the year");
+            Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
 
+            SubmissionOK = false;
+            db.WriteTransaction(
+                ref transaction,
+                ref SubmissionOK,
+                delegate
+                {
                     // Switch to 2012 - this is a leap year ...
                     accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010, transaction);
                     accountPeriodToNewYear.IsInInfoMode = false;
                     accountPeriodToNewYear.RunOperation();
                     SubmissionOK = true;
-
-                    accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
-                    accountPeriodInfo.AccountingPeriodNumber = 2;
-                    Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
                 });
+
+            accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
+            accountPeriodInfo.AccountingPeriodNumber = 2;
+            Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
         }
 
         /// <summary>
