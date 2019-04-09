@@ -565,7 +565,7 @@ namespace Ict.Common.DB
             {
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
-                    TLogging.Log("    Closing Database connection..." + GetDBConnectionIdentifier());
+                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO, "    Closing Database connection..." + GetDBConnectionIdentifier());
                 }
 
                 if (!ASuppressThreadCompatibilityCheck)

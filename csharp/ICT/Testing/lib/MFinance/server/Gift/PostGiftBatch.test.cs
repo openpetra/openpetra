@@ -1086,31 +1086,13 @@ namespace Tests.MFinance.Server.Gift
             // Prepare Gift Batch For Posting with batch number less than 1
             try
             {
-                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(1, -1, ref Transaction, out VerificationResult);
+                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(43, -1, ref Transaction, out VerificationResult);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)
             {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(43, e.LedgerNumber, Message);
                 Assert.AreEqual(-1, e.BatchNumber, Message);
-            }
-            catch
-            {
-                Assert.Fail(Message);
-            }
-
-            Message = "Validation failed for PrepareGiftBatchForPosting with null transaction.";
-
-            // Prepare Gift Batch For Posting with null transaction
-            try
-            {
-                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(1, 1, ref Transaction, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemDBTransactionNullException e)
-            {
-                Assert.AreEqual("Function:Prepare Gift Batch For Posting - Database Transaction must not be NULL!", e.Message,
-                    Message);
             }
             catch
             {
@@ -1149,31 +1131,13 @@ namespace Tests.MFinance.Server.Gift
             // Load Gift Batch with batch number less than 1
             try
             {
-                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(1, -1, Transaction, out ChangesToCommit);
+                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(43, -1, Transaction, out ChangesToCommit);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)
             {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(43, e.LedgerNumber, Message);
                 Assert.AreEqual(-1, e.BatchNumber, Message);
-            }
-            catch
-            {
-                Assert.Fail(Message);
-            }
-
-            Message = "Validation failed for LoadAGiftBatchAndRelatedData with null transaction.";
-
-            // Load Gift Batch with null transaction
-            try
-            {
-                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(1, 1, Transaction, out ChangesToCommit);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemDBTransactionNullException e)
-            {
-                Assert.AreEqual("Function:Load A Gift Batch And Related Data - Database Transaction must not be NULL!", e.Message,
-                    Message);
             }
             catch
             {
