@@ -769,6 +769,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Int64 PartnerKey;
 
             TDataBase db = DBAccess.Connect("TestDeleteBank");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
@@ -776,6 +777,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             BankPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create bank record");
+
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // check if Bank partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage);
@@ -795,7 +799,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details));
             BankingDetailsTable.Rows.Add(BankingDetailsRow);
 
-            TDBTransaction Transaction = new TDBTransaction();
+            Transaction.Commit();
+
             bool SubmitOK = false;
             db.WriteTransaction(ref Transaction, ref SubmitOK,
                 delegate
