@@ -87,7 +87,8 @@ namespace Tests.MPartner.Server.PartnerEdit
         [Test]
         public void TestSaveNewPartnerWithLocation()
         {
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestSaveNewPartnerWithLocation");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -117,7 +118,9 @@ namespace Tests.MPartner.Server.PartnerEdit
         [Test]
         public void TestNewPartnerWithLocation0()
         {
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestNewPartnerWithLocation0");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -139,6 +142,9 @@ namespace Tests.MPartner.Server.PartnerEdit
                 "There was a critical error when saving:");
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create a partner with location 0");
+
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 
@@ -169,6 +175,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             Assert.AreEqual(1, MainDS.PPartnerLocation.Rows.Count, "the partner should only have one location in the dataset");
 
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             // get all addresses of the partner
             TDBTransaction ReadTransaction = new TDBTransaction();
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
@@ -187,7 +196,8 @@ namespace Tests.MPartner.Server.PartnerEdit
         [Test]
         public void TestSaveNewPartnerWithExistingLocation()
         {
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestSaveNewPartnerWithExistingLocation");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -242,7 +252,8 @@ namespace Tests.MPartner.Server.PartnerEdit
         [Ignore("Ignore this test for the moment")]
         public void TestFamilyPropagateNewLocation()
         {
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestFamilyPropagateNewLocation");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -336,13 +347,19 @@ namespace Tests.MPartner.Server.PartnerEdit
             TSubmitChangesResult result;
             Int64 PartnerKey;
 
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestDeleteFamily");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             FamilyPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create family record");
+
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // check if Family partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
@@ -368,6 +385,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             result = connector.SubmitChanges(ref PersonDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create person record");
 
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
 
             if (TextMessage.Length > 0)
@@ -380,12 +400,12 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // create new family and create subscription given as gift from this family: not allowed to be deleted
             FamilyPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
-            PPublicationTable PublicationTable = PPublicationAccess.LoadByPrimaryKey("TESTPUBLICATION", DBAccess.GDBAccessObj.Transaction);
+            PPublicationTable PublicationTable = PPublicationAccess.LoadByPrimaryKey("TESTPUBLICATION", Transaction);
 
             if (PublicationTable.Count == 0)
             {
                 // first check if frequency "Annual" exists and if not then create it
-                if (!AFrequencyAccess.Exists("Annual", DBAccess.GDBAccessObj.Transaction))
+                if (!AFrequencyAccess.Exists("Annual", Transaction))
                 {
                     // set up details (e.g. bank account) for this Bank so deletion is not allowed
                     AFrequencyTable FrequencyTable = new AFrequencyTable();
@@ -394,7 +414,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                     FrequencyRow.FrequencyDescription = "Annual Frequency";
                     FrequencyTable.Rows.Add(FrequencyRow);
 
-                    AFrequencyAccess.SubmitChanges(FrequencyTable, DBAccess.GDBAccessObj.Transaction);
+                    AFrequencyAccess.SubmitChanges(FrequencyTable, Transaction);
                 }
 
                 // now add the publication "TESTPUBLICATION"
@@ -403,11 +423,11 @@ namespace Tests.MPartner.Server.PartnerEdit
                 PublicationRow.FrequencyCode = "Annual";
                 PublicationTable.Rows.Add(PublicationRow);
 
-                PPublicationAccess.SubmitChanges(PublicationTable, DBAccess.GDBAccessObj.Transaction);
+                PPublicationAccess.SubmitChanges(PublicationTable, Transaction);
             }
 
             // make sure that "reason subscription given" exists
-            if (!PReasonSubscriptionGivenAccess.Exists("FREE", DBAccess.GDBAccessObj.Transaction))
+            if (!PReasonSubscriptionGivenAccess.Exists("FREE", Transaction))
             {
                 // set up details (e.g. bank account) for this Bank so deletion is not allowed
                 PReasonSubscriptionGivenTable ReasonTable = new PReasonSubscriptionGivenTable();
@@ -416,7 +436,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 ReasonRow.Description = "Free Subscription";
                 ReasonTable.Rows.Add(ReasonRow);
 
-                PReasonSubscriptionGivenAccess.SubmitChanges(ReasonTable, DBAccess.GDBAccessObj.Transaction);
+                PReasonSubscriptionGivenAccess.SubmitChanges(ReasonTable, Transaction);
             }
 
             // now add the publication "TESTPUBLICATION" to the first family record and indicate it was a gift from newly created family record
@@ -429,6 +449,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "add publication to family record");
+
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // this should now not be allowed since partner record has a subscription linked to it
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
@@ -445,6 +468,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             PartnerKey = FamilyPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family record");
+
+            Transaction.Commit();
 
             // check if Family record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
@@ -469,7 +494,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             TSubmitChangesResult result;
             Int64 PartnerKey;
 
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestDeleteFamily");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -485,6 +512,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family and person record");
+
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // check if Family partner can be deleted (still needs to be possible at this point)
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
@@ -511,7 +541,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create unit to be used in commitment");
-            PmStaffDataAccess.SubmitChanges(CommitmentTable, DBAccess.GDBAccessObj.Transaction);
+            PmStaffDataAccess.SubmitChanges(CommitmentTable, Transaction);
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // this should now not be allowed since person record has a commitment linked to it
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
@@ -537,6 +569,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family and person record to be deleted");
 
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             // check if Family record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
 
@@ -559,7 +594,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             TSubmitChangesResult result;
             Int64 PartnerKey;
 
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestDeleteUnit");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -619,7 +655,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             TSubmitChangesResult result;
             Int64 PartnerKey;
 
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestDeleteChurch");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -690,7 +727,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             TSubmitChangesResult result;
             Int64 PartnerKey;
 
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestDeleteOrganisation");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -730,7 +768,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             TSubmitChangesResult result;
             Int64 PartnerKey;
 
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestDeleteBank");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -756,7 +795,14 @@ namespace Tests.MPartner.Server.PartnerEdit
             BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details));
             BankingDetailsTable.Rows.Add(BankingDetailsRow);
 
-            PBankingDetailsAccess.SubmitChanges(BankingDetailsTable, DBAccess.GDBAccessObj.Transaction);
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmitOK = false;
+            db.WriteTransaction(ref Transaction, ref SubmitOK,
+                delegate
+                {
+                    PBankingDetailsAccess.SubmitChanges(BankingDetailsTable, Transaction);
+                    SubmitOK = true;
+                });
 
             // now deletion must not be possible since a bank account is set up for the bank
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage);
@@ -795,7 +841,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             TSubmitChangesResult result;
             Int64 PartnerKey;
 
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestDeleteVenue");
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
@@ -821,7 +868,6 @@ namespace Tests.MPartner.Server.PartnerEdit
             BuildingTable.Rows.Add(BuildingRow);
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("TestDeleteVenue");
             bool submitOK = true;
             db.WriteTransaction(ref transaction, ref submitOK,
                 delegate

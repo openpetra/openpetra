@@ -97,6 +97,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         private PartnerEditTDS FSubmissionDS;
         private bool FTaxDeductiblePercentageEnabled = false;
         private bool FGovIdEnabled = false;
+        private TDataBase FDataBase = null;
 
         #region TPartnerEditUIConnector
 
@@ -106,11 +107,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// </summary>
         /// <param name="APartnerKey">PartnerKey for the Partner to instantiate this object with
         /// </param>
+        /// <param name="ADataBase"></param>
         /// <returns>void</returns>
-        public TPartnerEditUIConnector(System.Int64 APartnerKey) : base()
+        public TPartnerEditUIConnector(System.Int64 APartnerKey, TDataBase ADataBase = null) : base()
         {
             FPartnerKey = APartnerKey;
             FKeyForSelectingPartnerLocation = new TLocationPK(0, 0);
+            FDataBase = DBAccess.Connect("TPartnerEditUIConnector", ADataBase);
         }
 
         /// <summary>
@@ -124,11 +127,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <param name="ASiteKey">SiteKey of the PartnerLocation record of the Partner</param>
         /// <param name="ALocationKey">LocationKey of the PartnerLocation record of the Partner
         /// </param>
+        /// <param name="ADataBase"></param>
         /// <returns>void</returns>
-        public TPartnerEditUIConnector(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey) : base()
+        public TPartnerEditUIConnector(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDataBase ADataBase = null) : base()
         {
             FPartnerKey = APartnerKey;
             FKeyForSelectingPartnerLocation = new TLocationPK(ASiteKey, ALocationKey);
+            FDataBase = DBAccess.Connect("TPartnerEditUIConnector", ADataBase);
         }
 
         /// <summary>
@@ -136,9 +141,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TPartnerEditUIConnector() : base()
+        public TPartnerEditUIConnector(TDataBase ADataBase = null) : base()
         {
             FKeyForSelectingPartnerLocation = new TLocationPK(0, 0);
+            FDataBase = DBAccess.Connect("TPartnerEditUIConnector", ADataBase);
         }
 
         #region BankingDetails
@@ -2158,9 +2164,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 TVerificationResultCollection VerificationResult = AVerificationResult;
 
                 FSubmissionDS = AInspectDS;
+                bool SubmitOK = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                    ref SubmissionResult,
+                FDataBase.WriteTransaction(ref SubmitChangesTransaction,
+                    ref SubmitOK,
                     delegate
                     {
                         PrepareBankingDetailsForSaving(ref InspectDS, ref VerificationResult, SubmitChangesTransaction);
@@ -2357,6 +2364,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             InspectDS.AcceptChanges();
 
                             SubmissionResult = TSubmitChangesResult.scrOK;
+                            SubmitOK = true;
 
                             /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('Location[0] LocationKey: ' + FSubmissionDS.PLocation[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' +
                              *FSubmissionDS.PPartnerLocation[0].LocationKey.ToString);$ENDIF */

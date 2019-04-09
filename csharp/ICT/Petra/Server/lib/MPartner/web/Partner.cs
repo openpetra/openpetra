@@ -405,7 +405,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
+            TDataBase db = DBAccess.Connect("DeletePartner");
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
@@ -853,7 +853,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
 
-            TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
+            TDataBase db = DBAccess.Connect("CancelExpiredSubscriptions");
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
