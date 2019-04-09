@@ -173,6 +173,7 @@ namespace Tests.MFinance.Server.ICH
         [Test]
         public void TestExportGifts()
         {
+            TDataBase db = DBAccess.Connect("TestExportGifts");
             int LedgerNumber = FLedgerNumber;
             string CostCentre = "7300";
             string AcctCode = "0200";
@@ -197,7 +198,8 @@ namespace Tests.MFinance.Server.ICH
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber,
                 out glBatchNumbers,
-                out VerificationResults);
+                out VerificationResults,
+                db);
 
             VerificationResults = new TVerificationResultCollection();
 
@@ -221,7 +223,7 @@ namespace Tests.MFinance.Server.ICH
                 IchNumber,
                 TableForExport,
                 VerificationResults,
-                DBAccess.Connect("TestGenerateHOSAFiles"));
+                db);
 
             TableForExport.AcceptChanges();
 

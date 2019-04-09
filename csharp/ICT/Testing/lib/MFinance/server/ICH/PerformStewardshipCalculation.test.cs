@@ -237,6 +237,7 @@ namespace Tests.MFinance.Server.ICH
         public void TestPerformStewardshipCalculation()
         {
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+            TDataBase db = DBAccess.Connect("TestPerformStewardshipCalculation");
 
             List <Int32>glBatchNumbers;
 
@@ -248,7 +249,8 @@ namespace Tests.MFinance.Server.ICH
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber,
                 out glBatchNumbers,
-                out VerificationResults);
+                out VerificationResults,
+                db);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing initial Stewardship Calculation Failed!");
@@ -270,14 +272,21 @@ namespace Tests.MFinance.Server.ICH
                 (FLedgerNumber * 100).ToString("0000")).YtdActual;
 
             // import new gift batch. use proper period and date effective
-            DateTime PeriodStartDate, PeriodEndDate;
-            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, null);
+            DateTime PeriodStartDate = DateTime.Today;
+            DateTime PeriodEndDate = DateTime.Today;
+            TDBTransaction Transaction = new TDBTransaction();
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, Transaction);
+                });
+
             ImportAndPostGiftBatch(PeriodStartDate);
 
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber,
                 out glBatchNumbers,
-                out VerificationResults);
+                out VerificationResults, db);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing Stewardship Calculation Failed!");
 

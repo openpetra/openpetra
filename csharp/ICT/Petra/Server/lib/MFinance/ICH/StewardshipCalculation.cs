@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref DBTransaction,
                     ref SubmissionOK,
                     delegate
@@ -530,7 +530,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     //Post the batch just created
                     GLBatchTDSAccess.SubmitChanges(adminFeeDS, ADBTransaction.DataBaseObj);
 
-                    IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, batchRow.BatchNumber, out verification);
+                    IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, batchRow.BatchNumber, out verification, ADBTransaction.DataBaseObj);
 
                     if (IsSuccessful)
                     {
@@ -1127,7 +1127,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                             TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
 
-                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AglBatchNumber, out AVerificationResults);
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AglBatchNumber, out AVerificationResults, ADBTransaction.DataBaseObj);
                     }
                     else // There were no transactions
                     {
