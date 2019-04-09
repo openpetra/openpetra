@@ -397,9 +397,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the tables that are needed for posting
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
-        private static GLPostingTDS LoadGLDataForPosting(Int32 ALedgerNumber)
+        private static GLPostingTDS LoadGLDataForPosting(Int32 ALedgerNumber, TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -415,7 +414,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS PostingDS = new GLPostingTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("LoadGLDataForPosting");
+            TDataBase db = DBAccess.Connect("LoadGLDataForPosting", ADataBase);
 
             try
             {
@@ -492,7 +491,7 @@ namespace Ict.Petra.Server.MFinance.Common
         ///
         /// This should probably be changed, in the new, skinny summarization, only a few rows need to be accessed.
         /// </summary>
-        private static void LoadGLMData(ref GLPostingTDS AGLPostingDS, Int32 ALedgerNumber, ABatchRow ABatchToPost)
+        private static void LoadGLMData(ref GLPostingTDS AGLPostingDS, Int32 ALedgerNumber, ABatchRow ABatchToPost, TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -520,7 +519,7 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS GLPostingDS = AGLPostingDS;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("LoadGLMData");
+            TDataBase db = DBAccess.Connect("LoadGLMData", ADataBase);
 
             try
             {
@@ -2562,7 +2561,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AVerifications = new TVerificationResultCollection();
 
-            GLPostingTDS PostingDS = LoadGLDataForPosting(ALedgerNumber);
+            GLPostingTDS PostingDS = LoadGLDataForPosting(ALedgerNumber, ATransaction.DataBaseObj);
 
             // get the data from the database into the MainDS
             AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, ref ATransaction, ref AVerifications);
@@ -2657,7 +2656,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Load GLM Data...");
 
-            LoadGLMData(ref PostingDS, ALedgerNumber, BatchToPostRow);
+            LoadGLMData(ref PostingDS, ALedgerNumber, BatchToPostRow, ATransaction.DataBaseObj);
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Mark as posted and collect data...");
 

@@ -114,21 +114,29 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             CommonNUnitFunctions.ResetDatabase();
 
+            TDataBase db = DBAccess.Connect("SimpleDocument_ExpectPostingAndPayingWorking");
+            TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             APInfos = PostSimpleAPDocument(Amount, "Test", "Detail Item", out APAccountBalanceBefore, out ABankAccountBefore,
-                out AExpAccountBefore, out DocumentIDs);
+                out AExpAccountBefore, out DocumentIDs, db);
+
+            transaction.Commit();
+            transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             //
             // Act: Pay the AP document
             //
             VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount,
-                APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out PaymentNumber);
+                APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out PaymentNumber, null, db);
             CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
+
+            transaction.Commit();
 
             // Save the current amount on the AP account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+                APInfos.ApAccountCode, APInfos.CostCentreCode, db).YtdActual;
             decimal BankAccountAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.BankAccount, APInfos.CostCentreCode).YtdActual;
+                APInfos.BankAccount, APInfos.CostCentreCode, db).YtdActual;
 
             //
             // Primary Assert: Paying OK?
@@ -156,9 +164,14 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             CommonNUnitFunctions.ResetDatabase();
 
+            TDataBase db = DBAccess.Connect("ForeignCurrencySupplier_ExpectDocumentPostingPayingAndReversingWorking");
+            TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             // Act and Assert: both encapsulated in the method that gets called!
             PostAndPayForeignSupplierAPDocument("Test", out PaymentNumber, out DocumentIDs,
-                out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore);
+                out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore, db);
+
+            transaction.Commit();
         }
 
         /// <summary>
@@ -181,24 +194,32 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             CommonNUnitFunctions.ResetDatabase();
 
+            TDataBase db = DBAccess.Connect("ForeignCurrencySupplier_ExpectDocumentPostingPayingAndReversingWorking");
+            TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             // Post and pay a document with a foreign currency supplier
             APInfos = PostAndPayForeignSupplierAPDocument("Test Reverse", out PaymentNumber, out DocumentIDs,
-                out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore);
+                out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore, db);
 
+            transaction.Commit();
+            transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             //
             // Act: Immediately "un-pay" and "un-post" this invoice!
             //
-            VerificationResult = ReversePayment(PaymentNumber, APInfos.PeriodEndDate, DocumentIDs, APInfos.ApDS);
+            VerificationResult = ReversePayment(PaymentNumber, APInfos.PeriodEndDate, DocumentIDs, APInfos.ApDS, db);
             CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
+
+            transaction.Commit();
+            transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // Save the current amount on the AP account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+                APInfos.ApAccountCode, APInfos.CostCentreCode, db).YtdActual;
             decimal BankAccountAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.BankAccount, APInfos.CostCentreCode).YtdForeign;
+                APInfos.BankAccount, APInfos.CostCentreCode, db).YtdForeign;
             decimal RevalAccountAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.ForexGainsLossesAccount, APInfos.CostCentreCode).YtdActual;
+                APInfos.ForexGainsLossesAccount, APInfos.CostCentreCode, db).YtdActual;
 
             //
             // Primary Assert: Reversal OK?
@@ -212,12 +233,14 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 Math.Round(RevalAccountAfter, 2),
                 Math.Round(RevalAccountBefore, 2),
                 "After paying then reversing, the Forex Gains/Losses Account account should be as before.");
+
+            transaction.Commit();
         }
 
         #region Helper Methods
 
         private AAPInfos APTestsArrangement(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting,
-            string ADocumentCode, string ANarrative)
+            string ADocumentCode, string ANarrative, TDataBase ADataBase)
         {
             AAPInfos APInfos = new AAPInfos();
 
@@ -226,11 +249,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 AExchangeRatePosting,
                 ADocumentCode,
                 ANarrative,
-                out APInfos.ApDS);
+                out APInfos.ApDS, ADataBase);
 
             CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
-            GetLedgerInfo(out APInfos.PeriodStartDate, out APInfos.PeriodEndDate, out APInfos.ForexGainsLossesAccount);
+            GetLedgerInfo(out APInfos.PeriodStartDate, out APInfos.PeriodEndDate, out APInfos.ForexGainsLossesAccount, ADataBase);
 
             SetupSupplierAndDocumentInfo(APInfos.ApDS,
                 out APInfos.BankAccount,
@@ -242,23 +265,31 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         }
 
         private void GetLedgerInfo(out DateTime APeriodStartDate, out DateTime APeriodEndDate,
-            out string AForexGainsLossesAccount)
+            out string AForexGainsLossesAccount, TDataBase ADataBase)
         {
             ALedgerTable LedgerTable = null;
 
+            TDataBase db = DBAccess.Connect("GetLedgerInfo", ADataBase);
+
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
+            DateTime PeriodStartDate = DateTime.Today;
+            DateTime PeriodEndDate = DateTime.Today;
+            string ForexGainsLossesAccount = String.Empty;
+            
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
+
+                    ForexGainsLossesAccount = LedgerTable[0].ForexGainsLossesAccount;
+
+                    TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, Transaction);
                 });
 
-            AForexGainsLossesAccount = LedgerTable[0].ForexGainsLossesAccount;
-
-            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, LedgerTable[0].CurrentPeriod, out APeriodStartDate, out APeriodEndDate, null);
+            AForexGainsLossesAccount = ForexGainsLossesAccount;
+            APeriodStartDate = PeriodStartDate;
+            APeriodEndDate = PeriodEndDate;
         }
 
         private void SetupSupplierAndDocumentInfo(AccountsPayableTDS AMainDS, out string ABankAccount, out string ACurrencyCode,
@@ -279,20 +310,22 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         /// <param name="ADocumentCode"></param>
         /// <param name="ANarrative"></param>
         /// <param name="AMainDS"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         private TVerificationResultCollection CreateAPDocument(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting,
-            string ADocumentCode, string ANarrative, out AccountsPayableTDS AMainDS)
+            string ADocumentCode, string ANarrative, out AccountsPayableTDS AMainDS, TDataBase ADataBase)
         {
             string AssertFailMessage = "Problems saving AP document: ";
             TSubmitChangesResult SubmRes;
             TVerificationResultCollection VerificationResult;
 
-            AMainDS = TAPTransactionWebConnector.CreateAApDocument(FLedgerNumber, APartnerKey, false);
+            TDataBase db = DBAccess.Connect("CreateAPDocument", ADataBase);
+
+            AMainDS = TAPTransactionWebConnector.CreateAApDocument(FLedgerNumber, APartnerKey, false, db);
             AccountsPayableTDS MainDS = AMainDS;
 
             TDBTransaction Transaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -319,7 +352,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 AMainDS.AApDocument[0].ExchangeRateToBase = AExchangeRatePosting.Value;
             }
 
-            SubmRes = TAPTransactionWebConnector.SaveAApDocument(ref AMainDS, out VerificationResult);
+            SubmRes = TAPTransactionWebConnector.SaveAApDocument(ref AMainDS, out VerificationResult, db);
 
             if (SubmRes != TSubmitChangesResult.scrOK)
             {
@@ -333,7 +366,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         }
 
         private TVerificationResultCollection PostAPDocument(AccountsPayableTDS AMainDS, DateTime APostingDate,
-            ref List <int>ADocumentIds, bool AReversal = false)
+            ref List <int>ADocumentIds, bool AReversal = false, TDataBase ADataBase = null)
         {
             string AssertFailMessage = AReversal ? "Failed to post AP document reversal: " : "Problems posting AP document: ";
             TVerificationResultCollection VerificationResult;
@@ -350,7 +383,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     APostingDate,
                     AReversal,
                     out glBatchNumber,
-                    out VerificationResult))
+                    out VerificationResult,
+                    ADataBase))
             {
                 Assert.Fail(AssertFailMessage +
                     VerificationResult.BuildVerificationResultString());
@@ -363,25 +397,25 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
         private AAPInfos PostSimpleAPDocument(decimal AAmount, string ADocumentCode, string ANarrative,
             out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore,
-            out List <int>ADocumentIds)
+            out List <int>ADocumentIds, TDataBase ADataBase)
         {
             TVerificationResultCollection VerificationResult;
 
             ADocumentIds = new List <int>();
 
-            AAPInfos APInfos = APTestsArrangement(SUPPLIER_PARTNER_KEY, AAmount, null, ADocumentCode, ANarrative);
+            AAPInfos APInfos = APTestsArrangement(SUPPLIER_PARTNER_KEY, AAmount, null, ADocumentCode, ANarrative, ADataBase);
 
             // Save the current amount on the AP account
             AAPAccountBalanceBefore = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+                APInfos.ApAccountCode, APInfos.CostCentreCode, ADataBase).YtdActual;
             ABankAccountBefore = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.BankAccount, APInfos.CostCentreCode).YtdActual;
+                APInfos.BankAccount, APInfos.CostCentreCode, ADataBase).YtdActual;
 
             AExpAccountBefore = new TGet_GLM_Info(FLedgerNumber,
                 APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
-                APInfos.CostCentreCode).YtdActual;
+                APInfos.CostCentreCode, ADataBase).YtdActual;
 
-            VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds);
+            VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds, false, ADataBase);
             CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             //
@@ -389,7 +423,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             //
             decimal ExpAccountAfter = new TGet_GLM_Info(FLedgerNumber,
                 APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
-                APInfos.ApDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                APInfos.ApDS.AApSupplier[0].DefaultCostCentre, ADataBase).YtdActual;
 
             Assert.AreEqual(AAmount, ExpAccountAfter - AExpAccountBefore, "after posting the invoice, the expense account should be debited");
 
@@ -398,28 +432,28 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
         private AAPInfos PostForeignSupplierAPDocument(decimal AAmount, decimal AExchangeRatePosting, string ADocumentCode, string ANarrative,
             out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore,
-            out decimal ARevalAccountBefore, out List <int>ADocumentIds)
+            out decimal ARevalAccountBefore, out List <int>ADocumentIds, TDataBase ADataBase)
         {
             TVerificationResultCollection VerificationResult;
 
             ADocumentIds = new List <int>();
 
-            AAPInfos APInfos = APTestsArrangement(SUPPLIER_FOREIGN_PARTNER_KEY, AAmount, AExchangeRatePosting, ADocumentCode, ANarrative);
+            AAPInfos APInfos = APTestsArrangement(SUPPLIER_FOREIGN_PARTNER_KEY, AAmount, AExchangeRatePosting, ADocumentCode, ANarrative, ADataBase);
 
             // Save the current amount on the AP account
             AAPAccountBalanceBefore = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+                APInfos.ApAccountCode, APInfos.CostCentreCode, ADataBase).YtdActual;
             ABankAccountBefore = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.BankAccount, APInfos.CostCentreCode).YtdForeign;
+                APInfos.BankAccount, APInfos.CostCentreCode, ADataBase).YtdForeign;
 
             AExpAccountBefore = new TGet_GLM_Info(FLedgerNumber,
                 APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
-                APInfos.CostCentreCode).YtdActual;
+                APInfos.CostCentreCode, ADataBase).YtdActual;
             ARevalAccountBefore = new TGet_GLM_Info(FLedgerNumber,
                 APInfos.ForexGainsLossesAccount,
-                APInfos.CostCentreCode).YtdActual;
+                APInfos.CostCentreCode, ADataBase).YtdActual;
 
-            VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds);
+            VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds, false, ADataBase);
             CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             //
@@ -427,7 +461,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             //
             decimal ExpAccountAfter = new TGet_GLM_Info(FLedgerNumber,
                 APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
-                APInfos.ApDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+                APInfos.ApDS.AApSupplier[0].DefaultCostCentre, ADataBase).YtdActual;
 
             Assert.AreEqual(Math.Round(AAmount / AExchangeRatePosting, 2), Math.Round(ExpAccountAfter - AExpAccountBefore,
                     2), "after posting the invoice, the expense account should be debited the amount in base currency (Exchange Rate is " +
@@ -437,7 +471,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         }
 
         private AAPInfos PostAndPayForeignSupplierAPDocument(string ADocumentCode, out int APaymentNumber, out List <int>ADocumentIDs,
-            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal ARevalAccountBefore)
+            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal ARevalAccountBefore, TDataBase ADataBase)
         {
             decimal Amount = 100.0m;
             decimal ExchangeRatePosting = 1.2m;
@@ -447,20 +481,20 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             AAPInfos APInfos;
 
             APInfos = PostForeignSupplierAPDocument(Amount, ExchangeRatePosting, ADocumentCode, "Detail Item",
-                out AAPAccountBalanceBefore, out ABankAccountBefore, out ExpAccountBefore, out ARevalAccountBefore, out ADocumentIDs);
+                out AAPAccountBalanceBefore, out ABankAccountBefore, out ExpAccountBefore, out ARevalAccountBefore, out ADocumentIDs, ADataBase);
 
             //
             // Pay the AP document
             //
             VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount,
-                APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out APaymentNumber, ExchangeRatePayment);
+                APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out APaymentNumber, ExchangeRatePayment, ADataBase);
             CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             // Save the current amount on the AP account and Bank Account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+                APInfos.ApAccountCode, APInfos.CostCentreCode, ADataBase).YtdActual;
             decimal BankAccountAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.BankAccount, APInfos.CostCentreCode).YtdForeign;
+                APInfos.BankAccount, APInfos.CostCentreCode, ADataBase).YtdForeign;
 
             //
             // Guard Assert: Paying OK?
@@ -470,7 +504,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - ABankAccountBefore, "after paying the invoice, the bank account should be credited");
 
             decimal RevalAccountAfter = new TGet_GLM_Info(FLedgerNumber,
-                APInfos.ForexGainsLossesAccount, APInfos.CostCentreCode).YtdActual;
+                APInfos.ForexGainsLossesAccount, APInfos.CostCentreCode, ADataBase).YtdActual;
 
             Assert.AreEqual(
                 Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 2),
@@ -481,7 +515,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         }
 
         private TVerificationResultCollection PayAPDocument(int AApDocumentId, decimal AAmount, string ABankAccount,
-            string ACurrencyCode, DateTime APeriodEndDate, out int APaymentNumber, decimal? AExchangeRatePayment = null)
+            string ACurrencyCode, DateTime APeriodEndDate, out int APaymentNumber, decimal? AExchangeRatePayment = null, TDataBase ADataBase = null)
         {
             string AssertFailMessage = "Problems paying AP document: ";
             TVerificationResultCollection VerificationResult;
@@ -514,7 +548,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, APeriodEndDate,
                     out glBatchNumber,
                     out newPayments,
-                    out VerificationResult))
+                    out VerificationResult,
+                    ADataBase))
             {
                 Assert.Fail(AssertFailMessage +
                     VerificationResult.BuildVerificationResultString());
@@ -528,7 +563,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         }
 
         private TVerificationResultCollection ReversePayment(int APaymentNumber, DateTime APeriodEndDate,
-            List <int>ADocumentIds, AccountsPayableTDS AApDS)
+            List <int>ADocumentIds, AccountsPayableTDS AApDS, TDataBase ADataBase)
         {
             string AssertFailMessage = "Failed to reverse AP payment: ";
             TVerificationResultCollection VerificationResult;
@@ -540,7 +575,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     APaymentNumber,
                     APeriodEndDate,
                     out glBatchNumbers,
-                    out VerificationResult))
+                    out VerificationResult, ADataBase))
             {
                 Assert.Fail(AssertFailMessage +
                     VerificationResult.BuildVerificationResultString());
@@ -551,7 +586,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             // "Un-post" the specified invoice - returning it to "Approved" status!
             ADocumentIds[0] += 2; // The invoice I posted was reversed, and a duplicate now exists with an Id 2 greater than the original.
 
-            return PostAPDocument(AApDS, APeriodEndDate, ref ADocumentIds, true);
+            return PostAPDocument(AApDS, APeriodEndDate, ref ADocumentIds, true, ADataBase);
         }
 
         #endregion
