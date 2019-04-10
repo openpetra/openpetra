@@ -275,6 +275,8 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving 5:");
+
+            Transaction.Commit();
         }
     }
 }

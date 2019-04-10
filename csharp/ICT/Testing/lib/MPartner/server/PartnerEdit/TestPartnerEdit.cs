@@ -88,6 +88,7 @@ namespace Tests.MPartner.Server.PartnerEdit
         public void TestSaveNewPartnerWithLocation()
         {
             TDataBase db = DBAccess.Connect("TestSaveNewPartnerWithLocation");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
@@ -100,6 +101,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             TVerificationResultCollection VerificationResult;
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            Transaction.Commit();
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
@@ -176,11 +179,10 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(1, MainDS.PPartnerLocation.Rows.Count, "the partner should only have one location in the dataset");
 
             Transaction.Commit();
-            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // get all addresses of the partner
             TDBTransaction ReadTransaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -197,6 +199,7 @@ namespace Tests.MPartner.Server.PartnerEdit
         public void TestSaveNewPartnerWithExistingLocation()
         {
             TDataBase db = DBAccess.Connect("TestSaveNewPartnerWithExistingLocation");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
@@ -209,6 +212,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             TVerificationResultCollection VerificationResult;
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Transaction.Commit();
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
@@ -218,6 +222,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             Int32 LocationKey = MainDS.PLocation[0].LocationKey;
 
             MainDS = new PartnerEditTDS();
+
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
@@ -230,12 +236,13 @@ namespace Tests.MPartner.Server.PartnerEdit
             ResponseDS = new PartnerEditTDS();
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            Transaction.Commit();
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
 
             TDBTransaction ReadTransaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -530,7 +537,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
             PmStaffDataTable CommitmentTable = new PmStaffDataTable();
             PmStaffDataRow CommitmentRow = CommitmentTable.NewRowTyped();
-            CommitmentRow.Key = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_staff_data));
+            CommitmentRow.Key = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_staff_data, db));
             CommitmentRow.PartnerKey = PersonRow.PartnerKey;
             CommitmentRow.StartOfCommitment = DateTime.Today.Date;
             CommitmentRow.EndOfCommitment = DateTime.Today.AddDays(90).Date;
@@ -570,7 +577,6 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family and person record to be deleted");
 
             Transaction.Commit();
-            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // check if Family record is being deleted
             Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
@@ -796,7 +802,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             PBankingDetailsRow BankingDetailsRow = BankingDetailsTable.NewRowTyped();
             BankingDetailsRow.BankKey = BankPartnerRow.PartnerKey;
             BankingDetailsRow.BankingType = 0;
-            BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details));
+            BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details, db));
             BankingDetailsTable.Rows.Add(BankingDetailsRow);
 
             Transaction.Commit();

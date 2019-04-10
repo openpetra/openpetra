@@ -305,7 +305,7 @@ namespace Ict.Common.DB
 
                 WrappedTransaction.Commit();
 
-                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "       Transaction " + FTransactionName + " committed");
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "       Transaction " + FTransactionName + " in Connection " + FTDataBaseInstanceThatTransactionBelongsTo.ConnectionName + " committed");
 
                 // Commit was OK, now clean up.
                 Dispose();
@@ -364,7 +364,7 @@ namespace Ict.Common.DB
 
                 WrappedTransaction.Rollback();
 
-                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "       Transaction " + FTransactionName + " rolled back");
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRANSACTION, "       Transaction " + FTransactionName+ " in Connection " + FTDataBaseInstanceThatTransactionBelongsTo.ConnectionName + " rolled back");
 
                 // Rollback was OK, now clean up.
                 Dispose();
