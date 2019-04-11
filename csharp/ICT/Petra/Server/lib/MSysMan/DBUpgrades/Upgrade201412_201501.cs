@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,12 +55,12 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         public static bool UpgradeDatabase201412_201501()
         {
             // There are no new tables and fields
-
+            TDataBase db = DBAccess.Connect("TDBUpgrade");
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            bool SubmitOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                ref SubmissionResult,
+            db.WriteTransaction(ref SubmitChangesTransaction,
+                ref SubmitOK,
                 delegate
                 {
                     PPartnerAttributeTable partnerattributes = new PPartnerAttributeTable();
@@ -307,7 +307,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
 
                     PPartnerLocationAccess.SubmitChanges(partnerlocations, SubmitChangesTransaction);
                     PPartnerAttributeAccess.SubmitChanges(partnerattributes, SubmitChangesTransaction);
-                    SubmissionResult = TSubmitChangesResult.scrOK;
+                    SubmitOK = true;
                 });
             return true;
         }

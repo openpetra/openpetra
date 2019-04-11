@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 bool SubmissionResult = false;
                 TPetraPrincipal tempPrincipal;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                     ref SubmissionResult,
                     delegate
                     {
@@ -234,7 +234,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                 bool SubmissionResult = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                     ref SubmissionResult,
                     delegate
                     {
@@ -336,7 +336,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                 UserDR.PasswordNeedsChange = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                     ref SubmissionResult,
                     delegate
                     {
@@ -851,7 +851,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                     bool SubmissionResult = false;
 
-                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                    DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                         ref SubmissionResult,
                         delegate
                         {
@@ -1147,8 +1147,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // TODO: if user module access permissions have changed, automatically update the table access permissions?
             SubmitChangesTransaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                ref ReturnValue, delegate
+            bool SubmitOK = false;
+            DBAccess.WriteTransaction(ref SubmitChangesTransaction,
+                ref SubmitOK, delegate
                 {
                     if (SubmitDS.SUser != null)
                     {
@@ -1254,6 +1255,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         MaintainUsersTDSAccess.SubmitChanges(SubmitDS, SubmitChangesTransaction.DataBaseObj);
 
                         ReturnValue = TSubmitChangesResult.scrOK;
+                        SubmitOK = true;
                     }
                     catch (Exception e)
                     {

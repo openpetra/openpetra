@@ -38,11 +38,12 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         public static bool UpgradeDatabase201808_201809()
         {
             // there are some changes to the database structure
+            TDataBase db = DBAccess.Connect("TDBUpgrade");
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            bool SubmitOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                ref SubmissionResult,
+            db.WriteTransaction(ref SubmitChangesTransaction,
+                ref SubmitOK,
                 delegate
                 {
                     string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade201808_201809.sql").Split(new char[]{';'});
@@ -51,11 +52,11 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                     {
                         if (stmt.Trim().Length > 0)
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                            db.ExecuteNonQuery(stmt, SubmitChangesTransaction);
                         }
                     }
 
-                    SubmissionResult = TSubmitChangesResult.scrOK;
+                    SubmitOK = true;
                 });
             return true;
         }

@@ -107,59 +107,68 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <summary>
         /// init the exchange rate, to avoid messages "Cannot find exchange rate for EUR USD"
         /// </summary>
-        public static void InitExchangeRate()
+        public static void InitExchangeRate(TDataBase ADataBase = null)
         {
-            TAccountPeriodInfo AccountingPeriodInfo =
-                new TAccountPeriodInfo(FLedgerNumber, 1);
-            ADailyExchangeRateTable dailyrates = new ADailyExchangeRateTable();
-            ADailyExchangeRateRow row = dailyrates.NewRowTyped(true);
-
-            row.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
-            row.TimeEffectiveFrom = 100;
-            row.FromCurrencyCode = "USD";
-            row.ToCurrencyCode = "EUR";
-            row.RateOfExchange = 1.34m;
-            dailyrates.Rows.Add(row);
-            row = dailyrates.NewRowTyped(true);
-            row.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
-            row.TimeEffectiveFrom = 100;
-            row.FromCurrencyCode = "USD";
-            row.ToCurrencyCode = "GBP";
-            row.RateOfExchange = 1.57m;
-            dailyrates.Rows.Add(row);
-
-            if (!ADailyExchangeRateAccess.Exists(row.FromCurrencyCode, row.ToCurrencyCode, row.DateEffectiveFrom, row.TimeEffectiveFrom, null))
+            TDataBase db = DBAccess.Connect("InitExchangeRate", ADataBase);
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmitOK = false;
+            db.WriteTransaction(ref Transaction,
+                ref SubmitOK,
+            delegate
             {
-                ADailyExchangeRateAccess.SubmitChanges(dailyrates, null);
-            }
+                TAccountPeriodInfo AccountingPeriodInfo =
+                    new TAccountPeriodInfo(FLedgerNumber, 1);
+                ADailyExchangeRateTable dailyrates = new ADailyExchangeRateTable();
+                ADailyExchangeRateRow row = dailyrates.NewRowTyped(true);
 
-            ALedgerTable Ledger = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, null);
+                row.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+                row.TimeEffectiveFrom = 100;
+                row.FromCurrencyCode = "USD";
+                row.ToCurrencyCode = "EUR";
+                row.RateOfExchange = 1.34m;
+                dailyrates.Rows.Add(row);
+                row = dailyrates.NewRowTyped(true);
+                row.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+                row.TimeEffectiveFrom = 100;
+                row.FromCurrencyCode = "USD";
+                row.ToCurrencyCode = "GBP";
+                row.RateOfExchange = 1.57m;
+                dailyrates.Rows.Add(row);
 
-            for (int periodCounter = 1; periodCounter <= Ledger[0].NumberOfAccountingPeriods + Ledger[0].NumberFwdPostingPeriods; periodCounter++)
-            {
-                AccountingPeriodInfo = new TAccountPeriodInfo(FLedgerNumber, periodCounter);
-
-                ACorporateExchangeRateTable corprates = new ACorporateExchangeRateTable();
-                ACorporateExchangeRateRow corprow = corprates.NewRowTyped(true);
-                corprow.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
-                corprow.TimeEffectiveFrom = 100;
-                corprow.FromCurrencyCode = "USD";
-                corprow.ToCurrencyCode = "EUR";
-                corprow.RateOfExchange = 1.34m;
-                corprates.Rows.Add(corprow);
-                corprow = corprates.NewRowTyped(true);
-                corprow.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
-                corprow.TimeEffectiveFrom = 100;
-                corprow.FromCurrencyCode = "USD";
-                corprow.ToCurrencyCode = "GBP";
-                corprow.RateOfExchange = 1.57m;
-                corprates.Rows.Add(corprow);
-
-                if (!ACorporateExchangeRateAccess.Exists(corprow.FromCurrencyCode, corprow.ToCurrencyCode, corprow.DateEffectiveFrom, null))
+                if (!ADailyExchangeRateAccess.Exists(row.FromCurrencyCode, row.ToCurrencyCode, row.DateEffectiveFrom, row.TimeEffectiveFrom, Transaction))
                 {
-                    ACorporateExchangeRateAccess.SubmitChanges(corprates, null);
+                    ADailyExchangeRateAccess.SubmitChanges(dailyrates, Transaction);
                 }
-            }
+
+                ALedgerTable Ledger = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
+
+                for (int periodCounter = 1; periodCounter <= Ledger[0].NumberOfAccountingPeriods + Ledger[0].NumberFwdPostingPeriods; periodCounter++)
+                {
+                    AccountingPeriodInfo = new TAccountPeriodInfo(FLedgerNumber, periodCounter);
+
+                    ACorporateExchangeRateTable corprates = new ACorporateExchangeRateTable();
+                    ACorporateExchangeRateRow corprow = corprates.NewRowTyped(true);
+                    corprow.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+                    corprow.TimeEffectiveFrom = 100;
+                    corprow.FromCurrencyCode = "USD";
+                    corprow.ToCurrencyCode = "EUR";
+                    corprow.RateOfExchange = 1.34m;
+                    corprates.Rows.Add(corprow);
+                    corprow = corprates.NewRowTyped(true);
+                    corprow.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+                    corprow.TimeEffectiveFrom = 100;
+                    corprow.FromCurrencyCode = "USD";
+                    corprow.ToCurrencyCode = "GBP";
+                    corprow.RateOfExchange = 1.57m;
+                    corprates.Rows.Add(corprow);
+
+                    if (!ACorporateExchangeRateAccess.Exists(corprow.FromCurrencyCode, corprow.ToCurrencyCode, corprow.DateEffectiveFrom, Transaction))
+                    {
+                        ACorporateExchangeRateAccess.SubmitChanges(corprates, Transaction);
+                    }
+                }
+                SubmitOK = true;
+            });
         }
 
         /// <summary>
@@ -177,6 +186,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             SampleDataGiftBatches.LoadBatches(Path.Combine(datadirectory, "donations.csv"), smallNumber);
             SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber);
 
+            TDataBase db = DBAccess.Connect("GenerateLedger");
+
             while (periodOverall <= FNumberOfClosedPeriods)
             {
                 TLogging.LogAtLevel(1, "working on year " + yearCounter.ToString() + " / period " + period.ToString());
@@ -193,7 +204,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     throw new Exception("could not post invoices");
                 }
 
-                TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber);
+                TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber, db);
 
                 if (periodOverall < FNumberOfClosedPeriods)
                 {
@@ -202,7 +213,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     TLogging.Log("closing period at " + AccountingPeriodInfo.PeriodEndDate.ToShortDateString());
 
                     // run month end
-                    TMonthEnd MonthEndOperator = new TMonthEnd(LedgerInfo);
+                    TMonthEnd MonthEndOperator = new TMonthEnd(db, LedgerInfo);
                     MonthEndOperator.SetNextPeriod(null);
 
 
@@ -211,9 +222,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         TDBTransaction transaction = new TDBTransaction();
                         bool SubmissionOK = false;
 
-                        DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
-                            IsolationLevel.Serializable,
-                            TEnforceIsolationLevel.eilMinimum,
+                        db.WriteTransaction(
                             ref transaction,
                             ref SubmissionOK,
                             delegate
@@ -233,7 +242,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                                 glmNewYearInit.RunOperation();
                                 YearEndOperator.SetNextPeriod(transaction);
 
-                                SampleDataLedger.InitExchangeRate();
+                                SampleDataLedger.InitExchangeRate(db);
 
                                 YearAD++;
                                 yearCounter++;

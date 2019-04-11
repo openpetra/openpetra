@@ -1241,7 +1241,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOk = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOk,
                 delegate
                 {
                     AddressBlock = TFormLetterTools.BuildAddressBlock(AFormData, AAddressLayoutCode, APartnerClass, Transaction);
@@ -1301,7 +1301,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOk = false;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOk,
                 delegate
                 {
                     try
@@ -1365,7 +1365,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOk = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOk,
                 delegate
                 {
                     UpdateSubscriptionsReceived(APartnerKey, APublicationsCSVList, Transaction);

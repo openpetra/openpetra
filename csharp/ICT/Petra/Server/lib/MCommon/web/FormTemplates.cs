@@ -147,7 +147,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
             String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
+            bool submitOK = false;
 
             string strSQL = String.Format("UPDATE PUB_{0} SET ", PFormTable.GetTableDBName());
 
@@ -163,17 +163,17 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
             strSQL += String.Format("{0}='{1}' AND ", PFormTable.GetFormNameDBName(), AFormName);
             strSQL += String.Format("{0}='{1}'", PFormTable.GetFormLanguageDBName(), ALanguageCode);
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
-                ref SubmissionOK,
+                ref submitOK,
                 delegate
                 {
-                    int nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, Transaction, null, true);
-                    SubmissionOK = (nRowsAffected == 1) ? TSubmitChangesResult.scrOK : TSubmitChangesResult.scrError;
+                    int nRowsAffected = Transaction.DataBaseObj.ExecuteNonQuery(strSQL, Transaction, null, true);
+                    submitOK = (nRowsAffected == 1);
 
                 });
 
-            return SubmissionOK == TSubmitChangesResult.scrOK;
+            return submitOK;
         }
 
         /// <summary>
@@ -239,11 +239,9 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         {
             TDBTransaction Transaction = new TDBTransaction();
             PFormTable ReturnValue = new PFormTable();
-            TSubmitChangesResult result = TSubmitChangesResult.scrError;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.ReadTransaction(
                 ref Transaction,
-                ref result,
                 delegate
                 {
                     ReturnValue = PFormAccess.LoadByPrimaryKey(AFormCode, AFormName, ALanguageCode, Transaction);

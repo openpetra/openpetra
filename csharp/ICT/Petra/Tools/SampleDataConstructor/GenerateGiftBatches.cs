@@ -348,7 +348,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             {
                 TDBTransaction WriteTransaction = new TDBTransaction();
                 bool SubmissionOk = false;
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction, ref SubmissionOk,
+                DBAccess.WriteTransaction(ref WriteTransaction, ref SubmissionOk,
                     delegate
                     {
                         ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction);

@@ -296,7 +296,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 row.AcquisitionDescription = Catalog.GetString("Imported Data");
                 AcqTable.Rows.Add(row);
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, ref SubmissionOK,
+                DBAccess.WriteTransaction(ref SubmitChangesTransaction, ref SubmissionOK,
                     delegate
                     {
                         PAcquisitionAccess.SubmitChanges(AcqTable, SubmitChangesTransaction);
