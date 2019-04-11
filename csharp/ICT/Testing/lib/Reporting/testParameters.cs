@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,8 @@
 using System;
 using System.Data;
 using System.Configuration;
+using System.Globalization;
+using System.Threading;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System.IO;
@@ -78,6 +80,8 @@ namespace Tests.Reporting
             Assert.AreEqual("0", parameters.Get("amountdue", -1, 1,
                     eParameterFit.eBestFitEvenLowerLevel).ToFormattedString(), "currency parameter cannot be accessed from level up");
 
+            // this test only works with english culture settings
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
             parameters.Add("IntegerList", "300,400");
             parameters.Save("test.json");
             parameters.Load(Path.GetFullPath("test.json"));
