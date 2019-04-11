@@ -44,27 +44,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// calculate the report
         public static HtmlDocument Calculate(
             string AHTMLReportDefinition,
-            TParameterList parameterlist)
+            TParameterList parameterlist,
+            TDBTransaction ATransaction)
         {
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
-
-            bool NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                out NewTransaction,
-                "PartnerBySpecialTypesRead");
 
             // get all the partners
             string sql = templateProcessor.GetSQLQuery("SelectPartners");
 
-            DataTable partners = DBAccess.GDBAccessObj.SelectDT(sql, "transactions", ReadTransaction);
+            DataTable partners = ATransaction.DataBaseObj.SelectDT(sql, "transactions", ATransaction);
 
             // TODO: get best address
-
-            if (NewTransaction)
-            {
-                ReadTransaction.Rollback();
-            }
 
             // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();

@@ -94,21 +94,6 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             FProgressID = "ReportCalculation" + Guid.NewGuid();
             TProgressTracker.InitProgressTracker(FProgressID, string.Empty, -1.0m);
 
-            // First check whether the 'globally available' DB Connection isn't busy - we must not allow the start of a
-            // Report Calculation when that is the case (as this would lead to a nested DB Transaction exception,
-            // EDBTransactionBusyException).
-            if (DBAccess.GDBAccessObj.Transaction != null)
-            {
-                FErrorMessage = Catalog.GetString(SharedConstants.NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX +
-                    "The OpenPetra Server is currently too busy to prepare this Report. " +
-                    "Please retry once other running tasks (eg. a Report) are finished!");
-                TProgressTracker.FinishJob(FProgressID);
-                FSuccess = false;
-
-                // Return to the Client immediately!
-                return;
-            }
-
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
 
@@ -180,19 +165,21 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
             FSuccess = false;
 
+            TDataBase db = DBAccess.Connect("TReportGeneratorUIConnector");
+            
             TDBTransaction Transaction = new TDBTransaction();
-            bool SubmissionOK = false;
+            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(Level, ref Transaction,
+                db.BeginAutoTransaction(Level, ref Transaction,
                     ref SubmissionOK,
                     delegate
                     {
-                    if (FDatacalculator.GenerateResult(ref FParameterList, ref FHTMLOutput, out FHTMLDocument, ref FErrorMessage, ref FException))
+                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FHTMLOutput, out FHTMLDocument, ref FErrorMessage, ref FException, Transaction))
                         {
                             FSuccess = true;
-                            SubmissionOK = true;
+                            SubmissionOK = TSubmitChangesResult.scrOK;
                         }
                         else
                         {

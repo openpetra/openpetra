@@ -44,28 +44,18 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// calculate the report
         public static HtmlDocument Calculate(
             string AHTMLReportDefinition,
-            TParameterList parameterlist)
+            TParameterList parameterlist,
+            TDBTransaction ATransaction)
         {
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
-            bool NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                out NewTransaction,
-                "AccountDetailRead");
-
             // get all the transactions
             string sql = templateProcessor.GetSQLQuery("SelectTransactions");
-            DataTable transactions = DBAccess.GDBAccessObj.SelectDT(sql, "transactions", ReadTransaction);
+            DataTable transactions = ATransaction.DataBaseObj.SelectDT(sql, "transactions", ATransaction);
 
             // get all the balances
             sql = templateProcessor.GetSQLQuery("SelectBalances");
-            DataTable balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", ReadTransaction);
-
-            if (NewTransaction)
-            {
-                ReadTransaction.Rollback();
-            }
+            DataTable balances = ATransaction.DataBaseObj.SelectDT(sql, "balances", ATransaction);
 
             // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();
