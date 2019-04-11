@@ -438,7 +438,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     PmPastExperienceTable PastExperienceTable = new PmPastExperienceTable();
@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)

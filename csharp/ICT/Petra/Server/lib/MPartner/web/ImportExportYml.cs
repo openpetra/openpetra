@@ -672,7 +672,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             bool SubmissionOK = false;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

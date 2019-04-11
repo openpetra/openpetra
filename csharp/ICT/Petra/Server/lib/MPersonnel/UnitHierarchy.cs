@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction,
+            DBAccess.WriteTransaction(ref Transaction,
                 ref SubmissionOK,
                 delegate
                 {

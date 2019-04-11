@@ -175,5 +175,35 @@ namespace Ict.Common.DB
 
             return DBAccessObj;
         }
+
+        /// this is a direct way to create a serializable transaction on an anonymous database connection
+        public static void WriteTransaction(ref TDBTransaction ATransaction,
+            ref bool ASubmitOK, Action AEncapsulatedDBAccessCode)
+        {
+            if (!ATransaction.Valid)
+            {
+                TDataBase db = DBAccess.Connect("DBAccess.WriteTransaction");
+                db.WriteTransaction(ref ATransaction, ref ASubmitOK, AEncapsulatedDBAccessCode);
+            }
+            else
+            {
+                ATransaction.DataBaseObj.WriteTransaction(ref ATransaction, ref ASubmitOK, AEncapsulatedDBAccessCode);
+            }
+        }
+
+        /// this is a direct way to create a read transaction on an anonymous database connection
+        public static void ReadTransaction(ref TDBTransaction ATransaction,
+            Action AEncapsulatedDBAccessCode)
+        {
+            if (!ATransaction.Valid)
+            {
+                TDataBase db = DBAccess.Connect("DBAccess.ReadTransaction");
+                db.ReadTransaction(ref ATransaction, AEncapsulatedDBAccessCode);
+            }
+            else
+            {
+                ATransaction.DataBaseObj.ReadTransaction(ref ATransaction, AEncapsulatedDBAccessCode);
+            }
+        }
     }
 }
