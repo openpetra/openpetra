@@ -75,8 +75,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
-        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
+        /// then the Method executes DB commands with a new Database connection</param>
         public TLedgerInfo(int ALedgerNumber, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;

@@ -355,8 +355,10 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             GiftDetail.DetailNumber = 1;
             GiftDetail.MotivationGroupCode = "GIFT";
             GiftDetail.MotivationDetailCode = "SUPPORT";
-            GiftDetail.RecipientKey = 0;
+            // this won't work with RecipientKey 0 anymore. see https://github.com/openpetra/openpetra/issues/183
+            GiftDetail.RecipientKey = 43000000;
             GiftDetail.RecipientLedgerNumber = APartnerKey;
+            GiftDetail.GiftTransactionAmount = 10;
             AGiftDS.AGiftDetail.Rows.Add(GiftDetail);
 
             return Batch;
@@ -392,8 +394,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             RecurringGiftDetail.GiftTransactionNumber = 1;
             RecurringGiftDetail.MotivationGroupCode = "GIFT";
             RecurringGiftDetail.MotivationDetailCode = "SUPPORT";
-            RecurringGiftDetail.RecipientKey = APartnerKey;
+            RecurringGiftDetail.RecipientKey = 43000000;
             RecurringGiftDetail.RecipientLedgerNumber = APartnerKey;
+            RecurringGiftDetail.GiftAmount = 10;
             AGiftDS.ARecurringGiftDetail.Rows.Add(RecurringGiftDetail);
 
             return Batch;

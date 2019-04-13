@@ -136,9 +136,7 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>An instance of PPartnerRow if the Partner exists (taking AMustNotBeMergedPartner into consideration),
         /// otherwise null.</returns>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         public static PPartnerRow CheckPartnerExists2(Int64 APartnerKey, bool AMustNotBeMergedPartner,
             TDataBase ADataBase = null)
         {
@@ -309,9 +307,7 @@ namespace Ict.Petra.Server.MCommon
         /// optional but should be specified to aid in debugging as it gets logged in case Exceptions happen when the
         /// DB Transaction is taken out and the Query gets executed.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <remarks>An instance of TAsyncFindParameters with set up Properties must exist before this procedure can get
         /// called!
         /// </remarks>
@@ -1025,12 +1021,7 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>
         /// Constructor. It establishes a DB Connection for a FastReports Report.
         /// </summary>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
-        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used by this instance of
-        /// <see cref="TReportingDbAdapter" /> (with the 'globally available' open DB Connection that exists for the
-        /// users' AppDomain).</param>
-        public TReportingDbAdapter(bool ASeparateDBConnection = true)
+        public TReportingDbAdapter()
         {
             FPrivateDatabaseObj = EstablishDBConnection(false, "FastReports Report DB Connection");
         }
@@ -1069,13 +1060,8 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>
         /// Establishes a DB Connection for a FastReports Report.
         /// </summary>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
-        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets returned by this Method (with the
-        /// 'globally available' open DB Connection that exists for the users' AppDomain).</param>
-        /// <param name="AConnectionName"></param>
         /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
-        public static TDataBase EstablishDBConnection(bool ASeparateDBConnection = true, String AConnectionName = "")
+        public static TDataBase EstablishDBConnection(String AConnectionName = "")
         {
             TDataBase FDBAccessObj = DBAccess.Connect(
                 AConnectionName);

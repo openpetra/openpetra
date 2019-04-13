@@ -53,9 +53,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// </summary>
         /// <param name="ASequence"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null. If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns></returns>
         [NoRemoting]
         public static Int64 GetNextSequence(TSequenceNames ASequence, TDataBase ADataBase)

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -312,7 +312,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             int ReturnValue = 0;
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -387,7 +387,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -455,7 +455,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PFoundationTable ReturnValue = null;
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -482,7 +482,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             bool ReturnValue = false;
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -539,7 +539,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PBankingDetailsTable ReturnTable = new PBankingDetailsTable();
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -579,7 +579,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PartnerEditTDSPPartnerAttributeTable ReturnTable = new PartnerEditTDSPPartnerAttributeTable();
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -607,7 +607,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                    " OR (ToContactDetail.p_no_longer_current_from_d IS NULL" +
                                    " AND p_partner_attribute.p_no_longer_current_from_d IS NULL)))";
 
-                    DBAccess.GDBAccessObj.SelectDT(ReturnTable, Query, Transaction);
+                    Transaction.DataBaseObj.SelectDT(ReturnTable, Query, Transaction);
                 });
 
             return ReturnTable;
@@ -638,7 +638,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
