@@ -1023,7 +1023,7 @@ namespace Ict.Petra.Server.MCommon
         /// </summary>
         public TReportingDbAdapter()
         {
-            FPrivateDatabaseObj = EstablishDBConnection(false, "FastReports Report DB Connection");
+            FPrivateDatabaseObj = EstablishDBConnection("FastReports Report DB Connection");
         }
 
         /// <summary>
