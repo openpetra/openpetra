@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Boolean ASeparateDBConnection = false)
         {
             DataTable ReturnTable = null;
-            TReportingDbAdapter DbAdapter = new TReportingDbAdapter(ASeparateDBConnection);
+            TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
             TDBTransaction ReadTransaction = new TDBTransaction();
 
             ADisplayMember = "FieldName";
@@ -425,7 +425,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("Currency", typeof(string)));
 
             Boolean FromStartOfYear = (AStartPeriod == 1);
-            TReportingDbAdapter DbAdapter = new TReportingDbAdapter(true);
+            TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
 
             if (!FromStartOfYear)
             {
