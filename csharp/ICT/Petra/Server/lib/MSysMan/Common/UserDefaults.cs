@@ -310,9 +310,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// (re)loaded for the current user and the internal cache needs to be updated</param>
         /// <param name="AUserDefaultsDataTable">The loaded UserDefaults DataTable</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns>true if loading of UserDefaults was successful
         /// </returns>
         [NoRemoting]
@@ -494,9 +492,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="AMergeChangesToServerSideCache"></param>
         /// <param name="AUserDefaultsDataTable"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         [NoRemoting]
         public static void ReloadUserDefaults(String AUserName, Boolean AMergeChangesToServerSideCache,
             out SUserDefaultsTable AUserDefaultsDataTable, TDataBase ADataBase = null)

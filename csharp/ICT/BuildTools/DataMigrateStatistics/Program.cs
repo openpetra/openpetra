@@ -101,7 +101,7 @@ namespace Ict.Tools.DataMigrateStatistics
                 Console.WriteLine(percentage + "%");
                 Console.WriteLine();
 
-                DBAccess.GDBAccessObj.CloseDBConnection();
+                db.CloseDBConnection();
             }
             else
             {

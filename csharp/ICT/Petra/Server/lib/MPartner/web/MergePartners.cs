@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -806,6 +806,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             string msg =
                                 string.Format("An exception occurred during a merge of two partners ({0}->{1}): ", AFromPartnerKey, AToPartnerKey);
+                            TLogging.Log(e.ToString());
                             msg += e.Message;
                             verificationResults.Add(new TVerificationResult(ResultContext, msg, TResultSeverity.Resv_Critical));
                             verificationResults.Add(new TVerificationResult(ResultContext,

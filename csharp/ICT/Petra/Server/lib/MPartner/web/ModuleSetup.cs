@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
 
-            DBAccess.GDBAccessObj.ReadTransaction(ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     PTypeAccess.LoadAll(MainDS, ReadTransaction);
@@ -170,7 +170,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
 
-            DBAccess.GDBAccessObj.ReadTransaction(ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     PPublicationAccess.LoadAll(MainDS, ReadTransaction);

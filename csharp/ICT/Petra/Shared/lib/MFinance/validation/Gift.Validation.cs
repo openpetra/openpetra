@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop, alanP
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -280,7 +280,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
                         String.Empty +
-                        (IsImporting ? String.Empty : " of Batch Number " + ARow.BatchNumber.ToString()),
+                        (IsImporting ? String.Empty : " ExchangeRate of Batch Number " + ARow.BatchNumber.ToString()),
                         AContext, ValidationColumn);
 
                     // Handle addition/removal to/from TVerificationResultCollection
@@ -324,7 +324,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate,
                     StartDateCurrentPeriod,
                     EndDateLastForwardingPeriod,
-                    String.Empty + (IsImporting ? String.Empty : " of Batch Number " + ARow.BatchNumber.ToString()),
+                    String.Empty + (IsImporting ? String.Empty : " GlEffectiveDate of Batch Number " + ARow.BatchNumber.ToString()),
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     AContext,
@@ -492,7 +492,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsNonZeroDecimal(ARow.GiftTransactionAmount,
-                    String.Empty + (ImportInProcess ? String.Empty : " of " + ValidationContext),
+                    String.Empty + (ImportInProcess ? String.Empty : " GiftTransactionAmount of " + ValidationContext),
                     AContext, ValidationColumn);
 
                 if (VerificationResult != null)
@@ -1438,7 +1438,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (true)
             {
                 VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.GiftAmount,
-                    String.Empty + " of " + ValidationContext,
+                    String.Empty + " GiftTransactionAmount of " + ValidationContext,
                     AContext, ValidationColumn);
 
                 if (VerificationResult != null)

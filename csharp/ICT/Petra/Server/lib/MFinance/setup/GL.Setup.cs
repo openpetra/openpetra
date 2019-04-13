@@ -304,8 +304,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null. If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
-        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
+        /// then the Method executes DB commands with a new Database connection</param>
         /// <returns></returns>
         private static bool IsCalendarChangeAllowed(Int32 ALedgerNumber, TDataBase ADataBase)
         {
@@ -412,8 +411,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ASubsystemCode"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance,
-        /// otherwise with the instance that gets passed in with this Argument!</param>
+        /// then the Method executes DB commands with a new Database connection</param>
         /// <returns>True if specified subsystem is activated for a given Ledger, otherwise false.</returns>
         private static bool IsSubsystemActivated(Int32 ALedgerNumber, String ASubsystemCode, TDataBase ADataBase = null)
         {

@@ -61,9 +61,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="AIncludeExpiredAddresses">If true: include expired addresses.</param>
         /// <param name="APartnerLocations">The Locations of the Partner being processed.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns>False if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner, otherwise true.</returns>
         public static bool GetPartnerLocations(Int64 APartnerKey,
@@ -211,9 +209,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ALocationDR">DataRow containing the 'Best Address' Location</param>
         /// <param name="APartnerLocationDR">DataRow containing the 'Best Address' PartnerLocation</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns>False if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner or if Location/PartnerLocation Data could not be loaded for the
         /// Partner, otherwise true.</returns>

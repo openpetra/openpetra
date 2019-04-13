@@ -30,6 +30,7 @@
     <echo message="Target test-server started at: ${datetime::now()}" /> 
     
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerMerge.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Budget.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.BankImport.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" />

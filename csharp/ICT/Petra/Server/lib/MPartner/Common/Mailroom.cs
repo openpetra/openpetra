@@ -54,9 +54,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="APartnerKey"></param>
         /// <param name="ALastContactDate"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         public static void GetLastContactDate(Int64 APartnerKey, out DateTime ALastContactDate,
             TDataBase ADataBase = null)
         {

@@ -1096,8 +1096,7 @@ namespace Ict.Common.DB.Testing
 
                        try
                        {
-                           // Open independent DB Connection (independent of DBAccess.GDBAccessObj which automatically
-                           // gets created for every Test in this TestFixture!)
+                           // Open new DB Connection
                            TestDBInstance = DBAccess.Connect(String.Format(TestConnectionName, AThreadNumber));
 
                            // Get a new DB Transaction on DB Connection
@@ -1262,8 +1261,7 @@ namespace Ict.Common.DB.Testing
                     }
                 });
 
-            // Establish a new DB Connection on TestingThread1 (independent of DBAccess.GDBAccessObj which automatically
-            // gets created for every Test in this TestFixture!) and execute any 'encapsulated C# code section' that the
+            // Establish a new DB Connection on TestingThread1 and execute any 'encapsulated C# code section' that the
             // caller 'sends us' in the AFurtherDBAccessCode Action delegate (0..n lines of code!)
             TestingThread.Start();
             TestingThread.Join();
@@ -1279,8 +1277,7 @@ namespace Ict.Common.DB.Testing
         {
             TDataBase TDataBaseInstance = null;
 
-            // Attempt to establish a new, separate DB Connection (independent of DBAccess.GDBAccessObj which automatically
-            // gets created for every Test in this TestFixture!)
+            // Attempt to establish a new, separate DB Connection
             return () =>
                    {
                        if (AThreadNumber == 1)
@@ -1410,7 +1407,8 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
 
-            ATransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(AIsolationLevel, out NewTrans, ATransactionName);
+            TDataBase db = DBAccess.Connect("CallGetNewOrExistingTransaction");
+            ATransaction = db.GetNewOrExistingTransaction(AIsolationLevel, out NewTrans, ATransactionName);
 
             return NewTrans;
         }

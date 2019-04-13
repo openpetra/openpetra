@@ -89,9 +89,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             new TLogging("../../log/TestServer.log");
             FServerManager = TPetraServerConnector.Connect("../../etc/TestServer.config");
 
-            FCategories = new bool[20];
+            FCategories = new bool[21];
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 21; i++)
             {
                 FCategories[i] = true;
             }
@@ -307,12 +307,15 @@ namespace Tests.MPartner.Server.PartnerMerge
             ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeTwoUnits_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PUnit.Merge(PUnitAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PUnit.Merge(PUnitAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -871,11 +874,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoChurches_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeTwoChurches_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -999,12 +1005,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeChurchToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeChurchToOrganisation_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -1126,12 +1135,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeChurchToFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeChurchToFamily_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -1523,8 +1535,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.That(ToVenueRow, Is.Not.Null);
 
             // Modify records so that they contain different data
-            ToPartnerRow.PartnerShortName = "";
-            ToVenueRow.VenueCode = "";
+            //ToPartnerRow.PartnerShortName = "";
+            //ToVenueRow.VenueCode = "";
 
             // Submit the two new Venue Partner records to the database
             ResponseDS = new PartnerEditTDS();
@@ -1544,11 +1556,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoVenues_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeTwoVenues_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PVenue.Merge(PVenueAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PVenue.Merge(PVenueAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -1567,10 +1582,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
 
             // Checking the two Venues
-            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestVenue", ToPartnerRow.PartnerShortName, "merge two Venues");
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestVenue", FromPartnerRow.PartnerShortName, "merge two Venues");
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two Venues");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two Venues");
-            Assert.AreEqual('V' + AToPartnerKey.ToString().Substring(1), ToVenueRow.VenueCode, "merge two Venues");
+            // is this correct??? or should the from VenueCode be used?
+            Assert.AreEqual("TEST" + AToPartnerKey.ToString(), ToVenueRow.VenueCode, "merge two Venues");
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge two Venues");
@@ -2104,11 +2120,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoFamilies_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeTwoFamilies_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -2231,12 +2250,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeFamilyToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeFamilyToOrganisation_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -2358,12 +2380,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeFamilyToChurch_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeFamilyToChurch_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -2816,11 +2841,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoPersonsFromSameFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeTwoPersonsFromSameFamily_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3003,12 +3031,15 @@ namespace Tests.MPartner.Server.PartnerMerge
             ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeTwoPersonsFromDifferentFamilies_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3143,11 +3174,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoOrganisations_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeTwoOrganisations_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3268,12 +3302,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeOrganisationToChurch_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeOrganisationToChurch_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3397,12 +3434,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeOrganisationToFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeOrganisationToFamily_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3526,12 +3566,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeOrganisationToBank_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeOrganisationToBank_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBank.Merge(PBankAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            MainDS.PBank.Merge(PBankAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3891,11 +3934,16 @@ namespace Tests.MPartner.Server.PartnerMerge
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
+            TDataBase db = DBAccess.Connect("TestMergeTwoBanks_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBank.Merge(PBankAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBankingDetails.Merge(PBankingDetailsAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PBank.Merge(PBankAccess.LoadAll(Transaction));
+            MainDS.PBankingDetails.Merge(PBankingDetailsAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4020,12 +4068,16 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeBankToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDataBase db = DBAccess.Connect("TestMergeBankToOrganisation_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBank.Merge(PBankAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PBank.Merge(PBankAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4547,12 +4599,16 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
             GiftBatchTDS GiftDS = new GiftBatchTDS();
 
+            TDataBase db = DBAccess.Connect("TestMergeGiftInfo_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            GiftDS.AGift.Merge(AGiftAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, DBAccess.GDBAccessObj.Transaction));
-            GiftDS.AGiftDetail.Merge(AGiftDetailAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            GiftDS.AGift.Merge(AGiftAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, Transaction));
+            GiftDS.AGiftDetail.Merge(AGiftDetailAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4574,7 +4630,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftRow.DonorKey, "merge gift info");
-            Assert.AreEqual(0, GiftDetailRow.RecipientKey, "merge gift info");
+            Assert.AreEqual(43000000, GiftDetailRow.RecipientKey, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientLedgerNumber, "merge gift info");
 
             // Checking the MergeTable
@@ -4722,15 +4778,19 @@ namespace Tests.MPartner.Server.PartnerMerge
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
             GiftBatchTDS GiftDS = new GiftBatchTDS();
+            TDataBase db = DBAccess.Connect("TestMergeRecurringGiftInfo_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
             GiftDS.ARecurringGift.Merge(ARecurringGiftAccess.LoadViaARecurringGiftBatch(ALedgerNumber, ABatchNumber,
-                    DBAccess.GDBAccessObj.Transaction));
+                    Transaction));
             GiftDS.ARecurringGiftDetail.Merge(ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(ALedgerNumber, ABatchNumber,
-                    DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+                    Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4752,7 +4812,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftRow.DonorKey, "merge gift info");
-            Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientKey, "merge gift info");
+            Assert.AreEqual(43000000, GiftDetailRow.RecipientKey, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientLedgerNumber, "merge gift info");
 
             // Checking the MergeTable
@@ -4777,6 +4837,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             int[] LocationKeys = new int[0];
             TVerificationResultCollection VerificationResult;
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            TDataBase db = DBAccess.Connect("TestMergeAPInfo");
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
@@ -4815,7 +4877,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             TAPTransactionWebConnector.CancelAPDocuments(LedgerNumber, DocumentID, true);
             AccountsPayableTDS APDS = TAPTransactionWebConnector.LoadAApSupplier(LedgerNumber, ToPartnerKey);
             APDS.AApSupplier.Rows[0].Delete();
-            AApSupplierAccess.SubmitChanges(APDS.AApSupplier, DBAccess.GDBAccessObj.Transaction);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);            
+            AApSupplierAccess.SubmitChanges(APDS.AApSupplier, Transaction);
+            Transaction.Commit();
             TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
@@ -4895,12 +4959,16 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
             AccountsPayableTDS APDS = new AccountsPayableTDS();
 
+            TDataBase db = DBAccess.Connect("TestMergeAPInfo_SecondaryAsserts");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            APDS.AApSupplier.Merge(AApSupplierAccess.LoadViaPPartner(AToPartnerKey, DBAccess.GDBAccessObj.Transaction));
-            APDS.AApDocument.Merge(AApDocumentAccess.LoadByPrimaryKey(AAPDocumentID, DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            APDS.AApSupplier.Merge(AApSupplierAccess.LoadViaPPartner(AToPartnerKey, Transaction));
+            APDS.AApDocument.Merge(AApDocumentAccess.LoadByPrimaryKey(AAPDocumentID, Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4980,9 +5048,13 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
-            PDataLabelTable DataLabelTable = PDataLabelAccess.LoadByPrimaryKey(DataLabelKey, DBAccess.GDBAccessObj.Transaction);
+            TDataBase db = DBAccess.Connect("TestMergePMData");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+            PDataLabelTable DataLabelTable = PDataLabelAccess.LoadByPrimaryKey(DataLabelKey, Transaction);
             DataLabelTable.Rows[0].Delete();
-            PDataLabelAccess.SubmitChanges(DataLabelTable, DBAccess.GDBAccessObj.Transaction);
+            PDataLabelAccess.SubmitChanges(DataLabelTable, Transaction);
+
+            Transaction.Commit();
         }
 
         /// <summary>
@@ -5001,6 +5073,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
             IndividualDataTDS IndividualDS = new IndividualDataTDS();
+
+            TDataBase db = DBAccess.Connect("TestMergePMData_Arrange");
 
             // create two new Person Partners, one family and PM Data for both Partners
             TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
@@ -5033,14 +5107,17 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
+            TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             // Submit the new DataLabel record to the database
-            PDataLabelAccess.SubmitChanges(DataLabel, DBAccess.GDBAccessObj.Transaction);
+            PDataLabelAccess.SubmitChanges(DataLabel, transaction);
+            transaction.Commit();
 
             // Submit the new Document record to the database
             MainDS.Merge(IndividualDS);
             Result = TIndividualDataWebConnector.SubmitChangesServerSide(ref IndividualDS,
                 ref MainDS,
-                DBAccess.GDBAccessObj.Transaction,
+                transaction,
                 out VerificationResult);
 
             // Guard Assertion
@@ -5060,13 +5137,17 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
             IndividualDataTDS IndividualDS = new IndividualDataTDS();
 
+            TDataBase db = DBAccess.Connect("TestMergePMData_SecondaryAsserts");
+            TDBTransaction transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            IndividualDS.PDataLabelValuePartner.Merge(PDataLabelValuePartnerAccess.LoadViaPDataLabel(ADataLabelKey, DBAccess.GDBAccessObj.Transaction));
-            IndividualDS.PmPassportDetails.Merge(PmPassportDetailsAccess.LoadViaPPerson(AToPartnerKey, DBAccess.GDBAccessObj.Transaction));
-            IndividualDS.PmPersonalData.Merge(PmPersonalDataAccess.LoadViaPPerson(AToPartnerKey, DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(transaction));
+            IndividualDS.PDataLabelValuePartner.Merge(PDataLabelValuePartnerAccess.LoadViaPDataLabel(ADataLabelKey, transaction));
+            IndividualDS.PmPassportDetails.Merge(PmPassportDetailsAccess.LoadViaPPerson(AToPartnerKey, transaction));
+            IndividualDS.PmPersonalData.Merge(PmPersonalDataAccess.LoadViaPPerson(AToPartnerKey, transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, transaction);
+            transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -5095,6 +5176,7 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge PM data");
+
         }
     }
 }
