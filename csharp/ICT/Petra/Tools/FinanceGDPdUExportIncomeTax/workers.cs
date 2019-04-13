@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,9 +64,11 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
 			persons.Constraints.Clear();
 
             TDBTransaction Transaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
+                    TDataBase db = Transaction.DataBaseObj;
+
                     // get all partners with a commitment period for this date range
                     // ignore non-native workers. field must be home office, or receiving field
                     string sql =
@@ -111,9 +113,9 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
                     param.Value = new DateTime(AYear, 1, 1);
                     Parameters.Add(param);                    
 
-                    DBAccess.GDBAccessObj.SelectDT(staffdata, sql.Replace("SELECT *", "SELECT s.*"), Transaction, Parameters.ToArray(), 0, 0);
-                    DBAccess.GDBAccessObj.SelectDT(partners, sql.Replace("SELECT *", "SELECT p.*"), Transaction, Parameters.ToArray(), 0, 0);
-                    DBAccess.GDBAccessObj.SelectDT(persons, sql.Replace("SELECT *", "SELECT per.*"), Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(staffdata, sql.Replace("SELECT *", "SELECT s.*"), Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(partners, sql.Replace("SELECT *", "SELECT p.*"), Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(persons, sql.Replace("SELECT *", "SELECT per.*"), Transaction, Parameters.ToArray(), 0, 0);
 
                 });
 

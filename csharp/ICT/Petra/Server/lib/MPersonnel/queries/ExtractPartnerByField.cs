@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -236,7 +236,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             // now run the database query
             TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
-            DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
+            DataTable partnerkeys = ATransaction.DataBaseObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
             // filter data by postcode (if applicable)
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             // now run the database query
             TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
             partnerkeys.Clear();
-            partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
+            partnerkeys = ATransaction.DataBaseObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
             // filter data by postcode (if applicable)
@@ -423,7 +423,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             // now run the database query
             TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
-            DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
+            DataTable partnerkeys = ATransaction.DataBaseObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
             // filter data by postcode (if applicable)

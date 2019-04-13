@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,17 +69,21 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
+            TDataBase db = DBAccess.Connect("GenerateInvoices");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // get a list of potential suppliers
             string sqlGetSupplierPartnerKeys =
                 "SELECT PUB_a_ap_supplier.p_partner_key_n, PUB_a_ap_supplier.a_currency_code_c " +
                 "FROM PUB_p_organisation, PUB_a_ap_supplier WHERE PUB_a_ap_supplier.p_partner_key_n = PUB_p_organisation.p_partner_key_n";
-            DataTable SupplierKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetSupplierPartnerKeys, "keys", null);
+            DataTable SupplierKeys = db.SelectDT(sqlGetSupplierPartnerKeys, "keys", Transaction);
 
             // get a list of potential expense account codes
             string sqlGetExpenseAccountCodes = "SELECT a_account_code_c FROM PUB_a_account WHERE a_ledger_number_i = " +
                                                FLedgerNumber.ToString() +
                                                " AND a_account_type_c = 'Expense' AND a_account_active_flag_l = true AND a_posting_status_l = true";
-            DataTable AccountCodes = DBAccess.GDBAccessObj.SelectDT(sqlGetExpenseAccountCodes, "codes", null);
+            DataTable AccountCodes = db.SelectDT(sqlGetExpenseAccountCodes, "codes", Transaction);
+            Transaction.Rollback();
 
             while (RecordNode != null)
             {
@@ -146,6 +150,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, APeriod, out PeriodStartDate, out PeriodEndDate, null);
 
+            TDataBase db = DBAccess.Connect("PostAndPayInvoices");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             List <OdbcParameter>parameters = new List <OdbcParameter>();
 
             OdbcParameter parameter;
@@ -159,7 +166,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             parameter.Value = PeriodEndDate;
             parameters.Add(parameter);
 
-            DBAccess.GDBAccessObj.SelectDT(MainDS.AApDocument, sqlLoadDocuments, null, parameters.ToArray(), -1, -1);
+            db.SelectDT(MainDS.AApDocument, sqlLoadDocuments, Transaction, parameters.ToArray(), -1, -1);
+            Transaction.Rollback();
 
             int countUnPosted = MainDS.AApDocument.Count;
 

@@ -79,10 +79,10 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             TDBTransaction Transaction = new TDBTransaction();
             DataTable balances = null;
-            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
-                    balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", Transaction);
+                    balances = Transaction.DataBaseObj.SelectDT(sql, "balances", Transaction);
                 });
 
             StringBuilder sb = new StringBuilder();

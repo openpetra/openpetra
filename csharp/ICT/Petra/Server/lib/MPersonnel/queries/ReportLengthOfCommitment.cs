@@ -273,7 +273,8 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             string SqlStmt = TDataBase.ReadSqlFile("Personnel.Reports.AllCommitments.sql", Defines);
             Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("GetLengthOfCommitment");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             try
             {
@@ -281,7 +282,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
 
                 LengthOfCommitmentReportTDSPmStaffDataTable CommitmentTable = new LengthOfCommitmentReportTDSPmStaffDataTable();
-                DBAccess.GDBAccessObj.SelectDT(CommitmentTable, SqlStmt, Transaction,
+                db.SelectDT(CommitmentTable, SqlStmt, Transaction,
                     SqlParameterList.ToArray(), 0, 0);
 
                 // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button

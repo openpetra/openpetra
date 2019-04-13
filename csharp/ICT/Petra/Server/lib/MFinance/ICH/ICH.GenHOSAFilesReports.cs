@@ -667,7 +667,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
          *  )
          * {
          *  TDBTransaction DBTransaction = new TDBTransaction();
-         *  DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref DBTransaction,
+         *  DBAccess.ReadTransaction(ref DBTransaction,
          *      delegate
          *      {
          *          ALedgerTable ALedger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, DBTransaction);

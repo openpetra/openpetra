@@ -175,26 +175,28 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
+                    TDataBase db = ReadTransaction.DataBaseObj;
+
                     // get a list of potential donors (all class FAMILY)
                     string sqlGetFamilyPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_family";
-                    DataTable FamilyKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFamilyPartnerKeys,
+                    DataTable FamilyKeys = db.SelectDT(sqlGetFamilyPartnerKeys,
                         "keys",
                         ReadTransaction);
 
                     // get a list of workers (all class FAMILY, with special type WORKER)
                     string sqlGetWorkerPartnerKeys =
                         "SELECT PUB_p_family.p_partner_key_n FROM PUB_p_family, PUB_p_partner_type WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_family.p_partner_key_n AND p_type_code_c = 'WORKER'";
-                    DataTable WorkerKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetWorkerPartnerKeys, "keys", ReadTransaction);
+                    DataTable WorkerKeys = db.SelectDT(sqlGetWorkerPartnerKeys, "keys", ReadTransaction);
 
                     // get a list of fields (all class UNIT, with unit type F)
                     string sqlGetFieldPartnerKeys =
                         String.Format(
                             "SELECT U.p_partner_key_n FROM PUB_p_unit U WHERE u_unit_type_code_c = 'F' AND EXISTS (SELECT * FROM PUB_a_valid_ledger_number V WHERE V.a_ledger_number_i = {0} AND V.p_partner_key_n = U.p_partner_key_n)",
                             FLedgerNumber);
-                    DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", ReadTransaction);
+                    DataTable FieldKeys = db.SelectDT(sqlGetFieldPartnerKeys, "keys", ReadTransaction);
 
                     // get a list of key ministries (all class UNIT, with unit type KEY-MIN), and their field ledger number and cost centre code
                     string sqlGetKeyMinPartnerKeys =
@@ -204,7 +206,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         "AND us.um_child_unit_key_n = u.p_partner_key_n " +
                         "AND vl.p_partner_key_n = us.um_parent_unit_key_n " +
                         "AND vl.a_ledger_number_i = " + FLedgerNumber.ToString();
-                    DataTable KeyMinistries = DBAccess.GDBAccessObj.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
+                    DataTable KeyMinistries = db.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
 
                     LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
 

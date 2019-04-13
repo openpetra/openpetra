@@ -1341,18 +1341,20 @@ namespace Ict.Petra.Server.MReporting.MPartner
                            " AND (p_partner_type.p_type_code_c LIKE 'EX-WORKER%'" +
                            " OR p_partner_type.p_type_code_c LIKE 'APPLIED%')))";
 
-            PartnerTable = DBAccess.GDBAccessObj.SelectDT(PartnerTable, Query, situation.GetDatabaseConnection().Transaction, PublicationCodesParameters.ToArray());
+            TDBTransaction transaction = situation.GetDatabaseConnection().Transaction;
+            TDataBase db = transaction.DataBaseObj;
+            PartnerTable = db.SelectDT(PartnerTable, Query, transaction, PublicationCodesParameters.ToArray());
 
             // get total number of active partners
-            FNumberOfActivePartner = PPartnerAccess.CountViaPPartnerStatus("ACTIVE", situation.GetDatabaseConnection().Transaction);
+            FNumberOfActivePartner = PPartnerAccess.CountViaPPartnerStatus("ACTIVE", transaction);
 
             PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
 
             // load all subscriptions for publications in the list
             Query = "SELECT * FROM p_subscription" +
                     " WHERE p_subscription.p_publication_code_c IN (" + PublicationCodesPlaceholders + ")";
-            SubscriptionTable = (PSubscriptionTable)DBAccess.GDBAccessObj.SelectDT(SubscriptionTable, Query,
-                situation.GetDatabaseConnection().Transaction, PublicationCodesParameters.ToArray());
+            SubscriptionTable = (PSubscriptionTable)db.SelectDT(SubscriptionTable, Query,
+                transaction, PublicationCodesParameters.ToArray());
 
             PPartnerLocationRow PartnerLocationRow;
 

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -84,12 +84,9 @@ namespace Ict.Petra.Server.App.Core.Security
             String AUserID,
             Int32 AProcessID)
         {
-            TDBTransaction WriteTransaction;
-
             SErrorLogTable ErrorLogTable;
             SErrorLogRow NewErrorLogRow;
             DateTime ErrorLogDateTime;
-            Boolean NewTransaction;
             String Context;
 
             ErrorLogTable = new SErrorLogTable();
@@ -118,28 +115,21 @@ namespace Ict.Petra.Server.App.Core.Security
             NewErrorLogRow.MessageLine3 = AMessageLine3;
             ErrorLogTable.Rows.Add(NewErrorLogRow);
 
-            // Save DataRow
-            WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDataBase db = DBAccess.Connect("AddErrorLogEntry");
+            TDBTransaction WriteTransaction = db.BeginTransaction(IsolationLevel.Serializable);
 
+            // Save DataRow
             try
             {
                 SErrorLogAccess.SubmitChanges(ErrorLogTable, WriteTransaction);
 
-                if (NewTransaction)
-                {
-                    WriteTransaction.Commit();
-                }
+                WriteTransaction.Commit();
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of the Error Log:" + Environment.NewLine + Exc.ToString());
 
-                if (NewTransaction)
-                {
-                    WriteTransaction.Rollback();
-                }
+                WriteTransaction.Rollback();
 
                 throw;
             }

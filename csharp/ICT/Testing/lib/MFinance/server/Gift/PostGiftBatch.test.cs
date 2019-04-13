@@ -135,6 +135,8 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void TestPostGiftBatchWithMotivationDetailCostCentre()
         {
+            TDataBase db = DBAccess.Connect("TestPostGiftBatchWithMotivationDetailCostCentre");
+
             // import a gift batch, that we will modify later
             TGiftImporting importer = new TGiftImporting();
 
@@ -170,7 +172,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool NewTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             // create a new costcentre
             const string newCostCentre = "100001";
@@ -219,7 +221,7 @@ namespace Tests.MFinance.Server.Gift
                 Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
 
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
             giftdetails = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, BatchNumber, 1, 1, null, Transaction);
             Assert.AreEqual(newCostCentre, giftdetails[0].CostCentreCode, "cost centre code should have been adjusted because of the motivation detail");
             Transaction.Commit();
@@ -233,7 +235,8 @@ namespace Tests.MFinance.Server.Gift
         {
             bool NewTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("TestProcessAdminFees");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             TVerificationResultCollection VerficationResults = null;
 
@@ -284,7 +287,8 @@ namespace Tests.MFinance.Server.Gift
 
             //Reset
             NewTransaction = false;
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -321,10 +325,6 @@ namespace Tests.MFinance.Server.Gift
             Int64 PartnerKey = 73000000;
             Int64 RecipientLedgerNumber = 0;
 
-            //bool NewTransaction = false;
-
-            //TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
             try
             {
                 RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(PartnerKey);
@@ -333,13 +333,6 @@ namespace Tests.MFinance.Server.Gift
             {
                 throw;
             }
-            //finally
-            //{
-            //if (NewTransaction)
-            //{
-            //    DBAccess.GDBAccessObj.RollbackTransaction();
-            //}
-            //}
 
             //TODO the value to check for needs to be updated oncw workwer field is implemented.
             //TODO If this first one works, try different permatations for Assert.AreEqual
@@ -398,8 +391,7 @@ namespace Tests.MFinance.Server.Gift
             ATransactionRow TransactionRow = null;
             Int32 GLBatchNumber = -1;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -429,8 +421,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -493,8 +484,7 @@ namespace Tests.MFinance.Server.Gift
             AGiftDetailRow PositiveGiftDetailRow = null;
             AGiftDetailRow NegativeGiftDetailRow = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -518,8 +508,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -726,8 +715,7 @@ namespace Tests.MFinance.Server.Gift
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
             AGiftDetailRow GiftDetailRow = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -754,8 +742,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool SubmissionOK = true;
             Transaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -811,8 +798,7 @@ namespace Tests.MFinance.Server.Gift
             TDBTransaction Transaction = new TDBTransaction();
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -830,8 +816,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

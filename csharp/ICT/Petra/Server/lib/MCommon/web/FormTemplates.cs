@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanb
+//       alanb, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -325,8 +325,7 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
 
                 TDBTransaction Transaction = new TDBTransaction();
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                DBAccess.ReadTransaction(
                     ref Transaction,
                     delegate
                     {

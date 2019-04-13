@@ -112,9 +112,11 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
             ATransactionTable allTransactionsInJournal = new ATransactionTable();
             AGiftBatchTable giftbatches = new AGiftBatchTable();
             AAccountTable accounts = new AAccountTable();
-            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
+                    TDataBase db = Transaction.DataBaseObj;
+
                     string sql =
                         String.Format("SELECT T.*, B.{4} AS a_transaction_date_d " +
                             "FROM PUB_{8} AS B, PUB_{7} AS T " +
@@ -147,7 +149,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
                             ATransactionTable.GetReferenceDBName(),
                             "'" + AIgnoreReferences.Replace(",", "','") + "'");
 
-                    transactions = (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(transactions, sql, Transaction, null, 0, 0);
+                    transactions = (ATransactionTable)db.SelectDT(transactions, sql, Transaction, null, 0, 0);
 
                     // get the analysis attributes
                     sql =
@@ -172,7 +174,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
                             ATransactionTable.GetTableDBName(),
                             ABatchTable.GetBatchYearDBName());
 
-                    DBAccess.GDBAccessObj.SelectDT(TransAnalAttrib, sql, Transaction, null, 0, 0);
+                    db.SelectDT(TransAnalAttrib, sql, Transaction, null, 0, 0);
 
                     TransAnalAttrib.DefaultView.Sort =
                         ATransAnalAttribTable.GetBatchNumberDBName() + "," +
@@ -205,7 +207,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
                             batchnumbers.ToString() + "-1");
 
                     allTransactionsInJournal =
-                        (ATransactionTable)DBAccess.GDBAccessObj.SelectDT(allTransactionsInJournal, sql, Transaction, null, 0, 0);
+                        (ATransactionTable)db.SelectDT(allTransactionsInJournal, sql, Transaction, null, 0, 0);
 
                     allTransactionsInJournal.DefaultView.Sort =
                         ATransactionTable.GetBatchNumberDBName() + "," +
@@ -222,7 +224,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
                             AGiftBatchTable.GetBatchYearDBName(),
                             AFinancialYear);
 
-                    DBAccess.GDBAccessObj.SelectDT(giftbatches, sql, Transaction, null, 0, 0);
+                    db.SelectDT(giftbatches, sql, Transaction, null, 0, 0);
                     giftbatches.DefaultView.Sort = AGiftBatchTable.GetBatchNumberDBName();
 
 
@@ -233,7 +235,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExportIncomeTax
                             AAccountTable.GetLedgerNumberDBName(),
                             ALedgerNumber);
 
-                    DBAccess.GDBAccessObj.SelectDT(accounts, sql, Transaction, null, 0, 0);
+                    db.SelectDT(accounts, sql, Transaction, null, 0, 0);
                     accounts.DefaultView.Sort = AAccountTable.GetAccountCodeDBName();
                 });
 

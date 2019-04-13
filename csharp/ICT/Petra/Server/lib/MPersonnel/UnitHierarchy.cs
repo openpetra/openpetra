@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     PPartnerTable PartnerTbl = PPartnerAccess.LoadViaPPartnerClasses("UNIT", Transaction);
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
+                    Transaction.DataBaseObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
 
                     NewTable.ThrowAwayAfterSubmitChanges = true;  // I'm not interested in this table after this Submit:
                     UmUnitStructureAccess.SubmitChanges(NewTable, Transaction);

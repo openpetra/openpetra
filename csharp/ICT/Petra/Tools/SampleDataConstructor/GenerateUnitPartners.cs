@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,8 +68,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -149,9 +148,14 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             PartnerImportExportTDS PartnerDS = new PartnerImportExportTDS();
 
+            TDataBase db = DBAccess.Connect("GenerateKeyMinistries");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // get a list of fields (all class UNIT, with unit type F)
             string sqlGetFieldPartnerKeys = "SELECT p_partner_key_n, p_unit_name_c FROM PUB_p_unit WHERE u_unit_type_code_c = 'F'";
-            DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", null);
+            DataTable FieldKeys = db.SelectDT(sqlGetFieldPartnerKeys, "keys", Transaction);
+
+            Transaction.Rollback();
 
             Int32 NumberOfPartnerKeysReserved = 100;
             Int64 NextPartnerKey = TNewPartnerKey.ReservePartnerKeys(-1, ref NumberOfPartnerKeysReserved);

@@ -57,7 +57,6 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
         public static DataTable GetAvailableSites()
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
-            bool SubmissionOK = false;
 
             DataTable SitesTable = new DataTable();
             DataTable UnusedSitesTable = new DataTable();
@@ -80,8 +79,8 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
             UsedSitesTable.Columns.Add(new DataColumn(SiteKey, typeof(Int64)));
             UsedSitesTable.Columns.Add(new DataColumn(SiteShortName, typeof(string)));
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction, ref SubmissionOK,
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
                 delegate
                 {
                     try
@@ -99,7 +98,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                         // sort rows according to name
                         SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                        DataTable sites = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "fields", ReadTransaction);
+                        DataTable sites = ReadTransaction.DataBaseObj.SelectDT(SqlStmt, "fields", ReadTransaction);
 
                         foreach (DataRow tempSiteRow in sites.Rows)
                         {
@@ -167,7 +166,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
 
             // save site keys that can be used in p_partner_ledger
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -180,7 +179,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                             PartnerLedgerRow.PartnerKey = SiteKey;
 
                             // calculate last partner id, from older uses of this ledger number
-                            object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
+                            object MaxExistingPartnerKeyObj = Transaction.DataBaseObj.ExecuteScalar(
                                 String.Format("SELECT MAX(" + PPartnerTable.GetPartnerKeyDBName() + ") FROM " + PPartnerTable.GetTableDBName() +
                                     " WHERE " + PPartnerTable.GetPartnerKeyDBName() + " > {0} AND " + PPartnerTable.GetPartnerKeyDBName() +
                                     " < {1}",

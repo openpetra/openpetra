@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,13 +57,18 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             PartnerEditTDS MainDS = new PartnerEditTDS();
             PersonnelTDS PersonnelDS = new PersonnelTDS();
 
+            TDataBase db = DBAccess.Connect("GenerateWorkers");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // get a list of fields (all class UNIT, with unit type F)
             string sqlGetFieldPartnerKeys = "SELECT p_partner_key_n, p_unit_name_c FROM PUB_p_unit WHERE u_unit_type_code_c = 'F'";
-            DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", null);
+            DataTable FieldKeys = db.SelectDT(sqlGetFieldPartnerKeys, "keys", Transaction);
 
             // get a list of banks (all class BANK)
             string sqlGetBankPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_bank";
-            DataTable BankKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetBankPartnerKeys, "keys", null);
+            DataTable BankKeys = db.SelectDT(sqlGetBankPartnerKeys, "keys", Transaction);
+
+            Transaction.Rollback();
 
             // AlanP: May 2016 - We may no longer need the UTF8 because the method now automatically discovers the encoding even with no BOM
             XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AInputBeneratorFile, ",", Encoding.UTF8);

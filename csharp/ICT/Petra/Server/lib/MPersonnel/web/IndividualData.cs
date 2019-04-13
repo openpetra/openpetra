@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             IndividualDataTDS ReturnValue = new IndividualDataTDS();
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -281,9 +281,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             IndividualDataDS.Merge(AIndividualDataDS);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

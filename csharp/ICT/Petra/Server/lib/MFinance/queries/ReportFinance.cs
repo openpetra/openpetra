@@ -118,12 +118,12 @@ namespace Ict.Petra.Server.MFinance.queries
          *  DataTable resultTable = null;
          *
          *  TDBTransaction Transaction = new TDBTransaction();
-         *  DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
+         *  DBAccess.ReadTransaction(ref Transaction,
          *      delegate
          *      {
          *
          *          // now run the database query
-         *          resultTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "result", Transaction,
+         *          resultTable = Transaction.DataBaseObj.SelectDT(SqlStmt, "result", Transaction,
          *              SqlParameterList.ToArray());
          *      });
          *  // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
