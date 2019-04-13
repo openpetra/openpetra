@@ -151,13 +151,14 @@ namespace Tests.MFinance.Server.ICH
 //
 //              bool NewTransaction = false;
 //
-//              TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+//              TDataBase db = DBAccess.Connect("TestIsValidPostingPeriod");
+//              TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 //
 //			Assert.IsTrue(TFinancialYear.IsValidPostingPeriod(FLedgerNumber, Convert.ToDateTime("15-Sep-2011"), out DateEffectivePeriodNumber, out DateEffectiveYearNumber, Transaction),"Period is not valid");
 //
 //              if (NewTransaction)
 //              {
-//                      DBAccess.GDBAccessObj.RollbackTransaction();
+//                      Transaction.Rollback();
 //              }
 //        }
 
@@ -171,7 +172,7 @@ namespace Tests.MFinance.Server.ICH
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
@@ -212,7 +213,7 @@ namespace Tests.MFinance.Server.ICH
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);

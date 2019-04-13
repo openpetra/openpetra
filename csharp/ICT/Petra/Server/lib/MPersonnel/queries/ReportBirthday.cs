@@ -64,12 +64,13 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             string SqlStmt = TDataBase.ReadSqlFile("Personnel.Reports.GetFamilyKeyOfPerson.sql", Defines);
             Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("GetFamilyKeys");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             try
             {
                 // now run the database query
-                DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "result", Transaction,
+                DataTable resultTable = db.SelectDT(SqlStmt, "result", Transaction,
                     SqlParameterList.ToArray());
 
                 // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
@@ -221,13 +222,14 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             string SqlStmt = TDataBase.ReadSqlFile("Personnel.Reports.Birthday.sql", Defines);
             Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("CalculateBirthdays");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             try
             {
                 // now run the database query
                 TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
-                DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "result", Transaction,
+                DataTable resultTable = db.SelectDT(SqlStmt, "result", Transaction,
                     SqlParameterList.ToArray());
 
                 // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button

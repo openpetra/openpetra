@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Create Personnel Form Letter"));
 
             TDBTransaction ReadTransaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -138,7 +138,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -426,7 +426,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                      * parameters[0] = new OdbcParameter("PartnerKey", OdbcType.BigInt);
                      * parameters[0].Value = APartnerKey;
                      *
-                     * DataTable travelData = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "TravelDates", ReadTransaction, parameters);
+                     * DataTable travelData = ReadTransaction.DataBaseObj.SelectDT(SqlStmt, "TravelDates", ReadTransaction, parameters);
                      *
                      * for (int i = 0; i < travelData.Rows.Count; i++)
                      * {
@@ -588,7 +588,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

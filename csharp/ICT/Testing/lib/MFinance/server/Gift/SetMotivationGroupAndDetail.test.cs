@@ -313,7 +313,8 @@ namespace Tests.MFinance.Server.Gift
             Int64 retVal = 0;
             bool NewTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDataBase db = DBAccess.Connect("GetLedgerPartnerKey");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {

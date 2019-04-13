@@ -539,12 +539,11 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
             TDBTransaction Transaction = new TDBTransaction();
             DataTable tempTbl = new DataTable();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
-                    tempTbl = DBAccess.GDBAccessObj.SelectDT(StrSql, "result", Transaction);
+                    tempTbl = Transaction.DataBaseObj.SelectDT(StrSql, "result", Transaction);
                 });
 
             DataTable resultTbl = tempTbl.Clone();

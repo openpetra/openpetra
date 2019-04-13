@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             string ReturnValue = "";
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

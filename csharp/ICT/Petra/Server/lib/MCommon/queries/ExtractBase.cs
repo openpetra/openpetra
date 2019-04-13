@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MCommon.queries
 
             int ExtractId = -1;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     // get the partner keys from the database
@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MCommon.queries
 
                         // now run the database query
                         TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
-                        DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
+                        DataTable partnerkeys = Transaction.DataBaseObj.SelectDT(ASqlStmt, "partners", Transaction,
                             SqlParameterList.ToArray());
 
                         // filter data by postcode (if applicable)
@@ -521,8 +521,8 @@ namespace Ict.Petra.Server.MCommon.queries
             {
                 TDBTransaction ReadTransaction = new TDBTransaction();
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                DBAccess.ReadTransaction(
+                    ref ReadTransaction,
                     delegate
                     {
                         FPostcodeRangeTable = PPostcodeRangeAccess.LoadViaPPostcodeRegion(APostalRegion, ReadTransaction);

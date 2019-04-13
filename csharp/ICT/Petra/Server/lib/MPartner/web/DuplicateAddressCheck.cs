@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Checking for duplicate addresses"));
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     // get all locations from database,

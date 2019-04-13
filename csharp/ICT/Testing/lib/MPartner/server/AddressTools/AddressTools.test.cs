@@ -71,7 +71,7 @@ namespace Tests.MPartner.Server.AddressTools
             string Query = string.Format("SELECT * FROM p_location WHERE p_site_key_n = {0} AND p_location_key_i = {1}",
                 DomainManager.GSiteKey,
                 LocationKey);
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ATransaction,
                 delegate
                 {
@@ -215,7 +215,7 @@ namespace Tests.MPartner.Server.AddressTools
             DataTable DonorAddresses = null;
 
             // Act
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ATransaction,
                 delegate
                 {

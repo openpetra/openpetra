@@ -141,28 +141,17 @@ namespace Ict.Petra.Server.MCommon
             TDataBase ADataBase = null)
         {
             PPartnerRow ReturnValue = null;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-            PPartnerTable PartnerTable;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            PPartnerTable PartnerTable = null;
 
             if (APartnerKey != 0)
             {
-                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                try
-                {
-                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-                }
-                finally
-                {
-                    if (NewTransaction)
+                TDataBase db = DBAccess.Connect("CheckPartnerExists2", ADataBase);
+                db.ReadTransaction(ref ReadTransaction,
+                    delegate
                     {
-                        ReadTransaction.Commit();
-                        TLogging.LogAtLevel(7, "CheckPartnerExists: committed own transaction.");
-                    }
-                }
+                        PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+                    });
 
                 if (PartnerTable.Rows.Count != 0)
                 {
@@ -318,18 +307,7 @@ namespace Ict.Petra.Server.MCommon
             // need to initialize the database session
             TSession.InitThread(ASessionID);
 
-            if (!DBAccess.GDBAccessObj.ConnectionOK)
-            {
-                // we need a separate database object for this thread, since we cannot access the session object
-                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "");
-                ownDatabaseConnection = true;
-            }
+            TDataBase db = DBAccess.Connect("ExecuteQuery", ADataBase);
 
             try
             {
@@ -337,7 +315,7 @@ namespace Ict.Petra.Server.MCommon
                 TProgressTracker.InitProgressTracker(FProgressID, "Executing Query...", 100.0m);
 
                 // Create SQL statement and execute it to return all records
-                ExecuteFullQuery(AContext, ADataBase);
+                ExecuteFullQuery(AContext, db);
             }
             catch (Exception exp)
             {
@@ -356,11 +334,6 @@ namespace Ict.Petra.Server.MCommon
                  * --> WOULD BRING DOWN THE WHOLE PETRASERVER PROCESS AS A CONSEQUENCE! <--
                  *
                  */
-            }
-
-            if (ownDatabaseConnection)
-            {
-                DBAccess.GDBAccessObj.CloseDBConnection();
             }
         }
 
@@ -412,7 +385,7 @@ namespace Ict.Petra.Server.MCommon
                     -1, AContext + " Transaction");
 
                 // Fill temporary table with query results (all records)
-                FTotalRecords = DBAccess.GetDBAccessObj(ReadTransaction).SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
+                FTotalRecords = ADataBase.SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
                     ref FTmpDataTable, out FDataAdapterCanceller,
                     delegate(ref IDictionaryEnumerator AEnumerator)
                     {
@@ -1063,9 +1036,7 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
         public static TDataBase EstablishDBConnection(String AConnectionName = "")
         {
-            TDataBase FDBAccessObj = DBAccess.Connect(
-                AConnectionName);
-            return FDBAccessObj;
+            return DBAccess.Connect(AConnectionName);
         }
 
         /// <summary>

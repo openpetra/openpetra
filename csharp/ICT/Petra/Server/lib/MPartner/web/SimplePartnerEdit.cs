@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction( ref Transaction,
+            DBAccess.ReadTransaction( ref Transaction,
                 delegate
                 {
                     PCountryAccess.LoadAll(MainDS, Transaction);
@@ -144,7 +144,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction( ref Transaction,
+            DBAccess.ReadTransaction( ref Transaction,
                 delegate
                 {
                     PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
@@ -281,7 +281,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             bool SubmissionOK = false;
             bool ImportDefaultAcquCodeExists = false;
 
-            DBAccess.GDBAccessObj.ReadTransaction( ref ReadTransaction,
+            DBAccess.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     ImportDefaultAcquCodeExists = PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT,
@@ -530,7 +530,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool WrongCountryCode = false;
 
-            DBAccess.GDBAccessObj.ReadTransaction( ref Transaction,
+            DBAccess.ReadTransaction( ref Transaction,
                 delegate
                 {
                     WrongCountryCode = !PCountryAccess.Exists(SaveDS.PLocation[0].CountryCode, Transaction);

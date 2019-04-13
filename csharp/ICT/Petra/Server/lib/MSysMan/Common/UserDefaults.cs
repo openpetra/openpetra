@@ -696,7 +696,8 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                     if (AWriteTransaction == null)
                     {
-                        WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TDataBase db = DBAccess.Connect("SaveUserDefaultsTable");
+                        WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                             TEnforceIsolationLevel.eilMinimum,
                             out NewTransaction);
                     }

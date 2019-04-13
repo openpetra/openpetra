@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             Boolean ReturnValue = false;
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -260,7 +260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -283,7 +283,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -319,7 +319,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -397,7 +397,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             DataTable dt = new DataTable();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

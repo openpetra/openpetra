@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,9 +50,13 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <param name="AInputBeneratorFile"></param>
         public static void GenerateFamilyPartners(string AInputBeneratorFile)
         {
+            TDataBase db = DBAccess.Connect("GenerateFamilyPartners");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // get a list of banks (all class BANK)
             string sqlGetBankPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_bank";
-            DataTable BankKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetBankPartnerKeys, "keys", null);
+            DataTable BankKeys = db.SelectDT(sqlGetBankPartnerKeys, "keys", Transaction);
+            Transaction.Rollback();
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 

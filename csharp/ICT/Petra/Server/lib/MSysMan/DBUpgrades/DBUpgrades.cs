@@ -42,9 +42,17 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         /// </summary>
         private static TFileVersionInfo GetCurrentDBVersion()
         {
-            string currentVersion = (string)DBAccess.GDBAccessObj.ExecuteScalar(
-                "SELECT s_default_value_c FROM s_system_defaults where s_default_code_c='CurrentDatabaseVersion'",
-                IsolationLevel.ReadUncommitted);
+            TDataBase db = DBAccess.Connect("GetCurrentDBVersion");
+            TDBTransaction Transaction = new TDBTransaction();
+            string currentVersion = String.Empty;
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    currentVersion = (string)db.ExecuteScalar(
+                        "SELECT s_default_value_c FROM s_system_defaults where s_default_code_c='CurrentDatabaseVersion'",
+                        Transaction);
+                });
 
             return new TFileVersionInfo(currentVersion);
         }
