@@ -506,7 +506,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     OdbcParameter param = new OdbcParameter("branchcode", OdbcType.VarChar);
                     param.Value = BankSortCode;
                     PBankTable bank = new PBankTable();
-                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ATransaction, new OdbcParameter[] {
+                    ATransaction.DataBaseObj.SelectDT(bank, sqlFindBankBySortCode, ATransaction, new OdbcParameter[] {
                             param
                         }, -1, -1);
 
@@ -645,7 +645,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             TImportExportYml.NewPartnerKey = -1;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

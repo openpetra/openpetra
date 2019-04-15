@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

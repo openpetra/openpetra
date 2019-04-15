@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Create Partner Form Letter"));
 
             TDBTransaction ReadTransaction = new TDBTransaction();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -178,7 +178,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -213,7 +213,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

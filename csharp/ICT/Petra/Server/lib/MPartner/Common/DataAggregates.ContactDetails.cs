@@ -214,8 +214,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             TDBTransaction ReadTransaction = new TDBTransaction();
             PPartnerAttributeTable PartnerAttributeDT = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -264,8 +263,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             PPartnerAttributeTable ReturnValue = null;
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

@@ -45,7 +45,7 @@ namespace Ict.Petra.Server.MPartner.Import
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

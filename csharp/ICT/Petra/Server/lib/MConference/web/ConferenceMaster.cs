@@ -64,8 +64,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -117,9 +116,8 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
         private static void CreateOptionTypes()
         {
-            TDBTransaction Transaction;
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDataBase db = DBAccess.Connect("CreateOptionTypes");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             bool RowsToAdd = false;
 

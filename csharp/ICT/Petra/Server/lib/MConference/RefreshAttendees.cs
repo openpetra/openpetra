@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MConference.Applications
             PmShortTermApplicationTable ShortTermAppTable;
             ConferenceApplicationTDS MainDS;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MConference.Applications
             // make sure outreach codes are up to date in case it has changed in Unit record
             RefreshOutreachCode(AConferenceKey);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

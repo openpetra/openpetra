@@ -343,8 +343,7 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction Transaction = new TDBTransaction();
             bool FoundBestAddress = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

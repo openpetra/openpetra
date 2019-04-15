@@ -67,7 +67,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetOutreachOptions");
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -138,7 +139,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetConferences called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetConferences");
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -221,7 +223,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetEarliestAndLatestDates called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetEarliestAndLatestDate");
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -328,7 +331,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.ReadTransaction(ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     /* Load data */
@@ -432,7 +435,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetFieldUnits called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetFieldUnits");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -572,7 +577,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetSendingFieldsForOneConference called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetSendingFieldsForOneConference");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -641,7 +648,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetAllSendingFields called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetAllSendingFields");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -717,7 +726,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldsForOneConference called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetReceivingFieldsForOneConference");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -755,7 +766,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetAllReceivingFields called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetAllReceivingFields");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -819,7 +832,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromGiftDestination called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetReceivingFieldFromGiftDestination");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -878,7 +893,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromShortTermTable called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetReceivingFieldFromShortTermTable");
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -968,7 +984,8 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachPrefix: called.");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+            TDataBase db = DBAccess.Connect("GetConferencePrefix");
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 

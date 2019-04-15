@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -100,8 +100,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction WriteTransaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, ref WriteTransaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref WriteTransaction, ref SubmissionOK,
                 delegate
                 {
                     var extractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, WriteTransaction).AsEnumerable();
@@ -155,7 +154,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -218,7 +217,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             Boolean NewTransaction;
             DataTable Contacts = new DataTable();
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.Connect("FindContacts");
+            TDBTransaction WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
@@ -311,7 +311,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 TEnforceIsolationLevel.eilMinimum, ref Transaction,
                 delegate
                 {
@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             bool returnValue = false;
             TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -375,7 +375,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

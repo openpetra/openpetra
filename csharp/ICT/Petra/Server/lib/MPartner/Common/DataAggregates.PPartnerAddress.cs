@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             ParametersArray[0].Value = (System.Object)(NewLocationRowSaved.SiteKey);
                             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
                             ParametersArray[1].Value = (System.Object)(AOriginalLocationKey.LocationKey);
-                            PartnerLocationModifyDS = DBAccess.GDBAccessObj.Select(PartnerLocationModifyDS,
+                            PartnerLocationModifyDS = ASubmitChangesTransaction.DataBaseObj.Select(PartnerLocationModifyDS,
                                 "SELECT * " + "FROM PUB_" + PPartnerLocationTable.GetTableDBName() + ' ' + "WHERE " +
                                 PPartnerLocationTable.GetPartnerKeyDBName() + " IN (" + OtherPartnerKeys + ") " + "AND " +
                                 PPartnerLocationTable.GetSiteKeyDBName() + " = ? " + "AND " + PPartnerLocationTable.GetLocationKeyDBName() + " = ?",
@@ -741,7 +741,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 ParametersArray[1].Value = (System.Object)(ALocationRow.SiteKey);
                 ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
                 ParametersArray[2].Value = (System.Object)(ALocationRow.LocationKey);
-                DataTable OtherPartnerLocationReferencesDT = DBAccess.GDBAccessObj.SelectDT(
+                DataTable OtherPartnerLocationReferencesDT = AReadTransaction.DataBaseObj.SelectDT(
                     "SELECT PUB_" + PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + ", " +
                     PPartnerTable.GetPartnerShortNameDBName() + ", " +
                     PPartnerTable.GetPartnerClassDBName() + ", " + PPartnerLocationTable.GetTelephoneNumberDBName() + ", " +
@@ -1055,7 +1055,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             LocationKeyInString = LocationKeyInString.Substring(0, LocationKeyInString.Length - 1);
 
             // Can't use the DataStore here since the query contains an IN operator...
-            OtherLocations = Convert.ToInt16(DBAccess.GDBAccessObj.ExecuteScalar(
+            OtherLocations = Convert.ToInt16(AReadTransaction.DataBaseObj.ExecuteScalar(
                     "SELECT COUNT(*) " + "FROM PUB_" + PPartnerLocationTable.GetTableDBName() + ' ' +
                     "WHERE " + PPartnerLocationTable.GetPartnerKeyDBName() + " = ? " +
                     "AND " + PPartnerLocationTable.GetLocationKeyDBName() + " NOT IN " +
@@ -1335,7 +1335,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 MatchingLocationsDT = new PLocationTable();
 
                 // run query to find similar locations
-                DBAccess.GDBAccessObj.SelectDT(MatchingLocationsDT, sqlLoadSimilarAddresses, AReadTransaction, parameters, 0, 0);
+                AReadTransaction.DataBaseObj.SelectDT(MatchingLocationsDT, sqlLoadSimilarAddresses, AReadTransaction, parameters, 0, 0);
 
                 /*
                  * Note: County and Address3 are not searched for - we are looking for a

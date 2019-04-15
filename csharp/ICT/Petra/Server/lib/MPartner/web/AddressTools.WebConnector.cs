@@ -49,7 +49,8 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
             out string ACountryNameLocal)
         {
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.Connect("GetBestAddress");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             bool ResultValue = false;

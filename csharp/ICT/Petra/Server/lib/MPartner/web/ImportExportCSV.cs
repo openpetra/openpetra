@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.WriteTransaction(ref Transaction,
+            DBAccess.WriteTransaction(ref Transaction,
                 ref SubmissionOK,
                 delegate
                 {
@@ -670,7 +670,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     // we need to create a new application
                     // initialize GenApp record
                     GenAppRow.PartnerKey = APartnerKey;
-                    GenAppRow.ApplicationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue("seq_application", ATransaction);
+                    GenAppRow.ApplicationKey = (int)ATransaction.DataBaseObj.GetNextSequenceValue("seq_application", ATransaction);
                     GenAppRow.OldLink =
                         TSystemDefaults.GetSiteKeyDefault() + ";" + GenAppRow.ApplicationKey.ToString();
                     GenAppRow.RegistrationOffice = DomainManager.GSiteKey; // When this is imported, RegistrationOffice can't be null.

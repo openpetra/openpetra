@@ -2475,7 +2475,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 TDBTransaction Transaction = new TDBTransaction();
                 bool SubmissionOK = false;
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                DBAccess.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate

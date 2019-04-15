@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MConference.Applications
             List <Int64>AllowedRegistrationOffices = new List <long>();
 
             // get all offices that have registrations for this event
-            DataTable offices = DBAccess.GDBAccessObj.SelectDT(
+            DataTable offices = ATransaction.DataBaseObj.SelectDT(
                 String.Format("SELECT DISTINCT {0} FROM PUB_{1}",
                     PmShortTermApplicationTable.GetRegistrationOfficeDBName(),
                     PmShortTermApplicationTable.GetTableDBName()),
@@ -118,7 +118,8 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             // TODO: check for permissions for just one specific office, linked from the config file?
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("IsConferenceOrganisingOffice");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             List <Int64>AllowedRegistrationOffices = new List <long>();
             try
@@ -163,9 +164,7 @@ namespace Ict.Petra.Server.MConference.Applications
             TDBTransaction Transaction = new TDBTransaction();
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -417,7 +416,8 @@ namespace Ict.Petra.Server.MConference.Applications
         public static PPartnerTable GetRegistrationOffices()
         {
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("GetRegistrationOffices");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             PPartnerTable result = new PPartnerTable();
 

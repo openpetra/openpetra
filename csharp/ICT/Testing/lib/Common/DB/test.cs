@@ -868,7 +868,8 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
                 return;
             }
 
-            TDBTransaction FirstTransaction = DBAccess.GDBAccessObj.BeginTransaction(ATransactionName : "FirstTransaction");
+            TDataBase db = DBAccess.Connect("TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_CantJoinExistingTransaction");
+            TDBTransaction FirstTransaction = db.BeginTransaction(ATransactionName : "FirstTransaction");
             TDBTransaction ReadTransaction = new TDBTransaction();
             int Result = 0;
 
