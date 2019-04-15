@@ -277,14 +277,14 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             TDBTransaction Transaction=new TDBTransaction();
             DBAccess.ReadTransaction(
-                ref Transaction
+                ref Transaction,
                 delegate
                 {
                     if (ADataTable is PcConferenceTable)
                     {
-                        ReturnValue = CountByPrimaryKey(APrimaryKeyValues, ReadTransaction, true, out VerificationResult);
+                        ReturnValue = CountByPrimaryKey(APrimaryKeyValues, Transaction, true, out VerificationResult);
                     }
-            }
+                });
 
             AVerificationResult = VerificationResult;
 
@@ -368,32 +368,32 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             // make sure outreach codes are up to date in case it has changed in Unit record
             TAttendeeManagement.RefreshOutreachCode(AConferenceKey);
 
-            TDBTransaction ReadTransaction = new TDBTransaction();
-            DBAccess.ReadTransaction(
-                ref ReadTransaction,
-                delegate
+            TDataBase db = DBAccess.Connect("GetConferenceApplications");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, ReadTransaction);
+
+            if (ConferenceTable.Count == 0)
+            {
+                ReadTransaction.Rollback();
+                throw new Exception("Cannot find conference " + AConferenceKey.ToString("0000000000"));
+            }
+
+            string OutreachPrefix = ConferenceTable[0].OutreachPrefix;
+
+            // load application data for all conference attendees from db
+            TApplicationManagement.GetApplications(ref AMainDS, AConferenceKey, OutreachPrefix, "all", -1, true, null, false);
+
+            // obtain PPartner records for all the home offices
+            foreach (PcAttendeeRow AttendeeRow in AMainDS.PcAttendee.Rows)
+            {
+                if (AMainDS.PPartner.Rows.Find(new object[] { AttendeeRow.HomeOfficeKey }) == null)
                 {
-                    PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, ReadTransaction);
+                    PPartnerAccess.LoadByPrimaryKey(AMainDS, AttendeeRow.HomeOfficeKey, ReadTransaction);
+                }
+            }
 
-                    if (ConferenceTable.Count == 0)
-                    {
-                        throw new Exception("Cannot find conference " + AConferenceKey.ToString("0000000000"));
-                    }
-
-                    string OutreachPrefix = ConferenceTable[0].OutreachPrefix;
-
-                    // load application data for all conference attendees from db
-                    TApplicationManagement.GetApplications(ref AMainDS, AConferenceKey, OutreachPrefix, "all", -1, true, null, false);
-
-                    // obtain PPartner records for all the home offices
-                    foreach (PcAttendeeRow AttendeeRow in AMainDS.PcAttendee.Rows)
-                    {
-                        if (AMainDS.PPartner.Rows.Find(new object[] { AttendeeRow.HomeOfficeKey }) == null)
-                        {
-                            PPartnerAccess.LoadByPrimaryKey(AMainDS, AttendeeRow.HomeOfficeKey, ReadTransaction);
-                        }
-                    }
-                });
+            ReadTransaction.Rollback();
 
             return true;
         }
