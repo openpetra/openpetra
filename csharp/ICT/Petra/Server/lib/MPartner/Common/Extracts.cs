@@ -78,7 +78,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             TLogging.LogAtLevel(9, "CreateNewExtract called!");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     // Check if there is already an extract with the extract name
@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             Boolean ExtractNotDeletable = false;
             TVerificationResult VerificationResult = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
@@ -199,8 +199,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             Boolean ReturnValue = false;
             MExtractMasterRow TemplateRow;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -247,8 +246,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             TDBTransaction Transaction = new TDBTransaction();
             Int32 KeyCount = 0;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -282,7 +280,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             bool SubmissionOK = false;
             TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     MExtractMasterTable ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId,
@@ -354,7 +352,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             if (APartnerKey > 0)
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                     delegate
                     {
                         /*
@@ -606,7 +604,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     // Pre-process the table to remove partner rows that do not match the filter requirements

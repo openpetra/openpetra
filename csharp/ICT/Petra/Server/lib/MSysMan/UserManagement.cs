@@ -622,8 +622,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -656,8 +655,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -696,8 +694,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -857,7 +854,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         {
                             // send E-Mail with link to reset the password
                             // TODO: use double opt-in before sending the actual information???
-                            string token = SaveNewToken(AUserId, DBAccess.GDBAccessObj, SubmitChangesTransaction);
+                            string token = SaveNewToken(AUserId, SubmitChangesTransaction.DataBaseObj, SubmitChangesTransaction);
 
                             string Domain = TAppSettingsManager.GetValue("Server.Url");
                             string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
