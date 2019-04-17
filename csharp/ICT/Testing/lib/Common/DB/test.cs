@@ -51,22 +51,9 @@ namespace Ict.Common.DB.Testing
     {
         private const string DefaultDBConnName = "Default NUnit TTestCommonDB DB Connection";
         private TDBType FDBType;
+        private TDataBase FDataBase = null;
         Int32 FProgressUpdateCounter;
         Int32 FProgressUpdateNumber;
-
-        private TDataBase EstablishDBConnection(string AConnectionName = null)
-        {
-            return DBAccess.Connect(AConnectionName);
-        }
-
-        private void CloseTestDBConnection(TDataBase ADBAccessObject, string AConnectionName = null)
-        {
-            TLogging.Log("  CloseTestDBConnection: Closing connection to Database..." + ADBAccessObject.GetDBConnectionIdentifier());
-
-            ADBAccessObject.CloseDBConnection();
-
-            TLogging.Log("  CloseTestDBConnection: Database connection closed." + TDataBase.GetDBConnectionName(AConnectionName));
-        }
 
         /// init
         [SetUp]
@@ -76,7 +63,7 @@ namespace Ict.Common.DB.Testing
             new TAppSettingsManager("../../etc/TestServer.config");
             FDBType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType"));
 
-            EstablishDBConnection(DefaultDBConnName);
+            FDataBase = DBAccess.Connect(DefaultDBConnName);
 
             // Reset some Fields for every Test
             FTestDBInstance1 = null;
@@ -109,7 +96,7 @@ namespace Ict.Common.DB.Testing
         [TearDown]
         public void TearDown()
         {
-            //CloseTestDBConnection(DBAccess.GDBAccessObj, DefaultDBConnName);
+            FDataBase.CloseDBConnection();
         }
 
         /// <summary>
@@ -119,7 +106,7 @@ namespace Ict.Common.DB.Testing
         {
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = true;
-            TDataBase db = DBAccess.Connect("Test");
+            TDataBase db = DBAccess.Connect("Test", FDataBase);
             string sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
                          "VALUES(43, 99999999, 1)";
 
@@ -159,7 +146,7 @@ namespace Ict.Common.DB.Testing
         {
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = true;
-            TDataBase db = DBAccess.Connect("Test");
+            TDataBase db = DBAccess.Connect("Test", FDataBase);
 
             // setup test scenario: a gift batch, with 2 gifts, each with 2 gift details
             db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
@@ -210,7 +197,7 @@ namespace Ict.Common.DB.Testing
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = true;
             string sql;
-            TDataBase db = DBAccess.Connect("TestInsertMultipleRows");
+            TDataBase db = DBAccess.Connect("TestInsertMultipleRows", FDataBase);
 
             db.BeginAutoTransaction(
                 IsolationLevel.Serializable,
@@ -242,7 +229,7 @@ namespace Ict.Common.DB.Testing
         public void TestSequence()
         {
             TDBTransaction t = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("TestInsertMultipleRows");
+            TDataBase db = DBAccess.Connect("TestInsertMultipleRows", FDataBase);
             bool SubmissionOK = true;
 
             db.WriteTransaction(ref t,
@@ -269,7 +256,7 @@ namespace Ict.Common.DB.Testing
         public void TestTimeStamp()
         {
             TDBTransaction t = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("Test");
+            TDataBase db = DBAccess.Connect("Test", FDataBase);
             bool SubmissionOK = true;
 
             db.WriteTransaction(ref t,
@@ -336,7 +323,7 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_GNoETransaction_throws_proper_ExceptionOnWrongExactIsolationLevel()
         {
             bool NewTrans;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             //
             // Arrange
@@ -373,7 +360,7 @@ namespace Ict.Common.DB.Testing
         public void TestDBAccess_GNoETransaction_throws_proper_ExceptionOnWrongMinimumIsolationLevel()
         {
             bool NewTrans;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             //
             // Arrange
@@ -414,7 +401,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             //
             // Arrange
@@ -445,8 +432,7 @@ namespace Ict.Common.DB.Testing
         [Test]
         public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectEDBNullTransactionException()
         {
-            bool Result;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             // Guard Assert
             Assert.IsNull(db.Transaction);
@@ -455,10 +441,9 @@ namespace Ict.Common.DB.Testing
             // Act/Assert
             Assert.Catch <EDBNullTransactionException>(delegate
                                                        {
-                                                           Result =
-                                                               db.CheckRunningDBTransactionIsolationLevelIsCompatible(
-                                                                   IsolationLevel.ReadCommitted,
-                                                                   TEnforceIsolationLevel.eilExact);
+                                                           db.CheckRunningDBTransactionIsolationLevelIsCompatible(
+                                                               IsolationLevel.ReadCommitted,
+                                                               TEnforceIsolationLevel.eilExact);
                                                        },
                                                        "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
                                                        "IsolationLevel that is exactly what the running DB Transaction has got did not throw EDBNullTransactionException");
@@ -473,7 +458,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             //
             // Arrange
@@ -506,7 +491,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             //
             // Arrange
@@ -539,7 +524,7 @@ namespace Ict.Common.DB.Testing
         {
             bool NewTrans;
             bool Result;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             //
             // Arrange
@@ -579,7 +564,7 @@ namespace Ict.Common.DB.Testing
             TDBTransaction t = null;
             bool SubmissionOK = true;
             string sql;
-            TDataBase db = DBAccess.Connect("TestDBAccess");
+            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
             try
             {
