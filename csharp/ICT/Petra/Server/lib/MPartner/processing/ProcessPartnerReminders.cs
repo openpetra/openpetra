@@ -425,7 +425,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
             OdbcParams[1].Value = DateTime.Now.Date;
 
-            DBAccess.GetDBAccessObj(AReadTransaction).Select(ReminderResultsDS,
+            AReadTransaction.DataBaseObj.Select(ReminderResultsDS,
                 SQLCommand,
                 APartnerReminderDT.TableName,
                 AReadTransaction,

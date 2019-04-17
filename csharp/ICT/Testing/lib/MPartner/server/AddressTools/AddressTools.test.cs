@@ -75,7 +75,7 @@ namespace Tests.MPartner.Server.AddressTools
                 ref ATransaction,
                 delegate
                 {
-                    ResultTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "CheckLocations", ATransaction);
+                    ResultTable = ATransaction.DataBaseObj.SelectDT(Query, "CheckLocations", ATransaction);
                 });
             Assert.AreEqual(0, ResultTable.Rows.Count);
         }
@@ -317,7 +317,7 @@ namespace Tests.MPartner.Server.AddressTools
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
             TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult Result = UIConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            UIConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, "There was a critical error when saving:");
         }

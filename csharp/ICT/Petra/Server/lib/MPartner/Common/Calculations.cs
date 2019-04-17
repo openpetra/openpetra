@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -80,7 +80,8 @@ namespace Ict.Petra.Server.MPartner.Common
             PPartnerLocationTable PartnerLocationDT;
             Boolean NewTransaction;
 
-            TDBTransaction ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+            TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
+            TDBTransaction ReadTransaction = db.GetNewOrExistingTransaction(
                 MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -156,7 +157,8 @@ namespace Ict.Petra.Server.MPartner.Common
 
             BestLocation = DetermineBestAddress(APartnerKey, out APartnerLocationDR);
 
-            TDBTransaction ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+            TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
+            TDBTransaction ReadTransaction = db.GetNewOrExistingTransaction(
                 MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);

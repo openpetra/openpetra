@@ -759,7 +759,7 @@ namespace Ict.Petra.Server.MPartner.Common
             FamilyPersonsDT = new PPersonTable();
             TmpDS.Tables.Add(FamilyPersonsDT);
 
-            DBAccess.GetDBAccessObj(AReadTransaction).Select(TmpDS,
+            AReadTransaction.DataBaseObj.Select(TmpDS,
                 "SELECT " + "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                 PPartnerTable.GetPartnerKeyDBName() + ", " +
                 PPersonTable.GetFamilyNameDBName() + ", " +

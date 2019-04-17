@@ -164,7 +164,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         " AddressTable JOIN p_partner ON p_partner.p_partner_key_n=AddressTable.p_partner_key_n";
             }
 
-            ResultTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "PartnersAddresses", ATransaction);
+            ResultTable = ATransaction.DataBaseObj.SelectDT(Query, "PartnersAddresses", ATransaction);
             return ResultTable;
         }
 

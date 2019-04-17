@@ -90,7 +90,9 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (TSecurity.CanAccessPartnerByKey(APartnerKey, false, ADataBase) ==
                     TPartnerAccessLevelEnum.palGranted)
                 {
-                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+                    TDataBase db = DBAccess.Connect("GetPartnerLocations", ADataBase);
+
+                    ReadTransaction = db.GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
@@ -151,7 +153,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         APartnerLocations = new PPartnerLocationTable(PPartnerLocationTable.GetTableDBName());
                         FillDataSet.Tables.Add(APartnerLocations);
 
-                        DBAccess.GetDBAccessObj(ADataBase).Select(FillDataSet, SelectSQL,
+                        db.Select(FillDataSet, SelectSQL,
                             PPartnerLocationTable.GetTableDBName(),
                             ReadTransaction,
                             parameters.ToArray());
@@ -228,7 +230,9 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey > 0)
             {
-                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+                TDataBase db = DBAccess.Connect("GetPartnersBestLocationData", ADataBase);
+
+                ReadTransaction = db.GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 try

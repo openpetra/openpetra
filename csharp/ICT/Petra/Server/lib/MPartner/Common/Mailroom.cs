@@ -67,7 +67,8 @@ namespace Ict.Petra.Server.MPartner.Common
             LastContactDS = new DataSet("LastContactDate");
             LastContactDS.Tables.Add(new PContactLogTable());
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            TDataBase db = DBAccess.Connect("GetLastContactDate", ADataBase);
+            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
                 delegate

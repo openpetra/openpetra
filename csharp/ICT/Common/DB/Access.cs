@@ -83,30 +83,6 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for dumping stacktraces when Thread-safe access to the TDataBase Class is requested/released (extremely verbose log output): is 11</summary>
         public const Int32 DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES = 11;
 
-        /// <summary>
-        /// we create a new database object if this object is accessed.
-        /// this static property is used for backwards compatibility
-        /// </summary>
-        public static TDataBase GDBAccessObj
-        {
-            get
-            {
-                TLogging.LogAtLevel(0, "Deprecated call to GDBAccessObj");
-                //TLogging.LogStackTrace();
-                return Connect("GDBAccessObj");
-            }
-        }
-
-        /// <summary>
-        /// Deprecated: use Transaction.DataBaseObj instead
-        /// </summary>
-        public static TDataBase GetDBAccessObj(TDBTransaction ATransaction)
-        {
-            TLogging.LogAtLevel(0, "GetDBAccessObj is deprecated, use Transaction.DataBaseObj instead");
-            //TLogging.LogStackTrace();
-            return ATransaction != null ? ATransaction.DataBaseObj : GDBAccessObj;
-        }
-
         /// <summary>Returns the type of the RDBMS that is defined in the config file</summary>
         public static TDBType DBType
         {
@@ -119,27 +95,6 @@ namespace Ict.Common.DB
 
                 return TSrvSetting.RDMBSType;
             }
-        }
-
-
-        /// <summary>
-        /// Gets the <see cref="TDataBase"/> instance that gets passed in with Argument <paramref name="ADataBase"/>, or
-        /// a new database instance in case <paramref name="ADataBase"/>
-        /// is null.
-        /// <para>
-        /// This is needed for some generated code to be able to work with a (custom) reference to a TDataBase instance, is
-        /// helpful for static Methods (which might not have a means to get a reference to a custom <see cref="TDataBase" />
-        /// instance easily), and can be neat for other scenarios, too.
-        /// </para>
-        /// </summary>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null.</param>
-        /// <returns><see cref="TDataBase"/> instance that got passed in with Argument <paramref name="ADataBase"/>, or
-        /// a new database instance in case <paramref name="ADataBase"/>
-        /// is null.
-        /// </returns>
-        public static TDataBase GetDBAccessObj(TDataBase ADataBase)
-        {
-            return ADataBase ?? GDBAccessObj;
         }
 
         /// <summary>

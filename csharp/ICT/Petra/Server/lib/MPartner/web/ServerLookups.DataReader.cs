@@ -333,7 +333,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                                      "JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " +
                                                      "AND PUB_p_partner_location.p_location_key_i = PUB_p_location.p_location_key_i";
 
-                    DBAccess.GetDBAccessObj(ReadTransaction).Select(ReturnValue, QUERY_BANKRECORDS, ReturnValue.PBank.TableName,
+                    ReadTransaction.DataBaseObj.Select(ReturnValue, QUERY_BANKRECORDS, ReturnValue.PBank.TableName,
                         ReadTransaction, null);
 
                     foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
@@ -368,7 +368,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             int ReturnValue = 0;
 
-            DBAccess.GetDBAccessObj(ADBTransaction).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+            ADBTransaction.DataBaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ADBTransaction,
                 delegate

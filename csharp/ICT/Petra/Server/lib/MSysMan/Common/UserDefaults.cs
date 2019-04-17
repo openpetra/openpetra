@@ -333,7 +333,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             {
                 try
                 {
-                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    ReadTransaction = DBAccess.Connect("LoadUserDefaultsTable", ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
 

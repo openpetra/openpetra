@@ -886,7 +886,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
 
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GetDBAccessObj((TDataBase)null).GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction Transaction = DBAccess.Connect("CommitMatches").GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -900,7 +900,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             " SET " + AEpTransactionTable.GetEpMatchKeyDBName() + " = NULL" +
                             " WHERE " + AEpTransactionTable.GetEpMatchKeyDBName() + " = " +
                             TheRow[AEpMatchTable.GetEpMatchKeyDBName(), DataRowVersion.Original];
-                        DBAccess.GetDBAccessObj(Transaction).ExecuteNonQuery(sql, Transaction);
+                        Transaction.DataBaseObj.ExecuteNonQuery(sql, Transaction);
                     }
                 }
 

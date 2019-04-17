@@ -408,11 +408,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// </summary>
         [NoRemoting]
         public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName,
-            string AModulePermissions, string AClientComputerName, string AClientIPAddress, TDBTransaction ATransaction = null)
+            string AModulePermissions, string AClientComputerName, string AClientIPAddress, TDataBase ADataBase = null)
         {
-            TDataBase DBConnectionObj = DBAccess.GetDBAccessObj(ATransaction);
+            TDataBase DBConnectionObj = DBAccess.Connect("CreateUser", ADataBase);
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
-            bool SeparateDBConnectionEstablished = false;
             bool NewTransaction;
             bool SubmissionOK = false;
 
@@ -430,14 +429,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 newUser.UserId = AUsername.Substring(0, AUsername.IndexOf("@")).
                                  Replace(".", string.Empty).
                                  Replace("_", string.Empty).ToUpper();
-            }
-
-            if (DBConnectionObj == null)
-            {
-                // ATransaction was null and GDBAccess is also null: we need to establish a DB Connection manually here!
-                DBConnectionObj = DBAccess.Connect("CreateUser");
-
-                SeparateDBConnectionEstablished = true;
             }
 
             ReadWriteTransaction = DBConnectionObj.GetNewOrExistingTransaction(
@@ -577,11 +568,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     else
                     {
                         ReadWriteTransaction.Rollback();
-                    }
-
-                    if (SeparateDBConnectionEstablished)
-                    {
-                        DBConnectionObj.CloseDBConnection();
                     }
                 }
             }
@@ -1159,7 +1145,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 {
                                     // in fact, PasswordHash is expected to be the password in clear text
                                     CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty,
-                                        AClientComputerName, AClientIPAddress, SubmitChangesTransaction);
+                                        AClientComputerName, AClientIPAddress, SubmitChangesTransaction.DataBaseObj);
                                     // this is a hack: the user is not stored here, but in CreateUser
                                     user.AcceptChanges();
                                 }

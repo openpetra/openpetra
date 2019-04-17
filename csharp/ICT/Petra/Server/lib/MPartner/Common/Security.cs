@@ -71,7 +71,8 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (APartnerRow.PartnerClass == SharedTypes.PartnerClassEnumToString(
                         TPartnerClass.ORGANISATION))
                 {
-                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+                    TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
+                    ReadTransaction = db.GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
@@ -160,7 +161,8 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey != 0)
             {
-                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+                TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
+                ReadTransaction = db.GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
