@@ -302,8 +302,6 @@ namespace Ict.Petra.Server.MCommon
         /// </remarks>
         public void ExecuteQuery(string ASessionID, string AContext = null, TDataBase ADataBase = null)
         {
-            bool ownDatabaseConnection = false;
-
             // need to initialize the database session
             TSession.InitThread(ASessionID);
 

@@ -3260,7 +3260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                 });
 
-            LabelsAvailable = ALabelsAvailable;
+            ALabelsAvailable = LabelsAvailable;
 
             return DataLabelValuePartnerDT;
         }
