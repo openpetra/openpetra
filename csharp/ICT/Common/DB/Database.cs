@@ -137,12 +137,6 @@ namespace Ict.Common.DB
         private int FTimeoutForNextCommand = -1;
 
         /// <summary>
-        /// this is different from the SQL user name, which is usually the same for the whole server.
-        /// This is specific for the user id from table s_user
-        /// </summary>
-        private string FUserID = string.Empty;
-
-        /// <summary>
         /// Delegate that can optionally be passed to Method <see cref="SelectUsingDataAdapterMulti"/>. It will get called
         /// every 'n' records (where n is specified with the "AProgressUpdateEveryNRecs" Argument of that Method) while multiple
         /// Parameterised Query executions take place.
@@ -317,41 +311,6 @@ namespace Ict.Common.DB
             get
             {
                 return FTransaction;
-            }
-        }
-
-        /// <summary>
-        /// store the value of the current s_user.
-        /// not to be confused with the sql user
-        /// </summary>
-        public string UserID
-        {
-            get
-            {
-                WaitForCoordinatedDBAccess();
-
-                try
-                {
-                    return FUserID;
-                }
-                finally
-                {
-                    ReleaseCoordinatedDBAccess();
-                }
-            }
-
-            set
-            {
-                WaitForCoordinatedDBAccess();
-
-                try
-                {
-                    FUserID = value;
-                }
-                finally
-                {
-                    ReleaseCoordinatedDBAccess();
-                }
             }
         }
 

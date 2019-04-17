@@ -203,11 +203,6 @@ namespace Ict.Petra.Server.App.WebService
             AClientID = -1;
             AMustChangePassword = false;
 
-            if (DBAccess.GDBAccessObj == null)
-            {
-                TServerManager.TheCastedServerManager.EstablishDBConnection();
-            }
-
             try
             {
                 TConnectedClient CurrentClient = TClientManager.ConnectClient(
@@ -227,10 +222,6 @@ namespace Ict.Petra.Server.App.WebService
                 DomainManager.CurrentClient = CurrentClient;
                 UserInfo.GUserInfo = (TPetraPrincipal)AUserInfo;
 
-                DBAccess.GDBAccessObj.UserID = username.ToUpper();
-
-                TServerManager.TheCastedServerManager.AddDBConnection(DBAccess.GDBAccessObj);
-
                 AMustChangePassword = (((TPetraPrincipal)AUserInfo).LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
 
                 return eLoginEnum.eLoginSucceeded;
@@ -240,11 +231,6 @@ namespace Ict.Petra.Server.App.WebService
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
                 TSession.SetVariable("LoggedIn", false);
-
-                if (DBAccess.GDBAccessObj != null)
-                {
-                    DBAccess.GDBAccessObj.CloseDBConnection();
-                }
 
                 TSession.Clear();
                 return TClientManager.LoginErrorFromException(e);
@@ -282,78 +268,6 @@ namespace Ict.Petra.Server.App.WebService
             }
 
             return "0.0.0.0";
-        }
-
-        /// <summary>
-        /// TODO: we should only use one database object per request, and not have global variables for database connections
-        /// </summary>
-        private static SortedList <string, TDataBase>FDatabaseObjects = new SortedList <string, TDataBase>();
-
-        static private TDataBase GetDatabaseFromSession(bool AOpenConnection = true)
-        {
-            // if another thread gets called, then the session object is null
-            if (HttpContext.Current == null)
-            {
-                if (Thread.CurrentThread.Name == null)
-                {
-                    throw new Exception(
-                        "TOpenPetraOrgSessionManager.GetDatabaseFromSession: we do need a name for the thread for managing the database connection");
-                }
-
-                if (!FDatabaseObjects.ContainsKey(Thread.CurrentThread.Name))
-                {
-                    TDataBase db = new TDataBase();
-
-                    if (AOpenConnection)
-                    {
-                        db.EstablishDBConnection(TSrvSetting.RDMBSType,
-                            TSrvSetting.PostgreSQLServer,
-                            TSrvSetting.PostgreSQLServerPort,
-                            TSrvSetting.PostgreSQLDatabaseName,
-                            TSrvSetting.DBUsername,
-                            TSrvSetting.DBPassword,
-                            "");
-                    }
-
-                    FDatabaseObjects.Add(Thread.CurrentThread.Name, db);
-                }
-
-                return FDatabaseObjects[Thread.CurrentThread.Name];
-            }
-
-            if (TSession.GetVariable("DBAccessObj") == null)
-            {
-                if (TServerManager.TheServerManager == null)
-                {
-                    TLogging.Log("GetDatabaseFromSession : TheServerManager is null");
-                }
-                else
-                {
-                    // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
-                    TServerManager.TheCastedServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
-
-                    // disconnect normal users after 3 hours of inactivity
-                    TServerManager.TheCastedServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
-
-                    if (AOpenConnection)
-                    {
-                        TServerManager.TheCastedServerManager.EstablishDBConnection();
-                    }
-                }
-            }
-
-            return (TDataBase)TSession.GetVariable("DBAccessObj");
-        }
-
-        static private void SetDatabaseForSession(TDataBase database)
-        {
-            if (Thread.CurrentThread.Name == null)
-            {
-                // TLogging.Log("there is a new thread for session " + HttpContext.Current.Session.SessionID);
-                System.Threading.Thread.CurrentThread.Name = "MainThread" + Guid.NewGuid().ToString();;
-            }
-
-            TSession.SetVariable("DBAccessObj", database);
         }
 
         static private TPetraPrincipal GetUserInfoFromSession()

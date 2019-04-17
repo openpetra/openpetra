@@ -177,55 +177,6 @@ namespace Ict.Petra.Server.App.Core
             }
         }
 
-        private List <TDataBase>FDBConnections = new List <TDataBase>();
-
-        /// <summary>
-        /// manage database connections for the ASP webclient
-        /// </summary>
-        /// <param name="ADatabaseConnection"></param>
-        public void AddDBConnection(TDataBase ADatabaseConnection)
-        {
-            if (!FDBConnections.Contains(ADatabaseConnection))
-            {
-                FDBConnections.Add(ADatabaseConnection);
-            }
-        }
-
-        /// <summary>
-        /// disconnect database connections that are older than the given timeout in seconds.
-        /// This is useful for the ASP webclient
-        /// </summary>
-        /// <param name="ATimeoutInSeconds"></param>
-        /// <param name="AUserID">can limit to one specific username, eg. ANONYMOUS for online registration, or leave empty for all users</param>
-        /// <returns></returns>
-        public bool DisconnectTimedoutDatabaseConnections(Int32 ATimeoutInSeconds, string AUserID)
-        {
-            List <TDataBase>DBsToDisconnect = new List <TDataBase>();
-
-            foreach (TDataBase db in FDBConnections)
-            {
-                if ((AUserID == null) || (AUserID.Length == 0) || (AUserID == db.UserID))
-                {
-                    if (db.LastDBAction.AddSeconds(ATimeoutInSeconds) < DateTime.Now)
-                    {
-                        DBsToDisconnect.Add(db);
-                    }
-                }
-            }
-
-            foreach (TDataBase dbToDisconnect in DBsToDisconnect)
-            {
-                TLogging.Log("Disconnecting DB connection of client " +
-                    dbToDisconnect.UserID + " after timeout. Last activity was at: " +
-                    dbToDisconnect.LastDBAction.ToShortTimeString());
-
-                dbToDisconnect.CloseDBConnection();
-                FDBConnections.Remove(dbToDisconnect);
-            }
-
-            return DBsToDisconnect.Count > 0;
-        }
-
         /// <summary>
         /// (Re-)Opens a Database connection for the Server's DB Polling.
         /// </summary>
@@ -273,13 +224,7 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public TDataBase EstablishDBConnection()
         {
-            TDataBase AccessObj = new TDataBase();
-
-            AccessObj.EstablishDBConnection("Server's DB Connection");
-
-            TLogging.Log("  " + Catalog.GetString("Connected to Database."));
-
-            return AccessObj;
+            return DBAccess.Connect("Server's DB Connection");
         }
 
         private IImportExportManager FImportExportManager = null;

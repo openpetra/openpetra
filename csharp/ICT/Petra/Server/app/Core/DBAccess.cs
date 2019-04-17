@@ -55,6 +55,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
         private TSQLCache FCache;
         private bool FRetrievingTablePermissions;
+        private string FUserID = String.Empty;
 
         /// <summary>
         /// </summary>
@@ -98,7 +99,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 throw new ArgumentNullException("APetraUserName");
             }
 
-            UserID = APetraUserName;
+            FUserID = APetraUserName;
             FCache.Invalidate();
 
             // Call base Method with same name and same Method signature but different functionality!
@@ -147,7 +148,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     tab = FCache.GetDataTable(
                         "SELECT s_can_create_l, s_can_modify_l, s_can_delete_l, s_can_inquire_l, s_table_name_c FROM " +
-                        "PUB_s_user_table_access_permission WHERE s_user_id_c = '" + UserID + "'", this);
+                        "PUB_s_user_table_access_permission WHERE s_user_id_c = '" + FUserID + "'", this);
 
                     FRetrievingTablePermissions = false;
                     RequiredAccessPermission = "";
