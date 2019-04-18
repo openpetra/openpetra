@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            TDataBase db = DBAccess.Connect("GetNextSequence");
+            TDataBase db = DBAccess.Connect("GetNextSequence " + ASequence.ToString(), ADataBase);
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction, ref SubmissionOK,
                 delegate

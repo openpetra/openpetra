@@ -4836,14 +4836,13 @@ namespace Tests.MPartner.Server.PartnerMerge
             long[] SiteKeys = new long[0];
             int[] LocationKeys = new int[0];
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
-
             TDataBase db = DBAccess.Connect("TestMergeAPInfo");
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(db);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
             //
-            TestMergeAPInfo_Arrange(out FromPartnerKey, out ToPartnerKey, out FamilyPartnerKey, out APDocumentID, out LedgerNumber, UIConnector);
+            TestMergeAPInfo_Arrange(out FromPartnerKey, out ToPartnerKey, out FamilyPartnerKey, out APDocumentID, out LedgerNumber, UIConnector, db);
 
             //
             // Act: Merge the two Person Partners!
@@ -4859,7 +4858,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                db);
 
             //
             // Assert
@@ -4869,13 +4869,13 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(true, result, "Merging two Person Partners");
 
             // Secondary Asserts: Test that the data was merged correctly!
-            TestMergeAPInfo_SecondaryAsserts(FromPartnerKey, ToPartnerKey, APDocumentID, ref UIConnector);
+            TestMergeAPInfo_SecondaryAsserts(FromPartnerKey, ToPartnerKey, APDocumentID, ref UIConnector, db);
 
             // Cleanup: Delete test records
             List <int>DocumentID = new List <int>();
             DocumentID.Add(APDocumentID);
-            TAPTransactionWebConnector.CancelAPDocuments(LedgerNumber, DocumentID, true);
-            AccountsPayableTDS APDS = TAPTransactionWebConnector.LoadAApSupplier(LedgerNumber, ToPartnerKey);
+            TAPTransactionWebConnector.CancelAPDocuments(LedgerNumber, DocumentID, true, db);
+            AccountsPayableTDS APDS = TAPTransactionWebConnector.LoadAApSupplier(LedgerNumber, ToPartnerKey, db);
             APDS.AApSupplier.Rows[0].Delete();
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);            
             AApSupplierAccess.SubmitChanges(APDS.AApSupplier, Transaction);
@@ -4894,8 +4894,9 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// <param name="AAPDocumentID">Document ID for APDocument that is created for testing.</param>
         /// <param name="ALedgerNumber">Ledger Number for the GiftBatch that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        /// <param name="ADataBase"></param>
         private void TestMergeAPInfo_Arrange(out long AFromPartnerKey, out long AToPartnerKey, out long AFamilyPartnerKey, out int AAPDocumentID,
-            out int ALedgerNumber, TPartnerEditUIConnector AConnector)
+            out int ALedgerNumber, TPartnerEditUIConnector AConnector, TDataBase ADataBase)
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult Result;
@@ -4904,11 +4905,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             AccountsPayableTDS APDS = new AccountsPayableTDS();
 
             // create two new Person Partners, one family and APInfo for From Partner
-            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS, ADataBase);
             PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
-            AApDocumentRow APDocumentRow = TCreateTestPartnerData.CreateNewAPInfo(FromPartnerRow.PartnerKey, ref APDS);
+            AApDocumentRow APDocumentRow = TCreateTestPartnerData.CreateNewAPInfo(FromPartnerRow.PartnerKey, ref APDS, ADataBase);
 
             // Guard Assertions
             Assert.That(FamilyPartnerRow, Is.Not.Null);
@@ -4932,7 +4933,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
             // Submit the new Supplier record to the database
-            TSupplierEditUIConnector Connector = new TSupplierEditUIConnector();
+            TSupplierEditUIConnector Connector = new TSupplierEditUIConnector(ADataBase);
             Result = Connector.SubmitChanges(ref APDS);
 
             // Guard Assertion
@@ -4940,7 +4941,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for AP Info failed");
 
             // Submit the new Document record to the database
-            Result = TAPTransactionWebConnector.SaveAApDocument(ref APDS, out VerificationResult);
+            Result = TAPTransactionWebConnector.SaveAApDocument(ref APDS, out VerificationResult, ADataBase);
 
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
@@ -4954,13 +4955,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AAPDocumentID">Document ID for APDocument that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
-        void TestMergeAPInfo_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, int AAPDocumentID, ref TPartnerEditUIConnector AConnector)
+        /// <param name="ADataBase"></param>
+        void TestMergeAPInfo_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, int AAPDocumentID, ref TPartnerEditUIConnector AConnector, TDataBase ADataBase)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
             AccountsPayableTDS APDS = new AccountsPayableTDS();
 
-            TDataBase db = DBAccess.Connect("TestMergeAPInfo_SecondaryAsserts");
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.Connect("TestMergeAPInfo_SecondaryAsserts", ADataBase);
+            bool NewTransaction;
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             // Read Partners from the database after they have been merged
             MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
@@ -4968,7 +4971,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             APDS.AApSupplier.Merge(AApSupplierAccess.LoadViaPPartner(AToPartnerKey, Transaction));
             APDS.AApDocument.Merge(AApDocumentAccess.LoadByPrimaryKey(AAPDocumentID, Transaction));
             PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
-            Transaction.Rollback();
+
+            if (NewTransaction)
+            {
+                Transaction.Rollback();
+            }
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });

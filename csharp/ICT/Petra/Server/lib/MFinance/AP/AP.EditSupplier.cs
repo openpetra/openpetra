@@ -60,11 +60,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
     ///</summary>
     public class TSupplierEditUIConnector
     {
+        private TDataBase FDataBase = null;
+
         /// <summary>
         /// constructor
         /// </summary>
-        public TSupplierEditUIConnector() : base()
+        public TSupplierEditUIConnector(TDataBase ADataBase = null) : base()
         {
+            FDataBase = DBAccess.Connect("TSupplierEditUIConnector", ADataBase);
         }
 
         /// <summary>
@@ -77,9 +80,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             TDBTransaction ReadTransaction;
             bool NewTransaction = false;
             bool ReturnValue = false;
-            TDataBase db = DBAccess.Connect("CanFindSupplier");
 
-            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            ReadTransaction = FDataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -106,9 +108,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
-            TDataBase db = DBAccess.Connect("GetData");
 
-            ReadTransaction = db.BeginTransaction(IsolationLevel.RepeatableRead, 5);
+            ReadTransaction = FDataBase.BeginTransaction(IsolationLevel.RepeatableRead, 5);
 
             try
             {
@@ -175,21 +176,26 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     AInspectDS.AApSupplier[0].DefaultDiscountPercentage = 0;
                 }
 
-                TDataBase db = DBAccess.Connect("SubmitChanges");
-
-                SubmitChangesTransaction = db.BeginTransaction(IsolationLevel.Serializable);
+                bool NewTransaction;
+                SubmitChangesTransaction = FDataBase.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
                 try
                 {
                     AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction);
 
-                    SubmitChangesTransaction.Commit();
+                    if (NewTransaction)
+                    {
+                        SubmitChangesTransaction.Commit();
+                    }
                 }
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the storing of the AP Supplier):" + Environment.NewLine + Exc.ToString());
 
-                    SubmitChangesTransaction.Rollback();
+                    if (NewTransaction)
+                    {
+                        SubmitChangesTransaction.Rollback();
+                    }
 
                     throw;
                 }

@@ -99,6 +99,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ACategories">Array determines which sections will be merged</param>
         /// <param name="ADifferentFamilies">True if two persons have been merged from different families</param>
         /// <param name="AVerificationResults">An empty verification results collection that may be populated with messages for the client</param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if the two partners were merged and the transaction committed successfully</returns>
         [RequireModulePermission("PTNRUSER")]
         public static bool MergeTwoPartners(long AFromPartnerKey,
@@ -111,7 +112,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             int AMainBankingDetailsKey,
             bool[] ACategories,
             ref bool ADifferentFamilies,
-            ref TVerificationResultCollection AVerificationResults)
+            ref TVerificationResultCollection AVerificationResults,
+            TDataBase ADataBase = null)
         {
             decimal TrackerPercent;
             int NumberOfCategories = 0;
@@ -140,7 +142,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.WriteTransaction(
+            TDataBase db = DBAccess.Connect("MergeTwoPartners", ADataBase);
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

@@ -188,9 +188,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ADisplayMessage"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if partner can be deleted</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool CanPartnerBeDeleted(Int64 APartnerKey, out String ADisplayMessage)
+        public static bool CanPartnerBeDeleted(Int64 APartnerKey, out String ADisplayMessage, TDataBase ADataBase = null)
         {
             string ShortName;
             TPartnerClass PartnerClass;
@@ -200,7 +201,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             String DisplayMessage = "";
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("CanPartnerBeDeleted");
+            TDataBase db = DBAccess.Connect("CanPartnerBeDeleted", ADataBase);
 
             db.ReadTransaction(
                 ref Transaction,

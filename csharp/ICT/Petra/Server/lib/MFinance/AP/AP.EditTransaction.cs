@@ -93,18 +93,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>TDS with tables loaded</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
+        public static AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber, Int64 APartnerKey, TDataBase ADataBase = null)
         {
             // create the DataSet that will be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("LoadAApSupplier");
+            TDataBase db = DBAccess.Connect("LoadAApSupplier", ADataBase);
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -124,18 +124,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AApDocumentId"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>TDS with tables loaded</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber, Int32 AApDocumentId)
+        public static AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber, Int32 AApDocumentId, TDataBase ADataBase = null)
         {
             // create the DataSet that will be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("LoadAApDocument");
+            TDataBase db = DBAccess.Connect("LoadAApDocument", ADataBase);
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -195,8 +195,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("CreateAApDocument", ADataBase);
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -964,8 +963,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ADeleteCancelledRows">If true the documents are removed from the database.
         /// The standard AP behaviour is to set the status to Cancelled.  The Delete option should only be set to true in special circumstances
         /// (for example when running a test and the desire is to clean the database of added test rows).</param>
+        /// <param name="ADataBase"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static void CancelAPDocuments(Int32 ALedgerNumber, List <Int32>ACancelTheseDocs, bool ADeleteCancelledRows)
+        public static void CancelAPDocuments(Int32 ALedgerNumber, List <Int32>ACancelTheseDocs, bool ADeleteCancelledRows, TDataBase ADataBase = null)
         {
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
@@ -1003,8 +1003,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             Boolean submissionOK = true;
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("CancelAPDocuments");
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOK,
+            TDataBase db = DBAccess.Connect("CancelAPDocuments", ADataBase);
+            db.WriteTransaction(ref transaction, ref submissionOK,
                 delegate
                 {
                     AApAnalAttribAccess.SubmitChanges(TempDS.AApAnalAttrib, transaction);

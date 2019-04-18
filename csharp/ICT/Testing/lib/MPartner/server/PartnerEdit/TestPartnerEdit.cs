@@ -369,7 +369,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // check if Family partner can be deleted (still needs to be possible at this point)
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -395,7 +395,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Transaction.Commit();
             Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -461,7 +461,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // this should now not be allowed since partner record has a subscription linked to it
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(FamilyPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -525,7 +525,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // check if Family partner can be deleted (still needs to be possible at this point)
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -554,7 +554,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // this should now not be allowed since person record has a commitment linked to it
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -611,7 +611,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
             // check if Unit partner can be deleted (still needs to be possible at this point)
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(UnitPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(UnitPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -626,7 +626,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "set unit type to " + MPartnerConstants.UNIT_TYPE_KEYMIN);
 
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(UnitPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(UnitPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -673,7 +673,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create church record");
 
             // check if church partner can be deleted (still needs to be possible at this point)
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(ChurchPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(ChurchPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -699,7 +699,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 "There was a critical error when saving:");
 
             // now deletion must not be possible since relationship as SUPPCHURCH exists
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(ChurchPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(ChurchPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -745,7 +745,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create organisation record");
 
             // check if organisation partner can be deleted (still needs to be possible at this point)
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(OrganisationPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(OrganisationPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -790,7 +790,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // check if Bank partner can be deleted (still needs to be possible at this point)
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -818,7 +818,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 });
 
             // now deletion must not be possible since a bank account is set up for the bank
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -834,7 +834,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create bank partner for deletion");
 
             // check if Venue record is being deleted
-            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
+            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult, db));
 
             // check that Bank record is really deleted
             Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(PartnerKey));
@@ -864,7 +864,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create venue record");
 
             // check if Venue partner can be deleted (still needs to be possible at this point)
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(VenuePartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(VenuePartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {
@@ -889,7 +889,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 });
 
             // now deletion must not be possible since a building is linked to the venue
-            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(VenuePartnerRow.PartnerKey, out TextMessage);
+            CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(VenuePartnerRow.PartnerKey, out TextMessage, db);
 
             if (TextMessage.Length > 0)
             {

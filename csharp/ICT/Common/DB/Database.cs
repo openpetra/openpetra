@@ -2463,7 +2463,7 @@ namespace Ict.Common.DB
         public TDBTransaction GetNewOrExistingTransaction(IsolationLevel ADesiredIsolationLevel, out Boolean ANewTransaction,
             string ATransactionName = "")
         {
-            return GetNewOrExistingTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
+            return GetNewOrExistingTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilMinimum,
                 out ANewTransaction, ATransactionName);
         }
 

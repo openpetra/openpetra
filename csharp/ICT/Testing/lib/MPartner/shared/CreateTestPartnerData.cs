@@ -179,7 +179,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
-            TDataBase db = DBAccess.Connect("CreateNewChurchPartner");
+            TDataBase db = DBAccess.Connect("CreateNewChurchPartner", ADataBase);
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             // make sure denomination "UNKNOWN" exists as this is the default value
@@ -192,6 +192,10 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
                 DenominationTable.Rows.Add(DenominationRow);
                 PDenominationAccess.SubmitChanges(DenominationTable, Transaction);
                 Transaction.Commit();
+            }
+            else
+            {
+                Transaction.Rollback();
             }
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_CHURCH;
@@ -410,11 +414,11 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         public static AApDocumentRow CreateNewAPInfo(Int64 APartnerKey, ref AccountsPayableTDS AMainDS, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("CreateNewAPInfo", ADataBase);
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadAll(Transaction);
 
-            AMainDS = TAPTransactionWebConnector.CreateAApDocument(((ALedgerRow)LedgerTable.Rows[0]).LedgerNumber, APartnerKey, true);
+            AMainDS = TAPTransactionWebConnector.CreateAApDocument(((ALedgerRow)LedgerTable.Rows[0]).LedgerNumber, APartnerKey, true, db);
 
             // Create a new RecurringGiftBatch
             AApDocumentRow Document = AMainDS.AApDocument[0];
@@ -431,6 +435,8 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             ApSupplierRow.PartnerKey = APartnerKey;
             ApSupplierRow.CurrencyCode = "EUR";
             AMainDS.AApSupplier.Rows.Add(ApSupplierRow);
+
+            Transaction.Commit();
 
             return Document;
         }
