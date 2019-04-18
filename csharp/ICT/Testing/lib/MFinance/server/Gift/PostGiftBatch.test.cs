@@ -555,12 +555,12 @@ namespace Tests.MFinance.Server.Gift
             const Int64 DONORKEY = 43005001;
 
             // create a new recipient
-            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS, null);
             ARecipientKey = PartnerEditDS.PFamily[0].PartnerKey;
 
             // create two new Unit partners
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
 
@@ -857,14 +857,13 @@ namespace Tests.MFinance.Server.Gift
             // this is a family partner in the test database
             const Int64 DONORKEY = 43005001;
 
-
             // create a new recipient
-            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS, null);
             ARecipientKey = PartnerEditDS.PFamily[0].PartnerKey;
 
             // create two new Unit partners
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
 

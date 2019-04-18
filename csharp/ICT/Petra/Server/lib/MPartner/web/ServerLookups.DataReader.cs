@@ -362,18 +362,20 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// Gets the next available key for PPartnerGiftDestination
         /// </summary>
-        /// <param name="ADBTransaction">Transaction (if already exists in caller method)</param>
+        /// <param name="ADataBase"></param>
         /// <returns>The next available key</returns>
-        internal static int GetNewKeyForPartnerGiftDestination(TDBTransaction ADBTransaction)
+        internal static int GetNewKeyForPartnerGiftDestination(TDataBase ADataBase = null)
         {
             int ReturnValue = 0;
 
-            ADBTransaction.DataBaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ADBTransaction,
+            TDataBase db = DBAccess.Connect("GetNewKeyForPartnerGiftDestination", ADataBase);
+            TDBTransaction Transaction = new TDBTransaction();
+
+            db.ReadTransaction(
+                ref Transaction,
                 delegate
                 {
-                    PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(ADBTransaction);
+                    PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(Transaction);
 
                     foreach (PPartnerGiftDestinationRow Row in Table.Rows)
                     {

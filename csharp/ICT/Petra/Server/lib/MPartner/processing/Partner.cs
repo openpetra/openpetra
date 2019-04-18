@@ -697,10 +697,11 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// <param name="APartnerClass"></param>
         /// <param name="ANewPartner">Indicate if the partner is a new partner</param>
         /// <param name="ALastPartnerUse">Where is the partner used?</param>
+        /// <param name="ADataBase"></param>
         /// <returns>returns true if handling was successful
         /// </returns>
         public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass,
-            bool ANewPartner, TLastPartnerUse ALastPartnerUse)
+            bool ANewPartner, TLastPartnerUse ALastPartnerUse, TDataBase ADataBase)
         {
             const int MAX_SUBMIT_RETRIES = 5;
 
@@ -724,7 +725,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             // initialize result
             ReturnValue = true;
 
-            TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner");
+            TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner", ADataBase);
             ReadAndWriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 

@@ -100,7 +100,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, db);
 
             TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -280,7 +280,7 @@ namespace Tests.MFinance.Server.Gift
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartnerWithTypeCode(MainDS, "KEY-MIN");
+            PPartnerRow UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartnerWithTypeCode(MainDS, "KEY-MIN", null);
 
             if (UnitPartnerRow != null)
             {

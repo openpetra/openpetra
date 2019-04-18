@@ -712,7 +712,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 }
 
                 // now submit the whole dataset at once
-                IndividualDataTDSAccess.SubmitChanges(AInspectDS);
+                IndividualDataTDSAccess.SubmitChanges(AInspectDS, ASubmitChangesTransaction.DataBaseObj);
 
                 // Need to merge tables back into APartnerEditInspectDS so the updated s_modification_id_t is returned
                 // correctly to the Partner Edit.

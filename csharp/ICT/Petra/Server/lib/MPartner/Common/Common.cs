@@ -66,8 +66,9 @@ namespace Ict.Petra.Server.MPartner.Common
         /// this returns the default next available (highest) partner key of the given field
         /// </summary>
         /// <param name="AFieldPartnerKey">if this is -1, then the sitekey defined in System Parameters is used</param>
+        /// <param name="ADataBase"></param>
         /// <returns>void</returns>
-        public static System.Int64 GetNewPartnerKey(System.Int64 AFieldPartnerKey)
+        public static System.Int64 GetNewPartnerKey(System.Int64 AFieldPartnerKey, TDataBase ADataBase = null)
         {
             PPartnerLedgerTable PartnerLedgerTable = null;
             Int64 ReturnValue = -1;
@@ -78,7 +79,7 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GetNewPartnerKey");
+            TDataBase db = DBAccess.Connect("GetNewPartnerKey", ADataBase);
 
             db.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
@@ -105,10 +106,11 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="AFieldPartnerKey"></param>
         /// <param name="AOriginalDefaultKey">this has been previously retrieved from GetNewPartnerKey</param>
         /// <param name="ANewPartnerKey">the user proposes this key for a new partner; the function can change it and return a valid value, or -1</param>
+        /// <param name="ADataBase"></param>
         /// <returns>whether or not ANewPartnerKey has a valid new partner key;
         /// if it cannot be assigned, the function returns false, and ANewPartnerKey is -1
         /// </returns>
-        public static bool SubmitNewPartnerKey(System.Int64 AFieldPartnerKey, System.Int64 AOriginalDefaultKey, ref System.Int64 ANewPartnerKey)
+        public static bool SubmitNewPartnerKey(System.Int64 AFieldPartnerKey, System.Int64 AOriginalDefaultKey, ref System.Int64 ANewPartnerKey, TDataBase ADataBase = null)
         {
             bool ReturnValue = true;
             TDBTransaction ReadTransaction;
@@ -116,7 +118,7 @@ namespace Ict.Petra.Server.MPartner.Common
             Boolean NewTransaction;
             PPartnerLedgerTable PartnerLedgerDT;
 
-            TDataBase db = DBAccess.Connect("SubmitNewPartnerKey");
+            TDataBase db = DBAccess.Connect("SubmitNewPartnerKey", ADataBase);
             System.Int64 CurrentDefaultPartnerKey;
 
             if (ANewPartnerKey == AOriginalDefaultKey)
@@ -222,8 +224,9 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </summary>
         /// <param name="AFieldPartnerKey"></param>
         /// <param name="ANumberOfKeys"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>the first valid partner key to use</returns>
-        public static System.Int64 ReservePartnerKeys(System.Int64 AFieldPartnerKey, ref Int32 ANumberOfKeys)
+        public static System.Int64 ReservePartnerKeys(System.Int64 AFieldPartnerKey, ref Int32 ANumberOfKeys, TDataBase ADataBase = null)
         {
             Int64 NextPartnerKey = -1;
             Int32 NumberOfKeys = ANumberOfKeys;
@@ -234,7 +237,7 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("ReservePartnerKeys");
+            TDataBase db = DBAccess.Connect("ReservePartnerKeys", ADataBase);
             bool SubmissionOK = true;
 
             db.WriteTransaction(ref ReadWriteTransaction,

@@ -1972,7 +1972,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
                     }
 
-                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination(ATransaction));
+                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination(ATransaction.DataBaseObj));
                 }
                 else
                 {

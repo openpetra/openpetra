@@ -962,7 +962,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         #endregion
 
                         // Add this partner key to the list of recently used partners.
-                        TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
+                        TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner, ReadAndWriteTransaction.DataBaseObj);
 
                         SubmissionOK = true;
                     }
@@ -2298,7 +2298,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 // Partner is new Partner > add to list of recent partners. (If the
                                 // Partner was not new then this was already done in LoadData.)
                                 TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true,
-                                    TLastPartnerUse.lpuMailroomPartner);
+                                    TLastPartnerUse.lpuMailroomPartner, SubmitChangesTransaction.DataBaseObj);
                                 TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Set Partner as Recent Partner.");
 
                                 if (FPartnerClass == TPartnerClass.PERSON)
