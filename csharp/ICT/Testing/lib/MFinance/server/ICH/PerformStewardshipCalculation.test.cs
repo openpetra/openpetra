@@ -39,7 +39,6 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
-using Ict.Petra.Server.MFinance.ICH;
 using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;

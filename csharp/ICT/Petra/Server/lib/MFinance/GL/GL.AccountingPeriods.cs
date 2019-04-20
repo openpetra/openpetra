@@ -966,16 +966,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADateInAPeriod"></param>
         /// <param name="AFirstDayOfPeriod">The first day in the period of the specified date.</param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod)
+        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod, TDataBase ADataBase = null)
         {
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GetFirstDayOfAccountingPeriod");
+            TDataBase db = DBAccess.Connect("GetFirstDayOfAccountingPeriod", ADataBase);
             DateTime Result = DateTime.MinValue;
 
-            // Used by importing so the isolation level is serializable
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     // Get the accounting periods for this ledger.  The table will contain more than 12 rows.

@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             TDataBase db = DBAccess.Connect("ImportGiftBatches");
             bool SubmissionOK = false;
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
