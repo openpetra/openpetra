@@ -356,7 +356,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches", ADataBase);
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+            bool NewTransaction;
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             BankImportTDS ResultDataset = new BankImportTDS();
             string MyClientID = DomainManager.GClientID.ToString();
@@ -654,7 +655,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             {
                 TLogging.Log(e.GetType().ToString() + " in BankImport, GetBankStatementTransactionsAndMatches; " + e.Message);
                 TLogging.Log(e.StackTrace);
-                Transaction.Rollback();
+
+                if (NewTransaction)
+                {
+                    Transaction.Rollback();
+                }
+
                 throw;
             }
 
@@ -710,6 +716,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 TLogging.Log(
                     "Loading bank statement: matched: " + CountMatched.ToString() + " of " + ResultDataset.AEpTransaction.Rows.Count.ToString());
             }
+
+            Transaction.Commit();
 
             TProgressTracker.FinishJob(MyClientID);
 
