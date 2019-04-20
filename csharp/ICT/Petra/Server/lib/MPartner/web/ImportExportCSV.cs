@@ -549,8 +549,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
                 PPartnerAttributeAccess.LoadUsingTemplate;
-            TPartnerContactDetails_LocationConversionHelper.SequenceGetter =
-                MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence;
 
             TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(AMainDS,
                 ATransaction);

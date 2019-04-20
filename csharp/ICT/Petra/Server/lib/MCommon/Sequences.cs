@@ -41,22 +41,11 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// get the next sequence value
         /// </summary>
         /// <param name="ASequence"></param>
-        /// <returns></returns>
-        [RequireModulePermission("NONE")]
-        public static Int64 GetNextSequence(TSequenceNames ASequence)
-        {
-            return GetNextSequence(ASequence, null);
-        }
-
-        /// <summary>
-        /// get the next sequence value
-        /// </summary>
-        /// <param name="ASequence"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null. If null
         /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns></returns>
-        [NoRemoting]
-        public static Int64 GetNextSequence(TSequenceNames ASequence, TDataBase ADataBase)
+        [RequireModulePermission("NONE")]
+        public static Int64 GetNextSequence(TSequenceNames ASequence, TDataBase ADataBase = null)
         {
             Int64 NewSequenceValue = 0;
 
@@ -64,7 +53,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             bool SubmissionOK = false;
 
             TDataBase db = DBAccess.Connect("GetNextSequence " + ASequence.ToString(), ADataBase);
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop, PeterS
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 
@@ -239,7 +240,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// Action Delegate for the serialisation of a newly created Contact Details Row.
         /// </summary>
         public static Action <TPartnerContactDetails.PPartnerAttributeRecord,
-                              DataSet>CreateContactDetailsRow;
+                              DataSet, TDataBase>CreateContactDetailsRow;
 
         #region Inner Classes
 
@@ -530,9 +531,10 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// <summary>
         /// Populate the empty table p_partner_attribute using selected data from p_partner_location.
         /// </summary>
+        /// <param name="ADataBase"></param>
         /// <param name="ALogPartnerKeyStatistics">Switch on/off logging mechanism</param>
         /// <returns>Number of created PPartnerAttribute Rows.</returns>
-        public static int PopulatePPartnerAttribute(Boolean ALogPartnerKeyStatistics = false)
+        public static int PopulatePPartnerAttribute(TDataBase ADataBase, Boolean ALogPartnerKeyStatistics = false)
         {
             int RowCounter = 0;
             Int64 BestPartnerLocSiteKey;
@@ -771,7 +773,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     // Create new Rows and write them out
                     foreach (var PPARec in PPARecords)
                     {
-                        CreateContactDetailsRow(PPARec, PartnerAttributeHoldingDataSet);
+                        CreateContactDetailsRow(PPARec, PartnerAttributeHoldingDataSet, ADataBase);
                     }
 
                     RowCounter += PPARecords.Count;
