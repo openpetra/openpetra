@@ -494,7 +494,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             }
 
                             //Calculate the budget Year
-                            BudgetYearNumber = GetBudgetYearNumber(ALedgerNumber, BudgetYearStringUpper);
+                            BudgetYearNumber = GetBudgetYearNumber(ALedgerNumber, BudgetYearStringUpper, db);
 
                             //Add budget revision record if there's not one already.
                             if (ImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, BudgetYearNumber, BdgRevision }) == null)
@@ -631,7 +631,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                                 //Add the new budget row
                                 ABudgetRow BudgetRow = (ABudgetRow)ImportDS.ABudget.NewRowTyped();
-                                int newSequence = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_budget));
+                                int newSequence = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_budget, db));
 
                                 BudgetRow.BudgetSequence = newSequence;
                                 BudgetRow.LedgerNumber = ALedgerNumber;
@@ -798,7 +798,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
         }
 
-        private static Int32 GetBudgetYearNumber(int ALedgerNumber, string ABudgetYearName)
+        private static Int32 GetBudgetYearNumber(int ALedgerNumber, string ABudgetYearName, TDataBase ADataBase)
         {
             int RetVal = 0;
             int BudgetYear = 0;
@@ -807,12 +807,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             AAccountingPeriodTable AccPeriodTable = null;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GetBudgetYearNumber");
+            TDataBase db = DBAccess.Connect("GetBudgetYearNumber", ADataBase);
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -912,7 +911,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
                     ledgerRow.CurrentFinancialYear,
                     0,
-                    ledgerRow.NumberOfAccountingPeriods);
+                    ledgerRow.NumberOfAccountingPeriods,
+                    db);
 
                 BudgetYear = ABudgetRevisionYear + CurrentYearEnd.Year - ledgerRow.CurrentFinancialYear;
 

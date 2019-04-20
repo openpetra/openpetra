@@ -217,17 +217,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static System.DateTime GetPeriodEndDate(Int32 ALedgerNumber, System.Int32 AYear, System.Int32 ADiffPeriod,
-            System.Int32 APeriod)
-        {
-            return GetPeriodEndDate(ALedgerNumber, AYear, ADiffPeriod, APeriod, null);
-        }
-
-        /// <summary>
-        /// get the end date of the given period
-        /// </summary>
-        [NoRemoting]
-        public static System.DateTime GetPeriodEndDate(Int32 ALedgerNumber, System.Int32 AYear, System.Int32 ADiffPeriod,
-            System.Int32 APeriod, TDataBase ADataBase)
+            System.Int32 APeriod, TDataBase ADataBase = null)
         {
             System.Int32 RealYear = 0;
             System.Int32 RealPeriod = 0;
@@ -743,7 +733,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         currentYearEndDate = GetPeriodEndDate(ALedgerNumber,
                             currentFinancialYear,
                             ADiffPeriod,
-                            ledgerRow.NumberOfAccountingPeriods);
+                            ledgerRow.NumberOfAccountingPeriods,
+                            db);
 
                         //Filter to highest period number
                         AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
