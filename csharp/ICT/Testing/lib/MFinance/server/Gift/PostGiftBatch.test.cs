@@ -849,7 +849,8 @@ namespace Tests.MFinance.Server.Gift
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult Result;
             DataSet ResponseDS;
-            TPartnerEditUIConnector PartnerEditUIUIConnector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestRecurringBatchSubmitRecalculations_Arrange");
+            TPartnerEditUIConnector PartnerEditUIUIConnector = new TPartnerEditUIConnector(db);
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             PartnerEditTDS PartnerEditDS = new PartnerEditTDS();
@@ -858,12 +859,12 @@ namespace Tests.MFinance.Server.Gift
             const Int64 DONORKEY = 43005001;
 
             // create a new recipient
-            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS, null);
+            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS, db);
             ARecipientKey = PartnerEditDS.PFamily[0].PartnerKey;
 
             // create two new Unit partners
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, db);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, db);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
 
@@ -905,7 +906,7 @@ namespace Tests.MFinance.Server.Gift
             TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
             // create a new Recurring Gift Batch
-            MainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
+            MainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber, db);
             ARecurringGiftBatchNumber = MainDS.ARecurringGiftBatch[0].BatchNumber;
 
             // create a new recurring gifts

@@ -382,11 +382,17 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         public static ARecurringGiftBatchRow CreateNewRecurringGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("CreateNewRecurringGiftInfo", ADataBase);
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             ALedgerAccess.LoadAll(AGiftDS, Transaction);
 
-            AGiftDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(AGiftDS.ALedger[0].LedgerNumber);
+            AGiftDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(AGiftDS.ALedger[0].LedgerNumber, db);
+
+            if (NewTransaction)
+            {
+                Transaction.Rollback();
+            }
 
             // Create a new RecurringGiftBatch
             ARecurringGiftBatchRow Batch = AGiftDS.ARecurringGiftBatch[0];

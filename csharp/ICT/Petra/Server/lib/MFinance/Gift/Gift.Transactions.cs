@@ -157,9 +157,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// and immediately store the batch and the new number in the database
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber)
+        public static GiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -175,12 +176,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("CreateARecurringGiftBatch");
+            TDataBase db = DBAccess.Connect("CreateARecurringGiftBatch", ADataBase);
             bool SubmissionOK = false;
 
             try
             {
-                db.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
