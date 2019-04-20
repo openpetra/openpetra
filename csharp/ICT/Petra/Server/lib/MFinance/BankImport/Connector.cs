@@ -353,9 +353,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// tries to find matches too
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber)
+        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, TDataBase ADataBase = null)
         {
-            TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches");
+            TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches", ADataBase);
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             BankImportTDS ResultDataset = new BankImportTDS();
@@ -1108,9 +1108,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             Int32 ALedgerNumber,
             Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult,
-            out Int32 ABatchNumber)
+            out Int32 ABatchNumber,
+            TDataBase ADataBase = null)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, ADataBase);
             ABatchNumber = -1;
             string MyClientID = DomainManager.GClientID.ToString();
 
@@ -1132,7 +1133,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             DateTime BatchDateEffective = stmt.Date;
-            TDataBase db = DBAccess.Connect("CreateGiftBatch");
+            TDataBase db = DBAccess.Connect("CreateGiftBatch", ADataBase);
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             if (!TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref BatchDateEffective, out DateEffectiveYearNumber,
@@ -1213,7 +1214,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             GiftBatchTDS GiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(
                 ALedgerNumber,
                 BatchDateEffective,
-                String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
+                String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()), db);
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
             giftbatchRow.BankAccountCode = stmt.BankAccountCode;

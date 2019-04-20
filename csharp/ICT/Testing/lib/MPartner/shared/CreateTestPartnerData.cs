@@ -336,7 +336,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
 
             ALedgerAccess.LoadAll(AGiftDS, Transaction);
 
-            AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch", ADataBase);
+            AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch", db);
 
             // Create a new GiftBatch
             AGiftBatchRow Batch = AGiftDS.AGiftBatch[0];
