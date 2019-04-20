@@ -86,9 +86,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADateEffective"></param>
         /// <param name="ABatchDescription"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective, string ABatchDescription)
+        public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective, string ABatchDescription, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -104,12 +105,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("GiftTransactions", ADataBase);
             bool SubmissionOK = false;
 
             try
             {
-                db.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -1912,10 +1913,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="AInspectDS"></param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult, TDataBase ADataBase = null)
         {
             AVerificationResult = new TVerificationResultCollection();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
@@ -2128,7 +2130,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
 
-                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                GiftBatchTDSAccess.SubmitChanges(AInspectDS, ADataBase);
 
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
@@ -2173,7 +2175,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                            GiftBatchTDSAccess.SubmitChanges(AInspectDS, ADataBase);
 
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }

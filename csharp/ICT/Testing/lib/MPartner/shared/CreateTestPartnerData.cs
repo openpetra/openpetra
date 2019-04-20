@@ -331,11 +331,12 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         public static AGiftBatchRow CreateNewGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("CreateNewGiftInfo", ADataBase);
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             ALedgerAccess.LoadAll(AGiftDS, Transaction);
 
-            AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch");
+            AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch", ADataBase);
 
             // Create a new GiftBatch
             AGiftBatchRow Batch = AGiftDS.AGiftBatch[0];
@@ -368,6 +369,11 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             GiftDetail.RecipientLedgerNumber = APartnerKey;
             GiftDetail.GiftTransactionAmount = 10;
             AGiftDS.AGiftDetail.Rows.Add(GiftDetail);
+
+            if (NewTransaction)
+            {
+                  Transaction.Rollback();
+            }
 
             return Batch;
         }

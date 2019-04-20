@@ -4483,12 +4483,17 @@ namespace Tests.MPartner.Server.PartnerMerge
             long[] SiteKeys = new long[0];
             int[] LocationKeys = new int[0];
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            TDataBase db = DBAccess.Connect("TestMergeGiftInfo");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(db);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
             //
-            TestMergeGiftInfo_Arrange(out FromPartnerKey, out ToPartnerKey, out FamilyPartnerKey, out LedgerNumber, out BatchNumber, UIConnector);
+            TestMergeGiftInfo_Arrange(out FromPartnerKey, out ToPartnerKey, out FamilyPartnerKey, out LedgerNumber, out BatchNumber, UIConnector, db);
+
+            Transaction.Commit();
 
             //
             // Act: Merge the two Person Partners!
@@ -4536,8 +4541,9 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// <param name="ALedgerNumber">Ledger Number for the GiftBatch that is created for testing.</param>
         /// <param name="ABatchNumber">Batch Number for the GiftBatch that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        /// <param name="ADataBase"></param>
         private void TestMergeGiftInfo_Arrange(out long AFromPartnerKey, out long AToPartnerKey, out long AFamilyPartnerKey, out int ALedgerNumber,
-            out int ABatchNumber, TPartnerEditUIConnector AConnector)
+            out int ABatchNumber, TPartnerEditUIConnector AConnector, TDataBase ADataBase)
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult Result;
@@ -4546,11 +4552,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             GiftBatchTDS GiftDS = new GiftBatchTDS();
 
             // create two new Person Partners, one family and GiftInfo for From Partner
-            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS, ADataBase);
             PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
-            AGiftBatchRow GiftBatchRow = TCreateTestPartnerData.CreateNewGiftInfo(FromPartnerRow.PartnerKey, ref GiftDS);
+            AGiftBatchRow GiftBatchRow = TCreateTestPartnerData.CreateNewGiftInfo(FromPartnerRow.PartnerKey, ref GiftDS, ADataBase);
 
             // Guard Assertions
             Assert.That(FamilyPartnerRow, Is.Not.Null);
@@ -4575,7 +4581,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
             // Submit the new Gift Info records to the database
-            Result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+            Result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult, ADataBase);
 
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(

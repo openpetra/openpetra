@@ -393,9 +393,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if deletion was successful</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool DeletePartner(Int64 APartnerKey, out TVerificationResultCollection AVerificationResult)
+        public static bool DeletePartner(Int64 APartnerKey, out TVerificationResultCollection AVerificationResult, TDataBase ADataBase = null)
         {
             string ShortName;
             TPartnerClass PartnerClass;
@@ -408,7 +409,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            TDataBase db = DBAccess.Connect("DeletePartner");
+            TDataBase db = DBAccess.Connect("DeletePartner", ADataBase);
             db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
