@@ -72,7 +72,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool SubmissionOK = true;
             CorporateExchangeSetupTDS InspectDS = AInspectDS;
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -302,7 +302,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     // save changes to exchange rates
                     ACorporateExchangeRateAccess.SubmitChanges(InspectDS.ACorporateExchangeRate, Transaction);
-                }); // GetNewOrExistingAutoTransaction
+                }); // WriteTransaction
 
             TSubmitChangesResult SubmissionResult;
 
@@ -336,8 +336,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("CanDeleteCorporateExchangeRate");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

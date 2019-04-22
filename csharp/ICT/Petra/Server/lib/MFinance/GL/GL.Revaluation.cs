@@ -176,7 +176,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
                 {
                     glmTemplate.AccountCode = F_ForeignAccount[i];
-                    FDataBase.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    FDataBase.ReadTransaction(
                         ref Transaction,
                         delegate
                         {
@@ -240,8 +240,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 AGeneralLedgerMasterPeriodTable glmpTbl = null;
 
-                FDataBase.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                FDataBase.ReadTransaction(
                     ref transaction,
                     delegate
                     {

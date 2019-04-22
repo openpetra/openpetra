@@ -727,7 +727,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner", ADataBase);
             ReadAndWriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                out NewTransaction);
 
             try
             {

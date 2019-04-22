@@ -82,7 +82,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             bool ReturnValue = false;
 
             ReadTransaction = FDataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try

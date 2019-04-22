@@ -467,7 +467,7 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>void</returns>
         private void LoadSystemDefaultsTable()
         {
-            TDataBase DBAccessObj = new Ict.Common.DB.TDataBase();
+            TDataBase DBAccessObj = DBAccess.Connect("LoadSystemDefaultsTable");
             TDBTransaction ReadTransaction = new TDBTransaction();
 
             // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
@@ -482,11 +482,7 @@ namespace Ict.Petra.Server.App.Core
 
                 try
                 {
-                    DBAccessObj.EstablishDBConnection("SystemDefaultsCache DB Connection");
-
-                    TSubmitChangesResult result = TSubmitChangesResult.scrOK;
-                    DBAccessObj.BeginAutoTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,
-                        ref result,
+                    DBAccessObj.ReadTransaction(ref ReadTransaction,
                         delegate
                         {
                             FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
@@ -541,7 +537,7 @@ namespace Ict.Petra.Server.App.Core
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction WriteTransaction = new TDBTransaction();
-            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
+            bool SubmissionOK = false;
             SSystemDefaultsTable SystemDefaultsDT;
             Boolean Added = false;
 
@@ -551,7 +547,7 @@ namespace Ict.Petra.Server.App.Core
                 DBConnectionObj = DBAccess.Connect("SetSystemDefault");
 
                 // ...and start a DB Transaction on that separate DB Connection
-                DBConnectionObj.BeginAutoTransaction(IsolationLevel.ReadCommitted, ref WriteTransaction, ref SubmissionOK,
+                DBConnectionObj.WriteTransaction(ref WriteTransaction, ref SubmissionOK,
                     delegate
                     {
                         SystemDefaultsDT = SSystemDefaultsAccess.LoadAll(WriteTransaction);
@@ -583,7 +579,7 @@ namespace Ict.Petra.Server.App.Core
 
                         SSystemDefaultsAccess.SubmitChanges(SystemDefaultsDT, WriteTransaction);
 
-                        SubmissionOK = TSubmitChangesResult.scrOK;
+                        SubmissionOK = true;
                     });
 
                 AAdded = Added;
@@ -599,7 +595,7 @@ namespace Ict.Petra.Server.App.Core
             }
             finally
             {
-                if (SubmissionOK == TSubmitChangesResult.scrOK)
+                if (SubmissionOK)
                 {
                     // We need to ensure that the next time the System Defaults Caches gets accessed it is refreshed from the DB!!!
 

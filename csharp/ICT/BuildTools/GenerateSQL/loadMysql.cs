@@ -56,7 +56,7 @@ namespace GenerateSQL
                 return false;
             }
 
-            DBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref WriteTransaction,
+            DBAccessObj.WriteTransaction(ref WriteTransaction,
                 ref SubmissionResult,
                 delegate
                 {

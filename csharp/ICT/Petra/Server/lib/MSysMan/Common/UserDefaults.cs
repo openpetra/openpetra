@@ -334,7 +334,6 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                 try
                 {
                     ReadTransaction = DBAccess.Connect("LoadUserDefaultsTable", ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
 
                     if (SUserDefaultsAccess.CountViaSUser(AUserName, ReadTransaction) != 0)
@@ -698,7 +697,6 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                     {
                         TDataBase db = DBAccess.Connect("SaveUserDefaultsTable");
                         WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                            TEnforceIsolationLevel.eilMinimum,
                             out NewTransaction);
                     }
                     else

@@ -110,8 +110,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -217,10 +216,8 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetLedgerName", FDataBase);
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
-                "GetLedgerName",
                 delegate
                 {
                     String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
@@ -607,8 +604,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 try
                 {
-                    db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum, ref readTransaction,
+                    db.ReadTransaction(
+                        ref readTransaction,
                         delegate
                         {
                             // use the first bank account
@@ -832,8 +829,8 @@ namespace Ict.Petra.Server.MFinance.Common
             ALedgerInitFlagTable LedgerInitFlagTable = null;
             ALedgerInitFlagRow Ret = null;
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            db.ReadTransaction(
+                ref ReadTransaction,
                 delegate
                 {
                     LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(FLedgerNumber, AFlag, ReadTransaction);
@@ -858,8 +855,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TDataBase db = DBAccess.Connect("SetFlagValue", FDataBase);
             Boolean SubmissionOK = false;
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref ReadWriteTransaction,
                 ref SubmissionOK,
                 delegate
@@ -892,8 +888,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TDataBase db = DBAccess.Connect("DeleteFlag", FDataBase);
             Boolean SubmissionOK = true;
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

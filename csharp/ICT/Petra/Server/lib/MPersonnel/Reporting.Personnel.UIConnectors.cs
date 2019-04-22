@@ -71,9 +71,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             DataSet ReturnSet = new DataSet();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -366,9 +364,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             String Selection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -529,9 +525,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
 
             DataTable PreviousExperience = new DataTable();
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -581,9 +575,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             DataTable PreviousExperience = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -666,9 +658,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             DataTable PreviousExperience = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -709,9 +699,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -778,9 +766,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             string Selection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
             TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -810,9 +796,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             String Selection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -853,9 +837,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             DataTable StartOfCommitment = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -954,9 +936,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             DataTable UnitHierarchy = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

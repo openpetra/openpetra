@@ -217,9 +217,7 @@ namespace Ict.Petra.Server.MFinance.GL
  *          }
  */
  
-            db.GetNewOrExistingAutoTransaction(
-                IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref transaction,
                 ref SubmissionOK,
                 delegate

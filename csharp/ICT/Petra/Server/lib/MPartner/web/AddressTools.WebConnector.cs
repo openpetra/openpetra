@@ -51,7 +51,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
             bool NewTransaction;
             TDataBase db = DBAccess.Connect("GetBestAddress");
             TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                out NewTransaction);
 
             bool ResultValue = false;
 

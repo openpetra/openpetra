@@ -61,8 +61,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadMotivationDetails");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

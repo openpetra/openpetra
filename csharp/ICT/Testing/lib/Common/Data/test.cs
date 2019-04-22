@@ -74,8 +74,7 @@ namespace Ict.Common.Data.Testing
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDataBase db = DBAccess.Connect("test");
 
-            db.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ALedgerAccess.LoadAll(MainDS, ReadTransaction);
@@ -131,9 +130,7 @@ namespace Ict.Common.Data.Testing
             DateTime after = DateTime.Now;
             GiftBatchTDS ds = new GiftBatchTDS();
 
-            db.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

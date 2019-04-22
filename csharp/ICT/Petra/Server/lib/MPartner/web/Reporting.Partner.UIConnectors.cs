@@ -56,9 +56,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             DataTable Partners = new DataTable("Partners");
             DataTable Locations = new DataTable("Locations");
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -185,9 +183,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
             String PartnerSelection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -790,9 +786,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             DataTable PersonInformation = new DataTable();
             TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -959,9 +953,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             DataTable ReturnTable = new DataTable();
             TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

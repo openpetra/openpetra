@@ -133,7 +133,6 @@ namespace Ict.Common.DB.DBCaching
             try
             {
                 ReadTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 if (ATable == null)

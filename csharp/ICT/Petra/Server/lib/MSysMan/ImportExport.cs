@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 DBConnectionObj = DBAccess.Connect("ExportAllTables");
 
                 // ...and start a DB Transaction on that separate DB Connection
-                DBConnectionObj.BeginAutoTransaction(IsolationLevel.Serializable, ref ReadWriteTransaction, ref SubmissionResult, delegate
+                DBConnectionObj.WriteTransaction(ref ReadWriteTransaction, ref SubmissionResult, delegate
                     {
                         try
                         {

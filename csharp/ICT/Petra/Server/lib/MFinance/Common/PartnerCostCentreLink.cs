@@ -64,7 +64,6 @@ namespace Ict.Petra.Server.MFinance.Common
             TDataBase db = DBAccess.Connect("HasPartnerCostCentreLink");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
             try
             {

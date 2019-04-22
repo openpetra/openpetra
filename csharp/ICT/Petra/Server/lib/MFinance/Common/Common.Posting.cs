@@ -295,8 +295,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -418,8 +417,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -523,8 +521,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -672,8 +669,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ValidateGLBatchAndTransactions");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -892,8 +888,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TDBTransaction transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("ValidateGLBatchJournalNumbering");
 
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {
@@ -1080,8 +1075,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TDBTransaction transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("ValidateGLJournalTransactionNumbering");
 
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {
@@ -2121,7 +2115,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction, ref SubmissionOK,
                     delegate
                     {
@@ -2339,7 +2333,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -2971,8 +2965,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3055,8 +3048,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate

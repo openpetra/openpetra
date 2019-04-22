@@ -297,9 +297,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -402,9 +400,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -752,9 +748,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -968,8 +962,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
 
             TDBTransaction Transaction = new TDBTransaction();
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

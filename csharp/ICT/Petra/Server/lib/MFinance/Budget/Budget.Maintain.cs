@@ -89,8 +89,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -179,8 +178,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -410,10 +408,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             // Go round a loop reading the file line by line
             string ImportLine = sr.ReadLine();
+            bool SubmitOK = false;
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref transaction,
+                ref SubmitOK,
                 delegate
                 {
                     while (ImportLine != null)
@@ -670,7 +669,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             ImportLine = sr.ReadLine();
                         }
                     }
-                }); // NewOrExisting AutoReadTransaction
+
+                    SubmitOK = true;
+                }); // WriteTransaction
 
             ABudgetsAdded = BudgetsAdded;
             ABudgetsUpdated = BudgetsUpdated;
@@ -877,8 +878,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {

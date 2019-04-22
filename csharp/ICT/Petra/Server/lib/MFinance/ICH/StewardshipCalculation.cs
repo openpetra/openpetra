@@ -1242,7 +1242,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             TDBTransaction DBTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("SelectedPeriodRequiresStewardshipRun");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            db.ReadTransaction(
                 ref DBTransaction,
                 delegate
                 {

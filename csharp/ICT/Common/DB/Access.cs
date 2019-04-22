@@ -37,27 +37,6 @@ using Ict.Common.IO;
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// <see cref="IsolationLevel" /> that needs to be enforced when requesting a
-    /// DB Transaction with Methods
-    /// <see cref="M:DB.TDataBase.GetNewOrExistingTransaction(IsolationLevel, out Boolean)" /> and
-    /// <see cref="M:DB.TDataBase.GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out Boolean)" />.
-    /// </summary>
-    public enum TEnforceIsolationLevel
-    {
-        /// <summary>
-        /// <see cref="IsolationLevel" /> of current Transaction must match the
-        /// specified <see cref="IsolationLevel" /> <em>exactly</em>.
-        /// </summary>
-        eilExact,
-
-        /// <summary>
-        /// <see cref="IsolationLevel" /> of current Transaction must match or
-        /// exceed the specified <see cref="IsolationLevel" />.
-        /// </summary>
-        eilMinimum
-    }
-
-    /// <summary>
     /// Contains some Constants and a Global Variable for use with Database Access.
     /// </summary>
     public class DBAccess

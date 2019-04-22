@@ -834,7 +834,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             Boolean shouldCommit = true;
             DataTable Res = new DataTable();
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref shouldCommit,
                 delegate
@@ -857,7 +857,7 @@ namespace Ict.Petra.Server.MFinance.Gift
            
             Boolean shouldCommit = true;
 
-            db.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+            db.WriteTransaction(
                 ref Transaction,
                 ref shouldCommit,
                 delegate
@@ -961,7 +961,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             bool SubmissionOK = false;
             Int32 RowNumber = 0;
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1323,7 +1323,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     } // finally
-                }); // BeginAutoTransaction
+                }); // WriteTransaction
 
             AMessages = Messages;
             ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;

@@ -90,8 +90,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     TDataBase db = DBAccess.Connect("PeriodMonthEnd", ADataBase);
                     AAccountingPeriodTable PeriodTbl = null;
 
-                    db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
-                        TEnforceIsolationLevel.eilMinimum,
+                    db.ReadTransaction(
                         ref Transaction,
                         delegate
                         {
@@ -219,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref transaction,
                 ref submissionOK,
                 delegate
@@ -291,8 +290,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 AAccountingPeriodTable PeriodTbl = null;
                 
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -615,8 +613,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetUnpostedGiftInfo");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -674,8 +671,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetSuspenseAccountInfo");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -747,8 +743,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetBatchInfo");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {

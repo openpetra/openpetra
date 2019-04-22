@@ -94,8 +94,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadDatabase");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -486,8 +485,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TDataBase db = DBAccess.Connect("GetDailyExchangeRate");
             ExchangeRateTDS allRates = null;
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -564,7 +562,7 @@ namespace Ict.Petra.Server.MFinance.Common
             templateRow.FromCurrencyCode = ACurrencyFrom;
             templateRow.ToCurrencyCode = ACurrencyTo;
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

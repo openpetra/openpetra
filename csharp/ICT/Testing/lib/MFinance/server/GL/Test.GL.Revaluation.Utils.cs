@@ -71,8 +71,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadTestTata");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

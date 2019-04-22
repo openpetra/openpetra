@@ -67,8 +67,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetCurrentPeriodDates");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -116,8 +115,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetCurrentPostingRangeDates");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -208,8 +206,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("HasSuspenseAccounts");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -360,8 +357,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetCurrencyLanguage");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -391,8 +387,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             DataTable result = new DataTable();
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("TypeAheadAccountCode");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -436,8 +431,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDataBase db = DBAccess.Connect("TypeAheadCostCentreCode");
             DataTable result = new DataTable();
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -474,8 +468,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDataBase db = DBAccess.Connect("TypeAheadMotivationGroup");
             DataTable result = new DataTable();
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -510,8 +503,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             TDataBase db = DBAccess.Connect("TypeAheadMotivationDetail");
             DataTable result = new DataTable();
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

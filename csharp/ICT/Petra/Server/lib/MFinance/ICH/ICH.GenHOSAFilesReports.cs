@@ -100,8 +100,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
             TDataBase db = DBAccess.Connect("GenerateHOSAFiles", ADataBase);
             TDBTransaction DBTransaction = new TDBTransaction();
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref DBTransaction,
                 delegate
                 {

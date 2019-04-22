@@ -54,8 +54,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetGLMSequenceForBudget");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -375,8 +374,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("CalculateBudget");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {

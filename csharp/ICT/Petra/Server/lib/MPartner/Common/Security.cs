@@ -74,7 +74,6 @@ namespace Ict.Petra.Server.MPartner.Common
                     TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
                     ReadTransaction = db.GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
 
                     // Load Foundation
@@ -164,7 +163,6 @@ namespace Ict.Petra.Server.MPartner.Common
                 TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
                 ReadTransaction = db.GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 // Load Partner

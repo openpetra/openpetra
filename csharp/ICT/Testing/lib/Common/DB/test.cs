@@ -110,7 +110,7 @@ namespace Ict.Common.DB.Testing
             string sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
                          "VALUES(43, 99999999, 1)";
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+            db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
                     db.ExecuteNonQuery(sql, t);
@@ -121,7 +121,7 @@ namespace Ict.Common.DB.Testing
             SubmissionOK = true;
             sql = "DELETE FROM a_gift" +
                   " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+            db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
                     db.ExecuteNonQuery(sql, t);
@@ -149,7 +149,7 @@ namespace Ict.Common.DB.Testing
             TDataBase db = DBAccess.Connect("Test", FDataBase);
 
             // setup test scenario: a gift batch, with 2 gifts, each with 2 gift details
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+            db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
                     string sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
@@ -166,7 +166,7 @@ namespace Ict.Common.DB.Testing
             // UNDO the test
             t = null;
             SubmissionOK = true;
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+            db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
                     string sql = "DELETE FROM a_gift" +
@@ -199,8 +199,7 @@ namespace Ict.Common.DB.Testing
             string sql;
             TDataBase db = DBAccess.Connect("TestInsertMultipleRows", FDataBase);
 
-            db.BeginAutoTransaction(
-                IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref t,
                 ref SubmissionOK,
                 delegate
@@ -215,7 +214,7 @@ namespace Ict.Common.DB.Testing
             // UNDO the test
             t = new TDBTransaction();
             SubmissionOK = true;
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+            db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
                     sql = "DELETE FROM a_gift_batch" +
@@ -316,43 +315,6 @@ namespace Ict.Common.DB.Testing
 
         /// <summary>
         /// This Test asserts that GetNewOrExistingTransaction will throw the proper Exceptions once it gets called and
-        /// a DB Transaction is running and the exact <see cref="IsolationLevel"/> that is asked for by the caller cannot
-        /// be met.
-        /// </summary>
-        [Test]
-        public void TestDBAccess_GNoETransaction_throws_proper_ExceptionOnWrongExactIsolationLevel()
-        {
-            bool NewTrans;
-            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
-
-            //
-            // Arrange
-            //
-
-            TDBTransaction trans = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
-
-            // Guard Assert: Check that the new DB Transaction has been taken out
-            Assert.That(NewTrans, Is.True);
-
-            //
-            // Act and Assert
-            //
-            Assert.Throws <EDBTransactionIsolationLevelWrongException>(() =>
-                                                                       db.GetNewOrExistingTransaction(
-                                                                           IsolationLevel.Serializable,
-                                                                           TEnforceIsolationLevel.eilExact,
-                                                                           out NewTrans), "GetNewOrExistingTransaction didn't throw expected " +
-                                                                       "Exception (EDBTransactionIsolationLevelWrongException) on asking for an exact IsolationLevel which "
-                                                                       +
-                                                                       "cannot be met");
-
-            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
-            // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            trans.Rollback();
-        }
-
-        /// <summary>
-        /// This Test asserts that GetNewOrExistingTransaction will throw the proper Exceptions once it gets called and
         /// a DB Transaction is running and the minimum <see cref="IsolationLevel"/> that is asked for by the caller
         /// cannot be met.
         /// </summary>
@@ -377,7 +339,6 @@ namespace Ict.Common.DB.Testing
             Assert.Throws <EDBTransactionIsolationLevelTooLowException>(() =>
                                                                         db.GetNewOrExistingTransaction(
                                                                             IsolationLevel.Serializable,
-                                                                            TEnforceIsolationLevel.eilMinimum,
                                                                             out NewTrans), "GetNewOrExistingTransaction didn't throw expected " +
                                                                         "Exception (EDBTransactionIsolationLevelTooLowException) on asking for a minimum IsolationLevel which "
                                                                         +
@@ -393,44 +354,11 @@ namespace Ict.Common.DB.Testing
         #region CheckRunningDBTransactionIsolationLevelIsCompatible
 
         /// <summary>
-        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact
-        /// IsolationLevel that isn't what the running DB Transaction has got returns false.
-        /// </summary>
-        [Test]
-        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectFalse()
-        {
-            bool NewTrans;
-            bool Result;
-            TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
-
-            //
-            // Arrange
-            //
-
-            TDBTransaction transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
-
-            // Guard Assert: Check that the new DB Transaction has been taken out
-            Assert.That(NewTrans, Is.True);
-
-            // Act
-            Result = db.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadUncommitted,
-                TEnforceIsolationLevel.eilExact);
-
-            // Primary Assert
-            Assert.IsFalse(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
-                "IsolationLevel that isn't exactly what the running DB Transaction has got did not return false");
-
-            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
-            // it's better to do this explicitly here so it is clear it isn't forgotten about.
-            transaction.Rollback();
-        }
-
-        /// <summary>
         /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible when there is no current DB
         /// Transaction throws EDBNullTransactionException.
         /// </summary>
         [Test]
-        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectEDBNullTransactionException()
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_ExpectEDBNullTransactionException()
         {
             TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
 
@@ -442,19 +370,17 @@ namespace Ict.Common.DB.Testing
             Assert.Catch <EDBNullTransactionException>(delegate
                                                        {
                                                            db.CheckRunningDBTransactionIsolationLevelIsCompatible(
-                                                               IsolationLevel.ReadCommitted,
-                                                               TEnforceIsolationLevel.eilExact);
+                                                               IsolationLevel.ReadCommitted);
                                                        },
                                                        "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
                                                        "IsolationLevel that is exactly what the running DB Transaction has got did not throw EDBNullTransactionException");
         }
 
         /// <summary>
-        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact
-        /// IsolationLevel that is exactly what the running DB Transaction has got returns true.
+        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible returns true.
         /// </summary>
         [Test]
-        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectTrue2()
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_ExpectTrue2()
         {
             bool NewTrans;
             bool Result;
@@ -470,8 +396,7 @@ namespace Ict.Common.DB.Testing
             Assert.That(NewTrans, Is.True);
 
             // Act
-            Result = db.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilExact);
+            Result = db.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted);
 
             // Primary Assert
             Assert.IsTrue(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
@@ -503,8 +428,7 @@ namespace Ict.Common.DB.Testing
             Assert.That(NewTrans, Is.True);
 
             // Act
-            Result = db.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum);
+            Result = db.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.Serializable);
 
             // Primary Assert
             Assert.IsFalse(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for a minimum " +
@@ -536,8 +460,7 @@ namespace Ict.Common.DB.Testing
             Assert.That(NewTrans, Is.True);
 
             // Act
-            Result = db.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum);
+            Result = db.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted);
 
             // Primary Assert
             Assert.IsTrue(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for a minimum " +
@@ -561,7 +484,7 @@ namespace Ict.Common.DB.Testing
         [Test]
         public void TestDBAccess_working_after_ExecuteNonQuery_threw_DBLevel_Exception()
         {
-            TDBTransaction t = null;
+            TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = true;
             string sql;
             TDataBase db = DBAccess.Connect("TestDBAccess", FDataBase);
@@ -577,8 +500,8 @@ namespace Ict.Common.DB.Testing
                     "INSERT INTO p_type(p_type_code_c, p_type_description_c) " +
                     "VALUES ('TEST_EXECUTENONQUERY', NULL)";
 
-                t = null;
-                db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                t = new TDBTransaction();
+                db.WriteTransaction(ref t, ref SubmissionOK,
                     delegate
                     {
                         // Act #1
@@ -605,8 +528,8 @@ namespace Ict.Common.DB.Testing
                     "INSERT INTO p_type(p_type_code_c, p_type_description_c) " +
                     "VALUES ('TEST_EXECUTENONQUERY', 'Test should be fine')";
 
-                t = null;
-                db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+                t = new TDBTransaction();
+                db.WriteTransaction(ref t, ref SubmissionOK,
                     delegate
                     {
                         // Act #2 AND Assert
@@ -626,9 +549,9 @@ namespace Ict.Common.DB.Testing
             }
 
             // UNDO the test
-            t = null;
+            t = new TDBTransaction();
             SubmissionOK = true;
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref t, ref SubmissionOK,
+            db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
                     sql = "DELETE FROM p_type" +

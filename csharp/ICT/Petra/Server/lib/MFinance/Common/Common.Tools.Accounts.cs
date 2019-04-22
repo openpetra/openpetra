@@ -70,8 +70,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -335,8 +334,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -500,8 +498,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TDBTransaction Transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("TAccountInfo.LoadData");
 
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -732,8 +729,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {

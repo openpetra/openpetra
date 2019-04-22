@@ -58,8 +58,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("Budget");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -153,7 +152,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             Boolean SubmissionOK = false;
             TDataBase db = DBAccess.Connect("Budget");
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     ALedgerRow LedgerRow = FBudgetTDS.ALedger[0];
@@ -241,8 +240,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                 TDataBase db = DBAccess.Connect("Budget");
                 TDBTransaction transaction = new TDBTransaction();
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {

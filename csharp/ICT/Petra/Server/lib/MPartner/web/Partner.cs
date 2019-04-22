@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -410,7 +410,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             bool SubmissionOK = false;
 
             TDataBase db = DBAccess.Connect("DeletePartner", ADataBase);
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -858,7 +858,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TVerificationResultCollection VerificationResult = null;
 
             TDataBase db = DBAccess.Connect("CancelExpiredSubscriptions");
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -1684,7 +1684,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PPartnerRelationshipTable ReturnValue = null;
 
             TDataBase db = DBAccess.Connect("GetPartnerRelationships");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

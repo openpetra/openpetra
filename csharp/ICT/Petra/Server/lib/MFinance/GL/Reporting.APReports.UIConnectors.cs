@@ -53,9 +53,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable documents = new DataTable();
             DataTable currencies = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -198,9 +196,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable APCurrentPayable = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -276,9 +272,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable Payments = new DataTable();
             DataTable Suppliers = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -382,9 +376,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable Accounts = new DataTable();
             DataTable Details = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

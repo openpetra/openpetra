@@ -970,7 +970,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1117,7 +1117,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDataBase db = DBAccess.Connect("MarkReceiptsPrinted");
             bool SubmissionOK = false;
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1157,7 +1157,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDataBase db = DBAccess.Connect("MarkReceiptsPrinted");
             bool SubmissionOK = false;
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1240,7 +1240,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDataBase db = DBAccess.Connect("GetLastReceiptNumber");
             bool SubmissionOK = false;
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

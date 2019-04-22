@@ -106,7 +106,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDataBase db = DBAccess.Connect("UpdateUnpostedGiftsTaxDeductiblePct");
             bool SubmissionOK = false;
 
-            db.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

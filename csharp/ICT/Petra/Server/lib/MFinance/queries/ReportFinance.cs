@@ -214,8 +214,7 @@ namespace Ict.Petra.Server.MFinance.queries
             DataTable tempTbl = null;
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("TotalGiftsThroughFieldMonth");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -353,8 +352,7 @@ namespace Ict.Petra.Server.MFinance.queries
             DataTable tempTbl = null;
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("TotalGiftsThroughFieldYear");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -546,8 +544,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("SelectGiftRecipients");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

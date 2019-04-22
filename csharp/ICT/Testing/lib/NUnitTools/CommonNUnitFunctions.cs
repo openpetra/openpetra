@@ -134,15 +134,15 @@ namespace Ict.Testing.NUnitTools
                     sw.Close();
                     TDBTransaction LoadTransaction = new TDBTransaction();
                     TDataBase db = DBAccess.Connect("LoadTestDataMySQL");
-                    TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+                    bool SubmissionOK = false;
 
-                    db.BeginAutoTransaction(IsolationLevel.Serializable, ref LoadTransaction,
-                        ref SubmissionResult,
+                    db.WriteTransaction(ref LoadTransaction,
+                        ref SubmissionOK,
                         delegate
                         {
                             db.ExecuteNonQuery("LOAD DATA LOCAL INFILE '" + tempfile + "' INTO TABLE " + currenttable,
                                 LoadTransaction);
-                            SubmissionResult = TSubmitChangesResult.scrOK;
+                            SubmissionOK = true;
                         });
 
                     currenttable = String.Empty;
@@ -226,8 +226,7 @@ namespace Ict.Testing.NUnitTools
             TDataBase db = DBAccess.Connect("NUnitFunctions.CreateNewLedger");
             ALedgerTable ledgers = null;
 
-            db.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ledgers = ALedgerAccess.LoadAll(ReadTransaction);

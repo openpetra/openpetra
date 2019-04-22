@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                     TDBTransaction t = new TDBTransaction();
                     TDataBase db = DBAccess.Connect("DoDailyExchangeRateClean");
                     bool bSubmissionOk = false;
-                    db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref t, ref bSubmissionOk,
+                    db.WriteTransaction(ref t, ref bSubmissionOk,
                         delegate
                         {
                             string logMsg = String.Empty;
@@ -187,8 +187,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadDailyExchangeRateData");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

@@ -81,7 +81,8 @@ namespace Tests.MPartner.Server.PartnerExports
 
             TVerificationResultCollection VerificationResult;
             TPartnerFileImport importer = new TPartnerFileImport();
-            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, false, out VerificationResult);
+            TDataBase db = DBAccess.Connect("TestImportFamily");
+            PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, false, out VerificationResult, db);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult);
 

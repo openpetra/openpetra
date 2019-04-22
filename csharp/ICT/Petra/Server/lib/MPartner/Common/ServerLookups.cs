@@ -82,8 +82,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetPartnerShortName");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -133,8 +132,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetPartnerGiftDestination");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -265,7 +263,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDataBase db = DBAccess.Connect("PartnerIsLinkedToCC");
             Boolean Ret = false;
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -302,7 +300,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("PartnerOfTypeCCIsLinked");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -405,7 +403,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 RequiredColumns.Add(PPartnerTable.GetGroupIdDBName());
                 TDataBase db = DBAccess.Connect("VerifyPartnerAndGetDetails");
                 ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 try
                 {
@@ -477,7 +474,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             if (APartnerKey != 0)
             {
                 ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 try
                 {
@@ -532,7 +528,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             TDataBase db = DBAccess.Connect("VerifyPartnerAtLocation");
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
             try
             {
@@ -636,7 +631,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
                 TDataBase db = DBAccess.Connect("MergedPartnerDetails");
                 ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 try
@@ -970,7 +964,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             POrganisationTable OrganisationDT = new POrganisationTable();
             TDataBase db = DBAccess.Connect("GetPartnerFoundationStatus");
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             // Load data
@@ -1046,7 +1039,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDataBase db = DBAccess.Connect("GetRecentlyUsedPartners");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             // Load the recently used partners from this user
@@ -1077,7 +1069,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
                 ReadTransaction = db.GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 // Get the partner name from the recently used partner
@@ -1144,7 +1135,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDataBase db = DBAccess.Connect("GetFamilyKeyForPerson");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             PPersonTable PersonDT = new PPersonTable();
@@ -1185,7 +1175,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             bool NewTransaction;
             TDataBase db = DBAccess.Connect("GetCountryCodeFromSiteLedger");
             TDBTransaction ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             string CountryCode = TAddressTools.GetCountryCodeFromSiteLedger(ReadTransaction);
@@ -1213,7 +1202,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetUnitNameAndCountryCodeFromPartnerKey");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

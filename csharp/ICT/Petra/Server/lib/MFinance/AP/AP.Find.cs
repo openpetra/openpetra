@@ -329,8 +329,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetPartPaidAmount");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

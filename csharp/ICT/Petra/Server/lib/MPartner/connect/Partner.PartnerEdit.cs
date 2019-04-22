@@ -1740,7 +1740,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDataBase db = DBAccess.Connect("GetFamilyMembersInternal");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                out NewTransaction);
 
             try
             {

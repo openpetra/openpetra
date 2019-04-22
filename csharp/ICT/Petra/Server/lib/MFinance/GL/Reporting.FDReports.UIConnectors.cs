@@ -65,8 +65,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable Results = new DataTable();
             DataTable ReturnTable = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -233,9 +232,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable DonorAddresses = new DataTable();
             DataSet ReturnSet = new DataSet();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -335,9 +332,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable dtDonations = new DataTable("NewDonorReportDonations");
             DataTable DonorAddresses = new DataTable("DonorAddresses");
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -544,9 +539,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     AParameters["param_motivation_group_detail_pairs"]);
             }
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -774,7 +767,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Results = null;
                         return;
                     }
-                }); // GetNewOrExistingAutoReadTransaction
+                }); // ReadTransaction
             Results.Tables.Add(Gifts);
             Results.Tables.Add(Donors);
             Results.Tables.Add(Contacts);
@@ -796,9 +789,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable dt = new DataTable("TopDonorReport");
             DataTable recipients = new DataTable("Recipients");
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -1017,9 +1008,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable dtDonations = new DataTable("NewDonorReportDonations");
             DataTable DonorAddresses = new DataTable("DonorAddresses");
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

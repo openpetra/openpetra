@@ -81,8 +81,7 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetNewPartnerKey", ADataBase);
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
@@ -125,7 +124,7 @@ namespace Ict.Petra.Server.MPartner.Common
             {
                 // The user has selected the default
                 ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                    out NewTransaction);
 
                 try
                 {
@@ -163,7 +162,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 PartnerLedgerDT[0].LastPartnerId = (int)(ANewPartnerKey - PartnerLedgerDT[0].PartnerKey);
 
                 WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                    out NewTransaction);
 
                 try
                 {
@@ -190,7 +189,7 @@ namespace Ict.Petra.Server.MPartner.Common
             else
             {
                 ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                    out NewTransaction);
 
                 try
                 {

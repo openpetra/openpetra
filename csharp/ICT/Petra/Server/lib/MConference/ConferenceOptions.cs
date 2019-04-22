@@ -69,7 +69,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TDataBase db = DBAccess.Connect("GetOutreachOptions");
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -141,7 +140,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TDataBase db = DBAccess.Connect("GetConferences");
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -225,7 +223,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TDataBase db = DBAccess.Connect("GetEarliestAndLatestDate");
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -438,7 +435,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDataBase db = DBAccess.Connect("GetFieldUnits");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -580,7 +576,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDataBase db = DBAccess.Connect("GetSendingFieldsForOneConference");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -651,7 +646,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDataBase db = DBAccess.Connect("GetAllSendingFields");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -729,7 +723,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDataBase db = DBAccess.Connect("GetReceivingFieldsForOneConference");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -769,7 +762,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDataBase db = DBAccess.Connect("GetAllReceivingFields");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -835,7 +827,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             TDataBase db = DBAccess.Connect("GetReceivingFieldFromGiftDestination");
 
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -895,7 +886,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TDataBase db = DBAccess.Connect("GetReceivingFieldFromShortTermTable");
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -986,7 +976,6 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             TDataBase db = DBAccess.Connect("GetConferencePrefix");
             ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try

@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDataBase db = DBAccess.Connect("FindContacts");
             TDBTransaction WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                out NewTransaction);
 
             try
             {

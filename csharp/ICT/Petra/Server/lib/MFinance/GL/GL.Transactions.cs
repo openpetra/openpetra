@@ -104,8 +104,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -223,8 +222,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -312,8 +310,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                ADbConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                ADbConnection.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -404,8 +401,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -479,9 +475,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
+                db.ReadTransaction(
+                   ref Transaction,
                     delegate
                     {
                         ARecurringBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
@@ -554,8 +549,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -620,8 +614,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -679,8 +672,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -761,8 +753,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -827,8 +818,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -893,8 +883,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -975,8 +964,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1050,8 +1038,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1126,8 +1113,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1201,8 +1187,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1269,8 +1254,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1342,8 +1326,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1417,8 +1400,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1476,8 +1458,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1535,8 +1516,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1588,8 +1568,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1640,8 +1619,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1685,16 +1663,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             #endregion Validate Arguments
 
-            string AnalysisAttrList = string.Empty;
-
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadATransactionAndRelatedTablesForBatch");
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1767,8 +1742,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1939,8 +1913,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1992,8 +1965,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2050,8 +2022,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2095,8 +2066,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2160,8 +2130,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2221,8 +2190,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2310,8 +2278,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2396,8 +2363,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2455,8 +2421,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2515,8 +2480,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2627,8 +2591,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2684,8 +2647,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2743,8 +2705,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -3377,11 +3338,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ProcessTransAndAttributesForDeletion");
-            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
+            bool SubmissionOK = false;
 
             try
             {
-                db.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3532,7 +3493,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
                         MainDSCopy.AcceptChanges();
 
-                        SubmissionOK = TSubmitChangesResult.scrOK;
+                        SubmissionOK = true;
                     });
             }
             catch (Exception ex)
@@ -3606,11 +3567,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ProcessRecurrJrnlTransAttribForDeletion");
-            TSubmitChangesResult SubmissionOK = TSubmitChangesResult.scrError;
+            bool SubmissionOK = false;
 
             try
             {
-                db.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3802,7 +3763,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         GLBatchTDSAccess.SubmitChanges(MainDSCopy, db);
                         MainDSCopy.AcceptChanges();
 
-                        SubmissionOK = TSubmitChangesResult.scrOK;
+                        SubmissionOK = true;
                     });
             }
             catch (Exception ex)
@@ -3887,7 +3848,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -4135,7 +4096,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("SaveRecurringGLBatchTDS");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -4409,7 +4370,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -4655,7 +4616,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction, ref SubmissionOK,
                     delegate
                     {
@@ -4908,8 +4869,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 TDBTransaction transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("ValidateRecurringGLBatchJournalNumbering");
 
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {
@@ -5095,8 +5055,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 TDBTransaction transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("ValidateRecurringGLJournalTransactionNumbering");
 
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {
@@ -5419,7 +5378,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDataBase db = DBAccess.Connect("GetAccountsForReallocationJournal");
             DataTable NewTable = new DataTable("NewTable");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

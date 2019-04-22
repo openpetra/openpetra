@@ -59,7 +59,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             PUnitTable UnitTable;
             PPartnerLocationTable PartnerLocationTable;
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try
@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             TDataBase db = DBAccess.Connect("DeleteConference");
             bool SubmissionOK = false;
 
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try

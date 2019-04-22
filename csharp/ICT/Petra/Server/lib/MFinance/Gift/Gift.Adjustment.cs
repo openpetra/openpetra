@@ -69,8 +69,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetGiftsForReverseAdjust");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -130,8 +129,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AMessages = new TVerificationResultCollection();
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -256,7 +254,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -349,7 +347,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate

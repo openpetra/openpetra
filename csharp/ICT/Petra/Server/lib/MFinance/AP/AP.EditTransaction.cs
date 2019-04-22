@@ -529,8 +529,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadDocumentsAndCheck", ADataBase);
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -946,7 +945,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ApproveAPDocuments");
             Boolean submissionOk = true;
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOk,
+            db.WriteTransaction(ref transaction, ref submissionOk,
                 delegate
                 {
                     AApDocumentAccess.SubmitChanges(TempDS.AApDocument, transaction);
@@ -1675,7 +1674,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             Boolean SubmissionOK = false;
             ABatchRow batch = null;
 
-            db.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOK,
+            db.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     foreach (AccountsPayableTDSAApDocumentPaymentRow row in MainDS.AApDocumentPayment.Rows)
@@ -1825,8 +1824,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadAPPayment", ADataBase);
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {

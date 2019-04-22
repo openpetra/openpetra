@@ -94,7 +94,6 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     ReadTransaction = db.GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
 
                     // Load Partner Locations, taking passed in restrictions into account.
@@ -233,7 +232,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 TDataBase db = DBAccess.Connect("GetPartnersBestLocationData", ADataBase);
 
                 ReadTransaction = db.GetNewOrExistingTransaction(
-                    IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                    IsolationLevel.ReadCommitted, out NewTransaction);
 
                 try
                 {

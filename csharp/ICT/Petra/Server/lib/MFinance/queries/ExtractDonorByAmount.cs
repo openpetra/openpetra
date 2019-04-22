@@ -82,7 +82,7 @@ namespace Ict.Petra.Server.MFinance.queries
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("RunSpecialTreatment");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     DataTable giftdetails;

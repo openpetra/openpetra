@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDataBase db = DBAccess.Connect("GetCurrentPeriodDates");
             AAccountingPeriodTable AccountingPeriodTable = null;
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -161,7 +161,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetNumberOfPeriods");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -279,8 +279,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetPeriodDates");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -337,7 +336,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("FindFinancialYearByDate");
 
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -423,7 +422,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ImportBudgets");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -691,8 +690,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -845,8 +843,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DataTable BatchTable = null;
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetAvailableGLYearsHOSA");
-            db.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {

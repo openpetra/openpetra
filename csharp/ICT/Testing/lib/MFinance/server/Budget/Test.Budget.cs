@@ -173,7 +173,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             bool SubmissionOK = true;
             TDBTransaction Transaction = new TDBTransaction();
 
-            db.BeginAutoTransaction(IsolationLevel.ReadCommitted, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     db.ExecuteNonQuery(sqlChangeBudget, Transaction);
@@ -205,7 +205,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             SubmissionOK = true;
             Transaction = new TDBTransaction();
-            db.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     db.ExecuteNonQuery(sqlChangeBudget, Transaction);

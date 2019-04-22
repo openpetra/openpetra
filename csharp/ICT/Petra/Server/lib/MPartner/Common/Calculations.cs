@@ -83,7 +83,6 @@ namespace Ict.Petra.Server.MPartner.Common
             TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
             TDBTransaction ReadTransaction = db.GetNewOrExistingTransaction(
                 MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
@@ -160,7 +159,6 @@ namespace Ict.Petra.Server.MPartner.Common
             TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
             TDBTransaction ReadTransaction = db.GetNewOrExistingTransaction(
                 MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
             try
