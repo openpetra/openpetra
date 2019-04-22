@@ -479,7 +479,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Transaction.Commit();
 
             // check if Family record is being deleted
-            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
+            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult, db));
 
             // check that Family record is really deleted
             Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(PartnerKey));
@@ -642,7 +642,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create unit record for deletion");
 
             // check if Unit record is being deleted
-            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
+            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult, db));
 
             // check that Unit record is really deleted
             Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(PartnerKey));
@@ -905,7 +905,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create venue record for deletion");
 
             // check if Venue record is being deleted
-            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult));
+            Assert.IsTrue(TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult, db));
 
             // check that Venue record is really deleted
             Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(PartnerKey));

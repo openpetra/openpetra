@@ -155,7 +155,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PartnerEditTDS MainDS = new PartnerEditTDS();
 
                 PPartnerRow newPartner = MainDS.PPartner.NewRowTyped();
-                Int64 BankPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey);
+                Int64 BankPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey, db);
                 TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, BankPartnerKey, ref BankPartnerKey);
                 newPartner.PartnerKey = BankPartnerKey;
                 newPartner.PartnerShortName = "Bank " + ABranchCode;
@@ -621,7 +621,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             APartnerKey, Transaction);
                     }
 
-                    var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContactLogData(APartnerKey).PPartnerContact
+                    var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContactLogData(APartnerKey, db).PPartnerContact
                                           .AsEnumerable().Select(r =>
                         {
                             var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];

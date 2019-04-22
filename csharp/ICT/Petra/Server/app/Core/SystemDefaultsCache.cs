@@ -465,9 +465,9 @@ namespace Ict.Petra.Server.App.Core
         ///
         /// </summary>
         /// <returns>void</returns>
-        private void LoadSystemDefaultsTable()
+        private void LoadSystemDefaultsTable(TDataBase ADataBase = null)
         {
-            TDataBase DBAccessObj = DBAccess.Connect("LoadSystemDefaultsTable");
+            TDataBase DBAccessObj = DBAccess.Connect("LoadSystemDefaultsTable", ADataBase);
             TDBTransaction ReadTransaction = new TDBTransaction();
 
             // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!

@@ -303,15 +303,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// This returns all the data needed for the Patner Edit Contact Log tab
         /// </summary>
         /// <param name="APartnerKey"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerEditTDS GetPartnerContactLogData(long APartnerKey)
+        public static PartnerEditTDS GetPartnerContactLogData(long APartnerKey, TDataBase ADataBase = null)
         {
             PartnerEditTDS ReturnDS = new PartnerEditTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetPartnerContactLogData", ADataBase);
 
-            DBAccess.ReadTransaction(ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     ReturnDS.Merge(PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, Transaction));

@@ -970,7 +970,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             foreach (Int32 ApDocumentId in ACancelTheseDocs)
             {
-                TempDS.Merge(LoadAApDocument(ALedgerNumber, ApDocumentId)); // This gives me documents, details, and potentially ap_anal_attrib records.
+                TempDS.Merge(LoadAApDocument(ALedgerNumber, ApDocumentId, ADataBase)); // This gives me documents, details, and potentially ap_anal_attrib records.
             }
 
             if (ADeleteCancelledRows == false)

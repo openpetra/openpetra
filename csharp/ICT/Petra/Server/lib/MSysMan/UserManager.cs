@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
         /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
         /// </summary>
-        private static void CheckDatabaseVersion()
+        private static void CheckDatabaseVersion(TDataBase ADataBase)
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
             DataTable Tbl = null;
@@ -202,7 +202,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 return;
             }
 
-            TDataBase db = DBAccess.Connect("CheckDatabaseVersion");
+            TDataBase db = DBAccess.Connect("CheckDatabaseVersion", ADataBase);
             db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             ASystemEnabled = true;
 
-            CheckDatabaseVersion();
+            CheckDatabaseVersion(ATransaction.DataBaseObj);
 
             string EmailAddress = AUserID;
 

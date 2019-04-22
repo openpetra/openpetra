@@ -227,11 +227,11 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new BankingDetails record and a new PartnerBankingDetails record
-        public static PartnerEditTDSPBankingDetailsRow CreateNewBankingRecords(long APartnerKey, PartnerEditTDS AMainDS)
+        public static PartnerEditTDSPBankingDetailsRow CreateNewBankingRecords(long APartnerKey, PartnerEditTDS AMainDS, TDataBase ADataBase)
         {
             PartnerEditTDSPBankingDetailsRow BankingDetailsRow = AMainDS.PBankingDetails.NewRowTyped();
 
-            BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details));
+            BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details, ADataBase));
             BankingDetailsRow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
             BankingDetailsRow.MainAccount = true;
             AMainDS.PBankingDetails.Rows.Add(BankingDetailsRow);
@@ -500,6 +500,8 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             ToPersonalData.PartnerKey = AToPartnerKey;
             ToPersonalData.WeightKg = 95;
             AMainDS.PmPersonalData.Rows.Add(ToPersonalData);
+
+            Transaction.Rollback();
 
             return DataLabelTable;
         }
