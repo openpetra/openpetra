@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,7 @@ namespace Ict.Common.DB
                 }
 
                 AConnectionString = String.Format(
-                    "Server={0};Port={1};User Id={2};Database={3};Timeout={4};ConnectionIdleLifeTime={5};CommandTimeout={6}" +
+                    "Server={0};Port={1};User Id={2};Database={3};Timeout={4};ConnectionIdleLifeTime={5};CommandTimeout={6};MaximumPoolSize=300" +
                     ";Password=", AServer, APort, AUsername, ADatabaseName,
                     TAppSettingsManager.GetInt32("Server.DBConnectionTimeout", 10),
                     TAppSettingsManager.GetInt32("Server.DBConnectionLifeTime", 300),
