@@ -617,6 +617,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AExchangeRateToFind = ExchangeRateToFind;
 
+            db.CloseDBConnection();
+
             return AExchangeRateToFind != decimal.MinValue;
         }
 

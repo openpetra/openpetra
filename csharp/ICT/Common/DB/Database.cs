@@ -2612,61 +2612,18 @@ namespace Ict.Common.DB
         /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
         /// SQL command or a call to a Stored Procedure that inserts data and returns
         /// the value of a auto-numbered field). The statement is executed in a
-        /// transaction with the desired <see cref="IsolationLevel" /> and
-        /// the transaction is automatically committed. Suitable for
-        /// parameterised SQL statements.
-        /// </summary>
-        /// <param name="ASqlStatement">SQL statement.</param>
-        /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" /> of the transaction.</param>
-        /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
-        /// (including parameter Value).</param>
-        /// <returns>Single result as object.</returns>
-        public object ExecuteScalar(String ASqlStatement, IsolationLevel AIsolationLevel, DbParameter[] AParametersArray = null)
-        {
-            object ReturnValue = null;
-
-            if (ConnectionReady(false))
-            {
-                using (TDBTransaction EnclosingTransaction = BeginTransaction(AIsolationLevel, false))
-                {
-                    try
-                    {
-                        ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, false, AParametersArray);
-                    }
-                    finally
-                    {
-                        EnclosingTransaction.Commit();
-                    }
-                }
-            }
-            else
-            {
-                throw new EDBConnectionNotAvailableException(FSqlConnection.State.ToString("G"));
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Executes a SQL statement that returns a single result (eg. an SELECT COUNT(*)
-        /// SQL command or a call to a Stored Procedure that inserts data and returns
-        /// the value of a auto-numbered field). The statement is executed in a
         /// transaction. Suitable for parameterised SQL statements.
         /// </summary>
         /// <param name="ASqlStatement">SQL statement.</param>
         /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.</param>
-        /// <param name="ACommitTransaction">The transaction is committed if set to true,
-        /// otherwise the transaction is not committed (useful when the caller wants to
-        /// do further things in the same transaction).</param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
         /// (including parameter Value).</param>
         /// <returns>Single result as object.</returns>
         public object ExecuteScalar(String ASqlStatement,
             TDBTransaction ATransaction,
-            DbParameter[] AParametersArray = null,
-            bool ACommitTransaction = false)
+            DbParameter[] AParametersArray = null)
         {
-            return ExecuteScalar(ASqlStatement, ATransaction, true, AParametersArray, ACommitTransaction);
+            return ExecuteScalar(ASqlStatement, ATransaction, true, AParametersArray);
         }
 
         /// <summary>
@@ -2679,23 +2636,19 @@ namespace Ict.Common.DB
         /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />.</param>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
-        /// <param name="ACommitTransaction">The transaction is committed if set to true,
-        /// otherwise the transaction is not committed (useful when the caller wants to
-        /// do further things in the same transaction).</param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
         /// (including parameter Value).</param>
         /// <returns>Single result as object.</returns>
         private object ExecuteScalar(String ASqlStatement,
             TDBTransaction ATransaction,
             bool AMustCoordinateDBAccess,
-            DbParameter[] AParametersArray = null,
-            bool ACommitTransaction = false)
+            DbParameter[] AParametersArray = null)
         {
             object ReturnValue = null;
 
-            if ((ATransaction == null) && (ACommitTransaction == true))
+            if ((ATransaction == null) || !ATransaction.Valid)
             {
-                throw new ArgumentNullException("ACommitTransaction", "ACommitTransaction cannot be set to true when ATransaction is null!");
+                throw new ArgumentNullException("ATransaction", "We need a valid ATransaction for ExecuteScalar!");
             }
 
             if (AMustCoordinateDBAccess)
@@ -2778,11 +2731,6 @@ namespace Ict.Common.DB
                         {
                             throw new EOPDBException(exp);
                         }
-                    }
-
-                    if (ACommitTransaction)
-                    {
-                        ATransaction.Commit();
                     }
                 }
 

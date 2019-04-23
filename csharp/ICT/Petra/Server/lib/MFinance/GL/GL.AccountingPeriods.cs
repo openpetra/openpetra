@@ -78,6 +78,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         LedgerTable[0].CurrentPeriod,
                         transaction);
                 });
+
+            db.CloseDBConnection();
             AStartDate = AccountingPeriodTable[0].PeriodStartDate;
             AEndDate = AccountingPeriodTable[0].PeriodEndDate;
             return true;
@@ -167,6 +169,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
                     returnValue = LedgerTable[0].NumberOfAccountingPeriods;
                 });
+
+            db.CloseDBConnection();
 
             return returnValue;
         }
@@ -296,6 +300,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     EndDatePeriod = EndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
                 });
 
+            db.CloseDBConnection();
+
             AStartDatePeriod = StartDatePeriod;
             AEndDatePeriod = EndDatePeriod;
 
@@ -386,6 +392,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         yearDateBelongsTo--;
                     }
                 }); // Get NewOrExisting AutoReadTransaction
+
+            db.CloseDBConnection();
+
             //Set the year to return
             return yearDateBelongsTo;
         } // Find FinancialYear ByDate
@@ -452,6 +461,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                     PeriodNumber = AccountingPeriodRow.AccountingPeriodNumber;
                 });
+
+            db.CloseDBConnection();
 
             APeriodNumber = PeriodNumber;
 
@@ -545,6 +556,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 resultRow[2] = CurrentYearEnd.ToString("dd-MMM-yyyy");
                 DatTable.Rows.InsertAt(resultRow, 0);
             }
+
+            db.CloseDBConnection();
 
             return DatTable;
         }
@@ -809,6 +822,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             ReturnTable.Rows.InsertAt(resultRow, 0);
                         }
                     }); // Get NewOrExisting AutoReadTransaction
+
+                db.CloseDBConnection();
+
             }
             catch (Exception ex)
             {
@@ -928,6 +944,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 }); // Get NewOrExisting AutoReadTransaction
 
+            db.CloseDBConnection();
+
             return BatchTable;
         } // Get Available GLYears HOSA
 
@@ -990,6 +1008,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         Result = Result.AddMonths(-1);
                     }
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             AFirstDayOfPeriod = Result;
             return Result != DateTime.MinValue;

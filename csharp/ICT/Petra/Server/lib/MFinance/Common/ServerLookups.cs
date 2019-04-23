@@ -79,6 +79,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     endDate = accountingPeriodTable[0].PeriodEndDate;
                 });
 
+            db.CloseDBConnection();
+
             AStartDateCurrentPeriod = startDate;
             AEndDateCurrentPeriod = endDate;
             return true;
@@ -191,6 +193,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             AStartDateCurrentPeriod = StartDateCurrentPeriod;
             AEndDateLastForwardingPeriod = EndDateLastForwardingPeriod;
 
+            db.CloseDBConnection();
+
             return dataIsOk;
         }
 
@@ -212,6 +216,9 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 {
                     ReturnValue = (ASuspenseAccountAccess.CountViaALedger(ALedgerNumber, transaction) > 0);
                 });
+
+            db.CloseDBConnection();
+
             return ReturnValue;
         }
 
@@ -259,6 +266,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     }
                 });
 
+            db.CloseDBConnection();
+
             APartnerKey = PartnerKey;
             return ReturnValue;
         }
@@ -282,6 +291,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 {
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;
                 });
+
+            db.CloseDBConnection();
 
             return ReturnValue;
         }
@@ -335,6 +346,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                         ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = YtdActualForeign;
                     }
                 });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -368,6 +381,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                         ReturnValue = CurrencyLanguageTable[0];
                     }
                 });
+
+            db.CloseDBConnection();
 
             return ReturnValue;
         }
@@ -409,6 +424,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
+
+            db.CloseDBConnection();
 
             AResult = result;
             return result.Rows.Count > 0;
@@ -452,6 +469,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
 
+            db.CloseDBConnection();
+
             AResult = result;
             return result.Rows.Count > 0;
         }
@@ -487,6 +506,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
 
+            db.CloseDBConnection();
+
             AResult = result;
             return result.Rows.Count > 0;
         }
@@ -521,6 +542,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
+
+            db.CloseDBConnection();
 
             AResult = result;
             return result.Rows.Count > 0;

@@ -126,6 +126,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     CostCentreTestCasesAvailable = ACostCentreAccess.Exists(FLedgerNumber, "4301", Transaction);
                 });
 
+            db.CloseDBConnection();
+
             if (!CostCentreTestCasesAvailable)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\server\\GL\\" +

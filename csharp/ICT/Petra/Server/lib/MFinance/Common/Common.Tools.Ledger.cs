@@ -194,6 +194,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -229,6 +234,11 @@ namespace Ict.Petra.Server.MFinance.Common
                         ReturnValue = Convert.ToString(tab.Rows[0][PPartnerTable.GetPartnerShortNameDBName()]); //"p_partner_short_name_c"
                     }
                 });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             return ReturnValue;
         }
@@ -349,6 +359,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         FLedgerRow = (FMyDataView.Count == 0?null:(ALedgerRow)FMyDataView[0].Row);
                     });
+
+                if (FDataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
             catch (Exception ex)
             {
@@ -387,7 +402,17 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             GetDataRow();
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -675,6 +700,11 @@ namespace Ict.Petra.Server.MFinance.Common
                                 }
                             }
                         });
+
+                    if (FDataBase == null)
+                    {
+                        db.CloseDBConnection();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -841,6 +871,11 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 });
 
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return Ret;
         }
 
@@ -880,6 +915,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     SubmissionOK = true;
                 });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         private void DeleteFlag(String AFlag)
@@ -903,6 +943,11 @@ namespace Ict.Petra.Server.MFinance.Common
                         ALedgerInitFlagAccess.SubmitChanges(LedgerInitFlagTable, Transaction);
                     }
                 });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
     }
 }

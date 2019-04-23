@@ -310,6 +310,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return GLBatchDS;
         }
 
@@ -480,6 +485,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return PostingDS;
         }
 
@@ -559,6 +569,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -569,7 +584,8 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS APostingDS,
             Int32 ALedgerNumber,
             ABatchRow ABatchToPost,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -597,6 +613,8 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodName(true)));
             }
 
+            TDataBase db = DBAccess.Connect("ValidateGLBatchAndTransactions", ADataBase);
+
             #endregion Validate Arguments
 
             bool CriticalError = false;
@@ -619,8 +637,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             //Check the validity of the Journal and transaction numbering
             // This will also correct invalid LastJournal and LastTransaction numbers
-            if (!ValidateGLBatchJournalNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications)
-                || !ValidateGLJournalTransactionNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications))
+            if (!ValidateGLBatchJournalNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications, db)
+                || !ValidateGLJournalTransactionNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications, db))
             {
                 return false;
             }
@@ -667,7 +685,6 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDS GLBatchDS = AGLBatchDS;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("ValidateGLBatchAndTransactions");
 
             db.ReadTransaction(
                 ref Transaction,
@@ -815,12 +832,18 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);
         }
 
         private static bool ValidateGLBatchJournalNumbering(ref GLBatchTDS AGLBatch,
             ref ABatchRow ABatchToPost,
-            ref TVerificationResultCollection AVerifications)
+            ref TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -886,7 +909,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 //Create temp table to check veracity of Journal numbering
                 GLBatchTDS gLBatch = AGLBatch;
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("ValidateGLBatchJournalNumbering");
+                TDataBase db = DBAccess.Connect("ValidateGLBatchJournalNumbering", ADataBase);
 
                 db.ReadTransaction(
                     ref transaction,
@@ -981,6 +1004,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     ABatchToPost.LastJournal = Convert.ToInt32(tempDV[0][jLastJournalAlias]);
                 }
+
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
             catch (Exception ex)
             {
@@ -1000,7 +1028,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private static bool ValidateGLJournalTransactionNumbering(ref GLBatchTDS AGLBatch,
             ref ABatchRow ABatchToPost,
-            ref TVerificationResultCollection AVerifications)
+            ref TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -1073,7 +1102,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 //Create temp table to check veracity of Transaction numbering
                 GLBatchTDS gLBatch = AGLBatch;
                 TDBTransaction transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("ValidateGLJournalTransactionNumbering");
+                TDataBase db = DBAccess.Connect("ValidateGLJournalTransactionNumbering", ADataBase);
 
                 db.ReadTransaction(
                     ref transaction,
@@ -1185,6 +1214,11 @@ namespace Ict.Petra.Server.MFinance.Common
                             journalRow.LastTransactionNumber = Convert.ToInt32(drv[tLastTransactionAlias]);
                         }
                     }
+                }
+
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
                 }
             }
             catch (Exception ex)
@@ -2255,6 +2289,8 @@ namespace Ict.Petra.Server.MFinance.Common
             AVerifications = Verifications;
             AReversalBatchNumber = ReversalBatchNumber;
 
+            db.CloseDBConnection();
+
             return ReturnValue;
         }
 
@@ -2405,6 +2441,11 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             AVerifications = VerificationResult;
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             //
             // I previously used "Client Tasks" to ask the client to print the GL Posting Register,
@@ -2604,7 +2645,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 EffectiveDate);
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateGLBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPostRow, out AVerifications))
+            if (!ValidateGLBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPostRow, out AVerifications, ATransaction.DataBaseObj))
             {
                 return null;
             }
@@ -2931,6 +2972,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return MainDS;
         }
 
@@ -3019,6 +3065,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return MainDS;
         }
 
@@ -3105,6 +3156,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }

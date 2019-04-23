@@ -147,6 +147,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -283,6 +285,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -339,6 +343,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
 
             return CalendarChangeAllowed;
@@ -400,6 +409,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return NumberOfAccountingPeriods;
         }
 
@@ -456,6 +467,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                 });
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return Activated;
         }
 
@@ -487,6 +503,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     GiftProcessingSubsystemActivated = IsSubsystemActivated(ALedgerNumber,
                         CommonAccountingSubSystemsEnum.GR.ToString(), DBTransaction.DataBaseObj);
                 });
+
+            db.CloseDBConnection();
 
             AAccountsPayableSubsystemActivated = AccountsPayableSubsystemActivated;
             AGiftProcessingSubsystemActivated = GiftProcessingSubsystemActivated;
@@ -641,6 +659,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -739,6 +762,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -846,6 +871,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return Result;
         }
 
@@ -917,6 +944,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return SubmissionOK;
         }
@@ -1078,6 +1107,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -1294,6 +1325,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -1355,6 +1388,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return ParentCostCentreTbl;
         }
@@ -1457,6 +1492,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             //Set the out value
             APartnerCostCentreTbl = PartnerCostCentreTbl;
@@ -1581,6 +1618,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return PartnerAndLinksCombinationIsValid;
         }
 
@@ -1685,6 +1724,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             ReturnTable = partnerCostCentreTbl;
                         }
                     });
+
+                db.CloseDBConnection();
 
                 return ReturnTable;
             }
@@ -1841,6 +1882,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         private static void DropAccountProperties(
@@ -2288,6 +2331,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return TSubmitChangesResult.scrOK;
         }
 
@@ -2389,6 +2434,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 {
                                     AAccountPropertyAccess.LoadViaALedger(inspectDS, ALedgerNumber, transaction);
                                 });
+
+                            db.CloseDBConnection();
                         }
 
                         AInspectDS.AAccountProperty.DefaultView.RowFilter =
@@ -2445,6 +2492,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 {
                                     ASuspenseAccountAccess.LoadViaALedger(inspectDS, ALedgerNumber, transaction);
                                 });
+
+                            db.CloseDBConnection();
                         }
 
                         AInspectDS.ASuspenseAccount.DefaultView.RowFilter =
@@ -2536,6 +2585,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                             " AND a_account_code_c = '" + acc.AccountCode + "')";
                                         db.ExecuteNonQuery(query, transaction);
                                     });
+
+                                db.CloseDBConnection();
                             }
                         }
                     }
@@ -2571,6 +2622,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ReturnValue = TSubmitChangesResult.scrOK;
 
                 transaction.Commit();
+
+                db.CloseDBConnection();
             }
 
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
@@ -2725,6 +2778,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return DbSuccess;
         }
@@ -3006,6 +3061,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             // XmlDocument is not serializable, therefore print it to string and return the string
             return TXMLParser.XmlToString(doc);
@@ -3299,6 +3356,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         string ErrorMsg = String.Format(Catalog.GetString("There is a balance on account {0}"), accountRow.AccountCode);
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
                     }
+
+                    db.CloseDBConnection();
                 }
             }
 
@@ -3944,6 +4003,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     SubmissionOK = true;
                 });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -4067,7 +4128,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         // no location record exists yet: create new one
                         locationRow = MainDS.PLocation.NewRowTyped();
                         locationRow.SiteKey = 0;
-                        locationRow.LocationKey = (int)Transaction.DataBaseObj.GetNextSequenceValue(
+                        locationRow.LocationKey = (int)db.GetNextSequenceValue(
                             TSequenceNames.seq_location_number.ToString(), Transaction);
                         locationRow.StreetName = Catalog.GetString("No valid address on file");
                         locationRow.CountryCode = ACountryCode;
@@ -4279,18 +4340,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     SetupILTCostCentreHierarchy(ref MainDS, ANewLedgerNumber, Transaction);
                 }
 
-                ImportDefaultMotivations(ref MainDS, ANewLedgerNumber, Transaction.DataBaseObj);
+                ImportDefaultMotivations(ref MainDS, ANewLedgerNumber, db);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
                 // TODO: modify UI navigation yml file etc?
                 // TODO: permissions for which users?
-
-                GLSetupTDSAccess.SubmitChanges(MainDS, Transaction.DataBaseObj);
+                GLSetupTDSAccess.SubmitChanges(MainDS, db);
 
                 // activate gift processing subsystem
                 if (AActivateGiftProcessing)
                 {
-                    ActivateGiftProcessingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, Transaction.DataBaseObj);
+                    ActivateGiftProcessingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, db);
                 }
 
                 // activate accounts payable subsystem
@@ -4359,6 +4419,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
+            db.CloseDBConnection();
+
             return AllOK;
         }
 
@@ -4379,6 +4441,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     Result = (ATransactionAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
                 });
+
+            db.CloseDBConnection();
 
             return Result;
         }
@@ -4580,6 +4644,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     SubmitOK = SubmitChangesResult == TSubmitChangesResult.scrOK;
                 });
 
+            db.CloseDBConnection();
+
             AVerificationResult = VerificationResult;
             return Result;
         }
@@ -4621,6 +4687,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     return false;
                 }
 
+                db.CloseDBConnection();
+
                 return true;
             }
             else if (action == "delete")
@@ -4660,6 +4728,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     LedgerTable = ALedgerAccess.LoadAll(Fields, Transaction, null, 0, 0);
                 });
 
+            db.CloseDBConnection();
+
             return LedgerTable;
         }
 
@@ -4687,6 +4757,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
             AFreeformAnalysisTable myAT = MainDS.AFreeformAnalysis;
+
+            db.CloseDBConnection();
+
             return myAT;
         }
 
@@ -4756,6 +4829,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                 });
 
+            db.CloseDBConnection();
+
             AMessage = Message;
             return Result;
         }
@@ -4778,6 +4853,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     RetVal = ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, Transaction);
                 });
 
+            db.CloseDBConnection();
+
             return RetVal;
         }
 
@@ -4798,6 +4875,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ALedgerNumber, ATypeCode, Transaction);
                 });
+
+            db.CloseDBConnection();
 
             return RetVal;
         }
@@ -4844,6 +4923,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     RetVal.Add(Row.AnalysisTypeCode);
                 }
             }
+
+            db.CloseDBConnection();
 
             return RetVal;
         }
@@ -4916,6 +4997,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return AccountAnalysisAttributeExists;
         }
 
@@ -4971,6 +5054,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return AccountAnalysisAttributeExists;
         }
@@ -5028,6 +5113,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return AccountAnalysisAttributeValueRequired;
         }
@@ -5319,6 +5406,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             AVerificationResults = VerificationResults;
 
             return SubmissionOK;
@@ -5493,6 +5582,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             ACanBeParent = CanBeParent;
             ACanDelete = CanDelete;
             AMsg = Msg;
@@ -5639,6 +5730,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             AVerificationResults = VerificationResults;
 
             return SubmissionOK;
@@ -5720,6 +5813,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return ReturnValue;
         }
 
@@ -5779,6 +5874,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return ReturnValue;
         }
@@ -5871,6 +5968,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     SubmissionOK = true;
                 });
+
+            db.CloseDBConnection();
 
             return SubmissionOK;
         }
