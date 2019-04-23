@@ -117,19 +117,6 @@ namespace Ict.Common.DB
                 TLogging.Log(ExceptionList, true);
             }
 
-            if (TheConnection != null)
-            {
-                // Somehow the StateChange Event is never fired for an NpgsqlConnection, although it is documented.
-                // As a result of that we cannot rely on the FConnectionReady variable to contain valid values for
-                // NpgsqlConnection. Therefore I (ChristianK) wrote a wrapper routine, ConnectionReady, which
-                // handles this difference. FConnectionReady must therefore never be inquired directly, but only
-                // through calling ConnectionReady()!
-                // (As of Npgsql 2.0.11.92 the Event still isn't raised)
-
-                // TODO: need to test this again
-                ((NpgsqlConnection)TheConnection).StateChange += AStateChangeEventHandler;
-            }
-
             return TheConnection;
         }
 
@@ -444,7 +431,6 @@ namespace Ict.Common.DB
             }
 
 #if WITH_POSTGRESQL_LOGGING
-            // TODO?
             if (FDebugLevel >= DB_DEBUGLEVEL_TRACE)
             {
                 NpgsqlEventLog.Level = LogLevel.Debug;

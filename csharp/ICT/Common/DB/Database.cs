@@ -333,7 +333,7 @@ namespace Ict.Common.DB
         /// <summary>
         /// Establishes (opens) a DB connection to a specified RDBMS.
         /// </summary>
-        /// <param name="ADataBaseType">Type of the RDBMS to connect to. At the moment only PostgreSQL is officially supported.</param>
+        /// <param name="ADataBaseType">Type of the RDBMS to connect to.</param>
         /// <param name="ADsnOrServer">In case of an ODBC Connection: DSN (Data Source Name). In case of a PostgreSQL connection: Server.</param>
         /// <param name="ADBPort">In case of a PostgreSQL connection: port that the db server is running on.</param>
         /// <param name="ADatabaseName">the database to connect to</param>
@@ -424,6 +424,9 @@ namespace Ict.Common.DB
                         {
                             throw new EDBConnectionNotEstablishedException();
                         }
+
+                        // OnStateChangedHandler does not get called for PostgreSQL when opening the connection
+                        FConnectionReady = true;
                     }
                     else
                     {
@@ -608,6 +611,7 @@ namespace Ict.Common.DB
                 // Remark: TDBConnection.CloseDBConnection already calls Dispose() on FSqlConnection so we don't need to do it here
                 // and we can simply set it to null.
                 FSqlConnection = null;
+                FConnectionReady = false;
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
@@ -2972,12 +2976,6 @@ namespace Ict.Common.DB
 
             try
             {
-                if (FDbType == TDBType.PostgreSQL)
-                {
-                    // TODO: change when OnStateChangedHandler works for postgresql
-                    return FSqlConnection != null && FSqlConnection.State == ConnectionState.Open;
-                }
-
                 return FConnectionReady;
             }
             finally
@@ -2992,12 +2990,6 @@ namespace Ict.Common.DB
         /// <summary>
         /// Updates the FConnectionReady variable with the current ConnectionState.
         /// </summary>
-        /// <remarks>
-        /// <em>WARNING:</em> This doesn't work with NpgsqlConnection because it never raises the
-        /// Event. Therefore the FConnectionReady variable must
-        /// never be inquired directly, but only through calling ConnectionReady()!
-        /// TODO: revise this comment with more recent Npgsql release (as of Npgsql 2.0.11.92 the Event still isn't raised)
-        /// </remarks>
         /// <param name="ASender">Sending object.</param>
         /// <param name="AArgs">StateChange EventArgs.</param>
         private void OnStateChangedHandler(object ASender, StateChangeEventArgs AArgs)
