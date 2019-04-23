@@ -26,6 +26,8 @@
   <include name="EPPlus.dll"/>
   <include name="Npgsql.dll"/>
   <include name="System.Threading.Tasks.Extensions.dll" /> <!-- Needed for Npgsql.dll -->
+  <include name="System.Runtime.CompilerServices.Unsafe.dll" /> <!-- Needed for Npgsql.dll -->
+  <include name="System.Memory.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="MySql.Data.dll"/>
   <include name="Mono.Data.Sqlite.dll"/>
