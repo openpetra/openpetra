@@ -132,9 +132,6 @@ namespace Ict.Common
         /// <summary>The MySQL RDBMS</summary>
         MySQL,
 
-        /// <summary>Using ODBC to access legacy Progress databases</summary>
-        ProgressODBC,
-
         /// <summary>For standalone and demo system, SQLite</summary>
         SQLite
     }
@@ -376,11 +373,6 @@ namespace Ict.Common
             if (ADBType.ToLower() == "sqlite")
             {
                 return TDBType.SQLite;
-            }
-
-            if (ADBType.ToLower() == "progress")
-            {
-                return TDBType.ProgressODBC;
             }
 
             throw new Exception(Catalog.GetString("invalid database system"));

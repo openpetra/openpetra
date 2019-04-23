@@ -387,10 +387,6 @@ namespace Ict.Common.DB
                         FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
                         break;
 
-                    case TDBType.ProgressODBC:
-                        FDataBaseRDBMS = (IDataBaseRDBMS) new TProgressODBC();
-                        break;
-
                     default:
                         throw new ArgumentException(String.Format("EstablishDBConnection cannot deal with ADataBaseType " + "" +
                             "'{0}' that got passed in", ADataBaseType));
