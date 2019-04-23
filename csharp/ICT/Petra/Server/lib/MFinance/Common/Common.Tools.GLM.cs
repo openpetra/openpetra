@@ -76,6 +76,11 @@ namespace Ict.Petra.Server.MFinance.Common
                         LoadedOk = FGLMpTable.Rows.Count > 0;
                         FGLMpRow = (LoadedOk) ? FGLMpTable[0] : null;
                     });
+
+                if (FDataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
 
             return LoadedOk;
@@ -112,6 +117,11 @@ namespace Ict.Petra.Server.MFinance.Common
                     LoadedOk = (FGLMpTable.Rows.Count > 0);
                 });  // AutoReadTransaction
 
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             FGLMpRow = (LoadedOk) ? FGLMpTable[0] : null;
             return LoadedOk;
         }
@@ -145,6 +155,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadViaAGeneralLedgerMasterTemplate(GLMTemplateRow, transaction);
                 });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -189,6 +204,11 @@ namespace Ict.Petra.Server.MFinance.Common
                     GLMTemplateRow.Year = ACurrentFinancialYear;
                     FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -225,6 +245,11 @@ namespace Ict.Petra.Server.MFinance.Common
                                 ACostCentreCode, AAccountCode, msg));
                     }
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -321,6 +346,11 @@ namespace Ict.Petra.Server.MFinance.Common
                         " Rows.");
                     iPtr = -1;
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>

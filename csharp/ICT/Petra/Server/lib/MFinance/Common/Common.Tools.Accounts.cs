@@ -84,6 +84,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -346,6 +348,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -504,6 +508,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         FAccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, Transaction);
                     });
+
+                db.CloseDBConnection();
             }
 
             #region Validate Data
@@ -752,6 +758,11 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
             }
         }
 

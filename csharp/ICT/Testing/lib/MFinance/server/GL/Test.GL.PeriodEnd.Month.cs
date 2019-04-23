@@ -461,6 +461,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     db.ExecuteNonQuery(
                         strSQL, transaction, ParametersArray);
                 });
+            db.CloseDBConnection();
         }
     }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, christophert, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -100,6 +100,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     currencyTable = ACurrencyAccess.LoadAll(transaction);
                 });
+
+            db.CloseDBConnection();
 
             if (currencyTable.Rows.Count == 0)
             {
@@ -491,6 +493,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     allRates = TCrossLedger.LoadDailyExchangeRateData(false, earliestDate, ADateEffective);
                 });
+
+            db.CloseDBConnection();
 
             // Now work out the correct rate from the returned rows
             if (allRates != null)

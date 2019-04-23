@@ -97,6 +97,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, PeriodClosing, Transaction);
                         });
 
+                    if (ADataBase == null)
+                    {
+                        db.CloseDBConnection();
+                    }
+
                     if (PeriodTbl.Rows.Count > 0)
                     {
                         AVerificationResults.Add(
@@ -246,6 +251,11 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                     }
                 });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -351,6 +361,11 @@ namespace Ict.Petra.Server.MFinance.GL
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.LedgerDetails.ToString());
                 }
+            }
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
             }
 
             return !FHasCriticalErrors;
@@ -626,6 +641,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     FDataTable = db.SelectDT(
                         strSQL, AAccountingPeriodTable.GetTableDBName(), transaction, ParametersArray);
                 });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -677,6 +694,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     FSuspenseAccountTable = ASuspenseAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
                 });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -756,6 +775,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     " ORDER BY a_batch_number_i";
                     db.SelectDT(Fbatches, strSQL, transaction);
                 });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
