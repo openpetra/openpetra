@@ -95,6 +95,11 @@ namespace Ict.Petra.Server.MPartner.Common
                     }
                 });
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return ReturnValue;
         }
 
@@ -214,6 +219,11 @@ namespace Ict.Petra.Server.MPartner.Common
                 }
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return ReturnValue;
         }
 
@@ -262,6 +272,11 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     SubmissionOK = true;
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             if (!SubmissionOK)
             {

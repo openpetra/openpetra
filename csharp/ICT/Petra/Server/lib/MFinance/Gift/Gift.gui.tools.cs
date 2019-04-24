@@ -161,6 +161,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     });
 
+                db.CloseDBConnection();
+
                 AMotivationGroup = motivationGroup;
                 AMotivationDetail = motivationDetail;
             }

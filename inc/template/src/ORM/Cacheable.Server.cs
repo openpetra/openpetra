@@ -271,34 +271,21 @@ namespace {#NAMESPACE}
         {
             const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
             const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
-            TDataBase DBConnectionObj = ADataBase;
             TDBTransaction ReadTransaction = new TDBTransaction();
             String TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
-            bool SeparateDBConnectionEstablished = false;
 
             TLogging.LogAtLevel (9, "{#CACHEABLECLASS}.GetCacheableTable '{#SUBMODULE}' called.");
             bool NewTransaction = true;
 
             if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
+                TDataBase DBConnectionObj = DBAccess.Connect(StrDBConnName, ADataBase);
+
                 try
                 {
-                    if (DBConnectionObj == null)
-                    {
-                        // Open a separate DB Connection
-                        DBConnectionObj =  DBAccess.Connect(StrDBConnName);
-                        SeparateDBConnectionEstablished = true;
-
-                        // ...and start a DB Transction on that separate DB Connection                                
-                        ReadTransaction = DBConnectionObj.BeginTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                            ATransactionName: StrDBTransName);
-                    }
-                    else
-                    {
-                        ReadTransaction = ADataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                            out NewTransaction,
-                            ATransactionName: StrDBTransName);
-                    }
+                    ReadTransaction = ADataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        out NewTransaction,
+                        ATransactionName: StrDBTransName);
 
                     switch(ACacheableTable)
                     {
@@ -318,7 +305,7 @@ namespace {#NAMESPACE}
                     }
 
                     // Close separate DB Connection if we opened one earlier
-                    if (SeparateDBConnectionEstablished)
+                    if (ADataBase == null)
                     {
                         DBConnectionObj.CloseDBConnection();
                     }
@@ -356,14 +343,12 @@ namespace {#NAMESPACE}
             TDataBase ADataBase = null)
         {
             const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
-            TDataBase DBConnectionObj = ADataBase;
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             bool SubmitOK = false;
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
             TTypedDataTable SubmitTable = ASubmitTable;
             TVerificationResultCollection VerificationResult;
-            bool SeparateDBConnectionEstablished = false;
             
             // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
             AVerificationResult = null;
@@ -374,18 +359,14 @@ namespace {#NAMESPACE}
             {
                 AVerificationResult = new TVerificationResultCollection();
                 VerificationResult = AVerificationResult;
-                
+
+                TDataBase DBConnectionObj = DBAccess.Connect(StrDBConnName, ADataBase);
+
                 try
                 {
                     try
                     {
-                        if (ADataBase == null)
-                        {
-                            // Open a separate DB Connection
-                            DBConnectionObj =  DBAccess.Connect(StrDBConnName);
-                            SeparateDBConnectionEstablished = true;
-                        }
-                        
+                       
                         // Automatic handling of a (write) DB Transaction
                         DBConnectionObj.WriteTransaction(ref SubmitChangesTransaction, ref SubmitOK,
                             delegate
@@ -427,7 +408,7 @@ namespace {#NAMESPACE}
                 finally
                 {
                     // Close separate DB Connection if we opened one earlier
-                    if (SeparateDBConnectionEstablished)
+                    if (ADataBase == null)
                     {
                         DBConnectionObj.CloseDBConnection();
                     }
@@ -504,10 +485,8 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
 {
     const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
     const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
-    TDataBase DBConnectionObj = ADataBase;
     TDBTransaction ReadTransaction = new TDBTransaction();
     string TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
-    bool SeparateDBConnectionEstablished = false;
 
     if (TLogging.DL >= 7)
     {
@@ -533,24 +512,13 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     {
         bool NewTransaction = true;
 
+        TDataBase DBConnectionObj = DBAccess.Connect(StrDBConnName, ADataBase);
+
         try
         {
-            if (DBConnectionObj == null)
-            {
-                // Open a separate DB Connection
-                DBConnectionObj =  DBAccess.Connect(StrDBConnName);
-                SeparateDBConnectionEstablished = true;
-
-                // ...and start a DB Transction on that separate DB Connection
-                ReadTransaction = DBConnectionObj.BeginTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                    ATransactionName: StrDBTransName);
-            }
-            else
-            {
-                ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                    out NewTransaction,
-                    ATransactionName: StrDBTransName);
-            }
+            ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                out NewTransaction,
+                ATransactionName: StrDBTransName);
 
             switch (ACacheableTable)
             {
@@ -572,7 +540,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
             }
 
             // Close separate DB Connection if we opened one earlier
-            if (SeparateDBConnectionEstablished)
+            if (ADataBase == null)
             {
                 DBConnectionObj.CloseDBConnection();
             }
@@ -616,7 +584,6 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     TDataBase ADataBase = null)
 {
     const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
-    TDataBase DBConnectionObj = ADataBase;
     TDBTransaction SubmitChangesTransaction = new TDBTransaction();
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     bool SubmitOK = false;
@@ -624,7 +591,6 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     TTypedDataTable SubmitTable = ASubmitTable;
     TVerificationResultCollection VerificationResult;    
     Type TmpType;
-    bool SeparateDBConnectionEstablished = false;
     
     // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
     AVerificationResult = null;
@@ -635,16 +601,12 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     {
         AVerificationResult = new TVerificationResultCollection();
         VerificationResult = AVerificationResult;
+        TDataBase DBConnectionObj =  DBAccess.Connect(StrDBConnName, ADataBase);
 
         try
         {
             try
             {
-                if (DBConnectionObj == null)
-                {
-                    // Open a separate DB Connection
-                    DBConnectionObj =  DBAccess.Connect(StrDBConnName);
-                }
 
                 // Automatic handling of a (write) DB Transaction
                 DBConnectionObj.WriteTransaction(ref SubmitChangesTransaction, ref SubmitOK,
@@ -687,7 +649,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
         finally
         {
             // Close separate DB Connection if we opened one earlier
-            if (SeparateDBConnectionEstablished)
+            if (ADataBase == null)
             {
                 DBConnectionObj.CloseDBConnection();
             }

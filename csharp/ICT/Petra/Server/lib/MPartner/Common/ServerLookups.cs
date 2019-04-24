@@ -90,6 +90,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         out PartnerClass, out PartnerStatus, Transaction);
                 });
 
+            db.CloseDBConnection();
+
             if ((!AMergedPartners)
                 && (PartnerStatus == TStdPartnerStatusCode.spscMERGED))
             {
@@ -151,6 +153,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         throw;
                     }
                 });
+            db.CloseDBConnection();
 
             return PartnerField;
         }
@@ -194,6 +197,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     ReturnValue = PartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
                         out PartnerShortName, out PartnerClass, out PartnerStatus, ReadTransaction);
                 });
+            db.CloseDBConnection();
 
             APartnerShortName = PartnerShortName;
             APartnerClass = PartnerClass;
@@ -249,6 +253,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         }
                     }
                 });
+            db.CloseDBConnection();
             return IsActive;
         }
 
@@ -276,6 +281,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         Ret = true;
                     }
                 });
+            db.CloseDBConnection();
             return Ret;
         }
 
@@ -343,6 +349,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         PartnerAndLinksCombinationIsValid = false;
                     }
                 });
+            db.CloseDBConnection();
 
             return PartnerAndLinksCombinationIsValid;
         }
@@ -415,6 +422,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: committed own transaction.");
                     }
+                    db.CloseDBConnection();
                 }
 
                 if (PartnerTable.Rows.Count == 0)
@@ -486,6 +494,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: committed own transaction.");
                     }
+                    db.CloseDBConnection();
                 }
 
                 if (PartnerTable.Rows.Count == 0)
@@ -542,6 +551,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     ReadTransaction.Commit();
                 }
+                db.CloseDBConnection();
             }
 
             if (PartnerLocationTable.Rows.Count == 0)
@@ -703,6 +713,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         ReadTransaction.Commit();
                         TLogging.LogAtLevel(7, "TPartnerServerLookups.MergedPartnerDetails: committed own transaction.");
                     }
+                    db.CloseDBConnection();
                 }
             }
 
@@ -753,7 +764,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// for the Partner.</param>
         /// <param name="APartnerInfoDS">Typed DataSet of Type <see cref="PartnerInfoTDS" /> that
         /// contains the Partner Information that was requested for the Partner.</param>
-        /// <param name="ASeparateDBConnection">If you *must have* a separate DB Connection</param>
         /// <returns>True if Partner was found in DB, otherwise false.
         /// </returns>
         [RequireModulePermission("PTNRUSER")]
@@ -770,13 +780,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             APartnerInfoDS = new PartnerInfoTDS(DATASET_NAME);
             Boolean newTransaction = false;
 
-            // In case ASeparateDBConnection is true:
-            // Always open a separate DB Connection as it can otherwise conflict with the opening of
-            // a Partner Edit screen when the Partner Info Panel is shown on the Partner Find screen
-            // and a user double-clicks on a partner line in the Grid that is not the one for which the
-            // Partner Info is currently displayed.
-            TDataBase DBConnectionObj =
-                DBAccess.Connect("TPartnerServerLookups.PartnerInfo");
+            TDataBase DBConnectionObj = DBAccess.Connect("TPartnerServerLookups.PartnerInfo");
             try
             {
                 ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
@@ -838,10 +842,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     ReadTransaction.Rollback();
                 }
 
-                if (ASeparateDBConnection)
-                {
-                    DBConnectionObj.CloseDBConnection();
-                }
+                DBConnectionObj.CloseDBConnection();
             }
 
             return ReturnValue;
@@ -871,6 +872,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
                 });
+            db.CloseDBConnection();
 
             if (PartnerTbl.Rows.Count > 0)
             {
@@ -920,6 +922,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 {
                     ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);
                 });
+            db.CloseDBConnection();
 
             if (ExtractMasterDT.Rows.Count < 1)
             {
@@ -979,6 +982,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     TLogging.LogAtLevel(7, "TPartnerServerLookups.GetPartnerFoundationStatus: committed own transaction.");
                 }
             }
+
+            db.CloseDBConnection();
 
             if (OrganisationDT.Rows.Count < 1)
             {
@@ -1085,6 +1090,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                     }
                 }
 
+                db.CloseDBConnection();
+
                 if (PartnerDT.Rows.Count > 0)
                 {
                     /* Check the partner class.
@@ -1151,6 +1158,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 }
             }
 
+            db.CloseDBConnection();
+
             if (PersonDT.Rows.Count == 1)
             {
                 ReturnValue = ((PPersonRow)PersonDT.Rows[0]).FamilyKey;
@@ -1183,6 +1192,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 ReadTransaction.Commit();
             }
+
+            db.CloseDBConnection();
 
             return CountryCode;
         }
@@ -1224,6 +1235,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                         CountryCode = Convert.ToString(t.Rows[0][1]);
                     }
                 });
+
+            db.CloseDBConnection();
 
             AUnitName = PartnerShortName;
             ACountryCode = CountryCode;

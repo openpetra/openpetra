@@ -386,6 +386,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 });
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return ReturnValue;
         }
 

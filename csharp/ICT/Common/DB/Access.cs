@@ -118,6 +118,7 @@ namespace Ict.Common.DB
             {
                 TDataBase db = DBAccess.Connect("DBAccess.WriteTransaction");
                 db.WriteTransaction(ref ATransaction, ref ASubmitOK, AEncapsulatedDBAccessCode);
+                db.CloseDBConnection();
             }
             else
             {
@@ -133,6 +134,7 @@ namespace Ict.Common.DB
             {
                 TDataBase db = DBAccess.Connect("DBAccess.ReadTransaction");
                 db.ReadTransaction(ref ATransaction, AEncapsulatedDBAccessCode);
+                db.CloseDBConnection();
             }
             else
             {

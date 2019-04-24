@@ -40,7 +40,8 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
     }
 
     bool NewTransaction;
-    TDBTransaction SubmitChangesTransaction = DBAccess.Connect("{#DATASETNAME}SubmitChanges", ADataBase).GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+    TDataBase db = DBAccess.Connect("{#DATASETNAME}SubmitChanges", ADataBase);
+    TDBTransaction SubmitChangesTransaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
     string SavingOperation = "No action taken yet!";
 
     try
@@ -57,6 +58,11 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
         if (NewTransaction)
         {
             SubmitChangesTransaction.Commit();
+        }
+        
+        if (ADataBase == null)
+        {
+            db.CloseDBConnection();
         }
     }
     catch (Exception e)
