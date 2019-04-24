@@ -62,6 +62,9 @@ namespace Ict.Common.DB
     /// </summary>
     public class TDataBase
     {
+        /// this is for detecting open database connections that should have been closed.
+        private static int SNumberConnections = 0;
+
         private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " +
                                                            "DB Transaction Properties: Valid: {0}, IsolationLevel: {1}; it got started on Thread {2} in AppDomain '{3}'.  "
                                                            +
@@ -400,6 +403,9 @@ namespace Ict.Common.DB
                         FSqlConnection != null ? "Connection State: " + FSqlConnection.State.ToString("G") : "FSqlConnection is null");
                 }
 
+                SNumberConnections++;
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO, "number of connections " + SNumberConnections.ToString());
+
                 // We take out a 'lock' on the following code sequence because only *this* guarantees complete thread safety -
                 // though we have a call to 'WaitForCoordinatedDBAccess' above this could be either not working for some
                 // reason - and also this check can get by-passed by passing in 'false' for the 'AMustCoordinateDBAccess'
@@ -607,6 +613,8 @@ namespace Ict.Common.DB
                 }
 
                 TDBConnection.CloseDBConnection(FSqlConnection, GetDBConnectionIdentifierInternal());
+
+                SNumberConnections--;
 
                 // Remark: TDBConnection.CloseDBConnection already calls Dispose() on FSqlConnection so we don't need to do it here
                 // and we can simply set it to null.
