@@ -283,7 +283,7 @@ namespace {#NAMESPACE}
 
                 try
                 {
-                    ReadTransaction = ADataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                         out NewTransaction,
                         ATransactionName: StrDBTransName);
 
