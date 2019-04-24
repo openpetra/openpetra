@@ -168,11 +168,11 @@ namespace Ict.Petra.Server.MCommon.Processing
 
         private static void SendEmailForUser(TDataBase ADataBaseObj, string AUserId, DataTable AErrors)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             SUserRow userrow = null;
 
             // get the email address of the user
-            ADataBaseObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            ADataBaseObj.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     userrow = SUserAccess.LoadByPrimaryKey(AUserId, ReadTransaction)[0];

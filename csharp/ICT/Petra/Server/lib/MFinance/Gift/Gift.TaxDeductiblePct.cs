@@ -54,9 +54,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             DataTable Table = new DataTable();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("IsPartnerARecipient");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -84,7 +85,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                    " GROUP BY a_gift_detail.a_ledger_number_i";
 
-                    Table = DBAccess.GDBAccessObj.SelectDT(Query, "Gifts", Transaction);
+                    Table = db.SelectDT(Query, "Gifts", Transaction);
                 });
 
             AGiftTotals = Table;
@@ -101,10 +102,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static void UpdateUnpostedGiftsTaxDeductiblePct(Int64 ARecipientKey, decimal ANewPct, DateTime ADateFrom)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("UpdateUnpostedGiftsTaxDeductiblePct");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -125,7 +127,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     AGiftDetailTable Table = new AGiftDetailTable();
 
-                    DBAccess.GDBAccessObj.SelectDT(Table, Query, Transaction);
+                    db.SelectDT(Table, Query, Transaction);
 
                     // update fields for each row
                     for (int i = 0; i < Table.Rows.Count; i++)
@@ -158,12 +160,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal ANewPct,
             out TVerificationResultCollection AMessages)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetGiftsForTaxDeductiblePctAdjustment");
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             AMessages = new TVerificationResultCollection();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            db.ReadTransaction( ref Transaction,
                 delegate
                 {
                     string Query = "SELECT a_gift_detail.*" +
@@ -180,7 +183,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                    " AND a_gift_batch.a_batch_status_c = 'Posted' " +
                                    " AND a_gift_batch.a_gl_effective_date_d >= '" + ADateFrom.ToString("yyyy-MM-dd") + "'";
 
-                    DBAccess.GDBAccessObj.Select(MainDS, Query, MainDS.AGiftDetail.TableName, Transaction);
+                    db.Select(MainDS, Query, MainDS.AGiftDetail.TableName, Transaction);
 
                     // get additional data
                     foreach (GiftBatchTDSAGiftDetailRow Row in MainDS.AGiftDetail.Rows)

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -127,6 +127,7 @@ namespace Ict.Common.Data
                                " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                                " WHERE ";
             Boolean First = true;
+            TDataBase db = ATransaction.DataBaseObj;
 
             DataRowVersion WhichVersion = DataRowVersion.Original;
 
@@ -147,7 +148,7 @@ namespace Ict.Common.Data
                     SqlString = SqlString + " AND ";
                 }
 
-                if ((CommonTypes.ParseDBType(DBAccess.GetDBAccessObj(ATransaction).DBType) == TDBType.SQLite)
+                if ((DBAccess.DBType == TDBType.SQLite)
                     && ADataRow[PrimKeyOrd, WhichVersion] is DateTime)
                 {
                     SqlString = SqlString + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";
@@ -169,7 +170,7 @@ namespace Ict.Common.Data
                 Counter++;
             }
 
-            DataTable table = DBAccess.GetDBAccessObj(ATransaction).SelectDT(SqlString, TTypedDataTable.GetTableNameSQL(
+            DataTable table = db.SelectDT(SqlString, TTypedDataTable.GetTableNameSQL(
                     ATableId), ATransaction, Parameters);
             AModificationID = DateTime.MinValue;
             AModifiedBy = "";
@@ -238,7 +239,7 @@ namespace Ict.Common.Data
         public static void InsertRow(
             short ATableId,
             ref DataRow ADataRow,
-            DB.TDBTransaction ATransaction,
+            TDBTransaction ATransaction,
             String ACurrentUser,
             bool ATreatRowAsAdded)
         {
@@ -250,7 +251,7 @@ namespace Ict.Common.Data
             List <OdbcParameter>parameters =
                 GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ACurrentUser, false);
 
-            if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery(query, ATransaction, parameters.ToArray()))
+            if (0 == ATransaction.DataBaseObj.ExecuteNonQuery(query, ATransaction, parameters.ToArray()))
             {
                 throw new EDBSubmitException("[TTypedDataAccess.InsertRow] Problems INSERTing a row", eSubmitChangesOperations.eInsert);
             }
@@ -291,9 +292,10 @@ namespace Ict.Common.Data
             DateTime LastModificationId;
             String LastModifiedBy;
             System.DateTime LastModifiedDate;
+            TDataBase db = ATransaction.DataBaseObj;
 
             // First try to update with a where clause with the modification id
-            if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+            if (0 == db.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                         Columns,
                         ADataRow,
                         PrimKeyColumnOrdList), ATransaction,
@@ -367,7 +369,7 @@ namespace Ict.Common.Data
                             LastModifiedDate);
                     }
 
-                    int RowsChanged = DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+                    int RowsChanged = db.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                             Columns,
                             ADataRow,
                             PrimKeyColumnOrdList), ATransaction,
@@ -463,7 +465,7 @@ namespace Ict.Common.Data
                     LastModifiedDate);
             }
 
-            if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
+            if (0 == ATransaction.DataBaseObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
                         Columns,
                         PrimKeyColumnOrdList, ADataRow, ATransaction), ATransaction,
                     GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList)))
@@ -1661,7 +1663,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + " AND ";
                 }
 
-                if ((CommonTypes.ParseDBType(DBAccess.GetDBAccessObj(ATransaction).DBType) == TDBType.SQLite)
+                if ((DBAccess.DBType == TDBType.SQLite)
                     && ADataRow[PrimKeyOrd, DataRowVersion.Original] is DateTime)
                 {
                     ReturnValue = ReturnValue + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";
@@ -1698,7 +1700,7 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
-            DBAccess.GetDBAccessObj(ATransaction).Select(ADataSet,
+            ATransaction.DataBaseObj.Select(ADataSet,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClauseFromPrimaryKey(ATableId) +
@@ -1722,7 +1724,7 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
-            ADataTable = (TTypedDataTable)DBAccess.GetDBAccessObj(ATransaction).SelectDT(ADataTable,
+            ADataTable = (TTypedDataTable)ATransaction.DataBaseObj.SelectDT(ADataTable,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClauseFromPrimaryKey(ATableId) +
@@ -1754,7 +1756,7 @@ namespace Ict.Common.Data
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetUniqueKeyColumnOrdList(
                     ATableId), AUniqueKeyValues);
-            DBAccess.GetDBAccessObj(ATransaction).Select(ADataSet,
+            ATransaction.DataBaseObj.Select(ADataSet,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClause(TTypedDataTable.GetUniqueKeyColumnStringList(ATableId)) +
@@ -1777,7 +1779,7 @@ namespace Ict.Common.Data
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromKey(ATableId, TTypedDataTable.GetUniqueKeyColumnOrdList(
                     ATableId), AUniqueKeyValues);
-            ADataTable = (TTypedDataTable)DBAccess.GetDBAccessObj(ATransaction).SelectDT(ADataTable,
+            ADataTable = (TTypedDataTable)ATransaction.DataBaseObj.SelectDT(ADataTable,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClause(TTypedDataTable.GetUniqueKeyColumnStringList(ATableId)) +
@@ -1801,7 +1803,7 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(AOtherTableId, AForeignKeyValues);
-            DBAccess.GetDBAccessObj(ATransaction).Select(ADataSet,
+            ATransaction.DataBaseObj.Select(ADataSet,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClause(AThisFieldNames) +
@@ -1826,7 +1828,7 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(AOtherTableId, AForeignKeyValues);
-            DBAccess.GetDBAccessObj(ATransaction).SelectDT(ADataTable,
+            ATransaction.DataBaseObj.SelectDT(ADataTable,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClause(AThisFieldNames) +
@@ -1848,7 +1850,7 @@ namespace Ict.Common.Data
             int AStartRecord,
             int AMaxRecords)
         {
-            DBAccess.GetDBAccessObj(ATransaction).Select(ADataSet,
+            ATransaction.DataBaseObj.Select(ADataSet,
                 GenerateSelectClause(AFieldList, ATableId, true) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
                 GenerateWhereClauseForJoin(TTypedDataTable.GetTableNameSQL(AOtherTableId), TTypedDataTable.GetTableNameSQL(ATableId), AThisFieldNames,
@@ -1876,7 +1878,7 @@ namespace Ict.Common.Data
             int AStartRecord,
             int AMaxRecords)
         {
-            DBAccess.GetDBAccessObj(ATransaction).SelectDT(ADataTable,
+            ATransaction.DataBaseObj.SelectDT(ADataTable,
                 GenerateSelectClause(AFieldList, ATableId, true) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
                 GenerateWhereClauseForJoin(TTypedDataTable.GetTableNameSQL(AOtherTableId), TTypedDataTable.GetTableNameSQL(ATableId), AThisFieldNames,
@@ -1902,7 +1904,7 @@ namespace Ict.Common.Data
             int AStartRecord,
             int AMaxRecords)
         {
-            DBAccess.GetDBAccessObj(ATransaction).Select(ADataSet,
+            ATransaction.DataBaseObj.Select(ADataSet,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
                 GenerateWhereClause(AThisFieldNames) +
@@ -1928,7 +1930,7 @@ namespace Ict.Common.Data
             int AStartRecord,
             int AMaxRecords)
         {
-            DBAccess.GetDBAccessObj(ATransaction).SelectDT(ADataTable,
+            ATransaction.DataBaseObj.SelectDT(ADataTable,
                 GenerateSelectClause(AFieldList, ATableId) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
                 GenerateWhereClause(AThisFieldNames) +
@@ -1948,7 +1950,7 @@ namespace Ict.Common.Data
             TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(AOtherTableId, AForeignKeyValues);
-            return Convert.ToInt32(DBAccess.GetDBAccessObj(ATransaction).ExecuteScalar(
+            return Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar(
                     "SELECT COUNT(*) FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClause(AThisFieldNames),
                     ATransaction,
@@ -1964,7 +1966,7 @@ namespace Ict.Common.Data
             TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = GetParametersForWhereClause(AOtherTableId, ATemplateRow);
-            return Convert.ToInt32(DBAccess.GetDBAccessObj(ATransaction).ExecuteScalar(
+            return Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar(
                     "SELECT COUNT(*) FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClause(AThisFieldNames) +
                     GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
@@ -1981,7 +1983,7 @@ namespace Ict.Common.Data
             TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = GetParametersForWhereClause(AOtherTableId, ASearchCriteria);
-            return Convert.ToInt32(DBAccess.GetDBAccessObj(ATransaction).ExecuteScalar(
+            return Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar(
                     "SELECT COUNT(*) FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClause(AThisFieldNames) +
                     GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
@@ -2000,7 +2002,7 @@ namespace Ict.Common.Data
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
 
-            if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == ATransaction.DataBaseObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClauseFromPrimaryKey(ATableId),
                     ATransaction, ParametersArray))
             {
@@ -2017,7 +2019,7 @@ namespace Ict.Common.Data
         public static bool Exists(short ATableId, System.Object[] APrimaryKeyValues, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
-            return 1 == Convert.ToInt32(DBAccess.GetDBAccessObj(ATransaction).ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
+            return 1 == Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClauseFromPrimaryKey(ATableId),
                     ATransaction, ParametersArray));
@@ -2032,7 +2034,7 @@ namespace Ict.Common.Data
         public static bool ExistsUniqueKey(short ATableId, System.Object[] AUniqueKeyValues, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromUniqueKey(ATableId, AUniqueKeyValues);
-            return 1 == Convert.ToInt32(DBAccess.GetDBAccessObj(ATransaction).ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
+            return 1 == Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClauseFromUniqueKey(ATableId),
                     ATransaction, ParametersArray));
@@ -2058,7 +2060,7 @@ namespace Ict.Common.Data
             int AStartRecord,
             int AMaxRecords)
         {
-            DBAccess.GetDBAccessObj(ATransaction).Select(ADataSet, GenerateSelectClause(AFieldList, ATableID) +
+            ATransaction.DataBaseObj.Select(ADataSet, GenerateSelectClause(AFieldList, ATableID) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableID) +
                 GenerateWhereClause(ASearchCriteria) +
                 GenerateOrderByClause(AOrderBy), TTypedDataTable.GetTableName(ATableID), ATransaction,
@@ -2087,7 +2089,7 @@ namespace Ict.Common.Data
             int AMaxRecords)
         {
             ATypedTableToLoad = (TTypedDataTable)
-                                DBAccess.GetDBAccessObj(ATransaction).SelectDT(ATypedTableToLoad, GenerateSelectClause(AFieldList, ATableID) +
+                                ATransaction.DataBaseObj.SelectDT(ATypedTableToLoad, GenerateSelectClause(AFieldList, ATableID) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableID) +
                 GenerateWhereClause(ASearchCriteria) +
                 GenerateOrderByClause(AOrderBy), ATransaction,
@@ -2106,7 +2108,7 @@ namespace Ict.Common.Data
             TDBTransaction ATransaction,
             StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
-            DBAccess.GetDBAccessObj(ATransaction).Select(ADataSet,
+            ATransaction.DataBaseObj.Select(ADataSet,
                 (((GenerateSelectClause(AFieldList, ATableId) + " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId)) +
                   GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow,
                       ATemplateOperators)) +
@@ -2127,7 +2129,7 @@ namespace Ict.Common.Data
             StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
         {
             ADataTable =
-                (TTypedDataTable)DBAccess.GetDBAccessObj(ATransaction).SelectDT(ADataTable,
+                (TTypedDataTable)ATransaction.DataBaseObj.SelectDT(ADataTable,
                     (((GenerateSelectClause(AFieldList, ATableId) + " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId)) +
                       GenerateWhereClause(TTypedDataTable.GetColumnStringList(
                               ATableId), ATemplateRow, ATemplateOperators)) +
@@ -2144,7 +2146,7 @@ namespace Ict.Common.Data
         /// <param name="ATransaction"></param>
         public static void DeleteUsingTemplate(short ATableId, DataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == ATransaction.DataBaseObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                     GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow, ATemplateOperators),
                     ATransaction,
                     GetParametersForWhereClause(ATableId, ATemplateRow)))
@@ -2163,7 +2165,7 @@ namespace Ict.Common.Data
         /// <param name="ATransaction"></param>
         public static void DeleteUsingTemplate(short ATableId, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == ATransaction.DataBaseObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                                                                             GenerateWhereClause(ASearchCriteria)),
                     ATransaction,
                     GetParametersForWhereClause(ATableId, ASearchCriteria)))
@@ -2246,7 +2248,7 @@ namespace Ict.Common.Data
                         {
                             // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
                             TheRow.AcceptChanges();
-                            TheRow[ASequenceField] = (System.Object)DBAccess.GetDBAccessObj(ATransaction).GetNextSequenceValue(ASequenceName,
+                            TheRow[ASequenceField] = (System.Object)ATransaction.DataBaseObj.GetNextSequenceValue(ASequenceName,
                                 ATransaction);
                             TreatRowAsAdded = true;   // setting this variable to 'true' is *vital* for the retrieval of the s_modification_id_t for that record once it is saved!
                         }
@@ -2299,7 +2301,7 @@ namespace Ict.Common.Data
                 if (InsertParameters.Count > MAX_SQL_PARAMETERS)
                 {
                     // Inserts in one query
-                    if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
+                    if (0 == ATransaction.DataBaseObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
                     {
                         throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#1]",
                             eSubmitChangesOperations.eInsert);
@@ -2313,7 +2315,7 @@ namespace Ict.Common.Data
             if (InsertStatement.Length > 0)
             {
                 // Inserts in one query
-                if (0 == DBAccess.GetDBAccessObj(ATransaction).ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
+                if (0 == ATransaction.DataBaseObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
                 {
                     throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#2]", eSubmitChangesOperations.eInsert);
                 }

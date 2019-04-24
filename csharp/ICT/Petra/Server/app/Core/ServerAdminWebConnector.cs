@@ -48,13 +48,6 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         [CheckServerAdminToken]
         public static bool LoginServerAdmin()
         {
-            // create a new session, with database connection and everything that is needed
-            // see also Ict.Petra.Server.App.WebService.TOpenPetraOrgSessionManager.Login()
-            if (DBAccess.GDBAccessObj == null)
-            {
-                TServerManager.TheCastedServerManager.EstablishDBConnection();
-            }
-
             string WelcomeMessage;
             bool SystemEnabled;
             IPrincipal LocalUserInfo;
@@ -76,10 +69,6 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
             DomainManager.GClientID = ClientID;
             DomainManager.CurrentClient = CurrentClient;
             UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
-
-            DBAccess.GDBAccessObj.UserID = "SYSADMIN";
-
-            TServerManager.TheCastedServerManager.AddDBConnection(DBAccess.GDBAccessObj);
 
             return true;
         }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using System.Threading;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
@@ -187,6 +188,37 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         }
 
         /// <summary>
+        /// Application and Database should have the same version, otherwise all sorts of things can go wrong.
+        /// this is specific to the OpenPetra database, for all other databases it will just ignore the database version check
+        /// </summary>
+        private static void CheckDatabaseVersion(TDataBase ADataBase)
+        {
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            DataTable Tbl = null;
+
+            if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
+            {
+                // we want to upgrade the database, so don't check for the database version
+                return;
+            }
+
+            TDataBase db = DBAccess.Connect("CheckDatabaseVersion", ADataBase);
+            db.ReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    // now check if the database is 'up to date'; otherwise run db patch against it
+                    Tbl = ReadTransaction.DataBaseObj.SelectDT(
+                        "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                        "Temp", ReadTransaction, new OdbcParameter[0]);
+                });
+
+            if (Tbl.Rows.Count == 0)
+            {
+                return;
+            }
+        }
+
+        /// <summary>
         /// Authenticate a user.
         /// </summary>
         /// <param name="AUserID">User ID.</param>
@@ -211,6 +243,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             Int32 AProcessID = -1;
 
             ASystemEnabled = true;
+
+            CheckDatabaseVersion(ATransaction.DataBaseObj);
 
             string EmailAddress = AUserID;
 
@@ -385,6 +419,33 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                             SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
                         String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate.Value),
                             SystemStatusDT[0].SystemAvailableDate.Value.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
+                }
+            }
+
+            //
+            // (3b) Check if the license is valid
+            //
+            string LicenseCheckUrl = TAppSettingsManager.GetValue("LicenseCheck.Url", String.Empty, false);
+            string LicenseUser = TAppSettingsManager.GetValue("Server.DBName");
+
+            if ((LicenseCheckUrl != String.Empty) && (LicenseUser != "openpetra"))
+            {
+                string url = LicenseCheckUrl + LicenseUser;
+
+                string result = THTTPUtils.ReadWebsite(url);
+
+                bool valid = result.Contains("\"valid\":true");
+
+                if (!valid)
+                {
+                    TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
+                        Catalog.GetString("User wanted to log in, but the license is expired. ") +
+                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        out AProcessID, ATransaction);
+
+                    TLoginLog.RecordUserLogout(AUserID, AProcessID, ATransaction);
+
+                    throw new ELicenseExpiredException("LICENSE_EXPIRED");
                 }
             }
 
@@ -572,12 +633,14 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         [RequireModulePermission("NONE")]
         public static TPetraPrincipal ReloadCachedUserInfo()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ReloadCachedUserInfo");
             TPetraPrincipal UserDetails = null;
 
             try
             {
-                DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "ReloadCachedUserInfo", out ReadTransaction, delegate
+                db.ReadTransaction(ref ReadTransaction,
+                    delegate
                     {
                         LoadUser(UserInfo.GUserInfo.UserID, out UserDetails, ReadTransaction);
                     });

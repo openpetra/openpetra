@@ -317,12 +317,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Int32 forexBatchNumber;
             List <Int32>glBatchNumbers;
             Boolean stewardshipBatch;
+            TLedgerInfo ledgerinfo = new TLedgerInfo(FLedgerNumber);
 
             Boolean revalueOk = TRevaluationWebConnector.Revaluate(FLedgerNumber,
                 new string[] { strAccountGift },
                 new string[] { "GBP" },
                 new decimal[] { 1.2m },
-                TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
+                ledgerinfo.GetStandardCostCentre(),
                 out forexBatchNumber,
                 out verificationResult);
 
@@ -423,9 +424,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             template.LedgerNumber = FLedgerNumber;
             template.BatchDescription = strTestDataBatchDescription;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadTestData_GetBatchInfo");
             ABatchTable batches = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     batches = ABatchAccess.LoadUsingTemplate(template, transaction);
@@ -447,17 +449,19 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strTestDataBatchDescription;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("UnloadTestData_GetBatchInfo");
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+            db.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
                     strSQL += "WHERE " + ABatchTable.GetLedgerNumberDBName() + " = ? " +
                               "AND " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    db.ExecuteNonQuery(
                         strSQL, transaction, ParametersArray);
                 });
+            db.CloseDBConnection();
         }
     }
 
@@ -482,9 +486,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
                 ParametersArray[1].Value = strAcount;
 
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("Suspense");
                 bool SubmissionOK = true;
-                DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+                db.WriteTransaction(ref transaction, ref SubmissionOK,
                     delegate
                     {
                         string strSQL = "INSERT INTO PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
@@ -492,7 +497,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                         strSQL += "," + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + ") ";
                         strSQL += "VALUES ( ? , ? )";
 
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                        db.ExecuteNonQuery(strSQL, transaction, ParametersArray);
                     });
             }
             catch (Exception)
@@ -512,16 +517,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strAcount;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("Unsuspense");
             bool SubmissionOK = true;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(ref transaction, ref SubmissionOK,
+            db.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     string strSQL = "DELETE FROM PUB_" + ASuspenseAccountTable.GetTableDBName() + " ";
                     strSQL += "WHERE " + ASuspenseAccountTable.GetLedgerNumberDBName() + " = ? ";
                     strSQL += "AND " + ASuspenseAccountTable.GetSuspenseAccountCodeDBName() + " = ? ";
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
+                    db.ExecuteNonQuery(strSQL, transaction, ParametersArray);
                 });
         }
     }

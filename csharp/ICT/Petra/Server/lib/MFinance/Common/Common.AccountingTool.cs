@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.Verification;
 
 using Ict.Petra.Shared.MFinance;
@@ -40,6 +41,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TCommonAccountingTool
     {
+        private TDataBase FDataBase = null;
         private GLBatchTDS FBatchTDS = null;
         private ABatchRow FBatchRow;
         Int32 FBatchNumber;
@@ -64,10 +66,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ABatchDescription">a batch description text</param>
+        /// <param name="ADataBase"></param>
         public TCommonAccountingTool(int ALedgerNumber,
-            string ABatchDescription)
+            string ABatchDescription, TDataBase ADataBase = null)
         {
             FLedgerInfo = new TLedgerInfo(ALedgerNumber);
+            FDataBase = ADataBase;
             TCommonAccountingTool_(ABatchDescription);
         }
 
@@ -77,15 +81,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerInfo">The ledger-info object</param>
         /// <param name="ABatchDescription">the description text ...</param>
-        public TCommonAccountingTool(TLedgerInfo ALedgerInfo, string ABatchDescription)
+        /// <param name="ADataBase"></param>
+        public TCommonAccountingTool(TLedgerInfo ALedgerInfo, string ABatchDescription, TDataBase ADataBase = null)
         {
             FLedgerInfo = ALedgerInfo;
+            FDataBase = ADataBase;
             TCommonAccountingTool_(ABatchDescription);
         }
 
         private void TCommonAccountingTool_(string ABatchDescription)
         {
-            FBatchTDS = TGLPosting.CreateABatch(FLedgerInfo.LedgerNumber);
+            FBatchTDS = TGLPosting.CreateABatch(FLedgerInfo.LedgerNumber, FDataBase);
             FBaseCurrencyInfo = new TCurrencyInfo(FLedgerInfo.BaseCurrency);
             FBatchRow = FBatchTDS.ABatch[0];
             FBatchRow.BatchDescription = ABatchDescription;
@@ -416,9 +422,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="AVerifications">A TVerificationResultCollection can defined to
         /// accept the error messages and warnings - if necessary.</param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if it seemed to work</returns>
 
-        public Boolean CloseSaveAndPost(TVerificationResultCollection AVerifications = null)
+        public Boolean CloseSaveAndPost(TVerificationResultCollection AVerifications = null, TDataBase ADataBase = null)
         {
             if (FJournalCount != 0)
             {
@@ -427,10 +434,10 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             FBatchTDS.ThrowAwayAfterSubmitChanges = true;
-            GLBatchTDSAccess.SubmitChanges(FBatchTDS);
+            GLBatchTDSAccess.SubmitChanges(FBatchTDS, ADataBase);
 
             Boolean PostedOk = TGLPosting.PostGLBatch(
-                FLedgerInfo.LedgerNumber, FBatchNumber, out AVerifications);
+                FLedgerInfo.LedgerNumber, FBatchNumber, out AVerifications, ADataBase);
 
             // Make sure that this object cannot be used for another posting ...
             FBatchTDS = null;

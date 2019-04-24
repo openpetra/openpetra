@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -118,13 +118,15 @@ namespace Ict.Petra.Server.MFinance.Gift
                     ATransaction,
                     AForceEffectiveDateToFit);
 
+                TLedgerInfo info = new TLedgerInfo(ALedgerNumber, ATransaction.DataBaseObj);
+
                 NewRow.BatchYear = BatchYear;
                 NewRow.BatchPeriod = BatchPeriod;
                 NewRow.GlEffectiveDate = ADateEffective;
                 NewRow.ExchangeRateToBase = 1.0M;
                 NewRow.BatchDescription = "PLEASE ENTER A DESCRIPTION";
-                NewRow.BankAccountCode = TLedgerInfo.GetDefaultBankAccount(ALedgerNumber);
-                NewRow.BankCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+                NewRow.BankAccountCode = info.GetDefaultBankAccount();
+                NewRow.BankCostCentre = info.GetStandardCostCentre();
                 NewRow.CurrencyCode = ALedgerTbl[0].BaseCurrency;
                 AMainDS.AGiftBatch.Rows.Add(NewRow);
             }
@@ -182,6 +184,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             #endregion Validate Arguments
 
             GiftBatchTDS Temp = new GiftBatchTDS();
+            TLedgerInfo info = new TLedgerInfo(ALedgerNumber, ATransaction.DataBaseObj);
 
             ARecurringGiftBatchAccess.LoadViaALedger(Temp, ALedgerNumber, ATransaction);
 
@@ -205,8 +208,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.LedgerNumber = ALedgerNumber;
             NewRow.BatchNumber = ++ALedgerTbl[0].LastRecGiftBatchNumber;
             NewRow.BatchDescription = Catalog.GetString("Please enter recurring batch description");
-            NewRow.BankAccountCode = TLedgerInfo.GetDefaultBankAccount(ALedgerNumber);
-            NewRow.BankCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+            NewRow.BankAccountCode = info.GetDefaultBankAccount();
+            NewRow.BankCostCentre = info.GetStandardCostCentre();
             NewRow.CurrencyCode = ALedgerTbl[0].BaseCurrency;
             AMainDS.ARecurringGiftBatch.Rows.Add(NewRow);
             return NewRow;

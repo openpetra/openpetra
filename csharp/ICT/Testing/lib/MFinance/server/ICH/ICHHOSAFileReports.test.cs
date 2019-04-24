@@ -39,7 +39,6 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
-using Ict.Petra.Server.MFinance.ICH;
 using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -134,7 +133,8 @@ namespace Tests.MFinance.Server.ICH
                 CostCentre,
                 CurrencySelect,
                 FileName,
-                out VerificationResults);
+                out VerificationResults,
+                DBAccess.Connect("TestGenerateHOSAFiles"));
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "HOSA File Generation Failed!");
@@ -172,6 +172,7 @@ namespace Tests.MFinance.Server.ICH
         [Test]
         public void TestExportGifts()
         {
+            TDataBase db = DBAccess.Connect("TestExportGifts");
             int LedgerNumber = FLedgerNumber;
             string CostCentre = "7300";
             string AcctCode = "0200";
@@ -182,8 +183,6 @@ namespace Tests.MFinance.Server.ICH
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
-
-            bool NewTransaction = false;
 
             // otherwise period 1 might have been closed already
             CommonNUnitFunctions.ResetDatabase();
@@ -198,7 +197,8 @@ namespace Tests.MFinance.Server.ICH
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber,
                 out glBatchNumbers,
-                out VerificationResults);
+                out VerificationResults,
+                db);
 
             VerificationResults = new TVerificationResultCollection();
 
@@ -221,7 +221,8 @@ namespace Tests.MFinance.Server.ICH
                 Base,
                 IchNumber,
                 TableForExport,
-                VerificationResults);
+                VerificationResults,
+                db);
 
             TableForExport.AcceptChanges();
 
@@ -232,11 +233,6 @@ namespace Tests.MFinance.Server.ICH
 
             Assert.IsTrue((DR.Length > 0),
                 "HOSA - Performing Export of gifts Failed to return any rows!");
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
         }
     }
 }

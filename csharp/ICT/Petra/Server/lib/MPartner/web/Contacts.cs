@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, andreww, peters
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,10 +64,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             List <int>attributeCode,
             List <int>attributeDetailCode)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -97,17 +97,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PContactLogTable AContactLogTable,
             PPartnerContactAttributeTable APartnerContactAttributeTable)
         {
-            TDBTransaction WriteTransaction = null;
+            TDBTransaction WriteTransaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, ref WriteTransaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref WriteTransaction, ref SubmissionOK,
                 delegate
                 {
                     var extractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, WriteTransaction).AsEnumerable();
                     var partnerKeys = extractTable.Select(e => e.ItemArray[MExtractTable.ColumnPartnerKeyId]);
 
-                    long ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", WriteTransaction);
+                    long ContactLogId = WriteTransaction.DataBaseObj.GetNextSequenceValue("seq_contact", WriteTransaction);
 
                     AContactLogTable.Rows[0][PContactLogTable.ColumnContactLogIdId] = ContactLogId;
 
@@ -152,17 +151,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AModuleID,
             string AMailingCode)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
                 {
                     PContactLogTable contacts = new PContactLogTable();
                     PContactLogRow contact = contacts.NewRowTyped();
-                    contact.ContactLogId = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_contact", Transaction);
+                    contact.ContactLogId = Transaction.DataBaseObj.GetNextSequenceValue("seq_contact", Transaction);
                     contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
                     //contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
                     contact.ContactCode = AMethodOfContact;
@@ -218,8 +217,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             Boolean NewTransaction;
             DataTable Contacts = new DataTable();
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDataBase db = DBAccess.Connect("FindContacts");
+            TDBTransaction WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                out NewTransaction);
 
             try
             {
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     Query = Query.Substring(0, Query.Length - 3) + "))";
                 }
 
-                DBAccess.GDBAccessObj.SelectDT(Contacts, Query, WriteTransaction);
+                WriteTransaction.DataBaseObj.SelectDT(Contacts, Query, WriteTransaction);
 
                 Contacts.PrimaryKey = new DataColumn[] {
                     Contacts.Columns["p_partner_key_n"], Contacts.Columns["p_contact_log_id_i"]
@@ -293,7 +293,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             if (NewTransaction)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                WriteTransaction.Rollback();
             }
 
             return Contacts;
@@ -303,16 +303,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// This returns all the data needed for the Patner Edit Contact Log tab
         /// </summary>
         /// <param name="APartnerKey"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerEditTDS GetPartnerContactLogData(long APartnerKey)
+        public static PartnerEditTDS GetPartnerContactLogData(long APartnerKey, TDataBase ADataBase = null)
         {
             PartnerEditTDS ReturnDS = new PartnerEditTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetPartnerContactLogData", ADataBase);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     ReturnDS.Merge(PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, Transaction));
@@ -339,9 +340,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool IsContactLogAssociatedWithMoreThanOnePartner(long AContactLogId)
         {
             bool returnValue = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -372,10 +373,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static void DeleteContacts(
             DataTable AContactLogs)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

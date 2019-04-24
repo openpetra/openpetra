@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,6 +49,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TLedgerInfo
     {
+        TDataBase FDataBase = null;
         int FLedgerNumber;
 
         //Used for extracting ledger name irrespective of current active Ledger
@@ -74,22 +75,22 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
-        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
+        /// then the Method executes DB commands with a new Database connection</param>
         public TLedgerInfo(int ALedgerNumber, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FDataBase = ADataBase;
 
-            PopulateLedgerDictionaries(ALedgerNumber);
+            PopulateLedgerDictionaries();
 
-            GetDataRow(ADataBase);
+            GetDataRow();
         }
 
-        private static void PopulateLedgerDictionaries(int ALedgerNumber, TDataBase ADataBase = null)
+        private void PopulateLedgerDictionaries()
         {
             bool LedgerDictPrePopulated = (FLedgerNamesDict.Count > 0);
 
-            if (LedgerDictPrePopulated && FLedgerNamesDict.ContainsKey(ALedgerNumber))
+            if (LedgerDictPrePopulated && FLedgerNamesDict.ContainsKey(FLedgerNumber))
             {
                 return;
             }
@@ -104,12 +105,12 @@ namespace Ict.Petra.Server.MFinance.Common
             Dictionary <int, string>LedgerCountryCodesDictBackup = null;
             Dictionary <int, string>LedgerBaseCurrencyDictBackup = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PopulateLedgerDictionaries", FDataBase);
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -117,7 +118,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                         " FROM PUB_a_ledger, PUB_p_partner" +
                                         " WHERE PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n;";
 
-                        DataTable ledgerData = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", Transaction);
+                        DataTable ledgerData = db.SelectDT(strSql, "GetLedgerName_TempTable", Transaction);
 
                         #region Validate Data
 
@@ -193,41 +194,40 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
         /// Get the name for this Ledger
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
-        public static string GetLedgerName(int ALedgerNumber, TDataBase ADataBase = null)
+        public string GetLedgerName()
         {
             #region Validate Arguments
 
-            if (ALedgerNumber <= 0)
+            if (FLedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
+                        Utilities.GetMethodName(true)), FLedgerNumber);
             }
 
             #endregion Validate Arguments
 
             String ReturnValue = string.Empty;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetLedgerName", FDataBase);
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
-                "GetLedgerName",
                 delegate
                 {
                     String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
-                                    ALedgerNumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-                    DataTable tab = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
+                                    FLedgerNumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+                    DataTable tab = db.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
 
                     if (tab.Rows.Count > 0)
                     {
@@ -235,72 +235,26 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 });
 
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return ReturnValue;
-        }
-
-        /// <summary>Use a separate DB Connection to get the Ledger name</summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <returns></returns>
-        public static string GetLedgerNameUsingSeparateDb(Int32 ALedgerNumber)
-        {
-            TDataBase dataBase = DBAccess.SimpleEstablishDBConnection("GetLedgerName");
-
-            String ledgerName = GetLedgerName(ALedgerNumber, dataBase);
-
-            dataBase.CloseDBConnection();
-
-            return ledgerName;
-        }
-
-        /// <summary>
-        /// Get the name for this Ledger
-        /// </summary>
-        public static string GetLedgerName(int ALedgerNumber)
-        {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-
-            #endregion Validate Arguments
-
-            string LedgerName = string.Empty;
-
-            try
-            {
-                PopulateLedgerDictionaries(ALedgerNumber);
-
-                FReadWriteLock.EnterReadLock();
-
-                LedgerName = FLedgerNamesDict[ALedgerNumber];
-
-                FReadWriteLock.ExitReadLock();
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
-
-            return LedgerName;
         }
 
         /// <summary>
         /// Get the base currency for this Ledger
         /// </summary>
-        public static string GetLedgerBaseCurrency(int ALedgerNumber)
+        public string GetLedgerBaseCurrency()
         {
             #region Validate Arguments
 
-            if (ALedgerNumber <= 0)
+            if (FLedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
+                        Utilities.GetMethodName(true)), FLedgerNumber);
             }
 
             #endregion Validate Arguments
@@ -309,11 +263,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                PopulateLedgerDictionaries(ALedgerNumber);
+                PopulateLedgerDictionaries();
 
                 FReadWriteLock.EnterReadLock();
 
-                LedgerBaseCurrency = FLedgerBaseCurrencyDict[ALedgerNumber];
+                LedgerBaseCurrency = FLedgerBaseCurrencyDict[FLedgerNumber];
 
                 FReadWriteLock.ExitReadLock();
             }
@@ -329,15 +283,15 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Get the country code for this Ledger
         /// </summary>
-        public static string GetLedgerCountryCode(int ALedgerNumber)
+        public string GetLedgerCountryCode()
         {
             #region Validate Arguments
 
-            if (ALedgerNumber <= 0)
+            if (FLedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
+                        Utilities.GetMethodName(true)), FLedgerNumber);
             }
 
             #endregion Validate Arguments
@@ -346,11 +300,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                PopulateLedgerDictionaries(ALedgerNumber);
+                PopulateLedgerDictionaries();
 
                 FReadWriteLock.EnterReadLock();
 
-                LedgerCountryCode = FLedgerCountryCodeDict[ALedgerNumber];
+                LedgerCountryCode = FLedgerCountryCodeDict[FLedgerNumber];
 
                 FReadWriteLock.ExitReadLock();
             }
@@ -364,19 +318,16 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// TODO
+        /// Get Data Row
         /// </summary>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
-        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
-        private void GetDataRow(TDataBase ADataBase = null)
+        private void GetDataRow()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                TDataBase db = DBAccess.Connect("LedgerInfo.GetDataRow", FDataBase);
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -393,12 +344,10 @@ namespace Ict.Petra.Server.MFinance.Common
                         }
 
                         #endregion Validate Data 1
-
                         FMyDataView = new DataView(FLedgerTbl);
                         FMyDataView.RowFilter = String.Format("{0} = {1}", ALedgerTable.GetLedgerNumberDBName(), FLedgerNumber); //a_ledger_number_i
 
                         #region Validate Data 2
-
                         if (FMyDataView.Count == 0)
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
@@ -406,11 +355,15 @@ namespace Ict.Petra.Server.MFinance.Common
                                     Utilities.GetMethodName(true),
                                     FLedgerNumber));
                         }
-
                         #endregion Validate Data 2
 
-                        FLedgerRow = (ALedgerRow)FMyDataView[0].Row; // More than one TLedgerInfo object may point to this same row.
+                        FLedgerRow = (FMyDataView.Count == 0?null:(ALedgerRow)FMyDataView[0].Row);
                     });
+
+                if (FDataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
             catch (Exception ex)
             {
@@ -419,14 +372,15 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        private void CommitLedgerChange(TDataBase ADataBase = null)
+        private void CommitLedgerChange()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CommitLedgerChange", FDataBase);
             Boolean SubmissionOK = false;
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -448,7 +402,17 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             GetDataRow();
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -617,7 +581,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public string GetStandardCostCentre()
         {
-            return GetStandardCostCentre(LedgerNumber);
+            return GetStandardCostCentre(FLedgerNumber);
         }
 
         /// <summary>
@@ -642,36 +606,35 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// get the default bank account for this ledger
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ADataBase"></param>
-        public static string GetDefaultBankAccount(int ALedgerNumber, TDataBase ADataBase = null)
+        public string GetDefaultBankAccount()
         {
             #region Validate Arguments
 
-            if (ALedgerNumber <= 0)
+            if (FLedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
+                        Utilities.GetMethodName(true)), FLedgerNumber);
             }
 
             #endregion Validate Arguments
 
             string BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
+                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + FLedgerNumber.ToString());
 
             if (BankAccountCode.Length == 0)
             {
-                TDBTransaction readTransaction = null;
+                TDBTransaction readTransaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("GetDefaultBankAccount", FDataBase);
 
                 try
                 {
-                    DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum, ref readTransaction,
+                    db.ReadTransaction(
+                        ref readTransaction,
                         delegate
                         {
                             // use the first bank account
-                            AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, readTransaction);
+                            AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(FLedgerNumber, readTransaction);
 
                             accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
                                                                       MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
@@ -685,13 +648,13 @@ namespace Ict.Petra.Server.MFinance.Common
                             {
                                 string SQLQuery = "SELECT a_gift_batch.a_bank_account_code_c" +
                                                   " FROM a_gift_batch " +
-                                                  " WHERE a_gift_batch.a_ledger_number_i =" + ALedgerNumber +
+                                                  " WHERE a_gift_batch.a_ledger_number_i =" + FLedgerNumber +
                                                   "  AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "'" +
                                                   " ORDER BY a_gift_batch.a_batch_number_i DESC" +
                                                   " LIMIT 1;";
 
                                 DataTable latestAccountCode =
-                                    DBAccess.GetDBAccessObj(ADataBase).SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
+                                    db.SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
 
                                 // use the Bank Account of the previous Gift Batch
                                 if ((latestAccountCode != null) && (latestAccountCode.Rows.Count > 0))
@@ -701,7 +664,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                 // if this is the first ever gift batch (this should happen only once!) then use the first appropriate Account Code in the database
                                 else
                                 {
-                                    AAccountTable accountTable = AAccountAccess.LoadViaALedger(ALedgerNumber, readTransaction);
+                                    AAccountTable accountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, readTransaction);
 
                                     #region Validate Data
 
@@ -710,7 +673,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                         throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
                                                     "Function:{0} - Account data for Ledger number {1} does not exist or could not be accessed!"),
                                                 Utilities.GetMethodName(true),
-                                                ALedgerNumber));
+                                                FLedgerNumber));
                                     }
 
                                     #endregion Validate Data
@@ -722,7 +685,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                         AAccountTable.GetPostingStatusDBName()); // "a_account_active_flag_l = true AND a_posting_status_l = true";
                                     DataTable sortedDT = dv.ToTable();
 
-                                    TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ALedgerNumber);
+                                    TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(FLedgerNumber);
                                     List <string>children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
 
                                     foreach (DataRow account in sortedDT.Rows)
@@ -737,6 +700,11 @@ namespace Ict.Petra.Server.MFinance.Common
                                 }
                             }
                         });
+
+                    if (FDataBase == null)
+                    {
+                        db.CloseDBConnection();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -757,6 +725,7 @@ namespace Ict.Petra.Server.MFinance.Common
     {
         private int FLedgerNumber;
         private string FFlagName;
+        private TDataBase FDataBase;
 
         /// <summary>
         /// This Constructor only takes and stores the initial parameters.
@@ -764,10 +733,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerNumber">A valid ledger number</param>
         /// <param name="AFlag">Name of the flag</param>
-        public TLedgerInitFlag(int ALedgerNumber, String AFlag)
+        /// <param name="ADataBase"></param>
+        public TLedgerInitFlag(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
             FFlagName = AFlag;
+            FDataBase = ADataBase;
         }
 
         /// <summary>
@@ -777,22 +748,22 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return FindRecord(FLedgerNumber, FFlagName) != null;
+                return FindRecord(FFlagName) != null;
             }
             set
             {
-                if (FindRecord(FLedgerNumber, FFlagName) != null)
+                if (FindRecord(FFlagName) != null)
                 {
                     if (!value)
                     {
-                        DeleteFlag(FLedgerNumber, FFlagName);
+                        DeleteFlag(FFlagName);
                     }
                 }
                 else
                 {
                     if (value)
                     {
-                        SetFlagValue(FLedgerNumber, FFlagName, "IsSet");
+                        SetFlagValue(FFlagName, "IsSet");
                     }
                 }
             }
@@ -801,24 +772,22 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="AFlag"></param>
         /// <param name="AddIt"></param>
-        /// <param name="ADataBase"></param>
-        public static void SetOrRemoveFlag(int ALedgerNumber, String AFlag, Boolean AddIt, TDataBase ADataBase = null)
+        public void SetOrRemoveFlag(String AFlag, Boolean AddIt)
         {
-            if (FindRecord(ALedgerNumber, AFlag) != null)
+            if (FindRecord(AFlag) != null)
             {
                 if (!AddIt)
                 {
-                    DeleteFlag(ALedgerNumber, AFlag);
+                    DeleteFlag(AFlag);
                 }
             }
             else
             {
                 if (AddIt)
                 {
-                    SetFlagValue(ALedgerNumber, AFlag, "IsSet");
+                    SetFlagValue(AFlag, "IsSet");
                 }
             }
         }
@@ -827,13 +796,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// This more conventional string-based ValueStore is intended to replace the limited and over-complicated binary flag approach
         /// (which is preserved above, but no longer used for Reval, or anything else.)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="AFlag"></param>
-        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        public static String GetFlagValue(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
+        public String GetFlagValue(String AFlag)
         {
-            ALedgerInitFlagRow Row = FindRecord(ALedgerNumber, AFlag, ADataBase);
+            ALedgerInitFlagRow Row = FindRecord(AFlag);
 
             return Row == null ? "" : Row.Value;
         }
@@ -842,13 +809,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// The named AFlag is a composite value (internally stored as CSV)
         /// This method adds the component, if it's not already present.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="AFlag"></param>
         /// <param name="AComponent"></param>
-        /// <param name="ADataBase"></param>
-        public static void SetFlagComponent(int ALedgerNumber, String AFlag, String AComponent, TDataBase ADataBase = null)
+        public void SetFlagComponent(String AFlag, String AComponent)
         {
-            ALedgerInitFlagRow Row = FindRecord(ALedgerNumber, AFlag, ADataBase);
+            ALedgerInitFlagRow Row = FindRecord(AFlag);
             String Val = (Row == null ? "" : Row.Value);
 
             if ((Val + ",").IndexOf(AComponent + ",") < 0) // I need to add this?
@@ -859,7 +824,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
 
                 Val += AComponent;
-                SetFlagValue(ALedgerNumber, AFlag, Val, ADataBase);
+                SetFlagValue(AFlag, Val);
             }
         }
 
@@ -868,13 +833,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// This method removes the component, if it's present in AFlag.
         /// (If AFlag was not found, it's not created.)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="AFlag"></param>
         /// <param name="AComponent"></param>
-        /// <param name="ADataBase"></param>
-        public static void RemoveFlagComponent(int ALedgerNumber, String AFlag, String AComponent, TDataBase ADataBase = null)
+        public void RemoveFlagComponent(String AFlag, String AComponent)
         {
-            ALedgerInitFlagRow Row = FindRecord(ALedgerNumber, AFlag, ADataBase);
+            ALedgerInitFlagRow Row = FindRecord(AFlag);
             String Val = (Row == null ? "" : Row.Value);
             String NewVal = (Val + ",").Replace(AComponent + ",", "");
 
@@ -885,21 +848,22 @@ namespace Ict.Petra.Server.MFinance.Common
                     NewVal = NewVal.Substring(0, NewVal.Length - 1); // the test above appended a comma to the string
                 }
 
-                SetFlagValue(ALedgerNumber, AFlag, NewVal, ADataBase);
+                SetFlagValue(AFlag, NewVal);
             }
         }
 
-        private static ALedgerInitFlagRow FindRecord(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
+        private ALedgerInitFlagRow FindRecord(String AFlag)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("FindRecord", FDataBase);
             ALedgerInitFlagTable LedgerInitFlagTable = null;
             ALedgerInitFlagRow Ret = null;
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            db.ReadTransaction(
+                ref ReadTransaction,
                 delegate
                 {
-                    LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(ALedgerNumber, AFlag, ReadTransaction);
+                    LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(FLedgerNumber, AFlag, ReadTransaction);
 
                     if ((LedgerInitFlagTable != null) && (LedgerInitFlagTable.Rows.Count == 1))
                     {
@@ -907,35 +871,38 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 });
 
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return Ret;
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="AFlag"></param>
         /// <param name="AValue"></param>
-        /// <param name="ADataBase"></param>
-        public static void SetFlagValue(int ALedgerNumber, String AFlag, String AValue, TDataBase ADataBase = null)
+        public void SetFlagValue(String AFlag, String AValue)
         {
-            TDBTransaction ReadWriteTransaction = null;
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SetFlagValue", FDataBase);
             Boolean SubmissionOK = false;
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref ReadWriteTransaction,
                 ref SubmissionOK,
                 delegate
                 {
                     ALedgerInitFlagTable ledgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                        ALedgerNumber, AFlag, ReadWriteTransaction);
+                        FLedgerNumber, AFlag, ReadWriteTransaction);
 
                     ALedgerInitFlagRow ledgerInitFlagRow =
                         ledgerInitFlagTable.Rows.Count == 0 ?
                         ledgerInitFlagTable.NewRowTyped()
                         : ledgerInitFlagTable[0];
-                    ledgerInitFlagRow.LedgerNumber = ALedgerNumber;
+                    ledgerInitFlagRow.LedgerNumber = FLedgerNumber;
                     ledgerInitFlagRow.InitOptionName = AFlag;
                     ledgerInitFlagRow.Value = AValue;
 
@@ -948,21 +915,26 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     SubmissionOK = true;
                 });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
-        private static void DeleteFlag(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
+        private void DeleteFlag(String AFlag)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("DeleteFlag", FDataBase);
             Boolean SubmissionOK = true;
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
                 {
                     ALedgerInitFlagTable LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                        ALedgerNumber, AFlag, Transaction);
+                        FLedgerNumber, AFlag, Transaction);
 
                     if (LedgerInitFlagTable.Rows.Count == 1)
                     {
@@ -971,6 +943,11 @@ namespace Ict.Petra.Server.MFinance.Common
                         ALedgerInitFlagAccess.SubmitChanges(LedgerInitFlagTable, Transaction);
                     }
                 });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
     }
 }

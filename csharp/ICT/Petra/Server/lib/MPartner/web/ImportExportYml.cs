@@ -6,7 +6,7 @@
 //       thomass
 //       ChristianK
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -506,7 +506,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     OdbcParameter param = new OdbcParameter("branchcode", OdbcType.VarChar);
                     param.Value = BankSortCode;
                     PBankTable bank = new PBankTable();
-                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ATransaction, new OdbcParameter[] {
+                    ATransaction.DataBaseObj.SelectDT(bank, sqlFindBankBySortCode, ATransaction, new OdbcParameter[] {
                             param
                         }, -1, -1);
 
@@ -627,7 +627,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <returns></returns>
         public static PartnerImportExportTDS ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TVerificationResultCollection VerificationResult;
 
             VerificationResult = new TVerificationResultCollection();
@@ -645,7 +645,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             TImportExportYml.NewPartnerKey = -1;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -668,11 +668,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// </param>
         private static void LoadDataFromDB(ref PartnerEditTDS AMainDS)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -719,7 +719,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             AMainDS.Merge(MainDS);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            Transaction.Rollback();
         }
 
         /// <summary>

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -417,78 +417,72 @@ namespace Ict.Petra.Server.MPartner.Processing
         public TFamilyIDSuccessEnum GetNewFamilyID(Int64 AFamilyPartnerKey,
             Int32 APreferredFamilyID, out Int32 ANewFamilyID, out String AProblemMessage)
         {
-            TFamilyIDSuccessEnum ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
+            TFamilyIDSuccessEnum ReturnValue = TFamilyIDSuccessEnum.fiError;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             PPersonTable PersonDT;
             DataView PersonDV;
             PPersonRow PersonRow;
             DataRowView PersonRowView;
             int Counter;
+            Int32 NewFamilyID = -1;
+            String ProblemMessage = String.Empty;
 
-            try
-            {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                ReturnValue = GetAvailableFamilyID(AFamilyPartnerKey,
-                    0,
-                    0,
-                    APreferredFamilyID,
-                    out ANewFamilyID,
-                    out AProblemMessage,
-                    ReadTransaction);
-
-                if (ANewFamilyID == -1)
+            TDataBase db = DBAccess.Connect("GetNewFamilyID");
+            db.ReadTransaction(
+                ref ReadTransaction,
+                delegate
                 {
-                    // this case should actually not happen... (extend the problem message)
-                    AProblemMessage = "There was a problem determining an available Family ID for Family " +
-                                      AFamilyPartnerKey.ToString("0000000000") + "!\r\n" +
-                                      " Please report the follwing to your System Administrator:\r\n" + AProblemMessage + "\r\n";
+                    ReturnValue = GetAvailableFamilyID(AFamilyPartnerKey,
+                        0,
+                        0,
+                        APreferredFamilyID,
+                        out NewFamilyID,
+                        out ProblemMessage,
+                        ReadTransaction);
 
-                    // Find highest FamilyID
-                    PersonDT = PPersonAccess.LoadViaPFamily(AFamilyPartnerKey, ReadTransaction);
-
-                    if (PersonDT.Rows.Count == 0)
+                    if (NewFamilyID == -1)
                     {
-                        // It is perfectly OK to have no person in a family. In this case we
-                        // can return 0 as first FamilyID since this is the first person
-                        ANewFamilyID = 0;
-                        return ReturnValue;
-                    }
+                        // this case should actually not happen... (extend the problem message)
+                        ProblemMessage = "There was a problem determining an available Family ID for Family " +
+                                          AFamilyPartnerKey.ToString("0000000000") + "!\r\n" +
+                                          " Please report the follwing to your System Administrator:\r\n" + ProblemMessage + "\r\n";
 
-                    // sort found person records by old omss id, so we need to create a view
-                    // TODO still needed? no omss anymore
-                    ANewFamilyID = 0;
-                    PersonDV = new DataView(PersonDT);
-                    PersonDV.Sort = PPersonTable.GetFamilyIdDBName() + " DESC";
+                        // Find highest FamilyID
+                        PersonDT = PPersonAccess.LoadViaPFamily(AFamilyPartnerKey, ReadTransaction);
 
-                    for (Counter = 0; Counter <= PersonDV.Count - 1; Counter += 1)
-                    {
-                        PersonRowView = PersonDV[Counter];
-                        PersonRow = (PPersonRow)PersonRowView.Row;
-
-                        if ((!PersonRow.IsFamilyIdNull()))
+                        if (PersonDT.Rows.Count == 0)
                         {
-                            // take the next highest one
-                            ANewFamilyID = PersonRow.FamilyId + 1;
-                            break;
+                            // It is perfectly OK to have no person in a family. In this case we
+                            // can return 0 as first FamilyID since this is the first person
+                            NewFamilyID = 0;
+                        }
+                        else
+                        {
+                            // sort found person records by old omss id, so we need to create a view
+                            // TODO still needed? no omss anymore
+                            NewFamilyID = 0;
+                            PersonDV = new DataView(PersonDT);
+                            PersonDV.Sort = PPersonTable.GetFamilyIdDBName() + " DESC";
+
+                            for (Counter = 0; Counter <= PersonDV.Count - 1; Counter += 1)
+                            {
+                                PersonRowView = PersonDV[Counter];
+                                PersonRow = (PPersonRow)PersonRowView.Row;
+
+                                if ((!PersonRow.IsFamilyIdNull()))
+                                {
+                                    // take the next highest one
+                                    NewFamilyID = PersonRow.FamilyId + 1;
+                                    break;
+                                }
+                            }
                         }
                     }
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                });
 
-                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
-                    {
-                        Console.WriteLine(this.GetType().FullName + ".GetNewFamilyID: committed own transaction.");
-                    }
-                }
-            }
+            ANewFamilyID = NewFamilyID;
+            AProblemMessage = ProblemMessage;
+
             return ReturnValue;
         }
 
@@ -703,15 +697,16 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// <param name="APartnerClass"></param>
         /// <param name="ANewPartner">Indicate if the partner is a new partner</param>
         /// <param name="ALastPartnerUse">Where is the partner used?</param>
+        /// <param name="ADataBase"></param>
         /// <returns>returns true if handling was successful
         /// </returns>
         public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass,
-            bool ANewPartner, TLastPartnerUse ALastPartnerUse)
+            bool ANewPartner, TLastPartnerUse ALastPartnerUse, TDataBase ADataBase)
         {
             const int MAX_SUBMIT_RETRIES = 5;
 
             Boolean ReturnValue;
-            TDBTransaction ReadAndWriteTransaction;
+            TDBTransaction ReadAndWriteTransaction = new TDBTransaction();
             Boolean NewTransaction = false;
             PPartnerTable PartnerDT;
             PRecentPartnersTable RecentPartnersDT;
@@ -730,11 +725,12 @@ namespace Ict.Petra.Server.MPartner.Processing
             // initialize result
             ReturnValue = true;
 
+            TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner", ADataBase);
+            ReadAndWriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                out NewTransaction);
+
             try
             {
-                ReadAndWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
                 if (!ANewPartner)
                 {
                     PartnerDT = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadAndWriteTransaction);
@@ -847,7 +843,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: We need to retry issuing SubmitChanges as the RDBMS suggested to do that when 'Predicate Locking' failed (PostgreSQL Error Code 40001).");
 
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: rolling back DB Transaction to allow further SQL Commands to succeed");
-                            DBAccess.GDBAccessObj.RollbackTransaction();
+                            ReadAndWriteTransaction.Rollback();
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: rolled back DB Transaction, now starting a new DB Transaction");
 
                             // Let the caller of this Method know that the Method has rolled back the DB Transaction that was started outside of this Method.
@@ -860,7 +856,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                             SubmitRetries++;
 
-                            ReadAndWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted, 2);
+                            ReadAndWriteTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted, 2);
 //                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: successfully started a new DB Transaction, now retrying SubmitChanges (Retry attempt number: " + SubmitRetries.ToString() + ")...");
 
                             // Now let the while statement retry the submitting!
@@ -897,7 +893,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadAndWriteTransaction.Commit();
 
                     TLogging.LogAtLevel(4, "TRecentPartnersHandling.AddRecentlyUsedPartner: committed own transaction.");
                 }
@@ -937,10 +933,10 @@ namespace Ict.Petra.Server.MPartner.Processing
             Int32 NewFamilyID;
             string ProblemMessage = string.Empty;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try

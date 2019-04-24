@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,9 +42,17 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         /// </summary>
         private static TFileVersionInfo GetCurrentDBVersion()
         {
-            string currentVersion = (string)DBAccess.GDBAccessObj.ExecuteScalar(
-                "SELECT s_default_value_c FROM s_system_defaults where s_default_code_c='CurrentDatabaseVersion'",
-                IsolationLevel.ReadUncommitted);
+            TDataBase db = DBAccess.Connect("GetCurrentDBVersion");
+            TDBTransaction Transaction = new TDBTransaction();
+            string currentVersion = String.Empty;
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    currentVersion = (string)db.ExecuteScalar(
+                        "SELECT s_default_value_c FROM s_system_defaults where s_default_code_c='CurrentDatabaseVersion'",
+                        Transaction);
+                });
 
             return new TFileVersionInfo(currentVersion);
         }
@@ -54,15 +62,17 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         /// </summary>
         private static bool SetCurrentDBVersion(TFileVersionInfo ANewVersion)
         {
-            using (TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction())
-            {
-                string newVersionSql =
-                    String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
-                        ANewVersion.ToStringDotsHyphen());
-                DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
-
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TDBUpgrades_SetCurrentDBVersion");
+            bool SubmitOK = true;
+            db.WriteTransaction(ref transaction, ref SubmitOK,
+                delegate
+                {
+                    string newVersionSql =
+                        String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
+                            ANewVersion.ToStringDotsHyphen());
+                    db.ExecuteNonQuery(newVersionSql, transaction);
+                });
 
             return true;
         }

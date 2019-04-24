@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -465,10 +465,10 @@ namespace Ict.Petra.Server.App.Core
         ///
         /// </summary>
         /// <returns>void</returns>
-        private void LoadSystemDefaultsTable()
+        private void LoadSystemDefaultsTable(TDataBase ADataBase = null)
         {
-            TDataBase DBAccessObj = new Ict.Common.DB.TDataBase();
-            TDBTransaction ReadTransaction = null;
+            TDataBase DBAccessObj = DBAccess.Connect("LoadSystemDefaultsTable", ADataBase);
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
             FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
@@ -482,16 +482,7 @@ namespace Ict.Petra.Server.App.Core
 
                 try
                 {
-                    DBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                        TSrvSetting.PostgreSQLServer,
-                        TSrvSetting.PostgreSQLServerPort,
-                        TSrvSetting.PostgreSQLDatabaseName,
-                        TSrvSetting.DBUsername,
-                        TSrvSetting.DBPassword,
-                        "",
-                        "SystemDefaultsCache DB Connection");
-
-                    DBAccessObj.BeginAutoReadTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,
+                    DBAccessObj.ReadTransaction(ref ReadTransaction,
                         delegate
                         {
                             FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
@@ -545,19 +536,19 @@ namespace Ict.Petra.Server.App.Core
         public void SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction WriteTransaction = null;
-            Boolean SubmissionOK = false;
+            TDBTransaction WriteTransaction = new TDBTransaction();
+            bool SubmissionOK = false;
             SSystemDefaultsTable SystemDefaultsDT;
             Boolean Added = false;
 
             try
             {
                 // Open a separate DB Connection...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("SetSystemDefault");
+                DBConnectionObj = DBAccess.Connect("SetSystemDefault");
 
                 // ...and start a DB Transaction on that separate DB Connection
-                DBConnectionObj.BeginAutoTransaction(IsolationLevel.ReadCommitted, ref WriteTransaction, ref SubmissionOK,
-                    "SetSystemDefault", delegate
+                DBConnectionObj.WriteTransaction(ref WriteTransaction, ref SubmissionOK,
+                    delegate
                     {
                         SystemDefaultsDT = SSystemDefaultsAccess.LoadAll(WriteTransaction);
 

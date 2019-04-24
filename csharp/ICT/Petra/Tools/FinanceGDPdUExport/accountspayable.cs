@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,10 +59,12 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
 
             StringBuilder sb = new StringBuilder();
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            TDBTransaction Transaction = new TDBTransaction();
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
+                    TDataBase db = Transaction.DataBaseObj;
+
                     // get all posted or paid ap_documents by their date issued
                     string sql =
                         String.Format(
@@ -89,7 +91,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     Parameters.Add(param);
 
                     AApDocumentTable apDocuments = new AApDocumentTable();
-                    DBAccess.GDBAccessObj.SelectDT(apDocuments, sql, Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(apDocuments, sql, Transaction, Parameters.ToArray(), 0, 0);
 
                     // get all ap details
                     sql =
@@ -114,7 +116,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             "'" + ACostCentres.Replace(",", "','") + "'");
 
                     AApDocumentDetailTable apDetails = new AApDocumentDetailTable();
-                    DBAccess.GDBAccessObj.SelectDT(apDetails, sql, Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(apDetails, sql, Transaction, Parameters.ToArray(), 0, 0);
 
                     apDetails.DefaultView.Sort = AApDocumentDetailTable.GetApDocumentIdDBName();
 
@@ -148,7 +150,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             AApPaymentTable.GetPaymentNumberDBName());
 
                     AApDocumentPaymentTable apPayments = new AApDocumentPaymentTable();
-                    DBAccess.GDBAccessObj.SelectDT(apPayments, sql, Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(apPayments, sql, Transaction, Parameters.ToArray(), 0, 0);
 
                     apPayments.DefaultView.Sort = AApDocumentPaymentTable.GetApDocumentIdDBName();
 
@@ -172,7 +174,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             AApDocumentTable.GetApDocumentIdDBName());
 
                     AApAnalAttribTable apAttrib = new AApAnalAttribTable();
-                    DBAccess.GDBAccessObj.SelectDT(apAttrib, sql, Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(apAttrib, sql, Transaction, Parameters.ToArray(), 0, 0);
 
                     apAttrib.DefaultView.Sort = AApAnalAttribTable.GetApDocumentIdDBName() + "," + AApAnalAttribTable.GetDetailNumberDBName();
 
@@ -197,7 +199,7 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                             AApDocumentTable.GetPartnerKeyDBName());
 
                     PPartnerTable suppliers = new PPartnerTable();
-                    DBAccess.GDBAccessObj.SelectDT(suppliers, sql, Transaction, Parameters.ToArray(), 0, 0);
+                    db.SelectDT(suppliers, sql, Transaction, Parameters.ToArray(), 0, 0);
 
                     foreach (AApDocumentRow doc in apDocuments.Rows)
                     {

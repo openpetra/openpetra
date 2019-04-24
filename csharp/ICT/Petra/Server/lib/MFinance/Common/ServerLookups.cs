@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,10 +64,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             DateTime startDate = new DateTime();
             DateTime endDate = new DateTime();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetCurrentPeriodDates");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -78,6 +78,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     startDate = accountingPeriodTable[0].PeriodStartDate;
                     endDate = accountingPeriodTable[0].PeriodEndDate;
                 });
+
+            db.CloseDBConnection();
 
             AStartDateCurrentPeriod = startDate;
             AEndDateCurrentPeriod = endDate;
@@ -112,10 +114,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             DateTime StartDateCurrentPeriod = new DateTime();
             DateTime EndDateLastForwardingPeriod = new DateTime();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetCurrentPostingRangeDates");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -191,6 +193,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             AStartDateCurrentPeriod = StartDateCurrentPeriod;
             AEndDateLastForwardingPeriod = EndDateLastForwardingPeriod;
 
+            db.CloseDBConnection();
+
             return dataIsOk;
         }
 
@@ -203,15 +207,18 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         public static Boolean HasSuspenseAccounts(Int32 ALedgerNumber)
         {
             Boolean ReturnValue = false;
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("HasSuspenseAccounts");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
                     ReturnValue = (ASuspenseAccountAccess.CountViaALedger(ALedgerNumber, transaction) > 0);
                 });
+
+            db.CloseDBConnection();
+
             return ReturnValue;
         }
 
@@ -230,11 +237,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             Int64 PartnerKey = 0;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetPartnerKeyForForeignCostCentreCode");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ACostCentreTable CostCentreTable;
@@ -260,6 +266,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     }
                 });
 
+            db.CloseDBConnection();
+
             APartnerKey = PartnerKey;
             return ReturnValue;
         }
@@ -273,16 +281,18 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         public static string GetLedgerBaseCurrency(Int32 ALedgerNumber)
         {
             string ReturnValue = "";
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetLedgerBaseCurrency");
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                "TFinanceServerLookups.GetLedgerBaseCurrency", out ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;
                 });
+
+            db.CloseDBConnection();
 
             return ReturnValue;
         }
@@ -298,9 +308,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         {
             DataTable ForeignCurrencyAccounts = AForeignCurrencyAccounts;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetForeignCurrencyAccountActuals");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     AGeneralLedgerMasterTable glmTbl = new AGeneralLedgerMasterTable();
@@ -335,6 +346,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                         ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = YtdActualForeign;
                     }
                 });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -354,10 +367,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Language = Language.Substring(Language.Length - 2).ToUpper();
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetCurrencyLanguage");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -368,6 +381,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                         ReturnValue = CurrencyLanguageTable[0];
                     }
                 });
+
+            db.CloseDBConnection();
 
             return ReturnValue;
         }
@@ -384,11 +399,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
             DataTable result = new DataTable();
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TypeAheadAccountCode");
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -408,8 +422,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
+
+            db.CloseDBConnection();
 
             AResult = result;
             return result.Rows.Count > 0;
@@ -428,11 +444,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TypeAheadCostCentreCode");
             DataTable result = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -450,8 +466,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
+
+            db.CloseDBConnection();
 
             AResult = result;
             return result.Rows.Count > 0;
@@ -465,11 +483,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TypeAheadMotivationGroup");
             DataTable result = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -485,8 +503,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
+
+            db.CloseDBConnection();
 
             AResult = result;
             return result.Rows.Count > 0;
@@ -500,11 +520,11 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Int32 ALimit,
                 out DataTable AResult)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TypeAheadMotivationDetail");
             DataTable result = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -520,8 +540,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
                     SqlStmt += " LIMIT " + ALimit.ToString();
 
-                    result = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Search", Transaction, parameters);
+                    result = db.SelectDT(SqlStmt, "Search", Transaction, parameters);
                 });
+
+            db.CloseDBConnection();
 
             AResult = result;
             return result.Rows.Count > 0;

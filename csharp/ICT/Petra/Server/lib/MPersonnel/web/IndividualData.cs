@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,9 +66,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         public static IndividualDataTDS GetData(Int64 APartnerKey, TIndividualDataItemEnum AIndivDataItem)
         {
             IndividualDataTDS ReturnValue = new IndividualDataTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         if (!ShortTermRow.IsStConfirmedOptionNull())
                         {
                             Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
-                                (ShortTermRow.StConfirmedOption, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                                (ShortTermRow.StConfirmedOption, out EventOrFieldName, out PartnerClass, out PartnerStatus, AReadTransaction);
                             GenAppRow.EventOrFieldName = EventOrFieldName;
                         }
                     }
@@ -255,7 +255,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                         if (!GenAppRow.IsGenAppPossSrvUnitKeyNull())
                         {
                             Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
-                                (GenAppRow.GenAppPossSrvUnitKey, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                                (GenAppRow.GenAppPossSrvUnitKey, out EventOrFieldName, out PartnerClass, out PartnerStatus, AReadTransaction);
                             GenAppRow.EventOrFieldName = EventOrFieldName;
                         }
                     }
@@ -276,14 +276,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
         [RequireModulePermission("AND(PERSONNEL,PTNRUSER)")]
         public static bool GetSummaryData(Int64 APartnerKey, ref IndividualDataTDS AIndividualDataDS)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             IndividualDataTDS IndividualDataDS = new IndividualDataTDS();
 
             IndividualDataDS.Merge(AIndividualDataDS);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -714,7 +712,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 }
 
                 // now submit the whole dataset at once
-                IndividualDataTDSAccess.SubmitChanges(AInspectDS);
+                IndividualDataTDSAccess.SubmitChanges(AInspectDS, ASubmitChangesTransaction.DataBaseObj);
 
                 // Need to merge tables back into APartnerEditInspectDS so the updated s_modification_id_t is returned
                 // correctly to the Partner Edit.

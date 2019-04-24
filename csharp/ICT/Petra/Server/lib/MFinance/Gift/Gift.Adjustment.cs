@@ -4,7 +4,7 @@
 // @Authors:
 //       timop,matthiash, peters
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,10 +66,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AMessages = new TVerificationResultCollection();
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetGiftsForReverseAdjust");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -123,13 +123,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int64 AOldField,
             out TVerificationResultCollection AMessages)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetGiftsForFieldChangeAdjustment");
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             AMessages = new TVerificationResultCollection();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     param.Value = AOldField;
                     parameters.Add(param);
 
-                    DBAccess.GDBAccessObj.Select(MainDS, SqlStmt, MainDS.AGiftDetail.TableName, Transaction, parameters.ToArray());
+                    db.Select(MainDS, SqlStmt, MainDS.AGiftDetail.TableName, Transaction, parameters.ToArray());
 
                     // get additional data
                     foreach (GiftBatchTDSAGiftDetailRow Row in MainDS.AGiftDetail.Rows)
@@ -248,12 +248,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ReversedGiftReset");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -340,12 +341,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal batchGiftTotal = 0;
             Int32 ANewBatchNumber = (BatchSelected ? (Int32)requestParams["NewBatchNumber"] : 0);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GiftRevertAdjust");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate

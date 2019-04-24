@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,14 +51,15 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static void CreateNewConference(long APartnerKey)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CreateNewConference");
             bool SubmissionOK = false;
 
             PcConferenceTable ConferenceTable;
             PUnitTable UnitTable;
             PPartnerLocationTable PartnerLocationTable;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try
@@ -147,10 +148,11 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting conference"), 100);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("DeleteConference");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try
@@ -180,7 +182,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting: ") + Table, 10 *
                                 Progress);
 
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(
+                            Transaction.DataBaseObj.ExecuteNonQuery(
                                 String.Format("DELETE FROM PUB_{0} WHERE pc_conference_key_n = ?", Table),
                                 Transaction, ConferenceParameter);
 

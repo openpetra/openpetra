@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -67,11 +67,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SaveCorporateExchangeSetupTDS");
             bool SubmissionOK = true;
             CorporateExchangeSetupTDS InspectDS = AInspectDS;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -98,14 +99,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                            " AND a_ledger.a_base_currency_c = '" + xchangeRateRow.FromCurrencyCode + "'" +
                                            " AND a_ledger.a_intl_currency_c = '" + xchangeRateRow.ToCurrencyCode + "'";
 
-                            TransactionsChanged += DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                            TransactionsChanged += db.ExecuteNonQuery(Query, Transaction);
                         }
 
                         if (TransactionsChanged > 0)
                         {
                             //
                             // I also need to correct entries in GLM and GLMP after modifying these transactions:
-                            DataTable ledgerTbl = DBAccess.GDBAccessObj.SelectDT(
+                            DataTable ledgerTbl = db.SelectDT(
                                 "SELECT * FROM a_ledger WHERE " +
                                 " a_ledger.a_base_currency_c = '" + xchangeRateRow.FromCurrencyCode + "'" +
                                 " AND a_ledger.a_intl_currency_c = '" + xchangeRateRow.ToCurrencyCode + "'",
@@ -114,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             foreach (DataRow ledgerRow in ledgerTbl.Rows)
                             {
                                 Int32 ledgerNumber = Convert.ToInt32(ledgerRow["a_ledger_number_i"]);
-                                DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                DataTable tempTbl = db.SelectDT(
                                     "SELECT DISTINCT a_batch.a_batch_period_i, a_batch.a_batch_year_i FROM" +
                                     " a_batch, a_transaction, a_ledger WHERE" +
                                     " EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Month +
@@ -132,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 Int32 transactionPeriod = Convert.ToInt32(tempTbl.Rows[0]["a_batch_period_i"]);
                                 Int32 transactionYear = Convert.ToInt32(tempTbl.Rows[0]["a_batch_year_i"]);
 
-                                DataTable glmTbl = DBAccess.GDBAccessObj.SelectDT(
+                                DataTable glmTbl = db.SelectDT(
                                     "SELECT * from a_general_ledger_master" +
                                     " WHERE a_ledger_number_i = " + ledgerNumber +
                                     " AND a_year_i = " + transactionYear,
@@ -151,7 +152,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     accountCode = glmRow["a_account_code_c"].ToString();
                                     costCentreCode = glmRow["a_cost_centre_code_c"].ToString();
 
-                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                    tempTbl = db.SelectDT(
                                         "SELECT sum(a_amount_in_intl_currency_n) AS debit_total FROM a_transaction WHERE " +
                                         " EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Month +
                                         " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Year +
@@ -178,7 +179,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                         debitTotal = Convert.ToDecimal(tempTbl.Rows[0]["debit_total"]);
                                     }
 
-                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                    tempTbl = db.SelectDT(
                                         "SELECT sum(a_amount_in_intl_currency_n) AS credit_total FROM a_transaction WHERE " +
                                         " EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Month +
                                         " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Year +
@@ -215,7 +216,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                     if (transactionPeriod > 1)
                                     {
-                                        tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                        tempTbl = db.SelectDT(
                                             "SELECT a_actual_intl_n as last_month_balance " +
                                             " FROM a_general_ledger_master_period WHERE " +
                                             " a_glm_sequence_i = " + glmSequence + " AND a_period_number_i = " + (transactionPeriod - 1),
@@ -235,7 +236,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                         lastMonthBalance = Convert.ToInt32(glmRow["a_start_balance_intl_n"]);
                                     }
 
-                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                    tempTbl = db.SelectDT(
                                         "SELECT a_actual_intl_n as this_month_balance " +
                                         " FROM  a_general_ledger_master_period WHERE " +
                                         " a_glm_sequence_i = " + glmSequence + " AND a_period_number_i = " + transactionPeriod,
@@ -251,7 +252,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                     Decimal thisMonthBalance = Convert.ToDecimal(tempTbl.Rows[0]["this_month_balance"]);
 
-                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                    tempTbl = db.SelectDT(
                                         "SELECT a_debit_credit_indicator_l AS debit_indicator FROM " +
                                         " a_account WHERE a_account_code_c = '" + accountCode + "'" +
                                         " AND a_ledger_number_i = " + ledgerNumber,
@@ -273,13 +274,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                     Decimal discrepency = newPeriodBalance - thisMonthBalance;
 
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                                    db.ExecuteNonQuery(
                                         "UPDATE a_general_ledger_master_period SET " +
                                         " a_actual_intl_n = a_actual_intl_n + " + discrepency.ToString(CultureInfo.InvariantCulture) +
                                         " WHERE a_glm_sequence_i = " + glmSequence +
                                         " AND a_period_number_i >= " + transactionPeriod, Transaction);
 
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                                    db.ExecuteNonQuery(
                                         "UPDATE a_general_ledger_master SET " +
                                         " a_ytd_actual_intl_n = a_ytd_actual_intl_n + " + discrepency.ToString(CultureInfo.InvariantCulture) +
                                         " WHERE a_glm_sequence_i = " + glmSequence, Transaction);
@@ -301,7 +302,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     // save changes to exchange rates
                     ACorporateExchangeRateAccess.SubmitChanges(InspectDS.ACorporateExchangeRate, Transaction);
-                }); // GetNewOrExistingAutoTransaction
+                }); // WriteTransaction
 
             TSubmitChangesResult SubmissionResult;
 
@@ -332,10 +333,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static bool CanDeleteCorporateExchangeRate(DateTime ADateEffectiveFrom, string AIntlCurrency, string ATransactionCurrency)
         {
             bool ReturnValue = true;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CanDeleteCorporateExchangeRate");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -345,7 +346,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                    " AND a_accounting_period.a_period_start_date_d <= '" + DataUtilities.DateToSQLString(ADateEffectiveFrom) + "'";
 
                     AAccountingPeriodTable AccountingPeriodTable = new AAccountingPeriodTable();
-                    DBAccess.GDBAccessObj.SelectDT(AccountingPeriodTable, Query, ReadTransaction);
+                    db.SelectDT(AccountingPeriodTable, Query, ReadTransaction);
 
                     // no accounting period if effective in a year other that the current year
                     if ((AccountingPeriodTable == null) || (AccountingPeriodTable.Rows.Count == 0))
@@ -372,7 +373,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     ") THEN 'TRUE'" +
                                     " ELSE 'FALSE' END";
 
-                    DataTable DT = DBAccess.GDBAccessObj.SelectDT(Query2, "temp", ReadTransaction);
+                    DataTable DT = db.SelectDT(Query2, "temp", ReadTransaction);
 
                     // a batch has been found
                     if ((DT != null) && (DT.Rows.Count > 0) && (DT.Rows[0][0].ToString() == "TRUE"))

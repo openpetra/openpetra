@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -310,9 +310,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ACurrency = "";
             string Currency = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -339,9 +339,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static int CanFamilyMergeIntoDifferentClass(long APartnerKey)
         {
             int ReturnValue = 0;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -385,9 +385,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PPersonTable ToPersonTable = null;
             int ReturnValue = 0;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -453,9 +453,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static PFoundationTable GetOrganisationFoundation(long AFromPartnerKey)
         {
             PFoundationTable ReturnValue = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -480,9 +480,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool NeedMainBankAccount(long AFromPartnerKey, long AToPartnerKey)
         {
             bool ReturnValue = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -537,9 +537,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static PBankingDetailsTable GetPartnerBankingDetails(long AFromPartnerKey, long AToPartnerKey)
         {
             PBankingDetailsTable ReturnTable = new PBankingDetailsTable();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -577,9 +577,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static PartnerEditTDSPPartnerAttributeTable GetPartnerContactDetails(long AFromPartnerKey, long AToPartnerKey)
         {
             PartnerEditTDSPPartnerAttributeTable ReturnTable = new PartnerEditTDSPPartnerAttributeTable();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -607,7 +607,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                    " OR (ToContactDetail.p_no_longer_current_from_d IS NULL" +
                                    " AND p_partner_attribute.p_no_longer_current_from_d IS NULL)))";
 
-                    DBAccess.GDBAccessObj.SelectDT(ReturnTable, Query, Transaction);
+                    Transaction.DataBaseObj.SelectDT(ReturnTable, Query, Transaction);
                 });
 
             return ReturnTable;
@@ -636,9 +636,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PPartnerGiftDestinationRow ToGiftDestinationRowNeedsEnded = null;
             PPartnerGiftDestinationRow ActiveRow = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

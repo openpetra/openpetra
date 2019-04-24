@@ -44,18 +44,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     public static class TPartnerContactDetails_LocationConversionHelper
     {
         /// <summary>
-        /// Func Delegate for the getting of a Sequence value from the DB.
-        /// </summary>
-        public static Func <TSequenceNames, Int64>SequenceGetter;
-
-        /// <summary>
         /// Func Delegate for loading of PPartnerAttribute data from the DB using a Template Record.
         /// </summary>
         public static Func <PPartnerAttributeRow, StringCollection, TDBTransaction,
                             PPartnerAttributeTable>PartnerAttributeLoadUsingTemplate;
 
         /// <summary>
-        /// Parses certain p_partner_location data columns' content into a data structure that is p_parnter_attribute
+        /// Parses certain p_partner_location data columns' content into a data structure that is p_partner_attribute
         /// representation.
         /// </summary>
         /// <remarks>Similar to code found in \csharp\ICT\BuildTools\DataDumpPetra2\FixData.cs, Method 'FixData',
@@ -186,26 +181,39 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             TPartnerContactDetails.CountryTable = CountryTable;
             TPartnerContactDetails.SiteCountryCode = SiteCountryCode;
             TPartnerContactDetails.SiteInternatAccessCode = InternatAccessCode;
-            TPartnerContactDetails.PopulatePPartnerAttribute(false);
+            TPartnerContactDetails.PopulatePPartnerAttribute(ATransaction.DataBaseObj, false);
 
             Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);
         }
 
         /// <summary>
-        /// Creates a PPartnerAttribute Record out of data that is held in a data structure that is a p_parnter_attribute
+        /// Creates a PPartnerAttribute Record out of data that is held in a data structure that is a p_partner_attribute
         /// representation.
         /// </summary>
-        /// <param name="APPARec">Data structure that is p_parnter_attribute representation.</param>
+        /// <param name="APPARec">Data structure that is p_partner_attribute representation.</param>
         /// <param name="AMainDS">DataSet to which the PPartnerAttribute Record should be added to.</param>
+        /// <param name="ADataBase"></param>
         public static void CreatePartnerContactDetailRecord(TPartnerContactDetails.PPartnerAttributeRecord APPARec,
-            DataSet AMainDS)
+            DataSet AMainDS, TDataBase ADataBase = null)
         {
             var MainDS = (PartnerImportExportTDS)AMainDS;
 
             PPartnerAttributeRow PartnerAttributeDR = MainDS.PPartnerAttribute.NewRowTyped(false);
 
+            TDataBase db = DBAccess.Connect("CreatePartnerContactDetailRecord", ADataBase);
+            TDBTransaction Transaction = new TDBTransaction();
+
             PartnerAttributeDR.PartnerKey = APPARec.PartnerKey;
-            PartnerAttributeDR.Sequence = (Int32)SequenceGetter(TSequenceNames.seq_partner_attribute_index);
+    
+            bool SubmitOK = false;
+            db.WriteTransaction(ref Transaction,
+                ref SubmitOK,
+                delegate
+                {
+                    PartnerAttributeDR.Sequence = Convert.ToInt32(db.GetNextSequenceValue(TSequenceNames.seq_partner_attribute_index.ToString(), Transaction));
+                    SubmitOK = true;
+                });
+
             PartnerAttributeDR.AttributeType = APPARec.AttributeType;
             PartnerAttributeDR.Index = APPARec.Index;
             PartnerAttributeDR.Value = APPARec.Value;

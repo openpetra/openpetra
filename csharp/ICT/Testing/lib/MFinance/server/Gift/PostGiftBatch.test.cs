@@ -135,6 +135,8 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void TestPostGiftBatchWithMotivationDetailCostCentre()
         {
+            TDataBase db = DBAccess.Connect("TestPostGiftBatchWithMotivationDetailCostCentre");
+
             // import a gift batch, that we will modify later
             TGiftImporting importer = new TGiftImporting();
 
@@ -170,7 +172,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool NewTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             // create a new costcentre
             const string newCostCentre = "100001";
@@ -210,7 +212,7 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreNotEqual(newCostCentre, giftdetails[0].CostCentreCode, "cost centre code should not match the one defined by the motivation detail");
             AGiftDetailAccess.SubmitChanges(giftdetails, Transaction);
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+            Transaction.Commit();
 
             Int32 generatedGlBatchNumber;
 
@@ -219,10 +221,10 @@ namespace Tests.MFinance.Server.Gift
                 Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
 
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
             giftdetails = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, BatchNumber, 1, 1, null, Transaction);
             Assert.AreEqual(newCostCentre, giftdetails[0].CostCentreCode, "cost centre code should have been adjusted because of the motivation detail");
-            DBAccess.GDBAccessObj.CommitTransaction();
+            Transaction.Commit();
         }
 
         /// <summary>
@@ -233,7 +235,8 @@ namespace Tests.MFinance.Server.Gift
         {
             bool NewTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("TestProcessAdminFees");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             TVerificationResultCollection VerficationResults = null;
 
@@ -264,7 +267,7 @@ namespace Tests.MFinance.Server.Gift
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 
@@ -284,7 +287,8 @@ namespace Tests.MFinance.Server.Gift
 
             //Reset
             NewTransaction = false;
-            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -299,7 +303,7 @@ namespace Tests.MFinance.Server.Gift
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 
@@ -321,10 +325,6 @@ namespace Tests.MFinance.Server.Gift
             Int64 PartnerKey = 73000000;
             Int64 RecipientLedgerNumber = 0;
 
-            //bool NewTransaction = false;
-
-            //TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
             try
             {
                 RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(PartnerKey);
@@ -333,13 +333,6 @@ namespace Tests.MFinance.Server.Gift
             {
                 throw;
             }
-            //finally
-            //{
-            //if (NewTransaction)
-            //{
-            //    DBAccess.GDBAccessObj.RollbackTransaction();
-            //}
-            //}
 
             //TODO the value to check for needs to be updated oncw workwer field is implemented.
             //TODO If this first one works, try different permatations for Assert.AreEqual
@@ -392,14 +385,13 @@ namespace Tests.MFinance.Server.Gift
                 "TestBatchPostingRecalculations fail: Posting GiftBatch failed: " + VerificationResult.BuildVerificationResultString());
 
             // Primary Assert: Chaeck that the gifts have the correct RecipientLedgerNumber, CostCentreCode and Account
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             AGiftDetailRow PositiveGiftDetailRow = null;
             AGiftDetailRow NegativeGiftDetailRow = null;
             ATransactionRow TransactionRow = null;
             Int32 GLBatchNumber = -1;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -429,8 +421,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -489,12 +480,11 @@ namespace Tests.MFinance.Server.Gift
             Assert.IsNotNull(GiftBatchDS.AGiftDetail, "TestBatchLoadingRecalculations fail: Loading GiftBatch failed");
 
             // Primary Assert: Chaeck that the gift has the correct RecipientLedgerNumber and CostCentreCode
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             AGiftDetailRow PositiveGiftDetailRow = null;
             AGiftDetailRow NegativeGiftDetailRow = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -518,8 +508,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -566,12 +555,12 @@ namespace Tests.MFinance.Server.Gift
             const Int64 DONORKEY = 43005001;
 
             // create a new recipient
-            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS, null);
             ARecipientKey = PartnerEditDS.PFamily[0].PartnerKey;
 
             // create two new Unit partners
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, null);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
 
@@ -721,13 +710,12 @@ namespace Tests.MFinance.Server.Gift
             // Assert
             //
 
-            // Primary Assert: Chaeck that the RecurringGiftDetail and the newly created GiftDetail have the correct RecipientLedgerNumber
-            TDBTransaction Transaction = null;
+            // Primary Assert: Check that the RecurringGiftDetail and the newly created GiftDetail have the correct RecipientLedgerNumber
+            TDBTransaction Transaction = new TDBTransaction();
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
             AGiftDetailRow GiftDetailRow = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -736,6 +724,8 @@ namespace Tests.MFinance.Server.Gift
 
                     GiftBatchNumber = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction)[0].LastGiftBatchNumber;
                     GiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
+
+                    Transaction.Rollback();
                 });
 
             Assert.IsNotNull(
@@ -751,15 +741,15 @@ namespace Tests.MFinance.Server.Gift
             // Cleanup: Delete test records
 
             bool SubmissionOK = true;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            Transaction = new TDBTransaction();
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
                 {
                     AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, GiftDetailRow, Transaction);
                     ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
+                    Transaction.Commit();
                 });
 
             DataTable PartnerCostCentreTbl = null;
@@ -805,11 +795,10 @@ namespace Tests.MFinance.Server.Gift
             Assert.IsNotNull(GiftBatchDS.ARecurringGiftDetail, "TestRecurringBatchLoadingRecalculations fail: Loading GiftBatch failed");
 
             // Primary Assert: Chaeck that the gift has the correct RecipientLedgerNumber
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -827,8 +816,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -861,7 +849,8 @@ namespace Tests.MFinance.Server.Gift
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult Result;
             DataSet ResponseDS;
-            TPartnerEditUIConnector PartnerEditUIUIConnector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestRecurringBatchSubmitRecalculations_Arrange");
+            TPartnerEditUIConnector PartnerEditUIUIConnector = new TPartnerEditUIConnector(db);
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             PartnerEditTDS PartnerEditDS = new PartnerEditTDS();
@@ -869,14 +858,13 @@ namespace Tests.MFinance.Server.Gift
             // this is a family partner in the test database
             const Int64 DONORKEY = 43005001;
 
-
             // create a new recipient
-            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS, db);
             ARecipientKey = PartnerEditDS.PFamily[0].PartnerKey;
 
             // create two new Unit partners
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
-            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, db);
+            TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS, db);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
 
@@ -918,7 +906,7 @@ namespace Tests.MFinance.Server.Gift
             TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
             // create a new Recurring Gift Batch
-            MainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
+            MainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber, db);
             ARecurringGiftBatchNumber = MainDS.ARecurringGiftBatch[0].BatchNumber;
 
             // create a new recurring gifts
@@ -1059,7 +1047,7 @@ namespace Tests.MFinance.Server.Gift
         public void TestPrepareGiftBatchForPostingArgumentValidation()
         {
             TVerificationResultCollection VerificationResult = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             string Message = "Validation failed for PrepareGiftBatchForPosting with ledger number less than 1.";
 
@@ -1083,31 +1071,13 @@ namespace Tests.MFinance.Server.Gift
             // Prepare Gift Batch For Posting with batch number less than 1
             try
             {
-                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(1, -1, ref Transaction, out VerificationResult);
+                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(43, -1, ref Transaction, out VerificationResult);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)
             {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(43, e.LedgerNumber, Message);
                 Assert.AreEqual(-1, e.BatchNumber, Message);
-            }
-            catch
-            {
-                Assert.Fail(Message);
-            }
-
-            Message = "Validation failed for PrepareGiftBatchForPosting with null transaction.";
-
-            // Prepare Gift Batch For Posting with null transaction
-            try
-            {
-                TGiftTransactionWebConnector.PrepareGiftBatchForPosting(1, 1, ref Transaction, out VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemDBTransactionNullException e)
-            {
-                Assert.AreEqual("Function:Prepare Gift Batch For Posting - Database Transaction must not be NULL!", e.Message,
-                    Message);
             }
             catch
             {
@@ -1122,7 +1092,7 @@ namespace Tests.MFinance.Server.Gift
         public void TestLoadAGiftBatchAndRelatedDataArgumentValidation()
         {
             bool ChangesToCommit;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             // Load Gift Batch with ledger number less than 1
             string Message = "Validation failed for LoadAGiftBatchAndRelatedData with ledger number less than 1.";
@@ -1146,31 +1116,13 @@ namespace Tests.MFinance.Server.Gift
             // Load Gift Batch with batch number less than 1
             try
             {
-                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(1, -1, Transaction, out ChangesToCommit);
+                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(43, -1, Transaction, out ChangesToCommit);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)
             {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(43, e.LedgerNumber, Message);
                 Assert.AreEqual(-1, e.BatchNumber, Message);
-            }
-            catch
-            {
-                Assert.Fail(Message);
-            }
-
-            Message = "Validation failed for LoadAGiftBatchAndRelatedData with null transaction.";
-
-            // Load Gift Batch with null transaction
-            try
-            {
-                TGiftTransactionWebConnector.LoadAGiftBatchAndRelatedData(1, 1, Transaction, out ChangesToCommit);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemDBTransactionNullException e)
-            {
-                Assert.AreEqual("Function:Load A Gift Batch And Related Data - Database Transaction must not be NULL!", e.Message,
-                    Message);
             }
             catch
             {

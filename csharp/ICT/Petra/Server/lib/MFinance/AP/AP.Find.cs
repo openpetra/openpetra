@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             if (FSearchTransactions)
             {
-                if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                if (DBAccess.DBType == TDBType.SQLite)
                 {
                     // Fix for SQLite: it does not support the 'to_char' Function
                     PaymentNumberSQLPart = "PUB_a_ap_payment.a_payment_number_i as InvNum, ";
@@ -326,10 +326,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             Decimal PaidAmount = 0m;
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetPartPaidAmount");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -340,7 +340,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     {
                         PaidAmount += PrevPaymentRow.Amount;
                     }
-                }); // End of BeginAutoReadTransaction
+                }); // End of ReadTransaction
 
             return PaidAmount;
         }

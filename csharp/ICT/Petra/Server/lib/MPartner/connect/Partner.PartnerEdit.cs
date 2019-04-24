@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -97,6 +97,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         private PartnerEditTDS FSubmissionDS;
         private bool FTaxDeductiblePercentageEnabled = false;
         private bool FGovIdEnabled = false;
+        private TDataBase FDataBase = null;
 
         #region TPartnerEditUIConnector
 
@@ -106,11 +107,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// </summary>
         /// <param name="APartnerKey">PartnerKey for the Partner to instantiate this object with
         /// </param>
+        /// <param name="ADataBase"></param>
         /// <returns>void</returns>
-        public TPartnerEditUIConnector(System.Int64 APartnerKey) : base()
+        public TPartnerEditUIConnector(System.Int64 APartnerKey, TDataBase ADataBase = null) : base()
         {
             FPartnerKey = APartnerKey;
             FKeyForSelectingPartnerLocation = new TLocationPK(0, 0);
+            FDataBase = DBAccess.Connect("TPartnerEditUIConnector", ADataBase);
         }
 
         /// <summary>
@@ -124,11 +127,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <param name="ASiteKey">SiteKey of the PartnerLocation record of the Partner</param>
         /// <param name="ALocationKey">LocationKey of the PartnerLocation record of the Partner
         /// </param>
+        /// <param name="ADataBase"></param>
         /// <returns>void</returns>
-        public TPartnerEditUIConnector(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey) : base()
+        public TPartnerEditUIConnector(Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDataBase ADataBase = null) : base()
         {
             FPartnerKey = APartnerKey;
             FKeyForSelectingPartnerLocation = new TLocationPK(ASiteKey, ALocationKey);
+            FDataBase = DBAccess.Connect("TPartnerEditUIConnector", ADataBase);
         }
 
         /// <summary>
@@ -136,9 +141,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         ///
         /// </summary>
         /// <returns>void</returns>
-        public TPartnerEditUIConnector() : base()
+        public TPartnerEditUIConnector(TDataBase ADataBase = null) : base()
         {
             FKeyForSelectingPartnerLocation = new TLocationPK(0, 0);
+            FDataBase = DBAccess.Connect("TPartnerEditUIConnector", ADataBase);
         }
 
         #region BankingDetails
@@ -265,56 +271,40 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// </summary>
         public PartnerEditTDS GetBankingDetails()
         {
-            Boolean NewTransaction;
-
             PartnerEditTDS localDS = new PartnerEditTDS();
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            // Get hold of the two tables needed for the banking information:
-            // p_partner_banking_details
-            // p_banking_details
-            try
-            {
-                FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
-                    SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-                FGovIdEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
-                    SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
-                PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
-                PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
-                PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
-
-                if (FTaxDeductiblePercentageEnabled)
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
+                delegate
                 {
-                    PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
-                }
+                    // Get hold of the two tables needed for the banking information:
+                    // p_partner_banking_details
+                    // p_banking_details
+                    FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                        SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                    FGovIdEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                        SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
+                    PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                    PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                    PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
 
-                if (IsGovIdEnabled())
-                {
-                    PTaxRow template = new PTaxTable().NewRowTyped(false);
+                    if (FTaxDeductiblePercentageEnabled)
+                    {
+                        PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                    }
 
-                    template.PartnerKey = FPartnerKey;
-                    template.TaxType = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                        SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
+                    if (IsGovIdEnabled())
+                    {
+                        PTaxRow template = new PTaxTable().NewRowTyped(false);
 
-                    PTaxAccess.LoadUsingTemplate(localDS, template, ReadTransaction);
-                }
-            }
-            catch (Exception)
-            {
-                TLogging.Log("An exception happened while retrieving data.", TLoggingType.ToLogfile);
-                throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetBankingDetails: committed own transaction.");
-                }
-            }
+                        template.PartnerKey = FPartnerKey;
+                        template.TaxType = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                            SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
+
+                        PTaxAccess.LoadUsingTemplate(localDS, template, ReadTransaction);
+                    }
+                });
 
             foreach (PartnerEditTDSPBankingDetailsRow bd in localDS.PBankingDetails.Rows)
             {
@@ -392,13 +382,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PartnerEditTDS GetDataAddresses()
         {
             PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataAddresses called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     // Load data
@@ -419,13 +408,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PartnerEditTDS GetDataFoundation(Boolean ABaseTableOnly)
         {
             PartnerEditTDS ReturnValue;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             TLogging.LogAtLevel(9, "TPartnerEditUIConnector.GetDataFoundation called!");
             ReturnValue = new PartnerEditTDS(DATASETNAME);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     // Foundation Table
@@ -481,10 +469,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public PLocationTable GetDataLocation(Int64 ASiteKey, Int32 ALocationKey)
         {
             PLocationTable ReturnValue = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ReturnValue = TPPartnerAddressAggregate.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
@@ -495,7 +482,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private void LoadData(Boolean ADelayedDataLoading, TPartnerEditTabPageEnum ATabPage)
         {
-            TDBTransaction ReadAndWriteTransaction = null;
+            TDBTransaction ReadAndWriteTransaction = new TDBTransaction();
             bool SubmissionOK = false;
             PartnerEditTDSMiscellaneousDataTable MiscellaneousDataDT;
             PartnerEditTDSMiscellaneousDataRow MiscellaneousDataDR;
@@ -536,8 +523,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // to be opened, which will execute concurrently as multi-threading is at work then.
             // In both these cases either an EDBTransactionIsolationLevelWrongException or
             // an EDBTransactionIsolationLevelTooLowException would get thrown!
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
-                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadAndWriteTransaction,
+            DBAccess.WriteTransaction(
+                ref ReadAndWriteTransaction,
                 ref SubmissionOK,
                 delegate
                 {
@@ -975,7 +962,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         #endregion
 
                         // Add this partner key to the list of recently used partners.
-                        TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
+                        TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner, ReadAndWriteTransaction.DataBaseObj);
 
                         SubmissionOK = true;
                     }
@@ -1056,7 +1043,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 AFamilyLocationKey,
             out String ASiteCountryCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             PPartnerRow PartnerRow;
             PartnerEditTDSPPersonRow PersonRow;
             PartnerEditTDSPFamilyRow FamilyRow;
@@ -1112,7 +1099,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FPartnerKey = FNewPartnerPartnerKey;
             FPartnerClass = FNewPartnerPartnerClass;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     //
@@ -1602,17 +1589,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private PPartnerTypeTable GetPartnerTypesInternal(out Int32 ACount, Boolean ACountOnly)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PPartnerTypeTable PartnerTypesDT;
 
             PartnerTypesDT = new PPartnerTypeTable();
+
+            TDataBase db = DBAccess.Connect("GetPartnerTypesInternal");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
                 if (ACountOnly)
                 {
                     ACount = PPartnerTypeAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
@@ -1633,11 +1618,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataPartnerTypesInternal: committed own transaction.");
-                }
+                ReadTransaction.Rollback();
             }
             return PartnerTypesDT;
         }
@@ -1756,19 +1737,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
 
             PartnerTypeFamilyMembersDT = new PartnerEditTDSFamilyMembersTable();
+            TDataBase db = DBAccess.Connect("GetFamilyMembersInternal");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                out NewTransaction);
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
                 ParametersArray = new OdbcParameter[1];
                 ParametersArray[0] = new OdbcParameter("", OdbcType.Decimal, 10);
                 ParametersArray[0].Value = (System.Object)AFamilyPartnerKey;
 
                 if (ACountOnly)
                 {
-                    ACount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                    ACount = Convert.ToInt32(db.ExecuteScalar(
                             "SELECT COUNT(*) " +
                             "FROM PUB_" + PPersonTable.GetTableDBName() +
                             " INNER JOIN " + "PUB_" + PPartnerTable.GetTableDBName() +
@@ -1791,7 +1773,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TmpDS = new DataSet();
                     FamilyPersonsDT = new PPersonTable();
                     TmpDS.Tables.Add(FamilyPersonsDT);
-                    DBAccess.GDBAccessObj.Select(TmpDS,
+                    db.Select(TmpDS,
                         "SELECT " + "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                         PPartnerTable.GetPartnerKeyDBName() + ", " +
                         PPersonTable.GetFamilyNameDBName() + ", " +
@@ -1892,7 +1874,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetFamilyMembersInternal: committed own transaction.");
                 }
             }
@@ -1901,20 +1883,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private PartnerEditTDSPPartnerInterestTable GetPartnerInterestsInternal(out Int32 ACount, Boolean ACountOnly)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PartnerEditTDSPPartnerInterestTable PartnerInterestDT;
             PInterestTable InterestDT;
             DataRow InterestRow;
             int ItemsCountInterests;
 
             PartnerInterestDT = new PartnerEditTDSPPartnerInterestTable();
+
+            TDataBase db = DBAccess.Connect("GetPartnerInterestsInternal");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
                 if (ACountOnly)
                 {
                     ACount = PPartnerInterestAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
@@ -1947,11 +1927,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerInterestsInternal: committed own transaction.");
-                }
+                ReadTransaction.Rollback();
             }
             return PartnerInterestDT;
         }
@@ -1963,19 +1939,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private PInterestTable GetInterestsInternal(out Int32 ACount, Boolean ACountOnly)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PInterestTable InterestDT;
 
             ACount = 0;
             InterestDT = new PInterestTable();
 
+            TDataBase db = DBAccess.Connect("GetInterestsInternal");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
                 if (ACountOnly)
                 {
                 }
@@ -1997,11 +1970,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetInterestsInternal: committed own transaction.");
-                }
+                ReadTransaction.Rollback();
             }
             return InterestDT;
         }
@@ -2110,7 +2079,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             ref DataSet AResponseDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             PartnerAddressAggregateTDS TmpResponseDS = null;
             DataSet ResponseDS = AResponseDS;
@@ -2155,9 +2124,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 TVerificationResultCollection VerificationResult = AVerificationResult;
 
                 FSubmissionDS = AInspectDS;
+                bool SubmitOK = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                    ref SubmissionResult,
+                FDataBase.WriteTransaction(ref SubmitChangesTransaction,
+                    ref SubmitOK,
                     delegate
                     {
                         PrepareBankingDetailsForSaving(ref InspectDS, ref VerificationResult, SubmitChangesTransaction);
@@ -2253,7 +2223,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // all tables in the dataset will be stored.
                             // there are exceptions: for example cascading delete of foundations, change of unique key of family id
                             // those tables need to have run AcceptChanges
-                            PartnerEditTDSAccess.SubmitChanges(InspectDS);
+                            PartnerEditTDSAccess.SubmitChanges(InspectDS, SubmitChangesTransaction.DataBaseObj);
                         }
 
                         if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -2328,7 +2298,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 // Partner is new Partner > add to list of recent partners. (If the
                                 // Partner was not new then this was already done in LoadData.)
                                 TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true,
-                                    TLastPartnerUse.lpuMailroomPartner);
+                                    TLastPartnerUse.lpuMailroomPartner, SubmitChangesTransaction.DataBaseObj);
                                 TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Set Partner as Recent Partner.");
 
                                 if (FPartnerClass == TPartnerClass.PERSON)
@@ -2354,6 +2324,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             InspectDS.AcceptChanges();
 
                             SubmissionResult = TSubmitChangesResult.scrOK;
+                            SubmitOK = true;
 
                             /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('Location[0] LocationKey: ' + FSubmissionDS.PLocation[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' +
                              *FSubmissionDS.PPartnerLocation[0].LocationKey.ToString);$ENDIF */
@@ -3027,22 +2998,23 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TStdPartnerStatusCode PartnerStatus;
 
-            return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+            TDataBase db = DBAccess.Connect("GetPartnerShortName");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus, ReadTransaction);
         }
 
         private PSubscriptionTable GetSubscriptionsInternal(out Int32 ACount, Boolean ACountOnly)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PSubscriptionTable SubscriptionDT;
 
             SubscriptionDT = new PSubscriptionTable();
+
+            TDataBase db = DBAccess.Connect("GetSubscriptionsInternal");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
                 if (ACountOnly)
                 {
                     ACount = PSubscriptionAccess.CountViaPPartnerPartnerKey(FPartnerKey, ReadTransaction);
@@ -3063,29 +3035,23 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetSubscriptionsInternal: committed own transaction.");
-                }
+                ReadTransaction.Rollback();
             }
             return SubscriptionDT;
         }
 
         private PContactLogTable GetContactsInternal(out int ACount, out DateTime ALastContact)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PContactLogTable ContactDT;
 
             ALastContact = DateTime.MinValue;
             ContactDT = new PContactLogTable();
+
+            TDataBase db = DBAccess.Connect("GetContactsInternal");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
                 var PartnerContacts = PPartnerContactAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
                 ACount = PartnerContacts.Rows.Count;
 
@@ -3098,11 +3064,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetSubscriptionsInternal: committed own transaction.");
-                }
+                ReadTransaction.Rollback();
             }
 
             return ContactDT;
@@ -3115,15 +3077,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private void GetPartnerContactDetailsInternal(out Int32 ACount)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             int NonPartnerContactAttributesCount;
 
             // Partner Contact Details are kept in PPartnerAttribute, among other attributes (!), so we need to ensure that
             // PPartnerAttribute data for this Partner is loaded already (this will be the case when called from LoadData).
             if (FPartnerEditScreenDS.PPartnerAttribute == null)
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                DBAccess.ReadTransaction(
+                    ref ReadTransaction,
                     delegate
                     {
                         TLogging.LogAtLevel(7,
@@ -3142,18 +3104,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         private PartnerEditTDSPPartnerRelationshipTable GetPartnerRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PartnerEditTDSPPartnerRelationshipTable RelationshipDT;
             PPartnerTable PartnerDT;
 
             RelationshipDT = new PartnerEditTDSPPartnerRelationshipTable();
+
+            TDataBase db = DBAccess.Connect("GetPartnerRelationshipsInternal");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
                 if (ACountOnly)
                 {
                     // count relationships where partner is involved with partner key or reciprocal
@@ -3198,29 +3158,22 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetRelationshipsInternal: committed own transaction.");
-                }
+                ReadTransaction.Rollback();
             }
             return RelationshipDT;
         }
 
         private PartnerEditTDSPPartnerLocationTable GetPartnerLocationsInternal(out Int32 ACount, Boolean ACountOnly, ref PLocationTable ALocations)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PartnerEditTDS PartnerLocations = new PartnerEditTDS();
             PLocationTable LocationTable;
             PLocationRow LocationRow;
 
+            TDataBase db = DBAccess.Connect("GetPartnerLocationsInternal");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
                 if (ACountOnly)
                 {
                     ACount = PPartnerLocationAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
@@ -3275,53 +3228,39 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerLocationsInternal: committed own transaction.");
-                }
+                ReadTransaction.Rollback();
             }
             return PartnerLocations.PPartnerLocation;
         }
 
         private PDataLabelValuePartnerTable GetDataLocalPartnerDataValuesInternal(out Boolean ALabelsAvailable, Boolean ACountOnly)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
             PDataLabelValuePartnerTable DataLabelValuePartnerDT;
             OfficeSpecificDataLabelsTDS OfficeSpecificDataLabels;
-
+            bool LabelsAvailable = false;
             ALabelsAvailable = false;
 
             DataLabelValuePartnerDT = new PDataLabelValuePartnerTable();
 
-            try
-            {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-
-                OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
-                    MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
-                OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData();
-                ALabelsAvailable =
-                    (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
-
-                if (!ACountOnly)
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
+                delegate
                 {
-                    DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataLocalPartnerDataValuesInternal: committed own transaction.");
-                }
-            }
+                    OfficeSpecificDataLabelsUIConnector = new TOfficeSpecificDataLabelsUIConnector(FPartnerKey,
+                        MCommonTypes.PartnerClassEnumToOfficeSpecificDataLabelUseEnum(FPartnerClass));
+                    OfficeSpecificDataLabels = OfficeSpecificDataLabelsUIConnector.GetData();
+                    LabelsAvailable =
+                        (OfficeSpecificDataLabelsUIConnector.CountLabelUse(SharedTypes.PartnerClassEnumToString(FPartnerClass), ReadTransaction) != 0);
+
+                    if (!ACountOnly)
+                    {
+                        DataLabelValuePartnerDT.Merge(OfficeSpecificDataLabels.PDataLabelValuePartner);
+                    }
+                });
+
+            ALabelsAvailable = LabelsAvailable;
 
             return DataLabelValuePartnerDT;
         }
@@ -3355,29 +3294,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public Boolean HasPartnerLocationOtherPartnerReferences(Int64 ASiteKey, Int32 ALocationKey)
         {
-            Boolean ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            Boolean ReturnValue = false;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-//          TLogging.LogAtLevel(6, "Called HasPartnerLocationOtherPartnerReferences", TLoggingType.ToLogfile);
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-            try
-            {
-                ReturnValue = TPPartnerAddressAggregate.CheckHasPartnerLocationOtherPartnerReferences(FPartnerKey,
-                    ASiteKey,
-                    ALocationKey,
-                    ReadTransaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.HasPartnerLocationOtherPartnerReferences: committed own transaction.");
-                }
-            }
+                    ReturnValue = TPPartnerAddressAggregate.CheckHasPartnerLocationOtherPartnerReferences(FPartnerKey,
+                        ASiteKey,
+                        ALocationKey,
+                        ReadTransaction);
+                });
+
             return ReturnValue;
         }
 
@@ -3472,35 +3401,24 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public PPartnerGiftDestinationTable GetCurrentAndFutureGiftDestinationData(long AFamilyKey)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             PPartnerGiftDestinationTable ReturnValue = new PPartnerGiftDestinationTable();
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            try
-            {
-                PPartnerGiftDestinationTable GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPPartner(AFamilyKey, ReadTransaction);
-
-                // find which records are current or future
-                foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
+                delegate
                 {
-                    if (Row.IsDateExpiresNull() || ((Row.DateExpires >= DateTime.Today) && (Row.DateEffective != Row.DateExpires)))
+                    PPartnerGiftDestinationTable GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPPartner(AFamilyKey, ReadTransaction);
+
+                    // find which records are current or future
+                    foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
                     {
-                        ReturnValue.LoadDataRow(Row.ItemArray, true);
+                        if (Row.IsDateExpiresNull() || ((Row.DateExpires >= DateTime.Today) && (Row.DateEffective != Row.DateExpires)))
+                        {
+                            ReturnValue.LoadDataRow(Row.ItemArray, true);
+                        }
                     }
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetGiftDestinationData: committed own transaction.");
-                }
-            }
+                });
 
             return ReturnValue;
         }

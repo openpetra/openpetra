@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,14 +53,14 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         public static void RefreshOutreachCode(Int64 AConferenceKey)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
             PcConferenceTable ConferenceTable;
             PUnitTable UnitTable;
             PmShortTermApplicationTable ShortTermAppTable;
             ConferenceApplicationTDS MainDS;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -113,7 +113,7 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         public static void RefreshAttendees(Int64 AConferenceKey)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
             PcConferenceTable ConferenceTable;
             PUnitTable UnitTable;
@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MConference.Applications
             // make sure outreach codes are up to date in case it has changed in Unit record
             RefreshOutreachCode(AConferenceKey);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

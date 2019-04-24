@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, petrih, andreww
+//       christiank, petrih, andreww, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,13 +54,11 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="APartnerKey"></param>
         /// <param name="ALastContactDate"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         public static void GetLastContactDate(Int64 APartnerKey, out DateTime ALastContactDate,
             TDataBase ADataBase = null)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DataSet LastContactDS;
             PContactLogRow ContactDR;
@@ -69,8 +67,8 @@ namespace Ict.Petra.Server.MPartner.Common
             LastContactDS = new DataSet("LastContactDate");
             LastContactDS.Tables.Add(new PContactLogTable());
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.Connect("GetLastContactDate", ADataBase);
+            db.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

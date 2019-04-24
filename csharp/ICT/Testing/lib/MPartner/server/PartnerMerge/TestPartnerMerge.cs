@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -72,6 +72,7 @@ namespace Tests.MPartner.Server.PartnerMerge
     {
         private bool[] FCategories;
         private bool DifferentFamilies = false;
+        private TDataBase FDataBase = null;
 
         /// <summary>
         /// use automatic property to avoid compiler warning about unused variable FServerManager
@@ -89,12 +90,14 @@ namespace Tests.MPartner.Server.PartnerMerge
             new TLogging("../../log/TestServer.log");
             FServerManager = TPetraServerConnector.Connect("../../etc/TestServer.config");
 
-            FCategories = new bool[20];
+            FCategories = new bool[21];
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 21; i++)
             {
                 FCategories[i] = true;
             }
+
+            FDataBase = DBAccess.Connect("PartnerMergeTest");
         }
 
         /// <summary>
@@ -117,7 +120,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FamilyMemberPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two new Partners
@@ -139,9 +142,9 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FamilyMemberPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FamilyMemberPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -162,10 +165,10 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Family Partner with one family member and one new Church Partner
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
             PFamilyRow FromPartnerRow = (PFamilyRow)MainDS.PFamily.Rows[0];
             PPersonRow FamilyMember = (PPersonRow)MainDS.PPerson.Rows[0];
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -197,7 +200,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             long TestPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Unit Partners and a Family Partner
@@ -210,7 +213,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.UNIT, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -222,11 +225,10 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Secondary Asserts: Test that the data was merged correctly!
             TestMergeTwoUnits_SecondaryAsserts(FromPartnerKey, ToPartnerKey, TestPartnerKey, ref UIConnector);
 
-
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(TestPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(TestPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -247,8 +249,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Unit Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -278,7 +280,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Units failed: " + VerificationResult.BuildVerificationResultString());
 
             // Create a Family record to be able to test later that the FieldKey (which is referencing p_unit) is changed
-            PPartnerRow TestPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow TestPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
             Assert.That(TestPartnerRow, Is.Not.Null);
 
             ATestPartnerKey = TestPartnerRow.PartnerKey;
@@ -307,12 +309,14 @@ namespace Tests.MPartner.Server.PartnerMerge
             ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PUnit.Merge(PUnitAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PUnit.Merge(PUnitAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -355,7 +359,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -367,7 +371,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.UNIT, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -377,8 +381,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Unit to Church");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -395,8 +399,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Unit Partner and one new Church Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -425,7 +429,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -437,7 +441,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.UNIT, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -447,8 +451,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Unit to Venue");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -465,8 +469,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Unit Partner and one new Venue Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -495,7 +499,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -507,7 +511,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.UNIT, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -517,8 +521,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Unit to Family");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -535,8 +539,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Unit Partner and one new Family Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -566,7 +570,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             long ToFamilyKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners and a Family Partner
@@ -578,7 +582,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.UNIT, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -588,8 +592,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Unit to Person");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -610,9 +614,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Unit Partner and one new Person Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
 
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
 
             PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
             PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
@@ -646,7 +650,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -658,7 +662,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.UNIT, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -668,8 +672,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Unit to Organisation");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -686,8 +690,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Unit Partner and one new Organisation Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -717,7 +721,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -729,7 +733,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.UNIT, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -739,8 +743,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Unit to Bank");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -757,8 +761,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Unit Partner and one new Bank Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -787,7 +791,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Church Partners
@@ -799,7 +803,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.CHURCH, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -813,8 +817,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -831,8 +835,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Church Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -871,11 +875,13 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoChurches_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -914,7 +920,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create new Partners
@@ -926,7 +932,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.CHURCH, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -940,8 +946,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -958,8 +964,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -999,12 +1005,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeChurchToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -1043,7 +1051,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create new Partners
@@ -1055,7 +1063,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.CHURCH, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1069,8 +1077,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1087,8 +1095,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create new Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1126,12 +1134,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeChurchToFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -1170,7 +1180,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1182,7 +1192,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.CHURCH, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1192,8 +1202,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Church to Venue");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1210,8 +1220,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Church Partner and one new Venue Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1241,7 +1251,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             long ToFamilyKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners and a Family Partner
@@ -1253,7 +1263,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.CHURCH, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1263,8 +1273,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Church to Person");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1285,9 +1295,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Church Partner and one new Person Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
 
             PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
             PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
@@ -1321,7 +1331,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1333,7 +1343,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.CHURCH, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1343,8 +1353,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Church to Unit");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1361,8 +1371,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Church Partner and one new Unit Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1391,7 +1401,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1403,7 +1413,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.CHURCH, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1413,8 +1423,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Church to Bank");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1431,8 +1441,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Church Partner and one new Bank Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1461,7 +1471,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Venue Partners
@@ -1473,7 +1483,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.VENUE, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1487,8 +1497,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1505,8 +1515,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Venue Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1523,8 +1533,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.That(ToVenueRow, Is.Not.Null);
 
             // Modify records so that they contain different data
-            ToPartnerRow.PartnerShortName = "";
-            ToVenueRow.VenueCode = "";
+            //ToPartnerRow.PartnerShortName = "";
+            //ToVenueRow.VenueCode = "";
 
             // Submit the two new Venue Partner records to the database
             ResponseDS = new PartnerEditTDS();
@@ -1544,11 +1554,13 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoVenues_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PVenue.Merge(PVenueAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PVenue.Merge(PVenueAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -1567,10 +1579,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
 
             // Checking the two Venues
-            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestVenue", ToPartnerRow.PartnerShortName, "merge two Venues");
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestVenue", FromPartnerRow.PartnerShortName, "merge two Venues");
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two Venues");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two Venues");
-            Assert.AreEqual('V' + AToPartnerKey.ToString().Substring(1), ToVenueRow.VenueCode, "merge two Venues");
+            // is this correct??? or should the from VenueCode be used?
+            Assert.AreEqual("TEST" + AToPartnerKey.ToString(), ToVenueRow.VenueCode, "merge two Venues");
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge two Venues");
@@ -1587,7 +1600,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1599,7 +1612,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.VENUE, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1609,8 +1622,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Venue to Church");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1627,8 +1640,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Venue Partner and one new Church Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1657,7 +1670,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1669,7 +1682,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.VENUE, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1679,8 +1692,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Venue to Unit");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1697,8 +1710,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Venue Partner and one new Unit Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1727,7 +1740,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1739,7 +1752,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.VENUE, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1749,8 +1762,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Venue to Family");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1767,8 +1780,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Venue Partner and one new Family Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1798,7 +1811,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             long ToFamilyKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners and a Family Partner
@@ -1810,7 +1823,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.VENUE, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1820,8 +1833,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Venue to Person");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1842,9 +1855,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Venue Partner and one new Person Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
 
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
 
             PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
             PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
@@ -1878,7 +1891,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1890,7 +1903,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.VENUE, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1900,8 +1913,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Venue to Organisation");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1918,8 +1931,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Venue Partner and one new Organisation Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -1949,7 +1962,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -1961,7 +1974,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.VENUE, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -1971,8 +1984,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Venue to Bank");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -1989,8 +2002,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Venue Partner and one new Bank Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -2019,7 +2032,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Family Partners
@@ -2031,7 +2044,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.FAMILY, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -2045,8 +2058,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2063,8 +2076,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Family Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -2104,11 +2117,13 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoFamilies_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -2147,7 +2162,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Family Partners
@@ -2159,7 +2174,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.FAMILY, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -2173,8 +2188,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2191,8 +2206,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Family Partner and one new Organisation Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -2231,12 +2246,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeFamilyToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -2275,7 +2292,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two new Partners
@@ -2287,7 +2304,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.FAMILY, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -2301,8 +2318,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2319,8 +2336,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Family Partner and one new Church Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -2358,12 +2375,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeFamilyToChurch_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -2402,7 +2421,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -2414,7 +2433,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.FAMILY, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -2424,8 +2443,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Family to Venue");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2442,8 +2461,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Family Partner and one new Venue Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -2473,7 +2492,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             long ToFamilyKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners and a Family Partner
@@ -2485,7 +2504,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.FAMILY, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -2495,8 +2514,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Family to Person");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2517,9 +2536,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Family Partner and one new Person Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
 
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
 
             PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
             PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
@@ -2553,7 +2572,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -2565,7 +2584,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.FAMILY, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -2575,8 +2594,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Family to Unit");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2593,8 +2612,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Family Partner and one new Unit Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -2623,7 +2642,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -2635,7 +2654,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.FAMILY, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -2645,8 +2664,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Family to Bank");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2663,8 +2682,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Family Partner and one new Bank Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -2697,7 +2716,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long[] SiteKey;
             int[] LocationKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
@@ -2723,7 +2742,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                FDataBase);
 
             //
             // Assert
@@ -2735,11 +2755,10 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Secondary Asserts: Test that the data was merged correctly!
             TestMergeTwoPersonsFromSameFamily_SecondaryAsserts(FromPartnerKey, ToPartnerKey, ref UIConnector);
 
-
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2760,7 +2779,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // create two new Person Partners, one family and one location
-            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS, FDataBase);
             PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
@@ -2816,11 +2835,13 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoPersonsFromSameFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -2865,7 +2886,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long[] SiteKey;
             int[] LocationKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
@@ -2887,7 +2908,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                FDataBase);
 
             //
             // Assert
@@ -2899,12 +2921,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Secondary Asserts: Test that the data was merged correctly!
             TestMergeTwoPersonsFromDifferentFamilies_SecondaryAsserts(FromPartnerKey, ToPartnerKey, FromFamilyPartnerKey, ref UIConnector);
 
-
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FromFamilyPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToFamilyPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FromFamilyPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToFamilyPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -2931,7 +2952,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // create one new Person Partner, one family and one location
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
             PPartnerRow FromFamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PLocationRow LocationRow = (PLocationRow)MainDS.PLocation.Rows[0];
@@ -2941,7 +2962,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
             // create one new Person Partner, one family and one location
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
             PPartnerRow ToFamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[3];
 
@@ -3003,12 +3024,14 @@ namespace Tests.MPartner.Server.PartnerMerge
             ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3051,7 +3074,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Organisation Partners
@@ -3072,7 +3095,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                FDataBase);
 
             //
             // Assert
@@ -3084,10 +3108,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Secondary Asserts: Test that the data was merged correctly!
             TestMergeTwoOrganisations_SecondaryAsserts(FromPartnerKey, ToPartnerKey, ref UIConnector);
 
-
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3104,8 +3127,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Organisation Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -3143,11 +3166,13 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeTwoOrganisations_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3184,7 +3209,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -3196,7 +3221,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.ORGANISATION, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3210,8 +3235,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3228,8 +3253,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -3268,12 +3293,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeOrganisationToChurch_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3313,7 +3340,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -3325,7 +3352,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.ORGANISATION, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3339,8 +3366,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3357,8 +3384,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -3397,12 +3424,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeOrganisationToFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3442,7 +3471,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -3454,7 +3483,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.ORGANISATION, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3468,8 +3497,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3486,8 +3515,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -3526,12 +3555,14 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeOrganisationToBank_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBank.Merge(PBankAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            MainDS.PBank.Merge(PBankAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3570,7 +3601,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -3582,7 +3613,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.ORGANISATION, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3592,8 +3623,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Organisation to Venue");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3610,8 +3641,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Organisation Partner and one new Venue Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -3642,7 +3673,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             long ToFamilyKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners and a Family Partner
@@ -3654,7 +3685,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.ORGANISATION, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3664,8 +3695,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Organisation to Person");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3686,9 +3717,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Organisation Partner and one new Person Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
 
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
 
             PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
             PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
@@ -3723,7 +3754,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -3735,7 +3766,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.ORGANISATION, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3745,8 +3776,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Organisation to Unit");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3763,8 +3794,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Organisation Partner and one new Unit Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -3795,7 +3826,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             int BankingDetailsKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Bank Partners
@@ -3807,7 +3838,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.BANK, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3821,8 +3852,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3843,9 +3874,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Bank Partners and a new BankingDetails record
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
-            PartnerEditTDSPBankingDetailsRow BankingDetailsRow = TCreateTestPartnerData.CreateNewBankingRecords(FromPartnerRow.PartnerKey, MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
+            PartnerEditTDSPBankingDetailsRow BankingDetailsRow = TCreateTestPartnerData.CreateNewBankingRecords(FromPartnerRow.PartnerKey, MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -3891,11 +3922,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBank.Merge(PBankAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBankingDetails.Merge(PBankingDetailsAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PBank.Merge(PBankAccess.LoadAll(Transaction));
+            MainDS.PBankingDetails.Merge(PBankingDetailsAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -3935,7 +3970,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -3947,7 +3982,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.BANK, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -3961,8 +3996,8 @@ namespace Tests.MPartner.Server.PartnerMerge
 
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -3979,8 +4014,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create two new Partners
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -4020,12 +4055,15 @@ namespace Tests.MPartner.Server.PartnerMerge
         void TestMergeBankToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PBank.Merge(PBankAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PBank.Merge(PBankAccess.LoadAll(Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4064,7 +4102,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -4076,7 +4114,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.BANK, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -4086,8 +4124,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Bank to Church");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4104,8 +4142,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Bank Partner and one new Church Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -4134,7 +4172,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -4146,7 +4184,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.BANK, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -4156,8 +4194,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Bank to Venue");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4174,8 +4212,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Bank Partner and one new Venue Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -4204,7 +4242,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -4216,7 +4254,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.BANK, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -4226,8 +4264,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Bank to Family");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4244,8 +4282,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Bank Partner and one new Family Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -4275,7 +4313,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long ToPartnerKey;
             long ToFamilyKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners and a Family Partner
@@ -4287,7 +4325,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.BANK, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -4297,8 +4335,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Bank to Person");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4319,9 +4357,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Bank Partner and one new Person Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
 
-            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS, FDataBase);
 
             PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
             PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
@@ -4355,7 +4393,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long FromPartnerKey;
             long ToPartnerKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Partners
@@ -4367,7 +4405,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
+                TPartnerClass.BANK, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults, FDataBase);
 
             //
             // Assert
@@ -4377,8 +4415,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(false, result, "Merging Bank to Unit");
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4395,8 +4433,8 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // Create one new Bank Partner and one new Unit Partner
-            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
-            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS, FDataBase);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FromPartnerRow, Is.Not.Null);
@@ -4431,12 +4469,16 @@ namespace Tests.MPartner.Server.PartnerMerge
             long[] SiteKeys = new long[0];
             int[] LocationKeys = new int[0];
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.Serializable);
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
             //
             TestMergeGiftInfo_Arrange(out FromPartnerKey, out ToPartnerKey, out FamilyPartnerKey, out LedgerNumber, out BatchNumber, UIConnector);
+
+            Transaction.Commit();
 
             //
             // Act: Merge the two Person Partners!
@@ -4452,7 +4494,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                FDataBase);
 
             //
             // Assert
@@ -4470,9 +4513,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             GiftDS.AGift.Rows[0].Delete();
             GiftDS.AGiftBatch.Rows[0].Delete();
             TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4494,11 +4537,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             GiftBatchTDS GiftDS = new GiftBatchTDS();
 
             // create two new Person Partners, one family and GiftInfo for From Partner
-            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS, FDataBase);
             PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
-            AGiftBatchRow GiftBatchRow = TCreateTestPartnerData.CreateNewGiftInfo(FromPartnerRow.PartnerKey, ref GiftDS);
+            AGiftBatchRow GiftBatchRow = TCreateTestPartnerData.CreateNewGiftInfo(FromPartnerRow.PartnerKey, ref GiftDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FamilyPartnerRow, Is.Not.Null);
@@ -4523,7 +4566,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
             // Submit the new Gift Info records to the database
-            Result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+            Result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult, FDataBase);
 
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
@@ -4547,12 +4590,15 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
             GiftBatchTDS GiftDS = new GiftBatchTDS();
 
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            GiftDS.AGift.Merge(AGiftAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, DBAccess.GDBAccessObj.Transaction));
-            GiftDS.AGiftDetail.Merge(AGiftDetailAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            GiftDS.AGift.Merge(AGiftAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, Transaction));
+            GiftDS.AGiftDetail.Merge(AGiftDetailAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4574,7 +4620,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftRow.DonorKey, "merge gift info");
-            Assert.AreEqual(0, GiftDetailRow.RecipientKey, "merge gift info");
+            Assert.AreEqual(43000000, GiftDetailRow.RecipientKey, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientLedgerNumber, "merge gift info");
 
             // Checking the MergeTable
@@ -4598,7 +4644,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             long[] SiteKeys = new long[0];
             int[] LocationKeys = new int[0];
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.Serializable);
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
@@ -4609,6 +4657,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 out LedgerNumber,
                 out BatchNumber,
                 UIConnector);
+
+            Transaction.Commit();
 
             //
             // Act: Merge the two Person Partners!
@@ -4624,7 +4674,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                FDataBase);
 
             //
             // Assert
@@ -4642,9 +4693,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             GiftDS.ARecurringGift.Rows[0].Delete();
             GiftDS.ARecurringGiftBatch.Rows[0].Delete();
             TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4670,11 +4721,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             GiftBatchTDS GiftDS = new GiftBatchTDS();
 
             // create two new Person Partners, one family and GiftInfo for From Partner
-            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS, FDataBase);
             PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
-            ARecurringGiftBatchRow GiftBatchRow = TCreateTestPartnerData.CreateNewRecurringGiftInfo(FromPartnerRow.PartnerKey, ref GiftDS);
+            ARecurringGiftBatchRow GiftBatchRow = TCreateTestPartnerData.CreateNewRecurringGiftInfo(FromPartnerRow.PartnerKey, ref GiftDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FamilyPartnerRow, Is.Not.Null);
@@ -4699,7 +4750,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
             // Submit the new Gift Info records to the database
-            Result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+            Result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult, FDataBase);
 
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
@@ -4722,15 +4773,18 @@ namespace Tests.MPartner.Server.PartnerMerge
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
             GiftBatchTDS GiftDS = new GiftBatchTDS();
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
             GiftDS.ARecurringGift.Merge(ARecurringGiftAccess.LoadViaARecurringGiftBatch(ALedgerNumber, ABatchNumber,
-                    DBAccess.GDBAccessObj.Transaction));
+                    Transaction));
             GiftDS.ARecurringGiftDetail.Merge(ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(ALedgerNumber, ABatchNumber,
-                    DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+                    Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+
+            Transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4752,7 +4806,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftRow.DonorKey, "merge gift info");
-            Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientKey, "merge gift info");
+            Assert.AreEqual(43000000, GiftDetailRow.RecipientKey, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientLedgerNumber, "merge gift info");
 
             // Checking the MergeTable
@@ -4776,7 +4830,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             long[] SiteKeys = new long[0];
             int[] LocationKeys = new int[0];
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
@@ -4797,7 +4851,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                FDataBase);
 
             //
             // Assert
@@ -4812,13 +4867,15 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Cleanup: Delete test records
             List <int>DocumentID = new List <int>();
             DocumentID.Add(APDocumentID);
-            TAPTransactionWebConnector.CancelAPDocuments(LedgerNumber, DocumentID, true);
-            AccountsPayableTDS APDS = TAPTransactionWebConnector.LoadAApSupplier(LedgerNumber, ToPartnerKey);
+            TAPTransactionWebConnector.CancelAPDocuments(LedgerNumber, DocumentID, true, FDataBase);
+            AccountsPayableTDS APDS = TAPTransactionWebConnector.LoadAApSupplier(LedgerNumber, ToPartnerKey, FDataBase);
             APDS.AApSupplier.Rows[0].Delete();
-            AApSupplierAccess.SubmitChanges(APDS.AApSupplier, DBAccess.GDBAccessObj.Transaction);
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.Serializable);            
+            AApSupplierAccess.SubmitChanges(APDS.AApSupplier, Transaction);
+            Transaction.Commit();
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult, FDataBase);
         }
 
         /// <summary>
@@ -4840,11 +4897,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             AccountsPayableTDS APDS = new AccountsPayableTDS();
 
             // create two new Person Partners, one family and APInfo for From Partner
-            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS, FDataBase);
             PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
-            AApDocumentRow APDocumentRow = TCreateTestPartnerData.CreateNewAPInfo(FromPartnerRow.PartnerKey, ref APDS);
+            AApDocumentRow APDocumentRow = TCreateTestPartnerData.CreateNewAPInfo(FromPartnerRow.PartnerKey, ref APDS, FDataBase);
 
             // Guard Assertions
             Assert.That(FamilyPartnerRow, Is.Not.Null);
@@ -4868,7 +4925,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
             // Submit the new Supplier record to the database
-            TSupplierEditUIConnector Connector = new TSupplierEditUIConnector();
+            TSupplierEditUIConnector Connector = new TSupplierEditUIConnector(FDataBase);
             Result = Connector.SubmitChanges(ref APDS);
 
             // Guard Assertion
@@ -4876,7 +4933,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for AP Info failed");
 
             // Submit the new Document record to the database
-            Result = TAPTransactionWebConnector.SaveAApDocument(ref APDS, out VerificationResult);
+            Result = TAPTransactionWebConnector.SaveAApDocument(ref APDS, out VerificationResult, FDataBase);
 
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
@@ -4895,12 +4952,20 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
             AccountsPayableTDS APDS = new AccountsPayableTDS();
 
+            bool NewTransaction;
+            TDBTransaction Transaction = FDataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            APDS.AApSupplier.Merge(AApSupplierAccess.LoadViaPPartner(AToPartnerKey, DBAccess.GDBAccessObj.Transaction));
-            APDS.AApDocument.Merge(AApDocumentAccess.LoadByPrimaryKey(AAPDocumentID, DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(Transaction));
+            APDS.AApSupplier.Merge(AApSupplierAccess.LoadViaPPartner(AToPartnerKey, Transaction));
+            APDS.AApDocument.Merge(AApDocumentAccess.LoadByPrimaryKey(AAPDocumentID, Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction);
+
+            if (NewTransaction)
+            {
+                Transaction.Rollback();
+            }
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });
@@ -4943,7 +5008,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             int[] LocationKeys = new int[0];
             int DataLabelKey;
             TVerificationResultCollection VerificationResult;
-            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector(FDataBase);
 
             //
             // Arrange: Create two Person Partners in one Family Partner with one Location
@@ -4964,7 +5029,8 @@ namespace Tests.MPartner.Server.PartnerMerge
                 -1,
                 FCategories,
                 ref DifferentFamilies,
-                ref verificationResults);
+                ref verificationResults,
+                FDataBase);
 
             //
             // Assert
@@ -4977,12 +5043,15 @@ namespace Tests.MPartner.Server.PartnerMerge
             TestMergePMData_SecondaryAsserts(FromPartnerKey, ToPartnerKey, DataLabelKey, ref UIConnector);
 
             // Cleanup: Delete test records
-            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
-            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
-            PDataLabelTable DataLabelTable = PDataLabelAccess.LoadByPrimaryKey(DataLabelKey, DBAccess.GDBAccessObj.Transaction);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult, FDataBase);
+            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult, FDataBase);
+            TDBTransaction Transaction = FDataBase.BeginTransaction(IsolationLevel.Serializable);
+            PDataLabelTable DataLabelTable = PDataLabelAccess.LoadByPrimaryKey(DataLabelKey, Transaction);
             DataLabelTable.Rows[0].Delete();
-            PDataLabelAccess.SubmitChanges(DataLabelTable, DBAccess.GDBAccessObj.Transaction);
+            PDataLabelAccess.SubmitChanges(DataLabelTable, Transaction);
+
+            Transaction.Commit();
         }
 
         /// <summary>
@@ -5003,11 +5072,11 @@ namespace Tests.MPartner.Server.PartnerMerge
             IndividualDataTDS IndividualDS = new IndividualDataTDS();
 
             // create two new Person Partners, one family and PM Data for both Partners
-            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS, FDataBase);
             PPartnerRow FamilyPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[1];
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows[2];
-            PDataLabelTable DataLabel = TCreateTestPartnerData.CreateNewPMData(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey, IndividualDS);
+            PDataLabelTable DataLabel = TCreateTestPartnerData.CreateNewPMData(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey, IndividualDS, FDataBase);
 
             PmPassportDetailsRow row = (PmPassportDetailsRow)IndividualDS.PmPassportDetails.Rows[0];
 
@@ -5033,14 +5102,17 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
+            TDBTransaction transaction = FDataBase.BeginTransaction(IsolationLevel.Serializable);
+
             // Submit the new DataLabel record to the database
-            PDataLabelAccess.SubmitChanges(DataLabel, DBAccess.GDBAccessObj.Transaction);
+            PDataLabelAccess.SubmitChanges(DataLabel, transaction);
+            transaction.Commit();
 
             // Submit the new Document record to the database
             MainDS.Merge(IndividualDS);
             Result = TIndividualDataWebConnector.SubmitChangesServerSide(ref IndividualDS,
                 ref MainDS,
-                DBAccess.GDBAccessObj.Transaction,
+                transaction,
                 out VerificationResult);
 
             // Guard Assertion
@@ -5060,13 +5132,16 @@ namespace Tests.MPartner.Server.PartnerMerge
             PartnerEditTDS MainDS = new PartnerEditTDS();
             IndividualDataTDS IndividualDS = new IndividualDataTDS();
 
+            TDBTransaction transaction = FDataBase.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Read Partners from the database after they have been merged
-            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
-            IndividualDS.PDataLabelValuePartner.Merge(PDataLabelValuePartnerAccess.LoadViaPDataLabel(ADataLabelKey, DBAccess.GDBAccessObj.Transaction));
-            IndividualDS.PmPassportDetails.Merge(PmPassportDetailsAccess.LoadViaPPerson(AToPartnerKey, DBAccess.GDBAccessObj.Transaction));
-            IndividualDS.PmPersonalData.Merge(PmPersonalDataAccess.LoadViaPPerson(AToPartnerKey, DBAccess.GDBAccessObj.Transaction));
-            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, DBAccess.GDBAccessObj.Transaction);
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(transaction));
+            IndividualDS.PDataLabelValuePartner.Merge(PDataLabelValuePartnerAccess.LoadViaPDataLabel(ADataLabelKey, transaction));
+            IndividualDS.PmPassportDetails.Merge(PmPassportDetailsAccess.LoadViaPPerson(AToPartnerKey, transaction));
+            IndividualDS.PmPersonalData.Merge(PmPersonalDataAccess.LoadViaPPerson(AToPartnerKey, transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(AFromPartnerKey, transaction);
+            transaction.Rollback();
 
             PPartnerRow FromPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AFromPartnerKey });
             PPartnerRow ToPartnerRow = (PPartnerRow)MainDS.PPartner.Rows.Find(new object[] { AToPartnerKey });

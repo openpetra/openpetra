@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -117,13 +117,13 @@ namespace Ict.Petra.Server.MFinance.queries
          *  string SqlStmt = TDataBase.ReadSqlFile("ICH.HOSAReportGiftSummary.sql", Defines);
          *  DataTable resultTable = null;
          *
-         *  TDBTransaction Transaction = null;
-         *  DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref Transaction,
+         *  TDBTransaction Transaction = new TDBTransaction();
+         *  DBAccess.ReadTransaction(ref Transaction,
          *      delegate
          *      {
          *
          *          // now run the database query
-         *          resultTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "result", Transaction,
+         *          resultTable = Transaction.DataBaseObj.SelectDT(SqlStmt, "result", Transaction,
          *              SqlParameterList.ToArray());
          *      });
          *  // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
@@ -212,13 +212,13 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                          " AND motive.a_receipt_l=true");
             DataTable tempTbl = null;
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TotalGiftsThroughFieldMonth");
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
-                    tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                    tempTbl = db.SelectDT(SqlQuery, "result", Transaction);
                 });
 
             DataTable resultTable = new DataTable();
@@ -350,13 +350,13 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_receipt_l=true");
 
             DataTable tempTbl = null;
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TotalGiftsThroughFieldYear");
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
-                    tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                    tempTbl = db.SelectDT(SqlQuery, "result", Transaction);
                 });
 
             DataTable resultTable = new DataTable();
@@ -542,13 +542,13 @@ namespace Ict.Petra.Server.MFinance.queries
                     +
                     "ORDER BY recipient.p_partner_short_name_c");
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SelectGiftRecipients");
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
-                    TotalGiftsPerRecipient = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
+                    TotalGiftsPerRecipient = db.SelectDT(SqlQuery, "result", Transaction);
                 });
 
             //

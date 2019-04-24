@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,27 +44,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// calculate the report
         public static HtmlDocument Calculate(
             string AHTMLReportDefinition,
-            TParameterList parameterlist)
+            TParameterList parameterlist,
+            TDBTransaction ATransaction)
         {
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
-
-            bool NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                out NewTransaction,
-                "PartnerBySpecialTypesRead");
 
             // get all the partners
             string sql = templateProcessor.GetSQLQuery("SelectPartners");
 
-            DataTable partners = DBAccess.GDBAccessObj.SelectDT(sql, "transactions", ReadTransaction);
+            DataTable partners = ATransaction.DataBaseObj.SelectDT(sql, "transactions", ATransaction);
 
             // TODO: get best address
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
 
             // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();

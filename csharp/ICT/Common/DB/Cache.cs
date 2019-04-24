@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -70,14 +70,12 @@ namespace Ict.Common.DB.DBCaching
         /// <param name="ATable">can already have some prepared columns; optional parameter, can be null
         /// </param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new DataBase connection</param>
         /// <returns>void</returns>
         public DataSet GetDataSet(String sql, OdbcParameter[] AParameters, DataTable ATable, TDataBase ADataBase = null)
         {
-            TDataBase DBAccessObj = DBAccess.GetDBAccessObj(ADataBase);
-            TDBTransaction ReadTransaction;
+            TDataBase DBAccessObj = DBAccess.Connect("GetDataSet", ADataBase);
+            TDBTransaction ReadTransaction = new TDBTransaction();
             Boolean NewTransaction = false;
             DataSet newDataSet;
 
@@ -135,7 +133,6 @@ namespace Ict.Common.DB.DBCaching
             try
             {
                 ReadTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 if (ATable == null)
@@ -152,9 +149,9 @@ namespace Ict.Common.DB.DBCaching
             }
             finally
             {
-                if (NewTransaction)
+                if (NewTransaction && (ReadTransaction != null))
                 {
-                    DBAccessObj.CommitTransaction();
+                    ReadTransaction.Rollback();
                 }
             }
             storedDataSet.Add(newDataSet);
@@ -174,9 +171,7 @@ namespace Ict.Common.DB.DBCaching
         /// <param name="sql"></param>
         /// <param name="AParameters">odbc parameters</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new DataBase connection</param>
         /// <returns></returns>
         public DataSet GetDataSet(String sql, OdbcParameter[] AParameters, TDataBase ADataBase = null)
         {
@@ -194,9 +189,7 @@ namespace Ict.Common.DB.DBCaching
         /// <param name="ATable">can already have some prepared columns; optional parameter, can be nil
         /// </param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new DataBase connection</param>
         /// <returns>void</returns>
         public DataTable GetDataTable(string sql, OdbcParameter[] AParameters, DataTable ATable, TDataBase ADataBase = null)
         {
@@ -212,9 +205,7 @@ namespace Ict.Common.DB.DBCaching
         /// <param name="sql"></param>
         /// <param name="AParameters">odbc parameters</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new DataBase connection</param>
         /// <returns></returns>
         public DataTable GetDataTable(String sql, OdbcParameter[] AParameters = null, TDataBase ADataBase = null)
         {
@@ -240,9 +231,7 @@ namespace Ict.Common.DB.DBCaching
         /// <param name="sql"></param>
         /// <param name="AParameters">odbc parameters</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new DataBase connection</param>
         /// <returns>void</returns>
         public ArrayList GetStringList(String sql, OdbcParameter[] AParameters = null, TDataBase ADataBase = null)
         {

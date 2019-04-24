@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -111,9 +111,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                 (IncludeUnposted) ? " AND (PUB_a_gift_batch.a_batch_status_c = 'Posted' OR PUB_a_gift_batch.a_batch_status_c = 'Unposted')"
                 : " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'";
 
+            TDataBase db = DBAccess.Connect("ExportAllGiftBatchData");
+
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.ReadTransaction(
                     ref FTransaction,
                     delegate
                     {
@@ -163,7 +165,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 throw new ApplicationException(Catalog.GetString("Export of Batches was cancelled by user"));
                             }
 
-                            DBAccess.GDBAccessObj.Select(FMainDS,
+                            db.Select(FMainDS,
                                 sqlStatement,
                                 FMainDS.AGiftBatch.TableName,
                                 FTransaction
@@ -186,7 +188,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                            ", " +
                                            AGiftTable.GetGiftTransactionNumberDBName();
 
-                            DBAccess.GDBAccessObj.Select(FMainDS,
+                            db.Select(FMainDS,
                                 sqlStatement,
                                 FMainDS.AGift.TableName,
                                 FTransaction);
@@ -204,7 +206,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             sqlStatement = "SELECT DISTINCT PUB_a_gift_detail.* " + StatementCore;
 
-                            DBAccess.GDBAccessObj.Select(FMainDS,
+                            db.Select(FMainDS,
                                 sqlStatement,
                                 FMainDS.AGiftDetail.TableName,
                                 FTransaction);
@@ -409,9 +411,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                 // Get Partner ShortName
                 PPartnerTable pt = null;
 
-                TDBTransaction Transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                TDBTransaction Transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("PartnerShortName");
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {

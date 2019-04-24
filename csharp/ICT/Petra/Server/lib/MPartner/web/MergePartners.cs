@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,6 +99,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ACategories">Array determines which sections will be merged</param>
         /// <param name="ADifferentFamilies">True if two persons have been merged from different families</param>
         /// <param name="AVerificationResults">An empty verification results collection that may be populated with messages for the client</param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if the two partners were merged and the transaction committed successfully</returns>
         [RequireModulePermission("PTNRUSER")]
         public static bool MergeTwoPartners(long AFromPartnerKey,
@@ -111,7 +112,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             int AMainBankingDetailsKey,
             bool[] ACategories,
             ref bool ADifferentFamilies,
-            ref TVerificationResultCollection AVerificationResults)
+            ref TVerificationResultCollection AVerificationResults,
+            TDataBase ADataBase = null)
         {
             decimal TrackerPercent;
             int NumberOfCategories = 0;
@@ -137,10 +139,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Merging Partners"), 100);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            TDataBase db = DBAccess.Connect("MergeTwoPartners", ADataBase);
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -806,6 +809,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             string msg =
                                 string.Format("An exception occurred during a merge of two partners ({0}->{1}): ", AFromPartnerKey, AToPartnerKey);
+                            TLogging.Log(e.ToString());
                             msg += e.Message;
                             verificationResults.Add(new TVerificationResult(ResultContext, msg, TResultSeverity.Resv_Critical));
                             verificationResults.Add(new TVerificationResult(ResultContext,
@@ -1326,11 +1330,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             Parameters[0] = new OdbcParameter("PartnerKey", OdbcType.Int);
             Parameters[0].Value = AFromPartnerKey;
 
-            DBAccess.GDBAccessObj.SelectDT(FromContactDetails, Query, ATransaction, Parameters);
+            ATransaction.DataBaseObj.SelectDT(FromContactDetails, Query, ATransaction, Parameters);
 
             Parameters[0].Value = AToPartnerKey;
 
-            DBAccess.GDBAccessObj.SelectDT(ToContactDetails, Query, ATransaction, Parameters);
+            ATransaction.DataBaseObj.SelectDT(ToContactDetails, Query, ATransaction, Parameters);
 
             // get max sequence numbers for each attribute
             List <string[]>MaxSequenceNumbers = new List <string[]>();

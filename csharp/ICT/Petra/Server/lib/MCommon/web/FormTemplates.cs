@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanb
+//       alanb, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -146,8 +146,8 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         private static bool UploadFormTemplate(String AFormCode, String AFormName, String ALanguageCode, String ATemplateText,
             String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
         {
-            TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
+            TDBTransaction Transaction = new TDBTransaction();
+            bool submitOK = false;
 
             string strSQL = String.Format("UPDATE PUB_{0} SET ", PFormTable.GetTableDBName());
 
@@ -163,16 +163,17 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
             strSQL += String.Format("{0}='{1}' AND ", PFormTable.GetFormNameDBName(), AFormName);
             strSQL += String.Format("{0}='{1}'", PFormTable.GetFormLanguageDBName(), ALanguageCode);
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
-                ref SubmissionOK,
+                ref submitOK,
                 delegate
                 {
-                    int nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, Transaction, null, true);
-                    SubmissionOK = (nRowsAffected == 1);
+                    int nRowsAffected = Transaction.DataBaseObj.ExecuteNonQuery(strSQL, Transaction, null, true);
+                    submitOK = (nRowsAffected == 1);
+
                 });
 
-            return SubmissionOK;
+            return submitOK;
         }
 
         /// <summary>
@@ -236,10 +237,10 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         /// </summary>
         private static PFormTable DownloadFormTemplate(String AFormCode, String AFormName, String ALanguageCode)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             PFormTable ReturnValue = new PFormTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -322,10 +323,9 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
                     TemplateRow.FormTypeCode = AFormTypeCode;
                 }
 
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                DBAccess.ReadTransaction(
                     ref Transaction,
                     delegate
                     {

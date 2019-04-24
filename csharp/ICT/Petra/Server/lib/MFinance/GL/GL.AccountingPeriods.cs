@@ -66,10 +66,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool GetCurrentPeriodDates(Int32 ALedgerNumber, out DateTime AStartDate, out DateTime AEndDate)
         {
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetCurrentPeriodDates");
             AAccountingPeriodTable AccountingPeriodTable = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -77,6 +78,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         LedgerTable[0].CurrentPeriod,
                         transaction);
                 });
+
+            db.CloseDBConnection();
             AStartDate = AccountingPeriodTable[0].PeriodStartDate;
             AEndDate = AccountingPeriodTable[0].PeriodEndDate;
             return true;
@@ -157,14 +160,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static Int32 GetNumberOfPeriods(Int32 ALedgerNumber)
         {
             Int32 returnValue = 0;
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetNumberOfPeriods");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
                     returnValue = LedgerTable[0].NumberOfAccountingPeriods;
                 });
+
+            db.CloseDBConnection();
 
             return returnValue;
         }
@@ -215,17 +221,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static System.DateTime GetPeriodEndDate(Int32 ALedgerNumber, System.Int32 AYear, System.Int32 ADiffPeriod,
-            System.Int32 APeriod)
-        {
-            return GetPeriodEndDate(ALedgerNumber, AYear, ADiffPeriod, APeriod, null);
-        }
-
-        /// <summary>
-        /// get the end date of the given period
-        /// </summary>
-        [NoRemoting]
-        public static System.DateTime GetPeriodEndDate(Int32 ALedgerNumber, System.Int32 AYear, System.Int32 ADiffPeriod,
-            System.Int32 APeriod, TDataBase ADataBase)
+            System.Int32 APeriod, TDataBase ADataBase = null)
         {
             System.Int32 RealYear = 0;
             System.Int32 RealPeriod = 0;
@@ -284,10 +280,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             DateTime StartDatePeriod = new DateTime();
             DateTime EndDatePeriod = new DateTime();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetPeriodDates");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -303,6 +299,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     StartDatePeriod = StartDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
                     EndDatePeriod = EndDatePeriod.AddMonths(-12 * (LedgerTable[0].CurrentFinancialYear - AYearNumber));
                 });
+
+            db.CloseDBConnection();
 
             AStartDatePeriod = StartDatePeriod;
             AEndDatePeriod = EndDatePeriod;
@@ -341,9 +339,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 yearDateBelongsTo = 99;
             DateTime yearStartDate = DateTime.Today;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("FindFinancialYearByDate");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
@@ -393,6 +392,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         yearDateBelongsTo--;
                     }
                 }); // Get NewOrExisting AutoReadTransaction
+
+            db.CloseDBConnection();
+
             //Set the year to return
             return yearDateBelongsTo;
         } // Find FinancialYear ByDate
@@ -427,8 +429,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             Int32 PeriodNumber = 0;
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ImportBudgets");
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -459,6 +462,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     PeriodNumber = AccountingPeriodRow.AccountingPeriodNumber;
                 });
 
+            db.CloseDBConnection();
+
             APeriodNumber = PeriodNumber;
 
             return true;
@@ -476,7 +481,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AIncludeNextYear,
             out String ADisplayMember, out String AValueMember)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             ALedgerTable LedgerTable = null;
 
             DataTable BatchYearTable = null;
@@ -504,10 +509,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ABatchTable.GetTableDBName(),
                     ABatchTable.GetLedgerNumberDBName());
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                "TAccountingPeriodsWebConnector.GetAvailableGLYears", out ReadTransaction,
+            TDataBase db = DBAccess.Connect("GetAvailableGLYears");
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
@@ -522,7 +525,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ADiffPeriod,
                         LedgerTable[0].NumberOfAccountingPeriods, ReadTransaction.DataBaseObj);
 
-                    BatchYearTable = DBAccess.GetDBAccessObj(ReadTransaction).SelectDT(sql, "BatchYearTable", ReadTransaction);
+                    BatchYearTable = db.SelectDT(sql, "BatchYearTable", ReadTransaction);
                 });
 
             foreach (DataRow row in BatchYearTable.Rows)
@@ -553,6 +556,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 resultRow[2] = CurrentYearEnd.ToString("dd-MMM-yyyy");
                 DatTable.Rows.InsertAt(resultRow, 0);
             }
+
+            db.CloseDBConnection();
 
             return DatTable;
         }
@@ -693,12 +698,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             AValueMember = "YearNumber";
             ADisplayMember = "YearEndDate";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetAvailableGLYearEnds");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -739,7 +744,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         currentYearEndDate = GetPeriodEndDate(ALedgerNumber,
                             currentFinancialYear,
                             ADiffPeriod,
-                            ledgerRow.NumberOfAccountingPeriods);
+                            ledgerRow.NumberOfAccountingPeriods,
+                            db);
 
                         //Filter to highest period number
                         AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
@@ -778,7 +784,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 ALedgerNumber,
                                 yearNumber);
 
-                        DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
+                        DataTable BatchYearTable = db.SelectDT(sql, "BatchYearTable", Transaction);
 
                         BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
 
@@ -816,6 +822,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             ReturnTable.Rows.InsertAt(resultRow, 0);
                         }
                     }); // Get NewOrExisting AutoReadTransaction
+
+                db.CloseDBConnection();
+
             }
             catch (Exception ex)
             {
@@ -848,9 +857,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ADescriptionMember = "YearEndDateLong";
 
             DataTable BatchTable = null;
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetAvailableGLYearsHOSA");
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -902,7 +911,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             ALedgerNumber,
                             YearNumber);
 
-                    DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", transaction);
+                    DataTable BatchYearTable = db.SelectDT(sql, "BatchYearTable", transaction);
 
                     BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
 
@@ -934,6 +943,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     } // foreach
 
                 }); // Get NewOrExisting AutoReadTransaction
+
+            db.CloseDBConnection();
 
             return BatchTable;
         } // Get Available GLYears HOSA
@@ -970,15 +981,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADateInAPeriod"></param>
         /// <param name="AFirstDayOfPeriod">The first day in the period of the specified date.</param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod)
+        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod, TDataBase ADataBase = null)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetFirstDayOfAccountingPeriod", ADataBase);
             DateTime Result = DateTime.MinValue;
 
-            // Used by importing so the isolation level is serializable
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     // Get the accounting periods for this ledger.  The table will contain more than 12 rows.
@@ -996,6 +1008,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         Result = Result.AddMonths(-1);
                     }
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             AFirstDayOfPeriod = Result;
             return Result != DateTime.MinValue;

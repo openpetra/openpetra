@@ -29,14 +29,11 @@ namespace Ict.Tools.DataMigrateStatistics
 
             if (File.Exists(row_count_location))
             {
-                DBAccess.GDBAccessObj = new TDataBase();
+                TDataBase db = DBAccess.Connect("DataMigrateStatistics");
+                TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadUncommitted);
 
                 TCmdOpts cmdLine = new TCmdOpts();
                 string xmlfile = cmdLine.GetOptValue("petraxml");
-
-                DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(cmdLine.GetOptValue("type")), cmdLine.GetOptValue("host"),
-                    cmdLine.GetOptValue("port"), cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"), cmdLine.GetOptValue(
-                        "password"), "", "ICT.Tools.DataMigrateStatistics.Program.Main DB Connection");
 
                 TDataDefinitionParser parserNew = new TDataDefinitionParser(xmlfile, false);
                 TDataDefinitionStore storeNew = new TDataDefinitionStore();
@@ -63,7 +60,7 @@ namespace Ict.Tools.DataMigrateStatistics
 
                         // count rows in table
                         string sql = "SELECT count(*) from " + newTable.strName + ";";
-                        rowCount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(sql, IsolationLevel.ReadUncommitted));
+                        rowCount = Convert.ToInt32(db.ExecuteScalar(sql, Transaction));
 
                         // read how many rows there should be in the same table
                         while (i < checkRows.Length)
@@ -104,7 +101,7 @@ namespace Ict.Tools.DataMigrateStatistics
                 Console.WriteLine(percentage + "%");
                 Console.WriteLine();
 
-                DBAccess.GDBAccessObj.CloseDBConnection();
+                db.CloseDBConnection();
             }
             else
             {

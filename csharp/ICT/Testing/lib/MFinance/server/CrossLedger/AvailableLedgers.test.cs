@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       AlanP
+//       AlanP, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -76,9 +76,9 @@ namespace Tests.MFinance.Server.CrossLedger
 
             try
             {
-                TDBTransaction transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("Init");
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {
@@ -91,14 +91,21 @@ namespace Tests.MFinance.Server.CrossLedger
                     // Get the initial number of available ledgers
                     FInitialLedgerCount = TGLSetupWebConnector.GetAvailableLedgers().DefaultView.Count;
 
-                    // Add our test rows
-                    AddTestRow(FTestLedgerList[0], "NUnitTestLedger1", false);
-                    AddTestRow(FTestLedgerList[1], "NUnitTestLedger2", true, "JPY");
-                    AddTestRow(FTestLedgerList[2], "NUnitTestLedger2", true);
+                    bool SubmitOK = true;
+                    db.WriteTransaction(
+                        ref transaction,
+                        ref SubmitOK,
+                        delegate
+                        {
+                            // Add our test rows
+                            AddTestRow(FTestLedgerList[0], "NUnitTestLedger1", false);
+                            AddTestRow(FTestLedgerList[1], "NUnitTestLedger2", true, "JPY");
+                            AddTestRow(FTestLedgerList[2], "NUnitTestLedger2", true);
 
-                    // Save these new rows
-                    ALedgerAccess.SubmitChanges(FMainDS.ALedger, null);
-                    FMainDS.AcceptChanges();
+                            // Save these new rows
+                            ALedgerAccess.SubmitChanges(FMainDS.ALedger, transaction);
+                            FMainDS.AcceptChanges();
+                        });
 
                     FInitSucceeded = true;
                 }
@@ -121,7 +128,17 @@ namespace Tests.MFinance.Server.CrossLedger
                 DeleteTestRowIfExists(LedgerNum);
             }
 
-            ALedgerAccess.SubmitChanges(FMainDS.ALedger, null);
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TearDown");
+
+            bool SubmitOK = true;
+            db.WriteTransaction(
+                ref transaction,
+                ref SubmitOK,
+                delegate
+                {
+                    ALedgerAccess.SubmitChanges(FMainDS.ALedger, transaction);
+                });
 
             // Disconnect
             TPetraServerConnector.Disconnect();

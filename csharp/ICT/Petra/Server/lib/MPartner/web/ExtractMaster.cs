@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,10 +58,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static ExtractTDSMExtractMasterTable GetAllExtractHeaders()
         {
             ExtractTDSMExtractMasterTable ExtractMasterDT = new ExtractTDSMExtractMasterTable();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             string SqlStmt;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " = pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetUserIdDBName() +
                               " ORDER BY " + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName();
 
-                    DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, null, -1, -1);
+                    Transaction.DataBaseObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, null, -1, -1);
                 });
 
             return ExtractMasterDT;
@@ -223,13 +223,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                            " < ?";
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction,
+                    Transaction.DataBaseObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction,
                         SqlParameterList.ToArray(), -1, -1);
                 });
 
@@ -248,9 +248,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractMasterRow TemplateRow;
             Boolean ReturnValue = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -281,21 +281,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractMasterRow ResultRow;
             Int32 ReturnValue = -1;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = new TDBTransaction();
+            DBAccess.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
 
-            TemplateTable = new MExtractMasterTable();
-            TemplateRow = TemplateTable.NewRowTyped(false);
-            TemplateRow.ExtractName = AExtractName;
+                    TemplateTable = new MExtractMasterTable();
+                    TemplateRow = TemplateTable.NewRowTyped(false);
+                    TemplateRow.ExtractName = AExtractName;
 
-            ResultTable = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, null, Transaction);
+                    ResultTable = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, null, Transaction);
 
-            if (ResultTable.Count > 0)
-            {
-                ResultRow = (MExtractMasterRow)ResultTable.Rows[0];
-                ReturnValue = ResultRow.ExtractId;
-            }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    if (ResultTable.Count > 0)
+                    {
+                        ResultRow = (MExtractMasterRow)ResultTable.Rows[0];
+                        ReturnValue = ResultRow.ExtractId;
+                    }
+                });
 
             return ReturnValue;
         }
@@ -308,13 +311,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static String GetExtractName(Int32 AExtractId)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
             MExtractMasterTable ResultTable;
             MExtractMasterRow ResultRow;
             String ReturnValue = "";
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -478,12 +481,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             parameterArray[1] = new OdbcParameter("Date", OdbcType.Date);
             parameterArray[1].Value = ((object)PurgeDate);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
-                    object o = DBAccess.GDBAccessObj.ExecuteScalar(CountStmt, Transaction, parameterArray);
+                    object o = Transaction.DataBaseObj.ExecuteScalar(CountStmt, Transaction, parameterArray);
 
                     if (o != null)
                     {
@@ -539,10 +542,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             parameterArray[1].Value = ((object)PurgeDate);
 
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            TDataBase db = DBAccess.Connect("PurgeExtracts");
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -552,29 +556,29 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         MExtractTable.GetTableDBName());
                     DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                         MExtractTable.GetTableDBName() + "." + MExtractTable.GetExtractIdDBName());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // delete MExtractParameterTable
                     DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
                         MExtractParameterTable.GetTableDBName());
                     DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                         MExtractParameterTable.GetTableDBName() + "." + MExtractParameterTable.GetExtractIdDBName());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // delete SGroupExtractTable
                     DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
                         SGroupExtractTable.GetTableDBName());
                     DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
                         SGroupExtractTable.GetTableDBName() + "." + SGroupExtractTable.GetExtractIdDBName());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // delete MExtractMasterTable
                     DeleteStmt = "DELETE FROM pub_" + MExtractMasterTable.GetTableDBName() +
                                  " WHERE " + WhereStmtMaster;
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
+                    db.ExecuteNonQuery(DeleteStmt, Transaction, parameterArray);
 
                     // commit whole transaction if successful
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    Transaction.Commit();
                     SubmissionOK = true;
                 });
 
@@ -592,9 +596,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ExtractTDSMExtractTable ExtractDT = new ExtractTDSMExtractTable();
             string SqlStmt;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -610,7 +614,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
                               " ORDER BY " + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName();
 
-                    DBAccess.GDBAccessObj.SelectDT(ExtractDT, SqlStmt, Transaction, null, -1, -1);
+                    Transaction.DataBaseObj.SelectDT(ExtractDT, SqlStmt, Transaction, null, -1, -1);
                 });
 
             return ExtractDT;
@@ -631,10 +635,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             if (AExtractMasterTable != null)
             {
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
                 bool SubmissionOK = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                DBAccess.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -687,10 +691,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             if (AExtractTable != null)
             {
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
                 bool SubmissionOK = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                DBAccess.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -731,9 +735,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             Boolean ResultValue = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -769,10 +773,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             ExistingSubscriptionPartners = new PPartnerTable();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -837,10 +841,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PartnersWithoutSubscription = new PPartnerTable();
             SubscriptionsChanged = 0;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -982,10 +986,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             string SqlStmt;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -996,7 +1000,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
                               " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
@@ -1020,10 +1024,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             string SqlStmt = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1057,7 +1061,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                   " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
                                   " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + ATypeCode + "'";
 
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                        Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
                     }
 
                     SubmissionOK = true;
@@ -1089,10 +1093,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             string SqlStmt;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1106,7 +1110,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
                               " AND " + PPartnerTable.GetNoSolicitationsDBName() + " <> " + NoSolicitationsValue;
 
-                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    nRowsAffected = Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
@@ -1140,10 +1144,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             string SqlStmt;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1157,7 +1161,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
                               " AND " + PPartnerTable.GetEmailGiftStatementDBName() + " <> " + EmailGiftStatementValue;
 
-                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    nRowsAffected = Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
@@ -1191,10 +1195,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             string SqlStmt;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1233,7 +1237,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
                               " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    Transaction.DataBaseObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
@@ -1265,10 +1269,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             NewExtractId = -1;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1346,10 +1350,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             NewExtractId = -1;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1444,10 +1448,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             NewExtractId = -1;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

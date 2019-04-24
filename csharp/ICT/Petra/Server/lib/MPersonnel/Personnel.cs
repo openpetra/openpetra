@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,9 +108,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         public static PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey)
         {
             PersonnelTDS MainDS = new PersonnelTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
@@ -133,9 +133,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             PmStaffDataTable StaffDataDT;
             bool Result = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     StaffDataDT = PmStaffDataAccess.LoadByPrimaryKey(0, APartnerKey, Transaction);
@@ -170,10 +170,10 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             UmJobTable JobTableTemp = new UmJobTable();
             UmJobRow TemplateRow = (UmJobRow)JobTableTemp.NewRow();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -214,9 +214,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
             OdbcParameter Parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                                                  +
                                                  "AND PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
 
-                    DBAccess.GDBAccessObj.Select(MainDS,
+                    Transaction.DataBaseObj.Select(MainDS,
                         QueryShortTermApplication,
                         ShortTermAppTableName, Transaction, Parameters.ToArray());
                 });
@@ -275,9 +275,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             OdbcParameter Parameter2 = new OdbcParameter(
                 "Placementpersonkey", OdbcType.BigInt, PmGeneralApplicationTable.GetPlacementPartnerKeyLength());
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -311,7 +311,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                                                 +
                                                 "AND PUB_p_partner.p_partner_key_n = PUB_pm_general_application.p_partner_key_n";
 
-                    DBAccess.GDBAccessObj.Select(MainDS,
+                    Transaction.DataBaseObj.Select(MainDS,
                         QueryLongTermApplication,
                         GenAppTableName, Transaction, Parameters.ToArray());
                 });
@@ -342,11 +342,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -419,7 +417,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                              "WHERE pm_past_experience.p_partner_key_n = pm_short_term_application.p_partner_key_n " +
                              "AND pm_past_experience.pm_prev_location_c = PUB_pm_short_term_application.pm_confirmed_option_code_c)";
 
-                    DBAccess.GDBAccessObj.Select(MainDS, Query, ShortTermAppTableName, Transaction, Parameters.ToArray());
+                    Transaction.DataBaseObj.Select(MainDS, Query, ShortTermAppTableName, Transaction, Parameters.ToArray());
                 });
 
             AMainDS.Merge(MainDS);
@@ -435,10 +433,10 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         [RequireModulePermission("PERSONNEL")]
         public static Boolean ConvertApplicationsToPreviousExperience(ApplicationTDS AMainDS)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     PmPastExperienceTable PastExperienceTable = new PmPastExperienceTable();
@@ -476,10 +474,10 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         [RequireModulePermission("PERSONNEL")]
         public static Boolean RemoveApplicationsFromPreviousExperience(ApplicationTDS AMainDS)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
@@ -520,14 +518,14 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                            "AND p_unit.p_outreach_code_c = pm_short_term_application.pm_confirmed_option_code_c " +
                            "AND p_unit.p_partner_key_n = p_partner_location.p_partner_key_n";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable MinAndMax = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
-                    MinAndMax = DBAccess.GDBAccessObj.SelectDT(Query, "MinAndMax", Transaction);
+                    MinAndMax = Transaction.DataBaseObj.SelectDT(Query, "MinAndMax", Transaction);
                 });
 
             AMinYear = 0;

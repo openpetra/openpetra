@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, christophert, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,14 +91,17 @@ namespace Ict.Petra.Server.MFinance.Common
             intBaseCurrencyDigits = DIGIT_INIT_VALUE;
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
 
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadDatabase");
+
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
                     currencyTable = ACurrencyAccess.LoadAll(transaction);
                 });
+
+            db.CloseDBConnection();
 
             if (currencyTable.Rows.Count == 0)
             {
@@ -480,16 +483,18 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // Query the database using the specific period ...
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetDailyExchangeRate");
             ExchangeRateTDS allRates = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
                     allRates = TCrossLedger.LoadDailyExchangeRateData(false, earliestDate, ADateEffective);
                 });
+
+            db.CloseDBConnection();
 
             // Now work out the correct rate from the returned rows
             if (allRates != null)
@@ -552,7 +557,8 @@ namespace Ict.Petra.Server.MFinance.Common
             AExchangeRateToFind = decimal.MinValue;
             decimal ExchangeRateToFind = AExchangeRateToFind;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetCorporateExchangeRate");
 
             ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
             ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
@@ -560,7 +566,7 @@ namespace Ict.Petra.Server.MFinance.Common
             templateRow.FromCurrencyCode = ACurrencyFrom;
             templateRow.ToCurrencyCode = ACurrencyTo;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -614,6 +620,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 });
 
             AExchangeRateToFind = ExchangeRateToFind;
+
+            db.CloseDBConnection();
 
             return AExchangeRateToFind != decimal.MinValue;
         }

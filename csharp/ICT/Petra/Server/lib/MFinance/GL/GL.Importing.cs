@@ -188,9 +188,10 @@ namespace Ict.Petra.Server.MFinance.GL
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
 
             // Get a new transaction
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ImportGLBatches");
             Boolean submissionOK = false;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOK,
+            db.WriteTransaction(ref transaction, ref submissionOK,
                 delegate
                 {
                     try
@@ -511,7 +512,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                             DateTime firstDayOfMonth;
 
                                             if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournal.DateEffective,
-                                                    out firstDayOfMonth))
+                                                    out firstDayOfMonth, db))
                                             {
                                                 intlRateFromBase =
                                                     TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency,
@@ -879,7 +880,6 @@ namespace Ict.Petra.Server.MFinance.GL
             FCultureInfoNumberFormat = new CultureInfo(ANumberFormat.Equals("American") ? "en-US" : "de-DE");
             FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(ADateFormatString);
 
-            TDBTransaction Transaction = null;
             Int32 RowNumber = 0;
             Int32 InitialTextLength = AImportString.Length;
             Int32 TextProcessedLength = 0;
@@ -889,13 +889,16 @@ namespace Ict.Petra.Server.MFinance.GL
             Boolean CancelledByUser = false;
             int transactionsAdded = 0;
 
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ImportGLTransactions");
+
             try
             {
                 // This needs to be initialised because we will be calling the method
                 TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
                 TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref submissionOK,
+                db.WriteTransaction(ref Transaction, ref submissionOK,
                     delegate
                     {
                         // Construct our DataSet - we use all the journals for the batch so we can update the batch totals.
@@ -936,7 +939,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             string baseCurrency = LedgerTable[0].BaseCurrency;
 
                             if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournalRow.DateEffective,
-                                    out firstDayOfMonth))
+                                    out firstDayOfMonth, db))
                             {
                                 intlRateFromBase =
                                     TExchangeRateTools.GetCorporateExchangeRate(baseCurrency, intlCurrency, firstDayOfMonth,

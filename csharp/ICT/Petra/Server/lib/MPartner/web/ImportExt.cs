@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1972,7 +1972,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
                     }
 
-                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination(ATransaction));
+                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination(ATransaction.DataBaseObj));
                 }
                 else
                 {
@@ -2447,11 +2447,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="ALimitToOption">if this is not an empty string, only the applications for this conference will be imported, historic applications will be ignored</param>
         /// <param name="ADoNotOverwrite">do not modify records that already exist in the database</param>
         /// <param name="AResultList">verification results. can contain critical errors and messages for the user</param>
+        /// <param name="ADataBase"></param>
         /// <returns>nothing - an empty TDS</returns>
         public PartnerImportExportTDS ImportAllData(string[] ALinesToImport,
             string ALimitToOption,
             bool ADoNotOverwrite,
-            out TVerificationResultCollection AResultList)
+            out TVerificationResultCollection AResultList,
+            TDataBase ADataBase = null)
         {
             FResultList = new TVerificationResultCollection();
             FCountLocationKeys = -1;
@@ -2472,10 +2474,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
             else
             {
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
                 bool SubmissionOK = false;
+                
+                TDataBase db = DBAccess.Connect("ImportAllData", ADataBase);
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -2503,8 +2507,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             {
                                 TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
                                     PPartnerAttributeAccess.LoadUsingTemplate;
-                                TPartnerContactDetails_LocationConversionHelper.SequenceGetter =
-                                    MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence;
 
                                 TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(FMainDS,
                                     Transaction);

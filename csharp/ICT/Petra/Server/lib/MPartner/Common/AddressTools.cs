@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -164,7 +164,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         " AddressTable JOIN p_partner ON p_partner.p_partner_key_n=AddressTable.p_partner_key_n";
             }
 
-            ResultTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "PartnersAddresses", ATransaction);
+            ResultTable = ATransaction.DataBaseObj.SelectDT(Query, "PartnersAddresses", ATransaction);
             return ResultTable;
         }
 
@@ -278,7 +278,8 @@ namespace Ict.Petra.Server.MPartner.Common
             if (DomainManager.GSiteKey > 0)
             {
                 Int32 ledgerNumber = (Int32)(DomainManager.GSiteKey / 1000000);
-                CountryCode = TLedgerInfo.GetLedgerCountryCode(ledgerNumber);
+                TLedgerInfo ledgerinfo = new TLedgerInfo(ledgerNumber);
+                CountryCode = ledgerinfo.GetLedgerCountryCode();
             }
 
             if (CountryCode.Length == 0)

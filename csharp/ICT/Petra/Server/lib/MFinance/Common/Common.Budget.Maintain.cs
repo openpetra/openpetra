@@ -5,7 +5,7 @@
 //       timop
 //		 cthomas
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,10 +51,10 @@ namespace Ict.Petra.Server.MFinance.Common
             int retVal;
             AGeneralLedgerMasterTable GeneralLedgerMasterTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetGLMSequenceForBudget");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -167,7 +167,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             bool newTransaction = false;
-            TDBTransaction dBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
+            TDataBase db = DBAccess.Connect("GetActualInternal");
+            TDBTransaction dBTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
 
             AGeneralLedgerMasterTable generalLedgerMasterTable = null;
             AGeneralLedgerMasterRow generalLedgerMasterRow = null;
@@ -299,7 +300,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (newTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    dBTransaction.Rollback();
                 }
             }
 
@@ -371,9 +372,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 AStartPeriod = AEndPeriod;
             }
 
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CalculateBudget");
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Jakob Englert
+//       Jakob Englert, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.MPartner.Common
         public static void AddPrimaryPhoneEmailFaxToTable(DataTable ADataTable, int APartnerKeyColumn, TReportingDbAdapter ADbAdapter,
             Boolean AIncludeMobile = false, Boolean AIncludeAlternateTelephone = false, Boolean AIncludeURL = false)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             String SelectMobile = "";
             String SelectAlternateTelephone = "";
             String SelectURL = "";
@@ -265,9 +265,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 +
                 String.Join(",", partnerlist) + ")";
 
-            ADbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            ADbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -400,7 +398,7 @@ namespace Ict.Petra.Server.MPartner.Common
             String ADateKey,
             TReportingDbAdapter ADbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             DateTime CurrentDate = DateTime.Today;
 
@@ -489,9 +487,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                             GROUP BY partner.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
 
-            ADbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            ADbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -632,7 +628,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <returns></returns>
         public static String GetPartnerKeysAsString(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             if (AParameters["param_selection"].ToString() == "one partner")
             {
@@ -643,9 +639,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             DataTable Partners = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         public static bool ExportAllTables(out string ADataYmlGzBase64)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             XmlDocument OpenPetraData = TYml2Xml.CreateXmlDocument();
             XmlNode rootNode = OpenPetraData.FirstChild.NextSibling;
 
@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             try
             {
                 // Open a separate DB Connection for the exporting of the data...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("ExportAllTables");
+                DBConnectionObj = DBAccess.Connect("ExportAllTables");
 
                 // ...and start a DB Transaction on that separate DB Connection
                 ReadTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable, 0, "ExportAllTables");
@@ -94,7 +94,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
                 if (DBConnectionObj != null)
                 {
-                    DBConnectionObj.RollbackTransaction();
+                    ReadTransaction.Rollback();
 
                     DBConnectionObj.CloseDBConnection();
                 }
@@ -260,7 +260,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             List <string>tables = TTableList.GetDBNames();
             bool SubmissionResult = false;
-            TDBTransaction ReadWriteTransaction = null;
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
 
             string ClientID = "ClientID";
 
@@ -279,10 +279,10 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             try
             {
                 // Open a separate DB Connection for the importing of the data...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("ExportAllTables");
+                DBConnectionObj = DBAccess.Connect("ExportAllTables");
 
                 // ...and start a DB Transaction on that separate DB Connection
-                DBConnectionObj.BeginAutoTransaction(IsolationLevel.Serializable, ref ReadWriteTransaction, ref SubmissionResult, delegate
+                DBConnectionObj.WriteTransaction(ref ReadWriteTransaction, ref SubmissionResult, delegate
                     {
                         try
                         {
@@ -469,8 +469,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (count != 1)
                 {
-                    if ((CommonTypes.ParseDBType(AReadWriteTransaction.DataBaseObj.DBType) == TDBType.SQLite)
-                       || (CommonTypes.ParseDBType(AReadWriteTransaction.DataBaseObj.DBType) == TDBType.MySQL)
+                    if ((DBAccess.DBType == TDBType.SQLite)
+                       || (DBAccess.DBType == TDBType.MySQL)
                        || ((count % 500) == 0))
                     {
                         // SQLite does not support INSERT of several rows at the same time

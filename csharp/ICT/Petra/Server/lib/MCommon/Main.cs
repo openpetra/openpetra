@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop, TimI
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,60 +52,6 @@ namespace Ict.Petra.Server.MCommon
     public class MCommonMain
     {
         #region Functions
-
-        /// <summary>
-        /// Retrieves the Partner ShortName, the PartnerClass and PartnerStatus.
-        /// </summary>
-        /// <param name="APartnerKey">PartnerKey to identify the Partner.</param>
-        /// <param name="APartnerShortName">Returns the ShortName.</param>
-        /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
-        /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
-        /// <returns>True if partner was found, otherwise false.</returns>
-        public static Boolean RetrievePartnerShortName(Int64 APartnerKey,
-            out String APartnerShortName,
-            out TPartnerClass APartnerClass,
-            out TStdPartnerStatusCode APartnerStatus,
-            TDataBase ADataBase = null)
-        {
-            bool Result = false;
-
-            TPartnerClass tmpPartnerClass = new TPartnerClass();
-            TStdPartnerStatusCode tmpPartnerStatus = new TStdPartnerStatusCode();
-            string tmpPartnerShortName = "";
-
-            if (APartnerKey != 0)
-            {
-                TDBTransaction ReadTransaction = null;
-
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref ReadTransaction,
-                    delegate
-                    {
-                        Result = RetrievePartnerShortName(APartnerKey,
-                            out tmpPartnerShortName,
-                            out tmpPartnerClass,
-                            out tmpPartnerStatus,
-                            ReadTransaction);
-                    });
-            }
-            else
-            {
-                APartnerClass = new TPartnerClass();
-
-                Result = true;                //partner key key 0 should be valid
-            }
-
-            APartnerShortName = tmpPartnerShortName;
-            APartnerClass = tmpPartnerClass;
-            APartnerStatus = tmpPartnerStatus;
-
-            return Result;
-        }
 
         /// <summary>
         /// Retrieves the Partner ShortName, the PartnerClass and PartnerStatus.
@@ -190,35 +136,22 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>An instance of PPartnerRow if the Partner exists (taking AMustNotBeMergedPartner into consideration),
         /// otherwise null.</returns>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         public static PPartnerRow CheckPartnerExists2(Int64 APartnerKey, bool AMustNotBeMergedPartner,
             TDataBase ADataBase = null)
         {
             PPartnerRow ReturnValue = null;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
-            PPartnerTable PartnerTable;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            PPartnerTable PartnerTable = null;
 
             if (APartnerKey != 0)
             {
-                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                try
-                {
-                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-                }
-                finally
-                {
-                    if (NewTransaction)
+                TDataBase db = DBAccess.Connect("CheckPartnerExists2", ADataBase);
+                db.ReadTransaction(ref ReadTransaction,
+                    delegate
                     {
-                        DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
-                        TLogging.LogAtLevel(7, "CheckPartnerExists: committed own transaction.");
-                    }
-                }
+                        PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+                    });
 
                 if (PartnerTable.Rows.Count != 0)
                 {
@@ -363,31 +296,16 @@ namespace Ict.Petra.Server.MCommon
         /// optional but should be specified to aid in debugging as it gets logged in case Exceptions happen when the
         /// DB Transaction is taken out and the Query gets executed.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <remarks>An instance of TAsyncFindParameters with set up Properties must exist before this procedure can get
         /// called!
         /// </remarks>
         public void ExecuteQuery(string ASessionID, string AContext = null, TDataBase ADataBase = null)
         {
-            bool ownDatabaseConnection = false;
-
             // need to initialize the database session
             TSession.InitThread(ASessionID);
 
-            if (!DBAccess.GDBAccessObj.ConnectionOK)
-            {
-                // we need a separate database object for this thread, since we cannot access the session object
-                DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "");
-                ownDatabaseConnection = true;
-            }
+            TDataBase db = DBAccess.Connect("ExecuteQuery", ADataBase);
 
             try
             {
@@ -395,7 +313,7 @@ namespace Ict.Petra.Server.MCommon
                 TProgressTracker.InitProgressTracker(FProgressID, "Executing Query...", 100.0m);
 
                 // Create SQL statement and execute it to return all records
-                ExecuteFullQuery(AContext, ADataBase);
+                ExecuteFullQuery(AContext, db);
             }
             catch (Exception exp)
             {
@@ -415,20 +333,13 @@ namespace Ict.Petra.Server.MCommon
                  *
                  */
             }
-
-            if (ownDatabaseConnection)
-            {
-                DBAccess.GDBAccessObj.CloseDBConnection();
-            }
         }
 
         private void ExecuteFullQuery(string AContext = null, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction ReadTransaction = null;
-            bool ANewTransaction = false;
-            bool ASeparateDBConnectionEstablished = false;
-            string StrDBTransAndConnPartialName = AContext ?? "TPagedDataSet.ExecuteFullQuery DB";
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            bool SeparateDBConnectionEstablished = false;
 
             if (FFindParameters.FParametersGivenSeparately)
             {
@@ -463,23 +374,16 @@ namespace Ict.Petra.Server.MCommon
             {
                 if (ADataBase == null)
                 {
-                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
-                    // hence can be used to start a DB Transaction.
-                    ReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.ReadCommitted,
-                        out DBConnectionObj, out ASeparateDBConnectionEstablished,
-                        StrDBTransAndConnPartialName + " Connection",
-                        StrDBTransAndConnPartialName + " Transaction");
+                    ADataBase = new TDataBase();
+                    ADataBase.EstablishDBConnection(AContext + " Connection");
+                    SeparateDBConnectionEstablished = true;
+                }
 
-                    ANewTransaction = true;
-                }
-                else
-                {
-                    ReadTransaction = ADataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum, out ANewTransaction, AContext + " Transaction");
-                }
+                ReadTransaction = ADataBase.BeginTransaction(IsolationLevel.ReadCommitted,
+                    -1, AContext + " Transaction");
 
                 // Fill temporary table with query results (all records)
-                FTotalRecords = DBAccess.GetDBAccessObj(ReadTransaction).SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
+                FTotalRecords = ADataBase.SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
                     ref FTmpDataTable, out FDataAdapterCanceller,
                     delegate(ref IDictionaryEnumerator AEnumerator)
                     {
@@ -521,13 +425,10 @@ namespace Ict.Petra.Server.MCommon
             }
             finally
             {
-                if (ANewTransaction)
-                {
-                    DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
-                }
+                ReadTransaction.Rollback();
 
                 // Close separate DB Connection if we opened one earlier
-                if (ASeparateDBConnectionEstablished)
+                if (SeparateDBConnectionEstablished)
                 {
                     DBConnectionObj.CloseDBConnection();
                 }
@@ -1064,7 +965,6 @@ namespace Ict.Petra.Server.MCommon
         private TDataAdapterCanceller FDataAdapterCanceller;
         private Boolean FRunningQuery = false;
         private Exception FRunQueryException = null;
-        private Boolean FPrivateDBConnection = false;
 
         /// <summary>Use this object for creating DB Transactions, etc</summary>
         public TDataBase FPrivateDatabaseObj;
@@ -1092,16 +992,9 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>
         /// Constructor. It establishes a DB Connection for a FastReports Report.
         /// </summary>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
-        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used by this instance of
-        /// <see cref="TReportingDbAdapter" /> (with the 'globally available' open DB Connection that exists for the
-        /// users' AppDomain).</param>
-        public TReportingDbAdapter(bool ASeparateDBConnection)
+        public TReportingDbAdapter()
         {
-            FPrivateDBConnection = ASeparateDBConnection;
-
-            FPrivateDatabaseObj = EstablishDBConnection(ASeparateDBConnection, "FastReports Report DB Connection");
+            FPrivateDatabaseObj = EstablishDBConnection("FastReports Report DB Connection");
         }
 
         /// <summary>
@@ -1138,32 +1031,10 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>
         /// Establishes a DB Connection for a FastReports Report.
         /// </summary>
-        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
-        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
-        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets returned by this Method (with the
-        /// 'globally available' open DB Connection that exists for the users' AppDomain).</param>
-        /// <param name="AConnectionName"></param>
         /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
-        public static TDataBase EstablishDBConnection(bool ASeparateDBConnection, String AConnectionName)
+        public static TDataBase EstablishDBConnection(String AConnectionName = "")
         {
-            if (ASeparateDBConnection)
-            {
-                TDataBase FDBAccessObj = new Ict.Common.DB.TDataBase();
-
-                FDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "",
-                    AConnectionName);
-                return FDBAccessObj;
-            }
-            else
-            {
-                return DBAccess.GDBAccessObj;
-            }
+            return DBAccess.Connect(AConnectionName);
         }
 
         /// <summary>
@@ -1173,10 +1044,7 @@ namespace Ict.Petra.Server.MCommon
         /// </summary>
         public void CloseConnection()
         {
-            if (FPrivateDBConnection)
-            {
-                FPrivateDatabaseObj.CloseDBConnection();
-            }
+            FPrivateDatabaseObj.CloseDBConnection();
         }
 
         /// <summary>

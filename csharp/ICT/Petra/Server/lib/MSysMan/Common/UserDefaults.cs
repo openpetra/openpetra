@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -310,9 +310,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// (re)loaded for the current user and the internal cache needs to be updated</param>
         /// <param name="AUserDefaultsDataTable">The loaded UserDefaults DataTable</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns>true if loading of UserDefaults was successful
         /// </returns>
         [NoRemoting]
@@ -320,7 +318,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable, TDataBase ADataBase = null)
         {
             Boolean ReturnValue;
-            TDBTransaction ReadTransaction;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             Boolean NewTransaction = false;
             Boolean ReaderLockWasHeld;
             Boolean WriteLockTakenOut;
@@ -335,8 +333,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             {
                 try
                 {
-                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
+                    ReadTransaction = DBAccess.Connect("LoadUserDefaultsTable", ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                         out NewTransaction);
 
                     if (SUserDefaultsAccess.CountViaSUser(AUserName, ReadTransaction) != 0)
@@ -353,9 +350,9 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                 }
                 finally
                 {
-                    if (NewTransaction)
+                    if (NewTransaction && (ReadTransaction != null))
                     {
-                        DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
+                        ReadTransaction.Rollback();
                         TLogging.LogAtLevel(9, "TUserDefaults.LoadUserDefaultsTable: rolled back own transaction.");
                     }
                 }
@@ -494,9 +491,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="AMergeChangesToServerSideCache"></param>
         /// <param name="AUserDefaultsDataTable"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         [NoRemoting]
         public static void ReloadUserDefaults(String AUserName, Boolean AMergeChangesToServerSideCache,
             out SUserDefaultsTable AUserDefaultsDataTable, TDataBase ADataBase = null)
@@ -700,8 +695,8 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                     if (AWriteTransaction == null)
                     {
-                        WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                            TEnforceIsolationLevel.eilMinimum,
+                        TDataBase db = DBAccess.Connect("SaveUserDefaultsTable");
+                        WriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                             out NewTransaction);
                     }
                     else
@@ -794,7 +789,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                         if (NewTransaction)
                         {
-                            DBAccess.GDBAccessObj.CommitTransaction();
+                            WriteTransaction.Commit();
                         }
 
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
@@ -805,7 +800,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                         if (NewTransaction)
                         {
-                            DBAccess.GDBAccessObj.RollbackTransaction();
+                            WriteTransaction.Rollback();
                             TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
                         }
 
@@ -855,8 +850,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         public static void SaveUserDefaultsFromServerSide(
             Boolean ASendUpdateInfoToClient = true)
         {
-            TDBTransaction SubmitChangesTransaction = null;
-            bool SubmissionOK = false;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
 
             TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
 
@@ -870,16 +864,15 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                 if (DefaultsDT.Rows.Count > 0)
                 {
-                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction
-                    // running and hence can be used to start a DB Transaction.
-                    // After the delegate has been executed the DB Transaction either gets committed or
-                    // rolled back (depending on the value of SubmissionOK) and the DB Connection gets closed
-                    // if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
-                    DBAccess.SimpleAutoTransactionWrapper(IsolationLevel.Serializable,
-                        "SaveUserDefaultsFromServerSide", out SubmitChangesTransaction, ref SubmissionOK,
+                    TDataBase db = DBAccess.Connect("SaveUserDefaultsFromServerSide");
+                    bool SubmitOK = true;
+
+                    db.WriteTransaction(
+                        ref SubmitChangesTransaction,
+                        ref SubmitOK,
                         delegate
                         {
-                            SubmissionOK = TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
+                            TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
                                 ref DefaultsDT,
                                 SubmitChangesTransaction,
                                 ASendUpdateInfoToClient);

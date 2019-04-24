@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, Tim Ingham
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,9 +64,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
         {
             ALedgerTable Tbl = null;
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetLedgerInfo");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction);
@@ -92,17 +93,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>TDS with tables loaded</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
+        public static AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber, Int64 APartnerKey, TDataBase ADataBase = null)
         {
             // create the DataSet that will be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadAApSupplier", ADataBase);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -122,17 +124,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AApDocumentId"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>TDS with tables loaded</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber, Int32 AApDocumentId)
+        public static AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber, Int32 AApDocumentId, TDataBase ADataBase = null)
         {
             // create the DataSet that will be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadAApDocument", ADataBase);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -172,16 +175,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey">the supplier</param>
         /// <param name="ACreditNoteOrInvoice">true: credit note; false: invoice</param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice)
+        public static AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber, Int64 APartnerKey, bool ACreditNoteOrInvoice, TDataBase ADataBase = null)
         {
             // create the DataSet that will later be passed to the Client
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             AApDocumentRow NewDocumentRow = MainDS.AApDocument.NewRowTyped();
 
-            NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document);
+            NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document, ADataBase);
             NewDocumentRow.ApNumber = -1; // This will be assigned later.
             NewDocumentRow.LedgerNumber = ALedgerNumber;
             NewDocumentRow.PartnerKey = APartnerKey;
@@ -189,9 +193,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
             NewDocumentRow.LastDetailNumber = 0;
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CreateAApDocument", ADataBase);
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -248,7 +252,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             Int32 NewApNum = 1;
             Object MaxVal =
-                DBAccess.GDBAccessObj.ExecuteScalar(String.Format("SELECT max(a_ap_number_i) from PUB_a_ap_document where a_ledger_number_i={0}",
+                ATransaction.DataBaseObj.ExecuteScalar(String.Format("SELECT max(a_ap_number_i) from PUB_a_ap_document where a_ledger_number_i={0}",
                         ALedgerNumber), ATransaction);
 
             if (MaxVal.GetType() != typeof(System.DBNull))
@@ -270,12 +274,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="AVerificationResult">Empty if all verifications are OK and all DB calls
         /// succeded, otherwise filled with 1..n TVerificationResult objects
         /// (can also contain DB call exceptions)</param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if all verifications are OK and all DB calls succeeded,
         /// false if any verification or DB call failed
         /// </returns>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult, TDataBase ADataBase = null)
         {
             AccountsPayableTDS InspectDS = AInspectDS;
             TVerificationResultCollection LocalVerificationResults = new TVerificationResultCollection();
@@ -287,11 +292,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SaveAApDocument", ADataBase);
             Boolean SubmissionOK = false;
             TSubmitChangesResult result = TSubmitChangesResult.scrError;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOK,
+            db.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     if ((InspectDS.AApDocument != null) && (InspectDS.AApDocument.Rows.Count > 0))
@@ -511,7 +517,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DateTime APostingDate,
             Boolean AReversal,
             out Boolean AMustBeApproved,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
@@ -520,9 +527,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AVerifications = Verifications;
             Boolean MustBeApproved = false;
 
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadDocumentsAndCheck", ADataBase);
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -613,15 +620,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="APostingDate"></param>
         /// <param name="Reversal"></param>
         /// <param name="APDataset"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>Batch for posting</returns>
         private static GLBatchTDS CreateGLBatchAndTransactionsForPosting(
             Int32 ALedgerNumber,
             DateTime APostingDate,
             Boolean Reversal,
-            ref AccountsPayableTDS APDataset)
+            ref AccountsPayableTDS APDataset,
+            TDataBase ADataBase = null)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, false, true);
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ADataBase, false);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -852,9 +861,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List <String>AccountCodesCostCentres)
         {
             String ReportMsg = "";
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CheckAccountsAndCostCentres");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     foreach (String AccCostCentre in AccountCodesCostCentres)
@@ -883,7 +893,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             }
                         }
                     }
-                }); // End of BeginAutoReadTransaction
+                }); // End of ReadTransaction
             return ReportMsg;
         }
 
@@ -932,9 +942,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
             }
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ApproveAPDocuments");
             Boolean submissionOk = true;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOk,
+            db.WriteTransaction(ref transaction, ref submissionOk,
                 delegate
                 {
                     AApDocumentAccess.SubmitChanges(TempDS.AApDocument, transaction);
@@ -951,14 +962,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ADeleteCancelledRows">If true the documents are removed from the database.
         /// The standard AP behaviour is to set the status to Cancelled.  The Delete option should only be set to true in special circumstances
         /// (for example when running a test and the desire is to clean the database of added test rows).</param>
+        /// <param name="ADataBase"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static void CancelAPDocuments(Int32 ALedgerNumber, List <Int32>ACancelTheseDocs, bool ADeleteCancelledRows)
+        public static void CancelAPDocuments(Int32 ALedgerNumber, List <Int32>ACancelTheseDocs, bool ADeleteCancelledRows, TDataBase ADataBase = null)
         {
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
             foreach (Int32 ApDocumentId in ACancelTheseDocs)
             {
-                TempDS.Merge(LoadAApDocument(ALedgerNumber, ApDocumentId)); // This gives me documents, details, and potentially ap_anal_attrib records.
+                TempDS.Merge(LoadAApDocument(ALedgerNumber, ApDocumentId, ADataBase)); // This gives me documents, details, and potentially ap_anal_attrib records.
             }
 
             if (ADeleteCancelledRows == false)
@@ -989,8 +1001,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             Boolean submissionOK = true;
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref transaction, ref submissionOK,
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CancelAPDocuments", ADataBase);
+            db.WriteTransaction(ref transaction, ref submissionOK,
                 delegate
                 {
                     AApAnalAttribAccess.SubmitChanges(TempDS.AApAnalAttrib, transaction);
@@ -1011,6 +1024,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="Reversal"></param>
         /// <param name="AglBatchNumber">If a GL batch was posted, this is the Batch Number.</param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-2")]
         public static bool PostAPDocuments(Int32 ALedgerNumber,
@@ -1018,7 +1032,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DateTime APostingDate,
             Boolean Reversal,
             out Int32 AglBatchNumber,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             bool PostingWorkedOk = true;
 
@@ -1026,16 +1041,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ABatchRow batch = null;
             TVerificationResultCollection ResultsCollection = new TVerificationResultCollection();
 
-            TDBTransaction HighLevelTransaction = null;
+            TDBTransaction HighLevelTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PostAPDocuments", ADataBase);
             Boolean WillCommit = true;
             Boolean MustBeApproved;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref HighLevelTransaction, ref WillCommit,
+            db.WriteTransaction(ref HighLevelTransaction, ref WillCommit,
                 delegate
                 {
                     AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal,
                         out MustBeApproved,
-                        out ResultsCollection);
+                        out ResultsCollection, db);
 
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(ResultsCollection))
                     {
@@ -1043,13 +1059,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         return; // This is returning from the AutoTransaction, not from the whole method.
                     }
 
-                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS);
+                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS, db);
 
                     batch = GLDataset.ABatch[0];
 
                     // save the batch
                     if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                            out ResultsCollection) != TSubmitChangesResult.scrOK)
+                            out ResultsCollection, db) != TSubmitChangesResult.scrOK)
                     {
                         PostingWorkedOk = false;
                     }
@@ -1057,7 +1073,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     // post the batch
                     if (PostingWorkedOk)
                     {
-                        PostingWorkedOk = TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out ResultsCollection);
+                        PostingWorkedOk = TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out ResultsCollection, db);
                     }
 
                     if (!PostingWorkedOk)
@@ -1071,7 +1087,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             TGLPosting.DeleteGLBatch(
                                 ALedgerNumber,
                                 GLDataset.ABatch[0].BatchNumber,
-                                out MoreResults);
+                                out MoreResults,
+                                db);
                             ResultsCollection.AddCollection(MoreResults);
                         }
                         catch (Exception)
@@ -1131,11 +1148,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APostingDate"></param>
         /// <param name="APDataset"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset, TDataBase ADataBase = null)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, false, true);
+            GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ADataBase, false);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -1199,7 +1217,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             // Add a journal for each currency/exchangeRate, and the transactions.
             // Most likely only one currency/exchangeRate will be used!
-
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
             {
                 String StandardCostCentre = TLedgerInfo.GetStandardCostCentre(batch.LedgerNumber);
@@ -1631,7 +1648,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DateTime APostingDate,
             out Int32 AglBatchNumber,
             out AccountsPayableTDSAApPaymentTable ANewPayments,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             AccountsPayableTDS MainDS = AMainDS;
 
@@ -1650,12 +1668,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 return false;
             }
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PostAPPayments", ADataBase);
             Boolean PostingWorkedOk = false;
             Boolean SubmissionOK = false;
             ABatchRow batch = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOK,
+            db.WriteTransaction(ref transaction, ref SubmissionOK,
                 delegate
                 {
                     foreach (AccountsPayableTDSAApDocumentPaymentRow row in MainDS.AApDocumentPayment.Rows)
@@ -1702,7 +1721,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     // Get max payment number for this ledger
                     // PROBLEM: what if two payments are happening at the same time? do we need locking?
                     // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=50
-                    object maxPaymentCanBeNull = DBAccess.GDBAccessObj.ExecuteScalar(
+                    object maxPaymentCanBeNull = db.ExecuteScalar(
                         "SELECT MAX(PUB_a_ap_payment.a_payment_number_i) FROM PUB_a_ap_payment WHERE PUB_a_ap_payment.a_ledger_number_i = " +
                         MainDS.AApPayment[0].LedgerNumber.ToString(),
                         transaction);
@@ -1735,19 +1754,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     // create GL batch
                     GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPaying(MainDS.AApPayment[0].LedgerNumber,
                         APostingDate,
-                        ref MainDS);
+                        ref MainDS,
+                        db);
 
                     batch = GLDataset.ABatch[0];
 
                     // save the batch
                     PostingWorkedOk = (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                                           out VerificationResult) == TSubmitChangesResult.scrOK);
+                                           out VerificationResult, db) == TSubmitChangesResult.scrOK);
 
                     if (PostingWorkedOk)
                     {
                         // post the batch
                         PostingWorkedOk = TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
-                            out VerificationResult);
+                            out VerificationResult, db);
                     }
 
                     if (!PostingWorkedOk)
@@ -1760,7 +1780,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             TGLPosting.DeleteGLBatch(
                                 MainDS.AApPayment[0].LedgerNumber,
                                 batch.BatchNumber,
-                                out MoreResults);
+                                out MoreResults,
+                                db);
                             VerificationResult.AddCollection(MoreResults);
                         }
                         catch (Exception)
@@ -1795,17 +1816,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <summary>
         /// Load this payment, together with the supplier and all the related documents.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="APaymentNumber"></param>
         /// <returns>Fully loaded TDS</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber, Int32 APaymentNumber)
+        public static AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber, Int32 APaymentNumber, TDataBase ADataBase = null)
         {
             AccountsPayableTDS MainDs = new AccountsPayableTDS();
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadAPPayment", ADataBase);
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref transaction,
                 delegate
                 {
@@ -1892,13 +1911,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="APostingDate"></param>
         /// <param name="AglBatchNumbers">If GL Batches were generated, these are the Batch Numbers.</param>
         /// <param name="AVerifications"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-2")]
         public static bool ReversePayment(Int32 ALedgerNumber,
             Int32 APaymentNumber,
             DateTime APostingDate,
             out List <Int32>AglBatchNumbers,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             //
             // I need to create new documents and post them.
@@ -1908,14 +1929,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             List <Int32>internalGlBatchNumbers = AglBatchNumbers;
             AVerifications = Verifications;
 
-            TDBTransaction ReversalTransaction = null;
+            TDBTransaction ReversalTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ReversePayment", ADataBase);
             Boolean SubmissionOK = false;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref ReversalTransaction, ref SubmissionOK,
+            db.WriteTransaction(ref ReversalTransaction, ref SubmissionOK,
                 delegate
                 {
                     // First, a squeaky clean TDS, and also one with the existing payment:
                     AccountsPayableTDS ReverseDS = new AccountsPayableTDS();
-                    AccountsPayableTDS TempDS = LoadAPPayment(ALedgerNumber, APaymentNumber);
+                    AccountsPayableTDS TempDS = LoadAPPayment(ALedgerNumber, APaymentNumber, db);
 
                     Int32 NewApNum = -1;
                     Int32 batchNumber;
@@ -1937,7 +1959,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         DocIdx = TempDS.AApPayment.DefaultView.Find(DocPaymentRow.PaymentNumber);
                         AApPaymentRow OldPaymentRow = TempDS.AApPayment[DocIdx];
                         DataUtilities.CopyAllColumnValues(OldDocumentRow, NewDocumentRow);
-                        NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document);
+                        NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document, db);
 
                         PostTheseDocs.Add(NewDocumentRow.ApDocumentId);
 
@@ -1982,7 +2004,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                     //
                     // Save these new documents, with their details and analAttribs.
-                    if (SaveAApDocument(ref ReverseDS, out Verifications) != TSubmitChangesResult.scrOK)
+                    if (SaveAApDocument(ref ReverseDS, out Verifications, db) != TSubmitChangesResult.scrOK)
                     {
                         return;
                     }
@@ -2009,7 +2031,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             APostingDate,
                             false,
                             out batchNumber,
-                            out Verifications))
+                            out Verifications,
+                            db))
                     {
                         return;
                     }
@@ -2041,7 +2064,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             APostingDate,
                             out batchNumber,
                             out newPayments,
-                            out Verifications))
+                            out Verifications,
+                            db))
                     {
                         return;
                     }
@@ -2062,7 +2086,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         AApDocumentRow NewDocumentRow = CreateDs.AApDocument.NewRowTyped();
 
                         DataUtilities.CopyAllColumnValues(OldDocumentRow, NewDocumentRow);
-                        NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document);
+                        NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document, db);
                         NewDocumentRow.DocumentCode = "Duplicate " + OldDocumentRow.DocumentCode;
                         NewDocumentRow.Reference = "Duplicate " + OldDocumentRow.Reference;
                         NewDocumentRow.DateEntered = APostingDate;
@@ -2099,7 +2123,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         NewApNum--; // These negative record numbers should be replaced on posting.
                     }
 
-                    if (SaveAApDocument(ref CreateDs, out Verifications) != TSubmitChangesResult.scrOK)
+                    if (SaveAApDocument(ref CreateDs, out Verifications, db) != TSubmitChangesResult.scrOK)
                     {
                         return;
                     }
@@ -2114,7 +2138,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         PostTheseDocs.Add(DocumentRow.ApDocumentId);
                     }
 
-                    if (!PostAPDocuments(ALedgerNumber, PostTheseDocs, APostingDate, false, out batchNumber, out Verifications))
+                    if (!PostAPDocuments(ALedgerNumber, PostTheseDocs, APostingDate, false, out batchNumber, out Verifications, db))
                     {
                         return;
                     }

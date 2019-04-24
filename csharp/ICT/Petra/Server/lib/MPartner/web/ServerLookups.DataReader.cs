@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,9 +68,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Console.WriteLine("GetEventUnits called!");
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -114,7 +114,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PPartnerTable.GetPartnerShortNameDBName();
 
-                    Events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
+                    Events = Transaction.DataBaseObj.SelectDT(SqlStmt, "events",
                         Transaction, SqlParameterList.ToArray());
 
                     Key[0] = Events.Columns[PPartnerTable.GetPartnerKeyDBName()];
@@ -140,9 +140,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetActiveFieldUnits called!");
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                    DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "fields", Transaction);
+                    DataTable events = Transaction.DataBaseObj.SelectDT(SqlStmt, "fields", Transaction);
 
                     foreach (DataRow eventRow in events.Rows)
                     {
@@ -187,9 +187,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TLogging.LogAtLevel(9, "TPartnerDataReaderWebConnector.GetLedgerUnits called!");
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // sort rows according to name
                     SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                    DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "ledgers", Transaction);
+                    DataTable events = Transaction.DataBaseObj.SelectDT(SqlStmt, "ledgers", Transaction);
 
                     foreach (DataRow eventRow in events.Rows)
                     {
@@ -227,9 +227,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static Boolean IsPUnitAConference(Int64 APartnerKey)
         {
             Boolean ReturnValue = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -258,9 +258,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             PBankingDetailsTable ReturnRow = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -281,9 +281,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             PPartnerTable PartnerTable = new PPartnerTable();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -317,14 +317,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             BankTDS ReturnValue = new BankTDS();
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(
-                IsolationLevel.ReadCommitted,
-                "TPartnerDataReaderWebConnector.GetPBankRecords",
-                out ReadTransaction,
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
                 delegate
                 {
                     const string QUERY_BANKRECORDS = "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c, PUB_p_location.* " +
@@ -337,7 +333,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                                      "JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " +
                                                      "AND PUB_p_partner_location.p_location_key_i = PUB_p_location.p_location_key_i";
 
-                    DBAccess.GetDBAccessObj(ReadTransaction).Select(ReturnValue, QUERY_BANKRECORDS, ReturnValue.PBank.TableName,
+                    ReadTransaction.DataBaseObj.Select(ReturnValue, QUERY_BANKRECORDS, ReturnValue.PBank.TableName,
                         ReadTransaction, null);
 
                     foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
@@ -366,18 +362,20 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// Gets the next available key for PPartnerGiftDestination
         /// </summary>
-        /// <param name="ADBTransaction">Transaction (if already exists in caller method)</param>
+        /// <param name="ADataBase"></param>
         /// <returns>The next available key</returns>
-        internal static int GetNewKeyForPartnerGiftDestination(TDBTransaction ADBTransaction)
+        internal static int GetNewKeyForPartnerGiftDestination(TDataBase ADataBase = null)
         {
             int ReturnValue = 0;
 
-            DBAccess.GetDBAccessObj(ADBTransaction).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ADBTransaction,
+            TDataBase db = DBAccess.Connect("GetNewKeyForPartnerGiftDestination", ADataBase);
+            TDBTransaction Transaction = new TDBTransaction();
+
+            db.ReadTransaction(
+                ref Transaction,
                 delegate
                 {
-                    PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(ADBTransaction);
+                    PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(Transaction);
 
                     foreach (PPartnerGiftDestinationRow Row in Table.Rows)
                     {
@@ -387,6 +385,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         }
                     }
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             return ReturnValue;
         }
@@ -398,15 +401,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static long GetUnitHierarchyRootUnitKey()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable dt = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
                     String Query = "SELECT p_partner_key_n FROM p_unit WHERE u_unit_type_code_c = 'R'";
-                    dt = DBAccess.GDBAccessObj.SelectDT(Query, "UnitKey", Transaction);
+                    dt = Transaction.DataBaseObj.SelectDT(Query, "UnitKey", Transaction);
                 });
 
             long returnvalue = 0;

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, ChristianK
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -94,21 +94,6 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             FProgressID = "ReportCalculation" + Guid.NewGuid();
             TProgressTracker.InitProgressTracker(FProgressID, string.Empty, -1.0m);
 
-            // First check whether the 'globally available' DB Connection isn't busy - we must not allow the start of a
-            // Report Calculation when that is the case (as this would lead to a nested DB Transaction exception,
-            // EDBTransactionBusyException).
-            if (DBAccess.GDBAccessObj.Transaction != null)
-            {
-                FErrorMessage = Catalog.GetString(SharedConstants.NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX +
-                    "The OpenPetra Server is currently too busy to prepare this Report. " +
-                    "Please retry once other running tasks (eg. a Report) are finished!");
-                TProgressTracker.FinishJob(FProgressID);
-                FSuccess = false;
-
-                // Return to the Client immediately!
-                return;
-            }
-
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
 
@@ -156,43 +141,20 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             TSession.InitThread(ASessionID);
             IsolationLevel Level;
 
-            if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "readuncommitted")
-            {
-                // for long reports, that should not take out locks;
-                // the data does not need to be consistent or will most likely not be changed during the generation of the report
-                Level = IsolationLevel.ReadUncommitted;
-            }
-            else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "repeatableread")
-            {
-                // for financial reports: it is important to have consistent data; e.g. for totals
-                Level = IsolationLevel.RepeatableRead;
-            }
-            else if (FParameterList.Get("IsolationLevel").ToString().ToLower() == "serializable")
-            {
-                // for creating extracts: we need to write to the database
-                Level = IsolationLevel.Serializable;
-            }
-            else
-            {
-                // default behaviour for normal reports
-                Level = IsolationLevel.ReadCommitted;
-            }
-
             FSuccess = false;
 
-            TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
+            TDataBase db = DBAccess.Connect("TReportGeneratorUIConnector");
+            
+            TDBTransaction Transaction = new TDBTransaction();
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(Level, ref Transaction,
-                    ref SubmissionOK,
+                db.ReadTransaction(ref Transaction,
                     delegate
                     {
-                    if (FDatacalculator.GenerateResult(ref FParameterList, ref FHTMLOutput, out FHTMLDocument, ref FErrorMessage, ref FException))
+                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FHTMLOutput, out FHTMLDocument, ref FErrorMessage, ref FException, Transaction))
                         {
                             FSuccess = true;
-                            SubmissionOK = true;
                         }
                         else
                         {

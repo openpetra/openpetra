@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,7 +135,7 @@ namespace Ict.Petra.Server.App.Core.Security
         public void RecordUserLogout(String AUserID, int AProcessID, TDBTransaction ATransaction)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction WriteTransaction = null;
+            TDBTransaction WriteTransaction = new TDBTransaction();
             SLoginTable LoginTable = new SLoginTable();
             SLoginRow NewLoginRow = LoginTable.NewRowTyped(false);
             bool SubmissionOK = false;
@@ -159,7 +159,7 @@ namespace Ict.Petra.Server.App.Core.Security
             {
                 // Open a separate DB Connection (necessary because this Method gets executed in the Server's (Main) AppDomain
                 // which hasn't got an instance of DBAccess.GDBAccess!) ...
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("RecordUserLogout");
+                DBConnectionObj = DBAccess.Connect("RecordUserLogout");
 
                 // ...and start a DB Transaction on that separate DB Connection
                 WriteTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.RepeatableRead, 0, "RecordUserLogout");
@@ -190,11 +190,11 @@ namespace Ict.Petra.Server.App.Core.Security
             {
                 if (SubmissionOK)
                 {
-                    DBConnectionObj.CommitTransaction();
+                    ATransaction.Commit();
                 }
                 else
                 {
-                    DBConnectionObj.RollbackTransaction();
+                    ATransaction.Rollback();
                 }
 
                 if (DBConnectionObj != null)

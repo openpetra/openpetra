@@ -90,11 +90,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PartnerImportExportTDS ReadPartnerDataForCSV(Int64 APartnerKey, List <String>ACSVColumns)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             PartnerImportExportTDS MainDS = new PartnerImportExportTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -1977,10 +1977,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             TVerificationResultCollection ReferenceResults = new TVerificationResultCollection();
 
             bool CanImport = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            DBAccess.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -2213,8 +2213,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if (AIncludePersonWithFamily)
                 {
                     // We need to export the Persons in this Family as well
-                    TDBTransaction ReadTransaction = null;
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    TDBTransaction ReadTransaction = new TDBTransaction();
+                    DBAccess.ReadTransaction(
                         ref ReadTransaction,
                         delegate
                         {
@@ -2267,7 +2267,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CheckExtractContainsFamily(int AExtractId)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             bool ReturnValue = false;
             string Result = string.Empty;
 
@@ -2277,10 +2277,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                            " AND p_partner.p_partner_class_c = '" + MPartnerConstants.PARTNERCLASS_FAMILY + "')" +
                            " THEN 'true' ELSE 'false' END";
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
-                    Result = DBAccess.GDBAccessObj.ExecuteScalar(Query, ReadTransaction).ToString();
+                    Result = ReadTransaction.DataBaseObj.ExecuteScalar(Query, ReadTransaction).ToString();
                 });
 
             if (Result == "true")
@@ -2301,7 +2301,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers, Boolean AOldPetraFormat)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TPartnerFileExport Exporter = new TPartnerFileExport();
             String ExtText = Exporter.ExtFileHeader(AOldPetraFormat);
             PartnerImportExportTDS MainDS;
@@ -2316,10 +2316,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                            " WHERE m_extract.m_extract_id_i = " + AExtractId +
                            " AND p_partner.p_partner_key_n = m_extract.p_partner_key_n";
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
-                    ExtractPartners = DBAccess.GDBAccessObj.SelectDT(Query, ExtractPartners.TableName, ReadTransaction);
+                    ExtractPartners = ReadTransaction.DataBaseObj.SelectDT(Query, ExtractPartners.TableName, ReadTransaction);
                     int i = 0;
                     int Total = ExtractPartners.Rows.Count;
                     decimal PercentCompleted = 0;
@@ -2473,7 +2473,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static String ExportSinglePartnerExt(Int64 APartnerKey, Boolean AIncludeFamilyMembers, Boolean AOldPetraFormat)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TPartnerFileExport Exporter = new TPartnerFileExport();
             String ExtText = Exporter.ExtFileHeader(AOldPetraFormat);
             PartnerImportExportTDS MainDS;
@@ -2491,7 +2491,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 return "";
             }
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     // if row is a family partner and the user wants to also export the family's person members
@@ -2542,13 +2542,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static String ExportAllPartnersExt()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TPartnerFileExport Exporter = new TPartnerFileExport();
             String ExtText = Exporter.ExtFileHeader(false);
             PartnerImportExportTDS MainDS;
             PPartnerTable Partners = new PPartnerTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {

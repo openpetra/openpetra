@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean GetCurrency(Int64 APartnerKey, out string ACurrencyCode, out string ACurrencyName)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             PcConferenceTable ConferenceTable;
             ACurrencyTable CurrencyTable;
@@ -68,8 +68,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             string CurrencyCode = string.Empty;
             string CurrencyName = string.Empty;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
@@ -104,13 +103,12 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DateTime GetStartDate(Int64 APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             PcConferenceTable ConferenceTable;
             DateTime ConferenceStartDate = new DateTime();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
@@ -132,13 +130,12 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DateTime GetEndDate(Int64 APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             PcConferenceTable ConferenceTable;
             DateTime ConferenceEndDate = new DateTime();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
@@ -160,12 +157,11 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CheckDiscountCriteriaCodeExists(string[] ADiscountCriteriaCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             Boolean CriteriaCodeExists = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     foreach (string CriteriaCode in ADiscountCriteriaCode)
@@ -189,12 +185,11 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CheckCostTypeExists(string ACostTypeCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             Boolean RowExists = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     RowExists = PcCostTypeAccess.Exists(ACostTypeCode, ReadTransaction);
@@ -211,10 +206,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean ConferenceExists(long APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             Boolean Exists = false;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     Exists = PcConferenceAccess.Exists(APartnerKey, ReadTransaction);
@@ -231,11 +226,11 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static DataTable GetOutreachTypes(long APartnerKey)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DataTable Table = new PUnitTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            DBAccess.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
                     string OutreachPrefixCode =
@@ -251,7 +246,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                                    " WHERE LENGTH(p_unit.p_outreach_code_c) = 13" +
                                    " AND SUBSTRING(p_unit.p_outreach_code_c,1,5) = '" + OutreachPrefixCode + "'";
 
-                    DBAccess.GDBAccessObj.SelectDT(Table, Query, ReadTransaction);
+                    ReadTransaction.DataBaseObj.SelectDT(Table, Query, ReadTransaction);
                 });
 
             return Table;
@@ -278,32 +273,20 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             int ReturnValue = 0;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
-            Boolean NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction=new TDBTransaction();
+            DBAccess.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    if (ADataTable is PcConferenceTable)
+                    {
+                        ReturnValue = CountByPrimaryKey(APrimaryKeyValues, Transaction, true, out VerificationResult);
+                    }
+                });
 
-            try
-            {
-                if (ADataTable is PcConferenceTable)
-                {
-                    ReturnValue = CountByPrimaryKey(APrimaryKeyValues, ReadTransaction, true, out AVerificationResult);
-                }
-                else
-                {
-                    AVerificationResult = new TVerificationResultCollection();
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(9, ADataTable.TableName + ": GetNonCacheableRecordReferenceCount: committed own transaction.");
-                }
-            }
+            AVerificationResult = VerificationResult;
 
             return ReturnValue;
         }
@@ -382,47 +365,35 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean GetConferenceApplications(ref ConferenceApplicationTDS AMainDS, Int64 AConferenceKey)
         {
-            Boolean NewTransaction;
-
             // make sure outreach codes are up to date in case it has changed in Unit record
             TAttendeeManagement.RefreshOutreachCode(AConferenceKey);
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDataBase db = DBAccess.Connect("GetConferenceApplications");
+            TDBTransaction ReadTransaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            try
+            PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, ReadTransaction);
+
+            if (ConferenceTable.Count == 0)
             {
-                PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, ReadTransaction);
+                ReadTransaction.Rollback();
+                throw new Exception("Cannot find conference " + AConferenceKey.ToString("0000000000"));
+            }
 
-                if (ConferenceTable.Count == 0)
+            string OutreachPrefix = ConferenceTable[0].OutreachPrefix;
+
+            // load application data for all conference attendees from db
+            TApplicationManagement.GetApplications(ref AMainDS, AConferenceKey, OutreachPrefix, "all", -1, true, null, false);
+
+            // obtain PPartner records for all the home offices
+            foreach (PcAttendeeRow AttendeeRow in AMainDS.PcAttendee.Rows)
+            {
+                if (AMainDS.PPartner.Rows.Find(new object[] { AttendeeRow.HomeOfficeKey }) == null)
                 {
-                    throw new Exception("Cannot find conference " + AConferenceKey.ToString("0000000000"));
-                }
-
-                string OutreachPrefix = ConferenceTable[0].OutreachPrefix;
-
-                // load application data for all conference attendees from db
-                TApplicationManagement.GetApplications(ref AMainDS, AConferenceKey, OutreachPrefix, "all", -1, true, null, false);
-
-                // obtain PPartner records for all the home offices
-                foreach (PcAttendeeRow AttendeeRow in AMainDS.PcAttendee.Rows)
-                {
-                    if (AMainDS.PPartner.Rows.Find(new object[] { AttendeeRow.HomeOfficeKey }) == null)
-                    {
-                        PPartnerAccess.LoadByPrimaryKey(AMainDS, AttendeeRow.HomeOfficeKey, ReadTransaction);
-                    }
+                    PPartnerAccess.LoadByPrimaryKey(AMainDS, AttendeeRow.HomeOfficeKey, ReadTransaction);
                 }
             }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetConferenceApplications: commit own transaction.");
-                }
-            }
+
+            ReadTransaction.Rollback();
 
             return true;
         }

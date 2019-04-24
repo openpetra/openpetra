@@ -495,17 +495,11 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// log the current stack trace; on Mono, that does not fully work
+        /// log the current stack trace
         /// </summary>
         /// <param name="ALoggingtype">destination of logging</param>
-        public static void LogStackTrace(TLoggingType ALoggingtype)
+        public static void LogStackTrace(TLoggingType ALoggingtype = TLoggingType.ToConsole | TLoggingType.ToLogfile)
         {
-            if (Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
-            {
-                // not printing the stacktrace since that could cause an exception
-                return;
-            }
-
             String msg = StackTraceToText(new StackTrace(true));
 
             msg = msg + "in Appdomain " + AppDomain.CurrentDomain.FriendlyName + Environment.NewLine;

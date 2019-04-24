@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,12 +72,13 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
-            TDBTransaction ReadTransaction = null;
             TTypedDataTable ResultTable = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetData");
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TCommonDataReader.GetData", out ReadTransaction,
+            db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     GetData(ATablename, ASearchCriteria, out ResultTable, ReadTransaction);
@@ -271,19 +272,23 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             ref TTypedDataTable ASubmitTable, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
-            TDBTransaction WriteTransaction = null;
             TTypedDataTable SubmitTable = null;
             TVerificationResultCollection VerificationResult = null;
+            TDBTransaction WriteTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SaveData");
 
             SubmitTable = ASubmitTable;
+            bool submitOK = true;
 
             // Automatic handling of a DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoTransactionWrapper("TCommonDataReader.SaveData", out WriteTransaction,
-                ref ReturnValue,
+            db.WriteTransaction(
+                ref WriteTransaction,
+                ref submitOK,
                 delegate
                 {
                     ReturnValue = SaveData(ATablename, ref SubmitTable, out VerificationResult, WriteTransaction);
+                    submitOK = ReturnValue == TSubmitChangesResult.scrOK; 
                 });
 
             if ((ATablename == SSystemDefaultsTable.GetTableDBName()) && (ReturnValue == TSubmitChangesResult.scrOK))

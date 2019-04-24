@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,12 +65,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TGetAccountHierarchyDetailInfo");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -84,6 +84,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -329,12 +331,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("THandleAccountPropertyInfo");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -346,6 +348,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -495,15 +499,17 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             else
             {
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("TAccountInfo.LoadData");
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
                         FAccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, Transaction);
                     });
+
+                db.CloseDBConnection();
             }
 
             #region Validate Data
@@ -684,6 +690,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private int FLedgerNumber;
         private AAccountingPeriodTable FPeriodTable = null;
         private AAccountingPeriodRow FPeriodRow = null;
+        private TDataBase FDataBase = null;
 
 
         /// <summary>
@@ -699,9 +706,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Constructor needs a valid ledger number.
         /// </summary>
         /// <param name="ALedgerNumber">Ledger number</param>
-        public TAccountPeriodInfo(int ALedgerNumber)
+        /// <param name="ADataBase"></param>
+        public TAccountPeriodInfo(int ALedgerNumber, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FDataBase = ADataBase;
             LoadData();
         }
 
@@ -710,22 +719,23 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ALedgerNumber">the ledger number</param>
         /// <param name="ACurrentPeriod">the current accounting period</param>
-
-        public TAccountPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
+        /// <param name="ADataBase"></param>
+        public TAccountPeriodInfo(int ALedgerNumber, int ACurrentPeriod, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FDataBase = ADataBase;
             LoadData();
             AccountingPeriodNumber = ACurrentPeriod;
         }
 
         private void LoadData()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TAccountPeriodInfo.LoadData", FDataBase);
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -748,6 +758,11 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
             }
         }
 

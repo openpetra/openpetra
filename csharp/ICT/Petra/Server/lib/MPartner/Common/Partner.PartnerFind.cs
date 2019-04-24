@@ -1311,7 +1311,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         {
             DataTable FullFindResultDT;
             int AddedPartners = 0;
-            bool NewTransaction;
 
             AVerificationResult = null;
             TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: requesting Partner data of found Partners");
@@ -1360,62 +1359,34 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 /*
                  * Add all Partners to the desired Extract
                  */
-                DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("AddAllFoundPartnersToExtract");
+                bool SubmitOK = false;
+                db.WriteTransaction(ref transaction,
+                    ref SubmitOK,
+                    delegate
+                    {
+                        int keyCount;
+                        List <long>ignoredPartnerKeys = null;
+                        TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                            AExtractName,
+                            AExtractDescription,
+                            out AExtractID,
+                            PartnerKeysTable,
+                            1,
+                            LocationInfoProvided,
+                            out keyCount,
+                            out ignoredPartnerKeys,
+                            false);
 
-                try
-                {
-                    int keyCount;
-                    List <long>ignoredPartnerKeys = null;
-                    TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                        AExtractName,
-                        AExtractDescription,
-                        out AExtractID,
-                        PartnerKeysTable,
-                        1,
-                        LocationInfoProvided,
-                        out keyCount,
-                        out ignoredPartnerKeys,
-                        false);
+    //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");
 
-//                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");
+                        AddedPartners = TExtractsHandling.GetExtractKeyCount(AExtractID);
 
-                    AddedPartners = TExtractsHandling.GetExtractKeyCount(AExtractID);
+                        SubmitOK = true;
+                    });
 
                     return AddedPartners;
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("An Exception occured while adding all found Partners to an Extract:" + Environment.NewLine + Exc.ToString());
-
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-
-                    throw;
-                }
-                finally
-                {
-                    if (AddedPartners >= 0)
-                    {
-                        if (NewTransaction)
-                        {
-                            DBAccess.GDBAccessObj.CommitTransaction();
-                            TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: committed own transaction!");
-                        }
-                    }
-                    else
-                    {
-                        if (NewTransaction)
-                        {
-                            DBAccess.GDBAccessObj.RollbackTransaction();
-                            TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: ROLLED BACK own transaction!");
-                        }
-                    }
-                }
             }
             else
             {

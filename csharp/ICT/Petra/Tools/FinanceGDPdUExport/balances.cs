@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,12 +77,12 @@ namespace Ict.Petra.Tools.MFinance.Server.GDPdUExport
                     AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
                     AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName());
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable balances = null;
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
-                    balances = DBAccess.GDBAccessObj.SelectDT(sql, "balances", Transaction);
+                    balances = Transaction.DataBaseObj.SelectDT(sql, "balances", Transaction);
                 });
 
             StringBuilder sb = new StringBuilder();

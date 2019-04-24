@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,6 +55,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
         private TSQLCache FCache;
         private bool FRetrievingTablePermissions;
+        private string FUserID = String.Empty;
 
         /// <summary>
         /// </summary>
@@ -79,7 +80,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="APassword"></param>
         /// <param name="AConnectionString"></param>
         /// <param name="APetraUserName"></param>
-        public new void EstablishDBConnection(TDBType ADataBaseType,
+        public void EstablishDBConnection(TDBType ADataBaseType,
             String ADsn,
             String ADBPort,
             String ADatabaseName,
@@ -98,11 +99,12 @@ namespace Ict.Petra.Server.App.Core.Security
                 throw new ArgumentNullException("APetraUserName");
             }
 
-            UserID = APetraUserName;
+            FUserID = APetraUserName;
             FCache.Invalidate();
 
             // Call base Method with same name and same Method signature but different functionality!
             base.EstablishDBConnection(ADataBaseType, ADsn, ADBPort, ADatabaseName, AUsername, APassword, AConnectionString,
+                true,
                 "Client's Default DB Connection");
         }
 
@@ -146,7 +148,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     tab = FCache.GetDataTable(
                         "SELECT s_can_create_l, s_can_modify_l, s_can_delete_l, s_can_inquire_l, s_table_name_c FROM " +
-                        "PUB_s_user_table_access_permission WHERE s_user_id_c = '" + UserID + "'", this);
+                        "PUB_s_user_table_access_permission WHERE s_user_id_c = '" + FUserID + "'", this);
 
                     FRetrievingTablePermissions = false;
                     RequiredAccessPermission = "";

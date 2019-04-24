@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,9 +61,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="AIncludeExpiredAddresses">If true: include expired addresses.</param>
         /// <param name="APartnerLocations">The Locations of the Partner being processed.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns>False if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner, otherwise true.</returns>
         public static bool GetPartnerLocations(Int64 APartnerKey,
@@ -92,9 +90,10 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (TSecurity.CanAccessPartnerByKey(APartnerKey, false, ADataBase) ==
                     TPartnerAccessLevelEnum.palGranted)
                 {
-                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+                    TDataBase db = DBAccess.Connect("GetPartnerLocations", ADataBase);
+
+                    ReadTransaction = db.GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
 
                     // Load Partner Locations, taking passed in restrictions into account.
@@ -153,7 +152,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         APartnerLocations = new PPartnerLocationTable(PPartnerLocationTable.GetTableDBName());
                         FillDataSet.Tables.Add(APartnerLocations);
 
-                        DBAccess.GetDBAccessObj(ADataBase).Select(FillDataSet, SelectSQL,
+                        db.Select(FillDataSet, SelectSQL,
                             PPartnerLocationTable.GetTableDBName(),
                             ReadTransaction,
                             parameters.ToArray());
@@ -179,7 +178,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     {
                         if (NewTransaction)
                         {
-                            DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
+                            ReadTransaction.Commit();
                             TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations: committed own transaction.");
                         }
                     }
@@ -211,9 +210,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ALocationDR">DataRow containing the 'Best Address' Location</param>
         /// <param name="APartnerLocationDR">DataRow containing the 'Best Address' PartnerLocation</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns>False if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner or if Location/PartnerLocation Data could not be loaded for the
         /// Partner, otherwise true.</returns>
@@ -232,8 +229,10 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey > 0)
             {
-                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
-                    IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                TDataBase db = DBAccess.Connect("GetPartnersBestLocationData", ADataBase);
+
+                ReadTransaction = db.GetNewOrExistingTransaction(
+                    IsolationLevel.ReadCommitted, out NewTransaction);
 
                 try
                 {
@@ -284,7 +283,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(8, "TMailing.GetPartnersBestLocationData: committed own transaction.");
                     }
                 }
@@ -344,11 +343,10 @@ namespace Ict.Petra.Server.MPartner.Common
             string EmailAddress = String.Empty;
             PLocationTable Address = null;
             string CountryNameLocal = "";
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool FoundBestAddress = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

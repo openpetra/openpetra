@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -131,9 +131,6 @@ namespace Ict.Common
 
         /// <summary>The MySQL RDBMS</summary>
         MySQL,
-
-        /// <summary>Using ODBC to access legacy Progress databases</summary>
-        ProgressODBC,
 
         /// <summary>For standalone and demo system, SQLite</summary>
         SQLite
@@ -378,11 +375,6 @@ namespace Ict.Common
                 return TDBType.SQLite;
             }
 
-            if (ADBType.ToLower() == "progress")
-            {
-                return TDBType.ProgressODBC;
-            }
-
             throw new Exception(Catalog.GetString("invalid database system"));
         }
 
@@ -509,6 +501,9 @@ namespace Ict.Common
         /// System is disabled for the moment
         /// </summary>
         eLoginSystemDisabled,
+
+        /// System is currently not paid for (in a hosting offer)
+        eLoginLicenseExpired,
 
         /// <summary>
         /// version of dlls (or version.txt) of the client does not match the version of the program on the server

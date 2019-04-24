@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -589,6 +589,40 @@ namespace Ict.Common.Exceptions
         #endregion
     }
 
+    #endregion
+
+    #region ELicenseExpiredException
+
+    /// <summary>
+    /// Thrown if the license for the OpenPetra System is not paid in a hosted offering
+    /// </summary>
+    [Serializable()]
+    public class ELicenseExpiredException : EPetraSecurityException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public ELicenseExpiredException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ELicenseExpiredException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ELicenseExpiredException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+    }
     #endregion
 
     #region EInvalidSiteKeyException

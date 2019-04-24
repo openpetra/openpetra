@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
 // Copyright 2004-2017 by OM International
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
@@ -57,7 +58,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// </summary>
         public delegate bool TGetFirstDayOfAccountingPeriod(Int32 ALedgerNumber,
             DateTime ADateInAPeriod,
-            out DateTime AFirstDayOfPeriod);
+            out DateTime AFirstDayOfPeriod,
+            TDataBase ADataBase = null);
 
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Finance.
@@ -179,12 +181,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADateInAPeriod"></param>
         /// <param name="AFirstDayOfPeriod"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>The first day in the accounting period for the date specified.</returns>
-        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod)
+        public static bool GetFirstDayOfAccountingPeriod(Int32 ALedgerNumber, DateTime ADateInAPeriod, out DateTime AFirstDayOfPeriod, TDataBase ADataBase = null)
         {
             if (FDelegateGetFirstDayOfAccountingPeriod != null)
             {
-                return FDelegateGetFirstDayOfAccountingPeriod(ALedgerNumber, ADateInAPeriod, out AFirstDayOfPeriod);
+                return FDelegateGetFirstDayOfAccountingPeriod(ALedgerNumber, ADateInAPeriod, out AFirstDayOfPeriod, ADataBase);
             }
             else
             {

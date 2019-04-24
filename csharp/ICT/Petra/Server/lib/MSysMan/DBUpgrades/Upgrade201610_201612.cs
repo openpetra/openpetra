@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,21 +38,22 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         public static bool UpgradeDatabase201610_201612()
         {
             // there are various changes to the database structure
-            TDBTransaction SubmitChangesTransaction = null;
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TDataBase db = DBAccess.Connect("TDBUpgrade");
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
+            bool SubmitOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                ref SubmissionResult,
+            db.WriteTransaction(ref SubmitChangesTransaction,
+                ref SubmitOK,
                 delegate
                 {
                     string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade201610_201612.sql").Split(new char[]{';'});
 
                     foreach (string stmt in SqlStmts)
                     {
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                        db.ExecuteNonQuery(stmt, SubmitChangesTransaction);
                     }
 
-                    SubmissionResult = TSubmitChangesResult.scrOK;
+                    SubmitOK = true;
                 });
             return true;
         }

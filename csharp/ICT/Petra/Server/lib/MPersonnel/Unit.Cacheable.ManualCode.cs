@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
             DataColumn[] Key = new DataColumn[1];
 
             // Used eg. Select Event Dialog
-            Table = DBAccess.GetDBAccessObj(AReadTransaction).SelectDT(
+            Table = AReadTransaction.DataBaseObj.SelectDT(
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +
@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
             DataColumn[] Key = new DataColumn[1];
 
             // Used eg. Select Event Dialog
-            Table = DBAccess.GetDBAccessObj(AReadTransaction).SelectDT(
+            Table = AReadTransaction.DataBaseObj.SelectDT(
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +

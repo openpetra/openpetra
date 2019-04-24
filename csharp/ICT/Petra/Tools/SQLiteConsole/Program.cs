@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,20 +41,10 @@ namespace Ict.Tools.SQLiteConsole
         public static bool InitDBConnection(
             string ADBFile, string ADBPassword)
         {
-            db = new TDataBase();
+            db = DBAccess.Connect("TSQLiteConsole");
 
             new TLogging("debug.log");
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 0);
-
-            db.EstablishDBConnection(TDBType.SQLite,
-                ADBFile,
-                "",
-                "",
-                "",
-                ADBPassword,
-                "",
-                "TSQLiteConsole.InitDBConnection DB Connection");
-            DBAccess.GDBAccessObj = db;
 
             return true;
         }
@@ -93,12 +83,12 @@ namespace Ict.Tools.SQLiteConsole
                     SQLCommand += " " + line.Trim();
                 }
 
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
                 DataTable result = null;
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref transaction,
+                db.ReadTransaction(ref transaction,
                     delegate
                     {
-                        result = DBAccess.GDBAccessObj.SelectDT(SQLCommand, "temp", transaction);
+                        result = db.SelectDT(SQLCommand, "temp", transaction);
                     });
 
                 if (result == null)

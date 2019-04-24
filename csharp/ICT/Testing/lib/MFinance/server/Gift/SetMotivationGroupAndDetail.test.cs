@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -280,7 +280,7 @@ namespace Tests.MFinance.Server.Gift
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartnerWithTypeCode(MainDS, "KEY-MIN");
+            PPartnerRow UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartnerWithTypeCode(MainDS, "KEY-MIN", null);
 
             if (UnitPartnerRow != null)
             {
@@ -313,7 +313,8 @@ namespace Tests.MFinance.Server.Gift
             Int64 retVal = 0;
             bool NewTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDataBase db = DBAccess.Connect("GetLedgerPartnerKey");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -334,7 +335,7 @@ namespace Tests.MFinance.Server.Gift
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 

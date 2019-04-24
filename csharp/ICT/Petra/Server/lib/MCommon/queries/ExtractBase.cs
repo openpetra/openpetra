@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MCommon.queries
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults, out int AExtractId)
         {
             Boolean ReturnValue = false;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MCommon.queries
 
             int ExtractId = -1;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     // get the partner keys from the database
@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MCommon.queries
 
                         // now run the database query
                         TLogging.Log("Getting the data from the database...", TLoggingType.ToStatusBar);
-                        DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
+                        DataTable partnerkeys = Transaction.DataBaseObj.SelectDT(ASqlStmt, "partners", Transaction,
                             SqlParameterList.ToArray());
 
                         // filter data by postcode (if applicable)
@@ -519,10 +519,10 @@ namespace Ict.Petra.Server.MCommon.queries
             // Regions datatable should only be loaded once per extract generation
             if (FPostalRegion != APostalRegion)
             {
-                TDBTransaction ReadTransaction = null;
+                TDBTransaction ReadTransaction = new TDBTransaction();
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                DBAccess.ReadTransaction(
+                    ref ReadTransaction,
                     delegate
                     {
                         FPostcodeRangeTable = PPostcodeRangeAccess.LoadViaPPostcodeRegion(APostalRegion, ReadTransaction);

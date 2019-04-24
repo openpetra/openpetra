@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,14 +45,15 @@ namespace Ict.Petra.Server.MFinance.Common
         AGeneralLedgerMasterPeriodTable FGLMpTable;
         AGeneralLedgerMasterPeriodRow FGLMpRow;
         Int32 FLedgerNumber = -1;
+        TDataBase FDataBase = null;
 
         /// <summary>
         /// Instead of having several constructors, this single constructor now been separated from the initialisation methods.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        public TGlmpInfo(Int32 ALedgerNumber)
+        public TGlmpInfo(Int32 ALedgerNumber, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
+            FDataBase = ADataBase;
         }
 
         /// <summary>
@@ -65,24 +66,20 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (ASequence != -1)
             {
-                bool NewTransaction = false;
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("LoadBySequence", FDataBase);
 
-                try
-                {
-                    TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);
-
-                    FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(ASequence, APeriod, transaction);
-                    LoadedOk = FGLMpTable.Rows.Count > 0;
-                    FGLMpRow = (LoadedOk) ? FGLMpTable[0] : null;
-                }
-                finally
-                {
-                    if (NewTransaction)
+                db.ReadTransaction(ref transaction,
+                    delegate
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                        FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(ASequence, APeriod, transaction);
+                        LoadedOk = FGLMpTable.Rows.Count > 0;
+                        FGLMpRow = (LoadedOk) ? FGLMpTable[0] : null;
+                    });
+
+                if (FDataBase == null)
+                {
+                    db.CloseDBConnection();
                 }
             }
 
@@ -97,14 +94,15 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             Boolean LoadedOk = false;
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadByCostCentreAccountPeriod", FDataBase);
 
             FGLMpTable = new AGeneralLedgerMasterPeriodTable();
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref transaction,
+
+            db.ReadTransaction(ref transaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.SelectDT(
+                    db.SelectDT(
                         FGLMpTable,
                         "SELECT a_general_ledger_master_period.* FROM" +
                         " a_general_ledger_master_period, a_general_ledger_master" +
@@ -117,7 +115,12 @@ namespace Ict.Petra.Server.MFinance.Common
                         " AND a_general_ledger_master_period.a_period_number_i=" + APeriod,
                         transaction);
                     LoadedOk = (FGLMpTable.Rows.Count > 0);
-                });  // Get NewOrExisting AutoReadTransaction
+                });  // AutoReadTransaction
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             FGLMpRow = (LoadedOk) ? FGLMpTable[0] : null;
             return LoadedOk;
@@ -139,27 +142,23 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void LoadByYear(Int32 AYear)
         {
-            bool NewTransaction = false;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadByYear", FDataBase);
 
-            try
-            {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                AGeneralLedgerMasterTable GLMTemplateTbl = new AGeneralLedgerMasterTable();
-                AGeneralLedgerMasterRow GLMTemplateRow = GLMTemplateTbl.NewRowTyped(false);
-                GLMTemplateRow.LedgerNumber = FLedgerNumber;
-                GLMTemplateRow.Year = AYear;
-
-                FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadViaAGeneralLedgerMasterTemplate(GLMTemplateRow, transaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            db.ReadTransaction(ref transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    AGeneralLedgerMasterTable GLMTemplateTbl = new AGeneralLedgerMasterTable();
+                    AGeneralLedgerMasterRow GLMTemplateRow = GLMTemplateTbl.NewRowTyped(false);
+                    GLMTemplateRow.LedgerNumber = FLedgerNumber;
+                    GLMTemplateRow.Year = AYear;
+
+                    FGLMpTable = AGeneralLedgerMasterPeriodAccess.LoadViaAGeneralLedgerMasterTemplate(GLMTemplateRow, transaction);
+                });
+
+            if (FDataBase == null)
+            {
+                db.CloseDBConnection();
             }
         }
 
@@ -189,29 +188,26 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="ACurrentFinancialYear">Number of the year after the the installation of the software</param>
-        public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
+        /// <param name="ADataBase"></param>
+        public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear, TDataBase ADataBase=null)
         {
-            bool NewTransaction = false;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TGet_GLM_Info", ADataBase);
 
-            try
-            {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                FGLMTbl = new AGeneralLedgerMasterTable();
-                AGeneralLedgerMasterRow GLMTemplateRow = FGLMTbl.NewRowTyped(false);
-                GLMTemplateRow.LedgerNumber = ALedgerNumber;
-                GLMTemplateRow.AccountCode = AAccountCode;
-                GLMTemplateRow.Year = ACurrentFinancialYear;
-                FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            db.ReadTransaction(ref transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    FGLMTbl = new AGeneralLedgerMasterTable();
+                    AGeneralLedgerMasterRow GLMTemplateRow = FGLMTbl.NewRowTyped(false);
+                    GLMTemplateRow.LedgerNumber = ALedgerNumber;
+                    GLMTemplateRow.AccountCode = AAccountCode;
+                    GLMTemplateRow.Year = ACurrentFinancialYear;
+                    FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
+                });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
         }
 
@@ -224,38 +220,35 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="ACostCentreCode"></param>
-        public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
+        /// <param name="ADataBase"></param>
+        public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode, TDataBase ADataBase=null)
         {
-            bool NewTransaction = false;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TGet_GLM_Info", ADataBase);
 
-            try
-            {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                FGLMTbl = new AGeneralLedgerMasterTable();
-                AGeneralLedgerMasterRow GLMTemplateRow = FGLMTbl.NewRowTyped(false);
-                GLMTemplateRow.LedgerNumber = ALedgerNumber;
-                GLMTemplateRow.AccountCode = AAccountCode;
-                GLMTemplateRow.CostCentreCode = ACostCentreCode;
-                FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
-
-                if (FGLMTbl.Rows.Count == 0)
+            db.ReadTransaction(ref transaction,
+                delegate
                 {
-//                    String msg = TLogging.StackTraceToText(new StackTrace(true));
-                    String msg = "";
+                    FGLMTbl = new AGeneralLedgerMasterTable();
+                    AGeneralLedgerMasterRow GLMTemplateRow = FGLMTbl.NewRowTyped(false);
+                    GLMTemplateRow.LedgerNumber = ALedgerNumber;
+                    GLMTemplateRow.AccountCode = AAccountCode;
+                    GLMTemplateRow.CostCentreCode = ACostCentreCode;
+                    FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
 
-                    TLogging.Log(String.Format("ERROR: No TGet_GLM_Info row found for ({0}, {1}).",
-                            ACostCentreCode, AAccountCode, msg));
-                }
-            }
-            finally
+                    if (FGLMTbl.Rows.Count == 0)
+                    {
+                        // String msg = TLogging.StackTraceToText(new StackTrace(true));
+                        String msg = "";
+
+                        TLogging.Log(String.Format("ERROR: No TGet_GLM_Info row found for ({0}, {1}).",
+                                ACostCentreCode, AAccountCode, msg));
+                    }
+                });
+
+            if (ADataBase == null)
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                db.CloseDBConnection();
             }
         }
 
@@ -333,35 +326,30 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Loads only GLM Data selected by Ledger Number, Year and Account Code ...
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ACurrentFinancialYear"></param>
-        /// <param name="AAccountCode"></param>
-        public TGlmInfo(int ALedgerNumber, int ACurrentFinancialYear, string AAccountCode)
+        public TGlmInfo(int ALedgerNumber, int ACurrentFinancialYear, string AAccountCode, TDataBase ADataBase = null)
         {
-            bool NewTransaction = false;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("TGlmInfo", ADataBase);
 
-            try
-            {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                FGLMTbl = new AGeneralLedgerMasterTable();
-                AGeneralLedgerMasterRow GLMTemplateRow = FGLMTbl.NewRowTyped(false);
-                GLMTemplateRow.LedgerNumber = ALedgerNumber;
-                GLMTemplateRow.AccountCode = AAccountCode;
-                GLMTemplateRow.Year = ACurrentFinancialYear;
-                FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
-                TLogging.LogAtLevel(1,
-                    "TGlmInfo(" + ALedgerNumber + ", " + ACurrentFinancialYear + ", " + AAccountCode + ") has loaded " + FGLMTbl.Rows.Count +
-                    " Rows.");
-                iPtr = -1;
-            }
-            finally
-            {
-                if (NewTransaction)
+            db.ReadTransaction(
+                ref transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    FGLMTbl = new AGeneralLedgerMasterTable();
+                    AGeneralLedgerMasterRow GLMTemplateRow = FGLMTbl.NewRowTyped(false);
+                    GLMTemplateRow.LedgerNumber = ALedgerNumber;
+                    GLMTemplateRow.AccountCode = AAccountCode;
+                    GLMTemplateRow.Year = ACurrentFinancialYear;
+                    FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
+                    TLogging.LogAtLevel(1,
+                        "TGlmInfo(" + ALedgerNumber + ", " + ACurrentFinancialYear + ", " + AAccountCode + ") has loaded " + FGLMTbl.Rows.Count +
+                        " Rows.");
+                    iPtr = -1;
+                });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
         }
 

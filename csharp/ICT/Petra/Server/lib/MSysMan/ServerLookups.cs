@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, berndr, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,15 +50,14 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Boolean GetDBVersion(out System.String APetraDBVersion)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             APetraDBVersion = "Cannot retrieve DB version";
             TLogging.LogAtLevel(9, "TSysManServerLookups.GetDatabaseVersion called!");
 
             SSystemDefaultsTable SystemDefaultsDT = new SSystemDefaultsTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
                     // Load data
@@ -95,27 +94,16 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
             SPatchLogTable TmpTable = new SPatchLogTable();
 
             APatchLogDT = new SPatchLogTable();
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             TLogging.LogAtLevel(9, "TSysManServerLookups.GetInstalledPatches called!");
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            try
-            {
-                // Load data
-                TmpTable = SPatchLogAccess.LoadAll(ReadTransaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TSysManServerLookups.GetInstalledPatches: committed own transaction.");
-                }
-            }
+                    // Load data
+                    TmpTable = SPatchLogAccess.LoadAll(ReadTransaction);
+                });
 
             /* Sort the data...
              */

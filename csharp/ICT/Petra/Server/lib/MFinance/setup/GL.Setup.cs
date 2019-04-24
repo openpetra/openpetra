@@ -95,12 +95,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadLedgerInfo");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -147,6 +147,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -162,7 +164,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out DateTime ACalendarStartDate,
             out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadLedgerSettings");
 
             #region Validate Arguments
 
@@ -186,10 +189,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             try
             {
-                // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-                // Connection where a DB Transaction can be exectued (only if that should be needed).
-                DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                    "TGLSetupWebConnector.LoadLedgerSettings", out Transaction,
+                db.ReadTransaction(
+                    ref Transaction,
                     delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
@@ -284,6 +285,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -303,8 +306,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null. If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
-        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
+        /// then the Method executes DB commands with a new Database connection</param>
         /// <returns></returns>
         private static bool IsCalendarChangeAllowed(Int32 ALedgerNumber, TDataBase ADataBase)
         {
@@ -320,12 +322,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             Boolean CalendarChangeAllowed = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("IsCalendarChangeAllowed", ADataBase);
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, ref Transaction,
+                db.ReadTransaction(
+                    ref Transaction,
                     delegate
                     {
                         if ((ABatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
@@ -340,6 +343,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
 
             return CalendarChangeAllowed;
@@ -368,12 +376,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ALedgerTable LedgerTable = null;
             ALedgerRow LedgerRow = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("NumberOfAccountingPeriods");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, ref Transaction,
+                db.ReadTransaction(
+                    ref Transaction,
                     delegate
                     {
                         LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -400,6 +409,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return NumberOfAccountingPeriods;
         }
 
@@ -409,8 +420,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ASubsystemCode"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance,
-        /// otherwise with the instance that gets passed in with this Argument!</param>
+        /// then the Method executes DB commands with a new Database connection</param>
         /// <returns>True if specified subsystem is activated for a given Ledger, otherwise false.</returns>
         private static bool IsSubsystemActivated(Int32 ALedgerNumber, String ASubsystemCode, TDataBase ADataBase = null)
         {
@@ -444,10 +454,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TemplateOperators = new StringCollection();
             TemplateOperators.Add("=");
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("IsSubsystemActivated", ADataBase);
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref Transaction,
+            db.ReadTransaction(
+                ref Transaction,
                 delegate
                 {
                     if (ASystemInterfaceAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
@@ -455,6 +466,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Activated = true;
                     }
                 });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             return Activated;
         }
@@ -472,13 +488,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static void GetActivatedSubsystems(Int32 ALedgerNumber,
             out bool AAccountsPayableSubsystemActivated, out bool AGiftProcessingSubsystemActivated)
         {
-            TDBTransaction DBTransaction = null;
+            TDBTransaction DBTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetActivatedSubsystems");
             bool AccountsPayableSubsystemActivated = false;
             bool GiftProcessingSubsystemActivated = false;
 
-            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
-            // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TGLSetupWebConnector.GetActivatedSubsystems", out DBTransaction,
+            db.ReadTransaction(
+                ref DBTransaction,
                 delegate
                 {
                     AccountsPayableSubsystemActivated = IsSubsystemActivated(ALedgerNumber,
@@ -488,6 +504,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         CommonAccountingSubSystemsEnum.GR.ToString(), DBTransaction.DataBaseObj);
                 });
 
+            db.CloseDBConnection();
+
             AAccountsPayableSubsystemActivated = AccountsPayableSubsystemActivated;
             AGiftProcessingSubsystemActivated = GiftProcessingSubsystemActivated;
         }
@@ -495,33 +513,29 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// Returns true if the Gift Processing subsystem is activated for a given Ledger.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <returns>True if the Gift Processing subsystem is activated for a given Ledger, otherwise false.</returns>
         [NoRemoting]
-        public static bool IsGiftProcessingSubsystemActivated(Int32 ALedgerNumber)
+        public static bool IsGiftProcessingSubsystemActivated(Int32 ALedgerNumber, TDataBase ADataBase = null)
         {
-            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
+            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString(), ADataBase);
         }
 
         /// <summary>
         /// Returns true if the Accounts Payable (AP) subsystem is activated for a given Ledger.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <returns>True if the Accounts Payable (AP) subsystem is activated for a given Ledger, otherwise false.</returns>
         [NoRemoting]
-        public static bool IsAccountsPayableSubsystemActivated(Int32 ALedgerNumber)
+        public static bool IsAccountsPayableSubsystemActivated(Int32 ALedgerNumber, TDataBase ADataBase = null)
         {
-            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
+            return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString(), ADataBase);
         }
 
         /// <summary>
         /// activate subsystem for gift processing for given ledger
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AStartingReceiptNumber"></param>
         [RequireModulePermission("FINANCE-3")]
         public static void ActivateGiftProcessingSubsystem(Int32 ALedgerNumber,
-            Int32 AStartingReceiptNumber)
+            Int32 AStartingReceiptNumber, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -534,17 +548,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ActivateGiftProcessingSubsystem", ADataBase);
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum, ref Transaction, ref SubmissionOK,
+                db.WriteTransaction(ref Transaction, ref SubmissionOK,
                     delegate
                     {
                         // if subsystem already active then no need to go further
-                        if (!IsGiftProcessingSubsystemActivated(ALedgerNumber))
+                        if (!IsGiftProcessingSubsystemActivated(ALedgerNumber, db))
                         {
                             // create or update account for Creditor's Control
 
@@ -576,7 +590,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 TransactionTypeRow.TransactionTypeDescription = MFinanceConstants.TRANS_TYPE_GIFT_PROCESSING; // "Gift Processing";
                                 TransactionTypeRow.SpecialTransactionType = true;
                                 TransactionTypeTable.Rows.Add(TransactionTypeRow);
-
                                 ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction);
                             }
 
@@ -646,6 +659,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -666,19 +684,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ActivateAccountsPayableSubsystem");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
                     {
                         // if subsystem already active then no need to go further
-                        if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
+                        if (!IsAccountsPayableSubsystemActivated(ALedgerNumber, db))
                         {
                             // make sure transaction type exists for accounts payable subsystem
                             ATransactionTypeTable TemplateTransactionTypeTable;
@@ -744,6 +762,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -773,12 +793,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             Boolean Result = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CanSubsystemBeDeactivated");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, ref Transaction,
+                db.ReadTransaction(
+                    ref Transaction,
                     delegate
                     {
                         if (ASubsystemCode == CommonAccountingSubSystemsEnum.GR.ToString())
@@ -850,6 +871,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return Result;
         }
 
@@ -900,13 +923,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("DeactivateSubsystem");
             Boolean SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -921,6 +944,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return SubmissionOK;
         }
@@ -973,7 +998,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             System.Type TypeofTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadAccountHierarchies");
 
             try
             {
@@ -1003,8 +1029,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 template.Year = year;
                 template.CostCentreCode = costCentreCode;
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1082,6 +1107,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -1272,12 +1299,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadCostCentreHierarchy");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1297,6 +1324,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -1342,16 +1371,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ALedgerNumber,
                 ACostCentreTable.GetCostCentreTypeDBName());
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadLocalCostCentres");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
-                        ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", Transaction);
+                        ParentCostCentreTbl = db.SelectDT(SqlQuery, "ParentCostCentre", Transaction);
                     });
             }
             catch (Exception ex)
@@ -1359,6 +1388,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return ParentCostCentreTbl;
         }
@@ -1400,16 +1431,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // Load Partners where PartnerType includes "COSTCENTRE":
             String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadCostCentrePartnerLinks");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
-                        PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+                        PartnerCostCentreTbl = db.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                         PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
 
@@ -1461,6 +1492,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             //Set the out value
             APartnerCostCentreTbl = PartnerCostCentreTbl;
@@ -1549,16 +1582,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // Load Partners where PartnerType includes "COSTCENTRE":
             String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CostCentrePartnerLinksExist");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
-                        PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+                        PartnerCostCentreTbl = db.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                         if (APartnerKey > 0)
                         {
@@ -1584,6 +1617,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return PartnerAndLinksCombinationIsValid;
         }
@@ -1612,12 +1647,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String SqlQuery = string.Empty;
 
             DataTable ReturnTable = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CostCentrePartnerLinksExist");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1637,7 +1672,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 AEmailDestinationTable.GetEmailAddressDBName(),
                                 AEmailDestinationTable.GetFileCodeDBName());
 
-                            emailTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "HosaAddresses", Transaction);
+                            emailTbl = db.SelectDT(SqlQuery, "HosaAddresses", Transaction);
 
                             ReturnTable = emailTbl;
                         }
@@ -1671,7 +1706,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 ACostCentreFilter,
                                 AValidLedgerNumberTable.GetPartnerKeyDBName());
 
-                            partnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+                            partnerCostCentreTbl = db.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                             foreach (DataRow Row in partnerCostCentreTbl.Rows)
                             {
@@ -1689,6 +1724,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             ReturnTable = partnerCostCentreTbl;
                         }
                     });
+
+                db.CloseDBConnection();
 
                 return ReturnTable;
             }
@@ -1725,12 +1762,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SaveCostCentrePartnerLinks");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                db.WriteTransaction(ref Transaction, ref SubmissionOK,
                     delegate
                     {
                         AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
@@ -1844,6 +1882,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         private static void DropAccountProperties(
@@ -1989,15 +2029,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DateTime CurrentCalendarStartDate;
             Boolean CreateCalendar = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SaveLedgerSettings");
             bool SubmissionOK = false;
 
             GLSetupTDS InspectDS = AInspectDS;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -2269,18 +2309,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         // current period (start of ledger date): CURRENT-PERIOD
                         // calendar settings: CAL
                         // (Apparently no-one currently looks for the presence of any of these flags?)
-
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_SUSP_ACC, LedgerRow.SuspenseAccountFlag);
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_BUDGET, LedgerRow.BudgetControlFlag);
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENCY, !LedgerRow.IsBaseCurrencyNull());
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_INTL_CURRENCY,
+                        TLedgerInitFlag flag = new TLedgerInitFlag(ALedgerNumber, "", Transaction.DataBaseObj);
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_SUSP_ACC, LedgerRow.SuspenseAccountFlag);
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_BUDGET, LedgerRow.BudgetControlFlag);
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_CURRENCY, !LedgerRow.IsBaseCurrencyNull());
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_INTL_CURRENCY,
                             !LedgerRow.IsIntlCurrencyNull());
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENT_PERIOD,
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_CURRENT_PERIOD,
                             !LedgerRow.IsCurrentPeriodNull());
-                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CAL,
+                        flag.SetOrRemoveFlag(MFinanceConstants.LEDGER_INIT_FLAG_CAL,
                             !LedgerRow.IsNumberOfAccountingPeriodsNull());
 
-                        GLSetupTDSAccess.SubmitChanges(InspectDS);
+                        GLSetupTDSAccess.SubmitChanges(InspectDS, Transaction.DataBaseObj);
 
                         SubmissionOK = true;
                     });
@@ -2290,6 +2330,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return TSubmitChangesResult.scrOK;
         }
@@ -2383,15 +2425,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             AInspectDS.Merge(new AAccountPropertyTable());
 
                             GLSetupTDS inspectDS = AInspectDS;
-                            TDBTransaction transaction = null;
+                            TDBTransaction transaction = new TDBTransaction();
+                            TDataBase db = DBAccess.Connect("SaveGLSetupTDS");
 
-                            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                                TEnforceIsolationLevel.eilMinimum,
+                            db.ReadTransaction(
                                 ref transaction,
                                 delegate
                                 {
                                     AAccountPropertyAccess.LoadViaALedger(inspectDS, ALedgerNumber, transaction);
                                 });
+
+                            db.CloseDBConnection();
                         }
 
                         AInspectDS.AAccountProperty.DefaultView.RowFilter =
@@ -2439,15 +2483,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             AInspectDS.Merge(new ASuspenseAccountTable());
 
                             GLSetupTDS inspectDS = AInspectDS;
-                            TDBTransaction transaction = null;
+                            TDBTransaction transaction = new TDBTransaction();
+                            TDataBase db = DBAccess.Connect("SaveGLSetupTDS");
 
-                            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                                TEnforceIsolationLevel.eilMinimum,
+                            db.ReadTransaction(
                                 ref transaction,
                                 delegate
                                 {
                                     ASuspenseAccountAccess.LoadViaALedger(inspectDS, ALedgerNumber, transaction);
                                 });
+
+                            db.CloseDBConnection();
                         }
 
                         AInspectDS.ASuspenseAccount.DefaultView.RowFilter =
@@ -2505,9 +2551,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                             if (acc.DebitCreditIndicator != prevDebitCredit)
                             {
-                                TDBTransaction transaction = null;
-                                Boolean submitThis = true;
-                                DBAccess.SimpleAutoTransactionWrapper("AccountTypeCorrection", out transaction, ref submitThis,
+                                TDBTransaction transaction = new TDBTransaction();
+                                TDataBase db = DBAccess.Connect("db");
+                                bool SubmitOK = true;
+                                db.WriteTransaction(ref transaction, ref SubmitOK,
                                     delegate
                                     {
                                         String query =
@@ -2523,7 +2570,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                             " a_closing_period_actual_intl_n = - a_closing_period_actual_intl_n " +
                                             " WHERE a_ledger_number_i = " + ALedgerNumber +
                                             " AND a_account_code_c = '" + acc.AccountCode + "'";
-                                        DBAccess.GDBAccessObj.ExecuteNonQuery(query, transaction);
+                                        db.ExecuteNonQuery(query, transaction);
 
                                         query =
                                             "UPDATE a_general_ledger_master_period a set " +
@@ -2536,8 +2583,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                             " where a.a_glm_sequence_i = b.a_glm_sequence_i " +
                                             " AND a_ledger_number_i = " + ALedgerNumber +
                                             " AND a_account_code_c = '" + acc.AccountCode + "')";
-                                        DBAccess.GDBAccessObj.ExecuteNonQuery(query, transaction);
+                                        db.ExecuteNonQuery(query, transaction);
                                     });
+
+                                db.CloseDBConnection();
                             }
                         }
                     }
@@ -2560,7 +2609,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
-                GLSetupTDSAccess.SubmitChanges(AInspectDS);
+                TDataBase db = DBAccess.Connect("db");
+                TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
+                GLSetupTDSAccess.SubmitChanges(AInspectDS, transaction.DataBaseObj);
 
                 if (AInspectDS.AAnalysisAttribute != null)
                 {
@@ -2568,6 +2620,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
 
                 ReturnValue = TSubmitChangesResult.scrOK;
+
+                transaction.Commit();
+
+                db.CloseDBConnection();
             }
 
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
@@ -2618,7 +2674,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 "a_ledger_number_i=" + ALedgerNumber + " AND " +
                 "a_account_code_to_report_to_c = '" + AAccountCode + "';";
 
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, ATransaction);
+            object SqlResult = ATransaction.DataBaseObj.ExecuteScalar(QuerySql, ATransaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -2665,11 +2721,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             bool DbSuccess = true;
             string Msg = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetAccountCodeAttributes");
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2721,6 +2778,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return DbSuccess;
         }
@@ -2840,12 +2899,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             XmlDocument xmlDoc = TYml2Xml.CreateXmlDocument();
 
             GLSetupTDS MainDS = new GLSetupTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ExportAccountHierarchy");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -2979,12 +3038,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
             GLSetupTDS MainDS = new GLSetupTDS();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ExportCostCentreHierarchy");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -3002,6 +3061,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             // XmlDocument is not serializable, therefore print it to string and return the string
             return TXMLParser.XmlToString(doc);
@@ -3247,9 +3308,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // if there are any existing posted transactions that reference this account, it can't be deleted.
                     ATransactionTable transTbl = null;
 
-                    TDBTransaction transaction = null;
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
+                    TDBTransaction transaction = new TDBTransaction();
+                    TDataBase db = DBAccess.Connect("ImportAccountHierarchy");                    
+                    db.ReadTransaction(
                         ref transaction,
                         delegate
                         {
@@ -3295,6 +3356,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         string ErrorMsg = String.Format(Catalog.GetString("There is a balance on account {0}"), accountRow.AccountCode);
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
                     }
+
+                    db.CloseDBConnection();
                 }
             }
 
@@ -3566,7 +3629,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 PPartnerTypeTable.GetPartnerKeyDBName(),
                 PPartnerTypeTable.GetTypeCodeDBName(),
                 ALedgerNumber * 1000000);
-            DataTable t = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ILTCostCentres", ATransaction);
+            DataTable t = ATransaction.DataBaseObj.SelectDT(SqlQuery, "ILTCostCentres", ATransaction);
 
             foreach (DataRow row in t.Rows)
             {
@@ -3620,7 +3683,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         private static void CreateMotivationDetail(ref GLSetupTDS AMainDS,
             Int32 ALedgerNumber,
             XmlNode ACurrentNode,
-            string AMotivationGroupCode)
+            string AMotivationGroupCode,
+            TDataBase ADataBase)
         {
             AMotivationDetailRow newMotivationDetail = null;
 
@@ -3672,7 +3736,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         private static void CreateMotivationGroup(ref GLSetupTDS AMainDS,
             Int32 ALedgerNumber,
-            XmlNode ACurrentNode)
+            XmlNode ACurrentNode,
+            TDataBase ADataBase)
         {
             AMotivationGroupRow newMotivationGroup = null;
 
@@ -3717,12 +3782,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
-                CreateMotivationDetail(ref AMainDS, ALedgerNumber, child, newMotivationGroup.MotivationGroupCode);
+                CreateMotivationDetail(ref AMainDS, ALedgerNumber, child, newMotivationGroup.MotivationGroupCode, ADataBase);
             }
         }
 
         /// import motivation groups, details into an empty new ledger
-        private static void ImportDefaultMotivations(ref GLSetupTDS AMainDS, Int32 ALedgerNumber)
+        private static void ImportDefaultMotivations(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, TDataBase ADataBase)
         {
             XmlDocument doc;
             TYml2Xml ymlFile;
@@ -3749,7 +3814,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in root)
             {
-                CreateMotivationGroup(ref AMainDS, ALedgerNumber, child);
+                CreateMotivationGroup(ref AMainDS, ALedgerNumber, child, ADataBase);
             }
         }
 
@@ -3882,10 +3947,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         private static void RewireIchIsAsset(Int32 ANewLedgerNumber)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RewireIchIsAsset");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500", Transaction);
@@ -3937,6 +4003,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     SubmissionOK = true;
                 });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -3962,9 +4030,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AVerificationResult = null;
             bool AllOK = false;
 
-            TLogging.Log(ANumberOfAccountingPeriods.ToString());
+            TDataBase db = DBAccess.Connect("CreateNewLedger");
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
@@ -4060,7 +4128,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         // no location record exists yet: create new one
                         locationRow = MainDS.PLocation.NewRowTyped();
                         locationRow.SiteKey = 0;
-                        locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(
+                        locationRow.LocationKey = (int)db.GetNextSequenceValue(
                             TSequenceNames.seq_location_number.ToString(), Transaction);
                         locationRow.StreetName = Catalog.GetString("No valid address on file");
                         locationRow.CountryCode = ACountryCode;
@@ -4272,18 +4340,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     SetupILTCostCentreHierarchy(ref MainDS, ANewLedgerNumber, Transaction);
                 }
 
-                ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
+                ImportDefaultMotivations(ref MainDS, ANewLedgerNumber, db);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
                 // TODO: modify UI navigation yml file etc?
                 // TODO: permissions for which users?
-
-                GLSetupTDSAccess.SubmitChanges(MainDS);
+                GLSetupTDSAccess.SubmitChanges(MainDS, db);
 
                 // activate gift processing subsystem
                 if (AActivateGiftProcessing)
                 {
-                    ActivateGiftProcessingSubsystem(ANewLedgerNumber, AStartingReceiptNumber);
+                    ActivateGiftProcessingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, db);
                 }
 
                 // activate accounts payable subsystem
@@ -4300,7 +4367,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
                 moduleAccessPermissionRow.CanAccess = true;
                 moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
-
 
                 SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction);
 
@@ -4329,7 +4395,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 TLogging.Log("An Exception occured during the creation of a new Ledger:" + Environment.NewLine + Exc.ToString());
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                Transaction.Rollback();
 
                 throw;
             }
@@ -4337,7 +4403,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if (AllOK)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    Transaction.Commit();
 
                     //
                     // If the user has specified that ICH is an asset,
@@ -4349,9 +4415,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
                 else
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
+
+            db.CloseDBConnection();
 
             return AllOK;
         }
@@ -4364,13 +4432,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             bool Result = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ContainsTransactions");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+            db.ReadTransaction(
+                ref Transaction,
                 delegate
                 {
                     Result = (ATransactionAccess.CountViaALedger(ALedgerNumber, Transaction) > 0);
                 });
+
+            db.CloseDBConnection();
 
             return Result;
         }
@@ -4382,6 +4454,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static bool DeleteLedger(Int32 ALedgerNumber, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Deleting ledger"),
@@ -4391,181 +4464,190 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 Catalog.GetString("Deleting ledger"),
                 20);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            try
-            {
-                OdbcParameter[] ledgerparameter = new OdbcParameter[] {
-                    new OdbcParameter("ledgernumber", OdbcType.Int)
-                };
-                ledgerparameter[0].Value = ALedgerNumber;
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
-                        SUserModuleAccessPermissionTable.GetTableDBName(),
-                        SUserModuleAccessPermissionTable.GetModuleIdDBName(),
-                        ALedgerNumber),
-                    Transaction);
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
-                        SModuleTable.GetTableDBName(),
-                        SModuleTable.GetModuleIdDBName(),
-                        ALedgerNumber),
-                    Transaction);
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format(
-                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
-                        AGeneralLedgerMasterPeriodTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
-                        AGeneralLedgerMasterPeriodTable.GetTableDBName(),
-                        AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
-                        AGeneralLedgerMasterTable.GetTableDBName(),
-                        AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
-                    Transaction, ledgerparameter);
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format(
-                        "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
-                        ABudgetPeriodTable.GetTableDBName(),
-                        ABudgetTable.GetTableDBName(),
-                        ABudgetTable.GetTableDBName(),
-                        ABudgetTable.GetBudgetSequenceDBName(),
-                        ABudgetPeriodTable.GetTableDBName(),
-                        ABudgetPeriodTable.GetBudgetSequenceDBName(),
-                        ABudgetTable.GetTableDBName(),
-                        ABudgetTable.GetLedgerNumberDBName()),
-                    Transaction, ledgerparameter);
-
-                // the following tables are not deleted at the moment as they are not in use
-                //      PFoundationProposalDetailTable.GetTableDBName(),
-                //      AEpTransactionTable.GetTableDBName(),
-                //      AEpStatementTable.GetTableDBName(),
-                //      AEpMatchTable.GetTableDBName(),
-                // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
-                //      (those are tables needed in the accounts receivable module that does not exist yet)
-
-
-                string[] tablenames = new string[] {
-                    AValidLedgerNumberTable.GetTableDBName(),
-                         AProcessedFeeTable.GetTableDBName(),
-                         AGeneralLedgerMasterTable.GetTableDBName(),
-                         AMotivationDetailFeeTable.GetTableDBName(),
-
-                         ABudgetTable.GetTableDBName(),
-                         ABudgetRevisionTable.GetTableDBName(),
-
-                         ARecurringGiftDetailTable.GetTableDBName(),
-                         ARecurringGiftTable.GetTableDBName(),
-                         ARecurringGiftBatchTable.GetTableDBName(),
-
-                         AGiftDetailTable.GetTableDBName(),
-                         AGiftTable.GetTableDBName(),
-                         AGiftBatchTable.GetTableDBName(),
-
-                         ATransAnalAttribTable.GetTableDBName(),
-                         ATransactionTable.GetTableDBName(),
-                         AJournalTable.GetTableDBName(),
-                         ABatchTable.GetTableDBName(),
-
-                         ARecurringTransAnalAttribTable.GetTableDBName(),
-                         ARecurringTransactionTable.GetTableDBName(),
-                         ARecurringJournalTable.GetTableDBName(),
-                         ARecurringBatchTable.GetTableDBName(),
-
-                         AEpDocumentPaymentTable.GetTableDBName(),
-                         AEpPaymentTable.GetTableDBName(),
-
-                         AApAnalAttribTable.GetTableDBName(),
-                         AApDocumentPaymentTable.GetTableDBName(),
-                         AApPaymentTable.GetTableDBName(),
-                         ACrdtNoteInvoiceLinkTable.GetTableDBName(),
-                         AApDocumentDetailTable.GetTableDBName(),
-                         AApDocumentTable.GetTableDBName(),
-
-                         AFreeformAnalysisTable.GetTableDBName(),
-
-                         AEpAccountTable.GetTableDBName(),
-                         ASuspenseAccountTable.GetTableDBName(),
-                         SGroupMotivationTable.GetTableDBName(),
-                         AIchStewardshipTable.GetTableDBName(),
-                         SGroupCostCentreTable.GetTableDBName(),
-                         AAnalysisAttributeTable.GetTableDBName(),
-
-                         AMotivationDetailTable.GetTableDBName(),
-                         AMotivationGroupTable.GetTableDBName(),
-                         AFeesReceivableTable.GetTableDBName(),
-                         AFeesPayableTable.GetTableDBName(),
-                         ACostCentreTable.GetTableDBName(),
-                         ATransactionTypeTable.GetTableDBName(),
-                         AAccountPropertyTable.GetTableDBName(),
-                         AAccountHierarchyDetailTable.GetTableDBName(),
-                         AAccountHierarchyTable.GetTableDBName(),
-                         AAccountTable.GetTableDBName(),
-                         ASystemInterfaceTable.GetTableDBName(),
-                         AAccountingSystemParameterTable.GetTableDBName(),
-                         ACostCentreTypesTable.GetTableDBName(),
-                         AAnalysisTypeTable.GetTableDBName(),
-
-                         ALedgerInitFlagTable.GetTableDBName(),
-                         ATaxTableTable.GetTableDBName(),
-
-                         AAccountingPeriodTable.GetTableDBName(),
-
-                         SGroupLedgerTable.GetTableDBName()
-                };
-
-                foreach (string table in tablenames)
+            TDBTransaction Transaction = new TDBTransaction();
+            TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
+            bool SubmitOK = false;
+            TDataBase db = DBAccess.Connect("DeleteLedger");
+            bool Result = true;
+            db.WriteTransaction(ref Transaction,
+                ref SubmitOK,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(
-                        String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
-                        Transaction, ledgerparameter);
-                }
+                    try
+                    {
+                        OdbcParameter[] ledgerparameter = new OdbcParameter[] {
+                            new OdbcParameter("ledgernumber", OdbcType.Int)
+                        };
+                        ledgerparameter[0].Value = ALedgerNumber;
 
-                ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
+                        db.ExecuteNonQuery(
+                            String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
+                                SUserModuleAccessPermissionTable.GetTableDBName(),
+                                SUserModuleAccessPermissionTable.GetModuleIdDBName(),
+                                ALedgerNumber),
+                            Transaction);
 
-                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
-                {
-                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    throw new Exception("Deletion of Ledger was cancelled by the user");
-                }
+                        db.ExecuteNonQuery(
+                            String.Format("DELETE FROM PUB_{0} WHERE {1} = 'LEDGER{2:0000}'",
+                                SModuleTable.GetTableDBName(),
+                                SModuleTable.GetModuleIdDBName(),
+                                ALedgerNumber),
+                            Transaction);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
+                        db.ExecuteNonQuery(
+                            String.Format(
+                                "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
+                                AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
+                                AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                                AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName(),
+                                AGeneralLedgerMasterTable.GetTableDBName(),
+                                AGeneralLedgerMasterTable.GetLedgerNumberDBName()),
+                            Transaction, ledgerparameter);
 
-                AVerificationResult = new TVerificationResultCollection();
+                        db.ExecuteNonQuery(
+                            String.Format(
+                                "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
+                                ABudgetPeriodTable.GetTableDBName(),
+                                ABudgetTable.GetTableDBName(),
+                                ABudgetTable.GetTableDBName(),
+                                ABudgetTable.GetBudgetSequenceDBName(),
+                                ABudgetPeriodTable.GetTableDBName(),
+                                ABudgetPeriodTable.GetBudgetSequenceDBName(),
+                                ABudgetTable.GetTableDBName(),
+                                ABudgetTable.GetLedgerNumberDBName()),
+                            Transaction, ledgerparameter);
 
-                if (TDBExceptionHelper.IsTransactionSerialisationException(e))
-                {
-                    AVerificationResult.Add(new TVerificationResult("DeleteLedger",
-                            ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
-                }
-                else
-                {
-                    AVerificationResult.Add(new TVerificationResult(
-                            "Problems deleting ledger " + ALedgerNumber.ToString(),
-                            e.Message,
-                            "Cannot delete ledger",
-                            string.Empty,
-                            TResultSeverity.Resv_Critical,
-                            Guid.Empty));
-                }
+                        // the following tables are not deleted at the moment as they are not in use
+                        //      PFoundationProposalDetailTable.GetTableDBName(),
+                        //      AEpTransactionTable.GetTableDBName(),
+                        //      AEpStatementTable.GetTableDBName(),
+                        //      AEpMatchTable.GetTableDBName(),
+                        // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
+                        //      (those are tables needed in the accounts receivable module that does not exist yet)
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return false;
-            }
-            finally
-            {
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-            }
 
-            return true;
+                        string[] tablenames = new string[] {
+                            AValidLedgerNumberTable.GetTableDBName(),
+                                 AProcessedFeeTable.GetTableDBName(),
+                                 AGeneralLedgerMasterTable.GetTableDBName(),
+                                 AMotivationDetailFeeTable.GetTableDBName(),
+
+                                 ABudgetTable.GetTableDBName(),
+                                 ABudgetRevisionTable.GetTableDBName(),
+
+                                 ARecurringGiftDetailTable.GetTableDBName(),
+                                 ARecurringGiftTable.GetTableDBName(),
+                                 ARecurringGiftBatchTable.GetTableDBName(),
+
+                                 AGiftDetailTable.GetTableDBName(),
+                                 AGiftTable.GetTableDBName(),
+                                 AGiftBatchTable.GetTableDBName(),
+
+                                 ATransAnalAttribTable.GetTableDBName(),
+                                 ATransactionTable.GetTableDBName(),
+                                 AJournalTable.GetTableDBName(),
+                                 ABatchTable.GetTableDBName(),
+
+                                 ARecurringTransAnalAttribTable.GetTableDBName(),
+                                 ARecurringTransactionTable.GetTableDBName(),
+                                 ARecurringJournalTable.GetTableDBName(),
+                                 ARecurringBatchTable.GetTableDBName(),
+
+                                 AEpDocumentPaymentTable.GetTableDBName(),
+                                 AEpPaymentTable.GetTableDBName(),
+
+                                 AApAnalAttribTable.GetTableDBName(),
+                                 AApDocumentPaymentTable.GetTableDBName(),
+                                 AApPaymentTable.GetTableDBName(),
+                                 ACrdtNoteInvoiceLinkTable.GetTableDBName(),
+                                 AApDocumentDetailTable.GetTableDBName(),
+                                 AApDocumentTable.GetTableDBName(),
+
+                                 AFreeformAnalysisTable.GetTableDBName(),
+
+                                 AEpAccountTable.GetTableDBName(),
+                                 ASuspenseAccountTable.GetTableDBName(),
+                                 SGroupMotivationTable.GetTableDBName(),
+                                 AIchStewardshipTable.GetTableDBName(),
+                                 SGroupCostCentreTable.GetTableDBName(),
+                                 AAnalysisAttributeTable.GetTableDBName(),
+
+                                 AMotivationDetailTable.GetTableDBName(),
+                                 AMotivationGroupTable.GetTableDBName(),
+                                 AFeesReceivableTable.GetTableDBName(),
+                                 AFeesPayableTable.GetTableDBName(),
+                                 ACostCentreTable.GetTableDBName(),
+                                 ATransactionTypeTable.GetTableDBName(),
+                                 AAccountPropertyTable.GetTableDBName(),
+                                 AAccountHierarchyDetailTable.GetTableDBName(),
+                                 AAccountHierarchyTable.GetTableDBName(),
+                                 AAccountTable.GetTableDBName(),
+                                 ASystemInterfaceTable.GetTableDBName(),
+                                 AAccountingSystemParameterTable.GetTableDBName(),
+                                 ACostCentreTypesTable.GetTableDBName(),
+                                 AAnalysisTypeTable.GetTableDBName(),
+
+                                 ALedgerInitFlagTable.GetTableDBName(),
+                                 ATaxTableTable.GetTableDBName(),
+
+                                 AAccountingPeriodTable.GetTableDBName(),
+
+                                 SGroupLedgerTable.GetTableDBName()
+                        };
+
+                        foreach (string table in tablenames)
+                        {
+                            db.ExecuteNonQuery(
+                                String.Format("DELETE FROM PUB_{0} WHERE a_ledger_number_i = ?", table),
+                                Transaction, ledgerparameter);
+                        }
+
+                        ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
+
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                        {
+                            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                            throw new Exception("Deletion of Ledger was cancelled by the user");
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log(e.ToString());
+
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(e))
+                        {
+                            VerificationResult.Add(new TVerificationResult("DeleteLedger",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                        }
+                        else
+                        {
+                            VerificationResult.Add(new TVerificationResult(
+                                    "Problems deleting ledger " + ALedgerNumber.ToString(),
+                                    e.Message,
+                                    "Cannot delete ledger",
+                                    string.Empty,
+                                    TResultSeverity.Resv_Critical,
+                                    Guid.Empty));
+                        }
+
+                        Result = false;
+                    }
+                    finally
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    }
+
+                    SubmitOK = SubmitChangesResult == TSubmitChangesResult.scrOK;
+                });
+
+            db.CloseDBConnection();
+
+            AVerificationResult = VerificationResult;
+            return Result;
         }
 
         /// <summary>
@@ -4579,13 +4661,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (action == "update")
             {
-                TDBTransaction Transaction = null;
+                TDBTransaction Transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("MaintainLedger");
                 bool SubmissionOK = false;
 
                 try
                 {
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                        TEnforceIsolationLevel.eilMinimum, ref Transaction, ref SubmissionOK,
+                    db.WriteTransaction(
+                        ref Transaction, ref SubmissionOK,
                         delegate
                         {
                             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -4603,6 +4686,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     TLogging.LogException(ex, Utilities.GetMethodSignature());
                     return false;
                 }
+
+                db.CloseDBConnection();
 
                 return true;
             }
@@ -4634,14 +4719,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Fields.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
             Fields.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetAvailableLedgers");
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
                     LedgerTable = ALedgerAccess.LoadAll(Fields, Transaction, null, 0, 0);
                 });
+
+            db.CloseDBConnection();
 
             return LedgerTable;
         }
@@ -4654,10 +4741,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadAFreeformAnalysis");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -4670,6 +4757,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
             AFreeformAnalysisTable myAT = MainDS.AFreeformAnalysis;
+
+            db.CloseDBConnection();
+
             return myAT;
         }
 
@@ -4677,65 +4767,72 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if a AnalysisAttribute Row can be removed from an Account (not if it's in use!)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean CanDetachTypeCodeFromAccount(Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String Message)
+        public static Boolean CanDetachTypeCodeFromAccount(Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String AMessage)
         {
-            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            try
-            {
+            TDBTransaction ReadTrans = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CanDetachTypeCodeFromAccount");
+            bool Result = true;
+            string Message = String.Empty;
+            db.ReadTransaction(
+                ref ReadTrans,
+                delegate
                 {
-                    AApAnalAttribTable tbl = new AApAnalAttribTable();
-                    AApAnalAttribRow Template = tbl.NewRowTyped(false);
-                    Template.LedgerNumber = ALedgerNumber;
-                    Template.AccountCode = AAccountCode;
-                    Template.AnalysisTypeCode = ATypeCode;
-                    tbl = AApAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
-
-                    if (tbl.Rows.Count > 0)
+                    if (Result)
                     {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
-                                  String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
-                        return false;
+                        AApAnalAttribTable tbl = new AApAnalAttribTable();
+                        AApAnalAttribRow Template = tbl.NewRowTyped(false);
+                        Template.LedgerNumber = ALedgerNumber;
+                        Template.AccountCode = AAccountCode;
+                        Template.AnalysisTypeCode = ATypeCode;
+                        tbl = AApAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
+                        if (tbl.Rows.Count > 0)
+                        {
+                            Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                      String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
+                            Result = false;
+                        }
                     }
-                }
 
-                {
-                    ATransAnalAttribTable tbl = new ATransAnalAttribTable();
-                    ATransAnalAttribRow Template = tbl.NewRowTyped(false);
-                    Template.LedgerNumber = ALedgerNumber;
-                    Template.AccountCode = AAccountCode;
-                    Template.AnalysisTypeCode = ATypeCode;
-                    tbl = ATransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
-
-                    if (tbl.Rows.Count > 0)
+                    if (Result)
                     {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
-                                  String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
-                        return false;
-                    }
-                }
-                {
-                    ARecurringTransAnalAttribTable tbl = new ARecurringTransAnalAttribTable();
-                    ARecurringTransAnalAttribRow Template = tbl.NewRowTyped(false);
-                    Template.LedgerNumber = ALedgerNumber;
-                    Template.AccountCode = AAccountCode;
-                    Template.AnalysisTypeCode = ATypeCode;
-                    tbl = ARecurringTransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+                        ATransAnalAttribTable tbl = new ATransAnalAttribTable();
+                        ATransAnalAttribRow Template = tbl.NewRowTyped(false);
+                        Template.LedgerNumber = ALedgerNumber;
+                        Template.AccountCode = AAccountCode;
+                        Template.AnalysisTypeCode = ATypeCode;
+                        tbl = ATransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
 
-                    if (tbl.Rows.Count > 0)
-                    {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
-                                  String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
-                        return false;
+                        if (tbl.Rows.Count > 0)
+                        {
+                            Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                      String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
+                            Result = false;
+                        }
                     }
-                }
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-            Message = "";
-            return true;
+
+                    if (Result)
+                    {
+                        ARecurringTransAnalAttribTable tbl = new ARecurringTransAnalAttribTable();
+                        ARecurringTransAnalAttribRow Template = tbl.NewRowTyped(false);
+                        Template.LedgerNumber = ALedgerNumber;
+                        Template.AccountCode = AAccountCode;
+                        Template.AnalysisTypeCode = ATypeCode;
+                        tbl = ARecurringTransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
+                        if (tbl.Rows.Count > 0)
+                        {
+                            Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                      String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
+                            Result = false;
+                        }
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            AMessage = Message;
+            return Result;
         }
 
         /// <summary>
@@ -4746,15 +4843,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             int RetVal = 0;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CheckDeleteAFreeformAnalysis");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
                     RetVal = ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, Transaction);
                 });
+
+            db.CloseDBConnection();
 
             return RetVal;
         }
@@ -4767,15 +4866,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             int RetVal = 0;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CheckDeleteAAnalysisType");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
                     RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ALedgerNumber, ATypeCode, Transaction);
                 });
+
+            db.CloseDBConnection();
 
             return RetVal;
         }
@@ -4805,10 +4906,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             StringCollection RetVal = new StringCollection();
             AAnalysisAttributeTable AnalAttribTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RequiredAnalysisAttributesForAccount");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -4822,6 +4923,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     RetVal.Add(Row.AnalysisTypeCode);
                 }
             }
+
+            db.CloseDBConnection();
 
             return RetVal;
         }
@@ -4857,12 +4960,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAnalysisAttributeTable AnalysisAttributeTable = null;
             bool AccountAnalysisAttributeExists = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("AccountHasAnalysisAttributes");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -4894,6 +4997,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return AccountAnalysisAttributeExists;
         }
 
@@ -4917,12 +5022,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAnalysisAttributeTable AnalysisAttributeTable = null;
             bool AccountAnalysisAttributeExists = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("AccountHasAnalysisAttributes");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -4949,6 +5054,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return AccountAnalysisAttributeExists;
         }
@@ -4977,12 +5084,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             bool AccountAnalysisAttributeValueRequired = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("AccountAnalysisAttributeRequiresValues");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -5006,6 +5113,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return AccountAnalysisAttributeValueRequired;
         }
@@ -5071,7 +5180,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 QuerySql += String.Format(" AND {0}={1}", ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber);
             }
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(QuerySql, ATransaction);
+            ATransaction.DataBaseObj.ExecuteNonQuery(QuerySql, ATransaction);
         }
 
         /// <summary>
@@ -5115,12 +5224,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TVerificationResultCollection VerificationResults = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RenameAccountCode");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -5296,6 +5406,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             AVerificationResults = VerificationResults;
 
             return SubmissionOK;
@@ -5332,7 +5444,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ACostCentreTable.GetCostCentreToReportToDBName(),
                 ACostCentreCode);
 
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, ATransaction);
+            object SqlResult = ATransaction.DataBaseObj.ExecuteScalar(QuerySql, ATransaction);
 
             return Convert.ToInt32(SqlResult) > 0;
         }
@@ -5378,11 +5490,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String Msg = string.Empty;
             bool DBSuccess = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetCostCentreAttributes");
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                db.ReadTransaction(ref Transaction,
                     delegate
                     {
                         ACostCentreTable tempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
@@ -5461,13 +5574,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 CanBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
                             }
                         }
-                    }); // End of BeginAutoReadTransaction with anonymous function
+                    }); // End of ReadTransaction with anonymous function
             }
             catch (Exception ex)
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             ACanBeParent = CanBeParent;
             ACanDelete = CanDelete;
@@ -5517,12 +5632,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RenameCostCentreCode");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -5614,6 +5730,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             AVerificationResults = VerificationResults;
 
             return SubmissionOK;
@@ -5646,12 +5764,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             bool ReturnValue = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CheckAccountCanBeMadeForeign");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -5681,7 +5799,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             AGeneralLedgerMasterTable.GetGlmSequenceDBName(),
                             AGeneralLedgerMasterPeriodTable.GetActualBaseDBName());
 
-                        DataTable dT = DBAccess.GDBAccessObj.SelectDT(Query, "DataTable", Transaction);
+                        DataTable dT = Transaction.DataBaseObj.SelectDT(Query, "DataTable", Transaction);
 
                         if ((dT != null) && (dT.Rows.Count > 0))
                         {
@@ -5694,6 +5812,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return ReturnValue;
         }
@@ -5726,12 +5846,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             bool ReturnValue = false;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CheckForeignAccountHasBalances");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -5754,6 +5874,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return ReturnValue;
         }
@@ -5783,10 +5905,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ZeroForeignCurrencyBalances");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     foreach (string AccountCode in AAccountCode)
@@ -5821,7 +5944,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             ACostCentreTable.GetPostingCostCentreFlagDBName());
 
                         AGeneralLedgerMasterTable GeneralLedgerMasterTable = new AGeneralLedgerMasterTable();
-                        DBAccess.GDBAccessObj.SelectDT(GeneralLedgerMasterTable, Query, Transaction);
+                        Transaction.DataBaseObj.SelectDT(GeneralLedgerMasterTable, Query, Transaction);
 
                         foreach (DataRow Row in GeneralLedgerMasterTable.Rows)
                         {
@@ -5845,6 +5968,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     SubmissionOK = true;
                 });
+
+            db.CloseDBConnection();
 
             return SubmissionOK;
         }

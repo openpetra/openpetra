@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,13 +52,13 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static void FindAddressDuplicates(ref DataTable ADuplicateAddresses, bool AExactMatchNumber)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable ReturnTable = ADuplicateAddresses.Clone();
             PLocationTable Locations = new PLocationTable();
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Checking for duplicate addresses"));
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     // get all locations from database,
@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                                    " OR (p_location.p_street_name_c is NOT NULL AND p_location.p_street_name_c <> '')" +
                                    " OR (p_location.p_address_3_c is NOT NULL AND p_location.p_address_3_c <> '')";
 
-                    DBAccess.GDBAccessObj.SelectDT(Locations, Query, Transaction);
+                    Transaction.DataBaseObj.SelectDT(Locations, Query, Transaction);
 
                     // create a list of tables grouped by country codes
                     List <DataTable>LocationDataTables = Locations.AsEnumerable()

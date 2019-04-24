@@ -65,8 +65,9 @@ namespace Tests.MFinance.Server.Gift
         public void TestSimpleDatabaseAccess()
         {
             bool NewTransaction = false;
+            TDataBase db = DBAccess.Connect("TestSimpleDatabaseAccess");
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -80,7 +81,7 @@ namespace Tests.MFinance.Server.Gift
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
         }

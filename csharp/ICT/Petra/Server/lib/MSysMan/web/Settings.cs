@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,8 +56,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static DataTable GetAvailableSites()
         {
-            TDBTransaction ReadTransaction = null;
-            bool SubmissionOK = false;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             DataTable SitesTable = new DataTable();
             DataTable UnusedSitesTable = new DataTable();
@@ -80,8 +79,8 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
             UsedSitesTable.Columns.Add(new DataColumn(SiteKey, typeof(Int64)));
             UsedSitesTable.Columns.Add(new DataColumn(SiteShortName, typeof(string)));
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction, ref SubmissionOK,
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
                 delegate
                 {
                     try
@@ -99,7 +98,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                         // sort rows according to name
                         SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
 
-                        DataTable sites = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "fields", ReadTransaction);
+                        DataTable sites = ReadTransaction.DataBaseObj.SelectDT(SqlStmt, "fields", ReadTransaction);
 
                         foreach (DataRow tempSiteRow in sites.Rows)
                         {
@@ -160,14 +159,14 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static bool SaveSiteKeys(List <Int64>ASiteKeysSetUpForUse, List <Int64>ASiteKeysToRemove)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
             PPartnerLedgerTable PartnerLedgerTable = new PPartnerLedgerTable();
             PPartnerLedgerRow PartnerLedgerRow;
 
             // save site keys that can be used in p_partner_ledger
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -180,7 +179,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                             PartnerLedgerRow.PartnerKey = SiteKey;
 
                             // calculate last partner id, from older uses of this ledger number
-                            object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
+                            object MaxExistingPartnerKeyObj = Transaction.DataBaseObj.ExecuteScalar(
                                 String.Format("SELECT MAX(" + PPartnerTable.GetPartnerKeyDBName() + ") FROM " + PPartnerTable.GetTableDBName() +
                                     " WHERE " + PPartnerTable.GetPartnerKeyDBName() + " > {0} AND " + PPartnerTable.GetPartnerKeyDBName() +
                                     " < {1}",

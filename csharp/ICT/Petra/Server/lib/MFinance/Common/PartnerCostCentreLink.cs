@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,8 +60,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             RequiredColumns = new StringCollection();
             RequiredColumns.Add(AValidLedgerNumberTable.GetCostCentreCodeDBName());
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+
+            TDataBase db = DBAccess.Connect("HasPartnerCostCentreLink");
+
+            ReadTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 out NewTransaction);
             try
             {
@@ -87,7 +89,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ReadTransaction.Commit();
                     TLogging.LogAtLevel(7, "HasPartnerCostCentreLink: committed own transaction.");
                 }
             }

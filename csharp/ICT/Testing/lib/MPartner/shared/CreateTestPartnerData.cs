@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,7 +53,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
     public class TCreateTestPartnerData
     {
         /// create a new partner
-        public static PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS)
+        public static PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
             PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
 
@@ -62,8 +62,8 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
 
             do
             {
-                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey);
-                TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, newPartnerKey, ref newPartnerKey);
+                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey, ADataBase);
+                TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, newPartnerKey, ref newPartnerKey, ADataBase);
                 PartnerRow.PartnerKey = newPartnerKey;
             } while (newPartnerKey == -1);
 
@@ -77,9 +77,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new family
-        public static PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS)
+        public static PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestPartner, Mr";
@@ -100,9 +100,10 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             Int32 ALocationKey,
             string AFirstName,
             string ATitle,
-            int AFamilyID)
+            int AFamilyID,
+            TDataBase ADataBase)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
             PartnerRow.PartnerShortName = AFamilyKey.ToString() + ", " + AFirstName + ", " + ATitle;
@@ -126,9 +127,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new unit
-        public static PPartnerRow CreateNewUnitPartner(PartnerEditTDS AMainDS)
+        public static PPartnerRow CreateNewUnitPartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
             PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestUnit";
@@ -142,9 +143,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new unit
-        public static PPartnerRow CreateNewUnitPartnerWithTypeCode(PartnerEditTDS AMainDS, string AUnitType)
+        public static PPartnerRow CreateNewUnitPartnerWithTypeCode(PartnerEditTDS AMainDS, string AUnitType, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
             PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestUnit";
@@ -159,9 +160,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new organisation
-        public static PPartnerRow CreateNewOrganisationPartner(PartnerEditTDS AMainDS)
+        public static PPartnerRow CreateNewOrganisationPartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_ORGANISATION;
             PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestOrganisation";
@@ -175,19 +176,26 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new church
-        public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS)
+        public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
+            TDataBase db = DBAccess.Connect("CreateNewChurchPartner", ADataBase);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
-            // make sure denomation "UNKNOWN" exists as this is the default value
-            if (!PDenominationAccess.Exists("UNKNOWN", DBAccess.GDBAccessObj.Transaction))
+            // make sure denomination "UNKNOWN" exists as this is the default value
+            if (!PDenominationAccess.Exists("UNKNOWN", Transaction))
             {
                 PDenominationTable DenominationTable = new PDenominationTable();
                 PDenominationRow DenominationRow = DenominationTable.NewRowTyped();
                 DenominationRow.DenominationCode = "UNKNOWN";
                 DenominationRow.DenominationName = "Unknown";
                 DenominationTable.Rows.Add(DenominationRow);
-                PDenominationAccess.SubmitChanges(DenominationTable, DBAccess.GDBAccessObj.Transaction);
+                PDenominationAccess.SubmitChanges(DenominationTable, Transaction);
+                Transaction.Commit();
+            }
+            else
+            {
+                Transaction.Rollback();
             }
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_CHURCH;
@@ -203,9 +211,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new bank
-        public static PPartnerRow CreateNewBankPartner(PartnerEditTDS AMainDS)
+        public static PPartnerRow CreateNewBankPartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_BANK;
             PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestBank";
@@ -219,11 +227,11 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new BankingDetails record and a new PartnerBankingDetails record
-        public static PartnerEditTDSPBankingDetailsRow CreateNewBankingRecords(long APartnerKey, PartnerEditTDS AMainDS)
+        public static PartnerEditTDSPBankingDetailsRow CreateNewBankingRecords(long APartnerKey, PartnerEditTDS AMainDS, TDataBase ADataBase)
         {
             PartnerEditTDSPBankingDetailsRow BankingDetailsRow = AMainDS.PBankingDetails.NewRowTyped();
 
-            BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details));
+            BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details, ADataBase));
             BankingDetailsRow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
             BankingDetailsRow.MainAccount = true;
             AMainDS.PBankingDetails.Rows.Add(BankingDetailsRow);
@@ -243,9 +251,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new venue
-        public static PPartnerRow CreateNewVenuePartner(PartnerEditTDS AMainDS)
+        public static PPartnerRow CreateNewVenuePartner(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_VENUE;
             PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestVenue";
@@ -260,9 +268,9 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create a new family with one person
-        public static void CreateFamilyWithOnePersonRecord(PartnerEditTDS AMainDS)
+        public static void CreateFamilyWithOnePersonRecord(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewFamilyPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewFamilyPartner(AMainDS, ADataBase);
 
             CreateNewLocation(PartnerRow.PartnerKey, AMainDS);
 
@@ -271,13 +279,14 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
                 AMainDS.PLocation[0].LocationKey,
                 "Adam",
                 "Mr",
-                0);
+                0,
+                ADataBase);
         }
 
         /// create a new family with two persons
-        public static void CreateFamilyWithTwoPersonRecords(PartnerEditTDS AMainDS)
+        public static void CreateFamilyWithTwoPersonRecords(PartnerEditTDS AMainDS, TDataBase ADataBase = null)
         {
-            PPartnerRow PartnerRow = CreateNewFamilyPartner(AMainDS);
+            PPartnerRow PartnerRow = CreateNewFamilyPartner(AMainDS, ADataBase);
 
             CreateNewLocation(PartnerRow.PartnerKey, AMainDS);
 
@@ -286,13 +295,15 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
                 AMainDS.PLocation[0].LocationKey,
                 "Adam",
                 "Mr",
-                0);
+                0,
+                ADataBase);
             CreateNewPerson(AMainDS,
                 PartnerRow.PartnerKey,
                 AMainDS.PLocation[0].LocationKey,
                 "Eve",
                 "Mrs",
-                1);
+                1,
+                ADataBase);
         }
 
         /// create a new location
@@ -317,11 +328,15 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         }
 
         /// create new gift info
-        public static AGiftBatchRow CreateNewGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
+        public static AGiftBatchRow CreateNewGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS, TDataBase ADataBase = null)
         {
-            ALedgerAccess.LoadAll(AGiftDS, DBAccess.GDBAccessObj.Transaction);
+            TDataBase db = DBAccess.Connect("CreateNewGiftInfo", ADataBase);
+            bool NewTransaction;
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
-            AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch");
+            ALedgerAccess.LoadAll(AGiftDS, Transaction);
+
+            AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch", db);
 
             // Create a new GiftBatch
             AGiftBatchRow Batch = AGiftDS.AGiftBatch[0];
@@ -349,19 +364,35 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             GiftDetail.DetailNumber = 1;
             GiftDetail.MotivationGroupCode = "GIFT";
             GiftDetail.MotivationDetailCode = "SUPPORT";
-            GiftDetail.RecipientKey = 0;
+            // this won't work with RecipientKey 0 anymore. see https://github.com/openpetra/openpetra/issues/183
+            GiftDetail.RecipientKey = 43000000;
             GiftDetail.RecipientLedgerNumber = APartnerKey;
+            GiftDetail.GiftTransactionAmount = 10;
             AGiftDS.AGiftDetail.Rows.Add(GiftDetail);
+
+            if (NewTransaction)
+            {
+                  Transaction.Rollback();
+            }
 
             return Batch;
         }
 
         /// create new recurring gift info
-        public static ARecurringGiftBatchRow CreateNewRecurringGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
+        public static ARecurringGiftBatchRow CreateNewRecurringGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS, TDataBase ADataBase = null)
         {
-            ALedgerAccess.LoadAll(AGiftDS, DBAccess.GDBAccessObj.Transaction);
+            TDataBase db = DBAccess.Connect("CreateNewRecurringGiftInfo", ADataBase);
+            bool NewTransaction;
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
-            AGiftDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(AGiftDS.ALedger[0].LedgerNumber);
+            ALedgerAccess.LoadAll(AGiftDS, Transaction);
+
+            AGiftDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(AGiftDS.ALedger[0].LedgerNumber, db);
+
+            if (NewTransaction)
+            {
+                Transaction.Rollback();
+            }
 
             // Create a new RecurringGiftBatch
             ARecurringGiftBatchRow Batch = AGiftDS.ARecurringGiftBatch[0];
@@ -383,19 +414,23 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             RecurringGiftDetail.GiftTransactionNumber = 1;
             RecurringGiftDetail.MotivationGroupCode = "GIFT";
             RecurringGiftDetail.MotivationDetailCode = "SUPPORT";
-            RecurringGiftDetail.RecipientKey = APartnerKey;
+            RecurringGiftDetail.RecipientKey = 43000000;
             RecurringGiftDetail.RecipientLedgerNumber = APartnerKey;
+            RecurringGiftDetail.GiftAmount = 10;
             AGiftDS.ARecurringGiftDetail.Rows.Add(RecurringGiftDetail);
 
             return Batch;
         }
 
         /// create new AP info
-        public static AApDocumentRow CreateNewAPInfo(Int64 APartnerKey, ref AccountsPayableTDS AMainDS)
+        public static AApDocumentRow CreateNewAPInfo(Int64 APartnerKey, ref AccountsPayableTDS AMainDS, TDataBase ADataBase = null)
         {
-            ALedgerTable LedgerTable = ALedgerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction);
+            TDataBase db = DBAccess.Connect("CreateNewAPInfo", ADataBase);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
-            AMainDS = TAPTransactionWebConnector.CreateAApDocument(((ALedgerRow)LedgerTable.Rows[0]).LedgerNumber, APartnerKey, true);
+            ALedgerTable LedgerTable = ALedgerAccess.LoadAll(Transaction);
+
+            AMainDS = TAPTransactionWebConnector.CreateAApDocument(((ALedgerRow)LedgerTable.Rows[0]).LedgerNumber, APartnerKey, true, db);
 
             // Create a new RecurringGiftBatch
             AApDocumentRow Document = AMainDS.AApDocument[0];
@@ -413,14 +448,19 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             ApSupplierRow.CurrencyCode = "EUR";
             AMainDS.AApSupplier.Rows.Add(ApSupplierRow);
 
+            Transaction.Commit();
+
             return Document;
         }
 
         /// create new PM data
-        public static PDataLabelTable CreateNewPMData(long AFromPartnerKey, long AToPartnerKey, IndividualDataTDS AMainDS)
+        public static PDataLabelTable CreateNewPMData(long AFromPartnerKey, long AToPartnerKey, IndividualDataTDS AMainDS, TDataBase ADataBase = null)
         {
+            TDataBase db = DBAccess.Connect("CreateNewPMData", ADataBase);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
             // Create a new DataLabel record
-            PDataLabelTable AllDataLabelTable = PDataLabelAccess.LoadAll(DBAccess.GDBAccessObj.Transaction);
+            PDataLabelTable AllDataLabelTable = PDataLabelAccess.LoadAll(Transaction);
             PDataLabelTable DataLabelTable = new PDataLabelTable();
             PDataLabelRow DataLabelRow = DataLabelTable.NewRowTyped();
 
@@ -460,6 +500,8 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             ToPersonalData.PartnerKey = AToPartnerKey;
             ToPersonalData.WeightKg = 95;
             AMainDS.PmPersonalData.Rows.Add(ToPersonalData);
+
+            Transaction.Rollback();
 
             return DataLabelTable;
         }

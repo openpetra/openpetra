@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -82,8 +82,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Create Partner Form Letter"));
 
-            TDBTransaction ReadTransaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -176,9 +176,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return null;
             }
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -211,9 +211,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return null;
             }
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -1238,10 +1238,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             String AddressBlock = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOk = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOk,
                 delegate
                 {
                     AddressBlock = TFormLetterTools.BuildAddressBlock(AFormData, AAddressLayoutCode, APartnerClass, Transaction);
@@ -1299,9 +1299,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"));
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOk = false;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOk,
                 delegate
                 {
                     try
@@ -1362,10 +1362,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool UpdateSubscriptionsReceivedForPartner(long APartnerKey, String APublicationsCSVList)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOk = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+            DBAccess.WriteTransaction(ref Transaction, ref SubmissionOk,
                 delegate
                 {
                     UpdateSubscriptionsReceived(APartnerKey, APublicationsCSVList, Transaction);

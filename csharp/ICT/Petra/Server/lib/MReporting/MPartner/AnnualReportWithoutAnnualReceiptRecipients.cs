@@ -49,20 +49,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
         {
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
-            bool NewTransaction;
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
-                out NewTransaction,
-                "ReportRead");
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            DataTable recipients = null;
 
-            // get all the recipients
-            string sql = templateProcessor.GetSQLQuery("SelectRecipients");
-            DataTable recipients = DBAccess.GDBAccessObj.SelectDT(sql, "recipients", ReadTransaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
+                delegate
+                {
+                    // get all the recipients
+                    string sql = templateProcessor.GetSQLQuery("SelectRecipients");
+                    recipients = ReadTransaction.DataBaseObj.SelectDT(sql, "recipients", ReadTransaction);
+                });
 
             // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -98,14 +98,10 @@ namespace Ict.Testing.NUnitPetraServer
             Catalog.Init();
             TServerManager.TheServerManager = new TServerManager();
 
-            DBAccess.GDBAccessObj = new TDataBase();
-            DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
-                TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername, TSrvSetting.DBPassword, "",
+            TDataBase db = DBAccess.Connect(
                 "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
 
-            LoginTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead,
+            LoginTransaction = db.BeginTransaction(IsolationLevel.RepeatableRead,
 ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (Unit Test Login)");
 
             try
@@ -125,11 +121,11 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
             {
                 if (CommitLoginTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    LoginTransaction.Commit();
                 }
                 else
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    LoginTransaction.Rollback();
                 }
             }
 
@@ -156,7 +152,7 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
 
             TUserDefaults.InitializeUnit();
 
-            StringHelper.CurrencyFormatTable = DBAccess.GDBAccessObj.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
+            StringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
 
             return (TServerManager)TServerManager.TheServerManager;
         }

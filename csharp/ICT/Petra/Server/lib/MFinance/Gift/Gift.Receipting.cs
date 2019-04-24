@@ -107,9 +107,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 out typeofTable);
             string BaseCurrency = LedgerTable[0].BaseCurrency;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("AnnualGiftReceipts");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -175,7 +176,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 parameters[5].Value = AExtract;
                             }
 
-                            donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
+                            donorkeys = db.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
 
                             // put deceased partner's at the front (still sorted alphabetically)
                             if (ADeceasedFirst)
@@ -220,7 +221,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             parameters[3] = new OdbcParameter("DonorKey", OdbcType.BigInt);
                             parameters[3].Value = donorKey;
 
-                            DataTable donations = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Donations", Transaction, parameters);
+                            DataTable donations = db.SelectDT(SqlStmt, "Donations", Transaction, parameters);
 
                             if (donations.Rows.Count > 0)
                             {
@@ -707,9 +708,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             DataTable GiftsTbl = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetUnreceiptedGifts");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -733,7 +735,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                           "AND m.a_receipt_l=TRUE)) " +
                                           "ORDER BY BatchNumber";
 
-                        GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
+                        GiftsTbl = db.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
                     }
                     catch (Exception ex)
                     {
@@ -963,11 +965,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             string HtmlDoc = string.Empty;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PrintGiftReceipt");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -1014,9 +1017,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             SortedList <Int64, AGiftTable>GiftsPerDonor = new SortedList <Int64, AGiftTable>();
             SortedList <Int64, TempDonorInfo>DonorInfo = new SortedList <Int64, TempDonorInfo>();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PrintReceipts");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -1043,7 +1047,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                               " AND PUB_a_gift.a_batch_number_i=" + Row["BatchNumber"] +
                                               " AND PUB_a_gift.a_gift_transaction_number_i=" + Row["TransactionNumber"];
 
-                            DataRow TempRow = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction).Rows[0];
+                            DataRow TempRow = db.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction).Rows[0];
 
                             Int64 DonorKey = Convert.ToInt64(TempRow["DonorKey"]);
                             //
@@ -1109,10 +1113,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             AGiftTable Tbl = new AGiftTable();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("MarkReceiptsPrinted");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1148,10 +1153,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             AGiftTable Tbl = new AGiftTable();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("MarkReceiptsPrinted");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate
@@ -1193,9 +1199,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             ALedgerTable LedgerTbl = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetLastReceiptNumber");
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -1229,10 +1236,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             ALedgerTable LedgerTbl = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetLastReceiptNumber");
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+            db.WriteTransaction(
                 ref Transaction,
                 ref SubmissionOK,
                 delegate

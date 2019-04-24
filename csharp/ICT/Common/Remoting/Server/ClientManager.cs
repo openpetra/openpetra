@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,7 +79,6 @@ namespace Ict.Common.Remoting.Server
         private static IErrorLog UErrorLog = null;
         private static ILoginLog ULoginLog = null;
         private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null;
-        private static TDelegateDBConnectionBroken UDelegateDBConnectionBroken = null;
 
         /// <summary>Used for ThreadLocking a critical part of the Client Connection code to make sure that this code is executed by exactly one Client at any given time</summary>
         private static System.Object UConnectClientMonitor = new System.Object();
@@ -284,15 +283,13 @@ namespace Ict.Common.Remoting.Server
             IUserManager AUserManager,
             IErrorLog AErrorLog,
             ILoginLog ALoginLog,
-            IMaintenanceLogonMessage AMaintenanceLogonMessage,
-            TDelegateDBConnectionBroken ADelegateDBConnectionBroken)
+            IMaintenanceLogonMessage AMaintenanceLogonMessage)
         {
             USystemDefaultsCache = ASystemDefaultsCache;
             UUserManager = AUserManager;
             UErrorLog = AErrorLog;
             ULoginLog = ALoginLog;
             UMaintenanceLogonMessage = AMaintenanceLogonMessage;
-            UDelegateDBConnectionBroken = ADelegateDBConnectionBroken;
         }
 
         /// <summary>
@@ -378,6 +375,13 @@ namespace Ict.Common.Remoting.Server
             catch (ESystemDisabledException)
             {
                 LogFailedUserAuthentication(AUserName, "The System is currently Disabled",
+                    AClientComputerName, AClientIPAddress);
+
+                throw;
+            }
+            catch (ELicenseExpiredException)
+            {
+                LogFailedUserAuthentication(AUserName, "The System is not licensed",
                     AClientComputerName, AClientIPAddress);
 
                 throw;
@@ -909,7 +913,7 @@ namespace Ict.Common.Remoting.Server
             out IPrincipal AUserInfo)
         {
             TDataBase DBConnectionObj = null;
-            TDBTransaction ReadWriteTransaction = null;
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
             bool CommitLoginTransaction = false;
 
             TConnectedClient ConnectedClient = null;
@@ -1018,7 +1022,7 @@ namespace Ict.Common.Remoting.Server
                     try
                     {
                         // Open a separate DB Connection for the client login...
-                        DBConnectionObj = DBAccess.SimpleEstablishDBConnection("ConnectClient (User Login)");
+                        DBConnectionObj = DBAccess.Connect("ConnectClient (User Login)");
 
                         // ...and start a DB Transaction on that separate DB Connection
                         ReadWriteTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable, 0, "ConnectClient (User Login)");
@@ -1096,11 +1100,11 @@ namespace Ict.Common.Remoting.Server
                         {
                             if (CommitLoginTransaction)
                             {
-                                DBConnectionObj.CommitTransaction();
+                                ReadWriteTransaction.Commit();
                             }
                             else
                             {
-                                DBConnectionObj.RollbackTransaction();
+                                ReadWriteTransaction.Rollback();
                             }
 
                             DBConnectionObj.CloseDBConnection();
@@ -1177,6 +1181,10 @@ namespace Ict.Common.Remoting.Server
             else if (e is ESystemDisabledException)
             {
                 return eLoginEnum.eLoginSystemDisabled;
+            }
+            else if (e is ELicenseExpiredException)
+            {
+                return eLoginEnum.eLoginLicenseExpired;
             }
             else if (e is EClientVersionMismatchException)
             {

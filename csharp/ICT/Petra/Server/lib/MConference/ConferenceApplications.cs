@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MConference.Applications
             List <Int64>AllowedRegistrationOffices = new List <long>();
 
             // get all offices that have registrations for this event
-            DataTable offices = DBAccess.GDBAccessObj.SelectDT(
+            DataTable offices = ATransaction.DataBaseObj.SelectDT(
                 String.Format("SELECT DISTINCT {0} FROM PUB_{1}",
                     PmShortTermApplicationTable.GetRegistrationOfficeDBName(),
                     PmShortTermApplicationTable.GetTableDBName()),
@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
             // if there are no REG-... module permissions for anyone, allow all offices? this would help with a base database for testing?
             Int32 CountRegModules =
-                Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM " + SModuleTable.GetTableDBName() + " WHERE " +
+                Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar("SELECT COUNT(*) FROM " + SModuleTable.GetTableDBName() + " WHERE " +
                         SModuleTable.GetModuleIdDBName() + " LIKE 'REG-%'", ATransaction));
 
             foreach (DataRow officeRow in offices.Rows)
@@ -118,7 +118,8 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             // TODO: check for permissions for just one specific office, linked from the config file?
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("IsConferenceOrganisingOffice");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             List <Int64>AllowedRegistrationOffices = new List <long>();
             try
@@ -129,7 +130,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 
@@ -160,12 +161,10 @@ namespace Ict.Petra.Server.MConference.Applications
             string ARole,
             bool AClearJSONData)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -335,27 +334,27 @@ namespace Ict.Petra.Server.MConference.Applications
                 parameters.Add(parameter);
             }
 
-            DBAccess.GDBAccessObj.Select(MainDS,
+            ATransaction.DataBaseObj.Select(MainDS,
                 queryShortTermApplication,
                 MainDS.PmShortTermApplication.TableName, ATransaction, parameters.ToArray());
 
-            DBAccess.GDBAccessObj.Select(MainDS,
+            ATransaction.DataBaseObj.Select(MainDS,
                 queryPerson,
                 MainDS.PPerson.TableName, ATransaction, parameters.ToArray());
 
-            DBAccess.GDBAccessObj.Select(MainDS,
+            ATransaction.DataBaseObj.Select(MainDS,
                 queryPartner,
                 MainDS.PPartner.TableName, ATransaction, parameters.ToArray());
 
-            DBAccess.GDBAccessObj.Select(MainDS,
+            ATransaction.DataBaseObj.Select(MainDS,
                 queryGeneralApplication,
                 MainDS.PmGeneralApplication.TableName, ATransaction, parameters.ToArray());
 
-            DBAccess.GDBAccessObj.Select(MainDS,
+            ATransaction.DataBaseObj.Select(MainDS,
                 queryDataLabel,
                 MainDS.PDataLabelValuePartner.TableName, ATransaction, parameters.ToArray());
 
-            DBAccess.GDBAccessObj.Select(MainDS,
+            ATransaction.DataBaseObj.Select(MainDS,
                 "SELECT * FROM PUB_p_data_label WHERE " + DataLabels,
                 MainDS.PDataLabel.TableName, ATransaction);
 
@@ -417,7 +416,8 @@ namespace Ict.Petra.Server.MConference.Applications
         public static PPartnerTable GetRegistrationOffices()
         {
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDataBase db = DBAccess.Connect("GetRegistrationOffices");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             PPartnerTable result = new PPartnerTable();
 
@@ -457,7 +457,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    Transaction.Rollback();
                 }
             }
 

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//      peters
+//      peters, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -187,8 +187,9 @@ namespace Tests.MFinance.Server.GL
         [Test]
         public void TestPrepareGLBatchForPostingArgumentValidation()
         {
-            TVerificationResultCollection VerificationResult = null;
-            TDBTransaction Transaction = null;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+            TDataBase db = DBAccess.Connect("TestPrepareGLBatchForPostingArgumentValidation");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
             GLBatchTDS MainDS = null;
             int BatchPeriod = -1;
 
@@ -209,36 +210,17 @@ namespace Tests.MFinance.Server.GL
                 Assert.Fail(Message);
             }
 
-            Message = "Validation failed for PrepareGLBatchForPosting with batch number less than 1.";
-
             // Prepare GL Batch For Posting with batch number less than 1
+            Message = "Validation failed for PrepareGLBatchForPosting with batch number less than 1.";
             try
             {
-                TGLPosting.PrepareGLBatchForPosting(out MainDS, 1, -1, ref Transaction, out VerificationResult, null, ref BatchPeriod);
+                TGLPosting.PrepareGLBatchForPosting(out MainDS, 43, -1, ref Transaction, out VerificationResult, null, ref BatchPeriod);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)
             {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(43, e.LedgerNumber, Message);
                 Assert.AreEqual(-1, e.BatchNumber, Message);
-            }
-            catch
-            {
-                Assert.Fail(Message);
-            }
-
-            Message = "Validation failed for PrepareGLBatchForPosting with null transaction.";
-
-            // Prepare GL Batch For Posting with null transaction
-            try
-            {
-                TGLPosting.PrepareGLBatchForPosting(out MainDS, 1, 1, ref Transaction, out VerificationResult, null, ref BatchPeriod);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemDBTransactionNullException e)
-            {
-                Assert.AreEqual("Function:Prepare GL Batch For Posting - Database Transaction must not be NULL!", e.Message,
-                    Message);
             }
             catch
             {
@@ -253,7 +235,8 @@ namespace Tests.MFinance.Server.GL
         public void TestLoadGLBatchDataArgumentValidation()
         {
             TVerificationResultCollection VerificationResult = null;
-            TDBTransaction Transaction = null;
+            TDataBase db = DBAccess.Connect("TestLoadGLBatchDataArgumentValidation");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // Load GL Batch with ledger number less than 1
             string Message = "Validation failed for LoadGLBatchData with ledger number less than 1.";
@@ -272,17 +255,16 @@ namespace Tests.MFinance.Server.GL
                 Assert.Fail(Message);
             }
 
-            Message = "Validation failed for LoadGLBatchData with batch number less than 1.";
-
             // Load GL Batch with batch number less than 1
+            Message = "Validation failed for LoadGLBatchData with batch number less than 1.";
             try
             {
-                TGLPosting.LoadGLBatchData(1, -1, ref Transaction, ref VerificationResult);
+                TGLPosting.LoadGLBatchData(43, -1, ref Transaction, ref VerificationResult);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)
             {
-                Assert.AreEqual(1, e.LedgerNumber, Message);
+                Assert.AreEqual(43, e.LedgerNumber, Message);
                 Assert.AreEqual(-1, e.BatchNumber, Message);
             }
             catch
@@ -290,29 +272,9 @@ namespace Tests.MFinance.Server.GL
                 Assert.Fail(Message);
             }
 
-            Message = "Validation failed for LoadGLBatchData with null transaction.";
-
-            // Load GL Batch with null transaction
-            try
-            {
-                TGLPosting.LoadGLBatchData(1, 1, ref Transaction, ref VerificationResult);
-                Assert.Fail(Message);
-            }
-            catch (EFinanceSystemDBTransactionNullException e)
-            {
-                Assert.AreEqual("Function:Load GL Batch Data - Database Transaction must not be NULL!", e.Message,
-                    Message);
-            }
-            catch
-            {
-                Assert.Fail(Message);
-            }
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            Message = "Validation failed for LoadGLBatchData with null VerificationResult.";
-
             // Load GL Batch with null VerificationResult
+            Message = "Validation failed for LoadGLBatchData with null VerificationResult.";
+            VerificationResult = null;
             try
             {
                 TGLPosting.LoadGLBatchData(1, 1, ref Transaction, ref VerificationResult);

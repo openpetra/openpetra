@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,12 +60,8 @@ namespace Ict.Petra.Server.App.Core
     public class TServerManager : TServerManagerBase
     {
         private static TDataBase FDBConnectionCheckAccessObj;
-        private static bool FDBConnectionBroken = false;
-        private static System.Timers.Timer FCheckDBConnectionOK;
-        private static int FCheckDBConnectionSyncPoint = 0;
 
         private IUserManager FUserManager;
-        private readonly object FDBConnectionBrokenLock = new Object();
         private bool FDBConnectionEstablishmentAtStartup;
 
         /// <summary>
@@ -137,8 +133,7 @@ namespace Ict.Petra.Server.App.Core
                 FUserManager,
                 new TErrorLog(),
                 new TLoginLog(),
-                new TMaintenanceLogonMessage(),
-                ExceptionHandling_DBConnectionBrokenCallback);
+                new TMaintenanceLogonMessage());
 
             //
             // Set up 'Timed Processing'
@@ -182,55 +177,6 @@ namespace Ict.Petra.Server.App.Core
             }
         }
 
-        private List <TDataBase>FDBConnections = new List <TDataBase>();
-
-        /// <summary>
-        /// manage database connections for the ASP webclient
-        /// </summary>
-        /// <param name="ADatabaseConnection"></param>
-        public void AddDBConnection(TDataBase ADatabaseConnection)
-        {
-            if (!FDBConnections.Contains(ADatabaseConnection))
-            {
-                FDBConnections.Add(ADatabaseConnection);
-            }
-        }
-
-        /// <summary>
-        /// disconnect database connections that are older than the given timeout in seconds.
-        /// This is useful for the ASP webclient
-        /// </summary>
-        /// <param name="ATimeoutInSeconds"></param>
-        /// <param name="AUserID">can limit to one specific username, eg. ANONYMOUS for online registration, or leave empty for all users</param>
-        /// <returns></returns>
-        public bool DisconnectTimedoutDatabaseConnections(Int32 ATimeoutInSeconds, string AUserID)
-        {
-            List <TDataBase>DBsToDisconnect = new List <TDataBase>();
-
-            foreach (TDataBase db in FDBConnections)
-            {
-                if ((AUserID == null) || (AUserID.Length == 0) || (AUserID == db.UserID))
-                {
-                    if (db.LastDBAction.AddSeconds(ATimeoutInSeconds) < DateTime.Now)
-                    {
-                        DBsToDisconnect.Add(db);
-                    }
-                }
-            }
-
-            foreach (TDataBase dbToDisconnect in DBsToDisconnect)
-            {
-                TLogging.Log("Disconnecting DB connection of client " +
-                    dbToDisconnect.UserID + " after timeout. Last activity was at: " +
-                    dbToDisconnect.LastDBAction.ToShortTimeString());
-
-                dbToDisconnect.CloseDBConnection();
-                FDBConnections.Remove(dbToDisconnect);
-            }
-
-            return DBsToDisconnect.Count > 0;
-        }
-
         /// <summary>
         /// (Re-)Opens a Database connection for the Server's DB Polling.
         /// </summary>
@@ -250,62 +196,11 @@ namespace Ict.Petra.Server.App.Core
                 }
             }
 
-            FDBConnectionCheckAccessObj = DBAccess.SimpleEstablishDBConnection("Server's DB Polling Connection");
+            FDBConnectionCheckAccessObj = DBAccess.Connect("Server's DB Polling Connection");
 
             FDBReconnectionAttemptsCounter = 0;
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
-        }
-
-        /// <summary>
-        /// Callback Method that gets called from the 'FirstChanceException' Event if the Exception meant that
-        /// a DB Connection got broken and hence attempts to restore it automatically should be performed.
-        /// </summary>
-        /// <param name="ASource">Provided automatically by .NET - not used.</param>
-        /// <param name="AException">Provided automatically by .NET (holds the Exception that just occurred)
-        ///  - not used.</param>
-        public void ExceptionHandling_DBConnectionBrokenCallback(object ASource, Exception AException)
-        {
-            bool FlagWasntSet = false;
-            Thread PerformDBReconnectionThread;
-
-            lock (FDBConnectionBrokenLock)
-            {
-                if (!FDBConnectionBroken)
-                {
-                    FDBConnectionBroken = true;
-
-                    FlagWasntSet = true;
-                }
-            }
-
-            // Guard against reentry (this callback can be called numerous times [possibly in very quick succession]!):
-            // --> Only take measures if this is the first call in a row!
-            if (FlagWasntSet)
-            {
-                // Ensure we are starting a Thread for DB re-connection attempts only if the Server's DB Polling
-                // DB Connection is actually broken. (Reason for this check: This Event Handler can get called because a
-                // Client's AppDomain has come across a broken DB Connection *which since has been automatically restored*...
-                // if we wouldn't do this check here then we would in this case start re-connection attempts on a perfectly
-                // fine Server's DB Polling connection, which could have adverse side effects if DB commands are getting
-                // executed on it while this would happen!)
-                if (!IsDBConnectionOK())
-                {
-                    StopCheckDBConnectionTimer();
-
-                    QueueClientTaskForAllClientsRegardingBrokenDBConnection(true);
-
-                    TDBReconnectionThread ParameterisedThreadWithCallback = new TDBReconnectionThread(this,
-                        FDBConnectionEstablishmentAtStartup,
-                        new TDBReconnectionThreadCallback(DBReconnectionCallback));
-                    PerformDBReconnectionThread = new Thread(
-                        new ThreadStart(ParameterisedThreadWithCallback.PerformDBReconnection));
-                    PerformDBReconnectionThread.Name = UserInfo.GUserInfo.UserID + "__DBReconnectionThread";
-                    TLogging.LogAtLevel(7, PerformDBReconnectionThread.Name + " starting.");
-
-                    PerformDBReconnectionThread.Start();
-                }
-            }
         }
 
         private void QueueClientTaskForAllClientsRegardingBrokenDBConnection(bool AIsBroken)
@@ -325,198 +220,11 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
-        /// Callback that gets called from Method <see cref="TDBReconnectionThread.PerformDBReconnection"/> upon
-        /// its completion (=when it has successfully restored the Server's DB Polling connection).
-        /// </summary>
-        /// <param name="ADBConnectionBroken">New value for FDBConnectionBroken.</param>
-        /// <param name="ADBReconnectionAttemptsCounter">New value for FDBReconnectionAttemptsCounter.</param>
-        private void DBReconnectionCallback(bool ADBConnectionBroken, int ADBReconnectionAttemptsCounter)
-        {
-            // Update state
-            lock (FDBConnectionBrokenLock)
-            {
-                FDBConnectionBroken = ADBConnectionBroken;
-                FDBReconnectionAttemptsCounter = ADBReconnectionAttemptsCounter;
-            }
-
-            // Re-start the DB Connection check Timer (only if a check interval is specified).
-            StartCheckDBConnectionTimer();
-
-            // If the timed Server processing hasn't been setup yet (normally done at Server startup) then do it
-            // now (this only needs to happen when the DB Connection wasn't available at the time of the Server startup).
-            if (!FServerTimedProcessingSetup)
-            {
-                SetupServerTimedProcessing();
-            }
-
-            QueueClientTaskForAllClientsRegardingBrokenDBConnection(false);
-        }
-
-        /// <summary>
-        /// Starts the DB Connection check Timer (only if a check interval is specified!).
-        /// </summary>
-        /// <remarks>This Method is not reentrant-safe and hence must not be called from multiple Threads
-        /// simultaneously!</remarks>
-        public void StartCheckDBConnectionTimer()
-        {
-            if (DBConnectionCheckInterval != 0)
-            {
-                FCheckDBConnectionSyncPoint = 0;
-
-                FCheckDBConnectionOK = new System.Timers.Timer(DBConnectionCheckInterval);
-                FCheckDBConnectionOK.Elapsed += new ElapsedEventHandler(CheckDBConnectionOK);
-
-                FCheckDBConnectionOK.Start();
-            }
-        }
-
-        /// <summary>
-        /// Stops the DB Connection check Timer (only if a check interval is specified).
-        /// </summary>
-        /// <remarks>This Method is not reentrant-safe and hence must not be called from multiple Threads
-        /// simultaneously!</remarks>
-        public override void StopCheckDBConnectionTimer()
-        {
-            if (DBConnectionCheckInterval != 0)
-            {
-                if (FCheckDBConnectionOK != null)
-                {
-                    //TLogging.Log("Stopping DB Connection check timer...");
-
-                    FCheckDBConnectionOK.Stop();
-
-                    FCheckDBConnectionSyncPoint = -1;
-
-                    //TLogging.Log("    DB Connection check timer stopped.");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks whether the DB Polling Connection is OK. Gets called by the Elapsed Event of Timer
-        /// FCheckDBConnectionOK!
-        /// </summary>
-        /// <param name="ASender">Not evaluated.</param>
-        /// <param name="AEventArgs">Not evaluated.</param>
-        private static void CheckDBConnectionOK(object ASender, ElapsedEventArgs AEventArgs)
-        {
-            // Implementation explanation: The Interlocked.CompareExchange(Int32, Int32, Int32)
-            // method overload is used to avoid reentrancy and to prevent the control thread
-            // from continuing until an executing event ends. The event handler uses the
-            // CompareExchange(Int32, Int32, Int32) method to set a control variable,
-            // FCheckDBConnectionSyncPoint, to 1, but only if the value is currently zero.
-            // This is an *atomic operation*. If the return value is zero, the control
-            // variable has been set to 1 and the event handler proceeds. If the return
-            // value is non-zero, the event is simply discarded to avoid reentrancy.
-            // When the event handler ends, it sets the control variable back to zero.
-            int sync = Interlocked.CompareExchange(ref FCheckDBConnectionSyncPoint, 1, 0);
-
-            if (sync == 0)
-            {
-                // No other Elapsed Event was executing so we are fine to go ahead in this Elapsed Event.
-
-                // Check whether the DB Connection is OK. We don't need to check the return value of the
-                // IsDBConnectionOK Method because if there is a problem the automatic recovery attempts
-                // that get performed when a broken DB connection gets detected jump into gear (see notes in
-                // that Method's implementation)!
-                IsDBConnectionOK();
-
-                // Release control of FCheckDBConnectionSyncPoint
-                FCheckDBConnectionSyncPoint = 0;
-            }
-        }
-
-        /// <summary>
-        /// Checks whether the DB Connection accepts SQL commands by executing a dummy query.
-        /// </summary>
-        /// <remarks><em>Important:</em>If this Method should be renamed then you must search
-        /// for the string in the source code and rename it there as well because hard-coded checks
-        /// for this Method's name are in place!</remarks>
-        /// <returns>True if the DB Connection accepts SQL commands by executing a dummy query, otherwise false.</returns>
-        private static bool IsDBConnectionOK()
-        {
-            bool ReturnValue = false;
-            TDBTransaction ReadTransaction = null;
-
-            try
-            {
-                if (FDBConnectionCheckAccessObj != null)
-                {
-                    FDBConnectionCheckAccessObj.BeginAutoReadTransaction(ref ReadTransaction, delegate
-                        {
-                            //TLogging.Log("IsDBConnectionOK:  Checking Server's DB Polling Connection...");
-
-                            // Simply issue a dummy query to find out whether the DB Connection is OK!
-                            FDBConnectionCheckAccessObj.ExecuteScalar("SELECT 1", ReadTransaction);
-                            {
-                                //TLogging.Log("IsDBConnectionOK:  Server's DB Polling Connection is OK...");
-
-                                ReturnValue = true;
-                            }
-                        });
-                }
-            }
-            catch (Exception)
-            {
-                // *Deliberate swallowing* of Exception as we can expect Exceptions to happen when the DB Connection
-                // is somehow not OK!
-                // --> When any Exception gets thrown it ends up being caught by the FistChanceException Event Handler.
-                // This will 1) cause the Timer Method 'CheckDBConnectionOK' to no longer get called as the
-                // 'StopCheckDBConnectionTimer' Method will get called and then 2) a loop that runs an unlimited number
-                // of retries to re-establish the DB Connection gets started! (Only once the DB Connection got
-                // re-established the FCheckDBConnectionOK Timer will be started again!)
-            }
-
-            if (!ReturnValue)
-            {
-                //TLogging.Log("IsDBConnectionOK:  Found that the DB Connection is BROKEN!!!");
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Closes the Server's DB Polling Connection in an orderly fashion.
-        /// </summary>
-        public override void CloseDBPollingConnection()
-        {
-            try
-            {
-                if (FDBConnectionCheckAccessObj != null)
-                {
-                    TLogging.Log("Closing the Server's DB Polling Connection...");
-
-                    FDBConnectionCheckAccessObj.CloseDBConnection(true);
-
-                    TLogging.Log("    The Server's DB Polling Connection got closed.");
-                }
-            }
-            catch (Exception Exc)
-            {
-                // *Deliberate swallowing* of Exception as we don't care if we should encounter DB Connection problems when
-                // stopping the Server as the Server process will end anyway.
-                TLogging.Log("CloseDBPollingConnection: Encountered an Exception:" + Environment.NewLine + Exc.ToString());
-            }
-        }
-
-        /// <summary>
         /// Opens a Database connection to the main Database.
         /// </summary>
-        /// <returns>void</returns>
-        public void EstablishDBConnection()
+        public TDataBase EstablishDBConnection()
         {
-            DBAccess.GDBAccessObj = new TDataBase();
-
-            DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                TSrvSetting.PostgreSQLServer,
-                TSrvSetting.PostgreSQLServerPort,
-                TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername,
-                TSrvSetting.DBPassword,
-                "",
-                "Server's DB Connection");
-
-            TLogging.Log("  " + Catalog.GetString("Connected to Database."));
+            return DBAccess.Connect("Server's DB Connection");
         }
 
         private IImportExportManager FImportExportManager = null;
@@ -572,16 +280,6 @@ namespace Ict.Petra.Server.App.Core
         public override void RefreshAllCachedTables()
         {
             TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
-        }
-
-        /// <summary>
-        /// Clears (flushes) all RDMBS Connection Pools and returns the new number of DB Connections after clearing all
-        /// RDMBS Connection Pools.
-        /// </summary>
-        /// <returns>New number of DB Connections after clearing all RDMBS Connection Pools.</returns>
-        public override int ClearConnectionPoolAndGetNumberOfDBConnections()
-        {
-            return TDataBase.ClearConnectionPoolAndGetNumberOfDBConnections(TSrvSetting.RDMBSType);
         }
 
         /// <summary>
@@ -750,130 +448,6 @@ namespace Ict.Petra.Server.App.Core
             get
             {
                 return TTimedProcessing.DailyStartTime24Hrs;
-            }
-        }
-
-        /// <summary>
-        /// Class for running a background Thread that performs an unlimited number of retries to (re-)establish
-        /// the Server's DB Polling Connection.
-        /// </summary>
-        private class TDBReconnectionThread
-        {
-            // Stateful information used in Method 'PerformDBReconnection'.
-            private TServerManager FTheServerManager;
-            private bool FDBConnectionEstablishmentAtStartup;
-            private TDBReconnectionThreadCallback FCallbackAtEndOfThread;
-
-            /// <summary>
-            /// This Constructor sets stateful information that is used in Method 'PerformDBReconnection'.
-            /// </summary>
-            /// <param name="ATheServerManager">Reference to the one instance of <see cref="TServerManager"/>.</param>
-            /// <param name="ADBConnectionEstablishmentAtStartup">Set to true if the re-establishing of the Server's
-            /// DB Polling Connection happens at Server startup time, otherwise to false.</param>
-            /// <param name="ACallbackAtEndOfThread">Callback Method that gets called only when the Server's DB Polling
-            /// Connection has been re-established.</param>
-            public TDBReconnectionThread(
-                TServerManager ATheServerManager, bool ADBConnectionEstablishmentAtStartup,
-                TDBReconnectionThreadCallback ACallbackAtEndOfThread)
-            {
-                FTheServerManager = ATheServerManager;
-                FDBConnectionEstablishmentAtStartup = ADBConnectionEstablishmentAtStartup;
-                FCallbackAtEndOfThread = ACallbackAtEndOfThread;
-            }
-
-            /// <summary>
-            /// Performs an unlimited number of retries to (re-)establish the Server's DB Polling Connection.
-            /// Finishes only when the Server's DB Polling Connection is restored.
-            /// </summary>
-            /// <remarks>This Method must only be run in a Thread as otherwise it would blocks the server
-            /// completely!</remarks>
-            public void PerformDBReconnection()
-            {
-                const int WAITING_TIME_BETWEEN_RETRIES = 2000; // 2000 Milliseconds
-
-                string StrOpenDBConn = Catalog.GetString("open the Server's DB Polling Connection...");
-                string StrReestablishDBConn = Catalog.GetString("re-establish the Server's broken DB Polling Connection...");
-                string StrEstablished = Catalog.GetString("got successfully established");
-                string StrRestored = Catalog.GetString("got successfully restored");
-                bool DBConnectionRestored = false;
-
-                FTheServerManager.DBReconnectionAttemptsCounter = 0;
-
-                TLogging.LogAtLevel(1, String.Format(
-                        "ExceptionHandling_DBConnectionBrokenCallback: Starting handling of broken database connection (on Thread {0})...!",
-                        ThreadingHelper.GetThreadIdentifier(Thread.CurrentThread)));
-
-                while (!DBConnectionRestored)
-                {
-                    try
-                    {
-                        FTheServerManager.DBReconnectionAttemptsCounter++;
-
-                        TLogging.Log(String.Format("Attempt {0} to ", FTheServerManager.DBReconnectionAttemptsCounter) +
-                            (FDBConnectionEstablishmentAtStartup ? StrOpenDBConn : StrReestablishDBConn));
-
-                        FTheServerManager.EstablishDBPollingConnection();
-
-                        DBConnectionRestored = true;
-                    }
-                    catch (SocketException Exc)
-                    {
-                        TLogging.LogAtLevel(1, Exc.Message);
-
-                        // Getting a SocketException here *is what can be expected* until the DB connection can be successfully
-                        // established - hence we are 'swallowing' this particular Exception here on purpose!
-                        Thread.Sleep(WAITING_TIME_BETWEEN_RETRIES);
-                    }
-                    catch (NpgsqlException Exc)
-                    {
-                        TLogging.LogAtLevel(1, Exc.Message);
-
-                        // Getting a NpgsqlException here *is what can be expected* until the DB connection can be successfully
-                        // established - hence we are 'swallowing' this particular Exception here on purpose!
-                        Thread.Sleep(WAITING_TIME_BETWEEN_RETRIES);
-                    }
-                    catch (EDBConnectionNotEstablishedException Exc)
-                    {
-                        TLogging.LogAtLevel(1, Exc.Message);
-
-                        // Getting an EDBConnectionNotEstablishedException here *is what can be expected* until the DB connection
-                        // can be successfully established - hence we are 'swallowing' this particular Exception here on purpose!
-                        Thread.Sleep(WAITING_TIME_BETWEEN_RETRIES);
-                    }
-                    catch (Exception Exc)
-                    {
-                        TLogging.Log(Exc.Message);
-                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
-
-                        throw;
-                    }
-                }
-
-                if (FCallbackAtEndOfThread != null)
-                {
-                    FCallbackAtEndOfThread(false, 0);
-                }
-                else
-                {
-                    throw new EOPException("Delegate 'FCallbackAtEndOfThread' was not set up, but it must be set up " +
-                        "for the ability of the 'PerformDBReconnection' Method to signalise that it has re-established the " +
-                        "Server's DB Polling Connection");
-                }
-
-                // Log that we are done once the Callback Method has finished running
-                if (TLogging.DebugLevel == 0)
-                {
-                    TLogging.Log(String.Format("  --> The Server's DB Polling Connection {0}!",
-                            FDBConnectionEstablishmentAtStartup ? StrEstablished : StrRestored));
-                }
-                else
-                {
-                    TLogging.Log(
-                        String.Format("FINISHED with the handling of a broken database " +
-                            "connection (on Thread {0}) - the Server's DB Polling Connection {1}!",
-                            ThreadingHelper.GetThreadIdentifier(Thread.CurrentThread),
-                            FDBConnectionEstablishmentAtStartup ? StrEstablished : StrRestored));
-                }
             }
         }
     }

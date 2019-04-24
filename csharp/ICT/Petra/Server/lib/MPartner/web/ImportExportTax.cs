@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanP
+//       alanP, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -104,10 +104,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             bool cancelledByUser = false;
             bool doneHeaderRow = (firstRowIsHeader == false);
 
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
             bool submissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, 3, ref transaction, ref submissionOK,
+            DBAccess.WriteTransaction(ref transaction, ref submissionOK,
                 delegate
                 {
                     try

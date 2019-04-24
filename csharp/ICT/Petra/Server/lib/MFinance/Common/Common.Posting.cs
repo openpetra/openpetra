@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, morayh, christophert
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -263,13 +263,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the batch and all associated tables into the typed dataset
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
         public static GLBatchTDS LoadGLBatchData(Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -293,12 +290,12 @@ namespace Ict.Petra.Server.MFinance.Common
             AVerifications = new TVerificationResultCollection();
             TVerificationResultCollection Verifications = AVerifications;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadGLBatchData", ADataBase);
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -311,6 +308,11 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
 
             return GLBatchDS;
@@ -399,9 +401,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the tables that are needed for posting
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
-        private static GLPostingTDS LoadGLDataForPosting(Int32 ALedgerNumber)
+        private static GLPostingTDS LoadGLDataForPosting(Int32 ALedgerNumber, TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -416,12 +417,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLPostingTDS PostingDS = new GLPostingTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadGLDataForPosting", ADataBase);
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -484,6 +485,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return PostingDS;
         }
 
@@ -493,7 +499,7 @@ namespace Ict.Petra.Server.MFinance.Common
         ///
         /// This should probably be changed, in the new, skinny summarization, only a few rows need to be accessed.
         /// </summary>
-        private static void LoadGLMData(ref GLPostingTDS AGLPostingDS, Int32 ALedgerNumber, ABatchRow ABatchToPost)
+        private static void LoadGLMData(ref GLPostingTDS AGLPostingDS, Int32 ALedgerNumber, ABatchRow ABatchToPost, TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -520,12 +526,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLPostingTDS GLPostingDS = AGLPostingDS;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadGLMData", ADataBase);
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref Transaction,
                     delegate
                     {
@@ -553,7 +559,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         parameter = new OdbcParameter("period", OdbcType.Int);
                         parameter.Value = ABatchToPost.BatchPeriod;
                         parameters.Add(parameter);
-                        DBAccess.GDBAccessObj.Select(GLPostingDS,
+                        db.Select(GLPostingDS,
                             query,
                             GLPostingDS.AGeneralLedgerMasterPeriod.TableName, Transaction, parameters.ToArray());
                     });
@@ -562,6 +568,11 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
         }
 
@@ -573,7 +584,8 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS APostingDS,
             Int32 ALedgerNumber,
             ABatchRow ABatchToPost,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -601,6 +613,8 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodName(true)));
             }
 
+            TDataBase db = DBAccess.Connect("ValidateGLBatchAndTransactions", ADataBase);
+
             #endregion Validate Arguments
 
             bool CriticalError = false;
@@ -623,8 +637,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             //Check the validity of the Journal and transaction numbering
             // This will also correct invalid LastJournal and LastTransaction numbers
-            if (!ValidateGLBatchJournalNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications)
-                || !ValidateGLJournalTransactionNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications))
+            if (!ValidateGLBatchJournalNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications, db)
+                || !ValidateGLJournalTransactionNumbering(ref AGLBatchDS, ref ABatchToPost, ref AVerifications, db))
             {
                 return false;
             }
@@ -670,10 +684,9 @@ namespace Ict.Petra.Server.MFinance.Common
             //Perform additional checks
             GLBatchTDS GLBatchDS = AGLBatchDS;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -819,12 +832,18 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);
         }
 
         private static bool ValidateGLBatchJournalNumbering(ref GLBatchTDS AGLBatch,
             ref ABatchRow ABatchToPost,
-            ref TVerificationResultCollection AVerifications)
+            ref TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -889,14 +908,14 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 //Create temp table to check veracity of Journal numbering
                 GLBatchTDS gLBatch = AGLBatch;
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("ValidateGLBatchJournalNumbering", ADataBase);
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {
-                        DBAccess.GDBAccessObj.Select(gLBatch, SQLStatement, TempTableName, transaction);
+                        db.Select(gLBatch, SQLStatement, TempTableName, transaction);
                     });
 
                 //As long as Batches exist, rows will be returned
@@ -985,6 +1004,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     ABatchToPost.LastJournal = Convert.ToInt32(tempDV[0][jLastJournalAlias]);
                 }
+
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
             catch (Exception ex)
             {
@@ -1004,7 +1028,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private static bool ValidateGLJournalTransactionNumbering(ref GLBatchTDS AGLBatch,
             ref ABatchRow ABatchToPost,
-            ref TVerificationResultCollection AVerifications)
+            ref TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -1076,14 +1101,14 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 //Create temp table to check veracity of Transaction numbering
                 GLBatchTDS gLBatch = AGLBatch;
-                TDBTransaction transaction = null;
+                TDBTransaction transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("ValidateGLJournalTransactionNumbering", ADataBase);
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.ReadTransaction(
                     ref transaction,
                     delegate
                     {
-                        DBAccess.GDBAccessObj.Select(gLBatch, SQLStatement, TempTableName, transaction);
+                        db.Select(gLBatch, SQLStatement, TempTableName, transaction);
                     });
 
                 //As long as Batches exist, rows will be returned
@@ -1189,6 +1214,11 @@ namespace Ict.Petra.Server.MFinance.Common
                             journalRow.LastTransactionNumber = Convert.ToInt32(drv[tLastTransactionAlias]);
                         }
                     }
+                }
+
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
                 }
             }
             catch (Exception ex)
@@ -1845,7 +1875,8 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 ALedgerNumber,
             GLPostingTDS APostingDS,
             Int32 AFromPeriod,
-            ref SortedList <string, TAmount>APostingLevel)
+            ref SortedList <string, TAmount>APostingLevel,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -1939,7 +1970,9 @@ namespace Ict.Petra.Server.MFinance.Common
                         gLMRow.YtdActualForeign += postingLevelElement.TransAmount;
                     }
 
-                    TLedgerInitFlag.SetFlagComponent(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, accountRow.AccountCode);
+                    TLedgerInitFlag flag = new TLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL,
+                        ADataBase);
+                    flag.SetFlagComponent(MFinanceConstants.LEDGER_INIT_FLAG_REVAL, accountRow.AccountCode);
                 }
 
                 if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
@@ -2007,7 +2040,8 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS APostingDS,
             SortedList <string, TAmount>APostingLevel,
             Int32 AFromPeriod,
-            bool ACalculatePostingTree)
+            bool ACalculatePostingTree,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -2047,19 +2081,17 @@ namespace Ict.Petra.Server.MFinance.Common
             else
             {
                 TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SummarizeDataSimple...");
-                SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel);
+                SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel, ADataBase);
             }
         }
 
         /// <summary>
         /// Write all changes to the database; on failure the whole transaction will be rolled back
         /// </summary>
-        /// <param name="AMainDS"></param>
-
-        private static void SubmitChanges(GLPostingTDS AMainDS)
+        private static void SubmitChanges(GLPostingTDS AMainDS, TDataBase ADataBase)
         {
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SubmitChanges...");
-            GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true));
+            GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), ADataBase);
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Finished...");
         }
 
@@ -2111,12 +2143,13 @@ namespace Ict.Petra.Server.MFinance.Common
             AVerifications = null;
             TVerificationResultCollection Verifications = new TVerificationResultCollection();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ReverseBatch");
             bool SubmissionOK = true;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction, ref SubmissionOK,
                     delegate
                     {
@@ -2235,7 +2268,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             // Calculate the credit and debit totals
                             GLRoutines.UpdateBatchTotals(ref MainDS, ref newBatchRow);
 
-                            GLBatchTDSAccess.SubmitChanges(MainDS);
+                            GLBatchTDSAccess.SubmitChanges(MainDS, db);
 
                             ReversalBatchNumber = newBatchRow.BatchNumber;
 
@@ -2256,21 +2289,21 @@ namespace Ict.Petra.Server.MFinance.Common
             AVerifications = Verifications;
             AReversalBatchNumber = ReversalBatchNumber;
 
+            db.CloseDBConnection();
+
             return ReturnValue;
         }
 
         /// <summary>
         /// post a GL Batch
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             List <Int32>BatchNumbers = new List <int>();
             BatchNumbers.Add(ABatchNumber);
 
-            return PostGLBatches(ALedgerNumber, BatchNumbers, out AVerifications);
+            return PostGLBatches(ALedgerNumber, BatchNumbers, out AVerifications, ADataBase);
         }
 
         /// <summary>
@@ -2326,7 +2359,8 @@ namespace Ict.Petra.Server.MFinance.Common
             TVerificationResultCollection VerificationResult = AVerifications;
             TVerificationResultCollection SingleVerificationResultCollection;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PostGLBatches", ADataBase);
             bool SubmissionOK = false;
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
@@ -2335,7 +2369,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -2372,12 +2406,12 @@ namespace Ict.Petra.Server.MFinance.Common
                                 ABatchNumbers.IndexOf(BatchNumber) * 3 + 1);
 
                             mainDS.ThrowAwayAfterSubmitChanges = true;
-                            GLBatchTDSAccess.SubmitChanges(mainDS);
+                            GLBatchTDSAccess.SubmitChanges(mainDS, db);
 
-                            SummarizeInternal(ALedgerNumber, postingDS, PostingLevel, BatchPeriod, false); // No summarisation is performed, from April 2015, Tim Ingham
+                            SummarizeInternal(ALedgerNumber, postingDS, PostingLevel, BatchPeriod, false, db); // No summarisation is performed, from April 2015, Tim Ingham
 
                             postingDS.ThrowAwayAfterSubmitChanges = true;
-                            SubmitChanges(postingDS);
+                            SubmitChanges(postingDS, db);
                         }  // foreach
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -2407,6 +2441,11 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             AVerifications = VerificationResult;
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             //
             // I previously used "Client Tasks" to ask the client to print the GL Posting Register,
@@ -2494,7 +2533,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if ((MainDS != null) && (APostingDS != null))
                 {
-                    SummarizeInternal(ALedgerNumber, APostingDS, PostingLevel, ABatchPeriod, false);
+                    SummarizeInternal(ALedgerNumber, APostingDS, PostingLevel, ABatchPeriod, false, ATransaction.DataBaseObj);
                     RetVal = true;
                 }
             }
@@ -2557,7 +2596,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AVerifications = new TVerificationResultCollection();
 
-            GLPostingTDS PostingDS = LoadGLDataForPosting(ALedgerNumber);
+            GLPostingTDS PostingDS = LoadGLDataForPosting(ALedgerNumber, ATransaction.DataBaseObj);
 
             // get the data from the database into the MainDS
             AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, ref ATransaction, ref AVerifications);
@@ -2606,7 +2645,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 EffectiveDate);
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateGLBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPostRow, out AVerifications))
+            if (!ValidateGLBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPostRow, out AVerifications, ATransaction.DataBaseObj))
             {
                 return null;
             }
@@ -2652,7 +2691,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Load GLM Data...");
 
-            LoadGLMData(ref PostingDS, ALedgerNumber, BatchToPostRow);
+            LoadGLMData(ref PostingDS, ALedgerNumber, BatchToPostRow, ATransaction.DataBaseObj);
 
             TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Mark as posted and collect data...");
 
@@ -2666,14 +2705,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Tell me whether this Batch can be cancelled
         /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
         public static bool GLBatchCanBeCancelled(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -2695,7 +2731,7 @@ namespace Ict.Petra.Server.MFinance.Common
             bool RetVal = false;
             string BatchStatus = string.Empty;
 
-            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, out AVerifications);
+            AMainDS = LoadGLBatchData(ALedgerNumber, ABatchNumber, out AVerifications, ADataBase);
 
             // get the data from the database into the MainDS
             ABatchRow Batch = AMainDS.ABatch[0];
@@ -2769,14 +2805,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// If a Batch has been created then found to be not required, it can be deleted here.
         /// (This was added for ICH and Stewardship calculations, which can otherwise leave empty batches in the ledger.)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
         /// <returns></returns>
         public static bool DeleteGLBatch(
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -2799,7 +2833,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                if (!GLBatchCanBeCancelled(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+                if (!GLBatchCanBeCancelled(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications, ADataBase))
                 {
                     return false;
                 }
@@ -2839,7 +2873,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         row.Delete();
                     }
 
-                    GLBatchTDSAccess.SubmitChanges(MainDS);
+                    GLBatchTDSAccess.SubmitChanges(MainDS, ADataBase);
                 }
             }
             catch (Exception ex)
@@ -2863,7 +2897,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
-        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean AWithGLJournal = false, Boolean ACommitTransaction = true)
+        public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, TDataBase ADataBase, Boolean AWithGLJournal = false)
         {
             #region Validate Arguments
 
@@ -2877,17 +2911,16 @@ namespace Ict.Petra.Server.MFinance.Common
             #endregion Validate Arguments
 
             GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CreateABatch", ADataBase);
 
-            TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
-                    ACommitTransaction,
                     delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
@@ -2927,8 +2960,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         MainDS.ABatch.Rows.Add(NewRow);
 
-                        GLBatchTDSAccess.SubmitChanges(MainDS);
-
+                        GLBatchTDSAccess.SubmitChanges(MainDS, db);
                         SubmissionOK = true;
                     });
 
@@ -2940,6 +2972,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             return MainDS;
         }
 
@@ -2947,16 +2984,13 @@ namespace Ict.Petra.Server.MFinance.Common
         /// create a new batch.
         /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchDescription"></param>
-        /// <param name="ABatchControlTotal"></param>
-        /// <param name="ADateEffective"></param>
         /// <returns></returns>
         public static GLBatchTDS CreateABatch(
             Int32 ALedgerNumber,
             string ABatchDescription,
             decimal ABatchControlTotal,
-            DateTime ADateEffective)
+            DateTime ADateEffective,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -2971,13 +3005,13 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CreateABatch", ADataBase);
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3018,7 +3052,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         NewRow.BatchControlTotal = ABatchControlTotal;
                         MainDS.ABatch.Rows.Add(NewRow);
 
-                        GLBatchTDSAccess.SubmitChanges(MainDS);
+                        GLBatchTDSAccess.SubmitChanges(MainDS, db);
 
                         SubmissionOK = true;
                     });
@@ -3031,85 +3065,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw;
             }
 
-            return MainDS;
-        }
-
-        /// <summary>
-        /// create a new batch.
-        /// it is already stored to the database, to avoid problems with LastBatchNumber
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchDescription"></param>
-        /// <param name="ABatchControlTotal"></param>
-        /// <param name="ADateEffective"></param>
-        /// <param name="ATransaction"></param>
-        /// <returns></returns>
-        public static GLBatchTDS CreateABatch(
-            Int32 ALedgerNumber,
-            string ABatchDescription,
-            decimal ABatchControlTotal,
-            DateTime ADateEffective,
-            TDBTransaction ATransaction)
-        {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
+            if (ADataBase == null)
             {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-
-            #endregion Validate Arguments
-
-            GLBatchTDS MainDS = new GLBatchTDS();
-
-            try
-            {
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
-
-                #region Validate Data
-
-                if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
-                {
-                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
-                            Utilities.GetMethodName(true),
-                            ALedgerNumber));
-                }
-
-                #endregion Validate Data
-
-                ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
-                NewRow.LedgerNumber = ALedgerNumber;
-                MainDS.ALedger[0].LastBatchNumber++;
-                NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
-
-                int FinancialYear, FinancialPeriod;
-
-                if (ADateEffective != default(DateTime))
-                {
-                    TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod,
-                        ATransaction, false);
-                    NewRow.DateEffective = ADateEffective;
-                    NewRow.BatchPeriod = FinancialPeriod;
-                    NewRow.BatchYear = FinancialYear;
-                }
-
-                NewRow.BatchDescription = ABatchDescription;
-                NewRow.BatchControlTotal = ABatchControlTotal;
-                MainDS.ABatch.Rows.Add(NewRow);
-
-                GLBatchTDSAccess.SubmitChanges(MainDS);
-
-                MainDS.AcceptChanges();
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
+                db.CloseDBConnection();
             }
 
             return MainDS;
@@ -3135,13 +3093,13 @@ namespace Ict.Petra.Server.MFinance.Common
             GLBatchTDS MainDS = new GLBatchTDS();
             GLBatchTDS TempDS = new GLBatchTDS();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CreateARecurringBatch");
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
+                db.WriteTransaction(
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -3186,7 +3144,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         TempDS.RejectChanges();
 
                         //Submit changes to MainDS
-                        GLBatchTDSAccess.SubmitChanges(MainDS);
+                        GLBatchTDSAccess.SubmitChanges(MainDS, db);
 
                         SubmissionOK = true;
                     });
@@ -3198,6 +3156,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }

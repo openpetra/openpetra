@@ -56,9 +56,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             ArrayList Ret = new ArrayList();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     PPartnerTable PartnerTbl = PPartnerAccess.LoadViaPPartnerClasses("UNIT", Transaction);
@@ -168,14 +168,14 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             // the existing UmUnitStructure table.
             // I'll delete the whole content before calling SubmitChanges with my new data.
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction,
+            DBAccess.WriteTransaction(ref Transaction,
                 ref SubmissionOK,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
+                    Transaction.DataBaseObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
 
                     NewTable.ThrowAwayAfterSubmitChanges = true;  // I'm not interested in this table after this Submit:
                     UmUnitStructureAccess.SubmitChanges(NewTable, Transaction);

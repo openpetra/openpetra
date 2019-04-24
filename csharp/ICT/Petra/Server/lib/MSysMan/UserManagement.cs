@@ -98,11 +98,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
-                TDBTransaction SubmitChangesTransaction = null;
+                TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                 bool SubmissionResult = false;
                 TPetraPrincipal tempPrincipal;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                     ref SubmissionResult,
                     delegate
                     {
@@ -231,10 +231,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
                 TPetraPrincipal tempPrincipal;
-                TDBTransaction SubmitChangesTransaction = null;
+                TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                 bool SubmissionResult = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                     ref SubmissionResult,
                     delegate
                     {
@@ -336,7 +336,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                 UserDR.PasswordNeedsChange = false;
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                     ref SubmissionResult,
                     delegate
                     {
@@ -408,11 +408,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// </summary>
         [NoRemoting]
         public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName,
-            string AModulePermissions, string AClientComputerName, string AClientIPAddress, TDBTransaction ATransaction = null)
+            string AModulePermissions, string AClientComputerName, string AClientIPAddress, TDataBase ADataBase = null)
         {
-            TDataBase DBConnectionObj = DBAccess.GetDBAccessObj(ATransaction);
-            TDBTransaction ReadWriteTransaction = null;
-            bool SeparateDBConnectionEstablished = false;
+            TDataBase DBConnectionObj = DBAccess.Connect("CreateUser", ADataBase);
+            TDBTransaction ReadWriteTransaction = new TDBTransaction();
             bool NewTransaction;
             bool SubmissionOK = false;
 
@@ -430,14 +429,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 newUser.UserId = AUsername.Substring(0, AUsername.IndexOf("@")).
                                  Replace(".", string.Empty).
                                  Replace("_", string.Empty).ToUpper();
-            }
-
-            if (DBConnectionObj == null)
-            {
-                // ATransaction was null and GDBAccess is also null: we need to establish a DB Connection manually here!
-                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("CreateUser");
-
-                SeparateDBConnectionEstablished = true;
             }
 
             ReadWriteTransaction = DBConnectionObj.GetNewOrExistingTransaction(
@@ -572,16 +563,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     if (SubmissionOK)
                     {
-                        ReadWriteTransaction.DataBaseObj.CommitTransaction();
+                        ReadWriteTransaction.Commit();
                     }
                     else
                     {
-                        ReadWriteTransaction.DataBaseObj.RollbackTransaction();
-                    }
-
-                    if (SeparateDBConnectionEstablished)
-                    {
-                        DBConnectionObj.CloseDBConnection();
+                        ReadWriteTransaction.Rollback();
                     }
                 }
             }
@@ -619,11 +605,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS LoadUsersAndModulePermissions()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -653,11 +638,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS CreateUserWithInitialPermissions()
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -693,11 +677,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static MaintainUsersTDS LoadUserAndModulePermissions(string AUserId)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             MaintainUsersTDS ReturnValue = new MaintainUsersTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -848,16 +831,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 }
                 else if (NewUser && ASendMail)
                 {
-                    TDBTransaction SubmitChangesTransaction = null;
+                    TDBTransaction SubmitChangesTransaction = new TDBTransaction();
                     bool SubmissionResult = false;
 
-                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                    DBAccess.WriteTransaction(ref SubmitChangesTransaction,
                         ref SubmissionResult,
                         delegate
                         {
                             // send E-Mail with link to reset the password
                             // TODO: use double opt-in before sending the actual information???
-                            string token = SaveNewToken(AUserId, DBAccess.GDBAccessObj, SubmitChangesTransaction);
+                            string token = SaveNewToken(AUserId, SubmitChangesTransaction.DataBaseObj, SubmitChangesTransaction);
 
                             string Domain = TAppSettingsManager.GetValue("Server.Url");
                             string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
@@ -895,7 +878,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [NoRemoting]
         public static bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("InitialSysadminEmail");
+            TDataBase db = DBAccess.Connect("InitialSysadminEmail");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "InitialSysadminEmail");
 
             try
@@ -960,7 +943,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [NoRemoting]
         public static bool RequestNewPassword(string AEmailAddress)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RequestNewPassword");
+            TDataBase db = DBAccess.Connect("RequestNewPassword");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "RequireNewPassword");
 
             try
@@ -1030,7 +1013,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [NoRemoting]
         public static bool SetNewPassword(string AUserID, string AToken, string ANewPassword, out TVerificationResultCollection AVerificationResult)
         {
-            TDataBase db = DBAccess.SimpleEstablishDBConnection("RequestNewPassword");
+            TDataBase db = DBAccess.Connect("RequestNewPassword");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SetNewPassword1");
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1060,8 +1043,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     TLogging.Log("SetNewPassword: invalid token for user " + AUserID);
                     return false;
                 } else {
-                    db.RollbackTransaction();
-                    DBAccess.GDBAccessObj = db;
+                    Transaction.Rollback();
                     TPetraIdentity PetraIdentity = new TPetraIdentity(
                         AUserID, "", "", "", "",
                         DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
@@ -1091,8 +1073,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         return false;
                     }
                 }
-
-                return false;
             }
             catch (Exception e)
             {
@@ -1113,7 +1093,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string AClientComputerName, string AClientIPAddress)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
-            TDBTransaction SubmitChangesTransaction = null;
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             bool CanCreateUser;
             bool CanChangePassword;
             bool CanChangePermissions;
@@ -1149,9 +1129,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             // TODO: if user module access permissions have changed, automatically update the table access permissions?
-
-            DBAccess.SimpleAutoTransactionWrapper(IsolationLevel.Serializable, "SaveSUser", out SubmitChangesTransaction,
-                ref ReturnValue, delegate
+            SubmitChangesTransaction = new TDBTransaction();
+            bool SubmitOK = false;
+            DBAccess.WriteTransaction(ref SubmitChangesTransaction,
+                ref SubmitOK, delegate
                 {
                     if (SubmitDS.SUser != null)
                     {
@@ -1164,7 +1145,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 {
                                     // in fact, PasswordHash is expected to be the password in clear text
                                     CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty,
-                                        AClientComputerName, AClientIPAddress, SubmitChangesTransaction);
+                                        AClientComputerName, AClientIPAddress, SubmitChangesTransaction.DataBaseObj);
                                     // this is a hack: the user is not stored here, but in CreateUser
                                     user.AcceptChanges();
                                 }
@@ -1257,6 +1238,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         MaintainUsersTDSAccess.SubmitChanges(SubmitDS, SubmitChangesTransaction.DataBaseObj);
 
                         ReturnValue = TSubmitChangesResult.scrOK;
+                        SubmitOK = true;
                     }
                     catch (Exception e)
                     {

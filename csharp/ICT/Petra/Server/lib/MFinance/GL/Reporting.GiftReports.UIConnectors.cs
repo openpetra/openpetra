@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable GiftBatchDetailTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             int BatchNumber = AParameters["param_batch_number_i"].ToInt32();
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -130,7 +130,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TReportingDbAdapter DbAdapter,
             string DonorKeyList = "")
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string RecipientSelection = AParameters["param_recipient"].ToString();
@@ -140,7 +140,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             out Decimal APreviousYearTotal,
             Boolean AForDonor = false)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             int CurrentYear = AParameters["param_from_date"].ToDate().Year;
@@ -297,9 +297,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -381,7 +379,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String ACommentFor = "RECIPIENT"
             )
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string ReportType = AParameters["param_report_type"].ToString();
@@ -402,9 +400,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -602,8 +598,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Results.Columns.Add("DonorKey", typeof(Int64));
 
-            TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+            TDBTransaction Transaction = new TDBTransaction();
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -661,12 +657,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable RecipientTaxDeductPctTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(ref Transaction,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(ref Transaction,
                 delegate
                 {
                     DateTime CurrentDate = DateTime.Today;
@@ -744,7 +740,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int64 ARecipientKey,
             TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
@@ -752,9 +748,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -967,9 +961,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                          " ORDER BY a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, DonorKey";
             }
 
-            TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

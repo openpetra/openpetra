@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,9 +86,9 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                 Console.WriteLine("GetPostCodeRegionsAndRanges called!");
             }
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                         PPostcodeRegionRangeTable.GetTableDBName() + "." + PPostcodeRegionRangeTable.GetRegionDBName() +
                         " ORDER BY " + PPostcodeRegionTable.GetRegionDBName();
 
-                    RegionsRangesTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
+                    RegionsRangesTable = Transaction.DataBaseObj.SelectDT(SqlStmt, "events",
                         Transaction, SqlParameterList.ToArray());
                 });
 

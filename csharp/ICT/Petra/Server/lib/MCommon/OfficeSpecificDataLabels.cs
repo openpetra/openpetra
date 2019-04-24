@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -324,10 +324,9 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
             // create the FOfficeSpecificDataLabelsTDS DataSet that will later be passed to the Client
             FOfficeSpecificDataLabelsTDS = new OfficeSpecificDataLabelsTDS("OfficeSpecificDataLabels");
 
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -457,7 +456,21 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         {
             TStdPartnerStatusCode PartnerStatus;
 
-            return MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+            String PartnerShortName = String.Empty;
+            TPartnerClass PartnerClass = TPartnerClass.FAMILY;
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            bool Result = false;
+
+            DBAccess.ReadTransaction(
+                ref ReadTransaction,
+                delegate
+                {
+                    Result = MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass, out PartnerStatus, ReadTransaction);
+                });
+
+            APartnerShortName = PartnerShortName;
+            APartnerClass = PartnerClass;
+            return Result;
         }
 
         /// <summary>

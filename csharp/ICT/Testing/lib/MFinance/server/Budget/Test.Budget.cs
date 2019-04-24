@@ -83,6 +83,8 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             // reset the database, so that there is no consolidated budget
             CommonNUnitFunctions.ResetDatabase();
 
+            TDataBase db = DBAccess.Connect("T0_Consolidation");
+
             string budgetTestFile = TAppSettingsManager.GetValue("GiftBatch.file",
                 CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/BudgetImport-All.csv");
 
@@ -112,7 +114,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "ImportBudgets has critical errors:");
 
-            BudgetTDSAccess.SubmitChanges(ImportDS);
+            BudgetTDSAccess.SubmitChanges(ImportDS, db);
 
             // check for value in budget table
             string sqlQueryBudget =
@@ -124,7 +126,13 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                     ABudgetPeriodTable.GetTableDBName(),
                     FLedgerNumber);
 
-            decimal budgetValue = Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryBudget, IsolationLevel.ReadCommitted));
+            TDBTransaction Transaction = new TDBTransaction();
+            decimal budgetValue = -1;
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    budgetValue = Convert.ToDecimal(db.ExecuteScalar(sqlQueryBudget, Transaction));
+                });
             Assert.AreEqual(250m, budgetValue, "problem with importing budget from CSV");
 
             // check for zero in glmperiod budget: that row does not even exist yet, so check that it does not exist
@@ -136,8 +144,13 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                     AGeneralLedgerMasterTable.GetTableDBName(),
                     FLedgerNumber);
 
-            Assert.AreEqual(0, DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryCheckEmptyConsolidatedBudget,
-                    IsolationLevel.ReadCommitted), "budget should not be consolidated yet");
+            Transaction = new TDBTransaction();
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    Assert.AreEqual(0, db.ExecuteScalar(sqlQueryCheckEmptyConsolidatedBudget,
+                            Transaction), "budget should not be consolidated yet");
+                });
 
             // consolidate the budget
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
@@ -153,8 +166,14 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                     AGeneralLedgerMasterTable.GetTableDBName(),
                     FLedgerNumber);
 
-            decimal consolidatedBudgetValue =
-                Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
+            Transaction = new TDBTransaction();
+            decimal consolidatedBudgetValue = -1;
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    consolidatedBudgetValue =
+                        Convert.ToDecimal(db.ExecuteScalar(sqlQueryConsolidatedBudget, Transaction));
+                });
             Assert.AreEqual(250m, consolidatedBudgetValue, "budget should now be consolidated");
 
             // TODO: also check some summary account and cost centre for summed up budget values
@@ -169,19 +188,26 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 FLedgerNumber);
 
             bool SubmissionOK = true;
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            Transaction = new TDBTransaction();
+
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
+                    db.ExecuteNonQuery(sqlChangeBudget, Transaction);
                 });
 
             // post all budgets again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
             TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
-            consolidatedBudgetValue =
-                Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
+            Transaction = new TDBTransaction();
+
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    consolidatedBudgetValue =
+                        Convert.ToDecimal(db.ExecuteScalar(sqlQueryConsolidatedBudget, Transaction));
+                });
             Assert.AreEqual(44.0m, consolidatedBudgetValue, "budget should be consolidated with the new value");
 
             // post only a modified budget (testing UnPostBudget)
@@ -201,20 +227,28 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 FLedgerNumber);
 
             SubmissionOK = true;
-            Transaction = null;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            Transaction = new TDBTransaction();
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction);
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(sqlMarkBudgetForConsolidation, Transaction);
+                    db.ExecuteNonQuery(sqlChangeBudget, Transaction);
+                    db.ExecuteNonQuery(sqlMarkBudgetForConsolidation, Transaction);
                 });
 
             // post only modified budget again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
             TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, false);
 
-            consolidatedBudgetValue =
-                Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
+            Transaction = new TDBTransaction();
+
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    consolidatedBudgetValue =
+                        Convert.ToDecimal(db.ExecuteScalar(sqlQueryConsolidatedBudget, Transaction));
+                });
+
             Assert.AreEqual(65.0m, consolidatedBudgetValue, "budget should be consolidated with the new value, after UnPostBudget");
 
             // TODO: test forwarding periods. what happens to next year values, when there is no next year glm record yet?

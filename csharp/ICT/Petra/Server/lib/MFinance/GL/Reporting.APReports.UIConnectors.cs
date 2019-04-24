@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataSet APAgedSupplierList(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string DateSelection = AParameters["param_date_selection"].ToDate().ToString("yyyy-MM-dd");
@@ -53,9 +53,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable documents = new DataTable();
             DataTable currencies = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -190,7 +188,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable APCurrentPayable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string DateSelection = AParameters["param_payment_date"].ToDate().ToString("yyyy-MM-dd");
@@ -198,9 +196,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable APCurrentPayable = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -243,7 +239,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataSet APPaymentReport(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string NumFrom = "";
@@ -276,9 +272,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable Payments = new DataTable();
             DataTable Suppliers = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -347,7 +341,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataSet APAccountDetail(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             TLedgerInfo LedgerInfo = new TLedgerInfo(LedgerNumber);
@@ -382,9 +376,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable Accounts = new DataTable();
             DataTable Details = new DataTable();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

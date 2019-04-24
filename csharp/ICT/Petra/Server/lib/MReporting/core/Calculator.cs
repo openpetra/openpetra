@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,7 +77,8 @@ namespace Ict.Petra.Server.MReporting.Calculator
             ref string strHTMLOutput,
             out HtmlDocument HTMLDocument,
             ref String AErrorMessage,
-            ref Exception AException)
+            ref Exception AException,
+            TDBTransaction ATransaction)
         {
             Boolean ReturnValue = false;
             HTMLDocument = null;
@@ -105,7 +106,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
                 // to avoid still having in the status line: loading common.xml, although he is already working on the report
                 TLogging.Log("Preparing data for the report... ", TLoggingType.ToStatusBar);
 
-                if (CalculateFromClass(FParameters.Get("calculateFromClass").ToString()))
+                if (CalculateFromClass(FParameters.Get("calculateFromClass").ToString(), ATransaction))
                 {
                     if (FParameters.Get("CancelReportCalculation").ToBool() == true)
                     {
@@ -159,8 +160,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// <summary>
         /// call a class that calculates the result for a report or extract
         /// </summary>
-        /// <param name="ANamespaceClass"></param>
-        protected Boolean CalculateFromClass(string ANamespaceClass)
+        protected Boolean CalculateFromClass(string ANamespaceClass, TDBTransaction ATransaction)
         {
             string className = ANamespaceClass.Substring(ANamespaceClass.LastIndexOf(".") + 1);
             string namespaceName = ANamespaceClass.Substring(0, ANamespaceClass.LastIndexOf("."));
@@ -201,7 +201,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
 
             if (method != null)
             {
-                object[] mparameters = new object[] { this.FHTMLTemplate, this.FParameters };
+                object[] mparameters = new object[] { this.FHTMLTemplate, this.FParameters, ATransaction };
                 this.FHtmlDocument = (HtmlDocument)method.Invoke(null, mparameters);
                 this.FParameters = (TParameterList)mparameters[1];
                 return true;

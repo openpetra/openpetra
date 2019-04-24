@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Jakob Englert
+//       Jakob Englert, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,13 +52,11 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
         {
             DataSet ReturnDataSet = new DataSet();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable Partners = new DataTable("Partners");
             DataTable Locations = new DataTable("Locations");
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -162,7 +160,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
         {
             DataSet ReturnDataSet = new DataSet();
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             DataTable Partners = new DataTable("Partners");
             DataTable ClassPerson = new DataTable("ClassPerson");
             DataTable ClassFamily = new DataTable("ClassFamily");
@@ -185,9 +183,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
             String PartnerSelection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -788,11 +784,9 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             DataTable organisation = new DataTable();
             DataTable ContactInformation = new DataTable();
             DataTable PersonInformation = new DataTable();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -957,11 +951,9 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
         public static DataTable PartnerBySpecialType(Dictionary <string, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             DataTable ReturnTable = new DataTable();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

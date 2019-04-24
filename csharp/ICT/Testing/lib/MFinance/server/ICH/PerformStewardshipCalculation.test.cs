@@ -39,7 +39,6 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
-using Ict.Petra.Server.MFinance.ICH;
 using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -151,13 +150,14 @@ namespace Tests.MFinance.Server.ICH
 //
 //              bool NewTransaction = false;
 //
-//              TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+//              TDataBase db = DBAccess.Connect("TestIsValidPostingPeriod");
+//              TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 //
 //			Assert.IsTrue(TFinancialYear.IsValidPostingPeriod(FLedgerNumber, Convert.ToDateTime("15-Sep-2011"), out DateEffectivePeriodNumber, out DateEffectiveYearNumber, Transaction),"Period is not valid");
 //
 //              if (NewTransaction)
 //              {
-//                      DBAccess.GDBAccessObj.RollbackTransaction();
+//                      Transaction.Rollback();
 //              }
 //        }
 
@@ -169,9 +169,9 @@ namespace Tests.MFinance.Server.ICH
             AFeesPayableTable FeesPayableTable = null;
             AFeesReceivableTable FeesReceivableTable = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
@@ -211,8 +211,8 @@ namespace Tests.MFinance.Server.ICH
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            TDBTransaction Transaction = new TDBTransaction();
+            DBAccess.ReadTransaction(ref Transaction,
                 delegate
                 {
                     AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
@@ -237,6 +237,7 @@ namespace Tests.MFinance.Server.ICH
         public void TestPerformStewardshipCalculation()
         {
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+            TDataBase db = DBAccess.Connect("TestPerformStewardshipCalculation");
 
             List <Int32>glBatchNumbers;
 
@@ -248,7 +249,8 @@ namespace Tests.MFinance.Server.ICH
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber,
                 out glBatchNumbers,
-                out VerificationResults);
+                out VerificationResults,
+                db);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing initial Stewardship Calculation Failed!");
@@ -270,14 +272,21 @@ namespace Tests.MFinance.Server.ICH
                 (FLedgerNumber * 100).ToString("0000")).YtdActual;
 
             // import new gift batch. use proper period and date effective
-            DateTime PeriodStartDate, PeriodEndDate;
-            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, null);
+            DateTime PeriodStartDate = DateTime.Today;
+            DateTime PeriodEndDate = DateTime.Today;
+            TDBTransaction Transaction = new TDBTransaction();
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, Transaction);
+                });
+
             ImportAndPostGiftBatch(PeriodStartDate);
 
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber,
                 out glBatchNumbers,
-                out VerificationResults);
+                out VerificationResults, db);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing Stewardship Calculation Failed!");
 

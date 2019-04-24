@@ -5,7 +5,7 @@
 //       wolfgangu, timop
 //       Tim Ingham
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -71,20 +71,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AIsInInfoMode">True means: no calculation is done, only verification result messages are collected</param>
         /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if there's no problem</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool PeriodYearEnd(
             int ALedgerNum,
             bool AIsInInfoMode,
             out List <Int32>AglBatchNumbers,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             try
             {
-                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum);
+                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum, ADataBase);
                 bool res = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode,
                     out AglBatchNumbers,
-                    out AVerificationResult);
+                    out AVerificationResult,
+                    ADataBase);
 
                 if (!res)
                 {
@@ -158,11 +161,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 String Query = "DELETE FROM a_processed_fee WHERE" +
                                " a_ledger_number_i=" + FledgerInfo.LedgerNumber +
                                " AND a_period_number_i<=" + FledgerInfo.NumberOfAccountingPeriods;
-                DBAccess.GDBAccessObj.ExecuteNonQuery(Query, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(Query, ATransaction);
 
                 Query = "UPDATE a_processed_fee SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
                         " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
-                DBAccess.GDBAccessObj.ExecuteNonQuery(Query, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(Query, ATransaction);
             }
         }
 
@@ -172,11 +175,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AInfoMode"></param>
         /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVRCollection"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if an error occurred</returns>
         public bool RunYearEnd(
             bool AInfoMode,
             out List <Int32>AglBatchNumbers,
-            out TVerificationResultCollection AVRCollection)
+            out TVerificationResultCollection AVRCollection,
+            TDataBase ADataBase = null)
         {
             FInfoMode = AInfoMode;
             AVRCollection = new TVerificationResultCollection();
@@ -198,7 +203,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TPeriodEndOperations.FwasCancelled = false;
             Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
-            TDBTransaction transaction = null;
+            TDBTransaction transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RunYearEnd", ADataBase);
             bool SubmissionOK = false;
 
 /*
@@ -210,9 +216,8 @@ namespace Ict.Petra.Server.MFinance.GL
  *              MessageBox.Show("I'm about to begin YearEnd.");
  *          }
  */
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(
-                IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
+ 
+            db.WriteTransaction(
                 ref transaction,
                 ref SubmissionOK,
                 delegate
@@ -456,7 +461,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (DoExecuteableCode)
             {
                 yearEndBatch = new TCommonAccountingTool(FledgerInfo,
-                    Catalog.GetString("Financial year end processing"));
+                    Catalog.GetString("Financial year end processing"), FTransaction.DataBaseObj);
                 yearEndBatch.AddBaseCurrencyJournal();
                 yearEndBatch.JournalDescription = Catalog.GetString("YearEnd revaluations");
                 yearEndBatch.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
@@ -493,7 +498,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                +
                                " ORDER BY a_general_ledger_master.a_account_code_c";
 
-                accountBalanceTable = DBAccess.GDBAccessObj.SelectDT(Query, "AccountBalance", FTransaction);
+                accountBalanceTable = FTransaction.DataBaseObj.SelectDT(Query, "AccountBalance", FTransaction);
 
                 String DestCC = StandardCostCentre;                                                     // Roll-up to the standard Cost Centre, unless...
                 CCRollupStyleEnum RollupStyle = CCRollupStyleEnum.Always;
@@ -578,7 +583,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (DoExecuteableCode && transactionsWereAdded)
             {
-                Boolean PostedOk = yearEndBatch.CloseSaveAndPost(FverificationResults);
+                Boolean PostedOk = yearEndBatch.CloseSaveAndPost(FverificationResults, FTransaction.DataBaseObj);
 
                 if (PostedOk)
                 {
@@ -745,7 +750,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             " ORDER BY a_account_code_c,a_cost_centre_code_c";
 
 
-            DBAccess.GDBAccessObj.SelectDT(typedTable, strSQL, ATransaction);
+            ATransaction.DataBaseObj.SelectDT(typedTable, strSQL, ATransaction);
 
             return typedTable;
         }
@@ -771,7 +776,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             " ORDER BY PUB_a_general_ledger_master_period.a_period_number_i;";
 
-            DBAccess.GDBAccessObj.SelectDT(typedTable, strSQL, ATransaction);
+            FTransaction.DataBaseObj.SelectDT(typedTable, strSQL, ATransaction);
 
             return typedTable;
         }
@@ -937,7 +942,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TLogging.LogAtLevel(1,
                     "TGlmNewYearInit: New GLMP (" + FLedgerInfo.LedgerNumber + ") for year " + FNewYearNum + " has " +
                     GlmTDS.AGeneralLedgerMasterPeriod.Rows.Count + " Rows.");
-                GLPostingTDSAccess.SubmitChanges(GlmTDS);
+                GLPostingTDSAccess.SubmitChanges(GlmTDS, FTransaction.DataBaseObj);
 
                 FGlmpFrom.ThrowAwayAfterSubmitChanges = true;
 
@@ -1053,7 +1058,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
                     " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                 AJournalTable JournalTbl = new AJournalTable();
-                DBAccess.GDBAccessObj.SelectDT(JournalTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(JournalTbl, Query, FTransaction);
 
                 if (JournalTbl.Rows.Count > 0)
                 {
@@ -1074,7 +1079,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND a_batch_year_i=" + FOldYearNum +
                     " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                 ABatchTable BatchTbl = new ABatchTable();
-                DBAccess.GDBAccessObj.SelectDT(BatchTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(BatchTbl, Query, FTransaction);
 
                 if (BatchTbl.Rows.Count > 0)
                 {
@@ -1098,7 +1103,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND a_batch_year_i=" + FOldYearNum +
                     " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                 AGiftBatchTable GiftBatchTbl = new AGiftBatchTable();
-                DBAccess.GDBAccessObj.SelectDT(GiftBatchTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(GiftBatchTbl, Query, FTransaction);
 
                 if (GiftBatchTbl.Rows.Count > 0)
                 {
@@ -1181,7 +1186,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     " AND (a_year_i=" + FoldYearNum +
                     " OR a_year_i=0)";         // a_year_i may be zero because previously we didn't have a_year, but now we do.
 
-                DBAccess.GDBAccessObj.SelectDT(StewardshipTbl, Query, FTransaction);
+                FTransaction.DataBaseObj.SelectDT(StewardshipTbl, Query, FTransaction);
 
                 if (StewardshipTbl.Rows.Count > 0)
                 {

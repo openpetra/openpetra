@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,8 +79,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             bool ResultValue = false;
 
+            TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner");
+
             ResultValue = TRecentPartnersHandling.AddRecentlyUsedPartner
-                              (APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
+                              (APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse, db);
 
             return ResultValue;
         }
@@ -123,7 +125,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Int64 GetBankBySortCode(string ABranchCode)
         {
-            TDBTransaction ReadTransaction = null;
+            TDBTransaction ReadTransaction = new TDBTransaction();
             string sqlFindBankBySortCode =
                 String.Format("SELECT * FROM PUB_{0} WHERE {1}=?",
                     PBankTable.GetTableDBName(),
@@ -134,10 +136,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             param.Value = ABranchCode;
             PBankTable bank = new PBankTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            TDataBase db = DBAccess.Connect("GetBankBySortCode");
+            db.ReadTransaction( ref ReadTransaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
+                    db.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
                             param
                         }, -1, -1);
                 });
@@ -152,7 +155,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PartnerEditTDS MainDS = new PartnerEditTDS();
 
                 PPartnerRow newPartner = MainDS.PPartner.NewRowTyped();
-                Int64 BankPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey);
+                Int64 BankPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey, db);
                 TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, BankPartnerKey, ref BankPartnerKey);
                 newPartner.PartnerKey = BankPartnerKey;
                 newPartner.PartnerShortName = "Bank " + ABranchCode;
@@ -185,9 +188,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ADisplayMessage"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if partner can be deleted</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool CanPartnerBeDeleted(Int64 APartnerKey, out String ADisplayMessage)
+        public static bool CanPartnerBeDeleted(Int64 APartnerKey, out String ADisplayMessage, TDataBase ADataBase = null)
         {
             string ShortName;
             TPartnerClass PartnerClass;
@@ -196,9 +200,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             String DisplayMessage = "";
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("CanPartnerBeDeleted", ADataBase);
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -219,7 +224,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     // make sure we don't delete an active ledger
                     if (ResultValue
-                        && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                        && (Convert.ToInt32(db.ExecuteScalar(
                                     "SELECT COUNT(*) FROM PUB_" + ALedgerTable.GetTableDBName() +
                                     " WHERE " + ALedgerTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString(),
                                     Transaction)) > 0))
@@ -324,9 +329,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             String DisplayMessage = "";
             String PartnerShortName = "";
 
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetPartnerStatisticsForDeletion");
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -337,7 +342,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         DisplayMessage += Linebreak + Linebreak;
 
                         // count active subscription records
-                        Count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+                        Count = Convert.ToInt32(db.ExecuteScalar(
                                 "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
                                 " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                                 " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN ('CANCELLED','EXPIRED')",
@@ -388,9 +393,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if deletion was successful</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool DeletePartner(Int64 APartnerKey, out TVerificationResultCollection AVerificationResult)
+        public static bool DeletePartner(Int64 APartnerKey, out TVerificationResultCollection AVerificationResult, TDataBase ADataBase = null)
         {
             string ShortName;
             TPartnerClass PartnerClass;
@@ -400,10 +406,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             AVerificationResult = null;
             ResultValue = true;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.Connect("DeletePartner", ADataBase);
+            db.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
@@ -614,7 +621,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             APartnerKey, Transaction);
                     }
 
-                    var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContactLogData(APartnerKey).PPartnerContact
+                    var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContactLogData(APartnerKey, db).PPartnerContact
                                           .AsEnumerable().Select(r =>
                         {
                             var id = r.ItemArray[PPartnerContactTable.ColumnContactLogIdId];
@@ -640,7 +647,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                               " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                                               " AND " + PPartnerContactTable.GetContactLogIdDBName() + " = " + row.ContactLogId + ")";
 
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                                    db.ExecuteNonQuery(SqlStmt, Transaction);
                                 }
                                 catch (Exception Exc)
                                 {
@@ -840,7 +847,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static bool CancelExpiredSubscriptions()
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
 
             //Error handling
@@ -850,13 +857,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.Connect("CancelExpiredSubscriptions");
+            db.WriteTransaction(
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     try
                     {
-                        DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE " + PSubscriptionTable.GetTableDBName() +
+                        db.ExecuteNonQuery("UPDATE " + PSubscriptionTable.GetTableDBName() +
                             " SET " + PSubscriptionTable.GetDateCancelledDBName() + " = DATE(NOW()), " +
                             PSubscriptionTable.GetSubscriptionStatusDBName() + " = 'EXPIRED', " +
                             PSubscriptionTable.GetReasonSubsCancelledCodeDBName() + " = 'COMPLETE' " +
@@ -967,7 +975,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ADisplayMessage = "";
 
             // make sure we don't delete a key ministry
-            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
+            if (Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar(
                         "SELECT COUNT(*) FROM PUB_" + PUnitTable.GetTableDBName() +
                         " WHERE " + PUnitTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
                         " AND " + PUnitTable.GetUnitTypeCodeDBName() + " = 'KEY-MIN'",
@@ -1241,7 +1249,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 SqlStmt = "DELETE FROM pub_" + ATableName +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception Exc)
             {
@@ -1277,7 +1285,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                           " SET " + APartnerKeyColumnName + " = 0" +
                           " WHERE " + APartnerKeyColumnName + " = " + APartnerKey.ToString();
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, ATransaction);
+                ATransaction.DataBaseObj.ExecuteNonQuery(SqlStmt, ATransaction);
             }
             catch (Exception Exc)
             {
@@ -1672,10 +1680,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PPartnerRelationshipTable GetPartnerRelationships(Int64 APartnerRelationKey)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             PPartnerRelationshipTable ReturnValue = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDataBase db = DBAccess.Connect("GetPartnerRelationships");
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {

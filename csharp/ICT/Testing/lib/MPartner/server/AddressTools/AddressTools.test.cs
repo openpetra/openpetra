@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       AlanP
+//       AlanP, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -62,20 +62,21 @@ namespace Tests.MPartner.Server.AddressTools
             TPetraServerConnector.Connect("../../etc/TestServer.config");
 
             CommonNUnitFunctions.ResetDatabase();
-            PPartnerRow Partner1 = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            TDataBase db = DBAccess.Connect("AddressToolsTest");
+            PPartnerRow Partner1 = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, db);
             TestPartnerKey = Partner1.PartnerKey;
 
             //Guard assert: ensure database has been properly reset
-            TDBTransaction ATransaction = null;
+            TDBTransaction ATransaction = new TDBTransaction();
             DataTable ResultTable = null;
             string Query = string.Format("SELECT * FROM p_location WHERE p_site_key_n = {0} AND p_location_key_i = {1}",
                 DomainManager.GSiteKey,
                 LocationKey);
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref ATransaction,
                 delegate
                 {
-                    ResultTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "CheckLocations", ATransaction);
+                    ResultTable = ATransaction.DataBaseObj.SelectDT(Query, "CheckLocations", ATransaction);
                 });
             Assert.AreEqual(0, ResultTable.Rows.Count);
         }
@@ -211,11 +212,11 @@ namespace Tests.MPartner.Server.AddressTools
         {
             string ACountryName;
             PLocationTable AAddress = null;
-            TDBTransaction ATransaction = null;
+            TDBTransaction ATransaction = new TDBTransaction();
             DataTable DonorAddresses = null;
 
             // Act
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref ATransaction,
                 delegate
                 {
@@ -317,7 +318,7 @@ namespace Tests.MPartner.Server.AddressTools
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
             TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult Result = UIConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            UIConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, "There was a critical error when saving:");
         }

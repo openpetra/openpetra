@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -121,11 +121,6 @@ namespace Ict.Petra.Server.App.Core
         /// Establishes a new Database connection to the Database
         /// for TTimedProcessing.
         /// </summary>
-        /// <remarks>
-        /// We don't want to use the global Ict.Common.DB.DBAccess.GDBAccessObj object in the Default
-        /// AppDomain because this is reserved for OpenPetraServer's internal use (eg. verifying Client
-        /// connection reqests)!
-        /// </remarks>
         /// <returns>the database connection object</returns>
         private static TDataBase EstablishDBConnection()
         {
@@ -134,7 +129,7 @@ namespace Ict.Petra.Server.App.Core
 
             try
             {
-                FDBAccessObj = DBAccess.SimpleEstablishDBConnection("Servers's DB Connection for TimedProcessing");
+                FDBAccessObj = DBAccess.Connect("Servers's DB Connection for TimedProcessing");
             }
             catch (Exception Exc)
             {

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,14 +129,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Boolean ASeparateDBConnection = false)
         {
             DataTable ReturnTable = null;
-            TReportingDbAdapter DbAdapter = new TReportingDbAdapter(ASeparateDBConnection);
-            TDBTransaction ReadTransaction = null;
+            TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
+            TDBTransaction ReadTransaction = new TDBTransaction();
 
             ADisplayMember = "FieldName";
             AValueMember = "FieldKey";
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref ReadTransaction,
                 delegate
                 {
@@ -387,7 +386,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string GetLedgerName(int ALedgerNumber)
         {
-            return TLedgerInfo.GetLedgerNameUsingSeparateDb(ALedgerNumber);
+            TLedgerInfo info = new TLedgerInfo(ALedgerNumber);
+            return info.GetLedgerName();
         }
 
         /// <summary>
@@ -424,7 +424,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("Currency", typeof(string)));
 
             Boolean FromStartOfYear = (AStartPeriod == 1);
-            TReportingDbAdapter DbAdapter = new TReportingDbAdapter(true);
+            TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
 
             if (!FromStartOfYear)
             {
@@ -479,8 +479,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             DataTable GlmTbl = null;
             TDBTransaction ReadTrans = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref ReadTrans,
                 delegate
                 {
@@ -958,8 +957,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
             DataTable resultTable = null;
             TDBTransaction ReadTrans = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref ReadTrans,
                 delegate
                 {
@@ -1365,9 +1363,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             FilteredResults.TableName = "IncomeExpense";
 
             TDBTransaction ReadTrans = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref ReadTrans,
                 delegate
                 {
@@ -1383,7 +1379,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String PeriodFilter = " AND glmp.a_period_number_i<=" + LastPeriod;
                     String isEndPeriod = "Period=" + ReportPeriodEnd;
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
-                    String is12MothsBeforeEnd = "Period=" + (ReportPeriodEnd - 12);
                     String isLastPeriod = "Period=" + NumberOfAccountingPeriods;
 
                     String ActualYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND " + isEndPeriod + " THEN ActualGLM ELSE 0 END) AS ActualTemp, ";
@@ -1819,10 +1814,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable HosaGiftsTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             DataTable resultTable = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -2077,10 +2071,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable KeyMinGiftsTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             DataTable resultTable = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -2197,10 +2190,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable StewardshipTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             DataTable resultsTable = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -2362,10 +2354,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable FeesTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             DataTable resultsTable = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -2478,14 +2469,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable StewardshipForPeriodTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             DataTable Result = null;
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
             Int32 Year = AParameters["param_year_i"].ToInt32();
             Int32 startPeriod = AParameters["param_start_period_i"].ToInt32();
             Int32 endPeriod = AParameters["param_end_period_i"].ToInt32();
             Int32 ledgerNumber = AParameters["param_ledger_number_i"].ToInt32();
 
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -2591,8 +2582,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("ActualDebitIntl", typeof(Decimal)));
             Results.Columns.Add(new DataColumn("ActualCreditIntl", typeof(Decimal)));
 
-            TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -2711,7 +2702,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                        " AND PUB_a_account.a_account_code_c = PUB_a_account_hierarchy_detail.a_reporting_account_code_c" +
                                        " AND PUB_a_account.a_posting_status_l";
 
-                        DataTable NewTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "NewTable", ATransaction);
+                        DataTable NewTable = ATransaction.DataBaseObj.SelectDT(Query, "NewTable", ATransaction);
 
                         // if posting accounts found
                         if (NewTable.Rows.Count > 0)
@@ -2733,7 +2724,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable ExecutiveSummaryTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             int EndPeriod = AParameters["param_end_period_i"].ToInt32();
@@ -2771,7 +2762,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             DataRow ResultRow = Results.NewRow();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -3132,9 +3123,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ") AllData WHERE AmountPeriod > 0 ORDER BY FieldKey, RecipientName"
             ;
             DataTable resultTable = new DataTable();
-            TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -3225,9 +3215,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                          + " ORDER BY batch.a_gl_effective_date_d"
                          );
             DataTable tempTbl = null;
-            TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -3473,8 +3462,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 FieldFilter +
                 " ORDER BY donor.p_partner_short_name_c, GiftDate";
 
-            TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -3549,9 +3538,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                            " LEFT JOIN p_partner GiftDest " +
                            " ON GiftDest.p_partner_key_n=GiftDestn " +
                            " ORDER BY StaffKey ";
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -3667,9 +3656,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     " ORDER BY recipient.p_partner_short_name_c");
 
             DataTable resultTable = new DataTable();
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -3684,8 +3673,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         {
             decimal[] Results = new decimal[5];
 
-            TDBTransaction Transaction = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            TDBTransaction Transaction = new TDBTransaction();
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -3960,8 +3949,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             TDBTransaction ReadTrans = null;
             DataTable resultTable = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref ReadTrans,
                 delegate
                 {
@@ -4067,8 +4055,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             DataTable resultTable = null;
             TDBTransaction ReadTrans = null;
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref ReadTrans,
                 delegate
                 {
@@ -4193,10 +4180,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 } // "AccountLevel"
             } // switch
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            ADbConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            ADbConnection.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -4263,17 +4249,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="APrivateDB"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string GetTransactionCurrency(int ALedgerNumber, int ABatchNumber, Boolean APrivateDB)
+        public static string GetTransactionCurrency(int ALedgerNumber, int ABatchNumber)
         {
-            TDBTransaction Transaction = null;
-            TDataBase dbConnection = APrivateDB ? TReportingDbAdapter.EstablishDBConnection(APrivateDB, "GetTransactionCurrency")
-                                     : DBAccess.GDBAccessObj;
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetTransactionCurrency");
             string ReturnValue = "";
 
-            dbConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -4285,10 +4269,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
                 }); // Get NewOrExisting AutoReadTransaction
 
-            if (APrivateDB)
-            {
-                dbConnection.CloseDBConnection();
-            }
+            db.CloseDBConnection();
 
             return ReturnValue;
         } // Get Transaction Currency

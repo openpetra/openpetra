@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, christophert, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,12 +72,14 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="AgeneratedBatches">The Client should print these batches.</param>
         /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if calculation succeeded, otherwise false.</returns>
         [RequireModulePermission("FINANCE-2")]
         public static bool PerformStewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
             out List <Int32>AgeneratedBatches,
-            out TVerificationResultCollection AVerificationResult)
+            out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase = null)
         {
             /*
              *          if (TLogging.DL >= 9)
@@ -92,12 +94,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             AVerificationResult = new TVerificationResultCollection();
             TVerificationResultCollection VerificationResult = AVerificationResult;
 
-            TDBTransaction DBTransaction = null;
+            TDBTransaction DBTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("PerformStewardshipCalculation", ADataBase);
             bool SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                db.WriteTransaction(
                     ref DBTransaction,
                     ref SubmissionOK,
                     delegate
@@ -232,7 +235,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     AProcessedFeeTable.GetCostCentreCodeDBName()
                     );
 
-                DBAccess.GDBAccessObj.SelectDT(processedFeeDataTable, sqlStmt, ADBTransaction);
+                ADBTransaction.DataBaseObj.SelectDT(processedFeeDataTable, sqlStmt, ADBTransaction);
 
                 if (processedFeeDataTable.Count == 0)
                 {
@@ -253,7 +256,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 // Create a Batch and journal. If no fees are to be charged, I'll delete this batch later.
                 GLBatchTDS adminFeeDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString(
-                        "Admin Fees & Grants"), 0, accountingPeriodRow.PeriodEndDate);
+                        "Admin Fees & Grants"), 0, accountingPeriodRow.PeriodEndDate, ADBTransaction.DataBaseObj);
 
                 ABatchRow batchRow = adminFeeDS.ABatch[0];
 
@@ -516,7 +519,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     TGLPosting.DeleteGLBatch(
                         ALedgerNumber,
                         batchRow.BatchNumber,
-                        out batchCancelResult);
+                        out batchCancelResult,
+                        ADBTransaction.DataBaseObj);
 
                     AVerificationResults.AddCollection(batchCancelResult);
                     IsSuccessful = true;
@@ -524,9 +528,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 else
                 {
                     //Post the batch just created
-                    GLBatchTDSAccess.SubmitChanges(adminFeeDS);
+                    GLBatchTDSAccess.SubmitChanges(adminFeeDS, ADBTransaction.DataBaseObj);
 
-                    IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, batchRow.BatchNumber, out verification);
+                    IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, batchRow.BatchNumber, out verification, ADBTransaction.DataBaseObj);
 
                     if (IsSuccessful)
                     {
@@ -593,7 +597,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 string incomeAccounts = string.Empty;
                 string expenseAccounts = string.Empty;
 
-                string standardCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+                TLedgerInfo info = new TLedgerInfo(ALedgerNumber, ADBTransaction.DataBaseObj);
+                string standardCostCentre = info.GetStandardCostCentre();
 
                 int currentFinancialYear = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ADBTransaction)[0].CurrentFinancialYear;
                 DateTime periodStartDate;
@@ -616,7 +621,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                    "   AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= " + periodEndDateSQL +
                                    " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName();
 
-                DBAccess.GDBAccessObj.SelectDT(giftBatchTable, giftQuery, ADBTransaction);
+                ADBTransaction.DataBaseObj.SelectDT(giftBatchTable, giftQuery, ADBTransaction);
 
                 //Load tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
                 GLPostingTDS postingDS = new GLPostingTDS();
@@ -663,7 +668,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
 
                 //Create a new batch. If it turns out I don't need one, I can delete it later.
-                GLBatchTDS mainDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString("ICH Stewardship"), 0, periodEndDate, ADBTransaction);
+                GLBatchTDS mainDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString("ICH Stewardship"), 0, periodEndDate, ADBTransaction.DataBaseObj);
 
                 //Load the journal and transaction data
                 int batchNumber = 0;
@@ -1060,7 +1065,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     TGLPosting.DeleteGLBatch(
                         ALedgerNumber,
                         AglBatchNumber,
-                        out batchCancelResult);
+                        out batchCancelResult,
+                        ADBTransaction.DataBaseObj);
                     AglBatchNumber = -1;
                     AVerificationResults.AddCollection(batchCancelResult);
                 }
@@ -1115,13 +1121,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         AIchStewardshipAccess.SubmitChanges(iCHStewardshipTable, ADBTransaction);
 
                         mainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
-                        GLBatchTDSAccess.SubmitChanges(mainDS);
+                        GLBatchTDSAccess.SubmitChanges(mainDS, ADBTransaction.DataBaseObj);
 
                         // refresh cached ICHStewardship table
                         TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                             TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
 
-                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AglBatchNumber, out AVerificationResults);
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AglBatchNumber, out AVerificationResults, ADBTransaction.DataBaseObj);
                     }
                     else // There were no transactions
                     {
@@ -1136,7 +1142,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         TGLPosting.DeleteGLBatch(
                             ALedgerNumber,
                             AglBatchNumber,
-                            out BatchCancelResult);
+                            out BatchCancelResult,
+                            ADBTransaction.DataBaseObj);
                         AglBatchNumber = -1;
                         AVerificationResults.AddCollection(BatchCancelResult);
 
@@ -1232,9 +1239,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         public static Boolean SelectedPeriodRequiresStewardshipRun(Int32 ALedgerNumber, Int32 ASelectedPeriod, Int32 ASelectedYear)
         {
             Boolean Ret = false;
-            TDBTransaction DBTransaction = null;
+            TDBTransaction DBTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SelectedPeriodRequiresStewardshipRun");
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+            db.ReadTransaction(
                 ref DBTransaction,
                 delegate
                 {
@@ -1270,7 +1278,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                    " AND a_cost_centre.a_cost_centre_type_c = 'Foreign'" +
                                    " AND a_transaction.a_ich_number_i = 0";
                     DataTable ForeignTransactions =
-                        DBAccess.GDBAccessObj.SelectDT(Query, "ForeignTransactions", DBTransaction);
+                        db.SelectDT(Query, "ForeignTransactions", DBTransaction);
 
                     if ((ForeignTransactions != null) && (ForeignTransactions.Rows.Count > 0))
                     {

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,10 +62,9 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             ConferenceSetupTDS MainDS = new ConferenceSetupTDS();
             string ConferenceName = null;
 
-            TDBTransaction Transaction = null;
+            TDBTransaction Transaction = new TDBTransaction();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
+            DBAccess.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -117,9 +116,8 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
         private static void CreateOptionTypes()
         {
-            TDBTransaction Transaction;
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDataBase db = DBAccess.Connect("CreateOptionTypes");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             bool RowsToAdd = false;
 
@@ -162,14 +160,14 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     PcConferenceOptionTypeAccess.SubmitChanges(OptionTypeTable, Transaction);
                 }
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                Transaction.Commit();
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateOptionTypes: commit own transaction.");
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the creation of option types:" + Environment.NewLine + Exc.ToString());
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                Transaction.Rollback();
 
                 throw;
             }

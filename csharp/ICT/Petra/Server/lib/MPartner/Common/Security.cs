@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,9 +54,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </remarks>
         /// <param name="APartnerRow">Partner for which access should be checked for.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns><see cref="T:TPartnerAccessLevelEnum.palGranted" /> if access
         /// to the Partner is granted, otherwise a different
         /// <see cref="T:TPartnerAccessLevelEnum" /> value.</returns>
@@ -73,9 +71,9 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (APartnerRow.PartnerClass == SharedTypes.PartnerClassEnumToString(
                         TPartnerClass.ORGANISATION))
                 {
-                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+                    TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
+                    ReadTransaction = db.GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
 
                     // Load Foundation
@@ -101,7 +99,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     {
                         if (NewTransaction)
                         {
-                            DBAccess.GDBAccessObj.CommitTransaction();
+                            ReadTransaction.Commit();
                             TLogging.LogAtLevel(8, "TSecurity.CanAccessPartnerByKey: committed own transaction.");
                         }
                     }
@@ -128,9 +126,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// doesn't go unnoticed.</remarks>
         /// <param name="APartnerRow">Partner for which access should be checked for.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <exception cref="T:ESecurityPartnerAccessDeniedException">Thrown if access is not granted.</exception>
         public static void CanAccessPartnerExc(PPartnerRow APartnerRow, TDataBase ADataBase = null)
         {
@@ -151,9 +147,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// be checked for.</param>
         /// <param name="AThrowExceptionIfDenied"></param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
         /// <returns><see cref="TPartnerAccessLevelEnum.palGranted" /> if access
         /// to the Partner is granted (or Partner doesn't exist), otherwise a different
         /// <see cref="TPartnerAccessLevelEnum" /> value.</returns>
@@ -166,9 +160,9 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey != 0)
             {
-                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
+                TDataBase db = DBAccess.Connect("DetermineBestAddress", ADataBase);
+                ReadTransaction = db.GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 // Load Partner
@@ -206,7 +200,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
+                        ReadTransaction.Commit();
                         TLogging.LogAtLevel(8, "TSecurity.CanAccessPartnerByKey: committed own transaction.");
                     }
                 }

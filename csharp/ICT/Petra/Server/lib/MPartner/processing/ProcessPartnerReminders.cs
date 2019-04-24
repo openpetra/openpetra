@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timh, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                         TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
                         ": Could not send Partner Reminders because Petra couldn't create the required SystemDefault setting for the Last Reminder Date!");
 
-                    ADataBaseObj.RollbackTransaction();
+                    ReadWriteTransaction.Rollback();
 
                     return;
                 }
@@ -251,7 +251,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                 if (NewTransaction)
                 {
-                    ADataBaseObj.CommitTransaction();
+                    ReadWriteTransaction.Commit();
                 }
 
                 TLogging.LogAtLevel(1, TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
@@ -264,7 +264,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                 if (NewTransaction)
                 {
-                    ADataBaseObj.RollbackTransaction();
+                    ReadWriteTransaction.Rollback();
                 }
 
                 throw;
@@ -425,7 +425,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
             OdbcParams[1].Value = DateTime.Now.Date;
 
-            DBAccess.GetDBAccessObj(AReadTransaction).Select(ReminderResultsDS,
+            AReadTransaction.DataBaseObj.Select(ReminderResultsDS,
                 SQLCommand,
                 APartnerReminderDT.TableName,
                 AReadTransaction,

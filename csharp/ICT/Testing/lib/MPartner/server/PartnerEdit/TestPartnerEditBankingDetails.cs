@@ -94,11 +94,13 @@ namespace Tests.MPartner.Server.PartnerEdit
         [Test]
         public void TestBankingDetails()
         {
-            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+            TDataBase db = DBAccess.Connect("TestBankingDetails");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector(db);
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, db);
 
             TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 
@@ -112,7 +114,10 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "TPartnerEditUIConnector SubmitChanges return value");
 
-            connector = new TPartnerEditUIConnector(PartnerRow.PartnerKey);
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
+            connector = new TPartnerEditUIConnector(PartnerRow.PartnerKey, db);
 
             // add a banking detail
             PartnerEditTDSPBankingDetailsRow bankingDetailsRow = MainDS.PBankingDetails.NewRowTyped(true);
@@ -157,7 +162,10 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             MainDS.AcceptChanges();
 
-            Assert.AreEqual(1, PBankingDetailsUsageAccess.CountViaPPartner(PartnerRow.PartnerKey, null), "count of main accounts for partner");
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
+            Assert.AreEqual(1, PBankingDetailsUsageAccess.CountViaPPartner(PartnerRow.PartnerKey, Transaction), "count of main accounts for partner");
 
             // add another account
             bankingDetailsRow = MainDS.PBankingDetails.NewRowTyped(true);
@@ -252,6 +260,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving 4:");
 
+            Transaction.Commit();
+            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
             // now delete the last remaining bank account
             toDelete = MainDS.PBankingDetails[0];
             Assert.AreEqual(true, toDelete.MainAccount);
@@ -264,6 +275,8 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving 5:");
+
+            Transaction.Commit();
         }
     }
 }
