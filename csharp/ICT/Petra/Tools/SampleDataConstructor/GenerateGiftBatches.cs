@@ -78,7 +78,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <summary>
         /// post all gift batches in the given period, but leave some (or none) unposted
         /// </summary>
-        public static bool PostBatches(int AYear, int APeriod, int ALeaveBatchesUnposted = 0)
+        public static bool PostBatches(int AYear, int APeriod, int ALeaveBatchesUnposted, TDataBase ADataBase)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -88,7 +88,13 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             GiftBatchTemplateRow.BatchYear = AYear;
             GiftBatchTemplateRow.BatchPeriod = APeriod;
             GiftBatchTemplateRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
-            AGiftBatchAccess.LoadUsingTemplate(MainDS, GiftBatchTemplateRow, null);
+
+            TDBTransaction Transaction = new TDBTransaction();
+            ADataBase.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    AGiftBatchAccess.LoadUsingTemplate(MainDS, GiftBatchTemplateRow, Transaction);
+                });
 
             int countUnPosted = MainDS.AGiftBatch.Count;
 
@@ -109,7 +115,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TVerificationResultCollection VerificationResult;
 
-            if (!TGiftTransactionWebConnector.PostGiftBatches(FLedgerNumber, GiftBatchesToPost, generatedGlBatches, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatches(FLedgerNumber, GiftBatchesToPost, generatedGlBatches, out VerificationResult, ADataBase))
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 return false;

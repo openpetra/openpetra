@@ -62,14 +62,21 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         {
             TVerificationResultCollection VerificationResult;
 
-            if (ALedgerAccess.Exists(FLedgerNumber, null) && !TGLSetupWebConnector.DeleteLedger(FLedgerNumber, out VerificationResult))
-            {
-                throw new Exception("could not delete ledger");
-            }
+            TDataBase db = DBAccess.Connect("CreateNewLedger");
 
-            TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR",
-                    new DateTime(DateTime.Now.Year - 1, 4, 1),
-                    12, 1, 8, out VerificationResult);
+            TDBTransaction Transaction = new TDBTransaction();
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    if (ALedgerAccess.Exists(FLedgerNumber, Transaction) && !TGLSetupWebConnector.DeleteLedger(FLedgerNumber, out VerificationResult))
+                    {
+                        throw new Exception("could not delete ledger");
+                    }
+
+                    TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR",
+                            new DateTime(DateTime.Now.Year - 1, 4, 1),
+                            12, 1, 8, out VerificationResult);
+                });
         }
 
         /// <summary>
@@ -78,30 +85,42 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// </summary>
         public static void InitCalendar()
         {
-            int YearDifference = (FNumberOfClosedPeriods / 12);
-
-            if (FNumberOfClosedPeriods % 12 >= DateTime.Today.Month)
-            {
-                YearDifference++;
-            }
-
-            AAccountingPeriodTable periodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, null);
-
-            foreach (AAccountingPeriodRow row in periodTable.Rows)
-            {
-                row.PeriodStartDate = new DateTime(row.PeriodStartDate.Year - YearDifference, row.PeriodStartDate.Month, row.PeriodStartDate.Day);
-
-                int LastDay = row.PeriodEndDate.Day;
-
-                if (row.PeriodEndDate.Month == 2)
+            TDataBase db = DBAccess.Connect("InitCalendar");
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmitOK = false;
+            db.WriteTransaction(ref Transaction,
+                ref SubmitOK,
+                delegate
                 {
-                    LastDay = DateTime.IsLeapYear(row.PeriodEndDate.Year - YearDifference) ? 29 : 28;
-                }
+                    int YearDifference = (FNumberOfClosedPeriods / 12);
 
-                row.PeriodEndDate = new DateTime(row.PeriodEndDate.Year - YearDifference, row.PeriodEndDate.Month, LastDay);
-            }
+                    if (FNumberOfClosedPeriods % 12 >= DateTime.Today.Month)
+                    {
+                        YearDifference++;
+                    }
 
-            AAccountingPeriodAccess.SubmitChanges(periodTable, null);
+                    AAccountingPeriodTable periodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
+
+                    foreach (AAccountingPeriodRow row in periodTable.Rows)
+                    {
+                        row.PeriodStartDate = new DateTime(row.PeriodStartDate.Year - YearDifference, row.PeriodStartDate.Month, row.PeriodStartDate.Day);
+
+                        int LastDay = row.PeriodEndDate.Day;
+
+                        if (row.PeriodEndDate.Month == 2)
+                        {
+                            LastDay = DateTime.IsLeapYear(row.PeriodEndDate.Year - YearDifference) ? 29 : 28;
+                        }
+
+                        row.PeriodEndDate = new DateTime(row.PeriodEndDate.Year - YearDifference, row.PeriodEndDate.Month, LastDay);
+                    }
+
+                    AAccountingPeriodAccess.SubmitChanges(periodTable, Transaction);
+
+                    SubmitOK = true;
+                });
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -169,6 +188,11 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 }
                 SubmitOK = true;
             });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -194,7 +218,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                 SampleDataGiftBatches.CreateGiftBatches(period);
 
-                if (!SampleDataGiftBatches.PostBatches(yearCounter, period, (periodOverall == FNumberOfClosedPeriods) ? 1 : 0))
+                SampleDataLedger.InitExchangeRate(db);
+
+                if (!SampleDataGiftBatches.PostBatches(yearCounter, period, (periodOverall == FNumberOfClosedPeriods) ? 1 : 0, db))
                 {
                     throw new Exception("could not post gift batches");
                 }
@@ -246,7 +272,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                                 YearAD++;
                                 yearCounter++;
-                                SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber);
+                                SampleDataAccountsPayable.GenerateInvoices(Path.Combine(datadirectory, "invoices.csv"), YearAD, smallNumber, db);
                                 period = 0;
                                 SubmissionOK = true;
                             });

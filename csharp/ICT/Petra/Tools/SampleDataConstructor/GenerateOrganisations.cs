@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -139,9 +139,19 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            PartnerEditTDSAccess.SubmitChanges(MainDS);
-
-            AApSupplierAccess.SubmitChanges(supplierTable, null);
+            TDataBase db = DBAccess.Connect("GenerateOrganisationPartners");
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmitOK = false;
+            db.WriteTransaction(
+                ref Transaction,
+                ref SubmitOK,
+                delegate
+                {
+                    PartnerEditTDSAccess.SubmitChanges(MainDS, db);
+                    AApSupplierAccess.SubmitChanges(supplierTable, Transaction);
+                    SubmitOK = true;
+                });
+            db.CloseDBConnection();
         }
     }
 }
