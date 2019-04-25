@@ -59,7 +59,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <param name="AInputBeneratorFile"></param>
         /// <param name="AYear">eg. 2013</param>
         /// <param name="ASmallNumber">boolean to keep the size of the demo database down</param>
-        public static void GenerateInvoices(string AInputBeneratorFile, int AYear, bool ASmallNumber)
+        /// <param name="ADataBase"></param>
+        public static void GenerateInvoices(string AInputBeneratorFile, int AYear, bool ASmallNumber, TDataBase ADataBase = null)
         {
             MaxInvoicesPerYear = (ASmallNumber ? 25 : 200);
 
@@ -69,8 +70,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
-            TDataBase db = DBAccess.Connect("GenerateInvoices");
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDataBase db = DBAccess.Connect("GenerateInvoices", ADataBase);
+            bool NewTransaction;
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             // get a list of potential suppliers
             string sqlGetSupplierPartnerKeys =
@@ -83,7 +85,11 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                                                FLedgerNumber.ToString() +
                                                " AND a_account_type_c = 'Expense' AND a_account_active_flag_l = true AND a_posting_status_l = true";
             DataTable AccountCodes = db.SelectDT(sqlGetExpenseAccountCodes, "codes", Transaction);
-            Transaction.Rollback();
+            
+            if (NewTransaction)
+            {
+                Transaction.Rollback();
+            }
 
             while (RecordNode != null)
             {
@@ -93,7 +99,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 AApDocumentRow invoiceRow = MainDS.AApDocument.NewRowTyped(true);
 
                 invoiceRow.LedgerNumber = FLedgerNumber;
-                invoiceRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document);
+                invoiceRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document, db);
                 invoiceRow.ApNumber = invoiceRow.ApDocumentId;
                 invoiceRow.DocumentCode = invoiceRow.ApDocumentId.ToString();
                 invoiceRow.PartnerKey = SupplierKey;
@@ -131,7 +137,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            AccountsPayableTDSAccess.SubmitChanges(MainDS);
+            AccountsPayableTDSAccess.SubmitChanges(MainDS, db);
         }
 
         /// <summary>
@@ -148,10 +154,10 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             DateTime PeriodStartDate, PeriodEndDate;
 
-            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, APeriod, out PeriodStartDate, out PeriodEndDate, null);
-
             TDataBase db = DBAccess.Connect("PostAndPayInvoices");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, APeriod, out PeriodStartDate, out PeriodEndDate, Transaction);
 
             List <OdbcParameter>parameters = new List <OdbcParameter>();
 

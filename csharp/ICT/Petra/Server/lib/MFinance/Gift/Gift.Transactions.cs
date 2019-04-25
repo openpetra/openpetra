@@ -4433,7 +4433,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency,
                 LedgerIntlCurrency,
                 StartOfMonth,
-                GLEffectiveDate);
+                GLEffectiveDate,
+                ATransaction.DataBaseObj);
 
             //Check Batch period
             if (GiftBatchRow.BatchPeriod != DateEffectivePeriod)

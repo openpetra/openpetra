@@ -99,7 +99,7 @@ namespace Ict.Common.DB
                     AConnection.Close();
                     AConnection.Dispose();
 
-                    TLogging.Log(
+                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO,
                         "    " +
                         (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE ? "CloseDBConnection:" : "") +
                         "Database connection closed." + AConnectionName + " " +

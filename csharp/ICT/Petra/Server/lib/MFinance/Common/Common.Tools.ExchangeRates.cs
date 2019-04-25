@@ -547,18 +547,20 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AStartDate"></param>
         /// <param name="AEndDate"></param>
         /// <param name="AExchangeRateToFind"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
         public static bool GetCorporateExchangeRate(string ACurrencyFrom,
             string ACurrencyTo,
             DateTime AStartDate,
             DateTime AEndDate,
-            out decimal AExchangeRateToFind)
+            out decimal AExchangeRateToFind,
+            TDataBase ADataBase = null)
         {
             AExchangeRateToFind = decimal.MinValue;
             decimal ExchangeRateToFind = AExchangeRateToFind;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GetCorporateExchangeRate");
+            TDataBase db = DBAccess.Connect("GetCorporateExchangeRate", ADataBase);
 
             ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
             ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
@@ -621,7 +623,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AExchangeRateToFind = ExchangeRateToFind;
 
-            db.CloseDBConnection();
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             return AExchangeRateToFind != decimal.MinValue;
         }
