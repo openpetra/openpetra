@@ -168,7 +168,7 @@
 
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-primary" onclick="save_edit_batch(this)">{forms.save}</button>
+					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
 					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
 			</div>
@@ -232,7 +232,7 @@
 						<div class="row" edit-only>
 							<div class="col" id="Batch{val_a_batch_number_i}Gift{val_a_gift_transaction_number_i}">
 								<h4>Detail</h4>
-								<button type="button" class="btn btn-primary" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
+								<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
 									<span>{forms.new}</span>
 									<i class="fa fa-plus"></i>
 								</button>
@@ -254,8 +254,8 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_trans(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_trans(this)">{forms.save}</button>
+					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
+					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
 					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
 			</div>
@@ -355,8 +355,8 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_trans_detail(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_trans_detail(this)">{forms.save}</button>
+					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
+					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
 					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
 			</div>

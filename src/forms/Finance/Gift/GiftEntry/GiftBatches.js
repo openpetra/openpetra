@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2017-2018 by TBits.net
+// Copyright 2017-2019 by TBits.net
 //
 // This file is part of OpenPetra.
 //
@@ -78,7 +78,7 @@ function open_gift_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
-	if (obj.find('[batch-status]').text() == "Posted") {
+	if (obj.find('[batch-status]').text() == "Posted" || obj.find('[batch-status]').text() == "Cancelled") {
 		obj.find('.not_show_when_posted').hide();
 	}
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
@@ -169,8 +169,9 @@ function edit_batch(batch_id) {
 		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
 
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
-		if (batch['a_batch_status_c'] == "Posted") {
+		if (!parsed.ABatchIsUnposted) {
 				tpl_m.find('.posted_readonly').attr('readonly', true);
+				tpl_m.find('.not_show_when_posted').hide();
 		}
 
 		$('#modal_space').html(tpl_m);
@@ -202,8 +203,9 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
-		if (searched['a_batch_status_c'] == "Posted") {
+		if (!parsed.ABatchIsUnposted) {
 			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
+			tpl_edit_raw.find('.not_show_when_posted').hide();
 		}
 
 		for (detail of parsed.result.AGiftDetail) {
@@ -239,8 +241,9 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		}
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
-		if (searched['a_batch_status_c'] == "Posted") {
+		if (!parsed.ABatchIsUnposted) {
 			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
+			tpl_edit_raw.find('.not_show_when_posted').hide();
 		}
 
 		$('#modal_space').append(tpl_edit_raw);
