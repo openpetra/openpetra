@@ -3,12 +3,13 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
+	<!-- Batch line in list, with collapse list of transactions -->
 	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
 			<div class="col format_date">{val_a_gl_effective_date_d}</div>
 			<div class="col">{val_a_batch_description_c}</div>
-			<div class="col">{val_a_batch_total_n}</div>
+			<div class="col">{val_GiftBatchTotal}</div>
 			<div class="col" batch-status>{val_a_batch_status_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
@@ -80,6 +81,7 @@
 		</div>
 	</div>
 
+	<!-- modal for editing the batch -->
 	<div class="modal modal-wide fade tpl_edit_batch" tabindex="-1" role="dialog">
 		<input type="hidden" action value="create">
 		<div class="modal-dialog" role="document">
@@ -153,11 +155,11 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{batchtotal}</span>
+								<span>{batchhash}</span>
 							</div>
 							<div class="col">
-								<div class="autocomplete">
-									<input type="text" name="a_batch_total_n" value="" readonly>
+								<div>
+									<input class="posted_readonly" type="text" name="a_batch_total_n" value="">
 								</div>
 							</div>
 						</div>
@@ -173,6 +175,7 @@
 		</div>
 	</div>
 
+	<!-- modal for editing transaction -->
 	<div class="modal modal-wide fade tpl_edit_trans" tabindex="-1" role="dialog">
 		<input type="hidden" action value="create">
 		<div class="modal-dialog" role="document">

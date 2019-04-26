@@ -276,6 +276,7 @@
       "batchdate":"Buchungsdatum",
       "batchname":"Beschreibung",
       "batchstatus":"Stapelstatus",
+      "batchhash":"Prüfsumme",
       "batchtotal":"Gesamtsumme",
       "bank_account_code": "Bank Konto",
       "bank_ccenter_code": "Bank Kostenstelle",

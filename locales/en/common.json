@@ -275,6 +275,7 @@
       "batchdate":"Batch booking date",
       "batchname":"Batch description",
       "batchstatus":"Batch status",
+      "batchhash":"Check Total",
       "batchtotal":"Batch Total",
       "bank_account_code": "Bank Account",
       "bank_ccenter_code": "Bank Cost Centre",
