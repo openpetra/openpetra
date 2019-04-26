@@ -276,7 +276,7 @@
       "batchdate":"Buchungsdatum",
       "batchname":"Beschreibung",
       "batchstatus":"Stapelstatus",
-      "batchtotal":"Prüfsumme",
+      "batchtotal":"Gesamtsumme",
       "bank_account_code": "Bank Konto",
       "bank_ccenter_code": "Bank Kostenstelle",
       "trans_number": "Transaktions-Nummer",
