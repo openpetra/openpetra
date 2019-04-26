@@ -732,24 +732,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         if (AYear > -1)
                         {
-                            FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
-                                AGiftBatchTable.GetTableDBName(),
+                            FilterByPeriod = String.Format(" AND gb.{0} = {1}",
                                 AGiftBatchTable.GetBatchYearDBName(),
                                 AYear);
 
                             if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
                             {
                                 //Return current and forwarding periods
-                                FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
-                                    AGiftBatchTable.GetTableDBName(),
+                                FilterByPeriod += String.Format(" AND gb.{0} >= {1}",
                                     AGiftBatchTable.GetBatchPeriodDBName(),
                                     MainDS.ALedger[0].CurrentPeriod);
                             }
                             else if (APeriod > 0)
                             {
                                 //Return only specified period
-                                FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
-                                    AGiftBatchTable.GetTableDBName(),
+                                FilterByPeriod += String.Format(" AND gb.{0} = {1}",
                                     AGiftBatchTable.GetBatchPeriodDBName(),
                                     APeriod);
                             }
@@ -765,20 +762,48 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             ABatchStatus == MFinanceConstants.BATCH_POSTED ||
                             ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                         {
-                            FilterByBatchStatus += String.Format(" AND PUB_{0}.{1} = '{2}'",
-                                AGiftBatchTable.GetTableDBName(),
+                            FilterByBatchStatus += String.Format(" AND gb.{0} = '{1}'",
                                 AGiftBatchTable.GetBatchStatusDBName(),
                                 ABatchStatus);
                         }
 
                         string SelectClause =
-                            String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                            String.Format("SELECT * FROM PUB_{0} gb WHERE gb.{1} = {2}",
                                 AGiftBatchTable.GetTableDBName(),
                                 AGiftBatchTable.GetLedgerNumberDBName(),
                                 ALedgerNumber);
 
                         db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
                             MainDS.AGiftBatch.TableName, Transaction);
+
+                        // now get the gift detail transaction amounts for the gift batch total
+                        SelectClause =
+                            String.Format("SELECT * FROM PUB_{0} gb, PUB_{1} gd WHERE gb.{2} = {3} AND gb.{4} = gd.{5} AND gb.{6} = gd.{7}",
+                                AGiftBatchTable.GetTableDBName(),
+                                AGiftDetailTable.GetTableDBName(),
+                                AGiftBatchTable.GetLedgerNumberDBName(),
+                                ALedgerNumber,
+                                AGiftBatchTable.GetLedgerNumberDBName(),
+                                AGiftDetailTable.GetLedgerNumberDBName(),
+                                AGiftBatchTable.GetBatchNumberDBName(),
+                                AGiftDetailTable.GetBatchNumberDBName());
+                        db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
+                            MainDS.AGiftDetail.TableName, Transaction);
+
+                        foreach (GiftBatchTDSAGiftBatchRow batchRow in MainDS.AGiftBatch.Rows)
+                        {
+                            batchRow.GiftBatchTotal = 0;
+
+                            foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                            {
+                                if (giftDetail.BatchNumber == batchRow.BatchNumber)
+                                {
+                                    batchRow.GiftBatchTotal += giftDetail.GiftTransactionAmount;
+                                }
+                            }
+                        }
+
+                        MainDS.AGiftDetail.Clear();
                     });
 
 
@@ -789,6 +814,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -3573,11 +3600,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool IsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            // get the donor name
+            // get the donor name and the gift total
             foreach (GiftBatchTDSAGiftRow giftRow in MainDS.AGift.Rows)
             {
                 PPartnerRow donorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
                 giftRow.DonorName = donorRow.PartnerShortName;
+                giftRow.GiftTotal = 0;
+
+                foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                {
+                    if (giftDetail.GiftTransactionNumber == giftRow.GiftTransactionNumber)
+                    {
+                        giftRow.GiftTotal += giftDetail.GiftTransactionAmount;
+                    }
+                }
             }
 
             // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
