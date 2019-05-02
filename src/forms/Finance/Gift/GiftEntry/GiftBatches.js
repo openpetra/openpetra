@@ -50,6 +50,7 @@ function display_list(source) {
 		for (item of data.result.AGiftBatch) {
 			format_item(item);
 		}
+		format_currency(data.ACurrencyCode);
 		format_date();
 	})
 }
@@ -91,6 +92,7 @@ function open_gift_transactions(obj, number) {
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
+		format_currency(data.ACurrencyCode);
 		format_date();
 		$('.tpl_row .collapse').collapse('hide');
 		obj.find('.collapse').collapse('show')
