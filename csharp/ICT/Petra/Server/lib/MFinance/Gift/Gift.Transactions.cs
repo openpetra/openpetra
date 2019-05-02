@@ -45,6 +45,7 @@ using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
@@ -686,11 +687,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
         /// Period = -2 means all periods in current year</param>
         /// <param name="ABatchStatus"></param>
+        /// <param name="ACurrencyCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatchForYearPeriod(
             Int32 ALedgerNumber, Int32 AYear, Int32 APeriod,
-            String ABatchStatus)
+            String ABatchStatus,
+            out String ACurrencyCode
+            )
         {
             #region Validate Arguments
 
@@ -704,6 +708,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             string FilterByPeriod = string.Empty;
+            string CurrencyCode = string.Empty;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -803,6 +808,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
                         }
 
+                        CurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber, db);
+
                         MainDS.AGiftDetail.Clear();
                     });
 
@@ -814,6 +821,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            ACurrencyCode = CurrencyCode;
 
             db.CloseDBConnection();
 
@@ -1676,7 +1685,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// loads a list of gift transactions and details for the given ledger and batch
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
+        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted, out String ACurrencyCode)
         {
             #region Validate Arguments
 
@@ -1732,6 +1741,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            ACurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber);
 
             return MainDS;
         }
@@ -2374,7 +2385,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool BatchIsUnposted;
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
+            string CurrencyCode;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")
@@ -2493,7 +2505,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool BatchIsUnposted;
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
+            string CurrencyCode;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")

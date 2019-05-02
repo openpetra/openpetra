@@ -53,6 +53,7 @@ using Ict.Petra.Server.MFinance.BankImport.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.App.Core;
@@ -724,28 +725,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             return ResultDataset;
         }
 
-        private static string GetBaseCurrencyCode(Int32 ALedgerNumber)
-        {
-            string sqlSelectCurrency =
-                "SELECT ac.a_currency_code_c " +
-                "FROM a_currency ac, a_ledger l " +
-                "WHERE l.a_base_currency_c = ac.a_currency_code_c " +
-                "AND l.a_ledger_number_i = " + ALedgerNumber.ToString();
-
-            TDataBase db = DBAccess.Connect("GetBaseCurrencyCode");
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
-            DataTable RightCurrency = db.SelectDT(sqlSelectCurrency, "currency_select", Transaction);
-            Transaction.Rollback();
-
-            string CurrencyCode = "N/A";
-
-            if (RightCurrency.Rows.Count > 0) {
-                CurrencyCode = RightCurrency.Rows[0]["a_currency_code_c"].ToString();
-            }
-
-            return CurrencyCode;
-        }
-
         /// <summary>
         /// returns the transactions of the bank statement.
         /// returns only the transactions, not the details. no matching.
@@ -783,7 +762,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 }
             }
 
-            ACurrencyCode = GetBaseCurrencyCode(ALedgerNumber);
+            ACurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber);
 
             MainDS.AcceptChanges();
 
