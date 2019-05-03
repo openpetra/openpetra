@@ -5062,19 +5062,66 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// export all the Data of the batches matching the parameters to a String
         /// </summary>
-        /// <param name="requestParams">Hashtable containing the given params </param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumberStart"></param>
+        /// <param name="ABatchNumberEnd"></param>
+        /// <param name="ABatchDateFrom"></param>
+        /// <param name="ABatchDateTo"></param>
+        /// <param name="ADelimiter">delimiter for the CSV data</param>
+        /// <param name="ADateFormatString"></param>
+        /// <param name="ASummary"></param>
+        /// <param name="AUseBaseCurrency"></param>
+        /// <param name="ADateForSummary"></param>
+        /// <param name="ANumberFormat">American or European</param>
+        /// <param name="ATransactionsOnly"></param>
+        /// <param name="AExtraColumns"></param>
+        /// <param name="ARecipientNumber"></param>
+        /// <param name="AFieldNumber"></param>
+        /// <param name="AIncludeUnposted"></param>
         /// <param name="exportString">Big parts of the export file as a simple String</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>number of exported batches</returns>
         [RequireModulePermission("FINANCE-1")]
         static public Int32 ExportAllGiftBatchData(
-            Hashtable requestParams,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumberStart,
+            Int32 ABatchNumberEnd,
+            DateTime? ABatchDateFrom,
+            DateTime? ABatchDateTo,
+            string ADelimiter,
+            string ADateFormatString,
+            bool ASummary,
+            bool AUseBaseCurrency,
+            DateTime ADateForSummary,
+            string ANumberFormat,
+            bool ATransactionsOnly,
+            bool AExtraColumns,
+            Int64 ARecipientNumber,
+            Int64 AFieldNumber,
+            bool AIncludeUnposted,
             out String exportString,
             out TVerificationResultCollection AMessages)
         {
             TGiftExporting Exporting = new TGiftExporting();
 
-            return Exporting.ExportAllGiftBatchData(requestParams, out exportString, out AMessages);
+            return Exporting.ExportAllGiftBatchData(
+                ALedgerNumber,
+                ABatchNumberStart,
+                ABatchNumberEnd,
+                ABatchDateFrom,
+                ABatchDateTo,
+                ADelimiter,
+                ADateFormatString,
+                ASummary,
+                AUseBaseCurrency,
+                ADateForSummary,
+                ANumberFormat,
+                ATransactionsOnly,
+                AExtraColumns,
+                ARecipientNumber,
+                AFieldNumber,
+                AIncludeUnposted,
+                out exportString, out AMessages);
         }
 
         /// <summary>
