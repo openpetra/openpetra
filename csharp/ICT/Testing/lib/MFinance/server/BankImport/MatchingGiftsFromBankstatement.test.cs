@@ -169,7 +169,8 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
 
             int AdjustmentBatchNumber;
             bool BatchIsUnposted;
-            GiftBatchTDS GiftReverseDS = TGiftTransactionWebConnector.LoadGiftTransactionsForBatch(FLedgerNumber, BatchNumber, out BatchIsUnposted); 
+            string CurrencyCode;
+            GiftBatchTDS GiftReverseDS = TGiftTransactionWebConnector.LoadGiftTransactionsForBatch(FLedgerNumber, BatchNumber, out BatchIsUnposted, out CurrencyCode); 
             Assert.AreEqual(true, TAdjustmentWebConnector.GiftRevertAdjust(requestParams, out AdjustmentBatchNumber, GiftReverseDS), "reversing the gift batch");
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, AdjustmentBatchNumber, out generatedGlBatchNumber, out VerificationResult))
