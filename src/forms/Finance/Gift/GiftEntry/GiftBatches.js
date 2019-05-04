@@ -3,7 +3,8 @@
 // @Authors:
 //       Timotheus Pokorra <tp@tbits.net>
 //
-// Copyright 2017-2019 by TBits.net
+// Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -425,6 +426,47 @@ function cancel_batch(batch_id) {
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
+		}
+	});
+}
+
+function export_batch(batch_id) {
+	var r = {
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
+				ABatchNumberStart: batch_id,
+				ABatchNumberEnd: batch_id,
+				ABatchDateFrom: "null",
+				ABatchDateTo: "null",
+				ADateFormatString: "dmy",
+				ASummary: false,
+				AUseBaseCurrency: true,
+				ADateForSummary: "null",
+				ANumberFormat: "European",
+				ATransactionsOnly: true,
+				AExtraColumns: false,
+				ARecipientNumber: 0,
+				AFieldNumber: 0,
+				AIncludeUnposted: true
+			};
+
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportAllGiftBatchData', r).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result > 0) {
+			excelfile = parsed.AExportExcel;
+
+			var a = document.createElement("a");
+			a.style = "display: none";
+			a.href = 'data:application/excel;base64,'+excelfile;
+			a.download = i18next.t('GiftBatch') + '_' + batch_id + '.xlsx';
+
+			// For Mozilla we need to add the link, otherwise the click won't work
+			// see https://support.mozilla.org/de/questions/968992
+			document.body.appendChild(a);
+
+			a.click();
+		}
+		else if (parsed.result < 0) {
+			display_error(parsed.AVerificationMessages);
 		}
 	});
 }
