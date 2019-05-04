@@ -40,6 +40,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
@@ -83,9 +84,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// if ABatchPeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
         /// <param name="ABatchStatus">if empty all batches will be returned, otherwise only POSTED, CANCELLED or UNPOSTED</param>
         /// <param name="AMaxRecords"></param>
+        /// <param name="ACurrencyCode"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int ABatchYear, int ABatchPeriod, string ABatchStatus, int AMaxRecords)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int ABatchYear, int ABatchPeriod, string ABatchStatus, int AMaxRecords, out String ACurrencyCode)
         {
+            ACurrencyCode = String.Empty;
+            string CurrencyCode = String.Empty;
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -108,6 +113,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ref Transaction,
                     delegate
                     {
+                        CurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber, db);
+
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
                         #region Validate Data
@@ -184,6 +191,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            ACurrencyCode = CurrencyCode;
 
             return MainDS;
         }
@@ -373,10 +382,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="ACurrencyCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatchAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadABatchAJournalATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, out String ACurrencyCode)
         {
+            ACurrencyCode = String.Empty;
+            string CurrencyCode = String.Empty;
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -409,6 +422,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                         ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
+                        CurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber, db);
+
                         #region Validate Data
 
                         if ((MainDS.ABatch == null) || (MainDS.ABatch.Count == 0))
@@ -438,6 +453,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            ACurrencyCode = CurrencyCode;
 
             return MainDS;
         }
@@ -3174,7 +3191,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (action == "create")
             {
-                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+                string CurrencyCode;
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber, out CurrencyCode);
                 ATransactionRow row = MainDS.ATransaction.NewRowTyped();
                 row.LedgerNumber = ALedgerNumber;
                 row.BatchNumber = ABatchNumber;
@@ -3193,6 +3211,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 // TODO update journal last transaction number???
 
+                ABatchRow BatchRow = MainDS.ABatch[0];
+                GLRoutines.UpdateBatchTotals(ref MainDS, ref BatchRow);
+
                 try
                 {
                     SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
@@ -3204,7 +3225,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
             else if (action == "edit")
             {
-                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+                string CurrencyCode;
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber, out CurrencyCode);
 
                 foreach (ATransactionRow row in MainDS.ATransaction.Rows)
                 {
@@ -3222,6 +3244,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
+                ABatchRow BatchRow = MainDS.ABatch[0];
+                GLRoutines.UpdateBatchTotals(ref MainDS, ref BatchRow);
+
                 try
                 {
                     SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
@@ -3233,7 +3258,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
             else if (action == "delete")
             {
-                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber);
+                string CurrencyCode;
+                MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber, out CurrencyCode);
 
                 foreach (ATransactionRow row in MainDS.ATransaction.Rows)
                 {
@@ -3246,6 +3272,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         row.TransactionNumber--;
                     }
                 }
+
+                ABatchRow BatchRow = MainDS.ABatch[0];
+                GLRoutines.UpdateBatchTotals(ref MainDS, ref BatchRow);
 
                 try
                 {
@@ -5481,7 +5510,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             if (SingleBatchDS.AJournal.Count == 0)
             {
                 //Try to load all data
-                SingleBatchDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber));
+                string CurrencyCode;
+                SingleBatchDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber, out CurrencyCode));
             }
             else if (SingleBatchDS.ATransaction.Count == 0)
             {
