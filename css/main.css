@@ -108,3 +108,6 @@ body {
 .credit {
   color:black!important;
 }
+.format_currency {
+  text-align:right;
+}

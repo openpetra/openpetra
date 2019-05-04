@@ -235,6 +235,7 @@
         "year": "Year",
         "batchcredit":"Total Credit",
         "batchdebit":"Total Debit",
+        "batchtotal":"Total Hash",
         "batch_date": "Effective date",
         "trans_number": "Transaction number",
         "trans_date": "Transaction Date",

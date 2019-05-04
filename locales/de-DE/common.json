@@ -236,6 +236,7 @@
         "year": "Jahr",
         "batchcredit":"Stapel Kredit",
         "batchdebit":"Stapel Debit",
+        "batchtotal":"Summe",
         "batch_date": "Buchungs-Datum",
         "trans_number": "Transaktions-Nummer",
         "trans_date": "Datum",

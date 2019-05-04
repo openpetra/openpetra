@@ -8,6 +8,7 @@
 			<div class="col">{val_a_batch_number_i}</div>
 			<div class="col format_date">{val_a_date_effective_d}</div>
 			<div class="col">{val_a_batch_description_c}</div>
+			<div class="col format_currency">{val_a_batch_debit_total_n}</div>
 			<div class="col" batch-status>{val_a_batch_status_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
@@ -50,11 +51,11 @@
 						<div class ="row">
 							<div class="col">{trans_number}</div>
 							<div class="col">{trans_date}</div>
-							<div class="col">{CREDIT}</div>
-							<div class="col">{DEBIT}</div>
+							<div class="col format_currency">{CREDIT}</div>
+							<div class="col format_currency">{DEBIT}</div>
 							<div class="col">{trans_account_code}</div>
 							<div class="col">{trans_ccenter_code}</div>
-							<div class="col">{trans_narrative_code}</div>
+							<div class="col-3">{trans_narrative_code}</div>
 							<div class="col-1">
 								<button type="button" class="btn" onclick="$('.tpl_row .collapse').collapse('hide');">
 									<i class="fa fa-close"></i>
@@ -74,11 +75,11 @@
 		<div class="row">
 			<div class="col">{val_a_transaction_number_i}</div>
 			<div class="col format_date">{val_a_transaction_date_d}</div>
-			<div class="col format_curr">{val_creditamountbase}</div>
-			<div class="col format_curr">{val_debitamountbase}</div>
+			<div class="col format_currency">{val_creditamountbase}</div>
+			<div class="col format_currency">{val_debitamountbase}</div>
 			<div class="col">{val_a_account_code_c}</div>
 			<div class="col">{val_a_cost_centre_code_c}</div>
-			<div class="col">{val_a_narrative_c}</div>
+			<div class="col-3">{val_a_narrative_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_trans({val_a_batch_number_i}, {val_a_transaction_number_i})">
 					<i class="fa fa-wrench"></i>
@@ -348,6 +349,7 @@
 		<div class="col"><b>{batchnumber}</b></div>
 		<div class="col"><b>{batch_date}</b></div>
 		<div class="col"><b>{batchname}</b></div>
+		<div class="col"><b>{batchtotal}</b></div>
 		<div class="col"><b>{forms.status}</b></div>
 	</div>
 
