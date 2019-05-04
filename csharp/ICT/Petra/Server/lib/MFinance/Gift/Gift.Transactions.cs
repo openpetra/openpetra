@@ -5067,7 +5067,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumberEnd"></param>
         /// <param name="ABatchDateFrom"></param>
         /// <param name="ABatchDateTo"></param>
-        /// <param name="ADelimiter">delimiter for the CSV data</param>
         /// <param name="ADateFormatString"></param>
         /// <param name="ASummary"></param>
         /// <param name="AUseBaseCurrency"></param>
@@ -5078,7 +5077,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ARecipientNumber"></param>
         /// <param name="AFieldNumber"></param>
         /// <param name="AIncludeUnposted"></param>
-        /// <param name="exportString">Big parts of the export file as a simple String</param>
+        /// <param name="AExportExcel">the export file as Excel file</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>number of exported batches</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -5088,18 +5087,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ABatchNumberEnd,
             DateTime? ABatchDateFrom,
             DateTime? ABatchDateTo,
-            string ADelimiter,
             string ADateFormatString,
             bool ASummary,
             bool AUseBaseCurrency,
-            DateTime ADateForSummary,
+            DateTime? ADateForSummary,
             string ANumberFormat,
             bool ATransactionsOnly,
             bool AExtraColumns,
             Int64 ARecipientNumber,
             Int64 AFieldNumber,
             bool AIncludeUnposted,
-            out String exportString,
+            out String AExportExcel,
             out TVerificationResultCollection AMessages)
         {
             TGiftExporting Exporting = new TGiftExporting();
@@ -5110,7 +5108,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ABatchNumberEnd,
                 ABatchDateFrom,
                 ABatchDateTo,
-                ADelimiter,
                 ADateFormatString,
                 ASummary,
                 AUseBaseCurrency,
@@ -5121,7 +5118,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ARecipientNumber,
                 AFieldNumber,
                 AIncludeUnposted,
-                out exportString, out AMessages);
+                out AExportExcel, out AMessages);
         }
 
         /// <summary>

@@ -32,8 +32,10 @@ using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -58,14 +60,14 @@ namespace Ict.Petra.Server.MFinance.Gift
         private const String summarizedData = "Summarised Gift Data";
         private const String sGift = "Gift";
         private const String sConfidential = "Confidential";
-        TDBTransaction FTransaction;
+        TDBTransaction FTransaction = new TDBTransaction();
         StringWriter FStringWriter;
         String FDelimiter;
         String FDateFormatString;
         CultureInfo FCultureInfo;
         Boolean FTransactionsOnly;
         Boolean FExtraColumns;
-        DateTime FDateForSummary;
+        DateTime? FDateForSummary;
         Boolean FUseBaseCurrency;
         Int32 FLedgerNumber;
         String FCurrencyCode = "";
@@ -74,14 +76,13 @@ namespace Ict.Petra.Server.MFinance.Gift
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
 
         /// <summary>
-        /// export all the Data of the batches matching the parameters to a String
+        /// export all the Data of the batches matching the parameters to an Excel file
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumberStart"></param>
         /// <param name="ABatchNumberEnd"></param>
         /// <param name="ABatchDateFrom"></param>
         /// <param name="ABatchDateTo"></param>
-        /// <param name="ADelimiter">delimiter for the CSV data</param>
         /// <param name="ADateFormatString"></param>
         /// <param name="ASummary"></param>
         /// <param name="AUseBaseCurrency"></param>
@@ -92,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <param name="ARecipientNumber"></param>
         /// <param name="AFieldNumber"></param>
         /// <param name="AIncludeUnposted"></param>
-        /// <param name="AExportString">Big parts of the export file as a simple String</param>
+        /// <param name="AExportExcel">the export file as Excel file</param>
         /// <param name="AVerificationMessages">Additional messages to display in a messagebox</param>
         /// <returns>number of exported batches, -1 if cancelled, -2 if error</returns>
         public Int32 ExportAllGiftBatchData(
@@ -101,25 +102,25 @@ namespace Ict.Petra.Server.MFinance.Gift
             Int32 ABatchNumberEnd,
             DateTime? ABatchDateFrom,
             DateTime? ABatchDateTo,
-            string ADelimiter,
             string ADateFormatString,
             bool ASummary,
             bool AUseBaseCurrency,
-            DateTime ADateForSummary,
+            DateTime? ADateForSummary,
             string ANumberFormat,
             bool ATransactionsOnly,
             bool AExtraColumns,
             Int64 ARecipientNumber,
             Int64 AFieldNumber,
             bool AIncludeUnposted,
-            out String AExportString,
+            out String AExportExcel,
             out TVerificationResultCollection AVerificationMessages)
         {
             int ReturnGiftBatchCount = 0;
+            AExportExcel = string.Empty;
 
             FStringWriter = new StringWriter();
             FMainDS = new GiftBatchTDS();
-            FDelimiter = ADelimiter;
+            FDelimiter = ",";
             FLedgerNumber = ALedgerNumber;
             FDateFormatString = ADateFormatString;
             Boolean Summary = ASummary;
@@ -414,11 +415,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (ReturnGiftBatchCount > 0)
             {
-                AExportString = FStringWriter.ToString();
-            }
-            else
-            {
-                AExportString = string.Empty;
+                MemoryStream mstream = new MemoryStream();
+                if (TCsv2Xml.CSV2ExcelStream(FStringWriter.ToString(), mstream, FDelimiter, "giftbatch"))
+                {
+                    AExportExcel = Convert.ToBase64String(mstream.ToArray());
+                }
             }
 
             AVerificationMessages = FMessages;
@@ -460,7 +461,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(summarizedData);
             WriteStringQuoted(giftSummary.BankAccountCode);
             WriteCurrency(0);
-            WriteDate(FDateForSummary);
+            WriteDate(FDateForSummary.Value);
 
             if (FUseBaseCurrency)
             {
