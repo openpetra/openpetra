@@ -101,7 +101,7 @@ namespace Ict.Common
         /// <returns></returns>
         public static string StripDecimalAndZeros(string s)
         {
-            string ReturnValue = s;
+            string ReturnValue = s.Replace(CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, "");
 
             if (ReturnValue.IndexOf(CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator) != -1)
             {
