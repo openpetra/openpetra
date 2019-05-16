@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop,matthiash, peters
+//       timop, matthiash, peters
 //
 // Copyright 2004-2019 by OM International
 //
@@ -102,6 +102,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AGiftDS = MainDS;
 
+            db.CloseDBConnection();
+
             return CheckGiftsNotPreviouslyReversed(AGiftDS, out AMessages);
         }
 
@@ -169,6 +171,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 });
 
             AGiftDS = MainDS;
+
+            db.CloseDBConnection();
 
             return CheckGiftsNotPreviouslyReversed(AGiftDS, out AMessages);
         }
@@ -304,42 +308,44 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();            
         }
 
         /// <summary>
-        /// Revert or Adjust a Gift, revert a Gift Detail , revert a gift batch
+        /// Revert or Adjust a Gift, revert a Gift Detail, revert a gift batch
         /// </summary>
-        /// <param name="requestParams">Hashtable containing the given params</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AGiftDetailNumber"></param>
+        /// <param name="ABatchSelected"></param>
+        /// <param name="ANewBatchNumber"></param>
+        /// <param name="ANewGLDateEffective"></param>
+        /// <param name="AFunction"></param>
+        /// <param name="ANoReceipt"></param>
+        /// <param name="ANewPct"></param>
         /// <param name="AAdjustmentBatchNumber">Batch that adjustment transactions have been added to</param>
-        /// <param name="AGiftDS">DataSet containing all gift data needed</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool GiftRevertAdjust(Hashtable requestParams, out int AAdjustmentBatchNumber, GiftBatchTDS AGiftDS)
+        public static bool GiftRevertAdjust(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AGiftDetailNumber,
+            bool ABatchSelected,
+            Int32 ANewBatchNumber,
+            DateTime? ANewGLDateEffective,
+            GiftAdjustmentFunctionEnum AFunction,
+            bool ANoReceipt,
+            Decimal ANewPct,
+            out int AAdjustmentBatchNumber)
         {
             AAdjustmentBatchNumber = 0;
             int AdjustmentBatchNo = AAdjustmentBatchNumber;
 
-            if ((AGiftDS == null) || (AGiftDS.AGiftDetail == null) || (AGiftDS.AGiftDetail.Rows.Count == 0))
-            {
-                TLogging.Log("Empty dataset sent to GiftRevertAdjust");
-                return false;
-            }
+            GiftBatchTDS GiftDS = new GiftBatchTDS();
 
-            Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
-            Boolean BatchSelected = (Boolean)requestParams["NewBatchSelected"];
-            GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
-            Int32 GiftDetailNumber = -1;
-
-            if (Function == GiftAdjustmentFunctionEnum.ReverseGiftDetail)
-            {
-                GiftDetailNumber = (Int32)requestParams["GiftDetailNumber"];
-            }
-
-            bool NoReceipt = (Boolean)requestParams["NoReceipt"];
-
-            DateTime DateEffective;
             decimal batchGiftTotal = 0;
-            Int32 ANewBatchNumber = (BatchSelected ? (Int32)requestParams["NewBatchNumber"] : 0);
+            ANewBatchNumber = ABatchSelected ? ANewBatchNumber : 0;
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GiftRevertAdjust");
@@ -352,22 +358,43 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref SubmissionOK,
                     delegate
                     {
+                        // load the original gifts and gift details
+                        AGiftAccess.LoadViaAGiftBatch(GiftDS, ALedgerNumber, ABatchNumber, Transaction);
+                        AGiftDetailAccess.LoadViaAGiftBatch(GiftDS, ALedgerNumber, ABatchNumber, Transaction);
+
                         ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
                         AGiftBatchRow giftBatch;
 
-                        // if we need to create a new gift batch
-                        if (!BatchSelected)
+                        DateTime DateEffective;
+
+                        if (ANewGLDateEffective.HasValue)
                         {
-                            giftBatch = CreateNewGiftBatch(requestParams, ref AGiftDS, out DateEffective, ref ledgerTable, Transaction);
+                            DateEffective = ANewGLDateEffective.Value;
+                        }
+                        else
+                        {
+                            AGiftBatchTable OriginalGiftBatch = AGiftBatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
+                            DateEffective = OriginalGiftBatch[0].GlEffectiveDate;
+                        }
+
+                        // if we need to create a new gift batch
+                        if (!ABatchSelected)
+                        {
+                            giftBatch = CreateNewGiftBatch(
+                                ALedgerNumber,
+                                ABatchNumber,
+                                DateEffective,
+                                AFunction,
+                                ref GiftDS, ref ledgerTable, Transaction);
                         }
                         else // using an existing gift batch
                         {
-                            AGiftBatchAccess.LoadByPrimaryKey(AGiftDS, ALedgerNumber, ANewBatchNumber, Transaction);
+                            AGiftBatchAccess.LoadByPrimaryKey(GiftDS, ALedgerNumber, ANewBatchNumber, Transaction);
 
-                            giftBatch = AGiftDS.AGiftBatch[0];
+                            giftBatch = GiftDS.AGiftBatch[0];
                             DateEffective = giftBatch.GlEffectiveDate;
-                            //If into an existing batch, then retrive the existing batch total
+                            //If into an existing batch, then retrieve the existing batch total
                             batchGiftTotal = giftBatch.BatchTotal;
                         }
 
@@ -375,16 +402,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         //assuming new elements are added after these static borders
 
-                        AGiftDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
+                        GiftDS.AGift.DefaultView.Sort = string.Format("{0}, {1}",
                             AGiftTable.GetBatchNumberDBName(),
                             AGiftTable.GetGiftTransactionNumberDBName());
 
-                        AGiftDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}, {2}",
+                        GiftDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}, {2}",
                             AGiftDetailTable.GetBatchNumberDBName(),
                             AGiftDetailTable.GetGiftTransactionNumberDBName(),
                             AGiftDetailTable.GetDetailNumberDBName());
 
-                        foreach (DataRowView giftRow in AGiftDS.AGift.DefaultView)
+                        foreach (DataRowView giftRow in GiftDS.AGift.DefaultView)
                         {
                             int cycle = 0;
 
@@ -395,7 +422,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                 if (oldGift.RowState != DataRowState.Added)
                                 {
-                                    AGiftRow gift = AGiftDS.AGift.NewRowTyped(true);
+                                    AGiftRow gift = GiftDS.AGift.NewRowTyped(true);
                                     DataUtilities.CopyAllColumnValuesWithoutPK(oldGift, gift);
                                     gift.LedgerNumber = giftBatch.LedgerNumber;
                                     gift.BatchNumber = giftBatch.BatchNumber;
@@ -415,23 +442,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     else
                                     {
                                         gift.ReceiptPrinted = false;
-                                        gift.PrintReceipt = !NoReceipt;
+                                        gift.PrintReceipt = !ANoReceipt;
                                     }
 
-                                    AGiftDS.AGift.Rows.Add(gift);
+                                    GiftDS.AGift.Rows.Add(gift);
 
-                                    foreach (DataRowView giftDetailRow in AGiftDS.AGiftDetail.DefaultView)
+                                    foreach (DataRowView giftDetailRow in GiftDS.AGiftDetail.DefaultView)
                                     {
                                         AGiftDetailRow oldGiftDetail = (AGiftDetailRow)giftDetailRow.Row;
 
                                         // if gift detail belongs to gift
                                         if ((oldGiftDetail.GiftTransactionNumber == oldGift.GiftTransactionNumber)
                                             && (oldGiftDetail.BatchNumber == oldGift.BatchNumber)
-                                            && (Function != GiftAdjustmentFunctionEnum.ReverseGiftDetail)
-                                            || (oldGiftDetail.DetailNumber == GiftDetailNumber))
+                                            && (AFunction != GiftAdjustmentFunctionEnum.ReverseGiftDetail)
+                                            || (oldGiftDetail.DetailNumber == AGiftDetailNumber))
                                         {
-                                            AddDuplicateGiftDetailToGift(ref AGiftDS, ref gift, oldGiftDetail, cycle == 0, Transaction,
-                                                requestParams);
+                                            AddDuplicateGiftDetailToGift(ref GiftDS, ref gift, oldGiftDetail, cycle == 0, Transaction,
+                                                AFunction,
+                                                ANewPct);
 
                                             batchGiftTotal += oldGiftDetail.GiftTransactionAmount * ((cycle == 0) ? -1 : 1);
 
@@ -443,24 +471,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                 cycle++;
                             } while ((cycle < 2)
-                                     && (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift)
-                                         || Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
-                                         || Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
+                                     && (AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGift)
+                                         || AFunction.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
+                                         || AFunction.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
                         }
 
                         //When reversing into a new or existing batch, set batch total
-                        if (!Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
+                        if (!AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
                         {
                             giftBatch.BatchTotal = batchGiftTotal;
                         }
 
                         // save everything at the end
-                        AGiftBatchAccess.SubmitChanges(AGiftDS.AGiftBatch, Transaction);
+                        AGiftBatchAccess.SubmitChanges(GiftDS.AGiftBatch, Transaction);
                         ALedgerAccess.SubmitChanges(ledgerTable, Transaction);
-                        AGiftAccess.SubmitChanges(AGiftDS.AGift, Transaction);
-                        AGiftDetailAccess.SubmitChanges(AGiftDS.AGiftDetail, Transaction);
+                        AGiftAccess.SubmitChanges(GiftDS.AGift, Transaction);
+                        AGiftDetailAccess.SubmitChanges(GiftDS.AGiftDetail, Transaction);
 
-                        AGiftDS.AGiftBatch.AcceptChanges();
+                        GiftDS.AGiftBatch.AcceptChanges();
 
                         SubmissionOK = true;
                     });
@@ -473,28 +501,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AAdjustmentBatchNumber = AdjustmentBatchNo;
 
+            db.CloseDBConnection();
+
             return SubmissionOK;
         }
 
         /// create a new gift batch using some of the details of an existing gift batch
-        private static AGiftBatchRow CreateNewGiftBatch(Hashtable requestParams,
+        private static AGiftBatchRow CreateNewGiftBatch(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            DateTime ADateEffective,
+            GiftAdjustmentFunctionEnum AFunction,
             ref GiftBatchTDS AMainDS,
-            out DateTime ADateEffective,
             ref ALedgerTable ALedgerTable,
             TDBTransaction ATransaction)
         {
             AGiftBatchRow ReturnValue;
 
-            Int32 LedgerNumber = (Int32)requestParams["ALedgerNumber"];
-
-            ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
-            GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)requestParams["Function"];
-            Int32 BatchNumber = (Int32)requestParams["BatchNumber"];
-
-            AGiftBatchAccess.LoadByPrimaryKey(AMainDS, LedgerNumber, BatchNumber, ATransaction);
+            AGiftBatchAccess.LoadByPrimaryKey(AMainDS, ALedgerNumber, ABatchNumber, ATransaction);
 
             AGiftBatchRow oldGiftBatch = AMainDS.AGiftBatch[0];
-            TGiftBatchFunctions.CreateANewGiftBatchRow(ref AMainDS, ref ATransaction, ref ALedgerTable, LedgerNumber, ADateEffective);
+            TGiftBatchFunctions.CreateANewGiftBatchRow(ref AMainDS, ref ATransaction, ref ALedgerTable, ALedgerNumber, ADateEffective);
             ReturnValue = AMainDS.AGiftBatch[1];
             ReturnValue.BankAccountCode = oldGiftBatch.BankAccountCode;
             ReturnValue.BankCostCentre = oldGiftBatch.BankCostCentre;
@@ -511,15 +538,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ReturnValue.BankCostCentre = oldGiftBatch.BankCostCentre;
             ReturnValue.GiftType = oldGiftBatch.GiftType;
 
-            if (Function.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
+            if (AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
             {
                 ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment");
             }
-            else if (Function.Equals(GiftAdjustmentFunctionEnum.FieldAdjust))
+            else if (AFunction.Equals(GiftAdjustmentFunctionEnum.FieldAdjust))
             {
                 ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment (Field Change)");
             }
-            else if (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
+            else if (AFunction.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
             {
                 ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment (Tax Deductible Pct Change)");
             }
@@ -539,18 +566,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AOldGiftDetail"></param>
         /// <param name="AReversal">True for reverse or false for straight duplicate</param>
         /// <param name="ATransaction"></param>
-        /// <param name="ARequestParams"></param>
+        /// <param name="AFunction"></param>
+        /// <param name="ANewPct"></param>
+        /// <param name="AAutoCompleteComments"></param>
+        /// <param name="AReversalCommentOne"></param>
+        /// <param name="AReversalCommentTwo"></param>
+        /// <param name="AReversalCommentThree"></param>
+        /// <param name="AReversalCommentOneType"></param>
+        /// <param name="AReversalCommentTwoType"></param>
+        /// <param name="AReversalCommentThreeType"></param>
+        /// <param name="AUpdateTaxDeductiblePctRecipients"></param>
+        /// <param name="AGeneralFixedGiftDestination"></param>
+        /// <param name="AFixedGiftDestination"></param>
         private static void AddDuplicateGiftDetailToGift(ref GiftBatchTDS AMainDS,
             ref AGiftRow AGift,
             AGiftDetailRow AOldGiftDetail,
             bool AReversal,
             TDBTransaction ATransaction,
-            Hashtable ARequestParams = null)
+            GiftAdjustmentFunctionEnum AFunction,
+            Decimal ANewPct,
+            bool AAutoCompleteComments = false,
+            string AReversalCommentOne = "",
+            string AReversalCommentTwo = "",
+            string AReversalCommentThree = "",
+            string AReversalCommentOneType = "",
+            string AReversalCommentTwoType = "",
+            string AReversalCommentThreeType = "",
+            List <string[]> AUpdateTaxDeductiblePctRecipients = null,
+            bool AGeneralFixedGiftDestination = false,
+            List <string> AFixedGiftDestination = null
+            )
         {
             bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-
-            GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)ARequestParams["Function"];
 
             AGiftDetailRow giftDetail = AMainDS.AGiftDetail.NewRowTyped(true);
 
@@ -571,17 +619,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (TaxDeductiblePercentageEnabled)
             {
-                if (!AReversal && Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
+                if (!AReversal && AFunction.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust))
                 {
-                    giftDetail.TaxDeductiblePct = Convert.ToDecimal(ARequestParams["NewPct"]);
+                    giftDetail.TaxDeductiblePct = ANewPct;
                     TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetail);
                 }
                 else if (!AReversal)
                 {
-                    if (ARequestParams.ContainsKey("UpdateTaxDeductiblePct"))
+                    if (AUpdateTaxDeductiblePctRecipients != null)
                     {
-                        List <string[]>UpdateTaxDeductiblePctRecipeints = (List <string[]> )ARequestParams["UpdateTaxDeductiblePct"];
-                        string[] Result = UpdateTaxDeductiblePctRecipeints.Find(x => x[0] == giftDetail.RecipientKey.ToString());
+                        string[] Result = AUpdateTaxDeductiblePctRecipients.Find(x => x[0] == giftDetail.RecipientKey.ToString());
 
                         // true if a new percentage is available and the user wants to use it
                         if (Result != null)
@@ -602,25 +649,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            if (ARequestParams != null)
+            if (AAutoCompleteComments) // only used for tax deductible pct gift adjustments
             {
-                if ((bool)ARequestParams["AutoCompleteComments"]) // only used for tax deductible pct gift adjustments
-                {
-                    AGiftRow OldGiftRow = (AGiftRow)AMainDS.AGift.Rows.Find(
-                        new object[] { AOldGiftDetail.LedgerNumber, AOldGiftDetail.BatchNumber, AOldGiftDetail.GiftTransactionNumber });
+                AGiftRow OldGiftRow = (AGiftRow)AMainDS.AGift.Rows.Find(
+                    new object[] { AOldGiftDetail.LedgerNumber, AOldGiftDetail.BatchNumber, AOldGiftDetail.GiftTransactionNumber });
 
-                    giftDetail.GiftCommentThree = Catalog.GetString("Original gift date: " + OldGiftRow.DateEntered.ToString("dd-MMM-yyyy"));
-                    giftDetail.CommentThreeType = "Both";
-                }
-                else // user defined
-                {
-                    giftDetail.GiftCommentOne = (String)ARequestParams["ReversalCommentOne"];
-                    giftDetail.GiftCommentTwo = (String)ARequestParams["ReversalCommentTwo"];
-                    giftDetail.GiftCommentThree = (String)ARequestParams["ReversalCommentThree"];
-                    giftDetail.CommentOneType = (String)ARequestParams["ReversalCommentOneType"];
-                    giftDetail.CommentTwoType = (String)ARequestParams["ReversalCommentTwoType"];
-                    giftDetail.CommentThreeType = (String)ARequestParams["ReversalCommentThreeType"];
-                }
+                giftDetail.GiftCommentThree = Catalog.GetString("Original gift date: " + OldGiftRow.DateEntered.ToString("dd-MMM-yyyy"));
+                giftDetail.CommentThreeType = "Both";
+            }
+            else // user defined
+            {
+                giftDetail.GiftCommentOne = AReversalCommentOne;
+                giftDetail.GiftCommentTwo = AReversalCommentTwo;
+                giftDetail.GiftCommentThree = AReversalCommentThree;
+                giftDetail.CommentOneType = AReversalCommentOneType;
+                giftDetail.CommentTwoType = AReversalCommentTwoType;
+                giftDetail.CommentThreeType = AReversalCommentThreeType;
             }
 
             // If reversal: mark the new gift as a reversal
@@ -670,9 +714,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // if the gift destination should be fixed
-                if (ARequestParams.ContainsKey("FixedGiftDestination")
-                    && (Function.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) && (bool)ARequestParams["FixedGiftDestination"]
-                        || (((List <string> )ARequestParams["FixedGiftDestination"]).Exists(x => x == giftDetail.RecipientKey.ToString()))))
+                if ((AFunction.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust) && AGeneralFixedGiftDestination)
+                        || ((AFixedGiftDestination != null) && (AFixedGiftDestination.Exists(x => x == giftDetail.RecipientKey.ToString()))))
                 {
                     giftDetail.FixedGiftDestination = true;
                 }
