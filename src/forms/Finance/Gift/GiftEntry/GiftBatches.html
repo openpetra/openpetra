@@ -27,10 +27,13 @@
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="export_batch({val_a_batch_number_i})">
 							<span>{forms.export}&nbsp;</span><i class="fa fa-table"></i>
 						</button>
-						<button type="button" class="btn btn-primary not_show_when_posted" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning only_show_when_posted" style="margin-top:0.5em;" onclick="adjust_batch({val_a_batch_number_i})">
+							<span>{GLBatches.batch_adjust}&nbsp;</span><i class="fa fa-toggle-right"></i>
+						</button>
+						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
 							<span>{forms.post}&nbsp;</span><i class="fa fa-lock"></i>
 						</button>
-						<button type="button" class="btn not_show_when_posted" style="margin-top:0.5em;" onclick="cancel_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="cancel_batch({val_a_batch_number_i})">
 							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fa fa-ban"></i>
 						</button>
 					</div>

@@ -249,6 +249,7 @@
         "trans_ccenter_code": "Cost Centre Code",
         "trans_narrative_code": "Description",
         "batch_reverse": "Reverse batch",
+        "batch_adjust": "Adjust batch",
         "batch_post": "Post batch",
         "batch_cancel": "Cancel batch",
         "batch_test_post": "Test batch post",
@@ -296,6 +297,7 @@
       "edittitle_trans":"Edit transaction",
       "trans_description":"Transaction Comment",
       "edittitle_trans_detail":"Edit transaction details",
+      "success_adjust":  "An adjustment batch has been created",
       "success_cancelled": "The Batch has been cancelled",
       "success_posted": "The Batch has been posted",
       "ledgernumber":"Ledgernumber"

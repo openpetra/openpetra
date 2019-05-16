@@ -83,6 +83,10 @@ function open_gift_transactions(obj, number) {
 	if (obj.find('[batch-status]').text() == "Posted" || obj.find('[batch-status]').text() == "Cancelled") {
 		obj.find('.not_show_when_posted').hide();
 	}
+	if (obj.find('[batch-status]').text() != "Posted") {
+		obj.find('.only_show_when_posted').hide();
+	}
+
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -172,10 +176,14 @@ function edit_batch(batch_id) {
 		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
 
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
-		if (!parsed.ABatchIsUnposted) {
+		if (parsed.ABatchIsUnposted) {
+			tpl_m.find('.only_show_when_posted').hide();
+		}
+		else {
 				tpl_m.find('.posted_readonly').attr('readonly', true);
 				tpl_m.find('.not_show_when_posted').hide();
 		}
+		
 
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
@@ -464,6 +472,31 @@ function export_batch(batch_id) {
 			document.body.appendChild(a);
 
 			a.click();
+		}
+		else if (parsed.result < 0) {
+			display_error(parsed.AVerificationMessages);
+		}
+	});
+}
+
+function adjust_batch(batch_id) {
+	var r = {
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
+				ABatchNumber: batch_id,
+				AGiftDetailNumber: -1,
+				ABatchSelected: false,
+				ANewBatchNumber: -1,
+				ANewGLDateEffective: "null",
+				AFunction: "AdjustGift",
+				ANoReceipt: false,
+				ANewPct: 0.0
+			};
+
+	api.post('serverMFinance.asmx/TAdjustmentWebConnector_GiftRevertAdjust', r).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result > 0) {
+			display_message(i18next.t('GiftBatches.success_adjust'), "success");
+			display_list();
 		}
 		else if (parsed.result < 0) {
 			display_error(parsed.AVerificationMessages);

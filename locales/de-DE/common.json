@@ -250,6 +250,7 @@
         "trans_ccenter_code": "Kostenstelle",
         "trans_narrative_code": "Beschreibung",
         "batch_reverse": "Zurück buchen",
+        "batch_adjust": "Korrekturbuchung",
         "batch_post": "Stapel buchen",
         "batch_cancel": "Stapel abbrechen",
         "batch_test_post": "Stapel prüfen",
@@ -297,6 +298,7 @@
       "edittitle_trans":"Spende bearbeiten",
       "trans_description":"Beschreibung",
       "edittitle_trans_detail":"Spendendetails bearbeiten",
+      "success_adjust":  "Der Stapel wurde zur Korrektur kopiert",
       "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
       "success_posted": "Der Stapel wurde erfolgreich gebucht"
     },
