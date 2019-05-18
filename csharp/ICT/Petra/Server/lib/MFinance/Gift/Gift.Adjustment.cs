@@ -426,7 +426,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     DataUtilities.CopyAllColumnValuesWithoutPK(oldGift, gift);
                                     gift.LedgerNumber = giftBatch.LedgerNumber;
                                     gift.BatchNumber = giftBatch.BatchNumber;
-                                    gift.DateEntered = DateEffective;
+                                    // keep the same DateEntered as in the original gift if it is in the same period as the batch
+                                    if ((gift.DateEntered.Year != DateEffective.Year) || (gift.DateEntered.Month != DateEffective.Month))
+                                    {
+                                        gift.DateEntered = DateEffective;
+                                    }
                                     gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
                                     giftBatch.LastGiftNumber++;
                                     gift.LinkToPreviousGift = (cycle != 0);
