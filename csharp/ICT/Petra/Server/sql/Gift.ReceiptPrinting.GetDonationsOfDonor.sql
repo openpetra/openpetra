@@ -45,6 +45,7 @@ WHERE a_gift_batch.a_ledger_number_i = ?
    AND a_account.a_account_code_c = a_motivation_detail.a_account_code_c
    AND GiftDestination.p_partner_key_n = a_gift_detail.a_recipient_ledger_number_n
    AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n
+   AND a_gift_detail.a_modified_detail_l = 0
 ORDER BY a_gift.a_date_entered_d ASC,
     a_gift_detail.a_ledger_number_i ASC,
     a_gift_detail.a_batch_number_i ASC,
