@@ -328,6 +328,13 @@ namespace Ict.Common
             TypeVariant = eVariantTypes.eString;
             StringValue = value;
 
+            if (StringValue.Contains(",") &&
+                !StringValue.Contains(CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator))
+            {
+                // this is a comma separated list, not a decimal
+                return;
+            }
+
             if (this.ToBool().ToString() == StringValue)
             {
                 BooleanValue = this.ToBool();
