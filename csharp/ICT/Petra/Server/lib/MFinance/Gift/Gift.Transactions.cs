@@ -3501,7 +3501,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if (ChangesToCommit)
                         {
                             GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
-                            Transaction.Commit();
+                            ASubmissionOK = true;
                         }
 
                     });
@@ -4818,7 +4818,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (postWasOk)
             {
-                AGeneratedGlBatchNumber = GeneratedGLBatchNumbers[0];
+                // there might not be a gl batch necessary, if no money was moved but only the donor updated
+                if (GeneratedGLBatchNumbers.Count > 0)
+                {
+                    AGeneratedGlBatchNumber = GeneratedGLBatchNumbers[0];
+                }
             }
 
             return postWasOk;

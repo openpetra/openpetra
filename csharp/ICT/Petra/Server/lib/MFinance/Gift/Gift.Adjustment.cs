@@ -465,7 +465,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                                 AFunction,
                                                 ANewPct);
 
-                                            batchGiftTotal += oldGiftDetail.GiftTransactionAmount * ((cycle == 0) ? -1 : 1);
+                                            batchGiftTotal += ((cycle == 0) ? 0 : oldGiftDetail.GiftTransactionAmount);
 
                                             // original gift also gets marked as a reversal
                                             oldGiftDetail.ModifiedDetail = true;
@@ -481,10 +481,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
 
                         //When reversing into a new or existing batch, set batch total
-                        if (!AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
-                        {
-                            giftBatch.BatchTotal = batchGiftTotal;
-                        }
+                        giftBatch.BatchTotal = batchGiftTotal;
 
                         // save everything at the end
                         AGiftBatchAccess.SubmitChanges(GiftDS.AGiftBatch, Transaction);
