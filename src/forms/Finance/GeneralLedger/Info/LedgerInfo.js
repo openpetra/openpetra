@@ -34,13 +34,14 @@ $('document').ready(function () {
 
   api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPostingRangeDates', x).then(function (data) {
     data = JSON.parse(data.data.d);
-    $('#ledger_info').find('.fwd_posting').html( format_tpl( $('[phantom] .fwd_posting'), data ) );
+    let phantom = $('[phantom] .fwd_posting').copy();
+    $('#ledger_info').find('.fwd_posting').html( format_tpl( phantom, data ) );
     adjust_date();
   })
 
   api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPeriodDates', x).then(function (data) {
     data = JSON.parse(data.data.d);
-    $('#ledger_info').find('.period').html( format_tpl( $('[phantom] .period'), data ) );
+    $('#ledger_info').find('.period').html( format_tpl( $('[phantom] .period').clone(), data ) );
     adjust_date();
   })
 
