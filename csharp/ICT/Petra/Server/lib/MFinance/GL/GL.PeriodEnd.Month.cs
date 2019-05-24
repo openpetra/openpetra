@@ -79,12 +79,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber, ADataBase);
                 Int32 PeriodClosing = ledgerInfo.CurrentPeriod;
-                bool res = new TMonthEnd(ADataBase, ledgerInfo).RunMonthEnd(AInfoMode,
+                bool succeeded = new TMonthEnd(ADataBase, ledgerInfo).RunMonthEnd(AInfoMode,
                     out AglBatchNumbers,
                     out AStewardshipBatch,
                     out AVerificationResults);
 
-                if (!res && !AInfoMode)
+                if (succeeded && !AInfoMode)
                 {
                     TDBTransaction Transaction = new TDBTransaction();
                     TDataBase db = DBAccess.Connect("PeriodMonthEnd", ADataBase);
@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         db.CloseDBConnection();
                     }
 
-                    if (PeriodTbl.Rows.Count > 0)
+                    if (succeeded && PeriodTbl.Rows.Count > 0)
                     {
                         AVerificationResults.Add(
                             new TVerificationResult(
@@ -113,7 +113,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                return res;
+                return succeeded;
             }
             catch (Exception e)
             {
@@ -266,7 +266,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AglBatchNumbers">The Client should print the generated Batches</param>
         /// <param name="AStewardshipBatch">True if Stewardship Batch was generated</param>
         /// <param name="AVRCollection"></param>
-        /// <returns>false if it went OK</returns>
+        /// <returns>true if it went OK</returns>
         public bool RunMonthEnd(
             bool AInfoMode,
             out List <Int32>AglBatchNumbers,
@@ -290,7 +290,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         TResultSeverity.Resv_Critical);
                 FverificationResults.Add(tvt);
                 FHasCriticalErrors = true;
-                return true;
+                return false;
             }
 
             TDBTransaction Transaction = new TDBTransaction();
