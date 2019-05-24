@@ -83,16 +83,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             try
             {
-                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum, ADataBase);
+                TDataBase db = DBAccess.Connect("PeriodYearEnd", ADataBase);
+                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum, db);
                 bool res = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode,
                     out AglBatchNumbers,
                     out AVerificationResult,
-                    ADataBase);
+                    db);
 
                 if (!res)
                 {
                     String SuccessMsg = AIsInInfoMode ? "YearEnd check: No problems found." : "Success.";
                     AVerificationResult.Add(new TVerificationResult("Year End", SuccessMsg, "Success", TResultSeverity.Resv_Status));
+                }
+                
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
                 }
 
                 return res;
