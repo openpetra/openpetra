@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -210,6 +210,7 @@ namespace GenerateGlue
                 bool DecimalParameter = parametertype.StartsWith("System.Decimal") && !ArrayParameter;
                 bool DateTimeParameter = parametertype.EndsWith("DateTime");
                 bool ListParameter = parametertype.StartsWith("List<");
+                bool NullableDateTimeParameter = parametertype.Contains("Nullable<DateTime>");
                 bool BinaryParameter =
                     p.ParameterName.EndsWith("Base64") ||
                     !((parametertype.StartsWith("System.Int64")) || (parametertype.StartsWith("System.Int32"))
@@ -217,6 +218,7 @@ namespace GenerateGlue
                       || (parametertype.StartsWith("System.String")) || (parametertype.StartsWith("System.Boolean"))
                       || DecimalParameter
                       || DateTimeParameter
+                      || NullableDateTimeParameter
                       || EnumParameter
                       || ListParameter);
 
@@ -233,7 +235,7 @@ namespace GenerateGlue
                         ParameterDefinition += ", ";
                     }
 
-                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter) && (!DateTimeParameter) && (!DecimalParameter))
+                    if ((!BinaryParameter) && (!ArrayParameter) && (!EnumParameter) && (!DateTimeParameter) && (!NullableDateTimeParameter) && (!DecimalParameter))
                     {
                         ParameterDefinition += parametertype + " " + p.ParameterName;
                     }
@@ -281,6 +283,14 @@ namespace GenerateGlue
                         Environment.NewLine);
                 }
 
+                if (NullableDateTimeParameter && ((ParameterModifiers.Out & p.ParamModifier) == 0))
+                {
+                    snippet.AddToCodelet(
+                        "LOCALVARIABLES",
+                        parametertype + " Local" + p.ParameterName + " = " + p.ParameterName + " == \"null\"?(DateTime?)null:DateTime.Parse(" + p.ParameterName + ", null, System.Globalization.DateTimeStyles.RoundtripKind);" +
+                        Environment.NewLine);
+                }
+
                 if (DecimalParameter && ((ParameterModifiers.Out & p.ParamModifier) == 0))
                 {
                     snippet.AddToCodelet(
@@ -305,7 +315,7 @@ namespace GenerateGlue
                 }
                 else if ((ParameterModifiers.Ref & p.ParamModifier) != 0)
                 {
-                    if (TypedDataSetParameter || DateTimeParameter || DecimalParameter)
+                    if (TypedDataSetParameter || DateTimeParameter || NullableDateTimeParameter || DecimalParameter)
                     {
                         ActualParameters += "ref Local" + p.ParameterName;
                     }
@@ -330,7 +340,7 @@ namespace GenerateGlue
                 }
                 else
                 {
-                    if (TypedDataSetParameter || DateTimeParameter || DecimalParameter)
+                    if (TypedDataSetParameter || DateTimeParameter || NullableDateTimeParameter || DecimalParameter)
                     {
                         ActualParameters += "Local" + p.ParameterName;
                     }

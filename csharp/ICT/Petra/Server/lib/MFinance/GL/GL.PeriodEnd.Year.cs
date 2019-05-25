@@ -83,19 +83,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             try
             {
-                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum, ADataBase);
-                bool res = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode,
+                TDataBase db = DBAccess.Connect("PeriodYearEnd", ADataBase);
+                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum, db);
+                bool succeeded = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode,
                     out AglBatchNumbers,
                     out AVerificationResult,
-                    ADataBase);
+                    db);
 
-                if (!res)
+                if (succeeded)
                 {
                     String SuccessMsg = AIsInInfoMode ? "YearEnd check: No problems found." : "Success.";
                     AVerificationResult.Add(new TVerificationResult("Year End", SuccessMsg, "Success", TResultSeverity.Resv_Status));
                 }
+                
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
 
-                return res;
+                return succeeded;
             }
             catch (Exception e)
             {
@@ -176,7 +182,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVRCollection"></param>
         /// <param name="ADataBase"></param>
-        /// <returns>True if an error occurred</returns>
+        /// <returns>True if year end succeeded</returns>
         public bool RunYearEnd(
             bool AInfoMode,
             out List <Int32>AglBatchNumbers,

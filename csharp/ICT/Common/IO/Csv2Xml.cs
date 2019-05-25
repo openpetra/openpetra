@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.IO;
 using System.Data;
 using System.Xml;
 using System.Text;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -348,6 +349,69 @@ namespace Ict.Common.IO
                 ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(table.TableName);
 
                 DataTable2ExcelWorksheet(table, worksheet, AWithHashInCaption);
+
+                pck.SaveAs(AStream);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// save a generic CSV string to an Excel file
+        /// </summary>
+        public static bool CSV2ExcelStream(string ACSVData, MemoryStream AStream, string ASeparator = ",", string ATableName = "data")
+        {
+            try
+            {
+                ExcelPackage pck = new ExcelPackage();
+
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(ATableName);
+
+                Int32 rowCounter = 1;
+                Int16 colCounter = 1;
+
+                // we don't have headers for the columns
+
+                List<String> Lines = ACSVData.Split(Environment.NewLine).ToList();
+                Int32 LineCounter = 0;
+
+                while (LineCounter < Lines.Count)
+                {
+                    string line = Lines[LineCounter];
+
+                    while (line.Trim().Length > 0)
+                    {
+                        string value = StringHelper.GetNextCSV(ref line, Lines, ref LineCounter, ASeparator);
+
+                        TVariant v = new TVariant(value);
+                        if (v.TypeVariant == eVariantTypes.eDecimal)
+                        {
+                            worksheet.Cells[rowCounter, colCounter].Value = v.ToDecimal();
+                        }
+                        else if (v.TypeVariant == eVariantTypes.eInteger)
+                        {
+                            worksheet.Cells[rowCounter, colCounter].Value = v.ToInt32();
+                        }
+                        else if (v.TypeVariant == eVariantTypes.eDateTime)
+                        {
+                            worksheet.Cells[rowCounter, colCounter].Value = v.ToDate();
+                        }
+                        else
+                        {
+                            worksheet.Cells[rowCounter, colCounter].Value = value;
+                        }
+                        colCounter++;
+                    }
+
+                    LineCounter++;
+                    rowCounter++;
+                    colCounter = 1;
+                }
 
                 pck.SaveAs(AStream);
 

@@ -101,7 +101,7 @@ namespace Ict.Common
         /// <returns></returns>
         public static string StripDecimalAndZeros(string s)
         {
-            string ReturnValue = s;
+            string ReturnValue = s.Replace(CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, "");
 
             if (ReturnValue.IndexOf(CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator) != -1)
             {
@@ -327,6 +327,13 @@ namespace Ict.Common
 
             TypeVariant = eVariantTypes.eString;
             StringValue = value;
+
+            if (StringValue.Contains(",") &&
+                !StringValue.Contains(CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator))
+            {
+                // this is a comma separated list, not a decimal
+                return;
+            }
 
             if (this.ToBool().ToString() == StringValue)
             {

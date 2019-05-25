@@ -138,7 +138,7 @@ namespace Tests.MFinance.Server.Gift
 
             sr.Close();
 
-            string formletterExpectedFile = TAppSettingsManager.GetValue("ReceiptExptected.file",
+            string formletterExpectedFile = TAppSettingsManager.GetValue("ReceiptExpected.file",
                 "../../csharp/ICT/Testing/lib/MFinance/SampleData/AnnualReceiptExpected.html");
 
             Catalog.Init("de-DE", "de-DE");

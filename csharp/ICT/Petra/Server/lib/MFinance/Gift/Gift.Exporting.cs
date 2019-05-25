@@ -32,8 +32,10 @@ using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -58,14 +60,14 @@ namespace Ict.Petra.Server.MFinance.Gift
         private const String summarizedData = "Summarised Gift Data";
         private const String sGift = "Gift";
         private const String sConfidential = "Confidential";
-        TDBTransaction FTransaction;
+        TDBTransaction FTransaction = new TDBTransaction();
         StringWriter FStringWriter;
         String FDelimiter;
         String FDateFormatString;
         CultureInfo FCultureInfo;
         Boolean FTransactionsOnly;
         Boolean FExtraColumns;
-        DateTime FDateForSummary;
+        DateTime? FDateForSummary;
         Boolean FUseBaseCurrency;
         Int32 FLedgerNumber;
         String FCurrencyCode = "";
@@ -74,41 +76,64 @@ namespace Ict.Petra.Server.MFinance.Gift
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
 
         /// <summary>
-        /// export all the Data of the batches matching the parameters to a String
+        /// export all the Data of the batches matching the parameters to an Excel file
         /// </summary>
-        /// <param name="ARequestParams">Hashtable containing the given params </param>
-        /// <param name="AExportString">Big parts of the export file as a simple String</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumberStart"></param>
+        /// <param name="ABatchNumberEnd"></param>
+        /// <param name="ABatchDateFrom"></param>
+        /// <param name="ABatchDateTo"></param>
+        /// <param name="ADateFormatString"></param>
+        /// <param name="ASummary"></param>
+        /// <param name="AUseBaseCurrency"></param>
+        /// <param name="ADateForSummary"></param>
+        /// <param name="ANumberFormat">American or European</param>
+        /// <param name="ATransactionsOnly"></param>
+        /// <param name="AExtraColumns"></param>
+        /// <param name="ARecipientNumber"></param>
+        /// <param name="AFieldNumber"></param>
+        /// <param name="AIncludeUnposted"></param>
+        /// <param name="AExportExcel">the export file as Excel file</param>
         /// <param name="AVerificationMessages">Additional messages to display in a messagebox</param>
         /// <returns>number of exported batches, -1 if cancelled, -2 if error</returns>
         public Int32 ExportAllGiftBatchData(
-            Hashtable ARequestParams,
-            out String AExportString,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumberStart,
+            Int32 ABatchNumberEnd,
+            DateTime? ABatchDateFrom,
+            DateTime? ABatchDateTo,
+            string ADateFormatString,
+            bool ASummary,
+            bool AUseBaseCurrency,
+            DateTime? ADateForSummary,
+            string ANumberFormat,
+            bool ATransactionsOnly,
+            bool AExtraColumns,
+            Int64 ARecipientNumber,
+            Int64 AFieldNumber,
+            bool AIncludeUnposted,
+            out String AExportExcel,
             out TVerificationResultCollection AVerificationMessages)
         {
-            //Return number of exported batches, -1 if cancelled, -2 if error
             int ReturnGiftBatchCount = 0;
+            AExportExcel = string.Empty;
 
             FStringWriter = new StringWriter();
             FMainDS = new GiftBatchTDS();
-            FDelimiter = (String)ARequestParams["Delimiter"];
-            FLedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-            FDateFormatString = (String)ARequestParams["DateFormatString"];
-            Boolean Summary = (Boolean)ARequestParams["Summary"];
-            FUseBaseCurrency = (Boolean)ARequestParams["bUseBaseCurrency"];
-            FDateForSummary = (DateTime)ARequestParams["DateForSummary"];
-            String NumberFormat = (String)ARequestParams["NumberFormat"];
-            FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FTransactionsOnly = (Boolean)ARequestParams["TransactionsOnly"];
-            FExtraColumns = (Boolean)ARequestParams["ExtraColumns"];
-            Int64 recipientNumber = (Int64)ARequestParams["RecipientNumber"];
-            String RecipientFilter = (recipientNumber != 0) ? " AND PUB_a_gift_detail.p_recipient_key_n = " + recipientNumber : "";
+            FDelimiter = ",";
+            FLedgerNumber = ALedgerNumber;
+            FDateFormatString = ADateFormatString;
+            Boolean Summary = ASummary;
+            FUseBaseCurrency = AUseBaseCurrency;
+            FDateForSummary = ADateForSummary;
+            FCultureInfo = new CultureInfo(ANumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FTransactionsOnly = ATransactionsOnly;
+            FExtraColumns = AExtraColumns;
+            String RecipientFilter = (ARecipientNumber != 0) ? " AND PUB_a_gift_detail.p_recipient_key_n = " + ARecipientNumber.ToString() : "";
+            String FieldFilter = (AFieldNumber != 0) ? " AND PUB_a_gift_detail.a_recipient_ledger_number_n = " + AFieldNumber.ToString() : "";
 
-            Int64 fieldNumber = (Int64)ARequestParams["FieldNumber"];
-            String FieldFilter = (fieldNumber != 0) ? " AND PUB_a_gift_detail.a_recipient_ledger_number_n = " + fieldNumber : "";
-
-            Boolean IncludeUnposted = (Boolean)ARequestParams["IncludeUnposted"];
             String StatusFilter =
-                (IncludeUnposted) ? " AND (PUB_a_gift_batch.a_batch_status_c = 'Posted' OR PUB_a_gift_batch.a_batch_status_c = 'Unposted')"
+                (AIncludeUnposted) ? " AND (PUB_a_gift_batch.a_batch_status_c = 'Posted' OR PUB_a_gift_batch.a_batch_status_c = 'Unposted')"
                 : " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'";
 
             TDataBase db = DBAccess.Connect("ExportAllGiftBatchData");
@@ -122,19 +147,17 @@ namespace Ict.Petra.Server.MFinance.Gift
                         try
                         {
                             ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
-                            String BatchRangeFilter = (ARequestParams.ContainsKey(
-                                                           "BatchNumberStart")) ?
-                                                      " AND (PUB_a_gift_batch.a_batch_number_i >= " + (Int32)ARequestParams["BatchNumberStart"] +
-                                                      " AND PUB_a_gift_batch.a_batch_number_i <= " + (Int32)ARequestParams["BatchNumberEnd"] +
+                            String BatchRangeFilter = (ABatchNumberStart > -1) ?
+                                                      " AND (PUB_a_gift_batch.a_batch_number_i >= " + ABatchNumberStart.ToString() +
+                                                      " AND PUB_a_gift_batch.a_batch_number_i <= " + ABatchNumberEnd.ToString() +
                                                       ")" : "";
 
                             // If I've specified a BatchRange, I can't also have a DateRange:
                             String DateRangeFilter = (BatchRangeFilter == "") ?
                                                      " AND (PUB_a_gift_batch.a_gl_effective_date_d >= '" +
-                                                     ((DateTime)ARequestParams["BatchDateFrom"]).ToString(
-                                "yyyy-MM-dd") +
+                                                     ABatchDateFrom.Value.ToString("yyyy-MM-dd") +
                                                      "' AND PUB_a_gift_batch.a_gl_effective_date_d <= '" +
-                                                     ((DateTime)ARequestParams["BatchDateTo"]).ToString("yyyy-MM-dd") +
+                                                     ABatchDateTo.Value.ToString("yyyy-MM-dd") +
                                                      "')" : "";
 
                             string StatementCore =
@@ -392,11 +415,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (ReturnGiftBatchCount > 0)
             {
-                AExportString = FStringWriter.ToString();
-            }
-            else
-            {
-                AExportString = string.Empty;
+                MemoryStream mstream = new MemoryStream();
+                if (TCsv2Xml.CSV2ExcelStream(FStringWriter.ToString(), mstream, FDelimiter, "giftbatch"))
+                {
+                    AExportExcel = Convert.ToBase64String(mstream.ToArray());
+                }
             }
 
             AVerificationMessages = FMessages;
@@ -438,7 +461,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(summarizedData);
             WriteStringQuoted(giftSummary.BankAccountCode);
             WriteCurrency(0);
-            WriteDate(FDateForSummary);
+            WriteDate(FDateForSummary.Value);
 
             if (FUseBaseCurrency)
             {

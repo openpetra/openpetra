@@ -148,29 +148,18 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
 
             // revert the gift batch, so that the training does not get confused if the test is run again;
             // the training needs only one gift batch for that date
-            Hashtable requestParams = new Hashtable();
-            requestParams.Add("Function", GiftAdjustmentFunctionEnum.ReverseGiftBatch);
-            requestParams.Add("ALedgerNumber", FLedgerNumber);
-            requestParams.Add("BatchNumber", BatchNumber);
-            requestParams.Add("GiftDetailNumber", -1);
-            requestParams.Add("GiftNumber", -1);
-            requestParams.Add("NewBatchSelected", false);
-            requestParams.Add("NoReceipt", true);
-            requestParams.Add("NewPct", 0.0m);
-            requestParams.Add("UpdateTaxDeductiblePct", new System.Collections.Generic.List <string[]>());
-            requestParams.Add("GlEffectiveDate", new DateTime(DateTime.Now.Year, 09, 30));
-            requestParams.Add("AutoCompleteComments", false);
-            requestParams.Add("ReversalCommentOne", String.Empty);
-            requestParams.Add("ReversalCommentTwo", String.Empty);
-            requestParams.Add("ReversalCommentThree", String.Empty);
-            requestParams.Add("ReversalCommentOneType", String.Empty);
-            requestParams.Add("ReversalCommentTwoType", String.Empty);
-            requestParams.Add("ReversalCommentThreeType", String.Empty);
-
             int AdjustmentBatchNumber;
-            bool BatchIsUnposted;
-            GiftBatchTDS GiftReverseDS = TGiftTransactionWebConnector.LoadGiftTransactionsForBatch(FLedgerNumber, BatchNumber, out BatchIsUnposted); 
-            Assert.AreEqual(true, TAdjustmentWebConnector.GiftRevertAdjust(requestParams, out AdjustmentBatchNumber, GiftReverseDS), "reversing the gift batch");
+            Assert.AreEqual(true, TAdjustmentWebConnector.GiftRevertAdjust(
+                FLedgerNumber,
+                BatchNumber,
+                -1,
+                false,
+                -1,
+                new DateTime(DateTime.Now.Year, 09, 30),
+                GiftAdjustmentFunctionEnum.ReverseGiftBatch,
+                true,
+                0.0m,
+                out AdjustmentBatchNumber), "reversing the gift batch");
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, AdjustmentBatchNumber, out generatedGlBatchNumber, out VerificationResult))
             {

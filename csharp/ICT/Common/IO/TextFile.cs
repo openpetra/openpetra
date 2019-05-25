@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -250,6 +250,70 @@ namespace Ict.Common.IO
                     }
                 }
             }
+        }
+
+        /// very simple function to show the difference of two texts
+        public static string Diff(String TextA, String TextB)
+        {
+            String[] LinesA = TextA.Split("\n");
+            String[] LinesB = TextB.Split("\n");
+            String result = String.Empty;
+            int CounterA = 0;
+            int CounterB = 0;
+            while (CounterA < LinesA.Length || CounterB < LinesB.Length)
+            {
+                // A is shorter than B
+                if (CounterA == LinesA.Length)
+                {
+                    result += ">" + LinesB[CounterB] + Environment.NewLine;
+                    CounterB++;
+                    continue;
+                }
+
+                // B is shorter than A
+                if (CounterB == LinesB.Length)
+                {
+                    result += "<" + LinesA[CounterA] + Environment.NewLine;
+                    CounterA++;
+                    continue;
+                }
+
+                // lines are equal
+                if (CounterA < LinesA.Length && CounterB < LinesB.Length)
+                {
+                    if (LinesA[CounterA] == LinesB[CounterB])
+                    {
+                        CounterA++;
+                        CounterB++;
+                        continue;
+                    }
+                }
+
+                // does line A exist at all in text B?
+                int TempCountB = CounterB;
+                while (TempCountB < LinesB.Length && LinesA[CounterA] != LinesB[TempCountB])
+                {
+                    TempCountB++;
+                }
+                if (TempCountB < LinesB.Length)
+                {
+                    // we have additional lines in B
+                    while (CounterB < LinesB.Length && LinesA[CounterA] != LinesB[CounterB])
+                    {
+                        result += ">" + LinesB[CounterB] + Environment.NewLine;
+                        CounterB++;
+                    }
+                    continue;
+                }
+                else
+                {
+                    result += "<" + LinesA[CounterA] + Environment.NewLine;
+                    CounterA++;
+                    continue;
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

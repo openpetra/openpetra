@@ -275,14 +275,12 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         /// <summary>
         /// return ledger's base currency
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string GetLedgerBaseCurrency(Int32 ALedgerNumber)
+        public static string GetLedgerBaseCurrency(Int32 ALedgerNumber, TDataBase ADataBase = null)
         {
             string ReturnValue = "";
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GetLedgerBaseCurrency");
+            TDataBase db = DBAccess.Connect("GetLedgerBaseCurrency", ADataBase);
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
@@ -292,7 +290,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;
                 });
 
-            db.CloseDBConnection();
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             return ReturnValue;
         }

@@ -93,7 +93,7 @@ namespace Tests.MFinance.Server.Gift
 
             sr.Close();
 
-            string formletterExpectedFile = TAppSettingsManager.GetValue("ReceiptExptected.file",
+            string formletterExpectedFile = TAppSettingsManager.GetValue("ReceiptExpected.file",
                 "../../csharp/ICT/Testing/lib/MFinance/SampleData/SingleGiftReceiptExpected.html");
 
             //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar

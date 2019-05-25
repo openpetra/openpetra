@@ -45,6 +45,7 @@ using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
@@ -686,11 +687,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
         /// Period = -2 means all periods in current year</param>
         /// <param name="ABatchStatus"></param>
+        /// <param name="ACurrencyCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatchForYearPeriod(
             Int32 ALedgerNumber, Int32 AYear, Int32 APeriod,
-            String ABatchStatus)
+            String ABatchStatus,
+            out String ACurrencyCode
+            )
         {
             #region Validate Arguments
 
@@ -704,6 +708,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             string FilterByPeriod = string.Empty;
+            string CurrencyCode = string.Empty;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -732,24 +737,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         if (AYear > -1)
                         {
-                            FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
-                                AGiftBatchTable.GetTableDBName(),
+                            FilterByPeriod = String.Format(" AND gb.{0} = {1}",
                                 AGiftBatchTable.GetBatchYearDBName(),
                                 AYear);
 
                             if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
                             {
                                 //Return current and forwarding periods
-                                FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
-                                    AGiftBatchTable.GetTableDBName(),
+                                FilterByPeriod += String.Format(" AND gb.{0} >= {1}",
                                     AGiftBatchTable.GetBatchPeriodDBName(),
                                     MainDS.ALedger[0].CurrentPeriod);
                             }
                             else if (APeriod > 0)
                             {
                                 //Return only specified period
-                                FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
-                                    AGiftBatchTable.GetTableDBName(),
+                                FilterByPeriod += String.Format(" AND gb.{0} = {1}",
                                     AGiftBatchTable.GetBatchPeriodDBName(),
                                     APeriod);
                             }
@@ -765,20 +767,50 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             ABatchStatus == MFinanceConstants.BATCH_POSTED ||
                             ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                         {
-                            FilterByBatchStatus += String.Format(" AND PUB_{0}.{1} = '{2}'",
-                                AGiftBatchTable.GetTableDBName(),
+                            FilterByBatchStatus += String.Format(" AND gb.{0} = '{1}'",
                                 AGiftBatchTable.GetBatchStatusDBName(),
                                 ABatchStatus);
                         }
 
                         string SelectClause =
-                            String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                            String.Format("SELECT * FROM PUB_{0} gb WHERE gb.{1} = {2}",
                                 AGiftBatchTable.GetTableDBName(),
                                 AGiftBatchTable.GetLedgerNumberDBName(),
                                 ALedgerNumber);
 
                         db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
                             MainDS.AGiftBatch.TableName, Transaction);
+
+                        // now get the gift detail transaction amounts for the gift batch total
+                        SelectClause =
+                            String.Format("SELECT * FROM PUB_{0} gb, PUB_{1} gd WHERE gb.{2} = {3} AND gb.{4} = gd.{5} AND gb.{6} = gd.{7}",
+                                AGiftBatchTable.GetTableDBName(),
+                                AGiftDetailTable.GetTableDBName(),
+                                AGiftBatchTable.GetLedgerNumberDBName(),
+                                ALedgerNumber,
+                                AGiftBatchTable.GetLedgerNumberDBName(),
+                                AGiftDetailTable.GetLedgerNumberDBName(),
+                                AGiftBatchTable.GetBatchNumberDBName(),
+                                AGiftDetailTable.GetBatchNumberDBName());
+                        db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
+                            MainDS.AGiftDetail.TableName, Transaction);
+
+                        foreach (GiftBatchTDSAGiftBatchRow batchRow in MainDS.AGiftBatch.Rows)
+                        {
+                            batchRow.GiftBatchTotal = 0;
+
+                            foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                            {
+                                if (giftDetail.BatchNumber == batchRow.BatchNumber)
+                                {
+                                    batchRow.GiftBatchTotal += giftDetail.GiftTransactionAmount;
+                                }
+                            }
+                        }
+
+                        CurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber, db);
+
+                        MainDS.AGiftDetail.Clear();
                     });
 
 
@@ -789,6 +821,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            ACurrencyCode = CurrencyCode;
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -1649,7 +1685,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// loads a list of gift transactions and details for the given ledger and batch
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
+        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted, out String ACurrencyCode)
         {
             #region Validate Arguments
 
@@ -1705,6 +1741,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            ACurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber);
 
             return MainDS;
         }
@@ -2347,7 +2385,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool BatchIsUnposted;
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
+            string CurrencyCode;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")
@@ -2466,7 +2505,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool BatchIsUnposted;
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
+            string CurrencyCode;
+            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")
@@ -3461,7 +3501,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if (ChangesToCommit)
                         {
                             GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
-                            Transaction.Commit();
+                            ASubmissionOK = true;
                         }
 
                     });
@@ -3573,11 +3613,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             bool IsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            // get the donor name
+            // get the donor name and the gift total
             foreach (GiftBatchTDSAGiftRow giftRow in MainDS.AGift.Rows)
             {
                 PPartnerRow donorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
                 giftRow.DonorName = donorRow.PartnerShortName;
+                giftRow.GiftTotal = 0;
+
+                foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+                {
+                    if (giftDetail.GiftTransactionNumber == giftRow.GiftTransactionNumber)
+                    {
+                        giftRow.GiftTotal += giftDetail.GiftTransactionAmount;
+                    }
+                }
             }
 
             // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
@@ -4769,7 +4818,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (postWasOk)
             {
-                AGeneratedGlBatchNumber = GeneratedGLBatchNumbers[0];
+                // there might not be a gl batch necessary, if no money was moved but only the donor updated
+                if (GeneratedGLBatchNumbers.Count > 0)
+                {
+                    AGeneratedGlBatchNumber = GeneratedGLBatchNumbers[0];
+                }
             }
 
             return postWasOk;
@@ -5013,19 +5066,63 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// export all the Data of the batches matching the parameters to a String
         /// </summary>
-        /// <param name="requestParams">Hashtable containing the given params </param>
-        /// <param name="exportString">Big parts of the export file as a simple String</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumberStart"></param>
+        /// <param name="ABatchNumberEnd"></param>
+        /// <param name="ABatchDateFrom"></param>
+        /// <param name="ABatchDateTo"></param>
+        /// <param name="ADateFormatString"></param>
+        /// <param name="ASummary"></param>
+        /// <param name="AUseBaseCurrency"></param>
+        /// <param name="ADateForSummary"></param>
+        /// <param name="ANumberFormat">American or European</param>
+        /// <param name="ATransactionsOnly"></param>
+        /// <param name="AExtraColumns"></param>
+        /// <param name="ARecipientNumber"></param>
+        /// <param name="AFieldNumber"></param>
+        /// <param name="AIncludeUnposted"></param>
+        /// <param name="AExportExcel">the export file as Excel file</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>number of exported batches</returns>
         [RequireModulePermission("FINANCE-1")]
         static public Int32 ExportAllGiftBatchData(
-            Hashtable requestParams,
-            out String exportString,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumberStart,
+            Int32 ABatchNumberEnd,
+            DateTime? ABatchDateFrom,
+            DateTime? ABatchDateTo,
+            string ADateFormatString,
+            bool ASummary,
+            bool AUseBaseCurrency,
+            DateTime? ADateForSummary,
+            string ANumberFormat,
+            bool ATransactionsOnly,
+            bool AExtraColumns,
+            Int64 ARecipientNumber,
+            Int64 AFieldNumber,
+            bool AIncludeUnposted,
+            out String AExportExcel,
             out TVerificationResultCollection AMessages)
         {
             TGiftExporting Exporting = new TGiftExporting();
 
-            return Exporting.ExportAllGiftBatchData(requestParams, out exportString, out AMessages);
+            return Exporting.ExportAllGiftBatchData(
+                ALedgerNumber,
+                ABatchNumberStart,
+                ABatchNumberEnd,
+                ABatchDateFrom,
+                ABatchDateTo,
+                ADateFormatString,
+                ASummary,
+                AUseBaseCurrency,
+                ADateForSummary,
+                ANumberFormat,
+                ATransactionsOnly,
+                AExtraColumns,
+                ARecipientNumber,
+                AFieldNumber,
+                AIncludeUnposted,
+                out AExportExcel, out AMessages);
         }
 
         /// <summary>

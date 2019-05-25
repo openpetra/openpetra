@@ -1131,9 +1131,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
                     else // There were no transactions
                     {
-                        AVerificationResults.Add(new TVerificationResult(ErrorContext,
-                                Catalog.GetString("No Stewardship batch is required."),
-                                TResultSeverity.Resv_Status));
+                        //AVerificationResults.Add(new TVerificationResult(ErrorContext,
+                        //        Catalog.GetString("No Stewardship batch is required."),
+                        //        TResultSeverity.Resv_Status));
 
                         // An empty GL Batch now exists, which I need to delete.
                         //
