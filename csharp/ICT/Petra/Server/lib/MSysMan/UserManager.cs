@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             // Create PetraIdentity
             APetraIdentity = new Ict.Petra.Shared.Security.TPetraIdentity(
-                AUserID.ToUpper(), UserDR.LastName, UserDR.FirstName, UserDR.LanguageCode, UserDR.AcquisitionCode, DateTime.MinValue,
+                AUserID.ToUpper(), UserDR.FirstName + " " + UserDR.LastName, UserDR.LanguageCode, UserDR.AcquisitionCode, DateTime.MinValue,
                 LastLoginDateTime, FailedLoginDateTime, UserDR.FailedLogins, PartnerKey, UserDR.DefaultLedgerNumber, UserDR.AccountLocked,
                 UserDR.Retired, UserDR.CanModify);
             ReturnValue = UserDR;
@@ -277,7 +277,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             catch (EUserNotExistantException)
             {
                 TPetraIdentity PetraIdentity = new TPetraIdentity(
-                    "SYSADMIN", "", "", "", "",
+                    "SYSADMIN", "", "", "",
                     DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
                     0, -1, -1, false, false, false);
 

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,8 @@ using Ict.Common.Exceptions;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
+
+using Newtonsoft.Json.Linq;
 
 namespace Ict.Petra.Shared.Security
 {
@@ -187,6 +189,37 @@ namespace Ict.Petra.Shared.Security
             String[] AFunctions,
             String[] ARoles) : this(AIdentity, AGroups, null, AModuleAccess, AFunctions, ARoles)
         {
+        }
+
+        /// load principal from session
+        public TPetraPrincipal(Newtonsoft.Json.Linq.JObject o)
+        {
+/*
+        private System.Security.Principal.IIdentity FIdentity;
+        private SUserGroupTable FGroupsDT;
+        private SUserTableAccessPermissionTable FUserTableAccessPermissionDT;
+        private String[] FModuleAccess;
+        private String[] FRoles;
+        private String[] FFunctions;
+        private String FLoginMessage;
+        private Int32 FProcessID;
+*/
+            FProcessID = o["ProcessID"].ToObject<int>();
+            FLoginMessage = o["LoginMessage"].ToString();
+            JToken piObject = o["PetraIdentity"];
+            FIdentity = new Security.TPetraIdentity(piObject["UserID"].ToString(),
+                piObject["Name"].ToString(),
+                piObject["LanguageCode"].ToString(),
+                piObject["AcquisitionCode"].ToString(),
+                piObject["CurrentLogin"].ToObject<DateTime>(),
+                piObject["LastLogin"].ToObject<DateTime>(),
+                piObject["FailedLogin"].ToObject<DateTime>(),
+                piObject["FailedLogins"].ToObject<int>(),
+                piObject["PartnerKey"].ToObject<int>(),
+                piObject["DefaultLedgerNumber"].ToObject<int>(),
+                piObject["AccountLocked"].ToObject<bool>(),
+                piObject["Retired"].ToObject<bool>(),
+                piObject["ModifiableUser"].ToObject<bool>());
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,9 @@ using Ict.Common;
 using Ict.Common.Session;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
+
+using Newtonsoft.Json.Linq;
+
 
 namespace Ict.Petra.Shared
 {
@@ -82,8 +85,7 @@ namespace Ict.Petra.Shared
                 }
                 else
                 {
-//                    TLogging.Log("GUserInfo requested from server-side");
-                    return (TPetraPrincipal)TSession.GetVariable("UserInfo");
+                    return new TPetraPrincipal((JObject)TSession.GetVariable("UserInfo"));
                 }
             }
         }

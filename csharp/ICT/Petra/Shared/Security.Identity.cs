@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,8 +32,7 @@ namespace Ict.Petra.Shared.Security
     public class TPetraIdentity : System.Security.Principal.IIdentity
     {
         private String FUserID;
-        private String FLastName;
-        private String FFirstName;
+        private String FName;
         private String FLanguageCode;
         private String FAcquisitionCode;
         private DateTime FCurrentLogin;
@@ -210,7 +209,7 @@ namespace Ict.Petra.Shared.Security
         {
             get
             {
-                return FFirstName + ' ' + FLastName;
+                return FName;
             }
         }
 
@@ -218,8 +217,7 @@ namespace Ict.Petra.Shared.Security
         /// constructor
         /// </summary>
         /// <param name="AUserID"></param>
-        /// <param name="ALastName"></param>
-        /// <param name="AFirstName"></param>
+        /// <param name="AName"></param>
         /// <param name="ALanguageCode"></param>
         /// <param name="AAcquisitionCode"></param>
         /// <param name="ACurrentLogin"></param>
@@ -232,8 +230,7 @@ namespace Ict.Petra.Shared.Security
         /// <param name="ARetired"></param>
         /// <param name="AModifiableUser"></param>
         public TPetraIdentity(String AUserID,
-            String ALastName,
-            String AFirstName,
+            String AName,
             String ALanguageCode,
             String AAcquisitionCode,
             DateTime ACurrentLogin,
@@ -247,8 +244,7 @@ namespace Ict.Petra.Shared.Security
             Boolean AModifiableUser) : base()
         {
             FUserID = AUserID;
-            FLastName = ALastName;
-            FFirstName = AFirstName;
+            FName = AName;
             FLanguageCode = ALanguageCode;
             FAcquisitionCode = AAcquisitionCode;
             FCurrentLogin = ACurrentLogin;
