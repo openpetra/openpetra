@@ -139,8 +139,6 @@ namespace Ict.Petra.Server.App.WebService
 
                     // initialise the cached tables
                     TSetupDelegates.Init();
-
-                    TUserDefaults.InitializeUnit();
                 }
                 catch (Exception e)
                 {

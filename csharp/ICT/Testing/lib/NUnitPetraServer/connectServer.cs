@@ -150,8 +150,6 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
             DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = 
                 @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
 
-            TUserDefaults.InitializeUnit();
-
             StringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
 
             return (TServerManager)TServerManager.TheServerManager;

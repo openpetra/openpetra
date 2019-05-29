@@ -46,10 +46,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         {
             TLanguageCulture.SetLanguageAndCulture(ALanguageCode, ACultureCode);
 
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode, false);
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UICULTURE, ACultureCode, false);
-
-            TUserDefaults.SaveUserDefaultsFromServerSide();
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode, true);
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UICULTURE, ACultureCode, true);
 
             return true;
         }
