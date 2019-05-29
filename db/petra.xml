@@ -322,6 +322,29 @@
                 otherFields="p_country_code_c"/>
     <!-- Explicit Indexes on table a_currency  -->
   </table>
+  <table name="s_session"
+         descr="Sessions"
+         area="Petra Data"
+         label="Session"
+         dumpname="s_session"
+         group="sysman">
+    <tablefield name="s_session_id_c"
+                type="varchar"
+                descr="This is the identifier of the session"
+                format="X(64)"
+                notnull="yes"/>
+    <tablefield name="s_valid_until_d"
+                type="datetime"
+                descr="This is session is valid till this point in time"
+                notnull="yes"/>
+    <tablefield name="s_session_values_c"
+                type="text"
+                descr="JSON encoded list of session values."/>
+    <!-- Constraints on table s_session -->
+    <primarykey name="s_session_pk"
+                descr=""
+                thisFields="s_session_id_c"/>
+  </table>
   <table name="s_user"
          descr="List of users"
          area="Petra Data"
