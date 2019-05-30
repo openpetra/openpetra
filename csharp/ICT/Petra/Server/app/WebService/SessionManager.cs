@@ -192,10 +192,8 @@ namespace Ict.Petra.Server.App.WebService
             out Int32 AClientID,
             out string AWelcomeMessage,
             out Boolean ASystemEnabled,
-            out IPrincipal AUserInfo,
             out Boolean AMustChangePassword)
         {
-            AUserInfo = null;
             ASystemEnabled = true;
             AWelcomeMessage = string.Empty;
             AClientID = -1;
@@ -211,16 +209,14 @@ namespace Ict.Petra.Server.App.WebService
                     TClientServerConnectionType.csctRemote,
                     out AClientID,
                     out AWelcomeMessage,
-                    out ASystemEnabled,
-                    out AUserInfo);
+                    out ASystemEnabled);
                 TSession.SetVariable("LoggedIn", true);
 
                 // the following values are stored in the session object
                 DomainManager.GClientID = AClientID;
                 DomainManager.CurrentClient = CurrentClient;
-                UserInfo.GUserInfo = (TPetraPrincipal)AUserInfo;
 
-                AMustChangePassword = (((TPetraPrincipal)AUserInfo).LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
+                AMustChangePassword = (UserInfo.GUserInfo.LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
 
                 return eLoginEnum.eLoginSucceeded;
             }
@@ -241,12 +237,11 @@ namespace Ict.Petra.Server.App.WebService
         {
             string WelcomeMessage;
             bool SystemEnabled;
-            IPrincipal UserInfo;
             Int32 ClientID;
             bool MustChangePassword;
 
             eLoginEnum resultCode =  LoginInternal(username, password, TFileVersionInfo.GetApplicationVersion().ToVersion(),
-                out ClientID, out WelcomeMessage, out SystemEnabled, out UserInfo, out MustChangePassword);
+                out ClientID, out WelcomeMessage, out SystemEnabled, out MustChangePassword);
 
             Dictionary<string, object> result = new Dictionary<string, object>();
             result.Add("resultcode", resultCode.ToString());

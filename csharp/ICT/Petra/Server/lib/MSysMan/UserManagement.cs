@@ -1044,11 +1044,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     return false;
                 } else {
                     Transaction.Rollback();
-                    TPetraIdentity PetraIdentity = new TPetraIdentity(
-                        AUserID, "", "", "",
-                        DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
-                        0, -1, -1, false, false, false);
-                    UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+                    UserInfo.GUserInfo = new TPetraPrincipal(AUserID, null);
                     
                     if (SetUserPassword(AUserID,
                         ANewPassword,

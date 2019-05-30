@@ -302,14 +302,14 @@ namespace Ict.Common.Remoting.Server
         /// <param name="ASystemEnabled"></param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        static public IPrincipal PerformLoginChecks(String AUserName,
+        static public bool PerformLoginChecks(String AUserName,
             String APassword,
             String AClientComputerName,
             String AClientIPAddress,
             out Boolean ASystemEnabled,
             TDBTransaction ATransaction)
         {
-            IPrincipal ReturnValue;
+            bool ReturnValue;
 
             if (UUserManager == null)
             {
@@ -900,7 +900,6 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AClientID">Server-assigned ID of the Client</param>
         /// <param name="AWelcomeMessage"></param>
         /// <param name="ASystemEnabled"></param>
-        /// <param name="AUserInfo"></param>
         public static TConnectedClient ConnectClient(String AUserName,
             String APassword,
             String AClientComputerName,
@@ -909,8 +908,7 @@ namespace Ict.Common.Remoting.Server
             TClientServerConnectionType AClientServerConnectionType,
             out System.Int32 AClientID,
             out String AWelcomeMessage,
-            out Boolean ASystemEnabled,
-            out IPrincipal AUserInfo)
+            out Boolean ASystemEnabled)
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
@@ -1030,7 +1028,7 @@ namespace Ict.Common.Remoting.Server
                         // Perform login checks such as User authentication and Site Key check
                         try
                         {
-                            AUserInfo = PerformLoginChecks(AUserName,
+                            PerformLoginChecks(AUserName,
                                 APassword,
                                 AClientComputerName,
                                 AClientIPAddress,
@@ -1079,7 +1077,7 @@ namespace Ict.Common.Remoting.Server
                         {
                             if (UMaintenanceLogonMessage != null)
                             {
-                                AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserInfo, true, ReadWriteTransaction);
+                                AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserName, true, ReadWriteTransaction);
                             }
                             else
                             {

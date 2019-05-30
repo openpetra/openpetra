@@ -74,7 +74,6 @@ namespace Ict.Testing.NUnitPetraServer
             bool CommitLoginTransaction = false;
             bool SystemEnabled;
             string WelcomeMessage;
-            IPrincipal ThisUserInfo;
             Int32 ClientID;
 
             if (File.Exists(AConfigName))
@@ -137,13 +136,11 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
                 TClientServerConnectionType.csctLocal,
                 out ClientID,
                 out WelcomeMessage,
-                out SystemEnabled,
-                out ThisUserInfo);
+                out SystemEnabled);
 
             // the following values are stored in the session object
             DomainManager.GClientID = ClientID;
             DomainManager.CurrentClient = CurrentClient;
-            UserInfo.GUserInfo = (TPetraPrincipal)ThisUserInfo;
 
             TSetupDelegates.Init();
             TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();

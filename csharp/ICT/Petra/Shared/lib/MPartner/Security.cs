@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -201,8 +201,8 @@ namespace Ict.Petra.Shared.MPartner
                 {
                     TLogging.Log("CheckFoundationSecurity: User is NOT member of DEVADMIN Module");
 
-                    if ((UserInfo.GUserInfo.PetraIdentity.PartnerKey == AFoundationOwner1Key)
-                        || (UserInfo.GUserInfo.PetraIdentity.PartnerKey == AFoundationOwner2Key))
+                    if ((UserInfo.GUserInfo.PartnerKey == AFoundationOwner1Key)
+                        || (UserInfo.GUserInfo.PartnerKey == AFoundationOwner2Key))
                     {
                         TLogging.Log("CheckFoundationSecurity: User is Owner1 or Owner2");
                         ReturnValue = true;
