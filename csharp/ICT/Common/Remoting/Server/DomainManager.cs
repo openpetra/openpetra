@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,8 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.Exceptions;
 using Ict.Common.Session;
+
+using Newtonsoft.Json;
 
 namespace Ict.Common.Remoting.Server
 {
@@ -103,7 +105,7 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                return (TConnectedClient)TSession.GetVariable("ConnectedClient");
+                return JsonConvert.DeserializeObject<TConnectedClient>(TSession.GetVariant("ConnectedClient").ToJson());
             }
 
             set

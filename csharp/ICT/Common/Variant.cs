@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
 using Ict.Common;
 
+using Newtonsoft.Json;
 
 namespace Ict.Common
 {
@@ -82,7 +83,12 @@ namespace Ict.Common
         /// <summary>
         /// composite: several TVariants concatenated
         /// </summary>
-        eComposite
+        eComposite,
+
+        /// <summary>
+        /// JSON: json string
+        /// </summary>
+        eJson
     };
 
     /// <summary>
@@ -176,6 +182,15 @@ namespace Ict.Common
             else if (value.GetType() == typeof(TVariant))
             {
                 this.Assign(new TVariant((TVariant)value));
+            }
+            else if (value.GetType() == typeof(string))
+            {
+                this.Assign(new TVariant(value.ToString()));
+            }
+            else if (value.GetType().ToString() == value.ToString())
+            {
+                TypeVariant = eVariantTypes.eJson;
+                StringValue = JsonConvert.SerializeObject(value);
             }
             else
             {
@@ -554,7 +569,14 @@ namespace Ict.Common
                 typestr = StringHelper.GetNextCSV(ref encodedValue, ":");
                 currencyFormat = "";
 
-                if (typestr == eVariantTypes.eComposite.ToString())
+                if (typestr == eVariantTypes.eJson.ToString())
+                {
+                    valuestr = StringHelper.GetNextCSV(ref encodedValue, ":");
+                    value = new TVariant();
+                    value.TypeVariant = eVariantTypes.eJson;
+                    value.StringValue = valuestr;
+                }
+                else if (typestr == eVariantTypes.eComposite.ToString())
                 {
                     currencyFormat = StringHelper.GetNextCSV(ref encodedValue, ":");
                     valuestr = StringHelper.GetNextCSV(ref encodedValue, ":");
@@ -661,7 +683,12 @@ namespace Ict.Common
                     ReturnValue = StringHelper.AddCSV(ReturnValue, FormatString, ":");
                 }
 
-                if ((this.TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
+                if (this.TypeVariant == eVariantTypes.eJson)
+                {
+                    // make sure that it is put into quotes if there appear to be any separators in the string
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, StringValue, ":");
+                }
+                else if ((this.TypeVariant == eVariantTypes.eDecimal) || (TypeVariant == eVariantTypes.eCurrency))
                 {
                     // what about decimal point/comma? BitConverter saves it as int; that way no trouble with decimal point
                     ReturnValue = StringHelper.AddCSV(ReturnValue, BitConverter.DoubleToInt64Bits(this.ToDouble()).ToString(), ":");
@@ -789,6 +816,10 @@ namespace Ict.Common
             else if (TypeVariant == eVariantTypes.eBoolean)
             {
                 ReturnValue = (System.Object)(BooleanValue);
+            }
+            else if (TypeVariant == eVariantTypes.eJson)
+            {
+                ReturnValue = (System.Object)(JsonConvert.DeserializeObject(StringValue));
             }
 
             return ReturnValue;
@@ -996,6 +1027,19 @@ namespace Ict.Common
             }
 
             return ReturnValue;
+        }
+
+        /// return the json representation of the value
+        public String ToJson()
+        {
+            if (TypeVariant == eVariantTypes.eJson)
+            {
+                return StringValue;
+            }
+            else
+            {
+                return JsonConvert.SerializeObject(this.ToObject());
+            }
         }
 
         /// <summary>

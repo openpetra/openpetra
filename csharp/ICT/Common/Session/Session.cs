@@ -142,7 +142,7 @@ namespace Ict.Common.Session
             return Result;
         }
 
-        private static SortedList <string, object> GetSession(string ASessionID, TDataBase ADataBase)
+        private static SortedList <string, string> GetSession(string ASessionID, TDataBase ADataBase)
         {
             OdbcParameter[] parameters = new OdbcParameter[1];
             parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
@@ -150,13 +150,13 @@ namespace Ict.Common.Session
 
             string sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
             string jsonString = ADataBase.ExecuteScalar(sql, ADataBase.Transaction, parameters).ToString();
-            return JsonConvert.DeserializeObject<SortedList <string, object>>(jsonString);
+            return JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
         }
 
-        private static SortedList <string, object> GetSession(TDataBase ADataBase = null)
+        private static SortedList <string, string> GetSession(TDataBase ADataBase = null)
         {
             string sessionID = GetSessionID();
-            SortedList <string, object> result = null;
+            SortedList <string, string> result = null;
             TDataBase db = DBAccess.Connect("GetSession", ADataBase);
 
             TDBTransaction t = new TDBTransaction();
@@ -172,7 +172,7 @@ namespace Ict.Common.Session
                     }
                     else
                     {
-                        result = new SortedList <string, object>();
+                        result = new SortedList <string, string>();
                     }
 
                     SubmissionOK = true;
@@ -186,7 +186,7 @@ namespace Ict.Common.Session
             return result;
         }
 
-        private static void StoreSession(string ASessionID, SortedList <string, object> ASession, TDataBase ADataBase)
+        private static void StoreSession(string ASessionID, SortedList <string, string> ASession, TDataBase ADataBase)
         {
             OdbcParameter[] parameters = new OdbcParameter[3];
             parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
@@ -286,7 +286,6 @@ namespace Ict.Common.Session
         /// <param name="value"></param>
         public static void SetVariable(string name, object value)
         {
-            TLogging.Log("SetVariable " + name);
             // HttpContext.Current.Session[name] = value;
             TDataBase db = DBAccess.Connect("SessionSetVariable");
 
@@ -297,7 +296,7 @@ namespace Ict.Common.Session
                 delegate
                 {
                     string sessionID = GetSessionID();
-                    SortedList <string, object>session;
+                    SortedList <string, string>session;
 
                     if (HasValidSession(sessionID, db))
                     {
@@ -305,20 +304,20 @@ namespace Ict.Common.Session
                     }
                     else
                     {
-                        session = new SortedList <string, object>();
+                        session = new SortedList <string, string>();
                     }
 
                     if (session.Keys.Contains(name))
                     {
-                        session[name] = value;
+                        session[name] = (new TVariant(value)).EncodeToString();
                     }
                     else
                     {
-                        session.Add(name, value);
+                        session.Add(name, (new TVariant(value)).EncodeToString());
                     }
-TLogging.Log("Before StoreSession");
+
                     StoreSession(sessionID, session, db);
-TLogging.Log("After StoreSession");
+
                     SubmissionOK = true;
                 });
 
@@ -332,7 +331,7 @@ TLogging.Log("After StoreSession");
         /// <returns></returns>
         public static bool HasVariable(string name)
         {
-            SortedList <string, object>session = GetSession();
+            SortedList <string, string>session = GetSession();
 
             if (session.Keys.Contains(name) && (session[name] != null))
             {
@@ -350,14 +349,32 @@ TLogging.Log("After StoreSession");
         public static object GetVariable(string name)
         {
             // return HttpContext.Current.Session[name];
-            SortedList <string, object>session = GetSession();
+            SortedList <string, string>session = GetSession();
 
             if (session.Keys.Contains(name))
             {
-                return session[name];
+                return TVariant.DecodeFromString(session[name]).ToObject();
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// get a session variable, not decoded yet
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static TVariant GetVariant(string name)
+        {
+            // return HttpContext.Current.Session[name];
+            SortedList <string, string>session = GetSession();
+
+            if (session.Keys.Contains(name))
+            {
+                return TVariant.DecodeFromString(session[name]);
+            }
+
+            return new TVariant((object)null);
         }
 
         /// <summary>
@@ -368,7 +385,7 @@ TLogging.Log("After StoreSession");
         public static object GetVariable(string name, bool ADefault)
         {
             // return HttpContext.Current.Session[name];
-            SortedList <string, object>session = GetSession();
+            SortedList <string, string>session = GetSession();
 
             if (session.Keys.Contains(name))
             {
@@ -386,7 +403,7 @@ TLogging.Log("After StoreSession");
         public static object GetVariable(string name, string ADefault)
         {
             // return HttpContext.Current.Session[name];
-            SortedList <string, object>session = GetSession();
+            SortedList <string, string>session = GetSession();
 
             if (session.Keys.Contains(name))
             {

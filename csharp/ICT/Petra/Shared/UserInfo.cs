@@ -27,7 +27,7 @@ using Ict.Common.Session;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 
 namespace Ict.Petra.Shared
@@ -85,7 +85,24 @@ namespace Ict.Petra.Shared
                 }
                 else
                 {
-                    return new TPetraPrincipal((JObject)TSession.GetVariable("UserInfo"));
+                    try
+                    {
+                        object value = TSession.GetVariable("UserInfo");
+
+                        if (value == null)
+                        {
+                            TLogging.Log("UserInfo is null");
+                            return null;
+                        }
+
+                        return JsonConvert.DeserializeObject<TPetraPrincipal>(TSession.GetVariant("IserInfo").ToJson());
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Get user info " + e.ToString());
+                    }
+
+                    return null;
                 }
             }
         }
