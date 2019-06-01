@@ -1044,7 +1044,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     return false;
                 } else {
                     Transaction.Rollback();
-                    UserInfo.GUserInfo = new TPetraPrincipal(AUserID, null);
+                    UserInfo.GUserInfo = new TPetraPrincipal(AUserID);
                     
                     if (SetUserPassword(AUserID,
                         ANewPassword,

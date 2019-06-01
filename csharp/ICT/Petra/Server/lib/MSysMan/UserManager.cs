@@ -101,7 +101,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             SUserRow ReturnValue = LoadUser(AUserID, ATransaction);
 
             APetraPrincipal = new TPetraPrincipal(AUserID, TGroupManager.LoadUserGroups(
-                    AUserID, ATransaction), TTableAccessPermissionManager.LoadTableAccessPermissions(
                     AUserID, ATransaction), TModuleAccessManager.LoadUserModules(AUserID, ATransaction));
             if (!ReturnValue.IsPartnerKeyNull())
             {
@@ -226,7 +225,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
             catch (EUserNotExistantException)
             {
-                UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN", null);
+                UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN");
 
                 // Logging
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,

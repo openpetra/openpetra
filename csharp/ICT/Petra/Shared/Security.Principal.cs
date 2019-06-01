@@ -40,8 +40,9 @@ namespace Ict.Petra.Shared.Security
     [Serializable()]
     public class TPetraPrincipal
     {
-        private SUserGroupTable FGroupsDT;
-        private SUserTableAccessPermissionTable FUserTableAccessPermissionDT;
+        private String[] FGroups;
+        // TODO: this will not work with json sessions yet
+        // private SUserTableAccessPermissionTable FUserTableAccessPermissionDT;
         private String[] FModuleAccess;
         private String[] FRoles;
         private String[] FFunctions;
@@ -123,6 +124,39 @@ namespace Ict.Petra.Shared.Security
             }
         }
 
+        /// we need this for JSON serialization for the session
+        public string[] ModuleAccess
+        {
+            get
+            {
+                return FModuleAccess;
+            }
+            set
+            {
+                // only allow setting by json deserialization
+                if (FModuleAccess == null || FModuleAccess.Length == 0)
+                {
+                    FModuleAccess = value;
+                }
+            }
+        }
+
+        /// we need this for JSON serialization for the session
+        public string[] Groups
+        {
+            get
+            {
+                return FGroups;
+            }
+            set
+            {
+                // only allow setting by json deserialization
+                if (FGroups == null || FGroups.Length == 0)
+                {
+                    FGroups = value;
+                }
+            }
+        }
 
         #region TPetraPrincipal
 
@@ -138,112 +172,28 @@ namespace Ict.Petra.Shared.Security
         /// </summary>
         /// <param name="AUserID"></param>
         /// <param name="AGroups"></param>
-        public TPetraPrincipal(string AUserID, SUserGroupTable AGroups) : this(AUserID, AGroups, null, null, null, null)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AUserID"></param>
-        /// <param name="AGroups"></param>
-        /// <param name="AModuleAccess"></param>
-        public TPetraPrincipal(string AUserID, SUserGroupTable AGroups, String[] AModuleAccess) : this(AUserID,
-                                                                                                                                      AGroups, null,
-                                                                                                                                      AModuleAccess,
-                                                                                                                                      null, null)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AUserID"></param>
-        /// <param name="AGroups"></param>
-        /// <param name="AUserTableAccessPermissions"></param>
-        /// <param name="AModuleAccess"></param>
-        public TPetraPrincipal(string AUserID,
-            SUserGroupTable AGroups,
-            SUserTableAccessPermissionTable AUserTableAccessPermissions,
-            String[] AModuleAccess) : this(AUserID, AGroups, AUserTableAccessPermissions, AModuleAccess, null, null)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AUserID"></param>
-        /// <param name="AGroups"></param>
-        /// <param name="AModuleAccess"></param>
-        /// <param name="ARoles"></param>
-        public TPetraPrincipal(string AUserID, SUserGroupTable AGroups, String[] AModuleAccess,
-            String[] ARoles) : this(AUserID, AGroups, null, AModuleAccess, null, ARoles)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AUserID"></param>
-        /// <param name="AGroups"></param>
         /// <param name="AModuleAccess"></param>
         /// <param name="AFunctions"></param>
         /// <param name="ARoles"></param>
         public TPetraPrincipal(string AUserID,
-            SUserGroupTable AGroups,
-            String[] AModuleAccess,
-            String[] AFunctions,
-            String[] ARoles) : this(AUserID, AGroups, null, AModuleAccess, AFunctions, ARoles)
-        {
-        }
-
-/*
-        /// load principal from session
-        public TPetraPrincipal(Newtonsoft.Json.Linq.JObject o)
-        {
-            FProcessID = o["ProcessID"].ToObject<int>();
-            FLoginMessage = o["LoginMessage"].ToString();
-            JToken piObject = o["PetraIdentity"];
-            FIdentity = new Security.TPetraIdentity(piObject["UserID"].ToString(),
-                piObject["Name"].ToString(),
-                piObject["LanguageCode"].ToString(),
-                piObject["AcquisitionCode"].ToString(),
-                piObject["CurrentLogin"].ToObject<DateTime>(),
-                piObject["LastLogin"].ToObject<DateTime>(),
-                piObject["FailedLogin"].ToObject<DateTime>(),
-                piObject["FailedLogins"].ToObject<int>(),
-                piObject["PartnerKey"].ToObject<int>(),
-                piObject["DefaultLedgerNumber"].ToObject<int>(),
-                piObject["AccountLocked"].ToObject<bool>(),
-                piObject["Retired"].ToObject<bool>(),
-                piObject["ModifiableUser"].ToObject<bool>());
-        }
-*/
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="AUserID"></param>
-        /// <param name="AGroups"></param>
-        /// <param name="AUserTableAccessPermissions"></param>
-        /// <param name="AModuleAccess"></param>
-        /// <param name="AFunctions"></param>
-        /// <param name="ARoles"></param>
-        public TPetraPrincipal(string AUserID,
-            SUserGroupTable AGroups,
-            SUserTableAccessPermissionTable AUserTableAccessPermissions,
-            String[] AModuleAccess,
-            String[] AFunctions,
-            String[] ARoles) : base()
+            string[] AGroups = null,
+            String[] AModuleAccess = null,
+            String[] AFunctions = null,
+            String[] ARoles = null) : base()
         {
             FUserID = AUserID;
-            FGroupsDT = AGroups;
-            FUserTableAccessPermissionDT = AUserTableAccessPermissions;
+            FGroups = AGroups;
+            //FUserTableAccessPermissionDT = AUserTableAccessPermissions;
             FModuleAccess = AModuleAccess;
             FFunctions = AFunctions;
             FRoles = ARoles;
 
             // Prepare Arrays for fast BinarySearch
+            if (FGroups != null)
+            {
+                System.Array.Sort(FGroups);
+            }
+
             if (FModuleAccess != null)
             {
                 System.Array.Sort(FModuleAccess);
@@ -270,16 +220,7 @@ namespace Ict.Petra.Shared.Security
         /// <returns></returns>
         public Boolean IsInGroup(string AGroupName)
         {
-            DataRow[] FoundDataRows = FGroupsDT.Select(SUserGroupTable.GetGroupIdDBName() + " = '" + AGroupName + "'");
-
-            if (FoundDataRows.Length != 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (FGroups != null) && (System.Array.BinarySearch(FGroups, AGroupName) >= 0);
         }
 
         /// <summary>
@@ -292,6 +233,7 @@ namespace Ict.Petra.Shared.Security
             return (FRoles != null) && (System.Array.BinarySearch(FRoles, ARoleName) >= 0);
         }
 
+#if disabled
         /// <summary>
         /// tells if the user has the given permission to the given table
         /// </summary>
@@ -357,6 +299,7 @@ namespace Ict.Petra.Shared.Security
 
             return ReturnValue;
         }
+#endif
 
         /// <summary>
         /// check if user has access to the given module

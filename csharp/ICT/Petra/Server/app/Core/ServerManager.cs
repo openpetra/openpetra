@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.App.Core
         public override bool SetPassword(string AUserID, string APassword)
         {
             // we need a GUserInfo object for submitting the changes to the database later on
-            UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN", null);
+            UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN");
 
             return FUserManager.SetPassword(AUserID, APassword);
         }
@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.App.Core
         public override bool AddUser(string AUserID, string APassword = "")
         {
             // we need a GUserInfo object for submitting the changes to the database later on
-            UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN", null);
+            UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN");
 
             return FUserManager.AddUser(AUserID, APassword);
         }

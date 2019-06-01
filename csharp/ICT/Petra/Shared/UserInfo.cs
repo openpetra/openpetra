@@ -95,7 +95,7 @@ namespace Ict.Petra.Shared
                             return null;
                         }
 
-                        return JsonConvert.DeserializeObject<TPetraPrincipal>(TSession.GetVariant("IserInfo").ToJson());
+                        return JsonConvert.DeserializeObject<TPetraPrincipal>(TSession.GetVariant("UserInfo").ToJson());
                     }
                     catch (Exception e)
                     {
