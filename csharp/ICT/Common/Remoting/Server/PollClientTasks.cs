@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,10 +57,7 @@ namespace Ict.Common.Remoting.Server
             FLastPollingTime = DateTime.Now;
             FClientTasksManager = AClientTasksManager;
 
-            if (TLogging.DL >= 10)
-            {
-                TLogging.Log("TPollClientTasks created");
-            }
+            TLogging.LogAtLevel(10, "TPollClientTasks created");
         }
 
         /**
@@ -80,10 +77,7 @@ namespace Ict.Common.Remoting.Server
                     "Server.DEBUG.ClientTasks_UnusualNumberOfEntries", "5", false));
             DataTable ReturnValue = null;
 
-//            if (TLogging.DL >= 10)
-//            {
             TLogging.LogAtLevel(4, "TPollClientTasks: PollClientTasks called");
-//            }
 
             FLastPollingTime = DateTime.Now;
 
@@ -94,10 +88,7 @@ namespace Ict.Common.Remoting.Server
                 // reduce the number of bytes that are transfered to the Client!
                 ReturnValue = null;
 
-//                if (TLogging.DL > 9)
-//                {
                 TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table is empty!");
-//                }
             }
             else
             {
@@ -126,10 +117,7 @@ namespace Ict.Common.Remoting.Server
                     }
                 }
 
-//                if (TLogging.DL >= 9)
-//                {
                 TLogging.LogAtLevel(4, "TPollClientTasks: Client Tasks Table has " + (ReturnValue.Rows.Count).ToString() + " entries!");
-//                }
             }
 
             return ReturnValue;
