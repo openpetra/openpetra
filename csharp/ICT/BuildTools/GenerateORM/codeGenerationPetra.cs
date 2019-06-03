@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -82,7 +82,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 return "OdbcType.Date";
             }
-            else if (tableField.strType == "timestamp")
+            else if (tableField.strType == "timestamp" || tableField.strType == "datetime")
             {
                 return "OdbcType.DateTime";
             }
