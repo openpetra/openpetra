@@ -59,9 +59,9 @@ namespace Tests.MPartner.Server.AddressTools
         [OneTimeSetUp]
         public void Init()
         {
+            CommonNUnitFunctions.ResetDatabase();
             TPetraServerConnector.Connect("../../etc/TestServer.config");
 
-            CommonNUnitFunctions.ResetDatabase();
             TDataBase db = DBAccess.Connect("AddressToolsTest");
             PPartnerRow Partner1 = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS, db);
             TestPartnerKey = Partner1.PartnerKey;
