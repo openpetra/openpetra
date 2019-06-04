@@ -1,7 +1,7 @@
 sqlite3.dll has been downloaded from sqlite.org
 
 
-Version 3.14.2: https://www.sqlite.org/2016/sqlite-dll-win32-x86-3140200.zip
+Version 3.28.0: https://www.sqlite.org/2019/sqlite-dll-win32-x86-3280000.zip
 
 
 
