@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -292,7 +292,7 @@ namespace GenerateSQL
             foreach (TTable Table in Tables)
             {
                 // Dump indexes
-                DumpIndexes(sw, Table, eInclude.eIncludeSeparate, true);
+                DumpIndexes(ATargetDatabase, sw, Table, eInclude.eIncludeSeparate, true);
             }
 
             sw.Close();
@@ -409,7 +409,7 @@ namespace GenerateSQL
                 else
                 {
                     DumpConstraints(ASw, ATable, eInclude.eInCreateTable, true);
-                    DumpIndexes(ASw, ATable, eInclude.eInCreateTable, true);
+                    DumpIndexes(ATargetDatabase, ASw, ATable, eInclude.eInCreateTable, true);
                 }
             }
             else
@@ -433,7 +433,7 @@ namespace GenerateSQL
 
             if (AWriteConstraintsAndIndexes && (ATargetDatabase == eDatabaseType.PostgreSQL))
             {
-                DumpIndexes(ASw, ATable, eInclude.eIncludeSeparate, true);
+                DumpIndexes(ATargetDatabase, ASw, ATable, eInclude.eIncludeSeparate, true);
             }
 
             ASw.WriteLine();
@@ -637,7 +637,7 @@ namespace GenerateSQL
         }
 
         static Int32 countGeneratedIndex = 0;
-        private static void DumpIndexes(StreamWriter ASw, TTable ATable, eInclude includeIndexes, Boolean AAdd)
+        private static void DumpIndexes(eDatabaseType ATargetDatabase, StreamWriter ASw, TTable ATable, eInclude includeIndexes, Boolean AAdd)
         {
             for (System.Int32 implicit_ = 0; implicit_ <= 1; implicit_ += 1)
             {
@@ -696,7 +696,7 @@ namespace GenerateSQL
 
                                 foreach (TTableField field in ATable.grpTableField)
                                 {
-                                    if (field.strName == indfield.strName && field.iLength >= 1000)
+                                    if ((ATargetDatabase == eDatabaseType.MySQL) && (field.strName == indfield.strName && field.iLength >= 1000))
                                     {
                                         // avoid keys that are too long (Mysql on 32 bit)
                                         // ERROR 1071 (42000): Specified key was too long; max key length is 3072 bytes

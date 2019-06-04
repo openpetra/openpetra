@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -192,8 +192,6 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         protected override void ExecuteTask()
         {
-            bool Failure = false;
-
             System.Diagnostics.Process process;
             process = new System.Diagnostics.Process();
             process.EnableRaisingEvents = false;
@@ -233,7 +231,7 @@ namespace Ict.Tools.NAntTasks
                 process.StartInfo.Arguments += " -h " + FDatabaseHost;
             }
 
-            process.StartInfo.Arguments += " " + FDatabase;
+            process.StartInfo.Arguments += " " + FDatabase + " -v \"ON_ERROR_STOP=1\"";
 
             string SuperUser = string.Empty;
 
@@ -273,11 +271,6 @@ namespace Ict.Tools.NAntTasks
                 {
                     Console.WriteLine(line);
                 }
-
-                if (line.Contains(" error at"))
-                {
-                    Failure = true;
-                }
             }
 
             while (!process.HasExited)
@@ -288,11 +281,6 @@ namespace Ict.Tools.NAntTasks
             if (FailOnError && (process.ExitCode != 0))
             {
                 throw new Exception("Exit Code " + process.ExitCode.ToString() + " shows that something went wrong");
-            }
-
-            if (FailOnError && Failure)
-            {
-                throw new Exception("Output shows that something went wrong");
             }
         }
     }
