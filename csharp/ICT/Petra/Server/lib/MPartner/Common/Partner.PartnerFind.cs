@@ -817,7 +817,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
             }
 
@@ -839,7 +839,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
 
                 miParam = new OdbcParameter("", OdbcType.VarChar, 16);
@@ -1223,7 +1223,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
             }
 
@@ -1245,7 +1245,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
 
                 miParam = new OdbcParameter("", OdbcType.VarChar, 16);

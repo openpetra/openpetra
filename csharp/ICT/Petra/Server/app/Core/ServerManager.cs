@@ -177,32 +177,6 @@ namespace Ict.Petra.Server.App.Core
             }
         }
 
-        /// <summary>
-        /// (Re-)Opens a Database connection for the Server's DB Polling.
-        /// </summary>
-        /// <returns>void</returns>
-        public void EstablishDBPollingConnection()
-        {
-            if (FDBConnectionCheckAccessObj != null)
-            {
-                try
-                {
-                    FDBConnectionCheckAccessObj.CloseDBConnection(true);
-                }
-                catch (Exception)
-                {
-                    // *Deliberate swallowing* of Exception as we can expect Exceptions to happen when the DB Connection
-                    // is somehow not OK! - We don't mind as we are attempting to re-establish it in the next code lines!
-                }
-            }
-
-            FDBConnectionCheckAccessObj = DBAccess.Connect("Server's DB Polling Connection");
-
-            FDBReconnectionAttemptsCounter = 0;
-
-            TLogging.Log("  " + Catalog.GetString("Connected to Database."));
-        }
-
         private void QueueClientTaskForAllClientsRegardingBrokenDBConnection(bool AIsBroken)
         {
             string TaskCode;
@@ -288,7 +262,7 @@ namespace Ict.Petra.Server.App.Core
         public override bool SetPassword(string AUserID, string APassword)
         {
             // we need a GUserInfo object for submitting the changes to the database later on
-            UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN");
+            UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"));
 
             return FUserManager.SetPassword(AUserID, APassword);
         }
@@ -299,7 +273,7 @@ namespace Ict.Petra.Server.App.Core
         public override bool AddUser(string AUserID, string APassword = "")
         {
             // we need a GUserInfo object for submitting the changes to the database later on
-            UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN");
+            UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"));
 
             return FUserManager.AddUser(AUserID, APassword);
         }
@@ -404,7 +378,7 @@ namespace Ict.Petra.Server.App.Core
         {
             Thread StartProcessingThread = new Thread(TTimedProcessing.StartProcessing);
 
-            StartProcessingThread.Name = UserInfo.GUserInfo.UserID + "__TTimedProcessing.StartProcessing_Thread";
+            StartProcessingThread.Name = UserInfo.GetUserInfo().UserID + "__TTimedProcessing.StartProcessing_Thread";
             TLogging.LogAtLevel(7, StartProcessingThread.Name + " starting.");
 
             StartProcessingThread.Start();
@@ -420,7 +394,7 @@ namespace Ict.Petra.Server.App.Core
         {
             Thread StartProcessingThread = new Thread(TTimedProcessing.RunJobManually);
 
-            StartProcessingThread.Name = UserInfo.GUserInfo.UserID + "__TTimedProcessing.RunJobManually_Thread";
+            StartProcessingThread.Name = UserInfo.GetUserInfo().UserID + "__TTimedProcessing.RunJobManually_Thread";
             TLogging.LogAtLevel(7, StartProcessingThread.Name + " starting.");
 
             StartProcessingThread.Start(AProcessName);

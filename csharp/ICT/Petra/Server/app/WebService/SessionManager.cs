@@ -216,7 +216,7 @@ namespace Ict.Petra.Server.App.WebService
                 DomainManager.GClientID = AClientID;
                 DomainManager.CurrentClient = CurrentClient;
 
-                AMustChangePassword = (UserInfo.GUserInfo.LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
+                AMustChangePassword = (UserInfo.GetUserInfo().LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
 
                 return eLoginEnum.eLoginSucceeded;
             }
@@ -363,7 +363,7 @@ namespace Ict.Petra.Server.App.WebService
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
 
-            if (UserInfo.GUserInfo == null)
+            if (UserInfo.GetUserInfo() == null)
             {
                 result.Add("resultcode", "error");
                 result.Add("error", "invalid user");
@@ -381,7 +381,7 @@ namespace Ict.Petra.Server.App.WebService
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
 
-            if (UserInfo.GUserInfo == null)
+            if (UserInfo.GetUserInfo() == null)
             {
                 result.Add("resultcode", "error");
                 result.Add("error", "invalid user");
@@ -408,7 +408,7 @@ namespace Ict.Petra.Server.App.WebService
         {
             try
             {
-                if (UserInfo.GUserInfo == null)
+                if (UserInfo.GetUserInfo() == null)
                 {
                     TLogging.Log("PollClientTasks: GUserInfo == null!");
                     return THttpBinarySerializer.SerializeObject(false);

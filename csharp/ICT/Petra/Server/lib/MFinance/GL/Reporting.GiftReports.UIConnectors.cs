@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
                         " AND s_group_gift.a_batch_number_i = " + BatchNumber +
                         " AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
-                        " AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
+                        " AND s_user_group.s_user_id_c = '" + UserInfo.GetUserInfo().UserID + "'" +
                         " AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
                         " AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
                         ") THEN False ELSE True END AS ReadAccess " +

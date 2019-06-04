@@ -900,6 +900,7 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AClientID">Server-assigned ID of the Client</param>
         /// <param name="AWelcomeMessage"></param>
         /// <param name="ASystemEnabled"></param>
+        /// <param name="ADataBase"></param>
         public static TConnectedClient ConnectClient(String AUserName,
             String APassword,
             String AClientComputerName,
@@ -908,11 +909,13 @@ namespace Ict.Common.Remoting.Server
             TClientServerConnectionType AClientServerConnectionType,
             out System.Int32 AClientID,
             out String AWelcomeMessage,
-            out Boolean ASystemEnabled)
+            out Boolean ASystemEnabled,
+            TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
-            bool CommitLoginTransaction = false;
+            bool SystemEnabled = true;
+            string WelcomeMessage = String.Empty;
 
             TConnectedClient ConnectedClient = null;
 
@@ -1017,57 +1020,56 @@ namespace Ict.Common.Remoting.Server
                     #endregion
 
                     #region Login request verification (incl. User authentication)
-                    try
-                    {
-                        // Open a separate DB Connection for the client login...
-                        DBConnectionObj = DBAccess.Connect("ConnectClient (User Login)");
+                    DBConnectionObj = DBAccess.Connect("ConnectClient (User Login)", ADataBase);
+                    bool SubmitOK = false;
 
-                        // ...and start a DB Transaction on that separate DB Connection
-                        ReadWriteTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable, 0, "ConnectClient (User Login)");
-
-                        // Perform login checks such as User authentication and Site Key check
-                        try
+                    DBConnectionObj.WriteTransaction(ref ReadWriteTransaction,
+                        ref SubmitOK,
+                        delegate
                         {
-                            PerformLoginChecks(AUserName,
-                                APassword,
-                                AClientComputerName,
-                                AClientIPAddress,
-                                out ASystemEnabled,
-                                ReadWriteTransaction);
-                        }
-                        #region Exception handling
-                        catch (EPetraSecurityException)
-                        {
-                            #region Logging
-
-                            if (TLogging.DL >= 4)
+                            // Perform login checks such as User authentication and Site Key check
+                            try
                             {
-                                TLogging.Log(
-                                    "Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
-                                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                                PerformLoginChecks(AUserName,
+                                    APassword,
+                                    AClientComputerName,
+                                    AClientIPAddress,
+                                    out SystemEnabled,
+                                    ReadWriteTransaction);
                             }
-                            else
+                            #region Exception handling
+                            catch (EPetraSecurityException)
                             {
-                                TLogging.Log(
-                                    "Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
-                                    TLoggingType.ToLogfile);
-                            }
+                                #region Logging
 
+                                if (TLogging.DL >= 4)
+                                {
+                                    TLogging.Log(
+                                        "Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
+                                        TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                                }
+                                else
+                                {
+                                    TLogging.Log(
+                                        "Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
+                                        TLoggingType.ToLogfile);
+                                }
+
+                                #endregion
+
+                                ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
+
+                                // We need to set this flag to true here to get the failed login to be stored in the DB!!!
+                                SubmitOK = true;
+
+                                throw;
+                            }
+                            catch (Exception)
+                            {
+                                ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
+                                throw;
+                            }
                             #endregion
-
-                            ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
-
-                            // We need to set this flag to true here to get the failed login to be stored in the DB!!!
-                            CommitLoginTransaction = true;
-
-                            throw;
-                        }
-                        catch (Exception)
-                        {
-                            ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
-                            throw;
-                        }
-                        #endregion
 
                         // Login Checks were successful!
                         ConnectedClient.SessionStatus = TSessionStatus.adsConnectingLoginOK;
@@ -1077,11 +1079,11 @@ namespace Ict.Common.Remoting.Server
                         {
                             if (UMaintenanceLogonMessage != null)
                             {
-                                AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserName, true, ReadWriteTransaction);
+                                WelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserName, true, ReadWriteTransaction);
                             }
                             else
                             {
-                                AWelcomeMessage = "Welcome";
+                                WelcomeMessage = "Welcome";
                            }
                         }
                         catch (Exception)
@@ -1090,24 +1092,8 @@ namespace Ict.Common.Remoting.Server
                             throw;
                         }
 
-                        CommitLoginTransaction = true;
-                    }
-                    finally
-                    {
-                        if (DBConnectionObj != null)
-                        {
-                            if (CommitLoginTransaction)
-                            {
-                                ReadWriteTransaction.Commit();
-                            }
-                            else
-                            {
-                                ReadWriteTransaction.Rollback();
-                            }
-
-                            DBConnectionObj.CloseDBConnection();
-                        }
-                    }
+                        SubmitOK = true;
+                    });
                     #endregion
 
                     /*
@@ -1160,6 +1146,10 @@ namespace Ict.Common.Remoting.Server
             }
 
             #endregion
+
+            ASystemEnabled = SystemEnabled;
+            AWelcomeMessage = WelcomeMessage;
+
             return ConnectedClient;
         }
 

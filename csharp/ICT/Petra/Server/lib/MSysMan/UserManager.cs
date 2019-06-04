@@ -225,7 +225,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
             catch (EUserNotExistantException)
             {
-                UserInfo.GUserInfo = new TPetraPrincipal("SYSADMIN");
+                // pass ATransaction
+                UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"), ATransaction.DataBaseObj);
 
                 // Logging
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
@@ -238,7 +239,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 throw;
             }
 
-            UserInfo.GUserInfo = PetraPrincipal;
+            // pass ATransaction
+            UserInfo.SetUserInfo(PetraPrincipal, ATransaction.DataBaseObj);
 
             if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
@@ -572,19 +574,22 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         [RequireModulePermission("NONE")]
         public static TPetraPrincipal ReloadUserInfo()
         {
-            TDBTransaction ReadTransaction = new TDBTransaction();
+            TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ReloadUserInfo");
             TPetraPrincipal UserDetails = null;
+            bool SubmitOK = false;
 
             try
             {
-                db.ReadTransaction(ref ReadTransaction,
+                db.WriteTransaction(ref Transaction, ref SubmitOK,
                     delegate
                     {
-                        LoadUser(UserInfo.GUserInfo.UserID, out UserDetails, ReadTransaction);
+                        LoadUser(UserInfo.GetUserInfo().UserID, out UserDetails, Transaction);
                     });
 
-                UserInfo.GUserInfo = UserDetails;
+                UserInfo.SetUserInfo(UserDetails, Transaction.DataBaseObj);
+
+                SubmitOK = true;
             }
             catch (Exception Exp)
             {

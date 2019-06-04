@@ -328,7 +328,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
         }
         else
         {
-            SubmitChanges(ATable, ATransaction, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+            SubmitChanges(ATable, ATransaction, UserInfo.GetUserInfo(ATransaction.DataBaseObj).UserID{#SEQUENCENAMEANDFIELD});
         }        
     }
 

@@ -743,8 +743,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                 if (FPartnerEditScreenDS.POrganisation[0].Foundation)
                                 {
-                                    if (!((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
-                                          || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
+                                    if (!((UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
+                                          || (UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
                                     {
                                         throw new ESecurityScreenAccessDeniedException(
                                             // Some users won't have access to edit partners that are foundations. Foundations are a special type of organisation.
@@ -1092,7 +1092,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FNewPartnerPartnerKey = APartnerKey;
             FNewPartnerPartnerClass = APartnerClass;
             CreationDate = DateTime.Today;
-            CreationUserID = UserInfo.GUserInfo.UserID;
+            CreationUserID = UserInfo.GetUserInfo().UserID;
 
             // create the FPartnerEditScreenDS DataSet that will later be passed to the Client
             FPartnerEditScreenDS = new PartnerEditTDS(DATASETNAME);
@@ -2816,7 +2816,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     // Partner Status is PRIVATE > update related fields
                     APartnerTableSubmitDT[0].Restricted = SharedConstants.PARTNER_PRIVATE_USER;
-                    APartnerTableSubmitDT[0].UserId = UserInfo.GUserInfo.UserID;
+                    APartnerTableSubmitDT[0].UserId = UserInfo.GetUserInfo().UserID;
                 }
                 else
                 {

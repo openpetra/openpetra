@@ -3419,7 +3419,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             MergeRow.MergeTo = AToPartnerKey;
-            MergeRow.MergedBy = UserInfo.GUserInfo.UserID;
+            MergeRow.MergedBy = UserInfo.GetUserInfo().UserID;
             MergeRow.MergeDate = DateTime.Now;
 
             MergeTable.ThrowAwayAfterSubmitChanges = true;
@@ -3692,7 +3692,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             PRecentPartnersTable RecentPartnersTable = PRecentPartnersAccess.LoadByPrimaryKey(
-                Ict.Petra.Shared.UserInfo.GUserInfo.UserID, AFromPartnerKey, ATransaction);
+                Ict.Petra.Shared.UserInfo.GetUserInfo().UserID, AFromPartnerKey, ATransaction);
 
             // if a RecentPartners record exists for From Partner... delete.
             if (RecentPartnersTable.Rows.Count > 0)

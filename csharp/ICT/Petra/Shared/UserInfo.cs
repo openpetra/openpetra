@@ -24,6 +24,7 @@
 using System;
 using Ict.Common;
 using Ict.Common.Session;
+using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 
@@ -38,73 +39,33 @@ namespace Ict.Petra.Shared
     /// </summary>
     public class UserInfo
     {
-        /// <summary>used internally to hold User Information - but only when this class is used client-side!</summary>
-        private static TPetraPrincipal MUserInfo = null;
-
-        /// <summary>
-        /// True if the <see cref="UserInfo" /> Class is used on the client side, false otherwise.
-        /// </summary>
-        private static bool FRunningOnClientSide = false;
-
-        /// <summary>
-        /// True if the <see cref="UserInfo" /> Class is used on the client side, false otherwise.
-        /// </summary>
-        static public bool RunningOnClientSide
+        /// <summary>get user information from the session</summary>
+        public static TPetraPrincipal GetUserInfo(TDataBase ADataBase = null)
         {
-            get
+            try
             {
-                return FRunningOnClientSide;
-            }
+                object value = TSession.GetVariable("UserInfo", ADataBase);
 
-            set
-            {
-                FRunningOnClientSide = value;
-            }
-        }
-
-        /// <summary>used internally to hold User Information</summary>
-        public static TPetraPrincipal GUserInfo
-        {
-            set
-            {
-                if (FRunningOnClientSide)
+                if (value == null)
                 {
-//                    TLogging.Log("GUserInfo gets written to from server-side");
-                    MUserInfo = value;
-                }
-                else
-                {
-                    TSession.SetVariable("UserInfo", value);
-                }
-            }
-            get
-            {
-                if (FRunningOnClientSide)
-                {
-                    return MUserInfo;
-                }
-                else
-                {
-                    try
-                    {
-                        object value = TSession.GetVariable("UserInfo");
-
-                        if (value == null)
-                        {
-                            TLogging.Log("UserInfo is null");
-                            return null;
-                        }
-
-                        return JsonConvert.DeserializeObject<TPetraPrincipal>(TSession.GetVariant("UserInfo").ToJson());
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Get user info " + e.ToString());
-                    }
-
+                    TLogging.Log("UserInfo is null");
                     return null;
                 }
+
+                return JsonConvert.DeserializeObject<TPetraPrincipal>(TSession.GetVariant("UserInfo").ToJson());
             }
+            catch (Exception e)
+            {
+                TLogging.Log("Get user info " + e.ToString());
+            }
+
+            return null;
+        }
+
+        /// <summary>set user information in the session</summary>
+        public static void SetUserInfo(TPetraPrincipal value, TDataBase ADataBase = null)
+        {
+            TSession.SetVariable("UserInfo", value, ADataBase);
         }
     }
 }

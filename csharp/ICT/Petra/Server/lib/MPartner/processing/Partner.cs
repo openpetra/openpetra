@@ -745,16 +745,16 @@ namespace Ict.Petra.Server.MPartner.Processing
                 // At this point the partner is either new or it is not new but in existing in the db
                 // Now get the class of the recently used partner.
                 PartnerClassString = SharedTypes.PartnerClassEnumToString(APartnerClass);
-                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ReadAndWriteTransaction);
+                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GetUserInfo().UserID, ReadAndWriteTransaction);
 
                 // Check if the recently used partner already exists for the current user.
                 // Add it if not, otherwise just change the timestamp.
-                RecentPartnersRow = (PRecentPartnersRow)RecentPartnersDT.Rows.Find(new System.Object[] { UserInfo.GUserInfo.UserID, APartnerKey });
+                RecentPartnersRow = (PRecentPartnersRow)RecentPartnersDT.Rows.Find(new System.Object[] { UserInfo.GetUserInfo().UserID, APartnerKey });
 
                 if (RecentPartnersRow == null)
                 {
                     RecentPartnersRow = RecentPartnersDT.NewRowTyped(true);
-                    RecentPartnersRow.UserId = UserInfo.GUserInfo.UserID;
+                    RecentPartnersRow.UserId = UserInfo.GetUserInfo().UserID;
                     RecentPartnersRow.PartnerKey = APartnerKey;
                     RecentPartnersDT.Rows.Add(RecentPartnersRow);
                 }
@@ -767,7 +767,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                 FieldList = new StringCollection();
                 FieldList.Add(PPartnerTable.GetPartnerKeyDBName());
                 FieldList.Add(PPartnerTable.GetPartnerClassDBName());
-                PartnerDT = PPartnerAccess.LoadViaSUserPRecentPartners(UserInfo.GUserInfo.UserID, FieldList, ReadAndWriteTransaction, null, 0, 0);
+                PartnerDT = PPartnerAccess.LoadViaSUserPRecentPartners(UserInfo.GetUserInfo().UserID, FieldList, ReadAndWriteTransaction, null, 0, 0);
 
                 // Get the number of recent partners that the user has set, if not found
                 // take 10 as default value.

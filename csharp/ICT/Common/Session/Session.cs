@@ -284,10 +284,11 @@ namespace Ict.Common.Session
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        public static void SetVariable(string name, object value)
+        /// <param name="ADataBase"></param>
+        public static void SetVariable(string name, object value, TDataBase ADataBase = null)
         {
             // HttpContext.Current.Session[name] = value;
-            TDataBase db = DBAccess.Connect("SessionSetVariable");
+            TDataBase db = DBAccess.Connect("SessionSetVariable", ADataBase);
 
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = false;
@@ -345,11 +346,12 @@ namespace Ict.Common.Session
         /// get a session variable
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        public static object GetVariable(string name)
+        public static object GetVariable(string name, TDataBase ADataBase = null)
         {
             // return HttpContext.Current.Session[name];
-            SortedList <string, string>session = GetSession();
+            SortedList <string, string>session = GetSession(ADataBase);
 
             if (session.Keys.Contains(name))
             {

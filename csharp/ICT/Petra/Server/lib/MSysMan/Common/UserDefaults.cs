@@ -200,14 +200,14 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
             db.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
-                    if (!SUserDefaultsAccess.Exists(UserInfo.GUserInfo.UserID, AKey, ReadTransaction))
+                    if (!SUserDefaultsAccess.Exists(UserInfo.GetUserInfo().UserID, AKey, ReadTransaction))
                     {
                         ReturnValue = ADefaultValue;
                     }
                     else
                     {
                         SUserDefaultsTable DT =
-                                SUserDefaultsAccess.LoadByPrimaryKey(UserInfo.GUserInfo.UserID, AKey, ReadTransaction);
+                                SUserDefaultsAccess.LoadByPrimaryKey(UserInfo.GetUserInfo().UserID, AKey, ReadTransaction);
                         ReturnValue = DT[0].DefaultValue;
                     }
                 });
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                 ref SubmitOK,
                 delegate
                 {
-                    LoadUserDefaultsTable(UserInfo.GUserInfo.UserID, out UserDefaultsDataTable, db);
+                    LoadUserDefaultsTable(UserInfo.GetUserInfo().UserID, out UserDefaultsDataTable, db);
                     
                     DataView view = new DataView(UserDefaultsDataTable);
                     view.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
@@ -323,7 +323,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                     {
                         // User default not found, add it to the user defaults table
                         SUserDefaultsRow row = UserDefaultsDataTable.NewRowTyped();
-                        row.UserId = UserInfo.GUserInfo.UserID;
+                        row.UserId = UserInfo.GetUserInfo().UserID;
                         row.DefaultCode = AKey;
                         row.DefaultValue = AValue.ToString();
                         UserDefaultsDataTable.Rows.Add(row);
@@ -337,7 +337,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
                         if (ASendUpdateInfoToClient)
                         {
-                            UpdateUserDefaultsOnClient(UserInfo.GUserInfo.UserID, AKey, AValue.ToString(),
+                            UpdateUserDefaultsOnClient(UserInfo.GetUserInfo().UserID, AKey, AValue.ToString(),
                                 view[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()].ToString());
                         }
                     }
@@ -378,7 +378,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
             if (AChangedUserDefaultCode == null)
             {
-                if (AUserName == UserInfo.GUserInfo.UserID)
+                if (AUserName == UserInfo.GetUserInfo().UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
                     DomainManager.CurrentClient.FTasksManager.ClientTaskAdd(
@@ -406,7 +406,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                     SingleOrMultipleIndicator = "Multiple";
                 }
 
-                if (AUserName == UserInfo.GUserInfo.UserID)
+                if (AUserName == UserInfo.GetUserInfo().UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
                     if (DomainManager.CurrentClient != null)
@@ -416,7 +416,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                             AChangedUserDefaultCode,
                             AChangedUserDefaultValue,
                             AChangedUserDefaultModId,
-                            UserInfo.GUserInfo.ProcessID,
+                            UserInfo.GetUserInfo().ProcessID,
                             1);
                     }
                 }

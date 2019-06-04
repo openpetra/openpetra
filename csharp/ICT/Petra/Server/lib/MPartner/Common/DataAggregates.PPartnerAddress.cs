@@ -365,7 +365,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
             LocationTypeDBName = PPartnerLocationTable.GetLocationTypeDBName();
 
-            if (!UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN))
+            if (!UserInfo.GetUserInfo().IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN))
             {
 //              TLogging.LogAtLevel(9, "ApplySecurity (1): User isn't in Security Group ADDRESSCAN.");
                 if (AInspectDT.Columns.Contains(LocationTypeDBName))
@@ -516,7 +516,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             PPartnerLocationRow PartnerLocationDR;
             PLocationRow LocationDR;
 
-            if (!UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN))
+            if (!UserInfo.GetUserInfo().IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN))
             {
 //              TLogging.LogAtLevel(9, "ApplySecurity (2): User isn't in Security Group ADDRESSCAN.");
 

@@ -770,7 +770,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 AllContactDetailsStr += Catalog.GetString("None");
             }
 
-            situation.GetParameters().AddCalculationParameter("Username", new TVariant(UserInfo.GUserInfo.UserID));
+            situation.GetParameters().AddCalculationParameter("Username", new TVariant(UserInfo.GetUserInfo().UserID));
 
             return AllContactDetailsStr;
         }

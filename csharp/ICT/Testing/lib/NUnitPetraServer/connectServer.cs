@@ -100,8 +100,8 @@ namespace Ict.Testing.NUnitPetraServer
             TDataBase db = DBAccess.Connect(
                 "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
 
-            LoginTransaction = db.BeginTransaction(IsolationLevel.RepeatableRead,
-ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (Unit Test Login)");
+            // we need a serializable transaction, to store the session
+            LoginTransaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
@@ -136,7 +136,8 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
                 TClientServerConnectionType.csctLocal,
                 out ClientID,
                 out WelcomeMessage,
-                out SystemEnabled);
+                out SystemEnabled,
+                db);
 
             // the following values are stored in the session object
             DomainManager.GClientID = ClientID;
@@ -147,7 +148,14 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
             DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = 
                 @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
 
-            StringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            db.ReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    StringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ReadTransaction);
+                });
+
+            db.CloseDBConnection();
 
             return (TServerManager)TServerManager.TheServerManager;
         }

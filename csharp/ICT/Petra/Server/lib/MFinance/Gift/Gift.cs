@@ -97,8 +97,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 if (TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT).ToLower() == "true")
                 {
                     // Check OpenPetra Module access to FINANCE-1 or Financial Development
-                    if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
-                        || UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
+                    if (UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
+                        || UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
                     {
                         if (LastGiftCurrencyCode != "")
                         {
@@ -220,8 +220,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             String tmpLastGiftRecipientLedgerShortName = ALastGiftRecipientLedgerShortName;
             Boolean tmpRestrictedOrConfidentialGiftAccessDenied = ARestrictedOrConfidentialGiftAccessDenied;
 
-            if ((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
-                 || UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER)) == false)
+            if ((UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
+                 || UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_DEVUSER)) == false)
             {
                 // User hasn't got access to FINANCE-1 module or Financial Development module
                 return false;
@@ -276,7 +276,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 GiftDR.BatchNumber,
                                 GiftDR.GiftTransactionNumber,
                                 Transaction);
-                            UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, Transaction);
+                            UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GetUserInfo().UserID, Transaction);
 
                             // Loop over all rows of GroupGiftDT
                             for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)
@@ -372,8 +372,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         // Check for confidential gift and whether the current user is allowed to see it
                                         if (GiftDetailDR.ConfidentialGiftFlag)
                                         {
-                                            if (!((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
-                                                  || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
+                                            if (!((UserInfo.GetUserInfo().IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
+                                                  || (UserInfo.GetUserInfo().IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
                                             {
                                                 // User isn't allowed to see the gift
                                                 tmpRestrictedOrConfidentialGiftAccessDenied = true;
@@ -398,8 +398,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     // Check for confidential gift and whether the current user is allowed to see it
                                     if (GiftDetailDR.ConfidentialGiftFlag)
                                     {
-                                        if (!((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
-                                              || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
+                                        if (!((UserInfo.GetUserInfo().IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
+                                              || (UserInfo.GetUserInfo().IsInGroup(SharedConstants.PETRAGROUP_FINANCE3))))
                                         {
                                             // User isn't allowed to see the gift
                                             tmpRestrictedOrConfidentialGiftAccessDenied = true;
@@ -502,7 +502,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     gift.BatchNumber,
                     gift.GiftTransactionNumber,
                     ATransaction);
-                UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ATransaction);
+                UserGroupDT = SUserGroupAccess.LoadViaSUser(UserInfo.GetUserInfo().UserID, ATransaction);
 
                 // Loop over all rows of GroupGiftDT
                 for (Counter = 0; Counter <= GroupGiftDT.Rows.Count - 1; Counter += 1)

@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     contact.ContactComment = AComment;
                     contact.ModuleId = AModuleID;
                     contact.Contactor = AContactor;
-                    contact.UserId = UserInfo.GUserInfo.UserID;
+                    contact.UserId = UserInfo.GetUserInfo().UserID;
                     contacts.Rows.Add(contact);
 
                     if (AMailingCode.Length > 0)

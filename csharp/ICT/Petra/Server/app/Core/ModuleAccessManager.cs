@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     // authenticated user
                     if (moduleExpression == "USER")
                     {
-                        if (UserInfo.GUserInfo != null && UserInfo.GUserInfo.UserID != null)
+                        if (UserInfo.GetUserInfo() != null && UserInfo.GetUserInfo().UserID != null)
                         {
                             return true;
                         }

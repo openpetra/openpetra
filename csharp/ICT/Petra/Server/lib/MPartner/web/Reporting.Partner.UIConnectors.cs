@@ -506,7 +506,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
                                                                  WHERE s_user_id_c = '"
                         +
-                        UserInfo.GUserInfo.UserID +
+                        UserInfo.GetUserInfo().UserID +
                         @"'
 
                                                                    AND s_group_id_c = 'ADDRESSCAN') = 0

@@ -4363,7 +4363,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
 
                 SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
-                moduleAccessPermissionRow.UserId = UserInfo.GUserInfo.UserID;
+                moduleAccessPermissionRow.UserId = UserInfo.GetUserInfo().UserID;
                 moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
                 moduleAccessPermissionRow.CanAccess = true;
                 moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);

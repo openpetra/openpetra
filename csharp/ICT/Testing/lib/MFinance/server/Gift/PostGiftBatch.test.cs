@@ -47,6 +47,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Testing.NUnitTools;
 
@@ -136,6 +137,7 @@ namespace Tests.MFinance.Server.Gift
         public void TestPostGiftBatchWithMotivationDetailCostCentre()
         {
             TDataBase db = DBAccess.Connect("TestPostGiftBatchWithMotivationDetailCostCentre");
+            TPetraPrincipal userinfo = UserInfo.GetUserInfo(db);
 
             // import a gift batch, that we will modify later
             TGiftImporting importer = new TGiftImporting();
@@ -187,7 +189,7 @@ namespace Tests.MFinance.Server.Gift
                 ccrow.CostCentreToReportTo = (FLedgerNumber*100).ToString("0000");
                 ccrow.CostCentreType = MFinanceConstants.LOCAL_CC_TYPE;
                 cc.Rows.Add(ccrow);
-                ACostCentreAccess.SubmitChanges(cc, Transaction, UserInfo.GUserInfo.UserID);
+                ACostCentreAccess.SubmitChanges(cc, Transaction, userinfo.UserID);
             }
 
             // create a new motivation detail
@@ -202,7 +204,7 @@ namespace Tests.MFinance.Server.Gift
                 motrow.CostCentreCode = newCostCentre;
                 motrow.MotivationDetailDesc = newCostCentre;
                 mot.Rows.Add(motrow);
-                AMotivationDetailAccess.SubmitChanges(mot, Transaction, UserInfo.GUserInfo.UserID);
+                AMotivationDetailAccess.SubmitChanges(mot, Transaction, userinfo.UserID);
             }
 
             // modify the gift batch with that motivation detail, but with wrong costcentre

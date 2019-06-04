@@ -1049,7 +1049,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             // Load the recently used partners from this user
             try
             {
-                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ReadTransaction);
+                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GetUserInfo().UserID, ReadTransaction);
             }
             finally
             {
