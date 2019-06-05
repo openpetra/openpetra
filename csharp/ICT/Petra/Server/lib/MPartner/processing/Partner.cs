@@ -726,7 +726,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             ReturnValue = true;
 
             TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner", ADataBase);
-            ReadAndWriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            ReadAndWriteTransaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 out NewTransaction);
 
             try
@@ -745,16 +745,16 @@ namespace Ict.Petra.Server.MPartner.Processing
                 // At this point the partner is either new or it is not new but in existing in the db
                 // Now get the class of the recently used partner.
                 PartnerClassString = SharedTypes.PartnerClassEnumToString(APartnerClass);
-                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GetUserInfo().UserID, ReadAndWriteTransaction);
+                RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GetUserInfo(db).UserID, ReadAndWriteTransaction);
 
                 // Check if the recently used partner already exists for the current user.
                 // Add it if not, otherwise just change the timestamp.
-                RecentPartnersRow = (PRecentPartnersRow)RecentPartnersDT.Rows.Find(new System.Object[] { UserInfo.GetUserInfo().UserID, APartnerKey });
+                RecentPartnersRow = (PRecentPartnersRow)RecentPartnersDT.Rows.Find(new System.Object[] { UserInfo.GetUserInfo(db).UserID, APartnerKey });
 
                 if (RecentPartnersRow == null)
                 {
                     RecentPartnersRow = RecentPartnersDT.NewRowTyped(true);
-                    RecentPartnersRow.UserId = UserInfo.GetUserInfo().UserID;
+                    RecentPartnersRow.UserId = UserInfo.GetUserInfo(db).UserID;
                     RecentPartnersRow.PartnerKey = APartnerKey;
                     RecentPartnersDT.Rows.Add(RecentPartnersRow);
                 }
@@ -767,11 +767,11 @@ namespace Ict.Petra.Server.MPartner.Processing
                 FieldList = new StringCollection();
                 FieldList.Add(PPartnerTable.GetPartnerKeyDBName());
                 FieldList.Add(PPartnerTable.GetPartnerClassDBName());
-                PartnerDT = PPartnerAccess.LoadViaSUserPRecentPartners(UserInfo.GetUserInfo().UserID, FieldList, ReadAndWriteTransaction, null, 0, 0);
+                PartnerDT = PPartnerAccess.LoadViaSUserPRecentPartners(UserInfo.GetUserInfo(db).UserID, FieldList, ReadAndWriteTransaction, null, 0, 0);
 
                 // Get the number of recent partners that the user has set, if not found
                 // take 10 as default value.
-                NumberOfRecentPartners = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
+                NumberOfRecentPartners = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10, db);
                 ClassCounter = 0;
 
                 for (Counter = RecentPartnersDV.Count - 1; Counter >= 0; Counter -= 1)
