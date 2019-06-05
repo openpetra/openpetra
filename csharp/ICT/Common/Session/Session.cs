@@ -155,7 +155,7 @@ namespace Ict.Common.Session
 
         private static SortedList <string, string> GetSession(TDataBase ADataBase = null)
         {
-            string sessionID = GetSessionID();
+            string sessionID = GetSessionID(ADataBase);
             SortedList <string, string> result = null;
             TDataBase db = DBAccess.Connect("GetSession", ADataBase);
 
@@ -232,11 +232,11 @@ namespace Ict.Common.Session
         /// <summary>
         /// gets the current session id, or creates a new session id if it does not exist yet
         /// </summary>
-        public static string GetSessionID()
+        public static string GetSessionID(TDataBase ADataBase = null)
         {
             string sessionID = FindSessionID();
 
-            if ((sessionID != string.Empty) && !HasValidSession(sessionID))
+            if ((sessionID != string.Empty) && !HasValidSession(sessionID, ADataBase))
             {
                 TLogging.LogAtLevel(
                     1,
@@ -296,7 +296,7 @@ namespace Ict.Common.Session
             db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
-                    string sessionID = GetSessionID();
+                    string sessionID = GetSessionID(db);
                     SortedList <string, string>session;
 
                     if (HasValidSession(sessionID, db))
@@ -322,7 +322,10 @@ namespace Ict.Common.Session
                     SubmissionOK = true;
                 });
 
-            db.CloseDBConnection();
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -365,11 +368,12 @@ namespace Ict.Common.Session
         /// get a session variable, not decoded yet
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        public static TVariant GetVariant(string name)
+        public static TVariant GetVariant(string name, TDataBase ADataBase = null)
         {
             // return HttpContext.Current.Session[name];
-            SortedList <string, string>session = GetSession();
+            SortedList <string, string>session = GetSession(ADataBase);
 
             if (session.Keys.Contains(name))
             {
