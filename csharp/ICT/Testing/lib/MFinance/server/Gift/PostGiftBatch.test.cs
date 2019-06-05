@@ -174,7 +174,7 @@ namespace Tests.MFinance.Server.Gift
 
             bool NewTransaction = false;
 
-            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             // create a new costcentre
             const string newCostCentre = "100001";
