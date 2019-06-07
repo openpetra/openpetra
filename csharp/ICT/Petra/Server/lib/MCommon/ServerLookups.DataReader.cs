@@ -291,13 +291,12 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     submitOK = ReturnValue == TSubmitChangesResult.scrOK; 
                 });
 
+            AVerificationResult = VerificationResult;
+
             if ((ATablename == SSystemDefaultsTable.GetTableDBName()) && (ReturnValue == TSubmitChangesResult.scrOK))
             {
-                // Refresh the cache immediately so clients will get the changes
-                TSystemDefaultsCache.GSystemDefaultsCache.ReloadSystemDefaultsTable();
+                // TODO Reload the site key into the session, in case that was changed
             }
-
-            AVerificationResult = VerificationResult;
 
             return ReturnValue;
         }

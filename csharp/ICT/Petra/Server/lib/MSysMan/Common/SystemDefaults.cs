@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,12 +33,9 @@ using Ict.Petra.Server.App.Core.Security;
 namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 {
     /// <summary>
-    /// Reads and updates/adds System Defaults. This Class exists solely for Client calls; for any server-side calls
-    /// use the global (and always available!) <see cref="TSystemDefaultsCache.GSystemDefaultsCache" /> instance
-    /// of <see cref="TSystemDefaultsCache" /> directly!
+    /// Reads and updates/adds System Defaults.
     /// </summary>
-    /// <remarks>Utilises a thread-safe cache (<see cref="TSystemDefaultsCache" />) for speed!</remarks>
-    public static class TSystemDefaults
+    public static class TSystemDefaultsConnector
     {
         /// <summary>
         /// Call this Method to find out whether a System Default is defined, that is, if it exists in the System Defaults table.
@@ -48,7 +45,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool IsSystemDefaultDefined(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.IsSystemDefaultDefined(ASystemDefaultName);
+            return new TSystemDefaults().IsSystemDefaultDefined(ASystemDefaultName);
         }
 
         /// <summary>
@@ -67,7 +64,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static String GetSystemDefault(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetSystemDefault(ASystemDefaultName);
+            return new TSystemDefaults().GetSystemDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -86,7 +83,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetSystemDefault(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetSystemDefault(ASystemDefaultName, ADefault);
         }
 
         // The following set of functions serve as shortcuts to get User Defaults of a
@@ -102,7 +99,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool GetBooleanDefault(String ASystemDefaultName, bool ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetBooleanDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -114,7 +111,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool GetBooleanDefault(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(ASystemDefaultName);
+            return new TSystemDefaults().GetBooleanDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -127,7 +124,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Char GetCharDefault(String ASystemDefaultName, System.Char ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetCharDefault(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetCharDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -139,7 +136,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Char GetCharDefault(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetCharDefault(ASystemDefaultName);
+            return new TSystemDefaults().GetCharDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -152,7 +149,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static double GetDoubleDefault(String ASystemDefaultName, double ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetDoubleDefault(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetDoubleDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -163,7 +160,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static double GetDoubleDefault(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetDoubleDefault(ASystemDefaultName);
+            return new TSystemDefaults().GetDoubleDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -176,7 +173,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Int16 GetInt16Default(String ASystemDefaultName, System.Int16 ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetInt16Default(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetInt16Default(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -187,7 +184,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Int16 GetInt16Default(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetInt16Default(ASystemDefaultName);
+            return new TSystemDefaults().GetInt16Default(ASystemDefaultName);
         }
 
         /// <summary>
@@ -200,7 +197,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Int32 GetInt32Default(String ASystemDefaultName, System.Int32 ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetInt32Default(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetInt32Default(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -211,7 +208,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Int32 GetInt32Default(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetInt32Default(ASystemDefaultName);
+            return new TSystemDefaults().GetInt32Default(ASystemDefaultName);
         }
 
         /// <summary>
@@ -226,7 +223,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Int64 GetInt64Default(String ASystemDefaultName, System.Int64 ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetInt64Default(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -239,7 +236,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static System.Int64 GetInt64Default(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(ASystemDefaultName);
+            return new TSystemDefaults().GetInt64Default(ASystemDefaultName);
         }
 
         /// <summary>
@@ -252,7 +249,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static String GetStringDefault(String ASystemDefaultName, String ADefault)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(ASystemDefaultName, ADefault);
+            return new TSystemDefaults().GetStringDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -264,7 +261,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static String GetStringDefault(String ASystemDefaultName)
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(ASystemDefaultName);
+            return new TSystemDefaults().GetStringDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -277,7 +274,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static Int64 GetSiteKeyDefault()
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault();
+            return new TSystemDefaults().GetSiteKeyDefault();
         }
 
         /// <summary>
@@ -288,7 +285,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static SSystemDefaultsTable GetSystemDefaults()
         {
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetSystemDefaultsTable();
+            return new TSystemDefaults().GetSystemDefaultsTable();
         }
 
         /// <summary>
@@ -299,7 +296,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static void SetSystemDefault(String AKey, String AValue)
         {
-            TSystemDefaultsCache.GSystemDefaultsCache.SetSystemDefault(AKey, AValue);
+            new TSystemDefaults().SetSystemDefault(AKey, AValue);
         }
 
         /// <summary>
@@ -311,7 +308,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         [RequireModulePermission("NONE")]
         public static void SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
-            TSystemDefaultsCache.GSystemDefaultsCache.SetSystemDefault(AKey, AValue, out AAdded);
+            new TSystemDefaults().SetSystemDefault(AKey, AValue, out AAdded);
         }
     }
 }

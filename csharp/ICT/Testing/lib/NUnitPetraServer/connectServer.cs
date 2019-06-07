@@ -75,6 +75,7 @@ namespace Ict.Testing.NUnitPetraServer
             bool SystemEnabled;
             string WelcomeMessage;
             Int32 ClientID;
+            Int64 SiteKey;
 
             if (File.Exists(AConfigName))
             {
@@ -137,16 +138,15 @@ namespace Ict.Testing.NUnitPetraServer
                 out ClientID,
                 out WelcomeMessage,
                 out SystemEnabled,
+                out SiteKey,
                 db);
 
             // the following values are stored in the session object
             DomainManager.GClientID = ClientID;
             DomainManager.CurrentClient = CurrentClient;
+            DomainManager.GSiteKey = SiteKey;
 
             TSetupDelegates.Init();
-            TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
-            DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = 
-                @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
 
             TDBTransaction ReadTransaction = new TDBTransaction();
             db.ReadTransaction(ref ReadTransaction,

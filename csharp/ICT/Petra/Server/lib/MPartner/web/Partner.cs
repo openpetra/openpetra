@@ -79,10 +79,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             bool ResultValue = false;
 
-            TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner", ADataBase);
+            TDataBase db = DBAccess.Connect("AddRecentlyUsedPartner");
 
             ResultValue = TRecentPartnersHandling.AddRecentlyUsedPartner
                               (APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse, db);
+
+            db.CloseDBConnection();
 
             return ResultValue;
         }

@@ -281,9 +281,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     // Get hold of the two tables needed for the banking information:
                     // p_partner_banking_details
                     // p_banking_details
-                    FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                    FTaxDeductiblePercentageEnabled = TSystemDefaultsConnector.GetBooleanDefault(
                         SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-                    FGovIdEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                    FGovIdEnabled = TSystemDefaultsConnector.GetBooleanDefault(
                         SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
                     PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                     PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PTaxRow template = new PTaxTable().NewRowTyped(false);
 
                         template.PartnerKey = FPartnerKey;
-                        template.TaxType = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                        template.TaxType = TSystemDefaultsConnector.GetStringDefault(
                             SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
 
                         PTaxAccess.LoadUsingTemplate(localDS, template, ReadTransaction);
@@ -1109,8 +1109,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     #region Calculations
 
                     // Determine Gift Processing settings
-                    GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                        TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
+                    GiftReceiptingDefaults = TSystemDefaultsConnector.GetStringDefault(
+                        TSystemDefaults.PARTNER_GIFTRECEIPTINGDEFAULTS);
 
                     if (GiftReceiptingDefaults != "")
                     {
@@ -1392,7 +1392,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (APartnerClass == TPartnerClass.PERSON)
                     {
-                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                        if (TSystemDefaultsConnector.GetBooleanDefault(
                                 SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLADDRESSES, false))
                         {
                             // Copy *ALL* Addresses (p_location and p_partner_location records) of the FAMILY of the new PERSON
@@ -1436,7 +1436,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 ReadTransaction);
                         }
 
-                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                        if (TSystemDefaultsConnector.GetBooleanDefault(
                                 SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLCONTACTDETAILS, false))
                         {
                             // Copy all Contact Details of the FAMILY to the PERSON (incl. 'Primary Contact Detail', but no

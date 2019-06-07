@@ -206,7 +206,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // Initialise our working variables
             AGiftBatchRow giftBatch = null;
@@ -945,7 +945,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // Initialise our working variables
             decimal totalBatchAmount = 0;

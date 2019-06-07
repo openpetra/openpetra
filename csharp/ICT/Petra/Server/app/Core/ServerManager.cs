@@ -59,28 +59,7 @@ namespace Ict.Petra.Server.App.Core
     /// </summary>
     public class TServerManager : TServerManagerBase
     {
-        private static TDataBase FDBConnectionCheckAccessObj;
-
         private IUserManager FUserManager;
-        private bool FDBConnectionEstablishmentAtStartup;
-
-        /// <summary>
-        /// Whether the DB Connection Establishment happens at server startup, or not.
-        /// </summary>
-        public bool DBConnectionEstablishmentAtStartup
-        {
-            get
-            {
-                return FDBConnectionEstablishmentAtStartup;
-            }
-
-            set
-            {
-                FDBConnectionEstablishmentAtStartup = value;
-            }
-        }
-
-        private delegate void TDBReconnectionThreadCallback(bool ADBConnectionBroken, int ADBReconnectionAttemptsCounter);
 
         /// <summary>
         /// get a casted version of the static variable
@@ -99,10 +78,6 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public TServerManager() : base()
         {
-            // Create SystemDefaults Cache
-            TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
-            DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
-
             TCacheableTablesManager.InitializeUnit();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
 
@@ -129,7 +104,7 @@ namespace Ict.Petra.Server.App.Core
                 null,
                 null);
 
-            TClientManager.InitializeStaticVariables(TSystemDefaultsCache.GSystemDefaultsCache,
+            TClientManager.InitializeStaticVariables(
                 FUserManager,
                 new TErrorLog(),
                 new TLoginLog(),

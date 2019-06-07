@@ -72,9 +72,6 @@ namespace Ict.Common.Remoting.Server
 
         #endregion
 
-        /// <summary>Holds reference to an instance of TSystemDefaultsCache (for System Defaults lookups)</summary>
-        private static ISystemDefaultsCache USystemDefaultsCache;
-
         private static IUserManager UUserManager = null;
         private static IErrorLog UErrorLog = null;
         private static ILoginLog ULoginLog = null;
@@ -152,20 +149,6 @@ namespace Ict.Common.Remoting.Server
             get
             {
                 return FClientsConnectedTotal;
-            }
-        }
-
-        /// <summary>
-        /// Used by ServerManager to pass in a reference to the TSystemDefaultsCache
-        /// object. This reference is passed in turn by ClientManager into each
-        /// ClientDomain to give each ClientDomain access to the System Defaults cache.
-        ///
-        /// </summary>
-        public static ISystemDefaultsCache SystemDefaultsCache
-        {
-            get
-            {
-                return USystemDefaultsCache;
             }
         }
 
@@ -279,13 +262,12 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// initialize variables that are initialized from classes specific to the server, eg. with access to OpenPetra database
         /// </summary>
-        public static void InitializeStaticVariables(ISystemDefaultsCache ASystemDefaultsCache,
+        public static void InitializeStaticVariables(
             IUserManager AUserManager,
             IErrorLog AErrorLog,
             ILoginLog ALoginLog,
             IMaintenanceLogonMessage AMaintenanceLogonMessage)
         {
-            USystemDefaultsCache = ASystemDefaultsCache;
             UUserManager = AUserManager;
             UErrorLog = AErrorLog;
             ULoginLog = ALoginLog;
@@ -900,6 +882,7 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AClientID">Server-assigned ID of the Client</param>
         /// <param name="AWelcomeMessage"></param>
         /// <param name="ASystemEnabled"></param>
+        /// <param name="ASiteKey"></param>
         /// <param name="ADataBase"></param>
         public static TConnectedClient ConnectClient(String AUserName,
             String APassword,
@@ -910,12 +893,14 @@ namespace Ict.Common.Remoting.Server
             out System.Int32 AClientID,
             out String AWelcomeMessage,
             out Boolean ASystemEnabled,
+            out System.Int64 ASiteKey,
             TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
             bool SystemEnabled = true;
             string WelcomeMessage = String.Empty;
+            Int64 SiteKey = -1;
 
             TConnectedClient ConnectedClient = null;
 
@@ -1074,7 +1059,7 @@ namespace Ict.Common.Remoting.Server
                         // Login Checks were successful!
                         ConnectedClient.SessionStatus = TSessionStatus.adsConnectingLoginOK;
 
-                        // Retrieve Welcome message
+                        // Retrieve Welcome message and SiteKey
                         try
                         {
                             if (UMaintenanceLogonMessage != null)
@@ -1084,7 +1069,12 @@ namespace Ict.Common.Remoting.Server
                             else
                             {
                                 WelcomeMessage = "Welcome";
-                           }
+                            }
+
+                            // we could do this directly, or via an interface, similar to LogonMessage, see above
+                            string sql = "SELECT s_default_value_c FROM s_system_defaults WHERE s_default_code_c = 'SiteKey'";
+                             
+                            SiteKey = Convert.ToInt64(DBConnectionObj.ExecuteScalar(sql, ReadWriteTransaction));
                         }
                         catch (Exception)
                         {
@@ -1149,6 +1139,7 @@ namespace Ict.Common.Remoting.Server
 
             ASystemEnabled = SystemEnabled;
             AWelcomeMessage = WelcomeMessage;
+            ASiteKey = SiteKey;
 
             return ConnectedClient;
         }

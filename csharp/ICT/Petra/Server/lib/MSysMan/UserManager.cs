@@ -458,7 +458,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         {
             int AProcessID;
             int FailedLoginsUntilAccountGetsLocked =
-                TSystemDefaults.GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED, 10);
+                TSystemDefaultsConnector.GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED, 10);
             bool AccountLockedAtThisAttempt = false;
 
             // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +

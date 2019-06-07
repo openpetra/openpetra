@@ -1009,7 +1009,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 String Criteria = null;
 
                 if (IsDonorSearch
-                    && (!TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_ALLOWPERSONPARTNERSASDONORS, true)))
+                    && (!new TSystemDefaults().GetBooleanDefault(SharedConstants.SYSDEFAULT_ALLOWPERSONPARTNERSASDONORS, true)))
                 {
                     if (Criteria == null)
                     {

@@ -72,9 +72,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
+        /// <param name="ADataBase">database object</param>
         /// <returns>true if key does not exist</returns>
         [NoRemoting]
-        public static bool GetBooleanDefault(String AKey, bool ADefault = true)
+        public static bool GetBooleanDefault(String AKey, bool ADefault = true, TDataBase ADataBase = null)
         {
             return Convert.ToBoolean(GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -84,9 +85,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
+        /// <param name="ADataBase">database object</param>
         /// <returns></returns>
         [NoRemoting]
-        public static System.Char GetCharDefault(String AKey, System.Char ADefault)
+        public static System.Char GetCharDefault(String AKey, System.Char ADefault, TDataBase ADataBase = null)
         {
             return Convert.ToChar(GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -95,6 +97,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// get char default
         /// </summary>
         /// <param name="AKey"></param>
+        /// <param name="ADataBase">database object</param>
         /// <returns>space if key does not exist</returns>
         [NoRemoting]
         public static System.Char GetCharDefault(String AKey)
@@ -107,9 +110,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
+        /// <param name="ADataBase">database object</param>
         /// <returns>0.0 if key does not exist</returns>
         [NoRemoting]
-        public static double GetDoubleDefault(String AKey, double ADefault = 0.0)
+        public static double GetDoubleDefault(String AKey, double ADefault = 0.0, TDataBase ADataBase = null)
         {
             return Convert.ToDouble(GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -121,9 +125,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault">The value that should be returned in case the Key is not (yet)
         /// in the User Defaults.
         /// </param>
+        /// <param name="ADataBase">database object</param>
         /// <returns>0 if key does not exist</returns>
         [NoRemoting]
-        public static System.Int16 GetInt16Default(String AKey, System.Int16 ADefault = 0)
+        public static System.Int16 GetInt16Default(String AKey, System.Int16 ADefault = 0, TDataBase ADataBase = null)
         {
             return Convert.ToInt16(GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -133,9 +138,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
+        /// <param name="ADataBase">database object</param>
         /// <returns>0 if key does not exist</returns>
         [NoRemoting]
-        public static System.Int32 GetInt32Default(String AKey, System.Int32 ADefault = 0)
+        public static System.Int32 GetInt32Default(String AKey, System.Int32 ADefault = 0, TDataBase ADataBase = null)
         {
             return Convert.ToInt32(GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -147,7 +153,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault"></param>
         /// <returns>0 if key does not exist</returns>
         [NoRemoting]
-        public static System.Int64 GetInt64Default(String AKey, System.Int64 ADefault = 0)
+        public static System.Int64 GetInt64Default(String AKey, System.Int64 ADefault = 0, TDataBase ADataBase = null)
         {
             return Convert.ToInt64(GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -159,7 +165,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault"></param>
         /// <returns>empty string if key does not exist</returns>
         [NoRemoting]
-        public static String GetStringDefault(String AKey, String ADefault = "")
+        public static String GetStringDefault(String AKey, String ADefault = "", TDataBase ADataBase = null)
         {
             return GetUserDefault(AKey, ADefault);
         }

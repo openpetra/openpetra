@@ -36,23 +36,13 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 namespace Ict.Petra.Server.App.Core
 {
     /// <summary>
-    /// Cache Manager for the System Defaults of the Petra Site.
-    /// It is instantiated only once (in ServerManager) and then
-    /// accessed from each ClientDomain.
-    ///
-    /// The SystemDefaults are read from the DB when they are first requested,
-    /// all subsequent requests just use the cached System Defaults. This is fully
-    /// transparent to the caller. A reload of the cached System Defaults table can
-    /// be requested. Read access to the cache table is denied while the cache table
-    /// is (re)loaded to allow safe multi-threading operation.
+    /// Manager for the System Defaults of the OpenPetra Site.
+    /// It can be accessed from the client through the Ict.Petra.Server.MSysMan.Common.WebConnectors TSystemDefaultsConnector.
     /// </summary>
     /// <remarks>The System Defaults are retrieved from the s_system_defaults table
     /// and are put into a Typed DataTable that has the structure of this table.</remarks>
-    public class TSystemDefaultsCache : ISystemDefaultsCache
+    public class TSystemDefaults
     {
-        /// a static variable for global access to the system defaults
-        public static TSystemDefaultsCache GSystemDefaultsCache;
-
         /*------------------------------------------------------------------------------
          * Partner System Default Constants
          * -------------------------------------------------------------------------------*/
@@ -64,24 +54,14 @@ namespace Ict.Petra.Server.App.Core
          * Put other User Default Constants here as well.
          * -------------------------------------------------------------------------------*/
 
-        /// <summary>holds a state that tells whether the Typed DataTable is cached or not</summary>
-        private Boolean FTableCached;
-
-        private readonly object FTableCachedLockCookie = new object();
-
         /// <summary>this Typed DataTable holds the cached System Defaults</summary>
-        private SSystemDefaultsTable FSystemDefaultsDT;
-
-        /// <summary>used to control read and write access to the cache</summary>
-        private System.Threading.ReaderWriterLock FReadWriteLock;
-
+        private SSystemDefaultsTable FSystemDefaultsDT = null;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TSystemDefaultsCache() : base()
+        public TSystemDefaults()
         {
-            FReadWriteLock = new System.Threading.ReaderWriterLock();
         }
 
         /// <summary>
@@ -95,37 +75,12 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>System Defaults as a Typed DataTable.</returns>
         public SSystemDefaultsTable GetSystemDefaultsTable()
         {
-            SSystemDefaultsTable ReturnValue;
-
-            // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
-            // FTableCached value!
-            lock (FTableCachedLockCookie)
+            if (FSystemDefaultsDT == null)
             {
-                if (!FTableCached)
-                {
-                    LoadSystemDefaultsTable();
-
-                    FTableCached = true;
-                }
+                LoadSystemDefaultsTable();
             }
 
-            try
-            {
-                /*
-                 * Try to get a read lock on the cache table [We don't specify a timeout because
-                 *   (1) reading an emptied cache would lead to problems (it is emptied before the DB queries are issued),
-                 *   (2) reading the DB tables into the cached table should be fairly quick]
-                 */
-                FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-                ReturnValue = FSystemDefaultsDT;
-            }
-            finally
-            {
-                // Release read lock on the cache table
-                FReadWriteLock.ReleaseReaderLock();
-            }
-
-            return ReturnValue;
+            return FSystemDefaultsDT;
         }
 
         /// <summary>
@@ -136,16 +91,7 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>True if the System Default is defined, false if it isn't.</returns>
         public bool IsSystemDefaultDefined(String ASystemDefaultName)
         {
-            String Tmp = GetSystemDefault(ASystemDefaultName);
-
-            if (Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (GetSystemDefault(ASystemDefaultName) != SharedConstants.SYSDEFAULT_NOT_FOUND);
         }
 
         /// <summary>
@@ -163,50 +109,23 @@ namespace Ict.Petra.Server.App.Core
         /// </returns>
         public String GetSystemDefault(String ASystemDefaultName)
         {
-            String ReturnValue;
-            SSystemDefaultsRow FoundSystemDefaultsRow;
-
-            // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
-            // FTableCached value!
-            lock (FTableCachedLockCookie)
+            if (FSystemDefaultsDT == null)
             {
-                if (!FTableCached)
-                {
-                    LoadSystemDefaultsTable();
-
-                    FTableCached = true;
-                }
+               LoadSystemDefaultsTable();
             }
 
-            try
+            // FSystemDefaultsDT is not case sensitive so Find will find the first case-insensitive match
+            // The code to save a default handles ensuring that we never add a row with a 'similar' but non-identical primary key
+            SSystemDefaultsRow FoundSystemDefaultsRow = (SSystemDefaultsRow)FSystemDefaultsDT.Rows.Find(ASystemDefaultName);
+
+            if (FoundSystemDefaultsRow != null)
             {
-                /*
-                 * Try to get a read lock on the cache table [We don't specify a timeout because
-                 *   (1) reading an emptied cache would lead to problems (it is emptied before the DB queries are issued),
-                 *   (2) reading the DB tables into the cached table should be fairly quick]
-                 */
-                FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
-
-                // FSystemDefaultsDT is not case sensitive so Find will find the first case-insensitive match
-                // The code to save a default handles ensuring that we never add a row with a 'similar' but non-identical primary key
-                FoundSystemDefaultsRow = (SSystemDefaultsRow)FSystemDefaultsDT.Rows.Find(ASystemDefaultName);
-
-                if (FoundSystemDefaultsRow != null)
-                {
-                    ReturnValue = FoundSystemDefaultsRow.DefaultValue;
-                }
-                else
-                {
-                    ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
-                }
+                return FoundSystemDefaultsRow.DefaultValue;
             }
-            finally
+            else
             {
-                // Release read lock on the cache table
-                FReadWriteLock.ReleaseReaderLock();
+                return SharedConstants.SYSDEFAULT_NOT_FOUND;
             }
-
-            return ReturnValue;
         }
 
         /// <summary>
@@ -224,21 +143,16 @@ namespace Ict.Petra.Server.App.Core
         /// specified System Default was not found.</returns>
         public String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
-            String ReturnValue;
-            String Tmp;
-
-            Tmp = GetSystemDefault(ASystemDefaultName);
+            String Tmp = GetSystemDefault(ASystemDefaultName);
 
             if (Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND)
             {
-                ReturnValue = Tmp;
+                return Tmp;
             }
             else
             {
-                ReturnValue = ADefault;
+                return ADefault;
             }
-
-            return ReturnValue;
         }
 
         // The following set of functions serve as shortcuts to get User Defaults of a
@@ -470,46 +384,21 @@ namespace Ict.Petra.Server.App.Core
             TDataBase DBAccessObj = DBAccess.Connect("LoadSystemDefaultsTable", ADataBase);
             TDBTransaction ReadTransaction = new TDBTransaction();
 
-            // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
-            FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
-
-            try
+            if (FSystemDefaultsDT != null)
             {
-                if (FSystemDefaultsDT != null)
-                {
-                    FSystemDefaultsDT.Clear();
-                }
-
-                try
-                {
-                    DBAccessObj.ReadTransaction(ref ReadTransaction,
-                        delegate
-                        {
-                            FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
-                        });
-                }
-                finally
-                {
-                    DBAccessObj.CloseDBConnection();
-                }
-
-                // Thread.Sleep(5000);     uncomment this for debugging. This allows checking whether read access to FSystemDefaultsDT actually waits until we release the WriterLock in the finally block.
+                FSystemDefaultsDT.Clear();
             }
-            finally
+
+            DBAccessObj.ReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
+                });
+
+            if (ADataBase == null)
             {
-                // Other threads are now free to obtain a read lock on the cache table.
-                FReadWriteLock.ReleaseWriterLock();
+                DBAccessObj.CloseDBConnection();
             }
-        }
-
-        /// <summary>
-        /// Reloads the cached TypedDataTable that holds the System Defaults immediately.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void ReloadSystemDefaultsTable()
-        {
-            LoadSystemDefaultsTable();
         }
 
         /// <summary>
@@ -517,11 +406,12 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         /// <param name="AKey">Name of new or existing System Default.</param>
         /// <param name="AValue">String Value.</param>
-        public void SetSystemDefault(String AKey, String AValue)
+        /// <param name="ADataBase"></param>
+        public void SetSystemDefault(String AKey, String AValue, TDataBase ADataBase = null)
         {
             bool SystemDefaultAdded;
 
-            SetSystemDefault(AKey, AValue, out SystemDefaultAdded);
+            SetSystemDefault(AKey, AValue, out SystemDefaultAdded, ADataBase);
         }
 
         /// <summary>
@@ -532,8 +422,9 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AKey">Name of the System Default.</param>
         /// <param name="AValue">Value of the System Default.</param>
         /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
+        /// <param name="ADataBase"></param>
         /// <remarks>SystemDefault Names are not case sensitive.</remarks>
-        public void SetSystemDefault(String AKey, String AValue, out bool AAdded)
+        public void SetSystemDefault(String AKey, String AValue, out bool AAdded, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction WriteTransaction = new TDBTransaction();
@@ -544,7 +435,7 @@ namespace Ict.Petra.Server.App.Core
             try
             {
                 // Open a separate DB Connection...
-                DBConnectionObj = DBAccess.Connect("SetSystemDefault");
+                DBConnectionObj = DBAccess.Connect("SetSystemDefault", ADataBase);
 
                 // ...and start a DB Transaction on that separate DB Connection
                 DBConnectionObj.WriteTransaction(ref WriteTransaction, ref SubmissionOK,
@@ -595,21 +486,16 @@ namespace Ict.Petra.Server.App.Core
             }
             finally
             {
+                if (ADataBase == null)
+                {
+                    DBConnectionObj.CloseDBConnection();
+                }
+
                 if (SubmissionOK)
                 {
                     // We need to ensure that the next time the System Defaults Caches gets accessed it is refreshed from the DB!!!
-
-                    // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
-                    // FTableCached value!
-                    lock (FTableCachedLockCookie)
-                    {
-                        FTableCached = false;
-                    }
-                }
-
-                if (DBConnectionObj != null)
-                {
-                    DBConnectionObj.CloseDBConnection();
+                    FSystemDefaultsDT.Clear();
+                    FSystemDefaultsDT = null;
                 }
             }
         }

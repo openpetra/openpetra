@@ -619,7 +619,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             #endregion Validate Arguments
 
-            string BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+            string BankAccountCode = new TSystemDefaults().GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + FLedgerNumber.ToString());
 
             if (BankAccountCode.Length == 0)

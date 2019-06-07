@@ -735,16 +735,14 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// for the Partner.</param>
         /// <param name="APartnerInfoDS">Typed DataSet of Type <see cref="PartnerInfoTDS" /> that
         /// contains the Partner Information that was requested for the Partner.</param>
-        /// <param name="ASeparateDBConnection">If you *must have* a separate DB Connection</param>
         /// <returns>True if Partner was found in DB, otherwise false.
         /// </returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerInfo(Int64 APartnerKey,
             TPartnerInfoScopeEnum APartnerInfoScope,
-            out PartnerInfoTDS APartnerInfoDS,
-            Boolean ASeparateDBConnection = false)
+            out PartnerInfoTDS APartnerInfoDS)
         {
-            return PartnerInfo(APartnerKey, null, APartnerInfoScope, out APartnerInfoDS, ASeparateDBConnection);
+            return PartnerInfo(APartnerKey, null, APartnerInfoScope, out APartnerInfoDS);
         }
 
         /// <summary>
@@ -769,8 +767,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerInfo(Int64 APartnerKey, TLocationPK ALocationKey,
             TPartnerInfoScopeEnum APartnerInfoScope,
-            out PartnerInfoTDS APartnerInfoDS,
-            Boolean ASeparateDBConnection = false)
+            out PartnerInfoTDS APartnerInfoDS)
         {
             const string DATASET_NAME = "PartnerInfo";
 

@@ -131,10 +131,6 @@ namespace Ict.Petra.Server.App.WebService
                 {
                     TServerManager.TheCastedServerManager.EstablishDBConnection();
 
-                    TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
-                    DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate =
-                        @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
-
                     TLanguageCulture.Init();
 
                     // initialise the cached tables
@@ -198,6 +194,7 @@ namespace Ict.Petra.Server.App.WebService
             AWelcomeMessage = string.Empty;
             AClientID = -1;
             AMustChangePassword = false;
+            Int64 SiteKey;
 
             try
             {
@@ -209,12 +206,14 @@ namespace Ict.Petra.Server.App.WebService
                     TClientServerConnectionType.csctRemote,
                     out AClientID,
                     out AWelcomeMessage,
-                    out ASystemEnabled);
+                    out ASystemEnabled,
+                    out SiteKey);
                 TSession.SetVariable("LoggedIn", true);
 
                 // the following values are stored in the session object
                 DomainManager.GClientID = AClientID;
                 DomainManager.CurrentClient = CurrentClient;
+                DomainManager.GSiteKey = SiteKey;
 
                 AMustChangePassword = (UserInfo.GetUserInfo().LoginMessage == SharedConstants.LOGINMUSTCHANGEPASSWORD);
 

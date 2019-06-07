@@ -106,6 +106,7 @@ namespace Ict.Common.Session
 
         private static bool HasValidSession(string ASessionID, TDataBase ADataBase = null)
         {
+            //if (ADataBase == null) TLogging.LogStackTrace();
             TDataBase db = DBAccess.Connect("HasValidSession", ADataBase);
 
             TDBTransaction t = new TDBTransaction();
