@@ -51,6 +51,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
             string WelcomeMessage;
             bool SystemEnabled;
             Int32 ClientID;
+            Int64 SiteKey;
 
             TConnectedClient CurrentClient = TClientManager.ConnectClient(
                 "SYSADMIN", string.Empty,
@@ -60,12 +61,14 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
                 TClientServerConnectionType.csctRemote,
                 out ClientID,
                 out WelcomeMessage,
-                out SystemEnabled);
+                out SystemEnabled,
+                out SiteKey);
             TSession.SetVariable("LoggedIn", true);
 
             // the following values are stored in the session object
             DomainManager.GClientID = ClientID;
             DomainManager.CurrentClient = CurrentClient;
+            DomainManager.GSiteKey = SiteKey;
 
             return true;
         }
