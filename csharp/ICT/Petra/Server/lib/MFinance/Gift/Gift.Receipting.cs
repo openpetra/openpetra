@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
 
                             parameters[4] = new OdbcParameter("Frequency", OdbcType.VarChar);
-                            parameters[4].Value = AFrequency;
+                            parameters[4].Value = AFrequency.ToUpper();
 
                             if (!string.IsNullOrEmpty(AExtract))
                             {
