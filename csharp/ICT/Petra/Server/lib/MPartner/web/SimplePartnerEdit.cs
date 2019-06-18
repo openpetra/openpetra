@@ -81,9 +81,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             TPartnerEditUIConnector partneredit = new TPartnerEditUIConnector();
             string TmpSiteCountryCode;
+            Int64 SiteKey = DomainManager.GSiteKey;
 
             PartnerEditTDS MainDS = partneredit.GetDataNewPartner(
-                DomainManager.GSiteKey,
+                SiteKey,
                 NewPartnerKey(),
                 SharedTypes.PartnerClassStringToEnum(APartnerClass),
                 String.Empty,
@@ -97,7 +98,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MainDS.PPartner[0].ReceiptLetterFrequency = "Annual";
 
             PLocationRow location = MainDS.PLocation.NewRowTyped();
-            location.SiteKey = DomainManager.GSiteKey;
+            location.SiteKey = SiteKey;
             // TODO: read country code from SystemDefaults table
             location.CountryCode = "DE";
             location.LocationKey = -1;
