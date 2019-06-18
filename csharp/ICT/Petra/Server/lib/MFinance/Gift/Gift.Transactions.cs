@@ -5636,7 +5636,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null)
+        private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -5653,9 +5653,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             #endregion Validate Arguments
-
-            TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GetRecipientFundNumberInner");
 
             if (APartnerKey == 0)
             {
@@ -5677,6 +5674,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 return GetRecipientGiftDestination(PersonRow.FamilyKey, AGiftDate);
             }
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetRecipientFundNumberInner", ADataBase);
 
             //Check that LedgerPartnertypes are already loaded
             if ((AMainDS.LedgerPartnerTypes != null) && (AMainDS.LedgerPartnerTypes.Count == 0))
@@ -5708,6 +5708,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 && (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { APartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null))
             {
                 //TODO Warning on inactive Fund from p_partner table
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+
                 return APartnerKey;
             }
 
@@ -5732,10 +5737,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // recursive call until we find a partner that has partnertype LEDGER
-                return GetRecipientFundNumberInner(AMainDS, structureRow.ParentUnitKey);
+                Int64 result = GetRecipientFundNumberInner(AMainDS, structureRow.ParentUnitKey, null, db);
+
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+
+                return result;
             }
             else
             {
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+
                 return APartnerKey;
             }
         }
