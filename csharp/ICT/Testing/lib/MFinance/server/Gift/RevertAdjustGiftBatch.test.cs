@@ -152,6 +152,7 @@ namespace Tests.MFinance.Server.Gift
                 new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                 FileContent, null, String.Empty, null, String.Empty, "de-DE",
                 out receiptsPDF, out receiptsBefore);
+            Assert.AreNotEqual(0, receiptsBefore.Trim().Length, "old receipt must not be empty");
 
             int AdjustBatchNumber;
             TAdjustmentWebConnector.GiftRevertAdjust(FLedgerNumber,
@@ -199,6 +200,8 @@ namespace Tests.MFinance.Server.Gift
                 out receiptsPDF, out receiptsAfter);
             receiptsBefore = THttpBinarySerializer.DeserializeFromBase64(receiptsBefore);
             receiptsAfter = THttpBinarySerializer.DeserializeFromBase64(receiptsAfter);
+
+            TLogging.Log("TestAdjustGiftBatch Diff:");
             TLogging.Log(TTextFile.Diff(receiptsBefore, receiptsAfter));
             string[] diff = TTextFile.Diff(receiptsBefore, receiptsAfter).Trim().Split(Environment.NewLine);
             Assert.AreEqual(6, diff.Length, "difference on receipts are 6 lines");
