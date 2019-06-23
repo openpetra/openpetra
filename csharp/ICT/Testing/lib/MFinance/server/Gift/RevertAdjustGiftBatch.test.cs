@@ -165,10 +165,13 @@ namespace Tests.MFinance.Server.Gift
             GiftBatchTDS BatchTDS = TGiftTransactionWebConnector.LoadGiftTransactionsForBatch(
                 FLedgerNumber, AdjustBatchNumber, out BatchIsUnposted, out CurrencyCode);
 
+            // find the transaction to modify
+            Int32 ToModify = (BatchTDS.AGiftDetail[1].GiftTransactionNumber == 2)?1:0;
+            
             // change the amount from 20 to 25
-            BatchTDS.AGiftDetail[1].GiftTransactionAmount = 25;
+            BatchTDS.AGiftDetail[ToModify].GiftTransactionAmount = 25;
             // the money should go to field 35 instead of field 73
-            BatchTDS.AGiftDetail[1].RecipientKey = 35000000;
+            BatchTDS.AGiftDetail[ToModify].RecipientKey = 35000000;
             // TODO change of donor
             // BatchTDS.Gift[1].DonorKey = 
 
