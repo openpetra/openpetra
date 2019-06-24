@@ -40,16 +40,65 @@ namespace Ict.Common.Session
     /// <summary>
     /// Static class for storing sessions.
     /// we are using our own session handling,
-    /// since the mono server cannot handle concurrent requests in one session
-    /// see also http://serverfault.com/questions/324033/how-do-i-get-concurrent-asp-net-on-linux
-    /// and we want to store sessions in the database
+    /// since we want to store sessions in the database,
+    /// and we want to run tests without HttpContext.
     /// </summary>
     public class TSession
     {
         [ThreadStaticAttribute]
         private static string FSessionID;
+        [ThreadStaticAttribute]
+        private static SortedList <string, string> FSessionValues;
+        [ThreadStaticAttribute]
+        private static DateTime FSessionValidUntil;
 
         private const int SessionValidHours = 24;
+        
+        private static SortedList <string, string> GetSessionValues(string ASessionID)
+        {
+            if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))
+            {
+                if (HttpContext.Current.Session["SessionID"].ToString() == ASessionID)
+                {
+                    return (SortedList <string, string>) HttpContext.Current.Session["SessionValues"];
+                }
+            }
+            else if ((FSessionID == ASessionID) && (FSessionValidUntil.CompareTo(DateTime.Now) > 0))
+            {
+                return FSessionValues;
+            }
+
+            return null;
+        }
+
+        private static void SetSessionValues(string ASessionID, SortedList <string, string> AValues)
+        {
+            if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))
+            {
+                HttpContext.Current.Session["SessionID"] = ASessionID;
+                HttpContext.Current.Session["SessionValues"] = AValues;
+            }
+            else if ((FSessionID == ASessionID) || (FSessionID == String.Empty))
+            {
+                FSessionValidUntil = DateTime.Now.AddHours(SessionValidHours);
+                FSessionID = ASessionID;
+                FSessionValues = AValues;
+            }
+        }
+
+        private static void ClearSession()
+        {
+            if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))
+            {
+                HttpContext.Current.Session.Clear();
+            }
+            else
+            {
+                FSessionValidUntil = DateTime.Now.AddHours(-1);
+                FSessionID = String.Empty;
+                FSessionValues = null;
+            }
+        }
 
         /// get the current session id. if it is not stored in the http context, check the thread
         private static string FindSessionID()
@@ -106,6 +155,11 @@ namespace Ict.Common.Session
 
         private static bool HasValidSession(string ASessionID, TDataBase ADataBase = null)
         {
+            if (GetSessionValues(ASessionID) != null)
+            {
+                return true;
+            }
+
             //if (ADataBase == null) TLogging.LogStackTrace();
             TDataBase db = DBAccess.Connect("HasValidSession", ADataBase);
 
@@ -145,19 +199,35 @@ namespace Ict.Common.Session
 
         private static SortedList <string, string> GetSession(string ASessionID, TDataBase ADataBase)
         {
+            SortedList <string, string> result = null;
+            result = GetSessionValues(ASessionID);
+            if (result != null)
+            {
+                return result;
+            }
+
             OdbcParameter[] parameters = new OdbcParameter[1];
             parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
             parameters[0].Value = ASessionID;
 
             string sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
             string jsonString = ADataBase.ExecuteScalar(sql, ADataBase.Transaction, parameters).ToString();
-            return JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
+            result = JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
+            SetSessionValues(ASessionID, result);
+            return result;
         }
 
         private static SortedList <string, string> GetSession(TDataBase ADataBase = null)
         {
             string sessionID = GetSessionID(ADataBase);
             SortedList <string, string> result = null;
+
+            result = GetSessionValues(sessionID);
+            if (result != null)
+            {
+                return result;
+            }
+
             TDataBase db = DBAccess.Connect("GetSession", ADataBase);
 
             TDBTransaction t = new TDBTransaction();
@@ -174,6 +244,7 @@ namespace Ict.Common.Session
                     else
                     {
                         result = new SortedList <string, string>();
+                        SetSessionValues(sessionID, result);
                     }
 
                     SubmissionOK = true;
@@ -207,6 +278,8 @@ namespace Ict.Common.Session
                 string sql = "INSERT INTO s_session (s_session_values_c, s_valid_until_d, s_session_id_c) VALUES (?,?,?)";
                 ADataBase.ExecuteNonQuery(sql, ADataBase.Transaction, parameters);
             }
+
+            SetSessionValues(ASessionID, ASession);
         }
 
         private static void RemoveSession(string ASessionID)
@@ -226,6 +299,8 @@ namespace Ict.Common.Session
                     db.ExecuteNonQuery(sql, t, parameters);
                     SubmissionOK = true;
                 });
+
+            SetSessionValues(ASessionID, null);
     
             db.CloseDBConnection();
         }
@@ -288,7 +363,6 @@ namespace Ict.Common.Session
         /// <param name="ADataBase"></param>
         public static void SetVariable(string name, object value, TDataBase ADataBase = null)
         {
-            // HttpContext.Current.Session[name] = value;
             TDataBase db = DBAccess.Connect("SessionSetVariable", ADataBase);
 
             TDBTransaction t = new TDBTransaction();
@@ -354,7 +428,6 @@ namespace Ict.Common.Session
         /// <returns></returns>
         public static object GetVariable(string name, TDataBase ADataBase = null)
         {
-            // return HttpContext.Current.Session[name];
             SortedList <string, string>session = GetSession(ADataBase);
 
             if (session.Keys.Contains(name))
@@ -373,7 +446,6 @@ namespace Ict.Common.Session
         /// <returns></returns>
         public static TVariant GetVariant(string name, TDataBase ADataBase = null)
         {
-            // return HttpContext.Current.Session[name];
             SortedList <string, string>session = GetSession(ADataBase);
 
             if (session.Keys.Contains(name))
@@ -391,7 +463,6 @@ namespace Ict.Common.Session
         /// <returns></returns>
         public static object GetVariable(string name, bool ADefault)
         {
-            // return HttpContext.Current.Session[name];
             SortedList <string, string>session = GetSession();
 
             if (session.Keys.Contains(name))
@@ -409,7 +480,6 @@ namespace Ict.Common.Session
         /// <returns></returns>
         public static object GetVariable(string name, string ADefault)
         {
-            // return HttpContext.Current.Session[name];
             SortedList <string, string>session = GetSession();
 
             if (session.Keys.Contains(name))
@@ -425,8 +495,6 @@ namespace Ict.Common.Session
         /// </summary>
         static public void Clear()
         {
-            // HttpContext.Current.Session.Clear();
-
             TLogging.LogAtLevel(1, "TSession.Clear got called");
 
             string sessionId = GetSessionID();
@@ -438,8 +506,7 @@ namespace Ict.Common.Session
                 RemoveSession(sessionId);
                 HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
                 HttpContext.Current.Response.Cookies.Remove("OpenPetraSessionID");
-                // thread might be reused???
-                FSessionID = null;
+                ClearSession();
                 TLogging.LogAtLevel(1, "TSession.Clear: cleared session with sessionID = " + sessionId);
             }
         }
