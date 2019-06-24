@@ -3681,14 +3681,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         private static void MergeRecentAndLastPartnerInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
             // set user user defaults
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, AToPartnerKey);
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, AToPartnerKey);
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, AToPartnerKey);
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, AToPartnerKey, false, ATransaction.DataBaseObj);
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, AToPartnerKey, false, ATransaction.DataBaseObj);
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, AToPartnerKey, false, ATransaction.DataBaseObj);
 
             // if Partner is a conference then change LastConferenceWorkedWith to 0
             if (PcConferenceAccess.Exists(AFromPartnerKey, ATransaction))
             {
-                TUserDefaults.SetDefault(MSysManConstants.CONFERENCE_LASTCONFERENCEWORKEDWITH, 0);
+                TUserDefaults.SetDefault(MSysManConstants.CONFERENCE_LASTCONFERENCEWORKEDWITH, 0, false, ATransaction.DataBaseObj);
             }
 
             PRecentPartnersTable RecentPartnersTable = PRecentPartnersAccess.LoadByPrimaryKey(
