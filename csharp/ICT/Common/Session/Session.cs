@@ -58,7 +58,7 @@ namespace Ict.Common.Session
         {
             if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))
             {
-                if (HttpContext.Current.Session["SessionID"].ToString() == ASessionID)
+                if ((HttpContext.Current.Session["SessionID"] != null) && (HttpContext.Current.Session["SessionID"].ToString() == ASessionID))
                 {
                     return (SortedList <string, string>) HttpContext.Current.Session["SessionValues"];
                 }
