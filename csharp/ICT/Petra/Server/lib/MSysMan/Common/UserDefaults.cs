@@ -97,7 +97,6 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// get char default
         /// </summary>
         /// <param name="AKey"></param>
-        /// <param name="ADataBase">database object</param>
         /// <returns>space if key does not exist</returns>
         [NoRemoting]
         public static System.Char GetCharDefault(String AKey)
@@ -151,6 +150,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
+        /// <param name="ADataBase">database object</param>
         /// <returns>0 if key does not exist</returns>
         [NoRemoting]
         public static System.Int64 GetInt64Default(String AKey, System.Int64 ADefault = 0, TDataBase ADataBase = null)
@@ -163,6 +163,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
+        /// <param name="ADataBase">database object</param>
         /// <returns>empty string if key does not exist</returns>
         [NoRemoting]
         public static String GetStringDefault(String AKey, String ADefault = "", TDataBase ADataBase = null)
