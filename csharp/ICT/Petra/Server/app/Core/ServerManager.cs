@@ -168,14 +168,6 @@ namespace Ict.Petra.Server.App.Core
             QueueClientTask(-1, SharedConstants.CLIENTTASKGROUP_DBCONNECTIONBROKEN, TaskCode, null, null, null, null, 1);
         }
 
-        /// <summary>
-        /// Opens a Database connection to the main Database.
-        /// </summary>
-        public TDataBase EstablishDBConnection()
-        {
-            return DBAccess.Connect("Server's DB Connection");
-        }
-
         private IImportExportManager FImportExportManager = null;
         private IDBUpgrades FDBUpgrades = null;
 

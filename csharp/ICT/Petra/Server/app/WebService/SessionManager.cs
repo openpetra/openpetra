@@ -69,11 +69,6 @@ namespace Ict.Petra.Server.App.WebService
         /// </summary>
         public TOpenPetraOrgSessionManager() : base()
         {
-            if (TLogging.DebugLevel >= 4)
-            {
-                TLogging.Log(HttpContext.Current.Request.PathInfo);
-            }
-
             Init();
         }
 
@@ -108,6 +103,12 @@ namespace Ict.Petra.Server.App.WebService
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
+            if (TLogging.DebugLevel >= 4)
+            {
+                TLogging.Log("TOpenPetraOrgSessionManager.Init");
+                TLogging.Log(HttpContext.Current.Request.PathInfo);
+            }
+
             if (HttpContext.Current != null)
             {
                 HttpContext.Current.Server.ScriptTimeout = Convert.ToInt32(
@@ -129,8 +130,6 @@ namespace Ict.Petra.Server.App.WebService
 
                 try
                 {
-                    TServerManager.TheCastedServerManager.EstablishDBConnection();
-
                     TLanguageCulture.Init();
 
                     // initialise the cached tables
