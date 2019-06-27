@@ -68,6 +68,7 @@ start() {
       # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
 
       # improve speed of initial request by user by forcing to load all assemblies now
+      sleep 1
       curl --retry 5 --silent http://localhost/api/serverSessionManager.asmx/IsUserLoggedIn > /dev/null
 
       # this process must not end, otherwise systemd stops the server
