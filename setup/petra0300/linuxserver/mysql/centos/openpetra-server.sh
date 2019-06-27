@@ -64,8 +64,11 @@ start() {
     if [ "`whoami`" = "$userName" ]
     then
       cd $documentroot
-      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenPetraPath/bin fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null
+      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenPetraPath/bin fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null &
       # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
+
+      # improve speed of initial request by user by forcing to load all assemblies now
+      curl --retry 5 --silent http://localhost/api/serverSessionManager.asmx/IsUserLoggedIn > /dev/null
     else
       echo "Error: can only start the server as user $userName"
       exit -1
