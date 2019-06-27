@@ -69,6 +69,9 @@ start() {
 
       # improve speed of initial request by user by forcing to load all assemblies now
       curl --retry 5 --silent http://localhost/api/serverSessionManager.asmx/IsUserLoggedIn > /dev/null
+
+      # this process must not end, otherwise systemd stops the server
+      tail -f
     else
       echo "Error: can only start the server as user $userName"
       exit -1
