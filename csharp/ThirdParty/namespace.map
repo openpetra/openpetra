@@ -35,6 +35,7 @@ System.ServiceModel.Web=${csharpStdLibs}/System.ServiceModel.Web.dll
 System.ServiceModel=${csharpStdLibs}/System.ServiceModel.dll
 System.Web.Script*=${csharpStdLibs}/System.Web.Extensions.dll
 System.Web*=${csharpStdLibs}/System.Web.dll
+System.Net.Http*=${csharpStdLibs}/System.Net.Http.dll
 System.Xml=${csharpStdLibs}/System.Xml.dll
 System.Runtime.Caching=${csharpStdLibs}/System.Runtime.Caching.dll
 System.ComponentModel.DataAnnotations*=${csharpStdLibs}/System.ComponentModel.DataAnnotations.dll

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,9 +24,11 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Net.Security;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
@@ -142,57 +144,61 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// read from a website;
-        /// used to check for available patches
         /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
         public static string ReadWebsite(string url)
         {
-            string ReturnValue = null;
+            return ReadWebsiteAsync(url).Result;
+        }
 
-            byte[] buf;
+        /// <summary>
+        /// read from a website;
+        /// </summary>
+        private static async Task<string> ReadWebsiteAsync(string url)
+        {
+            string urlToLog = url;
 
-            WebClientWithSession WClient = GetNewWebClient(url);
-
-            if (TLogging.DebugLevel > 0)
+            // hide password and other parameters from the log
+            if (urlToLog.Contains("?"))
             {
-                string urlToLog = url;
-
-                if (url.Contains("password"))
-                {
-                    urlToLog = url.Substring(0, url.IndexOf("?")) + "?...";
-                }
-
-                TLogging.Log(urlToLog);
+                urlToLog = urlToLog.Substring(0, urlToLog.IndexOf("?")) + "?...";
             }
 
-            try
-            {
-                buf = WClient.Get(url);
+            TLogging.LogAtLevel(1, "ReadWebsite: " + urlToLog);
+            string ReturnValue = String.Empty;
 
-                if ((buf != null) && (buf.Length > 0))
-                {
-                    ReturnValue = Encoding.ASCII.GetString(buf, 0, buf.Length);
-                }
-                else
-                {
-                    TLogging.Log("server did not return anything? timeout?");
-                }
-
-                StoreSessionCookie(WClient.CookieContainer, url);
-            }
-            catch (System.Net.WebException e)
+            Uri fullUri = new Uri(url);
+            string baseUrl = fullUri.GetComponents(
+                UriComponents.SchemeAndServer | UriComponents.UserInfo, UriFormat.Unescaped);
+            Uri baseAddress = new Uri(baseUrl);
+            string pageUrl = url.Substring(baseUrl.Length);
+            var cookieContainer = new CookieContainer();
+            using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
             {
-                if (url.Contains("?"))
+                using (var client = new HttpClient(handler) { BaseAddress = baseAddress })
                 {
-                    // do not show passwords in the log file which could be encoded in the parameters
-                    TLogging.Log("Trying to download: " + url.Substring(0, url.IndexOf("?")) + "?..." + Environment.NewLine +
-                        e.ToString(), TLoggingType.ToLogfile);
-                }
-                else
-                {
-                    TLogging.Log("Trying to download: " + url + Environment.NewLine +
-                        e.ToString(), TLoggingType.ToLogfile);
+                    var result = client.GetAsync(pageUrl).Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        byte[] buf = await result.Content.ReadAsByteArrayAsync();
+
+                        if ((buf != null) && (buf.Length > 0))
+                        {
+                            ReturnValue = Encoding.ASCII.GetString(buf, 0, buf.Length);
+                        }
+                        else
+                        {
+                            TLogging.Log("server did not return anything? timeout?");
+                        }
+
+                        StoreSessionCookie(cookieContainer, baseAddress.ToString());
+                    }
+                    else
+                    {
+                        var error = await result.Content.ReadAsStringAsync();
+                        TLogging.Log("Trying to download: " + urlToLog + Environment.NewLine +
+                            result.StatusCode.ToString() + " " + error, TLoggingType.ToLogfile);
+                        throw new Exception("THTTPUtils::ReadWebsite: " + urlToLog + " " + result.StatusCode.ToString() + " " + error);
+                    }
                 }
             }
 
@@ -270,7 +276,7 @@ namespace Ict.Common.IO
             }
             catch (System.Net.WebException ex)
             {
-                TLogging.LogAtLevel(1, "WebClientUploadValues WebException: " + ex.ToString());
+                TLogging.LogAtLevel(0, "WebClientUploadValues WebException: " + ex.ToString());
 
                 HttpWebResponse httpWebResponse = (HttpWebResponse)ex.Response;
 
@@ -350,6 +356,7 @@ namespace Ict.Common.IO
                 LogRequest(url, parameters);
                 TLogging.Log(e.Message);
                 TLogging.Log("Error message from server:");
+                TLogging.Log(e.ToString());
 
                 if (e.Response != null)
                 {
