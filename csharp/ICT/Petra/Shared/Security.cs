@@ -134,9 +134,13 @@ namespace Ict.Petra.Shared.Security
         /// <returns>True if the user has access permissions.  Otherwise the method throws a ESecurityModuleAccessDeniedException exception.</returns>
         public static bool CheckUserModulePermissions(string AModuleExpression, string AModuleAccessExceptionContext = "")
         {
+            string Message = String.Empty;
+
             if (UserInfo.GetUserInfo() == null && AModuleExpression != "NONE")
             {
-                throw new Exception("Only authenticated users are allowed to use this function");
+                Message = "Only authenticated users are allowed to use this function";
+                TLogging.Log("CheckUserModulePermissions: " + Message);
+                throw new Exception(Message);
             }
 
             if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
@@ -174,9 +178,12 @@ namespace Ict.Petra.Shared.Security
 
                 if (AModuleExpression.StartsWith("OR(") && !oneTrue)
                 {
-                    throw new ESecurityModuleAccessDeniedException(String.Format(
+                    Message = String.Format(
                             Catalog.GetString("No access for user {0} to either of the modules {1}."),
-                            UserInfo.GetUserInfo().UserID, modulesList),
+                            UserInfo.GetUserInfo().UserID, modulesList);
+                    TLogging.Log("CheckUserModulePermissions: " + Message);
+
+                    throw new ESecurityModuleAccessDeniedException(Message,
                         UserInfo.GetUserInfo().UserID, modulesList, AModuleAccessExceptionContext);
                 }
 
@@ -202,9 +209,12 @@ namespace Ict.Petra.Shared.Security
 
                 if (!UserInfo.GetUserInfo().IsInModule(ModuleName))
                 {
-                    throw new ESecurityModuleAccessDeniedException(String.Format(
+                    Message = String.Format(
                             Catalog.GetString("No access for user {0} to {1}."),
-                            UserInfo.GetUserInfo().UserID, GetModuleOrLedger(ModuleName)),
+                            UserInfo.GetUserInfo().UserID, GetModuleOrLedger(ModuleName));
+                    TLogging.Log("CheckUserModulePermissions: " + Message);
+
+                    throw new ESecurityModuleAccessDeniedException(Message,
                         UserInfo.GetUserInfo().UserID, ModuleName, AModuleAccessExceptionContext);
                 }
 
