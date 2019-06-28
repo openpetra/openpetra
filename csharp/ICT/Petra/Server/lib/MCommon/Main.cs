@@ -836,11 +836,8 @@ namespace Ict.Petra.Server.MCommon
         /// <returns></returns>
         public object GetParameterValue()
         {
-            String criteriavalue;
-            object outcome;
             String matchvalue;
 
-            outcome = "";
             try
             {
                 // not all fields have a MatchField defined yet
@@ -856,33 +853,29 @@ namespace Ict.Petra.Server.MCommon
                 matchvalue = "EXACT";
             }
 
-            criteriavalue = FDataRow[FCriteriaField].ToString().Replace("*", String.Empty);
+            String criteriavalue = FDataRow[FCriteriaField].ToString().Replace("*", String.Empty);
 
             if (criteriavalue.Length > 0)
             {
-                if (matchvalue == "BEGINS")
+                if ((matchvalue == "BEGINS" || matchvalue == "CONTAINS") && !criteriavalue.EndsWith("%"))
                 {
-                    outcome = (object)(criteriavalue + '%');
+                    criteriavalue = criteriavalue + '%';
                 }
 
-                if (matchvalue == "ENDS")
+                if ((matchvalue == "ENDS" || matchvalue == "CONTAINS") && !criteriavalue.StartsWith("%"))
                 {
-                    outcome = (object)('%' + criteriavalue);
-                }
-
-                if (matchvalue == "CONTAINS")
-                {
-                    outcome = (object)('%' + criteriavalue + '%');
+                    criteriavalue = '%' + criteriavalue;
                 }
 
                 if (matchvalue == "EXACT")
                 {
-                    criteriavalue = FDataRow[FCriteriaField].ToString();
-                    outcome = (object)(criteriavalue.ToLower());
+                    criteriavalue = FDataRow[FCriteriaField].ToString().ToLower();
                 }
+
+                criteriavalue = criteriavalue.Replace("%%", "%");
             }
 
-            return outcome;
+            return criteriavalue;
         }
 
         /// <summary>
