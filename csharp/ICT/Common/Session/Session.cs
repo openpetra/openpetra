@@ -29,6 +29,7 @@ using System.Threading;
 using System.Web.SessionState;
 using System.Data;
 using System.Data.Odbc;
+using System.Linq;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -103,10 +104,12 @@ namespace Ict.Common.Session
         /// get the current session id. if it is not stored in the http context, check the thread
         private static string FindSessionID()
         {
+            string sessionId;
+
             // only look in thread if there is no HttpContext.Current; otherwise Threads are reused.
             if (HttpContext.Current == null)
             {
-                string sessionId = FSessionID;
+                sessionId = FSessionID;
 
                 if ((sessionId != null) && (sessionId.Length > 0))
                 {
@@ -117,18 +120,19 @@ namespace Ict.Common.Session
 
                 TLogging.LogAtLevel(1,
                     "FindSessionID: Session ID not found in the thread!!! thread id: " + Thread.CurrentThread.ManagedThreadId.ToString());
+                return String.Empty;
             }
-            else if (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null)
+            else if (HttpContext.Current.Request.Cookies.AllKeys.Contains("OpenPetraSessionID"))
             {
-                string sessionID = HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
-                TLogging.LogAtLevel(4, "FindSessionID: Session ID found in HttpContext. SessionID = " + sessionID);
-                return sessionID;
-            }
-            else
-            {
-                TLogging.LogAtLevel(1, "FindSessionID: Session ID not found in the HttpContext");
+                sessionId = HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
+                if (sessionId != String.Empty)
+                {
+                    TLogging.LogAtLevel(4, "FindSessionID: Session ID found in HttpContext. SessionID = " + sessionId);
+                    return sessionId;
+                }
             }
 
+            TLogging.LogAtLevel(1, "FindSessionID: Session ID not found in the HttpContext");
             return string.Empty;
         }
 
@@ -174,7 +178,7 @@ namespace Ict.Common.Session
                     else
                     {
                         // clean all old sessions
-                        sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d > NOW()";
+                        sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
                         db.ExecuteNonQuery(sql, t);
                         SubmissionOK = true;
                     }
