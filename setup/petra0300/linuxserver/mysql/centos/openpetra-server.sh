@@ -72,7 +72,7 @@ start() {
       curl --retry 5 --silent http://localhost/api/serverSessionManager.asmx/IsUserLoggedIn > /dev/null
 
       # this process must not end, otherwise systemd stops the server
-      tail -f
+      tail -f /dev/null
     else
       echo "Error: can only start the server as user $userName"
       exit -1
