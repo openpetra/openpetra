@@ -63,12 +63,8 @@ namespace Ict.Common.Remoting.Server
         /**
          * Called by the Client to obtain a DataTable that contains ClientTasks.
          *
-         * @comment This Method needs to be called in regular intervals by a Thread of
-         * the Client to prevent the Client's AppDomain from being teared down by
-         * TClientStillAliveCheck!
-         *
          * @return DataTable containing the ClientTasks for the connected Client, or
-         * nil in case there are no ClientTasks for the connected Client.
+         * null in case there are no ClientTasks for the connected Client.
          *
          */
         public DataTable PollClientTasks()
@@ -78,6 +74,13 @@ namespace Ict.Common.Remoting.Server
             DataTable ReturnValue = null;
 
             TLogging.LogAtLevel(4, "TPollClientTasks: PollClientTasks called");
+
+            if (FClientTasksManager == null)
+            {
+                // TODO: ClientTasks should be stored in the database
+                TLogging.Log("FClientTasksManager is null");
+                return null;
+            }
 
             FLastPollingTime = DateTime.Now;
 
