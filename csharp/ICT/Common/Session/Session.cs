@@ -103,21 +103,6 @@ namespace Ict.Common.Session
         /// get the current session id. if it is not stored in the http context, check the thread
         private static string FindSessionID()
         {
-            if ((HttpContext.Current != null) && (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null))
-            {
-                TLogging.LogAtLevel(4, "using session id from HttpContext");
-                return HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
-            }
-
-            // Session ID not found in the http context, checking the thread
-            TLogging.LogAtLevel(4, "(HttpContext.Current != null) : " + (HttpContext.Current != null).ToString());
-
-            if (HttpContext.Current != null)
-            {
-                TLogging.LogAtLevel(4, "(HttpContext.Current.Request.Cookies[OpenPetraSessionID] != null) : " +
-                    (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null).ToString());
-            }
-
             // only look in thread if there is no HttpContext.Current; otherwise Threads are reused.
             if (HttpContext.Current == null)
             {
@@ -133,9 +118,15 @@ namespace Ict.Common.Session
                 TLogging.LogAtLevel(1,
                     "FindSessionID: Session ID not found in the thread!!! thread id: " + Thread.CurrentThread.ManagedThreadId.ToString());
             }
+            else if (HttpContext.Current.Request.Cookies["OpenPetraSessionID"] != null)
+            {
+                string sessionID = HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
+                TLogging.LogAtLevel(4, "FindSessionID: Session ID found in HttpContext. SessionID = " + sessionID);
+                return sessionID;
+            }
             else
             {
-                TLogging.LogAtLevel(1, "FindSessionID: Session ID not found in the http context");
+                TLogging.LogAtLevel(1, "FindSessionID: Session ID not found in the HttpContext");
             }
 
             return string.Empty;
@@ -268,16 +259,21 @@ namespace Ict.Common.Session
             parameters[2] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
             parameters[2].Value = ASessionID;
 
-            if (HasValidSession(ASessionID, ADataBase))
+            string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_session_id_c = ?";
+            OdbcParameter[] parameters2 = new OdbcParameter[1];
+            parameters2[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+            parameters2[0].Value = ASessionID;
+            
+            if (Convert.ToInt32(ADataBase.ExecuteScalar(sql, ADataBase.Transaction, parameters2)) == 1)
             {
-                string sql = "UPDATE s_session SET s_session_values_c = ?, s_valid_until_d = ? WHERE s_session_id_c = ?";
-                ADataBase.ExecuteNonQuery(sql, ADataBase.Transaction, parameters);
+                sql = "UPDATE PUB_s_session SET s_session_values_c = ?, s_valid_until_d = ? WHERE s_session_id_c = ?";
             }
             else
             {
-                string sql = "INSERT INTO s_session (s_session_values_c, s_valid_until_d, s_session_id_c) VALUES (?,?,?)";
-                ADataBase.ExecuteNonQuery(sql, ADataBase.Transaction, parameters);
+                sql = "INSERT INTO PUB_s_session (s_session_values_c, s_valid_until_d, s_session_id_c) VALUES (?,?,?)";
             }
+
+            ADataBase.ExecuteNonQuery(sql, ADataBase.Transaction, parameters);
 
             SetSessionValues(ASessionID, ASession);
         }
@@ -334,7 +330,6 @@ namespace Ict.Common.Session
             if (sessionID == string.Empty)
             {
                 TLogging.LogAtLevel(1, "GetSessionID: sessionID == string.Empty! --> creating new session");
-                TLogging.LogAtLevel(1, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
                 sessionID = Guid.NewGuid().ToString();
 
                 if (HttpContext.Current != null)
@@ -342,10 +337,14 @@ namespace Ict.Common.Session
                     HttpContext.Current.Request.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
                     HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
                 }
+                else
+                {
+                    TLogging.LogAtLevel(4, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
+                    InitThread(sessionID);
+                }
 
                 TLogging.LogAtLevel(1, "GetSessionID: new sessionID = " + sessionID);
 
-                InitThread(sessionID);
             }
             else
             {
