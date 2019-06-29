@@ -57,8 +57,8 @@ namespace Ict.Petra.Server.App.Core.Security
                 AMessageLine1,
                 AMessageLine2,
                 AMessageLine3,
-                UserInfo.GUserInfo.UserID,
-                UserInfo.GUserInfo.ProcessID);
+                UserInfo.GetUserInfo().UserID,
+                UserInfo.GetUserInfo().ProcessID);
         }
 
         /// <summary>

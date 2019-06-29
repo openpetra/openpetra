@@ -131,7 +131,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // calculates each step's (optional and non-optional) percentage for the progress tracker
             TrackerPercent = 100 / (NumberOfCategories + 3);
@@ -3419,7 +3419,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             MergeRow.MergeTo = AToPartnerKey;
-            MergeRow.MergedBy = UserInfo.GUserInfo.UserID;
+            MergeRow.MergedBy = UserInfo.GetUserInfo().UserID;
             MergeRow.MergeDate = DateTime.Now;
 
             MergeTable.ThrowAwayAfterSubmitChanges = true;
@@ -3681,18 +3681,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         private static void MergeRecentAndLastPartnerInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
             // set user user defaults
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, AToPartnerKey);
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, AToPartnerKey);
-            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, AToPartnerKey);
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, AToPartnerKey, false, ATransaction.DataBaseObj);
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, AToPartnerKey, false, ATransaction.DataBaseObj);
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, AToPartnerKey, false, ATransaction.DataBaseObj);
 
             // if Partner is a conference then change LastConferenceWorkedWith to 0
             if (PcConferenceAccess.Exists(AFromPartnerKey, ATransaction))
             {
-                TUserDefaults.SetDefault(MSysManConstants.CONFERENCE_LASTCONFERENCEWORKEDWITH, 0);
+                TUserDefaults.SetDefault(MSysManConstants.CONFERENCE_LASTCONFERENCEWORKEDWITH, 0, false, ATransaction.DataBaseObj);
             }
 
             PRecentPartnersTable RecentPartnersTable = PRecentPartnersAccess.LoadByPrimaryKey(
-                Ict.Petra.Shared.UserInfo.GUserInfo.UserID, AFromPartnerKey, ATransaction);
+                Ict.Petra.Shared.UserInfo.GetUserInfo().UserID, AFromPartnerKey, ATransaction);
 
             // if a RecentPartners record exists for From Partner... delete.
             if (RecentPartnersTable.Rows.Count > 0)

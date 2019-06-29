@@ -31,8 +31,10 @@ using System.Text;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
@@ -53,7 +55,7 @@ namespace Ict.Petra.Server.app.JSClient
         /// <summary>
         /// checks if the user has access to the navigation node
         /// </summary>
-        public static bool HasAccessPermission(XmlNode ANode, string AUserId, bool ACheckLedgerPermissions)
+        public static bool HasAccessPermission(XmlNode ANode, TPetraPrincipal AUserInfo, bool ACheckLedgerPermissions)
         {
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
 
@@ -63,7 +65,7 @@ namespace Ict.Petra.Server.app.JSClient
             {
                 string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired);
 
-                if (!UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                if (!AUserInfo.IsInModule(PermissionRequired))
                 {
                     return false;
                 }
@@ -78,7 +80,7 @@ namespace Ict.Petra.Server.app.JSClient
 
                     if (LedgerNumber != -1)
                     {
-                        if (!UserInfo.GUserInfo.IsInModule(FormatLedgerNumberForModuleAccess(LedgerNumber)))
+                        if (!AUserInfo.IsInModule(FormatLedgerNumberForModuleAccess(LedgerNumber)))
                         {
                             return false;
                         }
@@ -96,6 +98,7 @@ namespace Ict.Petra.Server.app.JSClient
             ALedgerRow ProcessedLedger;
             XmlAttribute enabledAttribute;
             bool LedgersAvailableToUserCreatedInThisIteration = false;
+            TPetraPrincipal userinfo = UserInfo.GetUserInfo();
 
             //Iterate through all children nodes of the node
             while (childNode != null)
@@ -146,7 +149,7 @@ namespace Ict.Petra.Server.app.JSClient
                             }
 
                             // Check access permission for Ledger
-                            if (!HasAccessPermission(SpecificLedgerNode, UserInfo.GUserInfo.UserID, true))
+                            if (!HasAccessPermission(SpecificLedgerNode, userinfo, true))
                             {
                                 enabledAttribute = childNode.OwnerDocument.CreateAttribute("Enabled");
                                 enabledAttribute.Value = "false";
@@ -203,7 +206,7 @@ namespace Ict.Petra.Server.app.JSClient
                     else if (AAvailableLedgers.Rows.Count == 1)
                     {
                         // Check access permission for Ledger
-                        if (UserInfo.GUserInfo.IsInModule(FormatLedgerNumberForModuleAccess(AAvailableLedgers[0].LedgerNumber)))
+                        if (userinfo.IsInModule(FormatLedgerNumberForModuleAccess(AAvailableLedgers[0].LedgerNumber)))
                         {
                             // Set the 'Current Ledger' to the only Ledger of the Site.
                             FCurrentLedger = AAvailableLedgers[0].LedgerNumber;
@@ -247,7 +250,7 @@ namespace Ict.Petra.Server.app.JSClient
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
 
-            if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+            if (UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
             {
                 AvailableLedgers = TGLSetupWebConnector.GetAvailableLedgers();
             }
@@ -265,6 +268,8 @@ namespace Ict.Petra.Server.app.JSClient
         /// </summary>
         public static Dictionary<string, object> LoadNavigationUI(bool ADontUseDefaultLedger = false)
         {
+            TPetraPrincipal userinfo = UserInfo.GetUserInfo();
+
             // Force re-calculation of available Ledgers and correct setting of FCurrentLedger
             FLedgersAvailableToUser = null;
 
@@ -275,7 +280,7 @@ namespace Ict.Petra.Server.app.JSClient
 
             while (DepartmentNode != null)
             {
-                result.Add(DepartmentNode.Name, AddFolder(DepartmentNode, UserInfo.GUserInfo.UserID));
+                result.Add(DepartmentNode.Name, AddFolder(DepartmentNode, userinfo));
 
                 DepartmentNode = DepartmentNode.NextSibling;
             }
@@ -295,7 +300,7 @@ namespace Ict.Petra.Server.app.JSClient
             }
         }
 
-        private static Dictionary<string, object> AddFolder(XmlNode AFolderNode, string AUserId)
+        private static Dictionary<string, object> AddFolder(XmlNode AFolderNode, TPetraPrincipal AUserInfo)
         {
             // TODO icon?
 
@@ -308,7 +313,7 @@ namespace Ict.Petra.Server.app.JSClient
             }
             else
             {
-                enabled = HasAccessPermission(AFolderNode, AUserId, false);
+                enabled = HasAccessPermission(AFolderNode, AUserInfo, false);
             }
 
             Dictionary<string, object> folder = new Dictionary<string, object>();
@@ -456,7 +461,7 @@ namespace Ict.Petra.Server.app.JSClient
 
             if (SectionNode != null)
             {
-                ScreenContent.Append(AddSection(ANavigationPage, SectionNode, UserInfo.GUserInfo.UserID));
+                ScreenContent.Append(AddSection(ANavigationPage, SectionNode, UserInfo.GetUserInfo().UserID));
             }
             else
             {

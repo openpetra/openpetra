@@ -134,9 +134,13 @@ namespace Ict.Petra.Shared.Security
         /// <returns>True if the user has access permissions.  Otherwise the method throws a ESecurityModuleAccessDeniedException exception.</returns>
         public static bool CheckUserModulePermissions(string AModuleExpression, string AModuleAccessExceptionContext = "")
         {
-            if (UserInfo.GUserInfo == null && AModuleExpression != "NONE")
+            string Message = String.Empty;
+
+            if (UserInfo.GetUserInfo() == null && AModuleExpression != "NONE")
             {
-                throw new Exception("Only authenticated users are allowed to use this function");
+                Message = "Only authenticated users are allowed to use this function";
+                TLogging.Log("CheckUserModulePermissions: " + Message);
+                throw new Exception(Message);
             }
 
             if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
@@ -156,14 +160,14 @@ namespace Ict.Petra.Shared.Security
 
                 foreach (string module in modules)
                 {
-                    if (!UserInfo.GUserInfo.IsInModule(module))
+                    if (!UserInfo.GetUserInfo().IsInModule(module))
                     {
                         if (AModuleExpression.StartsWith("AND("))
                         {
                             throw new ESecurityModuleAccessDeniedException(String.Format(
                                     Catalog.GetString("No access for user {0} to module {1}."),
-                                    UserInfo.GUserInfo.UserID, module),
-                                UserInfo.GUserInfo.UserID, module, AModuleAccessExceptionContext);
+                                    UserInfo.GetUserInfo().UserID, module),
+                                UserInfo.GetUserInfo().UserID, module, AModuleAccessExceptionContext);
                         }
                     }
                     else
@@ -174,10 +178,13 @@ namespace Ict.Petra.Shared.Security
 
                 if (AModuleExpression.StartsWith("OR(") && !oneTrue)
                 {
-                    throw new ESecurityModuleAccessDeniedException(String.Format(
+                    Message = String.Format(
                             Catalog.GetString("No access for user {0} to either of the modules {1}."),
-                            UserInfo.GUserInfo.UserID, modulesList),
-                        UserInfo.GUserInfo.UserID, modulesList, AModuleAccessExceptionContext);
+                            UserInfo.GetUserInfo().UserID, modulesList);
+                    TLogging.Log("CheckUserModulePermissions: " + Message);
+
+                    throw new ESecurityModuleAccessDeniedException(Message,
+                        UserInfo.GetUserInfo().UserID, modulesList, AModuleAccessExceptionContext);
                 }
 
                 return true;
@@ -200,12 +207,15 @@ namespace Ict.Petra.Shared.Security
                     throw new ArgumentException("There is a Comma in the wrong place");
                 }
 
-                if (!UserInfo.GUserInfo.IsInModule(ModuleName))
+                if (!UserInfo.GetUserInfo().IsInModule(ModuleName))
                 {
-                    throw new ESecurityModuleAccessDeniedException(String.Format(
+                    Message = String.Format(
                             Catalog.GetString("No access for user {0} to {1}."),
-                            UserInfo.GUserInfo.UserID, GetModuleOrLedger(ModuleName)),
-                        UserInfo.GUserInfo.UserID, ModuleName, AModuleAccessExceptionContext);
+                            UserInfo.GetUserInfo().UserID, GetModuleOrLedger(ModuleName));
+                    TLogging.Log("CheckUserModulePermissions: " + Message);
+
+                    throw new ESecurityModuleAccessDeniedException(Message,
+                        UserInfo.GetUserInfo().UserID, ModuleName, AModuleAccessExceptionContext);
                 }
 
                 return true;

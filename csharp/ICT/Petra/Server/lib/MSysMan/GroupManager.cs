@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Collections;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -43,17 +44,39 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="AUserID"></param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        public static SUserGroupTable LoadUserGroups(String AUserID, TDBTransaction ATransaction)
+        public static string[] LoadUserGroups(String AUserID, TDBTransaction ATransaction)
         {
-            SUserGroupTable ReturnValue;
+            string[] ReturnValue;
+            SUserGroupTable table;
+            Int32 Counter;
+            ArrayList groups;
 
             if (SUserGroupAccess.CountViaSUser(AUserID, ATransaction) > 0)
             {
-                ReturnValue = SUserGroupAccess.LoadViaSUser(AUserID, ATransaction);
+                table = SUserGroupAccess.LoadViaSUser(AUserID, ATransaction);
+
+                // Dimension the ArrayList with the maximum number of Groups first
+                groups = new ArrayList(table.Rows.Count - 1);
+
+                for (Counter = 0; Counter <= table.Rows.Count - 1; Counter += 1)
+                {
+                    groups.Add(table[Counter].GroupId);
+                }
+
+                if (table.Rows.Count != 0)
+                {
+                    // Copy contents of the ArrayList into the ReturnValue
+                    ReturnValue = new string[table.Rows.Count];
+                    Array.Copy(groups.ToArray(), ReturnValue, table.Rows.Count);
+                }
+                else
+                {
+                    ReturnValue = new string[0];
+                }
             }
             else
             {
-                ReturnValue = new SUserGroupTable();
+                ReturnValue = new string[0];
             }
 
             return ReturnValue;

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,48 +29,35 @@ using Ict.Common;
 using Ict.Common.Exceptions;
 using Ict.Common.Session;
 
+using Newtonsoft.Json;
+
 namespace Ict.Common.Remoting.Server
 {
     /// <summary>
-    /// holds some global variables, depending on the current session or thread
+    /// manages access to some session variables
     /// </summary>
     public class DomainManager
     {
-        private static Func <Int64>FGetSiteKeyFromSystemDefaultsCacheDelegate;
-
         /// <summary>Used internally for accessing SiteKey Information (for convenience).</summary>
-        /// <remarks>The SiteKey in OpenPetra is part of the data that is held in the System Defaults and gets returned from
-        /// OpenPetra's server-side System Defaults Cache.
+        /// <remarks>The SiteKey in OpenPetra is part of the data that is held in the System Defaults.
         /// <para><em>Important:</em>The SiteKey can get changed by a user with the necessary priviledges while being logged
         /// in to OpenPetra and any further inquiry of the GSiteKey Property reflects any such change!!!</para></remarks>
         public static Int64 GSiteKey
         {
             get
             {
-                if (FGetSiteKeyFromSystemDefaultsCacheDelegate != null)
+                if (TSession.HasVariable("SiteKey"))
                 {
-                    return FGetSiteKeyFromSystemDefaultsCacheDelegate();
+                    string ClientID = TSession.GetVariable("SiteKey").ToString();
+                    return Convert.ToInt64(ClientID);
                 }
-                else
-                {
-                    throw new Exception("GetSiteKeyFromSystemDefaultsCacheDelegate must be set up, but it isn't!");
-                }
-            }
-        }
 
-        /// <summary>
-        /// Delegate that allows <see cref="DomainManager" /> to access the System Defaults Cache of OpenPetra.
-        /// </summary>
-        public static Func <Int64>GetSiteKeyFromSystemDefaultsCacheDelegate
-        {
-            get
-            {
-                return FGetSiteKeyFromSystemDefaultsCacheDelegate;
+                throw new EOPDBInvalidSessionException("Session is invalid - it does not have a SiteKey");
             }
 
             set
             {
-                FGetSiteKeyFromSystemDefaultsCacheDelegate = value;
+                TSession.SetVariable("SiteKey", value);
             }
         }
 
@@ -103,7 +90,7 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                return (TConnectedClient)TSession.GetVariable("ConnectedClient");
+                return JsonConvert.DeserializeObject<TConnectedClient>(TSession.GetVariant("ConnectedClient").ToJson());
             }
 
             set

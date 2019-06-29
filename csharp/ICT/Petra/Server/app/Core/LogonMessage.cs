@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Security.Principal;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -55,13 +56,14 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// overload. language code is part of TPetraPrincipal
         /// </summary>
-        /// <param name="AUserInfo"></param>
+        /// <param name="AUserID"></param>
         /// <param name="AReturnEnglishIfNotFound"></param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        public String GetLogonMessage(IPrincipal AUserInfo, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction)
+        public String GetLogonMessage(string AUserID, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction)
         {
-            return GetLogonMessage(((TPetraPrincipal)AUserInfo).PetraIdentity.LanguageCode, false, ATransaction);
+            SUserTable user = SUserAccess.LoadByPrimaryKey(AUserID, ATransaction);
+            return GetLogonMessageLanguage(user[0].LanguageCode, false, ATransaction);
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns>The LogonMessage
         /// </returns>
-        public String GetLogonMessage(String ALanguageCode, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction)
+        public String GetLogonMessageLanguage(String ALanguageCode, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction)
         {
             String ReturnValue;
             SLogonMessageTable LogonMessageTable;

@@ -42,8 +42,9 @@
     </fileset>
   </copy>
 
+  <echo message="Restarting the OpenPetra server..."/>
   <exec program="bash"
-    commandline="-c &quot;killall mono; sleep 1; killall mono; sudo systemctl restart openpetra&quot;"/>
+    commandline="-c &quot;sudo systemctl restart openpetra;&quot;"/>
 </target>
 
 <target name="install.js">

@@ -82,6 +82,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         {
             // reset the database, so that there is no consolidated budget
             CommonNUnitFunctions.ResetDatabase();
+            TPetraServerConnector.Connect("../../etc/TestServer.config");
 
             TDataBase db = DBAccess.Connect("T0_Consolidation");
 

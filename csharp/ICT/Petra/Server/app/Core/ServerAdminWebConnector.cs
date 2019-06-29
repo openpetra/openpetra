@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,8 +50,8 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         {
             string WelcomeMessage;
             bool SystemEnabled;
-            IPrincipal LocalUserInfo;
             Int32 ClientID;
+            Int64 SiteKey;
 
             TConnectedClient CurrentClient = TClientManager.ConnectClient(
                 "SYSADMIN", string.Empty,
@@ -62,13 +62,13 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
                 out ClientID,
                 out WelcomeMessage,
                 out SystemEnabled,
-                out LocalUserInfo);
+                out SiteKey);
             TSession.SetVariable("LoggedIn", true);
 
             // the following values are stored in the session object
             DomainManager.GClientID = ClientID;
             DomainManager.CurrentClient = CurrentClient;
-            UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
+            DomainManager.GSiteKey = SiteKey;
 
             return true;
         }

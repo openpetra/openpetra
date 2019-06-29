@@ -152,6 +152,7 @@ namespace Tests.MFinance.Server.Gift
                 new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                 FileContent, null, String.Empty, null, String.Empty, "de-DE",
                 out receiptsPDF, out receiptsBefore);
+            Assert.AreNotEqual(0, receiptsBefore.Trim().Length, "old receipt must not be empty");
 
             int AdjustBatchNumber;
             TAdjustmentWebConnector.GiftRevertAdjust(FLedgerNumber,
@@ -164,10 +165,13 @@ namespace Tests.MFinance.Server.Gift
             GiftBatchTDS BatchTDS = TGiftTransactionWebConnector.LoadGiftTransactionsForBatch(
                 FLedgerNumber, AdjustBatchNumber, out BatchIsUnposted, out CurrencyCode);
 
+            // find the transaction to modify
+            Int32 ToModify = (BatchTDS.AGiftDetail[1].GiftTransactionNumber == 2)?1:0;
+            
             // change the amount from 20 to 25
-            BatchTDS.AGiftDetail[1].GiftTransactionAmount = 25;
+            BatchTDS.AGiftDetail[ToModify].GiftTransactionAmount = 25;
             // the money should go to field 35 instead of field 73
-            BatchTDS.AGiftDetail[1].RecipientKey = 35000000;
+            BatchTDS.AGiftDetail[ToModify].RecipientKey = 35000000;
             // TODO change of donor
             // BatchTDS.Gift[1].DonorKey = 
 
@@ -199,6 +203,8 @@ namespace Tests.MFinance.Server.Gift
                 out receiptsPDF, out receiptsAfter);
             receiptsBefore = THttpBinarySerializer.DeserializeFromBase64(receiptsBefore);
             receiptsAfter = THttpBinarySerializer.DeserializeFromBase64(receiptsAfter);
+
+            TLogging.Log("TestAdjustGiftBatch Diff:");
             TLogging.Log(TTextFile.Diff(receiptsBefore, receiptsAfter));
             string[] diff = TTextFile.Diff(receiptsBefore, receiptsAfter).Trim().Split(Environment.NewLine);
             Assert.AreEqual(6, diff.Length, "difference on receipts are 6 lines");

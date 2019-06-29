@@ -76,6 +76,7 @@ namespace Ict.Common
             // modify current locale for the given language
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(ALanguageCode);
 
+#if USE_GETTEXT_RESOURCEDLL
             string ResourceDllFname = TAppSettingsManager.ApplicationDirectory +
                                       Path.DirectorySeparatorChar +
                                       Thread.CurrentThread.CurrentUICulture.Name +
@@ -91,6 +92,7 @@ namespace Ict.Common
             {
                 TLogging.LogAtLevel(1, "cannot find " + ResourceDllFname);
             }
+#endif
 
             Thread.CurrentThread.CurrentCulture = new CultureInfo(ACultureCode);
         }

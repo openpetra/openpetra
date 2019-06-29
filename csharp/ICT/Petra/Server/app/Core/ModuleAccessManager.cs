@@ -61,8 +61,6 @@ namespace Ict.Petra.Server.App.Core.Security
             {
                 UserModuleAccessPermissionsDT = SUserModuleAccessPermissionAccess.LoadViaSUser(AUserID, ATransaction);
 
-//TLogging.Log("UserModuleAccessPermissionsDT.Rows.Count - 1: " + (UserModuleAccessPermissionsDT.Rows.Count - 1).ToString());
-
                 // Dimension the ArrayList with the maximum number of ModuleAccessPermissions first
                 UserModuleAccessPermissions = new ArrayList(UserModuleAccessPermissionsDT.Rows.Count - 1);
 
@@ -72,8 +70,6 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     if (UserModuleAccessPermissionsDT[CounterOverall].CanAccess)
                     {
-//TLogging.Log("UserModuleAccessPermissionsDT[" + CounterOverall.ToString() + "].ModuleId: " + UserModuleAccessPermissionsDT[CounterOverall].ModuleId + ": CounterAdded: " + CounterAdded.ToString());
-
                         UserModuleAccessPermissions.Add(UserModuleAccessPermissionsDT[CounterOverall].ModuleId);
                         CounterAdded = CounterAdded + 1;
                     }
@@ -84,15 +80,6 @@ namespace Ict.Petra.Server.App.Core.Security
                     // Copy contents of the ArrayList into the ReturnValue
                     ReturnValue = new string[CounterAdded];
                     Array.Copy(UserModuleAccessPermissions.ToArray(), ReturnValue, CounterAdded);
-
-                    // ModulesList := '';
-                    //
-                    // for Counter := 0 to CounterAdded  1 do
-                    // begin
-                    // Console.WriteLine('ModulesList: working on Counter ' + Counter.ToString());
-                    // ModulesList := ModulesList + UserModuleAccessPermissionsArray[Counter].ToString() + #10#13;
-                    // end;
-                    // Console.WriteLine(ModulesList);
                 }
                 else
                 {
@@ -175,7 +162,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     // authenticated user
                     if (moduleExpression == "USER")
                     {
-                        if (UserInfo.GUserInfo != null && UserInfo.GUserInfo.UserID != null)
+                        if (UserInfo.GetUserInfo() != null && UserInfo.GetUserInfo().UserID != null)
                         {
                             return true;
                         }

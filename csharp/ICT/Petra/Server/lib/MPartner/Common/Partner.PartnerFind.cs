@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
+using System.Text;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
@@ -82,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             String FieldList;
             String FromClause;
             String WhereClause;
-            System.Text.StringBuilder sb;
+            StringBuilder sb;
             DataRow CriteriaRow;
             TLogging.LogAtLevel(7, "TPartnerFind.PerformSearch called.");
 
@@ -98,73 +99,86 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             CriteriaRow = ACriteriaData.Rows[0];
 
             // Create Field List
-            sb = new System.Text.StringBuilder();
+            sb = new StringBuilder();
+            StringBuilder groupBy = new StringBuilder();
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_partner_class_c", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.p_partner_class_c, ");
 
             // short
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_partner_short_name_c", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.p_partner_short_name_c, ");
 
             sb.AppendFormat("{0},{1}", "PUB.p_location.p_city_c", Environment.NewLine);
+            groupBy.Append("PUB.p_location.p_city_c, ");
 
             // short
             if (ADetailedResults == true)
             {
                 sb.AppendFormat("{0},{1}", "PUB.p_location.p_postal_code_c", Environment.NewLine);
-            }
+                groupBy.Append("PUB.p_location.p_postal_code_c, ");
 
-            if (ADetailedResults == true)
-            {
                 sb.AppendFormat("{0},{1}", "PUB.p_location.p_locality_c", Environment.NewLine);
+                groupBy.Append("PUB.p_location.p_locality_c, ");
             }
 
             sb.AppendFormat("{0},{1}", "PUB.p_location.p_street_name_c", Environment.NewLine);
+            groupBy.Append("PUB.p_location.p_street_name_c, ");
 
             // short
             if (ADetailedResults == true)
             {
                 sb.AppendFormat("{0},{1}", "PUB.p_location.p_address_3_c", Environment.NewLine);
-            }
+                groupBy.Append("PUB.p_location.p_address_3_c, ");
 
-            if (ADetailedResults == true)
-            {
                 sb.AppendFormat("{0},{1}", "PUB.p_location.p_county_c", Environment.NewLine);
-            }
+                groupBy.Append("PUB.p_location.p_county_c, ");
 
-            if (ADetailedResults == true)
-            {
                 sb.AppendFormat("{0},{1}", "PUB.p_location.p_country_code_c", Environment.NewLine);
+                groupBy.Append("PUB.p_location.p_country_code_c, ");
             }
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_partner_key_n", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.p_partner_key_n, ");
 
             if ((ADetailedResults == true)
                 && ((CriteriaRow["PartnerClass"].ToString() == "PERSON")
                     || (CriteriaRow["PartnerClass"].ToString() == "*")))
             {
                 sb.AppendFormat("{0},{1}", "PUB.p_person.p_family_key_n", Environment.NewLine);
+                groupBy.Append("PUB.p_person.p_family_key_n, ");
                 sb.AppendFormat("{0},{1}", "PUB.p_person.p_date_of_birth_d", Environment.NewLine);
+                groupBy.Append("PUB.p_person.p_date_of_birth_d, ");
             }
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner_location.p_location_type_c", Environment.NewLine);
+            groupBy.Append("PUB.p_partner_location.p_location_type_c, ");
 
             if (ADetailedResults == true)
             {
                 sb.AppendFormat("{0},{1}", "PUB.p_partner.p_previous_name_c", Environment.NewLine);
+                groupBy.Append("PUB.p_partner.p_previous_name_c, ");
             }
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_status_code_c", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.p_status_code_c, ");
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner.p_acquisition_code_c", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.p_acquisition_code_c, ");
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner.s_date_created_d", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.s_date_created_d, ");
             sb.AppendFormat("{0},{1}", "PUB.p_partner.s_created_by_c", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.s_created_by_c, ");
             sb.AppendFormat("{0},{1}", "PUB.p_partner.s_modification_id_t", Environment.NewLine);
+            groupBy.Append("PUB.p_partner.s_modification_id_t, ");
 
             // short
             sb.AppendFormat("{0},{1}", "PUB.p_location.p_location_key_i", Environment.NewLine);
+            groupBy.Append("PUB.p_location.p_location_key_i, ");
 
             // short
             sb.AppendFormat("{0},{1}", "PUB.p_partner_location.p_site_key_n", Environment.NewLine);
+            groupBy.Append("PUB.p_partner_location.p_site_key_n ");
 
             sb.AppendFormat("{0}{1}", "MAX(PUB.a_gift.a_date_entered_d) AS LastGiftDate", Environment.NewLine);
 
@@ -195,7 +209,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.p_partner.p_partner_key_n = PUB.a_gift.p_donor_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift_batch", Environment.NewLine);
-                sb.AppendFormat("{0}{1}", "ON PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift.a_ledger_number_i AND PUB.a_gift_batch.a_batch_number_i AND PUB.a_gift.a_batch_number_i", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift.a_ledger_number_i AND PUB.a_gift_batch.a_batch_number_i = PUB.a_gift.a_batch_number_i", Environment.NewLine);
             }
             else
             {
@@ -210,7 +224,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.p_partner.p_partner_key_n = PUB.a_gift.p_donor_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift_batch", Environment.NewLine);
-                sb.AppendFormat("{0}{1}", "ON PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift.a_ledger_number_i AND PUB.a_gift_batch.a_batch_number_i AND PUB.a_gift.a_batch_number_i", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift.a_ledger_number_i AND PUB.a_gift_batch.a_batch_number_i = PUB.a_gift.a_batch_number_i", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", ", PUB.p_location", Environment.NewLine);
             }
 
@@ -231,7 +245,9 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 WhereClause += " AND " + sbWhereClause.ToString();
             }
 
-            WhereClause += " GROUP BY PUB.p_partner.p_partner_key_n";
+            // need to include all columns in group by that are not in an aggregate function, for PostgreSQL.
+            // see https://stackoverflow.com/questions/19601948/must-appear-in-the-group-by-clause-or-be-used-in-an-aggregate-function
+            WhereClause += " GROUP BY " + groupBy.ToString();
 
             FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(FieldList,
                 FromClause,
@@ -817,7 +833,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
             }
 
@@ -839,7 +855,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
 
                 miParam = new OdbcParameter("", OdbcType.VarChar, 16);
@@ -1009,7 +1025,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 String Criteria = null;
 
                 if (IsDonorSearch
-                    && (!TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_ALLOWPERSONPARTNERSASDONORS, true)))
+                    && (!new TSystemDefaults().GetBooleanDefault(SharedConstants.SYSDEFAULT_ALLOWPERSONPARTNERSASDONORS, true)))
                 {
                     if (Criteria == null)
                     {
@@ -1223,7 +1239,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
             }
 
@@ -1245,7 +1261,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 // user must be current user
                 miParam = new OdbcParameter("", OdbcType.VarChar, 20);
-                miParam.Value = UserInfo.GUserInfo.UserID;
+                miParam.Value = UserInfo.GetUserInfo().UserID;
                 InternalParameters.Add(miParam);
 
                 miParam = new OdbcParameter("", OdbcType.VarChar, 16);

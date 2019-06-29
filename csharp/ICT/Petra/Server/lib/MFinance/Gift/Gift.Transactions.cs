@@ -283,7 +283,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Parameter Arguments
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
             bool TransactionInIntlCurrency = false;
 
             int NewGiftBatchNumber = -1;
@@ -2894,7 +2894,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
                             {
-                                if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
+                                if (TypeRow.TypeCode.StartsWith(TSystemDefaultsConnector.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
                                             "EX-WORKER")))
                                 {
                                     ReturnValue.Rows.Add((object[])Row.ItemArray.Clone());
@@ -2921,7 +2921,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
             batch.DateEffective = giftBatch.GlEffectiveDate;
@@ -3194,7 +3194,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (!ARecurring)
                 {
                     TaxDeductiblePercentageEnabled =
-                        TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                        TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 }
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
@@ -3291,9 +3291,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     parameters.ToArray(), 0, 0);
 
                 // In Austria, the donors may have Govt. Tax Ids:
-                if (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, false))
+                if (TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, false))
                 {
-                    String taxTypeFieldValue = TSystemDefaults.GetStringDefault("GovIdDbKeyName", "bPK");
+                    String taxTypeFieldValue = TSystemDefaultsConnector.GetStringDefault("GovIdDbKeyName", "bPK");
 
                     String query = "SELECT * FROM p_tax WHERE p_tax_type_c='" + taxTypeFieldValue + "' AND p_partner_key_n IN" +
                                    " (SELECT DISTINCT p_donor_key_n FROM a_gift WHERE" +
@@ -5636,7 +5636,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null)
+        private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -5653,9 +5653,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             #endregion Validate Arguments
-
-            TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GetRecipientFundNumberInner");
 
             if (APartnerKey == 0)
             {
@@ -5677,6 +5674,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 return GetRecipientGiftDestination(PersonRow.FamilyKey, AGiftDate);
             }
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetRecipientFundNumberInner", ADataBase);
 
             //Check that LedgerPartnertypes are already loaded
             if ((AMainDS.LedgerPartnerTypes != null) && (AMainDS.LedgerPartnerTypes.Count == 0))
@@ -5708,6 +5708,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 && (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { APartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null))
             {
                 //TODO Warning on inactive Fund from p_partner table
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+
                 return APartnerKey;
             }
 
@@ -5732,10 +5737,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // recursive call until we find a partner that has partnertype LEDGER
-                return GetRecipientFundNumberInner(AMainDS, structureRow.ParentUnitKey);
+                Int64 result = GetRecipientFundNumberInner(AMainDS, structureRow.ParentUnitKey, null, db);
+
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+
+                return result;
             }
             else
             {
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+
                 return APartnerKey;
             }
         }

@@ -119,6 +119,7 @@ namespace Tests.MFinance.Server.Gift
         public void TestAnnualReceipt()
         {
             CommonNUnitFunctions.ResetDatabase();
+            TPetraServerConnector.Connect("../../etc/TestServer.config");
 
             // import a test gift batch
             TVerificationResultCollection VerificationResult;

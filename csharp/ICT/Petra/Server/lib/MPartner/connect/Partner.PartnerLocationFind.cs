@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.StopSearch: Starting StopQuery thread...");
 
             StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
-            StopQueryThread.Name = UserInfo.GUserInfo.UserID + "__ParnterFind_StopSearch_Thread";
+            StopQueryThread.Name = UserInfo.GetUserInfo().UserID + "__ParnterFind_StopSearch_Thread";
             StopQueryThread.Start();
 
             /* It might take some time until the executing query is cancelled by the DB,

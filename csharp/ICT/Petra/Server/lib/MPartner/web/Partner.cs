@@ -84,6 +84,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ResultValue = TRecentPartnersHandling.AddRecentlyUsedPartner
                               (APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse, db);
 
+            db.CloseDBConnection();
+
             return ResultValue;
         }
 

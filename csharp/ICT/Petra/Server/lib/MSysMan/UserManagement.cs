@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 TUserAccountActivityLog.USER_ACTIVITY_PWD_CHANGE_ATTEMPT_BY_SYSADMIN_FOR_NONEXISTING_USER,
                                 String.Format(Catalog.GetString(
                                         "A system administrator, {0}, made an attempt to change a User's password for UserID {1} " +
-                                        "but that user doesn't exist! "), UserInfo.GUserInfo.UserID, AUsername) +
+                                        "but that user doesn't exist! "), UserInfo.GetUserInfo().UserID, AUsername) +
                                 String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                 SubmitChangesTransaction);
 
@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 TUserAccountActivityLog.USER_ACTIVITY_PWD_CHANGE_BY_SYSADMIN,
                                 String.Format(Catalog.GetString(
                                         "The password of user {0} got changed by user {1} (the latter user has got SYSADMIN " +
-                                        "privileges). "), UserDR.UserId, UserInfo.GUserInfo.UserID) +
+                                        "privileges). "), UserDR.UserId, UserInfo.GetUserInfo().UserID) +
                                 String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                 SubmitChangesTransaction);
                         }
@@ -214,7 +214,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // Security check: Is the user that is performing the password change request the current user?
             AUserID = AUserID.ToUpper();
-            if (AUserID != UserInfo.GUserInfo.UserID)
+            if (AUserID != UserInfo.GetUserInfo().UserID)
             {
                 throw new EOPAppException(
                     "The setting of a User's Password must only be done by the user itself, but this isn't the case here and therefore the request gets denied");
@@ -255,7 +255,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 TUserAccountActivityLog.USER_ACTIVITY_PWD_CHANGE_ATTEMPT_BY_USER_FOR_NONEXISTING_USER,
                                 String.Format(Catalog.GetString(
                                         "User {0} tried to make an attempt to change a User's password for UserID {1} " +
-                                        "but that user doesn't exist! "), UserInfo.GUserInfo.UserID, AUserID) +
+                                        "but that user doesn't exist! "), UserInfo.GetUserInfo().UserID, AUserID) +
                                 String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                 SubmitChangesTransaction);
 
@@ -291,7 +291,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                             "User {0} supplied the wrong current password while attempting to change " +
                                             "his/her password! ") +
                                         String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
-                                        UserInfo.GUserInfo.UserID),
+                                        UserInfo.GetUserInfo().UserID),
                                     SubmitChangesTransaction);
 
                                 SubmissionResult = true;
@@ -348,7 +348,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 (APasswordNeedsChanged ? TUserAccountActivityLog.USER_ACTIVITY_PWD_CHANGE_BY_USER_ENFORCED :
                                  TUserAccountActivityLog.USER_ACTIVITY_PWD_CHANGE_BY_USER),
                                 String.Format(Catalog.GetString("User {0} changed his/her password{1}"),
-                                    UserInfo.GUserInfo.UserID,
+                                    UserInfo.GetUserInfo().UserID,
                                     (APasswordNeedsChanged ? Catalog.GetString(" (enforced password change.) ") : ". ")) +
                                 String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                 SubmitChangesTransaction);
@@ -548,7 +548,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     TUserAccountActivityLog.AddUserAccountActivityLogEntry(newUser.UserId,
                         TUserAccountActivityLog.USER_ACTIVITY_USER_RECORD_CREATED,
                         String.Format(Catalog.GetString("The user record for the new user {0} got created by user {1}. "),
-                            newUser.UserId, UserInfo.GUserInfo.UserID) +
+                            newUser.UserId, UserInfo.GetUserInfo().UserID) +
                         String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                         ReadWriteTransaction);
 
@@ -1044,11 +1044,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     return false;
                 } else {
                     Transaction.Rollback();
-                    TPetraIdentity PetraIdentity = new TPetraIdentity(
-                        AUserID, "", "", "", "",
-                        DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
-                        0, -1, -1, false, false, false);
-                    UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+                    UserInfo.SetUserInfo(new TPetraPrincipal(AUserID));
                     
                     if (SetUserPassword(AUserID,
                         ANewPassword,
@@ -1162,7 +1158,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                         TUserAccountActivityLog.AddUserAccountActivityLogEntry(user.UserId,
                                             TUserAccountActivityLog.USER_ACTIVITY_USER_ACCOUNT_GOT_LOCKED,
                                             String.Format(
-                                                StrUserChangedOtherUsersLockedState, UserInfo.GUserInfo.UserID,
+                                                StrUserChangedOtherUsersLockedState, UserInfo.GetUserInfo().UserID,
                                                 user.UserId, Catalog.GetString("locked")) +
                                             String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                             SubmitChangesTransaction);
@@ -1172,7 +1168,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                         TUserAccountActivityLog.AddUserAccountActivityLogEntry(user.UserId,
                                             TUserAccountActivityLog.USER_ACTIVITY_USER_ACCOUNT_GOT_UNLOCKED,
                                             String.Format(
-                                                StrUserChangedOtherUsersLockedState, UserInfo.GUserInfo.UserID,
+                                                StrUserChangedOtherUsersLockedState, UserInfo.GetUserInfo().UserID,
                                                 user.UserId, Catalog.GetString("unlocked")) +
                                             String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                             SubmitChangesTransaction);
@@ -1200,7 +1196,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                         TUserAccountActivityLog.AddUserAccountActivityLogEntry(user.UserId,
                                             TUserAccountActivityLog.USER_ACTIVITY_USER_GOT_RETIRED,
                                             String.Format(
-                                                StrUserChangedOtherUsersRetiredState, UserInfo.GUserInfo.UserID,
+                                                StrUserChangedOtherUsersRetiredState, UserInfo.GetUserInfo().UserID,
                                                 user.UserId, Catalog.GetString("retired")) +
                                             String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                             SubmitChangesTransaction);
@@ -1210,7 +1206,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                         TUserAccountActivityLog.AddUserAccountActivityLogEntry(user.UserId,
                                             TUserAccountActivityLog.USER_ACTIVITY_USER_GOT_UNRETIRED,
                                             String.Format(
-                                                StrUserChangedOtherUsersRetiredState, UserInfo.GUserInfo.UserID,
+                                                StrUserChangedOtherUsersRetiredState, UserInfo.GetUserInfo().UserID,
                                                 user.UserId, Catalog.GetString("no longer retired")) +
                                             String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                                             SubmitChangesTransaction);

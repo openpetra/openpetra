@@ -186,6 +186,7 @@ namespace Tests.MFinance.Server.ICH
 
             // otherwise period 1 might have been closed already
             CommonNUnitFunctions.ResetDatabase();
+            TPetraServerConnector.Connect("../../etc/TestServer.config");
 
             // need to create gifts first
             TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);

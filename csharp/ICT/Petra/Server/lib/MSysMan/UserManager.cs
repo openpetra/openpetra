@@ -98,15 +98,14 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         [NoRemoting]
         internal static SUserRow LoadUser(String AUserID, out TPetraPrincipal APetraPrincipal, TDBTransaction ATransaction)
         {
-            SUserRow ReturnValue;
+            SUserRow ReturnValue = LoadUser(AUserID, ATransaction);
 
-            TPetraIdentity PetraIdentity;
-
-            ReturnValue = LoadUser(AUserID, out PetraIdentity, ATransaction);
-
-            APetraPrincipal = new TPetraPrincipal(PetraIdentity, TGroupManager.LoadUserGroups(
-                    AUserID, ATransaction), TTableAccessPermissionManager.LoadTableAccessPermissions(
+            APetraPrincipal = new TPetraPrincipal(AUserID, TGroupManager.LoadUserGroups(
                     AUserID, ATransaction), TModuleAccessManager.LoadUserModules(AUserID, ATransaction));
+            if (!ReturnValue.IsPartnerKeyNull())
+            {
+                APetraPrincipal.PartnerKey = ReturnValue.PartnerKey;
+            }
 
 /*
  *          TLogging.LogAtLevel (8, "APetraPrincipal.IsTableAccessOK(tapMODIFY, 'p_person'): " +
@@ -119,21 +118,13 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// Loads the details of the user from the s_user DB Table.
         /// </summary>
         /// <param name="AUserID">User ID to load the details for.</param>
-        /// <param name="APetraIdentity">An instance of <see cref="TPetraIdentity"/> that is populated according
-        /// to data in the s_user record.</param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns>s_user record of the User (if the user exists).</returns>
         /// <exception cref="EUserNotExistantException">Throws <see cref="EUserNotExistantException"/> if the user
         /// doesn't exist!</exception>
         [NoRemoting]
-        private static SUserRow LoadUser(String AUserID, out TPetraIdentity APetraIdentity, TDBTransaction ATransaction)
+        private static SUserRow LoadUser(String AUserID, TDBTransaction ATransaction)
         {
-            SUserRow ReturnValue;
-            SUserTable UserDT = null;
-            SUserRow UserDR;
-            DateTime LastLoginDateTime;
-            DateTime FailedLoginDateTime;
-
             // Check if user exists in s_user DB Table
             if (!SUserAccess.Exists(AUserID, ATransaction))
             {
@@ -141,50 +132,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
 
             // User exists, so load User record
-            UserDT = SUserAccess.LoadByPrimaryKey(AUserID, ATransaction);
+            SUserTable UserDT = SUserAccess.LoadByPrimaryKey(AUserID, ATransaction);
 
-            UserDR = UserDT[0];
-
-            if (!UserDR.IsFailedLoginDateNull())
-            {
-                FailedLoginDateTime = UserDR.FailedLoginDate.Value;
-                FailedLoginDateTime = FailedLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.FailedLoginTime));
-            }
-            else
-            {
-                FailedLoginDateTime = DateTime.MinValue;
-            }
-
-            if (!UserDR.IsLastLoginDateNull())
-            {
-                LastLoginDateTime = UserDR.LastLoginDate.Value;
-                LastLoginDateTime = LastLoginDateTime.AddSeconds(Convert.ToDouble(UserDR.LastLoginTime));
-            }
-            else
-            {
-                LastLoginDateTime = DateTime.MinValue;
-            }
-
-            Int64 PartnerKey;
-
-            if (!UserDR.IsPartnerKeyNull())
-            {
-                PartnerKey = UserDR.PartnerKey;
-            }
-            else
-            {
-                // to make it not match PartnerKey 0, which might be stored in the DB or in a variable
-                PartnerKey = -1;
-            }
-
-            // Create PetraIdentity
-            APetraIdentity = new Ict.Petra.Shared.Security.TPetraIdentity(
-                AUserID.ToUpper(), UserDR.LastName, UserDR.FirstName, UserDR.LanguageCode, UserDR.AcquisitionCode, DateTime.MinValue,
-                LastLoginDateTime, FailedLoginDateTime, UserDR.FailedLogins, PartnerKey, UserDR.DefaultLedgerNumber, UserDR.AccountLocked,
-                UserDR.Retired, UserDR.CanModify);
-            ReturnValue = UserDR;
-
-            return ReturnValue;
+            return UserDT[0];
         }
 
         /// <summary>
@@ -227,9 +177,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// <param name="AClientIPAddress">IP Address of the Client Computer that the authentication request came from.</param>
         /// <param name="ASystemEnabled">True if the system is enabled, otherwise false.</param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
-        /// <returns>An instance of <see cref="TPetraPrincipal"/> if the authentication was successful, otherwise null.</returns>
         [NoRemoting]
-        public static TPetraPrincipal PerformUserAuthentication(String AUserID, String APassword,
+        public static bool PerformUserAuthentication(String AUserID, String APassword,
             string AClientComputerName, string AClientIPAddress, out Boolean ASystemEnabled,
             TDBTransaction ATransaction)
         {
@@ -276,12 +225,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
             catch (EUserNotExistantException)
             {
-                TPetraIdentity PetraIdentity = new TPetraIdentity(
-                    "SYSADMIN", "", "", "", "",
-                    DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
-                    0, -1, -1, false, false, false);
-
-                UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+                // pass ATransaction
+                UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"), ATransaction.DataBaseObj);
 
                 // Logging
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
@@ -294,7 +239,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 throw;
             }
 
-            UserInfo.GUserInfo = PetraPrincipal;
+            // pass ATransaction
+            UserInfo.SetUserInfo(PetraPrincipal, ATransaction.DataBaseObj);
 
             if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
@@ -356,9 +302,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // IMPORTANT: We perform these checks only AFTER the check for the correctness of the password so that every
             // log-in attempt that gets rejected on grounds of a wrong password takes the same amount of time (to help prevent
             // an attack vector called 'timing attack')
-            if (PetraPrincipal.PetraIdentity.AccountLocked || PetraPrincipal.PetraIdentity.Retired)
+            if (UserDR.AccountLocked || UserDR.Retired)
             {
-                if (PetraPrincipal.PetraIdentity.AccountLocked)
+                if (UserDR.AccountLocked)
                 {
                     // Logging
                     TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_LOCKED_USER,
@@ -466,10 +412,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             SaveUser(AUserID, (SUserTable)UserDR.Table, ATransaction);
 
-            PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
-
-            //PetraPrincipal.PetraIdentity.FailedLogins = 0;
-
             // TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
 
             if (PetraPrincipal.IsInGroup("SYSADMIN"))
@@ -499,7 +441,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 PetraPrincipal.LoginMessage = SharedConstants.LOGINMUSTCHANGEPASSWORD;
             }
 
-            return PetraPrincipal;
+            return true;
         }
 
         /// <summary>
@@ -516,7 +458,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         {
             int AProcessID;
             int FailedLoginsUntilAccountGetsLocked =
-                TSystemDefaults.GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED, 10);
+                TSystemDefaultsConnector.GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED, 10);
             bool AccountLockedAtThisAttempt = false;
 
             // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +
@@ -627,25 +569,27 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         }
 
         /// <summary>
-        /// Causes an immediately reload of the UserInfo that is stored in a global
-        /// variable.
+        /// Causes an immediately reload of the UserInfo that is stored in the session
         /// </summary>
         [RequireModulePermission("NONE")]
-        public static TPetraPrincipal ReloadCachedUserInfo()
+        public static TPetraPrincipal ReloadUserInfo()
         {
-            TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("ReloadCachedUserInfo");
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("ReloadUserInfo");
             TPetraPrincipal UserDetails = null;
+            bool SubmitOK = false;
 
             try
             {
-                db.ReadTransaction(ref ReadTransaction,
+                db.WriteTransaction(ref Transaction, ref SubmitOK,
                     delegate
                     {
-                        LoadUser(UserInfo.GUserInfo.UserID, out UserDetails, ReadTransaction);
+                        LoadUser(UserInfo.GetUserInfo().UserID, out UserDetails, Transaction);
                     });
 
-                UserInfo.GUserInfo = UserDetails;
+                UserInfo.SetUserInfo(UserDetails, Transaction.DataBaseObj);
+
+                SubmitOK = true;
             }
             catch (Exception Exp)
             {
@@ -653,7 +597,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 throw;
             }
 
-            return UserInfo.GUserInfo;
+            return UserDetails;
         }
 
         /// <summary>
@@ -747,8 +691,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// <param name="AClientIPAddress">IP Address of the Client Computer that the authentication request came from.</param>
         /// <param name="ASystemEnabled">True if the system is enabled, otherwise false.</param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
-        /// <returns>An instance of <see cref="TPetraPrincipal"/> if the authentication was successful, otherwise null.</returns>
-        public IPrincipal PerformUserAuthentication(string AUserID, string APassword,
+        public bool PerformUserAuthentication(string AUserID, string APassword,
             string AClientComputerName, string AClientIPAddress,
             out Boolean ASystemEnabled,
             TDBTransaction ATransaction)

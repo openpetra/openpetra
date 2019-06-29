@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Security;
 
@@ -60,8 +61,9 @@ namespace Ict.Petra.Shared.MPartner
         public static TPartnerAccessLevelEnum CanAccessPartner(PPartnerRow APartnerRow, bool AIsFoundation,
             PFoundationRow AFoundationRow)
         {
+            TPetraPrincipal userinfo = UserInfo.GetUserInfo();
             if ((APartnerRow.Restricted == PARTNER_RESTRICTED_TO_USER)
-                && !((APartnerRow.UserId == UserInfo.GUserInfo.UserID) || UserInfo.GUserInfo.IsInModule("SYSMAN")))
+                && !((APartnerRow.UserId == userinfo.UserID) || userinfo.IsInModule("SYSMAN")))
             {
                 TLogging.LogAtLevel(6,
                     "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to User " +
@@ -69,7 +71,7 @@ namespace Ict.Petra.Shared.MPartner
                 return TPartnerAccessLevelEnum.palRestrictedToUser;
             }
             else if ((APartnerRow.Restricted == PARTNER_RESTRICTED_TO_GROUP)
-                     && !((UserInfo.GUserInfo.IsInGroup(APartnerRow.GroupId)) || UserInfo.GUserInfo.IsInModule("SYSMAN")))
+                     && !((userinfo.IsInGroup(APartnerRow.GroupId)) || userinfo.IsInModule("SYSMAN")))
             {
                 TLogging.LogAtLevel(6,
                     "CanAccessPartner: Access DENIED - Partner " + APartnerRow.PartnerKey.ToString() + " is restriced to Group " +
@@ -174,6 +176,7 @@ namespace Ict.Petra.Shared.MPartner
         public static bool CheckFoundationSecurity(Int64 AFoundationOwner1Key, Int64 AFoundationOwner2Key)
         {
             Boolean ReturnValue;
+            TPetraPrincipal userinfo = UserInfo.GetUserInfo();
 
             ReturnValue = false;
 
@@ -181,8 +184,8 @@ namespace Ict.Petra.Shared.MPartner
             {
                 TLogging.Log("CheckFoundationSecurity: None of the Owners is set.");
 
-                if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER)
-                    || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN)))
+                if (userinfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER)
+                    || (userinfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN)))
                 {
                     TLogging.Log("CheckFoundationSecurity: User is member of DEVUSER or DEVADMIN Module");
                     ReturnValue = true;
@@ -192,7 +195,7 @@ namespace Ict.Petra.Shared.MPartner
             {
                 TLogging.Log("CheckFoundationSecurity: One of the Owners is set!");
 
-                if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))
+                if (userinfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))
                 {
                     TLogging.Log("CheckFoundationSecurity: User is member of DEVADMIN Module");
                     ReturnValue = true;
@@ -201,8 +204,8 @@ namespace Ict.Petra.Shared.MPartner
                 {
                     TLogging.Log("CheckFoundationSecurity: User is NOT member of DEVADMIN Module");
 
-                    if ((UserInfo.GUserInfo.PetraIdentity.PartnerKey == AFoundationOwner1Key)
-                        || (UserInfo.GUserInfo.PetraIdentity.PartnerKey == AFoundationOwner2Key))
+                    if ((userinfo.PartnerKey == AFoundationOwner1Key)
+                        || (userinfo.PartnerKey == AFoundationOwner2Key))
                     {
                         TLogging.Log("CheckFoundationSecurity: User is Owner1 or Owner2");
                         ReturnValue = true;

@@ -74,8 +74,8 @@ namespace Ict.Testing.NUnitPetraServer
             bool CommitLoginTransaction = false;
             bool SystemEnabled;
             string WelcomeMessage;
-            IPrincipal ThisUserInfo;
             Int32 ClientID;
+            Int64 SiteKey;
 
             if (File.Exists(AConfigName))
             {
@@ -101,8 +101,8 @@ namespace Ict.Testing.NUnitPetraServer
             TDataBase db = DBAccess.Connect(
                 "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
 
-            LoginTransaction = db.BeginTransaction(IsolationLevel.RepeatableRead,
-ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (Unit Test Login)");
+            // we need a serializable transaction, to store the session
+            LoginTransaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
@@ -138,21 +138,24 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
                 out ClientID,
                 out WelcomeMessage,
                 out SystemEnabled,
-                out ThisUserInfo);
+                out SiteKey,
+                db);
 
             // the following values are stored in the session object
             DomainManager.GClientID = ClientID;
             DomainManager.CurrentClient = CurrentClient;
-            UserInfo.GUserInfo = (TPetraPrincipal)ThisUserInfo;
+            DomainManager.GSiteKey = SiteKey;
 
             TSetupDelegates.Init();
-            TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
-            DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = 
-                @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
 
-            TUserDefaults.InitializeUnit();
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            db.ReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    StringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ReadTransaction);
+                });
 
-            StringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
+            db.CloseDBConnection();
 
             return (TServerManager)TServerManager.TheServerManager;
         }

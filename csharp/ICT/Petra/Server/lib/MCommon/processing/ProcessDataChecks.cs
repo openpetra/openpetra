@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.IO;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MSysMan.Cacheable.WebConnectors;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
@@ -57,9 +58,7 @@ namespace Ict.Petra.Server.MCommon.Processing
             {
                 DateTime LastRun =
                     TVariant.DecodeFromString(
-
-
-                        TSystemDefaults.GetStringDefault(
+                        TSystemDefaultsConnector.GetStringDefault(
                             PROCESSDATACHECK_LAST_RUN,
                             new TVariant(DateTime.MinValue).EncodeToString())).ToDate();
 
@@ -76,7 +75,7 @@ namespace Ict.Petra.Server.MCommon.Processing
             TLogging.LogAtLevel(1, "TProcessDataChecks.Process: Checking Modules");
             CheckModule(ADataBaseObj, "DataCheck.MPartner.");
 
-            TSystemDefaults.SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString());
+            new TSystemDefaults().SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString(), ADataBaseObj);
         }
 
         private static void CheckModule(TDataBase ADataBaseObj, string AModule)

@@ -113,6 +113,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             AAPInfos APInfos;
 
             CommonNUnitFunctions.ResetDatabase();
+            TPetraServerConnector.Connect();
 
             TDataBase db = DBAccess.Connect("SimpleDocument_ExpectPostingAndPayingWorking");
             TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
@@ -163,6 +164,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal RevalAccountBefore;
 
             CommonNUnitFunctions.ResetDatabase();
+            TPetraServerConnector.Connect();
 
             TDataBase db = DBAccess.Connect("ForeignCurrencySupplier_ExpectDocumentPostingPayingAndReversingWorking");
             TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);
@@ -193,6 +195,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             AAPInfos APInfos;
 
             CommonNUnitFunctions.ResetDatabase();
+            TPetraServerConnector.Connect();
 
             TDataBase db = DBAccess.Connect("ForeignCurrencySupplier_ExpectDocumentPostingPayingAndReversingWorking");
             TDBTransaction transaction = db.BeginTransaction(IsolationLevel.Serializable);

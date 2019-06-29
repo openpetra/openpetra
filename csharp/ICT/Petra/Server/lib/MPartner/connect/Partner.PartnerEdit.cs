@@ -281,9 +281,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     // Get hold of the two tables needed for the banking information:
                     // p_partner_banking_details
                     // p_banking_details
-                    FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                    FTaxDeductiblePercentageEnabled = TSystemDefaultsConnector.GetBooleanDefault(
                         SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-                    FGovIdEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                    FGovIdEnabled = TSystemDefaultsConnector.GetBooleanDefault(
                         SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
                     PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                     PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PTaxRow template = new PTaxTable().NewRowTyped(false);
 
                         template.PartnerKey = FPartnerKey;
-                        template.TaxType = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                        template.TaxType = TSystemDefaultsConnector.GetStringDefault(
                             SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
 
                         PTaxAccess.LoadUsingTemplate(localDS, template, ReadTransaction);
@@ -743,8 +743,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                 if (FPartnerEditScreenDS.POrganisation[0].Foundation)
                                 {
-                                    if (!((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
-                                          || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
+                                    if (!((UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
+                                          || (UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
                                     {
                                         throw new ESecurityScreenAccessDeniedException(
                                             // Some users won't have access to edit partners that are foundations. Foundations are a special type of organisation.
@@ -1092,7 +1092,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             FNewPartnerPartnerKey = APartnerKey;
             FNewPartnerPartnerClass = APartnerClass;
             CreationDate = DateTime.Today;
-            CreationUserID = UserInfo.GUserInfo.UserID;
+            CreationUserID = UserInfo.GetUserInfo().UserID;
 
             // create the FPartnerEditScreenDS DataSet that will later be passed to the Client
             FPartnerEditScreenDS = new PartnerEditTDS(DATASETNAME);
@@ -1109,8 +1109,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     #region Calculations
 
                     // Determine Gift Processing settings
-                    GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                        TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
+                    GiftReceiptingDefaults = TSystemDefaultsConnector.GetStringDefault(
+                        TSystemDefaults.PARTNER_GIFTRECEIPTINGDEFAULTS);
 
                     if (GiftReceiptingDefaults != "")
                     {
@@ -1392,7 +1392,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (APartnerClass == TPartnerClass.PERSON)
                     {
-                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                        if (TSystemDefaultsConnector.GetBooleanDefault(
                                 SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLADDRESSES, false))
                         {
                             // Copy *ALL* Addresses (p_location and p_partner_location records) of the FAMILY of the new PERSON
@@ -1436,7 +1436,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 ReadTransaction);
                         }
 
-                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                        if (TSystemDefaultsConnector.GetBooleanDefault(
                                 SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLCONTACTDETAILS, false))
                         {
                             // Copy all Contact Details of the FAMILY to the PERSON (incl. 'Primary Contact Detail', but no
@@ -2816,7 +2816,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     // Partner Status is PRIVATE > update related fields
                     APartnerTableSubmitDT[0].Restricted = SharedConstants.PARTNER_PRIVATE_USER;
-                    APartnerTableSubmitDT[0].UserId = UserInfo.GUserInfo.UserID;
+                    APartnerTableSubmitDT[0].UserId = UserInfo.GetUserInfo().UserID;
                 }
                 else
                 {

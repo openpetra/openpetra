@@ -50,7 +50,7 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// Authenticates a user.
         /// </summary>
-        IPrincipal PerformUserAuthentication(string AUserName, string APassword,
+        bool PerformUserAuthentication(string AUserName, string APassword,
             string AClientComputerName, string AClientIPAddress,
             out Boolean ASystemEnabled,
             TDBTransaction ATransaction);
@@ -137,27 +137,13 @@ namespace Ict.Common.Remoting.Server
     }
 
     /// <summary>
-    /// an interface for retrieving a welcome message from the databse
+    /// an interface for retrieving a welcome message from the database
     /// </summary>
     public interface IMaintenanceLogonMessage
     {
         /// <summary>
         /// get a welcome message
         /// </summary>
-        string GetLogonMessage(IPrincipal UserInfo, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction);
-    }
-
-    /// an interface for system defaults cache
-    public interface ISystemDefaultsCache
-    {
-        /// <summary>
-        /// get boolean default value
-        /// </summary>
-        bool GetBooleanDefault(String AKey, bool ADefault);
-
-        /// <summary>
-        /// get int default
-        /// </summary>
-        System.Int64 GetInt64Default(String AKey);
+        string GetLogonMessage(string AUserID, bool AReturnEnglishIfNotFound, TDBTransaction ATransaction);
     }
 }

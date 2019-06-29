@@ -599,7 +599,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             )
         {
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             AGiftDetailRow giftDetail = AMainDS.AGiftDetail.NewRowTyped(true);
 

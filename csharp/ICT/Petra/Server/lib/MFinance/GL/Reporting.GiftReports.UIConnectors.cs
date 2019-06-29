@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
                         "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
                         " AND p_partner_type.p_type_code_c LIKE '" +
-                        TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
+                        TSystemDefaultsConnector.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
                         ") THEN True ELSE False END AS EXWORKER, " +
 
                         // true if the gift is restricted for the user
@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
                         " AND s_group_gift.a_batch_number_i = " + BatchNumber +
                         " AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
-                        " AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
+                        " AND s_user_group.s_user_id_c = '" + UserInfo.GetUserInfo().UserID + "'" +
                         " AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
                         " AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
                         ") THEN False ELSE True END AS ReadAccess " +
@@ -457,7 +457,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String pTaxFieldAsRequired = ", NULL AS TaxRef, NULL AS DOB, NULL AS Email";
                     String pTaxFieldFilterAsRequired = "";
 
-                    if (TSystemDefaults.GetBooleanDefault("GovIdEnabled",
+                    if (TSystemDefaultsConnector.GetBooleanDefault("GovIdEnabled",
                             false))                                               // This gets the Austrian bPK field...
                     {
                         Boolean filterDonorList = false;
@@ -467,7 +467,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             filterDonorList = true;
                         }
 
-                        String taxTypeFieldValue = TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "bPK");
+                        String taxTypeFieldValue = TSystemDefaultsConnector.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "bPK");
                         pTaxFieldAsRequired =
                             ", PUB_p_tax.p_tax_ref_c AS TaxRef, PUB_p_person.p_date_of_birth_d AS DOB, PUB_p_partner_attribute.p_value_c AS Email";
                         Boolean requireBpk = filterDonorList ? AParameters["param_chkRequireBpkCode"].ToBool() : false;
