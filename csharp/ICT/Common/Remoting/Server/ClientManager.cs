@@ -1073,8 +1073,16 @@ namespace Ict.Common.Remoting.Server
 
                             // we could do this directly, or via an interface, similar to LogonMessage, see above
                             string sql = "SELECT s_default_value_c FROM s_system_defaults WHERE s_default_code_c = 'SiteKey'";
-                             
-                            SiteKey = Convert.ToInt64(DBConnectionObj.ExecuteScalar(sql, ReadWriteTransaction));
+
+                            try
+                            {
+                                SiteKey = Convert.ToInt64(DBConnectionObj.ExecuteScalar(sql, ReadWriteTransaction));
+                            }
+                            catch (EOPDBException)
+                            {
+                                // there is no site key defined yet.
+                                SiteKey = -1;
+                            }
                         }
                         catch (Exception)
                         {
