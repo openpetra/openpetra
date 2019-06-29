@@ -78,7 +78,7 @@ namespace Ict.Common.Remoting.Server
             if (FClientTasksManager == null)
             {
                 // TODO: ClientTasks should be stored in the database
-                TLogging.Log("FClientTasksManager is null");
+                TLogging.LogAtLevel(4, "FClientTasksManager is null");
                 return null;
             }
 
