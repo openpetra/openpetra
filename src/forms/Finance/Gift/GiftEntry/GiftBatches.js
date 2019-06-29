@@ -4,6 +4,7 @@
 //       Timotheus Pokorra <tp@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -50,6 +51,7 @@ function display_list(source) {
 		for (item of data.result.AGiftBatch) {
 			format_item(item);
 		}
+		format_currency(data.ACurrencyCode);
 		format_date();
 	})
 }
@@ -78,9 +80,13 @@ function open_gift_transactions(obj, number) {
 	if (obj.find('.collapse').is(':visible') ) {
 		return;
 	}
-	if (obj.find('[batch-status]').text() == "Posted") {
+	if (obj.find('[batch-status]').text() == "Posted" || obj.find('[batch-status]').text() == "Cancelled") {
 		obj.find('.not_show_when_posted').hide();
 	}
+	if (obj.find('[batch-status]').text() != "Posted") {
+		obj.find('.only_show_when_posted').hide();
+	}
+
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -91,6 +97,7 @@ function open_gift_transactions(obj, number) {
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
+		format_currency(data.ACurrencyCode);
 		format_date();
 		$('.tpl_row .collapse').collapse('hide');
 		obj.find('.collapse').collapse('show')
@@ -169,9 +176,14 @@ function edit_batch(batch_id) {
 		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
 
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
-		if (batch['a_batch_status_c'] == "Posted") {
-				tpl_m.find('.posted_readonly').attr('readonly', true);
+		if (parsed.ABatchIsUnposted) {
+			tpl_m.find('.only_show_when_posted').hide();
 		}
+		else {
+				tpl_m.find('.posted_readonly').attr('readonly', true);
+				tpl_m.find('.not_show_when_posted').hide();
+		}
+		
 
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
@@ -202,8 +214,9 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
-		if (searched['a_batch_status_c'] == "Posted") {
+		if (!parsed.ABatchIsUnposted) {
 			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
+			tpl_edit_raw.find('.not_show_when_posted').hide();
 		}
 
 		for (detail of parsed.result.AGiftDetail) {
@@ -239,8 +252,9 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		}
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
-		if (searched['a_batch_status_c'] == "Posted") {
+		if (!parsed.ABatchIsUnposted) {
 			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
+			tpl_edit_raw.find('.not_show_when_posted').hide();
 		}
 
 		$('#modal_space').append(tpl_edit_raw);
@@ -420,6 +434,72 @@ function cancel_batch(batch_id) {
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
+		}
+	});
+}
+
+function export_batch(batch_id) {
+	var r = {
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
+				ABatchNumberStart: batch_id,
+				ABatchNumberEnd: batch_id,
+				ABatchDateFrom: "null",
+				ABatchDateTo: "null",
+				ADateFormatString: "dmy",
+				ASummary: false,
+				AUseBaseCurrency: true,
+				ADateForSummary: "null",
+				ANumberFormat: "European",
+				ATransactionsOnly: true,
+				AExtraColumns: false,
+				ARecipientNumber: 0,
+				AFieldNumber: 0,
+				AIncludeUnposted: true
+			};
+
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportAllGiftBatchData', r).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result > 0) {
+			excelfile = parsed.AExportExcel;
+
+			var a = document.createElement("a");
+			a.style = "display: none";
+			a.href = 'data:application/excel;base64,'+excelfile;
+			a.download = i18next.t('GiftBatch') + '_' + batch_id + '.xlsx';
+
+			// For Mozilla we need to add the link, otherwise the click won't work
+			// see https://support.mozilla.org/de/questions/968992
+			document.body.appendChild(a);
+
+			a.click();
+		}
+		else if (parsed.result < 0) {
+			display_error(parsed.AVerificationMessages);
+		}
+	});
+}
+
+function adjust_batch(batch_id) {
+	var r = {
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
+				ABatchNumber: batch_id,
+				AGiftDetailNumber: -1,
+				ABatchSelected: false,
+				ANewBatchNumber: -1,
+				ANewGLDateEffective: "null",
+				AFunction: "AdjustGift",
+				ANoReceipt: false,
+				ANewPct: 0.0
+			};
+
+	api.post('serverMFinance.asmx/TAdjustmentWebConnector_GiftRevertAdjust', r).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result > 0) {
+			display_message(i18next.t('GiftBatches.success_adjust'), "success");
+			display_list();
+		}
+		else if (parsed.result < 0) {
+			display_error(parsed.AVerificationMessages);
 		}
 	});
 }

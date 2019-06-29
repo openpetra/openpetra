@@ -1,4 +1,5 @@
 <h2>{caption}</h2>
+<link rel="stylesheet" href="/css/autocomplete.css">
 
 <div class="container" id="parameters">
 	<div class="row">
@@ -15,6 +16,17 @@
 		</div>
 		<div class="col">
 			<input type="date" name="AEndDate" id="EndDate">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{one_partner}</span>
+		</div>
+		<div class="col">
+			<div class="autocomplete">
+				<input type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40"><button onclick="$('input[name=p_donor_name_c]').val('');$('input[name=p_donor_name_c]').attr('key-value',0)"><i class="fa fa-close"></i></button
+				<small class="form-text text-muted">{one_partner_help}</small>
+			</div>
 		</div>
 	</div>
 	<div class="row">
@@ -68,6 +80,8 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
 

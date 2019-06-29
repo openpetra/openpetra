@@ -241,7 +241,7 @@ function import_file(self) {
 			"ANumberFormat": "European",
 			"ACurrencyCode": "EUR",
 			"AStartAfterLine": '"Buchungstag";"Wertstellungstag";"Verwendungszweck";"Umsatz";"Währung"',
-			"AColumnMeaning": "unused,DateEffective,Description,Amount,Currency" // TODO
+			"AColumnMeaning": "DateEffective,unused,Description,Amount,Currency" // TODO
 			};
 
 		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCSVFile', p)

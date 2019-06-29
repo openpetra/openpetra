@@ -1,3 +1,59 @@
 
-<br>
+<br/>
 <button type="button" class="btn btn-primary" onclick="month_end()">{end_month}</button>
+<br/>
+<br/>
+
+  <div phantom hidden>
+
+    <div class="row fwd_posting">
+      <div class="col">
+        <span>{LedgerInfo.fwd_posting}</span>
+      </div>
+      <div class="col">
+        <span class="date">{val_AStartDateCurrentPeriod}</span> - <span class="date">{val_AEndDateLastForwardingPeriod}</span>
+      </div>
+    </div>
+
+    <div class="row period">
+      <div class="col">
+        <span>{LedgerInfo.period}</span>
+      </div>
+      <div class="col">
+        <span class="date">{val_AStartDateCurrentPeriod}</span> - <span class="date">{val_AEndDateCurrentPeriod}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="frame">
+
+    <div class="container" style="background:#eee;" id="ledger_info">
+
+      <div class="row">
+        <div class="col">
+          <span>{LedgerInfo.ledger_current_period}</span>
+        </div>
+        <div class="col current_period">
+          <span></span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col period">
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col fwd_posting">
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

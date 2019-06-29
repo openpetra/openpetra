@@ -4,6 +4,7 @@
 //       Timotheus Pokorra <tp@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -68,6 +69,7 @@ function display_list(source) {
 		for (item of data.result.ABatch) {
 			format_item(item);
 		}
+		format_currency(data.ACurrencyCode);
 		format_date();
 	})
 }
@@ -125,6 +127,7 @@ function open_transactions(obj, number) {
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
+		format_currency(data.ACurrencyCode);
 		format_date();
 		$('.tpl_row .collapse').collapse('hide');
 		obj.find('.collapse').collapse('show')

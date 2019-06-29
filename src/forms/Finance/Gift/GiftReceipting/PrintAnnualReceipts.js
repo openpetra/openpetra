@@ -120,7 +120,7 @@ function GenerateAnnualReceiptsRemote() {
 		'ALanguage': currentLng(),
 		'ADeceasedFirst': true,
 		'AExtract': '',
-		'ADonorKey': 0};
+		'ADonorKey': payload['p_donor_key_n']};
 
 	api.post('serverMFinance.asmx/TReceiptingWebConnector_CreateAnnualGiftReceipts', p)
 	.then(function (result) {
