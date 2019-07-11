@@ -118,6 +118,9 @@
         "description": "Beschreibung",
         "import": "Importieren",
         "export": "Exportieren",
+        "yes": "Ja",
+        "no": "Nein",
+        "confirm_title": "Ganz sicher?",
         "save_preset": "Als Voreinstellung speichern",
         "preset": "Voreinstellung"
     },
@@ -499,9 +502,11 @@
       "period":"Zeitspanne der aktuellen Periode"
     },
     "YearEnd": {
+      "confirm_body": "Wollen Sie wirklich das Jahr abschließen?",
       "end_year": "Jahresabschluss durchführen"
     },
     "MonthEnd": {
+      "confirm_body": "Wollen Sie wirklich den Monat abschließen?",
       "end_month": "Monatsabschluss durchführen"
     },
     "AccountTree": {

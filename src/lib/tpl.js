@@ -5,6 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -197,7 +198,7 @@ function format_currency(currencyCode) {
 		function(x, obj) {
 			obj = $(obj);
 			let t = obj.text();
-			if (t == null || t.length <=1) {return}
+			if (t == null || t.length == 0) {return}
 			obj.text(printCurrency(t, currencyCode));
 
 		}
