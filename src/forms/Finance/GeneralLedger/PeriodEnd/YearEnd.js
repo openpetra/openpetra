@@ -22,6 +22,10 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+$('document').ready(function () {
+	updateInfo();
+});
+
 function year_end() {
 
 	let x = {ALedgerNum: window.localStorage.getItem('current_ledger')};
@@ -30,10 +34,46 @@ function year_end() {
 		let s = false;
 		if (parsed.result == true) {
 			display_message( i18next.t('forms.saved'), 'success' )
+			updateInfo();
 		}
 		else {
 			display_error( parsed.AVerificationResult );
 		}
 	});
 
+}
+
+function updateInfo() {
+	let x = {ALedgerNumber: window.localStorage.getItem('current_ledger')};
+	api.post('serverMFinance.asmx/TAPTransactionWebConnector_GetLedgerInfo', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		let ledger = data.result[0];
+		let to_replace = $('#ledger_info').clone();
+		to_replace.find('.current_period').find('span').text( i18next.t( 'LedgerInfo.'+ledger.a_current_period_i+'_month' ) );
+		$('.frame').html( format_tpl( to_replace, ledger ) );
+	});
+
+	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPostingRangeDates', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		$('#ledger_info').find('.fwd_posting').html( format_tpl( $('[phantom] .fwd_posting').clone(), data ) );
+		adjust_date();
+	});
+
+	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPeriodDates', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		$('#ledger_info').find('.period').html( format_tpl( $('[phantom] .period').clone(), data ) );
+		adjust_date();
+	});
+}
+
+function adjust_date() {
+  $('.frame .date').each(function (g, obj) {
+    let object = $(obj);
+    let time = object.text();
+
+    let new_time = new Date(time).toLocaleDateString();
+
+    object.text(new_time);
+    object.removeClass('date');
+  });
 }

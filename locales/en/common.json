@@ -118,6 +118,9 @@
         "description": "Description",
         "import": "Import",
         "export": "Export",
+        "yes": "Yes",
+        "no": "No",
+        "confirm_title": "Are you sure?",
         "save_preset": "Save preset",
         "preset": "Preset"
     },
@@ -501,9 +504,11 @@
     },
 
     "YearEnd": {
-      "end_year": "Close the financial year"
+      "confirm_body": "Do you really want to run the year end?",
+      "end_year": "Run the financial year end"
     },
     "MonthEnd": {
+      "confirm_body": "Do you really want to close this period?",
       "end_month": "Close the current financial period"
     },
     "AccountTree": {
