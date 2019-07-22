@@ -135,7 +135,7 @@ namespace Ict.Tools.CodeChecker
                         && !file.Contains("csharp/ICT/Petra/Tools") && !file.Contains("csharp/ICT/Petra/ServerAdmin"))
                     {
                         bool firstFileMatch = true;
-                        RegExpToFind = new Regex(@"static (?!readonly)(?!partial).*[;=]\n");
+                        RegExpToFind = new Regex(@"static (?!readonly)(?!partial)(?!extern).*[;=]\n");
 
                         foreach (Match matchInfo in RegExpToFind.Matches(contents))
                         {
@@ -152,7 +152,7 @@ namespace Ict.Tools.CodeChecker
                                 TLogging.Log("file " + file);
                             }
 
-                            TLogging.Log("                           match = '" + matchInfo.Value.Trim() + "'");
+                            TLogging.Log("                           " + matchInfo.Value.Trim());
 
                             NumberOfRegExMatches++;
                         }
