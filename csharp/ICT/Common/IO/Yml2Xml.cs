@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -149,7 +149,7 @@ namespace Ict.Common.IO
             }
         }
 
-        private static Int32 DEFAULTINDENT = 4;
+        private const Int32 DEFAULTINDENT = 4;
         private static void WriteXmlNode2Yml(StringBuilder AYmlDocument,
             Int32 ACurrentIndent,
             XmlNode ANode,
@@ -889,13 +889,13 @@ namespace Ict.Common.IO
         }
 
         /// the name used for elements in a list
-        public static string XMLLIST = "XmlList";
+        public const string XMLLIST = "XmlList";
 
         /// the name used for elements in generated xml code
-        public static string XMLELEMENT = "XmlElement";
+        public const string XMLELEMENT = "XmlElement";
 
         /// the name used for root node in generated xml code
-        public static string ROOTNODEINTERNAL = "RootNodeInternal";
+        public const string ROOTNODEINTERNAL = "RootNodeInternal";
 
         /// create an empty xml document, which will be filled with the data from the yaml file
         static public XmlDocument CreateXmlDocument()

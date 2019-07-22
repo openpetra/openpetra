@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.App.Core
             }
         }
 
-        static private int DEBUG_PROGRESS = 1;
+        static private readonly int DEBUG_PROGRESS = 1;
 
         /// <summary>
         /// set the current state

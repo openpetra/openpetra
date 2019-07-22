@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>Resourcestring used for logging purposes.</summary>
         public const string StrAutomaticProcessing = "Automatic Processing";
 
-        private static int MINUTES_DELAY_BETWEEN_INDIV_PROCESSES = 5;
+        private const int MINUTES_DELAY_BETWEEN_INDIV_PROCESSES = 5;
         delegate void TGenericProcessor (object processormethod);
         /// <summary>
         /// delegate for processing

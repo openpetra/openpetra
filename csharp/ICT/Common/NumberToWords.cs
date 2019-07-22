@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,17 +33,17 @@ namespace Ict.Common
     /// </summary>
     public class NumberToWords
     {
-        private static string[] SingleDigitsDE =
+        private static readonly string[] SingleDigitsDE =
         {
             "null", "ein", "zwei", "drei", "vier", "fünf", "sechs", "sieben",
             "acht", "neun"
         };
-        private static string[] TenTo19DE =
+        private static readonly string[] TenTo19DE =
         {
             "zehn", "elf", "zwölf", "dreizehn", "vierzehn", "fünfzehn", "sechzehn",
             "siebzehn", "achtzehn", "neunzehn"
         };
-        private static string[] MultiplesOf10DE =
+        private static readonly string[] MultiplesOf10DE =
         {
             "zwanzig", "dreißig", "vierzig", "fünfzig", "sechzig", "siebzig",
             "achtzig", "neunzig"
@@ -104,17 +104,17 @@ namespace Ict.Common
             return Result;
         }
 
-        private static string[] SingleDigitsUK =
+        private static readonly string[] SingleDigitsUK =
         {
             "zero", "one", "two", "three", "four", "five", "six", "seven",
             "eight", "nine"
         };
-        private static string[] TenTo19UK =
+        private static readonly string[] TenTo19UK =
         {
             "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
             "seventeen", "eighteen", "nineteen"
         };
-        private static string[] MultiplesOf10UK =
+        private static readonly string[] MultiplesOf10UK =
         {
             "twenty", "thirty", "fourty", "fifty", "sixty", "seventy",
             "eighty", "ninety"
