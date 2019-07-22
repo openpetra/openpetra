@@ -148,13 +148,6 @@ namespace Ict.Testing.NUnitPetraServer
 
             TSetupDelegates.Init();
 
-            TDBTransaction ReadTransaction = new TDBTransaction();
-            db.ReadTransaction(ref ReadTransaction,
-                delegate
-                {
-                    StringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ReadTransaction);
-                });
-
             db.CloseDBConnection();
 
             return (TServerManager)TServerManager.TheServerManager;
