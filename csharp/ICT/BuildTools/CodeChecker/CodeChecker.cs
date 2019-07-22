@@ -104,6 +104,9 @@ namespace Ict.Tools.CodeChecker
                     DeclareFalsePositives(out FalsePositivesFullMatch, out FalsePositivesEndMatch);
                 }
 
+                bool firstMatchStatic = true;
+                string StaticMessage = "Static Variables are not allowed in ASP.net";
+
                 // Log that we have started a run
                 TLogging.Log("'CODECHECKER' run started at " + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") + Environment.NewLine +
                     "  (" + RegExPatterns.Count.ToString() +
@@ -131,13 +134,25 @@ namespace Ict.Tools.CodeChecker
                     if ((action == "static") && (file.Contains("csharp/ICT/Common") || file.Contains("csharp/ICT/Petra"))
                         && !file.Contains("csharp/ICT/Petra/Tools") && !file.Contains("csharp/ICT/Petra/ServerAdmin"))
                     {
-                        string message = "Static Variables are not allowed in ASP.net";
+                        bool firstFileMatch = true;
                         RegExpToFind = new Regex(@"static (?!readonly)(?!partial).*[;=]\n");
 
                         foreach (Match matchInfo in RegExpToFind.Matches(contents))
                         {
                             // RegEx Match is found, so log this file!
-                            TLogging.Log(file + " -> " + message + " - match = '" + matchInfo.Value.Trim() + "'");
+                            if (firstMatchStatic)
+                            {
+                                firstMatchStatic = false;
+                                TLogging.Log("*****   " + StaticMessage + "   *****");
+                            }
+
+                            if (firstFileMatch)
+                            {
+                                firstFileMatch = false;
+                                TLogging.Log("file " + file);
+                            }
+
+                            TLogging.Log("                           match = '" + matchInfo.Value.Trim() + "'");
 
                             NumberOfRegExMatches++;
                         }
