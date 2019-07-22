@@ -630,7 +630,7 @@ namespace Ict.Common.Printing
         /// <summary>
         /// default printer resolution
         /// </summary>
-        public static Int32 DEFAULTPRINTERRESOLUTION = 300;
+        public const Int32 DEFAULTPRINTERRESOLUTION = 300;
 
         /// <summary>
         /// convert pixels to inches or other unit used for output

@@ -40,7 +40,7 @@ namespace Ict.Common.Printing
         /// <summary>
         /// define the first row in the details to apply to the whole group
         /// </summary>
-        public static string HEADERGROUP = "HEADERGROUP:";
+        public const string HEADERGROUP = "HEADERGROUP:";
 
         /// <summary>
         /// for form letter files, we need to check if there is a template specific for the country or form.
