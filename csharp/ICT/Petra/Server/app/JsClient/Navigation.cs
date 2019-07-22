@@ -47,15 +47,15 @@ namespace Ict.Petra.Server.app.JSClient
     /// </summary>
     public class TUINavigation
     {
-        private static bool FMultiLedgerSite = false;
-        private static List <string>FLedgersAvailableToUser = null;
-        private static int FCurrentLedger = -1;
+        private bool FMultiLedgerSite = false;
+        private List <string>FLedgersAvailableToUser = null;
+        private int FCurrentLedger = -1;
         private const int LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER = -2;
 
         /// <summary>
         /// checks if the user has access to the navigation node
         /// </summary>
-        public static bool HasAccessPermission(XmlNode ANode, TPetraPrincipal AUserInfo, bool ACheckLedgerPermissions)
+        public bool HasAccessPermission(XmlNode ANode, TPetraPrincipal AUserInfo, bool ACheckLedgerPermissions)
         {
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
 
@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.app.JSClient
             return true;
         }
 
-        private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers, bool ADontUseDefaultLedger)
+        private void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers, bool ADontUseDefaultLedger)
         {
             XmlNode childNode = AMenuNode.FirstChild;
             int PotentialCurrentLedger;
@@ -236,7 +236,7 @@ namespace Ict.Petra.Server.app.JSClient
         /// <summary>
         /// build an XML document which includes all ledgers etc.
         /// </summary>
-        public static XmlNode BuildNavigationXml(bool ADontUseDefaultLedger = false)
+        public XmlNode BuildNavigationXml(bool ADontUseDefaultLedger = false)
         {
             string UINavigationFile = TAppSettingsManager.GetValue("UINavigation.File");
 
@@ -266,7 +266,7 @@ namespace Ict.Petra.Server.app.JSClient
         /// <summary>
         /// load the navigation ready to be converted to JSON
         /// </summary>
-        public static Dictionary<string, object> LoadNavigationUI(bool ADontUseDefaultLedger = false)
+        public Dictionary<string, object> LoadNavigationUI(bool ADontUseDefaultLedger = false)
         {
             TPetraPrincipal userinfo = UserInfo.GetUserInfo();
 
@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.app.JSClient
             return result;
         }
 
-        private static string GetCaption(XmlNode ANode, bool AWithoutBrackets=false)
+        private string GetCaption(XmlNode ANode, bool AWithoutBrackets=false)
         {
             if (AWithoutBrackets)
             {
@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.app.JSClient
             }
         }
 
-        private static Dictionary<string, object> AddFolder(XmlNode AFolderNode, TPetraPrincipal AUserInfo)
+        private Dictionary<string, object> AddFolder(XmlNode AFolderNode, TPetraPrincipal AUserInfo)
         {
             // TODO icon?
 
@@ -343,7 +343,7 @@ namespace Ict.Petra.Server.app.JSClient
             return folder;
         }
 
-        private static StringBuilder AddSection(string path, XmlNode ASectionNode, string AUserId)
+        private StringBuilder AddSection(string path, XmlNode ASectionNode, string AUserId)
         {
             // TODO icon?
 
@@ -410,12 +410,12 @@ namespace Ict.Petra.Server.app.JSClient
             return ScreenCode;
         }
 
-        private static string FormatLedgerNumberForModuleAccess(int ALedgerNumber)
+        private string FormatLedgerNumberForModuleAccess(int ALedgerNumber)
         {
             return "LEDGER" + ALedgerNumber.ToString("0000");
         }
 
-        private static XmlNode FindSectionNode(XmlNode ACurrentNode, string[] ATaskName, int ADepth = 0)
+        private XmlNode FindSectionNode(XmlNode ACurrentNode, string[] ATaskName, int ADepth = 0)
         {
             while (ACurrentNode != null && ADepth < ATaskName.Length)
             {
@@ -443,7 +443,7 @@ namespace Ict.Petra.Server.app.JSClient
         /// <summary>
         /// load the html code for a single navigation page, based on the UINavigation file
         /// </summary>
-        public static string LoadNavigationPage(string ANavigationPage)
+        public string LoadNavigationPage(string ANavigationPage)
         {
             // TODO: store MainMenuNode in session variable?
 
