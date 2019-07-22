@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,7 @@ namespace Ict.Common
     /// </summary>
     public class StringHelper
     {
-        private static string[] DefaultCSVSeparators = new string[] {
+        private const string[] DefaultCSVSeparators = new string[] {
             ",", ";", "/", "|", "-", ":"
         };
 
@@ -2291,23 +2291,6 @@ namespace Ict.Common
             return ReturnValue;
         }
 
-/*
- *      private static ArrayList months = new ArrayList();
- *      /// <summary>
- *      /// initialize the localized month names
- *      /// not used at the moment; using .net localisation instead
- *      /// </summary>
- *      /// <param name="monthNames">an array of the month names</param>
- *      public static void SetLocalizedMonthNames(ArrayList monthNames)
- *      {
- *          months = new ArrayList();
- *
- *          foreach (string s in monthNames)
- *          {
- *              months.Add(s);
- *          }
- *      }
- */
         /// <summary>
         /// Finds a matching closing bracket in a String.
         /// </summary>

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,33 +37,6 @@ namespace Ict.Petra.Shared.MCommon.Validation
     public static class TSharedValidationControlHelper
     {
         /// <summary>
-        /// Delegate for invoking the simple data reader.
-        /// </summary>
-        public delegate TVerificationResult TSharedGetDateVerificationResult();
-
-        /// <summary>
-        /// Reference to the Delegate for invoking the getting of a DateVerificationResult.
-        /// </summary>
-        private static TSharedGetDateVerificationResult FDelegateSharedGetDateVerificationResult;
-
-        /// <summary>
-        /// This property is used to provide a function which invokes the simple data reader.
-        /// </summary>
-        /// <description>The Delegate is set up at the start of the application.</description>
-        public static TSharedGetDateVerificationResult SharedGetDateVerificationResultDelegate
-        {
-            get
-            {
-                return FDelegateSharedGetDateVerificationResult;
-            }
-
-            set
-            {
-                FDelegateSharedGetDateVerificationResult = value;
-            }
-        }
-
-        /// <summary>
         /// Checks wheter a given DateTime is an invalid date. A check whether it is an undefined DateTime is always performed.
         /// </summary>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
@@ -72,28 +45,8 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TVerificationResultCollection AVerificationResultCollection, bool ATreatNullAsInvalid = false,
             object AResultContext = null, System.Data.DataColumn AResultColumn = null)
         {
-            TVerificationResult VerificationResult;
-
-            if (FDelegateSharedGetDateVerificationResult != null)
-            {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
-                    ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn);
-
-                // Remove Verification Result that would have been recorded earlier for the same DataColumn
-                TVerificationResult OtherRecordedVerificationResult = AVerificationResultCollection.FindBy(AResultColumn);
-
-                if (OtherRecordedVerificationResult != null)
-                {
-                    AVerificationResultCollection.Remove(OtherRecordedVerificationResult);
-                }
-            }
-            else
-            {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ADate,
-                    ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn);
-            }
-
-            return VerificationResult;
+            return TDateChecks.IsNotUndefinedDateTime(ADate,
+                ADescription, ATreatNullAsInvalid, AResultContext, AResultColumn);
         }
     }
 }

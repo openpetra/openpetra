@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, alanp
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,8 +34,6 @@ namespace Ict.Petra.Shared.Security
     {
         #region Shared code for security of setup screens
 
-        private static List <string>FSecurityPermissionsSetupScreensEditingAndSaving = null;
-
         /// <summary>
         /// Security Permission Check: Editing and Saving of data in 'Setup-screens'
         /// </summary>
@@ -64,15 +62,9 @@ namespace Ict.Petra.Shared.Security
         {
             get
             {
-                if (FSecurityPermissionsSetupScreensEditingAndSaving == null)
-                {
-                    var SecurityPermissionRequired = new List <string>();
-                    SecurityPermissionRequired.Add(TSecurityChecks.SECURITYPERMISSION_EDITING_AND_SAVING_OF_SETUP_DATA);
-
-                    FSecurityPermissionsSetupScreensEditingAndSaving = SecurityPermissionRequired;
-                }
-
-                return FSecurityPermissionsSetupScreensEditingAndSaving;
+                var SecurityPermissionRequired = new List <string>();
+                SecurityPermissionRequired.Add(TSecurityChecks.SECURITYPERMISSION_EDITING_AND_SAVING_OF_SETUP_DATA);
+                return SecurityPermissionRequired;
             }
         }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -241,11 +241,6 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// useful for testing, see Login.test.cs
-        /// </summary>
-        public static TFileVersionInfo FManualApplicationVersion = null;
-
-        /// <summary>
         /// get the version of the current application.
         /// Parse version.txt in the same directory if that file exists.
         /// Otherwise use the version of the exe or dll file
@@ -254,11 +249,6 @@ namespace Ict.Common
         public static TFileVersionInfo GetApplicationVersion()
         {
             TFileVersionInfo Result = new TFileVersionInfo();
-
-            if (FManualApplicationVersion != null)
-            {
-                return FManualApplicationVersion;
-            }
 
             // retrieve the current version of the server from the file version.txt in the bin directory
             // this is easier to manage than to check the assembly version in case you only need to quickly update the client
