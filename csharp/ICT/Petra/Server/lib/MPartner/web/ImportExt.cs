@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private Int64 FPartnerKey = -1;
         private bool FIgnorePartner = false;
         private bool FIgnoreApplication = false;
-        private static String ImportContext;
+        private String ImportContext;
         private bool FParsingOfPartnerLocationsForContactDetailsNecessary = true;
 
         private void AddVerificationResult(String AResultText, TResultSeverity ASeverity)

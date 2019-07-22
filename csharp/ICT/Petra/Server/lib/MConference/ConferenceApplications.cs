@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MConference.Applications
     /// </summary>
     public class TApplicationManagement
     {
-        private static Int32 MINIMUM_OFFICES_TO_BECOME_ORGANIZER = 3;
+        private const Int32 MINIMUM_OFFICES_TO_BECOME_ORGANIZER = 3;
 
         /// <summary>
         /// use the permissions of the user to get all offices that this user has permissions for

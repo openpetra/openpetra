@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// <summary>
         /// this will create some default module permissions, for demo purposes
         /// </summary>
-        public static string DEMOMODULEPERMISSIONS = "DEMOMODULEPERMISSIONS";
+        public static readonly string DEMOMODULEPERMISSIONS = "DEMOMODULEPERMISSIONS";
 
         private static readonly string StrUserChangedOtherUsersLockedState = Catalog.GetString(
             "User {0} changed the 'Locked' state of the user account of user {1}: the latter user account is now {2}. ");

@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PartnerImportExportTDS ImportPartnersFromYml(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
-            return TImportExportYml.ImportPartners(AXmlPartnerData, out AVerificationResult);
+            return new TImportExportYml().ImportPartners(AXmlPartnerData, out AVerificationResult);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
-            PartnerImportExportTDS MainDS = TPartnerImportCSV.ImportData(root, ADateFormat, ref AVerificationResult);
+            PartnerImportExportTDS MainDS = new TPartnerImportCSV().ImportData(root, ADateFormat, ref AVerificationResult);
 
             return MainDS;
         }
@@ -2122,7 +2122,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static string ExportPartners()
         {
-            return TImportExportYml.ExportPartners();
+            return new TImportExportYml().ExportPartners();
         }
 
         /// <summary>

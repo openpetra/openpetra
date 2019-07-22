@@ -59,9 +59,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// 'somewhere in the world' can be parsed correctly 'somewhere else in the world'.</remarks>
         public const string IMPORTEXPORT_YAML_DATEFORMAT = "yyyy-MM-dd HH:mm:ss";
 
-        static Int64 NewPartnerKey = -1;
+        Int64 NewPartnerKey = -1;
 
-        private static void ParsePartners(ref PartnerImportExportTDS AMainDS,
+        private void ParsePartners(ref PartnerImportExportTDS AMainDS,
             XmlNode ACurNode,
             TDBTransaction ATransaction,
             ref TVerificationResultCollection AVerificationResult)
@@ -113,8 +113,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                     else
                     {
-                        PartnerRow.PartnerKey = TImportExportYml.NewPartnerKey;
-                        TImportExportYml.NewPartnerKey--;
+                        PartnerRow.PartnerKey = NewPartnerKey;
+                        NewPartnerKey--;
                     }
 
                     String PartnerClass = TYml2Xml.GetAttributeRecursive(LocalNode, "class");
@@ -475,7 +475,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);
         }
 
-        private static void ParseFinancialDetails(PartnerImportExportTDS AMainDS,
+        private void ParseFinancialDetails(PartnerImportExportTDS AMainDS,
             XmlNode AFinancialDetailsNode,
             Int64 APartnerKey,
             TDBTransaction ATransaction)
@@ -520,8 +520,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     // create a new bank record
                     PBankRow bankRow = AMainDS.PBank.NewRowTyped(true);
-                    bankRow.PartnerKey = TImportExportYml.NewPartnerKey;
-                    TImportExportYml.NewPartnerKey--;
+                    bankRow.PartnerKey = NewPartnerKey;
+                    NewPartnerKey--;
                     bankRow.BranchCode = BankSortCode;
                     bankRow.BranchName = BankSortCode;
                     AMainDS.PBank.Rows.Add(bankRow);
@@ -542,7 +542,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void ParsePartnerAttributes(PartnerImportExportTDS AMainDS,
+        private void ParsePartnerAttributes(PartnerImportExportTDS AMainDS,
             XmlNode APartnerAttributeNode,
             Int64 APartnerKey,
             TDBTransaction ATransaction)
@@ -625,7 +625,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="AXmlPartnerData"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        public static PartnerImportExportTDS ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
+        public PartnerImportExportTDS ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
             TVerificationResultCollection VerificationResult;
@@ -643,7 +643,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // import partner groups
             // advantage: can inherit some common attributes, eg. partner class, etc
 
-            TImportExportYml.NewPartnerKey = -1;
+            NewPartnerKey = -1;
 
             DBAccess.ReadTransaction(
                 ref ReadTransaction,
@@ -666,7 +666,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// The Datastructure which is filled with the data from the DB.
         /// It should be empty initially.
         /// </param>
-        private static void LoadDataFromDB(ref PartnerEditTDS AMainDS)
+        private void LoadDataFromDB(ref PartnerEditTDS AMainDS)
         {
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
@@ -735,7 +735,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// True: if a location was found for given key and the countryCode
         /// and siteKey were updated. False otherwise.
         /// </returns>
-        private static bool UpdateCountryAndSiteForGivenPK(
+        private bool UpdateCountryAndSiteForGivenPK(
             PartnerEditTDS MainDS,
             long partnerKey,
             ref string countryCode /* default could be "" */,
@@ -790,7 +790,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         ///   - and each category having a list of partnerKeys attached to it
         /// </returns>
         ///
-        public static SortedList <string, List <long>>GroupPartnersIntoCategories(PartnerEditTDS MainDS)
+        public SortedList <string, List <long>>GroupPartnersIntoCategories(PartnerEditTDS MainDS)
         {
             SortedList <string, List <long>>PartnerCategories = new SortedList <string, List <long>>();
 
@@ -826,7 +826,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// the partners are grouped by class, country, status, and sitekey
         /// </summary>
         /// <returns></returns>
-        public static string ExportPartners()
+        public string ExportPartners()
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
 

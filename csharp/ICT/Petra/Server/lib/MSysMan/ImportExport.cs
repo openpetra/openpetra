@@ -261,6 +261,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             List <string>tables = TTableList.GetDBNames();
             bool SubmissionResult = false;
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
+            SortedList <int, string>CurrencyPerLedger = new SortedList <int, string>();
 
             string ClientID = "ClientID";
 
@@ -318,11 +319,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                             // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
                             bool success = true;
-                            success = success && LoadTable("s_user", ymlParser, ReadWriteTransaction);
-                            success = success && LoadTable("s_module", ymlParser, ReadWriteTransaction);
-                            success = success && LoadTable("s_user_module_access_permission", ymlParser, ReadWriteTransaction);
-                            success = success && LoadTable("s_system_defaults", ymlParser, ReadWriteTransaction);
-                            success = success && LoadTable("s_system_status", ymlParser, ReadWriteTransaction);
+                            success = success && LoadTable("s_user", ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
+                            success = success && LoadTable("s_module", ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
+                            success = success && LoadTable("s_user_module_access_permission", ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
+                            success = success && LoadTable("s_system_defaults", ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
+                            success = success && LoadTable("s_system_status", ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
 
                             // make sure we have the correct database version
                             TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
@@ -352,8 +353,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             tables.Remove("s_system_defaults");
                             tables.Remove("s_system_status");
 
-                            FCurrencyPerLedger = new SortedList <int, string>();
-
                             int tableCounter = 2;
 
                             foreach (string table in tables)
@@ -373,7 +372,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                     return;
                                 }
 
-                                LoadTable(table, ymlParser, ReadWriteTransaction);
+                                LoadTable(table, ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
                             }
 
                             TProgressTracker.SetCurrentState(ClientID,
@@ -442,9 +441,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return false;
         }
 
-        private static SortedList <Int32, string>FCurrencyPerLedger = new SortedList <int, string>();
-
-        private static bool LoadTable(string ATableName, TSimpleYmlParser AYmlParser, TDBTransaction AReadWriteTransaction)
+        private static bool LoadTable(string ATableName, TSimpleYmlParser AYmlParser, TDBTransaction AReadWriteTransaction,
+            ref SortedList <Int32, string> ACurrencyPerLedger)
         {
             if (!AYmlParser.StartParseList(StringHelper.UpperCamelCase(ATableName, false, false) + "Table"))
             {
@@ -499,7 +497,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 // needed for workaround for version 0.2.24, AAPDocument.BaseCurrency and AAPPayment.BaseCurrency;
                 if (ATableName == "a_ledger")
                 {
-                    FCurrencyPerLedger.Add(Convert.ToInt32(RowDetails["LedgerNumber"]), RowDetails["BaseCurrency"]);
+                    ACurrencyPerLedger.Add(Convert.ToInt32(RowDetails["LedgerNumber"]), RowDetails["BaseCurrency"]);
                 }
 
                 // workaround for 2015.09: a_account_hierarchy_detail.a_report_order_i must not be NULL
@@ -624,14 +622,14 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         if ((ATableName == "a_ap_document") && (col.ColumnName == "CurrencyCode"))
                         {
                             OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
-                            p.Value = FCurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
+                            p.Value = ACurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
                             Parameters.Add(p);
                             InsertStatement.Append("?");
                         }
                         else if ((ATableName == "a_ap_payment") && (col.ColumnName == "CurrencyCode"))
                         {
                             OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
-                            p.Value = FCurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
+                            p.Value = ACurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
                             Parameters.Add(p);
                             InsertStatement.Append("?");
                         }
