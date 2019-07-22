@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -767,7 +767,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
                     AddVerificationResult(string.Format("Bad arrival/departure date format in Application: {0} (Expected format: {1})", TimeString,
-                            APartnerKey), TResultSeverity.Resv_Critical);
+                            fmt), TResultSeverity.Resv_Critical);
                 }
 
                 DateTime TempTime;

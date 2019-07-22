@@ -179,8 +179,6 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             DataTable Reminders = new DataTable("Reminders");
             DataTable SpecialTypes = new DataTable("SpecialTypes");
 
-            DataTable PartnerSelectionTable = new DataTable("DataSelection");
-
             String PartnerSelection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
 
             DbAdapter.FPrivateDatabaseObj.ReadTransaction(
