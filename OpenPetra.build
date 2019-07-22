@@ -60,6 +60,7 @@ compat:
   buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
   generateGuidedTranslations: Simplifies the translation of the .po files
   checkHtml: check the HTML files if certain rules are put into practise
+  checkCode: check the C# code for certain rules
 
 releases:
   buildRPM: will build the linux files that can be used for RPM. creates tar files for local server
@@ -457,6 +458,13 @@ useful parameters
     <ExecDotNet program="${dir.bin}/Ict.Tools.CheckHtml.exe" 
         commandline="-formsdir:../openpetra-client-js/src/forms/"/>
 </target>
+
+<target name="checkCode">
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+    <ExecDotNet program="${dir.bin}/Ict.Tools.CodeChecker.exe" 
+        commandline="-Action:static"/>
+</target>
+
 
 <target name="enable-sqlite-config-for-jenkins">
     <echo message="Target enable-sqlite-config-for-jenkins started at: ${datetime::now()}" />
