@@ -25,8 +25,6 @@ namespace {#NAMESPACE}
 [Serializable()]
 public class {#TABLENAME}Table : {#BASECLASSTABLE}
 {
-    private static readonly String strCustomReportPermission = "{#CUSTOMREPORTPERMISSION}";
-    
     /// TableId for Ict.Common.Data generic functions
     public {#NEW}static readonly short TableId = {#TABLEID};
     {#COLUMNIDS}
@@ -35,6 +33,12 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
     private static readonly bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
     {
+        // to avoid a compiler warning about unused variable FInitInfoValues
+        if (FInitInfoValues)
+        {
+            return true;
+        }
+
         TableInfo.Add(TableId, new TTypedTableInfo(TableId, "{#TABLEVARIABLENAME}", "{#DBTABLENAME}", 
             new TTypedColumnInfo[] { 
                 {#COLUMNINFO}
@@ -47,9 +51,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
 {#ENDIF COLUMNUNIQUEKEYORDER}
             }));
 
-        // try to avoid a compiler warning about unused variable FInitInfoValues which we need for initially calling InitInfoValues once
-        FInitInfoValues = true;
-        return FInitInfoValues;
+        return true;
     }
 {#ENDIF COLUMNINFO}
 
