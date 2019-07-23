@@ -32,7 +32,6 @@ using Ict.Common;
 using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
-using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner;
@@ -142,8 +141,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         ANode = ANode.NextSibling;
                     }
-
-                    CreatePartnerAttributes(ref ResultDS, Transaction);
                 });
 
             return ResultDS;
@@ -361,8 +358,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newLocation.County = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTY);
             newLocation.CountryCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
+            TPartnerContactDetails_LocationConversionHelper myHelper =
+                new TPartnerContactDetails_LocationConversionHelper();
+
             PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
-            TPartnerContactDetails_LocationConversionHelper.AddOldDBTableColumnsToPartnerLocation(AMainDS.PPartnerLocation);
+            myHelper.AddOldDBTableColumnsToPartnerLocation(AMainDS.PPartnerLocation);
 
             partnerlocation.LocationKey = FLocationKey;
             partnerlocation.SiteKey = 0;
@@ -533,25 +533,70 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             newPartnerLocation.SendMail = false;
 
-            newPartnerLocation["p_email_address_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'newPartnerLocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
-            newPartnerLocation["p_telephone_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'newPartnerLocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
-            newPartnerLocation["p_mobile_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'newPartnerLocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
+            string email = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            string phone = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
+            string mobile = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+
+            if (email.Length > 0)
+            {
+                PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
+                partnerAttributeRow.Index = 0;
+                partnerAttributeRow.Primary = true;
+                partnerAttributeRow.Value = email;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+
+                partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                partnerAttributeRow.Index = 9999;
+                partnerAttributeRow.Primary = false;
+                partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_EMAIL;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+            }
+
+            if (phone.Length > 0)
+            {
+                PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
+                partnerAttributeRow.Index = 0;
+                partnerAttributeRow.Primary = true;
+                partnerAttributeRow.Value = phone;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+
+                partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                partnerAttributeRow.Index = 9999;
+                partnerAttributeRow.Primary = false;
+                partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_PHONE;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+            }
+
+            if (mobile.Length > 0)
+            {
+                PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                partnerAttributeRow.Index = 0;
+                partnerAttributeRow.Primary = true;
+                partnerAttributeRow.Value = mobile;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+
+                partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                partnerAttributeRow.Index = 9999;
+                partnerAttributeRow.Primary = false;
+                partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+            }
 
             AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
 
             return newPerson.PartnerKey;
-        }
-
-        private void CreatePartnerAttributes(ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
-        {
-            TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
-                PPartnerAttributeAccess.LoadUsingTemplate;
-
-            TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(AMainDS,
-                ATransaction);
         }
 
         private void CreateSpecialTypes(XmlNode ANode,
