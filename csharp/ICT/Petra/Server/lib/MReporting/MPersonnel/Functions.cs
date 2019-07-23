@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
     /// </summary>
     public class TRptUserFunctionsPersonnel : TRptUserFunctions
     {
-        private static PmSpecialNeedRow FCachedSpecialNeedRow;
+        private PmSpecialNeedRow FCachedSpecialNeedRow;
 
         /// <summary>
         /// constructor

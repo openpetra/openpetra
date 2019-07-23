@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static void CancelPeriodOperation()
         {
             TLogging.Log("PeriodEnd operation was cancelled.");
-            TPeriodEndOperations.FwasCancelled = true;
+            TPeriodEndOperations.WasCancelled = true;
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void PurgeProcessedFeeTable(TDBTransaction ATransaction)
         {
-            if (TPeriodEndOperations.FwasCancelled)
+            if (TPeriodEndOperations.WasCancelled)
             {
                 return;
             }
@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 return !FHasCriticalErrors;
             }
 
-            TPeriodEndOperations.FwasCancelled = false;
+            TPeriodEndOperations.WasCancelled = false;
             Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("RunYearEnd", ADataBase);
@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     PurgeProcessedFeeTable(transaction);
 
-                    if (TPeriodEndOperations.FwasCancelled)
+                    if (TPeriodEndOperations.WasCancelled)
                     {
                         FverificationResults.Add(new TVerificationResult(Catalog.GetString("Year End"),
                                 Catalog.GetString("Process was cancelled by user."), "",
@@ -478,7 +478,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             foreach (DataRowView rv in costCentreTbl.DefaultView)
             {
-                if (TPeriodEndOperations.FwasCancelled)
+                if (TPeriodEndOperations.WasCancelled)
                 {
                     return 0;
                 }
@@ -803,7 +803,7 @@ namespace Ict.Petra.Server.MFinance.GL
  */
             foreach (AGeneralLedgerMasterRow GlmRowFrom in FGlmPostingFrom.Rows)
             {
-                if (TPeriodEndOperations.FwasCancelled)
+                if (TPeriodEndOperations.WasCancelled)
                 {
                     return EntryCount;
                 }
