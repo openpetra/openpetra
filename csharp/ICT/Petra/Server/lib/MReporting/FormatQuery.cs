@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MReporting
         }
 
         // do not print warning too many times for the same variable
-        private static SortedList <string, Int32>VariablesNotFound = new SortedList <string, int>();
+        private SortedList <string, Int32>VariablesNotFound = new SortedList <string, int>();
 
         /// <summary>
         /// Replace parameters with ODBC Parameters

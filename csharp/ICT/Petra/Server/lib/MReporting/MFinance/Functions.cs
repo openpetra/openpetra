@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,22 +41,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
     /// </summary>
     public class TRptUserFunctionsFinance : TRptUserFunctions
     {
-        private static TSQLCache ActualsCache = new TSQLCache();
-        private static TSQLCache AccountDescendantsCache = new TSQLCache();
-
         /// <summary>
         /// constructor
         /// </summary>
         public TRptUserFunctionsFinance() : base()
         {
-        }
-
-        /// <summary>
-        /// Don't remember anything from the last report...
-        /// </summary>
-        public static void FlushSqlCache()
-        {
-            ActualsCache.Invalidate();
         }
 
         private string UnitKeyToForeignCostCentre(Int64 pv_unit_partner_key_n)
@@ -643,6 +632,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private decimal GetActualValue(TFinancialPeriod period, String pv_currency_select_c)
         {
+            // this is not an actual cache anymore. We don't want to use static variables anymore
+            TSQLCache ActualsCache = new TSQLCache();
+            
             string strSql = "SELECT a_actual_base_n, a_actual_intl_n, a_actual_foreign_n FROM PUB_a_general_ledger_master_period" +
                             " WHERE a_glm_sequence_i = " + period.realGlmSequence.glmSequence +
                             " AND a_period_number_i = " + period.realPeriod;
@@ -765,6 +757,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <returns></returns>
         private decimal GetActual(TFinancialPeriod period, int pv_period_number_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
         {
+            // this is not an actual cache anymore. We don't want to use static variables anymore
+            TSQLCache ActualsCache = new TSQLCache();
+            
             if ((period == null) || (period.realGlmSequence == null))
             {
                 return 0.0M;
@@ -1150,6 +1145,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 null,
                 rptCalculation.rptGrpTemplate,
                 rptCalculation.rptGrpQuery);
+
+            // this is not an actual cache anymore. We don't want to use static variables anymore
+            SQLCache AccountDescendantsCache = new TSQLCache();
 
             // this is an sql statement and not a function result
             DataTable tab = AccountDescendantsCache.GetDataTable(

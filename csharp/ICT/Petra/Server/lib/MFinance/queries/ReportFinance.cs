@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Session;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MFinance;
@@ -437,8 +438,6 @@ namespace Ict.Petra.Server.MFinance.queries
             return resultTable;
         }
 
-        private static DataTable TotalGiftsPerRecipient = null;
-
         /// <summary>
         /// Find recipient Partner Key and name for all partners who received gifts in the timeframe.
         /// NOTE - the user can select the PartnerType of the recipient.
@@ -450,6 +449,7 @@ namespace Ict.Petra.Server.MFinance.queries
         /// <returns>RecipientKey, RecipientName</returns>
         public static DataTable SelectGiftRecipients(TParameterList AParameters, TResultList AResults)
         {
+            DataTable TotalGiftsPerRecipient = null;
             Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
             Boolean onlySelectedTypes = AParameters.Get("param_type_selection").ToString() == "selected_types";
             Boolean onlySelectedFields = AParameters.Get("param_field_selection").ToString() == "selected_fields";
@@ -544,6 +544,10 @@ namespace Ict.Petra.Server.MFinance.queries
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("SelectGiftRecipients");
+
+            // store the query in the session to be called again in SelectGiftDonors
+            TSession.SetVariable("QueryFinanceReport_SelectGiftRecipients", SqlQuery, db);
+
             db.ReadTransaction(
                 ref Transaction,
                 delegate
@@ -589,6 +593,20 @@ namespace Ict.Petra.Server.MFinance.queries
         public static DataTable SelectGiftDonors(TParameterList AParameters, TResultList AResults)
         {
             Int64 recipientKey = AParameters.Get("RecipientKey").ToInt64();
+
+            // TotalGiftsPerRecipient must not be static.
+            DataTable TotalGiftsPerRecipient = null;
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SelectGiftDonors");
+            string SqlQuery = TSession.GetVariable("QueryFinanceReport_SelectGiftRecipients", db).ToString();
+            SqlQuery = SqlQuery.Replace("GROUP by ", "AND recipient.p_partner_key_n = " + recipientKey + " GROUP by ");
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    TotalGiftsPerRecipient = db.SelectDT(SqlQuery, "result", Transaction);
+                });
 
             TotalGiftsPerRecipient.DefaultView.RowFilter = "RecipientKey = " + recipientKey.ToString();
             DataTable resultTable = TotalGiftsPerRecipient.DefaultView.ToTable(true,

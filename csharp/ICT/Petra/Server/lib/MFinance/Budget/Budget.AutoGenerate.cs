@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,11 +55,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     public class TBudgetAutoGenerateWebConnector
     {
         /// <summary>
-        /// Main Budget tables dataset
-        /// </summary>
-        public static BudgetTDS FMainDS = new BudgetTDS();
-
-        /// <summary>
         /// load budget tables and return the budget table
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -67,6 +62,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static BudgetTDS LoadBudgetForAutoGenerate(Int32 ALedgerNumber)
         {
+            BudgetTDS FMainDS = new BudgetTDS();
+
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadBudgetForAutoGenerate");
 
@@ -130,6 +127,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-3")]
         public static bool GenBudgetForNextYear(int ALedgerNumber, int ABudgetSeq, string AForecastType)
         {
+            BudgetTDS FMainDS = LoadBudgetForAutoGenerate(ALedgerNumber);
+
             bool retVal = false;
 
             decimal budgetSum;
@@ -208,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                 (currentFinancialYear - 1),
                                 false,
                                 MFinanceConstants.CURRENCY_BASE);
-                            SetBudgetPeriodBaseAmount(ABudgetSeq, i, actualAmount);
+                            SetBudgetPeriodBaseAmount(FMainDS, ABudgetSeq, i, actualAmount);
                         }
 
                         for (int j = currentPeriod; j <= MFinanceConstants.MAX_PERIODS; j++)
@@ -219,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                     Math.Round(TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear, -1, j, numAccPeriods,
                                             false,
                                             MFinanceConstants.CURRENCY_BASE));
-                                SetBudgetPeriodBaseAmount(ABudgetSeq, j, budgetAmount);
+                                SetBudgetPeriodBaseAmount(FMainDS, ABudgetSeq, j, budgetAmount);
                             }
                             else
                             {
@@ -232,7 +231,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                     (currentFinancialYear - 1),
                                     false,
                                     MFinanceConstants.CURRENCY_BASE);
-                                SetBudgetPeriodBaseAmount(ABudgetSeq, j, actualAmount);
+                                SetBudgetPeriodBaseAmount(FMainDS, ABudgetSeq, j, actualAmount);
                             }
                         }
 
@@ -312,7 +311,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         for (int i = 1; i <= numAccPeriods; i++)
                         {
-                            SetBudgetPeriodBaseAmount(ABudgetSeq, i, Math.Round(budgetSum));
+                            SetBudgetPeriodBaseAmount(FMainDS, ABudgetSeq, i, Math.Round(budgetSum));
                         }
 
                         break;
@@ -321,7 +320,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         for (int i = 1; i <= numAccPeriods; i++)
                         {
-                            if (GetBudgetPeriodAmount(ABudgetSeq, i) != GetBudgetPeriodAmount(ABudgetSeq, 1))
+                            if (GetBudgetPeriodAmount(FMainDS, ABudgetSeq, i) != GetBudgetPeriodAmount(FMainDS, ABudgetSeq, 1))
                             {
                                 periodOfChange = i - 1;
                                 break;
@@ -489,12 +488,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                             for (int i = 1; i <= periodOfChange; i++)
                             {
-                                SetBudgetPeriodBaseAmount(ABudgetSeq, i, Math.Round(priorAmount, 0));
+                                SetBudgetPeriodBaseAmount(FMainDS, ABudgetSeq, i, Math.Round(priorAmount, 0));
                             }
 
                             for (int i = (periodOfChange + 1); i <= numAccPeriods; i++)
                             {
-                                SetBudgetPeriodBaseAmount(ABudgetSeq, i, Math.Round(afterAmount, 0));
+                                SetBudgetPeriodBaseAmount(FMainDS, ABudgetSeq, i, Math.Round(afterAmount, 0));
                             }
                         }
 
@@ -523,14 +522,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         }
 
         /// <summary>
-        /// Description: set the budget of a period.
+        /// set the budget of a period.
         /// </summary>
+        /// <param name="FMainDS"></param>
         /// <param name="ABudgetSequence"></param>
         /// <param name="APeriodNumber"></param>
         /// <param name="ABudgetAmount"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static decimal SetBudgetPeriodBaseAmount(int ABudgetSequence, int APeriodNumber, decimal ABudgetAmount)
+        public static decimal SetBudgetPeriodBaseAmount(BudgetTDS FMainDS, int ABudgetSequence, int APeriodNumber, decimal ABudgetAmount)
         {
             decimal retVal = 0;
 
@@ -550,13 +550,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         }
 
         /// <summary>
-        ///
+        /// Get the amount for a certain period and budget
         /// </summary>
+        /// <param name="FMainDS"></param>
         /// <param name="ABudgetSequence"></param>
         /// <param name="APeriodNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static decimal GetBudgetPeriodAmount(int ABudgetSequence, int APeriodNumber)
+        public static decimal GetBudgetPeriodAmount(BudgetTDS FMainDS, int ABudgetSequence, int APeriodNumber)
         {
             decimal retVal = 0m;
 

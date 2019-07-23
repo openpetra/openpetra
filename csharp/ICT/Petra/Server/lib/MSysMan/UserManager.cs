@@ -66,30 +66,23 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
     /// </remarks>
     public class TUserManagerWebConnector
     {
-        private static IUserAuthentication FUserAuthenticationClass = null;
-
         /// <summary>
         /// load the plugin assembly for authentication
         /// </summary>
         [NoRemoting]
         public static IUserAuthentication LoadAuthAssembly(string AUserAuthenticationMethod)
         {
-            if (FUserAuthenticationClass == null)
-            {
-                // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
-                // the dll has to be in the normal application directory
-                string Namespace = AUserAuthenticationMethod;
-                string NameOfDll = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + Namespace + ".dll";
-                string NameOfClass = Namespace + ".TUserAuthentication";
+            // namespace of the class TUserAuthentication, eg. Plugin.AuthenticationPhpBB
+            // the dll has to be in the normal application directory
+            string Namespace = AUserAuthenticationMethod;
+            string NameOfDll = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + Namespace + ".dll";
+            string NameOfClass = Namespace + ".TUserAuthentication";
 
-                // dynamic loading of dll
-                System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
-                System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
+            // dynamic loading of dll
+            System.Reflection.Assembly assemblyToUse = System.Reflection.Assembly.LoadFrom(NameOfDll);
+            System.Type CustomClass = assemblyToUse.GetType(NameOfClass);
 
-                FUserAuthenticationClass = (IUserAuthentication)Activator.CreateInstance(CustomClass);
-            }
-
-            return FUserAuthenticationClass;
+            return (IUserAuthentication)Activator.CreateInstance(CustomClass);
         }
 
         /// <summary>

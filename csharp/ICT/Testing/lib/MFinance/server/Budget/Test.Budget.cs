@@ -154,7 +154,6 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 });
 
             // consolidate the budget
-            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
             TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             // check for correct value in glmperiod budget
@@ -198,7 +197,6 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 });
 
             // post all budgets again
-            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
             TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             Transaction = new TDBTransaction();
@@ -237,7 +235,6 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 });
 
             // post only modified budget again
-            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
             TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, false);
 
             Transaction = new TDBTransaction();
@@ -369,9 +366,9 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             //Add 10 to Budget base value and check if it is written
             decimal budgetBase = bPRow.BudgetBase;
-            TBudgetAutoGenerateWebConnector.SetBudgetPeriodBaseAmount(budgetSequence, 1, (budgetBase + 10));
+            TBudgetAutoGenerateWebConnector.SetBudgetPeriodBaseAmount(MainDS, budgetSequence, 1, (budgetBase + 10));
 
-            decimal budgetBaseNew = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(budgetSequence, 1);
+            decimal budgetBaseNew = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(MainDS, budgetSequence, 1);
             Assert.IsTrue(budgetBaseNew == (budgetBase + 10), String.Format("SetBudgetPeriod Failed. BudgetBase ({0}) has not been updated to: {1}",
                     budgetBase,
                     budgetBaseNew));

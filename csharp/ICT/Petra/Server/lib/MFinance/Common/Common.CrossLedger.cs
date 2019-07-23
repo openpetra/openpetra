@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanP
+//       alanP, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Session;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.CrossLedger.Data;
@@ -41,10 +42,6 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
     ///</summary>
     public static class TCrossLedger
     {
-        // Two static variables that are used in our code to automatically clean the Daily Exchange Rate table
-        private static DateTime PreviousDailyExchangeRateCleanTime = DateTime.UtcNow.AddDays(-30);
-        private static DateTime PreviousDailyExchangeRateAccessTime = DateTime.UtcNow.AddHours(-24);
-
         /// <summary>
         /// This method is called when clients access the Daily Exchange Rate data.
         /// The Daily Exchange Rate table is unusual in that it doesn't really need to hold any data because the DataSet that the client receives
@@ -61,6 +58,19 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
         /// </summary>
         private static void DoDailyExchangeRateClean()
         {
+            DateTime PreviousDailyExchangeRateAccessTime = DateTime.UtcNow.AddHours(-24);
+
+            if (TSession.HasVariable("PreviousDailyExchangeRateAccessTime"))
+            {
+                PreviousDailyExchangeRateAccessTime = (DateTime)TSession.GetVariable("PreviousDailyExchangeRateAccessTime");
+            }
+
+            DateTime PreviousDailyExchangeRateCleanTime = DateTime.UtcNow.AddDays(-30);
+            if (TSession.HasVariable("PreviousDailyExchangeRateCleanTime"))
+            {
+                PreviousDailyExchangeRateCleanTime = (DateTime)TSession.GetVariable("PreviousDailyExchangeRateCleanTime");
+            }
+
             if ((DateTime.UtcNow - PreviousDailyExchangeRateAccessTime).TotalHours > 8)
             {
                 // Nobody has opened a DailyExchangeRate screen for 8 hours
@@ -100,7 +110,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                                     ADailyExchangeRateTable.GetDateModifiedDBName());
                                 affectedRowCount = db.ExecuteNonQuery(sql, t);
                                 bSubmissionOk = true;
-                                PreviousDailyExchangeRateCleanTime = DateTime.UtcNow;
+                                TSession.SetVariable("PreviousDailyExchangeRateCleanTime", DateTime.UtcNow);
                             }
                             catch (Exception ex)
                             {
@@ -123,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.Common.WebConnectors
                 }
             }
 
-            PreviousDailyExchangeRateAccessTime = DateTime.UtcNow;
+            TSession.SetVariable("PreviousDailyExchangeRateAccessTime", DateTime.UtcNow);
         }
 
         /// <summary>
