@@ -621,14 +621,19 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="Reversal"></param>
         /// <param name="APDataset"></param>
         /// <param name="ADataBase"></param>
+        /// <param name="ATransaction"></param>
         /// <returns>Batch for posting</returns>
         private static GLBatchTDS CreateGLBatchAndTransactionsForPosting(
             Int32 ALedgerNumber,
             DateTime APostingDate,
             Boolean Reversal,
             ref AccountsPayableTDS APDataset,
-            TDataBase ADataBase = null)
+            TDataBase ADataBase,
+            TDBTransaction ATransaction)
         {
+            StringHelper myStringHelper = new StringHelper();
+            myStringHelper.CurrencyFormatTable = ADataBase.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ATransaction);
+
             // create one GL batch
             GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ADataBase, false);
 
@@ -678,8 +683,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 if (journal.TransactionCurrency != GLDataset.ALedger[0].BaseCurrency)
                 {
-                    baseCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
-                    intlCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].IntlCurrency);
+                    baseCurrencyDecimalPlaces = myStringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
+                    intlCurrencyDecimalPlaces = myStringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].IntlCurrency);
                 }
 
                 if (Reversal)
@@ -1059,7 +1064,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         return; // This is returning from the AutoTransaction, not from the whole method.
                     }
 
-                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS, db);
+                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS, db, HighLevelTransaction);
 
                     batch = GLDataset.ABatch[0];
 
@@ -1149,9 +1154,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="APostingDate"></param>
         /// <param name="APDataset"></param>
         /// <param name="ADataBase"></param>
+        /// <param name="ATransaction"></param>
         /// <returns></returns>
-        private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset, TDataBase ADataBase = null)
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset, TDataBase ADataBase, TDBTransaction ATransaction)
         {
+            StringHelper myStringHelper = new StringHelper();
+            myStringHelper.CurrencyFormatTable = ADataBase.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ATransaction);
+
             // create one GL batch
             GLBatchTDS GLDataset = TGLPosting.CreateABatch(ALedgerNumber, ADataBase, false);
 
@@ -1238,8 +1247,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 if (journalRow.TransactionCurrency != GLDataset.ALedger[0].BaseCurrency)
                 {
-                    baseCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
-                    intlCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].IntlCurrency);
+                    baseCurrencyDecimalPlaces = myStringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
+                    intlCurrencyDecimalPlaces = myStringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].IntlCurrency);
                 }
 
                 // I'm not using the Daily Exchange Rate, since the exchange rate has been specified by the user in the payment.
@@ -1755,7 +1764,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPaying(MainDS.AApPayment[0].LedgerNumber,
                         APostingDate,
                         ref MainDS,
-                        db);
+                        db,
+                        transaction);
 
                     batch = GLDataset.ABatch[0];
 

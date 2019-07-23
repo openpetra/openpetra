@@ -72,6 +72,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         Int32 FLedgerNumber;
         String FCurrencyCode = "";
         GiftBatchTDS FMainDS;
+        StringHelper myStringHelper = new StringHelper();
 
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
 
@@ -146,6 +147,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                     {
                         try
                         {
+                            myStringHelper.CurrencyFormatTable = db.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", FTransaction);
+
                             ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
                             String BatchRangeFilter = (ABatchNumberStart > -1) ?
                                                       " AND (PUB_a_gift_batch.a_batch_number_i >= " + ABatchNumberStart.ToString() +
@@ -671,7 +674,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             else
             {
                 FStringWriter.Write(quote);
-                FStringWriter.Write(StringHelper.FormatUsingCurrencyCode(currencyField, FCurrencyCode));
+                FStringWriter.Write(myStringHelper.FormatUsingCurrencyCode(currencyField, FCurrencyCode));
                 FStringWriter.Write(quote);
             }
 

@@ -4513,12 +4513,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Check Hash total
             if ((GiftBatchRow.HashTotal != 0) && (GiftBatchRow.BatchTotal != GiftBatchRow.HashTotal))
             {
+                StringHelper myStringHelper = new StringHelper();
+                myStringHelper.CurrencyFormatTable = ATransaction.DataBaseObj.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ATransaction);
+
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
                         String.Format("The gift batch total ({0}) does not equal the hash total ({1}).",
-                            StringHelper.FormatUsingCurrencyCode(GiftBatchRow.BatchTotal, GiftBatchRow.CurrencyCode),
-                            StringHelper.FormatUsingCurrencyCode(GiftBatchRow.HashTotal, GiftBatchRow.CurrencyCode)),
+                            myStringHelper.FormatUsingCurrencyCode(GiftBatchRow.BatchTotal, GiftBatchRow.CurrencyCode),
+                            myStringHelper.FormatUsingCurrencyCode(GiftBatchRow.HashTotal, GiftBatchRow.CurrencyCode)),
                         TResultSeverity.Resv_Critical));
             }
 

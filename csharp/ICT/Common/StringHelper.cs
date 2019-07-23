@@ -2166,7 +2166,7 @@ namespace Ict.Common
         /// <summary></summary>
         /// <param name="ACurrencyCode"></param>
         /// <returns></returns>
-        private int DecimalPlacesForCurrency(String ACurrencyCode)
+        public int DecimalPlacesForCurrency(String ACurrencyCode)
         {
             int Ret = 2;
 
