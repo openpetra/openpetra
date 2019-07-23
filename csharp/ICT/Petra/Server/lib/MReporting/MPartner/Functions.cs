@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,14 +63,14 @@ namespace Ict.Petra.Server.MReporting.MPartner
         #region members for publication statistical report
 
         /// <summary> Holds the results of the calculation of publication statistical report </summary>
-        private static DataTable FStatisticalReportDataTable;
+        private DataTable FStatisticalReportDataTable;
 
         /// <summary> Holds the result for the row "Percent:" of the publication statistical report </summary>
-        private static Dictionary <String, String>FStatisticalReportPercentage;
+        private Dictionary <String, String>FStatisticalReportPercentage;
 
         /// <summary> Holds the number of active partner. This is needed for calculation of the
         /// publication statistical report. </summary>
-        private static int FNumberOfActivePartner;
+        private int FNumberOfActivePartner;
 
         /// <summary> These constants define special rows for the publication statistical report </summary>
         private const String ROW_FOREIGN = "*FOREIGN*";
