@@ -814,18 +814,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
         /// <summary>
-        ///
-        /// </summary>
-        public DateTime EffectiveDate
-        {
-            get
-            {
-                return FPeriodRow.EffectiveDate;
-            }
-        }
-
-
-        /// <summary>
         /// Returns the number of accounting periods in the table
         /// </summary>
         public int Rows

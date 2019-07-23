@@ -1210,11 +1210,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 ToRow.SendMail = FromRow.SendMail;
                             }
 
-                            if (ToRow.Telex == 0)
-                            {
-                                ToRow.Telex = FromRow.Telex;
-                            }
-
                             if (ToRow.CreatedBy == "")
                             {
                                 ToRow.CreatedBy = FromRow.CreatedBy;

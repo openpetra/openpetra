@@ -2534,12 +2534,6 @@
                 thisFields="p_location_type_c"
                 otherTable="p_location_type"
                 otherFields="p_code_c"/>
-    <!-- Explicit Indexes on table p_partner_location  -->
-    <index name="p_email_address_k"
-           descr="for quicker searches, from Mail application etc."
-           area="Petra Index">
-      <indexfield name="p_email_address_c" order="ascending"/>
-    </index>
   </table>
   <table name="p_partner_attribute_category"
          descr="Holds categories that categorise Partner Attributes Types, thus allowing logical grouping of the latter (e.g. to have all Partner Attributes Types that are to do with phone numbers in one category)."
