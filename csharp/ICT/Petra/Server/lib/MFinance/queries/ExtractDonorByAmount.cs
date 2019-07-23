@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.MFinance.queries
                     ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
 
                     // filter data by postcode (if applicable)
-                    ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
+                    PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
 
                     // create an extract with the given name in the parameters
                     int keyCount;

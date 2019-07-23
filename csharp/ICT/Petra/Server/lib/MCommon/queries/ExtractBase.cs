@@ -151,7 +151,7 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <param name="AAddressFilterAdded"></param>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        public static void PostcodeFilter(ref DataTable APartnerkeys,
+        public void PostcodeFilter(ref DataTable APartnerkeys,
             ref bool AAddressFilterAdded,
             TParameterList AParameters,
             TDBTransaction ATransaction)
@@ -445,7 +445,7 @@ namespace Ict.Petra.Server.MCommon.queries
         /// this will return true if the best address is in the given postal region, postcode range and county it will not reset the data returned by best address
         /// </summary>
         /// <returns>void</returns>
-        public static bool AddressMeetsPostCodeCriteriaOrEmpty(string APostcode,
+        public bool AddressMeetsPostCodeCriteriaOrEmpty(string APostcode,
             String APostalRegion,
             String APostCodeFrom,
             String APostCodeTo)
@@ -510,11 +510,11 @@ namespace Ict.Petra.Server.MCommon.queries
             return ReturnValue;
         }
 
-        private static string FPostalRegion = "";
-        private static PPostcodeRangeTable FPostcodeRangeTable = null;
+        private string FPostalRegion = "";
+        private PPostcodeRangeTable FPostcodeRangeTable = null;
 
         // check if a postcode is contained within a region
-        private static bool PostcodeInRegion(string APostcode, string APostalRegion)
+        private bool PostcodeInRegion(string APostcode, string APostalRegion)
         {
             // Regions datatable should only be loaded once per extract generation
             if (FPostalRegion != APostalRegion)

@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 SqlParameterList.ToArray());
 
             // filter data by postcode (if applicable)
-            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
+            PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
@@ -307,7 +307,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 SqlParameterList.ToArray());
 
             // filter data by postcode (if applicable)
-            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
+            PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
@@ -427,7 +427,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 SqlParameterList.ToArray());
 
             // filter data by postcode (if applicable)
-            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
+            PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
