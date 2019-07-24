@@ -271,6 +271,14 @@
          <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, DemoData.Dir)}'/>
 
+         <property name="toReplace" value="SELECT nextval('seq_bank_details');"/>
+         <property name="Replacement" value="INSERT INTO seq_bank_details VALUES(NULL, -1);"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, Replacement)}'/>
+
+         <property name="toReplace" value="SELECT nextval('seq_location_number');"/>
+         <property name="Replacement" value="INSERT INTO seq_location_number VALUES(NULL, -1);"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, Replacement)}'/>
+
          <property name="toReplace" value="{#RELEASEVERSION}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
          

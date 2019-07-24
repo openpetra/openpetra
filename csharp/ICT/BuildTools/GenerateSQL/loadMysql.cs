@@ -82,6 +82,10 @@ namespace GenerateSQL
                         {
                             DBAccessObj.ExecuteNonQuery(line, WriteTransaction);
                         }
+                        else if (line.Trim().ToUpper().StartsWith("UPDATE"))
+                        {
+                            DBAccessObj.ExecuteNonQuery(line, WriteTransaction);
+                        }
                         else if (line.Trim().ToUpper().StartsWith("COPY"))
                         {
                             // pgsql: COPY p_language FROM 'c:/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
