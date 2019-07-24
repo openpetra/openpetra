@@ -179,6 +179,13 @@ namespace Ict.Tools.NAntTasks
             process.EnableRaisingEvents = false;
             process.StartInfo.FileName = FMysqlExecutable;
 
+            if (FSQLFile.Length > 0)
+            {
+                Log(Level.Info, "Load sql commands from file: " + FSQLFile);
+                
+                FSQLCommand = "source " + FSQLFile + ";";
+                
+            }
             if (FSQLCommand.Length > 0)
             {
                 process.StartInfo.RedirectStandardInput = true;
@@ -195,11 +202,6 @@ namespace Ict.Tools.NAntTasks
                 }
 
                 Log(Level.Info, SqlPrint);
-            }
-            else if (FSQLFile.Length > 0)
-            {
-                process.StartInfo.RedirectStandardInput = true;
-                Log(Level.Info, "Load sql commands from file: " + FSQLFile);
             }
 
             // add -v before -u if you want to see the sql commands...
@@ -243,15 +245,10 @@ namespace Ict.Tools.NAntTasks
 
             if ((FSQLCommand.Length > 0) && (process.StandardInput != null))
             {
+                System.Threading.Thread.Sleep(500);
                 process.StandardInput.WriteLine(FSQLCommand);
+                process.StandardInput.WriteLine("Commit;");
                 process.StandardInput.Close();
-            }
-            else if (FSQLFile.Length > 0)
-            {
-                StreamReader sr = new StreamReader(FSQLFile);
-                process.StandardInput.Write(sr.ReadToEnd());
-                process.StandardInput.Close();
-                sr.Close();
             }
 
             while (!process.HasExited)
