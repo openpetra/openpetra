@@ -156,9 +156,6 @@ namespace Ict.Petra.Server.App.Core
         {
             if (TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                object o = TSession.GetVariable(PROGRESSTRACKER + AClientID);
-                TLogging.Log("TEST TIMOTHEUS" + o.GetType().ToString());
-
                 TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
 
                 state.JobFinished = true;
