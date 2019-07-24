@@ -139,6 +139,12 @@ namespace Ict.Tools.CodeChecker
 
                         foreach (Match matchInfo in RegExpToFind.Matches(contents))
                         {
+                            if (file.Contains("csharp/ICT/Common/Session/Session.cs") && matchInfo.Value.Contains("// STATIC_OK"))
+                            {
+                                // this is an allowed exception, in Ict.Common.Session.TSession
+                                continue;
+                            }
+
                             // RegEx Match is found, so log this file!
                             if (firstMatchStatic)
                             {
