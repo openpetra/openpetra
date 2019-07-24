@@ -31,6 +31,8 @@ using Ict.Common.Session;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.Security;
 
+using Newtonsoft.Json.Linq;
+
 namespace Ict.Petra.Server.App.Core
 {
     /// <summary>
@@ -68,7 +70,7 @@ namespace Ict.Petra.Server.App.Core
         {
             if ((AClientID != null) && TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = (TProgressState)TSession.GetVariable(PROGRESSTRACKER + AClientID);
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
                 if (state.PercentageDone > 100)
                 {
                     TLogging.Log("invalid percentage: " + state.PercentageDone.ToString());
@@ -93,7 +95,7 @@ namespace Ict.Petra.Server.App.Core
         {
             if (TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = (TProgressState)TSession.GetVariable(PROGRESSTRACKER + AClientID);
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
 
                 if (AStatusMessage.Length > 0)
                 {
@@ -120,7 +122,7 @@ namespace Ict.Petra.Server.App.Core
         {
             if (TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = (TProgressState)TSession.GetVariable(PROGRESSTRACKER + AClientID);
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
 
                 if (state.JobFinished == true)
                 {
@@ -154,7 +156,10 @@ namespace Ict.Petra.Server.App.Core
         {
             if (TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = (TProgressState)TSession.GetVariable(PROGRESSTRACKER + AClientID);
+                object o = TSession.GetVariable(PROGRESSTRACKER + AClientID);
+                TLogging.Log("TEST TIMOTHEUS" + o.GetType().ToString());
+
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
 
                 state.JobFinished = true;
 
