@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -403,11 +403,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                 TmpDR[PPartnerLocationTable.GetSendMailDBName()] = false;
                             }
 
-                            if (AInspectDT.Columns.Contains(PPartnerLocationTable.GetTelexDBName()))
-                            {
-                                TmpDR[PPartnerLocationTable.GetTelexDBName()] = 0;
-                            }
-
                             if (AInspectDT.Columns.Contains(PPartnerLocationTable.GetLocationDetailCommentDBName()))
                             {
                                 TmpDR[PPartnerLocationTable.GetLocationDetailCommentDBName()] = Catalog.GetString("** restricted **");
@@ -533,7 +528,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         PartnerLocationDR.SetDateEffectiveNull();
                         PartnerLocationDR.SetDateGoodUntilNull();
                         PartnerLocationDR.SendMail = false;
-                        PartnerLocationDR.Telex = 0;
                         PartnerLocationDR.LocationDetailComment = Catalog.GetString("** restricted **");
                         PartnerLocationDR.SetDateCreatedNull();
                         PartnerLocationDR.CreatedBy = Catalog.GetString("** restricted **");
@@ -744,7 +738,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 DataTable OtherPartnerLocationReferencesDT = AReadTransaction.DataBaseObj.SelectDT(
                     "SELECT PUB_" + PPartnerLocationTable.GetTableDBName() + '.' + PPartnerLocationTable.GetPartnerKeyDBName() + ", " +
                     PPartnerTable.GetPartnerShortNameDBName() + ", " +
-                    PPartnerTable.GetPartnerClassDBName() + ", " + PPartnerLocationTable.GetTelephoneNumberDBName() + ", " +
+                    PPartnerTable.GetPartnerClassDBName() + ", " +
                     PPartnerLocationTable.GetLocationTypeDBName() + ' ' + "FROM PUB_" + PPartnerTable.GetTableDBName() + " INNER JOIN PUB_" +
                     PPartnerLocationTable.GetTableDBName() + " ON PUB_" + PPartnerTable.GetTableDBName() + '.' +
                     PPartnerTable.GetPartnerKeyDBName() +

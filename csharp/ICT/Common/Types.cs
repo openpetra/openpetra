@@ -529,18 +529,39 @@ namespace Ict.Common
     [Serializable]
     public class TProgressState
     {
+        /// constructor
+        public TProgressState()
+        {
+            PercentageDone = -1;
+            AbsoluteOverallAmount = 100.0m;
+            Caption = string.Empty;
+            CancelJob = false;
+            JobFinished = false;
+        }
+
         /// percentage done
-        public int PercentageDone = -1;
+        public int PercentageDone
+        { get; set; }
+
         /// overall amount
-        public decimal AbsoluteOverallAmount = 100.0m;
+        public decimal AbsoluteOverallAmount
+        { get; set; }
+
         /// status message, which changes during the procedure
-        public string StatusMessage = string.Empty;
+        public string StatusMessage
+        { get; set; }
+
         /// caption, overall description of job
-        public string Caption = string.Empty;
+        public string Caption
+        { get; set; }
+
         /// the client can ask the procedure to stop
-        public bool CancelJob = false;
+        public bool CancelJob
+        { get; set; }
+
         /// if the job has finished, this is set to true. note: sometimes percentage might be inaccurate, or not present at all
-        public bool JobFinished = false;
+        public bool JobFinished
+        { get; set; }
 
         /// format the value in JSON for the javascript client
         public string ToJson()

@@ -130,8 +130,6 @@ namespace Ict.Petra.Server.App.WebService
 
                 try
                 {
-                    TLanguageCulture.Init();
-
                     // initialise the cached tables
                     TSetupDelegates.Init();
                 }
@@ -369,7 +367,7 @@ namespace Ict.Petra.Server.App.WebService
             }
 
             result.Add("resultcode", "success");
-            result.Add("navigation", TUINavigation.LoadNavigationUI());
+            result.Add("navigation", new TUINavigation().LoadNavigationUI());
             return JsonConvert.SerializeObject(result);
         }
 
@@ -386,7 +384,7 @@ namespace Ict.Petra.Server.App.WebService
                 return JsonConvert.SerializeObject(result);
             }
 
-            string htmlcode = TUINavigation.LoadNavigationPage(ANavigationPage);
+            string htmlcode = new TUINavigation().LoadNavigationPage(ANavigationPage);
 
             if (htmlcode.StartsWith("error:"))
             {

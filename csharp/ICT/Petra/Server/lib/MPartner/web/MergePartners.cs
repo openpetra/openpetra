@@ -83,8 +83,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
          *      Let the user select which sections they would like to merge. */
 
 
-        // TODO private static StreamWriter MyWriter;
-
         /// <summary>
         /// returns the supplier currency for a partner if it is a supplier
         /// </summary>
@@ -148,11 +146,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-                    /* // TODO write original data to xml file
-                     * string path = "../../log/OriginalRecordsBeforeMerge.xml";
-                     * FileStream outStream = File.Create(Path.GetFullPath(path);
-                     * MyWriter = new StreamWriter(outStream, Encoding.UTF8);*/
-
                     try
                     {
                         int numChanges = 0;
@@ -835,8 +828,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     }
-
-                    //TODO MyWriter.Close();
                 });
 
             ADifferentFamilies = DifferentFamilies;
@@ -854,8 +845,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (GiftTable.Rows.Count > 0)
             {
                 numChanges += GiftTable.Rows.Count;
-
-                //TODO GiftTable.WriteXml(MyWriter);
 
                 foreach (DataRow Row in GiftTable.Rows)
                 {
@@ -1219,11 +1208,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             if (ToRow.SendMail == false)
                             {
                                 ToRow.SendMail = FromRow.SendMail;
-                            }
-
-                            if (ToRow.Telex == 0)
-                            {
-                                ToRow.Telex = FromRow.Telex;
                             }
 
                             if (ToRow.CreatedBy == "")

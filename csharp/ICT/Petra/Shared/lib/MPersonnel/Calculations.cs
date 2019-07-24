@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,10 +39,10 @@ namespace Ict.Petra.Shared.MPersonnel
     public class Calculations
     {
         /// <summary>Passport expired</summary>
-        public static String PASSPORT_EXPIRED = " (" + Catalog.GetString("exp.") + ")";
+        public static readonly String PASSPORT_EXPIRED = " (" + Catalog.GetString("exp.") + ")";
 
         /// <summary>Main passport expired</summary>
-        public static String PASSPORTMAIN_EXPIRED = " (" + Catalog.GetString("exp.") + " " + Catalog.GetString("MAIN") + "!)";
+        public static readonly String PASSPORTMAIN_EXPIRED = " (" + Catalog.GetString("exp.") + " " + Catalog.GetString("MAIN") + "!)";
 
         /// <summary>
         /// Determines a PERSON's Nationalities (deduced from its passports).

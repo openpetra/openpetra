@@ -25,17 +25,20 @@ namespace {#NAMESPACE}
 [Serializable()]
 public class {#TABLENAME}Table : {#BASECLASSTABLE}
 {
-    private static String strCustomReportPermission = "{#CUSTOMREPORTPERMISSION}";
-    private static List<String> listCustomReportField = new List<String>{{#INITVARSCUSTOMREPORTFIELDLIST}};
-    
     /// TableId for Ict.Common.Data generic functions
-    public {#NEW}static short TableId = {#TABLEID};
+    public {#NEW}static readonly short TableId = {#TABLEID};
     {#COLUMNIDS}
 
 {#IFDEF COLUMNINFO}
-    private static bool FInitInfoValues = InitInfoValues();
+    private static readonly bool FInitInfoValues = InitInfoValues();
     private static bool InitInfoValues()
     {
+        // to avoid a compiler warning about unused variable FInitInfoValues
+        if (FInitInfoValues)
+        {
+            return true;
+        }
+
         TableInfo.Add(TableId, new TTypedTableInfo(TableId, "{#TABLEVARIABLENAME}", "{#DBTABLENAME}", 
             new TTypedColumnInfo[] { 
                 {#COLUMNINFO}
@@ -48,9 +51,7 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
 {#ENDIF COLUMNUNIQUEKEYORDER}
             }));
 
-        // try to avoid a compiler warning about unused variable FInitInfoValues which we need for initially calling InitInfoValues once
-        FInitInfoValues = true;
-        return FInitInfoValues;
+        return true;
     }
 {#ENDIF COLUMNINFO}
 
@@ -161,53 +162,13 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
         return CreateOdbcParameter(TableId, AColumnNr);
     }
 
-    /// string to indicate which permissions a user needs to access table for custom reports
-    /// (e.g. "PTNRUSER", "OR(FINANCE-1,DEVUSER)", "AND(PTNRUSER,FINANCE-1)"
-    /// This should be returned by method in derived class
-    public static string {#TABLEINTDS}CustomReportPermission()
-    {
-        return strCustomReportPermission;
-    }
-
-    /// string to indicate which permissions a user needs to access table for custom reports
-    /// (e.g. "PTNRUSER", "OR(FINANCE-1,DEVUSER)", "AND(PTNRUSER,FINANCE-1)"
-    /// This should be returned by method in derived class
-    public override string GetCustomReportPermission()
-    {
-        return strCustomReportPermission;
-    }
-    
-    /// Is this table generally available in custom reports?
-    public static bool {#TABLEINTDS}AvailableForCustomReport()
-    {
-        return {#AVAILABLEFORCUSTOMREPORT};
-    }
-
-    /// Is this table generally available in custom reports?
-    public override bool IsAvailableForCustomReport()
-    {
-        return {#AVAILABLEFORCUSTOMREPORT};
-    }
-    
-    /// Return a list of fields that are available for custom reports
-    public static List<String> {#TABLEINTDS}CustomReportFieldList()
-    {
-        return listCustomReportField;
-    }
-
-    /// Return a list of fields that are available for custom reports
-    public override List<String> GetCustomReportFieldList()
-    {
-        return listCustomReportField;
-    }
-    
     {#STATICCOLUMNPROPERTIES}
 
 }
 
 {##COLUMNIDS}
 /// used for generic TTypedDataTable functions
-public static {#NEW}short Column{#COLUMNNAME}Id = {#COLUMNORDERNUMBER};
+public static readonly {#NEW}short Column{#COLUMNNAME}Id = {#COLUMNORDERNUMBER};
 
 {##DATACOLUMN}
 {#COLUMN_DESCRIPTION}

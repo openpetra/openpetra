@@ -277,7 +277,7 @@ namespace Ict.Petra.Server.MFinance.GL
             FverificationResults = new TVerificationResultCollection();
             AVRCollection = FverificationResults;
             AStewardshipBatch = false;
-            TPeriodEndOperations.FwasCancelled = false;
+            WasCancelled = false;
             AglBatchNumbers = new List <int>();
 
             if (FledgerInfo.ProvisionalYearEndFlag)
@@ -342,7 +342,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
 
-            if (TPeriodEndOperations.FwasCancelled)
+            if (TPeriodEndOperations.WasCancelled)
             {
                 FverificationResults.Add(new TVerificationResult(Catalog.GetString("Month End"),
                         Catalog.GetString("Process was cancelled by user."), "",

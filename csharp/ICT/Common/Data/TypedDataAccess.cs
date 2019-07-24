@@ -70,31 +70,12 @@ namespace Ict.Common.Data
         /// <summary>
         /// indicates whether a row has been deleted
         /// </summary>
-        public static DateTime MODIFICATION_ID_DELETEDROW_INDICATOR = DateTime.MaxValue;
+        public static readonly DateTime MODIFICATION_ID_DELETEDROW_INDICATOR = DateTime.MaxValue;
 
         /// <summary>
         /// the max for sqlite is 500. for postgresql it could be higher.
         /// </summary>
         private const int MAX_SQL_PARAMETERS = 450;
-
-        private static int FRowCount;
-
-        /// <summary>
-        /// how many rows are in the current query or have been processed
-        /// this is used for the Progress bar, to watch the current status
-        /// </summary>
-        public static Int32 RowCount
-        {
-            get
-            {
-                return FRowCount;
-            }
-
-            set
-            {
-                FRowCount = value;
-            }
-        }
 
         /// <summary>
         /// This function returns true if the column name is not one of the special columns, that
@@ -2232,7 +2213,7 @@ namespace Ict.Common.Data
             List <OdbcParameter>InsertParameters = new List <OdbcParameter>();
             StringBuilder InsertStatement = new StringBuilder();
 
-            for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount++)
+            for (int RowCount = 0; (RowCount != ATable.Rows.Count); RowCount++)
             {
                 DataRow TheRow = ATable.Rows[RowCount];
 

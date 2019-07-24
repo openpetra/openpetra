@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
 // Copyright 2004-2019 by OM International
 //
@@ -375,7 +375,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteAnalysisAttributesSuffix(transaction);
         }
 
-        static int maxNumValuesExport = 5;
+        const int maxNumValuesExport = 5;
         void WriteAnalysisAttributesSuffix(ATransactionRow transaction)
         {
             FMainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetAnalysisTypeCodeDBName();

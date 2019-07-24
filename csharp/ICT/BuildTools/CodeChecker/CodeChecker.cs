@@ -38,7 +38,13 @@ namespace Ict.Tools.CodeChecker
         static int Main(string[] args)
         {
             // Root of all C# directories for OpenPetra.org
-            string RootOfCSharpDirectories = "../../csharp/";
+            string RootOfCSharpDirectories = "csharp/";
+            if (!Directory.Exists(RootOfCSharpDirectories))
+            {
+                // if this exe is run from delivery/bin
+                RootOfCSharpDirectories = "../../csharp/";
+            }
+
             // We are only analysing C# Files
             string CSharpFileType = "*.cs";
             // Log file where to put output of the analysis to
@@ -46,8 +52,8 @@ namespace Ict.Tools.CodeChecker
             Regex RegExpToFind;
             var RegExPatterns = new Dictionary <string, string>();
 
-            Dictionary <string, string>FalsePositivesFullMatch;
-            Dictionary <string, string>FalsePositivesEndMatch;
+            Dictionary <string, string>FalsePositivesFullMatch = new Dictionary <string, string>();
+            Dictionary <string, string>FalsePositivesEndMatch = new Dictionary <string, string>();
             string FalsePositiveValue;
             string FalsePositiveKey = String.Empty;
             string FalsePositivesEncountered = String.Empty;
@@ -57,7 +63,7 @@ namespace Ict.Tools.CodeChecker
             try
             {
                 // Application set-up
-                new TAppSettingsManager("../../etc/Client.config");
+                new TAppSettingsManager(false);
             }
             catch (Exception Exc)
             {
@@ -67,16 +73,19 @@ namespace Ict.Tools.CodeChecker
                 return -1;
             }
 
+            string action = TAppSettingsManager.GetValue("Action", "help");
+
+            if (action == "help")
+            {
+                Console.WriteLine("sample calls: ");
+                Console.WriteLine("   mono Ict.Tools.CodeChecker -Action:data");
+                Console.WriteLine("   mono Ict.Tools.CodeChecker -Action:static");
+                return -1;
+            }
+
             try
             {
-                if (Directory.Exists(TAppSettingsManager.GetValue("OpenPetra.PathLog")))
-                {
-                    new TLogging(TAppSettingsManager.GetValue("OpenPetra.PathLog") + "/" + LogFile, true);
-                }
-                else
-                {
-                    new TLogging(LogFile, true);
-                }
+                new TLogging(LogFile, true);
             }
             catch (Exception Exc)
             {
@@ -89,8 +98,14 @@ namespace Ict.Tools.CodeChecker
             try
             {
                 // 'Discovery rules' set-up
-                RegExPatterns = DeclareRegExpressions();
-                DeclareFalsePositives(out FalsePositivesFullMatch, out FalsePositivesEndMatch);
+                if (action == "data")
+                {
+                    RegExPatterns = DeclareRegExpressions();
+                    DeclareFalsePositives(out FalsePositivesFullMatch, out FalsePositivesEndMatch);
+                }
+
+                bool firstMatchStatic = true;
+                string StaticMessage = "Static Variables are not allowed in ASP.net";
 
                 // Log that we have started a run
                 TLogging.Log("'CODECHECKER' run started at " + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") + Environment.NewLine +
@@ -104,15 +119,50 @@ namespace Ict.Tools.CodeChecker
                              SearchOption.AllDirectories))
                 {
                     // Don't process the file that belongs to this project as it contains comments that would otherwise be found!
-                    if (file == @"../../csharp/ICT\BuildTools\CodeChecker\CodeChecker.cs")
+                    if (file.Contains(@"csharp/ICT/BuildTools/CodeChecker/CodeChecker.cs"))
                     {
                         continue;
                     }
 
-                    Console.WriteLine("Processing file: " + file);
+                    TLogging.LogAtLevel(4, "Processing file: " + file);
 
                     // Open C# file and read its text
                     string contents = File.ReadAllText(file);
+
+                    // check for static variables
+                    // does the filename match?
+                    if ((action == "static") && (file.Contains("csharp/ICT/Common") || file.Contains("csharp/ICT/Petra"))
+                        && !file.Contains("csharp/ICT/Petra/Tools") && !file.Contains("csharp/ICT/Petra/ServerAdmin"))
+                    {
+                        bool firstFileMatch = true;
+                        RegExpToFind = new Regex(@"static (?!readonly)(?!partial)(?!extern).*[;=]\n");
+
+                        foreach (Match matchInfo in RegExpToFind.Matches(contents))
+                        {
+                            if (file.Contains("csharp/ICT/Common/Session/Session.cs") && matchInfo.Value.Contains("// STATIC_OK"))
+                            {
+                                // this is an allowed exception, in Ict.Common.Session.TSession
+                                continue;
+                            }
+
+                            // RegEx Match is found, so log this file!
+                            if (firstMatchStatic)
+                            {
+                                firstMatchStatic = false;
+                                TLogging.Log("*****   " + StaticMessage + "   *****");
+                            }
+
+                            if (firstFileMatch)
+                            {
+                                firstFileMatch = false;
+                                TLogging.Log("file " + file);
+                            }
+
+                            TLogging.Log("                           " + matchInfo.Value.Trim());
+
+                            NumberOfRegExMatches++;
+                        }
+                    }
 
                     //
                     // Check if any of the RegEx matches!!!

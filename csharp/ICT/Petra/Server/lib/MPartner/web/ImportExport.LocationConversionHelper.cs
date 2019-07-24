@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,6 @@ using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
@@ -41,150 +40,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     /// <summary>
     /// Helper Class that aids in the conversion of certain p_partner_location data columns' content into Contact Details.
     /// </summary>
-    public static class TPartnerContactDetails_LocationConversionHelper
+    public class TPartnerContactDetails_LocationConversionHelper
     {
         /// <summary>
         /// Func Delegate for loading of PPartnerAttribute data from the DB using a Template Record.
         /// </summary>
-        public static Func <PPartnerAttributeRow, StringCollection, TDBTransaction,
+        public Func <PPartnerAttributeRow, StringCollection, TDBTransaction,
                             PPartnerAttributeTable>PartnerAttributeLoadUsingTemplate;
-
-        /// <summary>
-        /// Parses certain p_partner_location data columns' content into a data structure that is p_partner_attribute
-        /// representation.
-        /// </summary>
-        /// <remarks>Similar to code found in \csharp\ICT\BuildTools\DataDumpPetra2\FixData.cs, Method 'FixData',
-        /// in the code section that starts with the comment 'Process p_partner_location records and migrate certain values
-        /// of p_partner_location records to 'Contact Detail' records'.</remarks>
-        /// <param name="AMainDS">Typed DataSet that holds the p_partner_location records that are to be parsed.</param>
-        /// <param name="ATransaction">Instantiated DB Transaction.</param>
-        public static void ParsePartnerLocationsForContactDetails(PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
-        {
-            DataTable PartnerLocationsDT;
-            DataRow NewPartnerLocationDR;
-            string TelephoneNumber = String.Empty;
-            string FaxNumber = String.Empty;
-            string PhoneExtension;
-            string FaxExtension;
-
-            // collect the partner classes
-            foreach (PPartnerRow PartnerDR in AMainDS.PPartner.Rows)
-            {
-                TPartnerContactDetails.PartnerClassInformation[PartnerDR.PartnerKey] = PartnerDR.PartnerClass;
-            }
-
-            SortedList <long, DataTable>PartnerLocationsTables = new SortedList <long, DataTable>();
-
-            for (int counter = 0; counter < TPartnerContactDetails.NumberOfTables; counter++)
-            {
-                PartnerLocationsTables[counter] = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();
-            }
-
-            TPartnerContactDetails.PartnerLocationRecords = PartnerLocationsTables;
-
-            foreach (PPartnerLocationRow PartnerLocationDR in AMainDS.PPartnerLocation.Rows)
-            {
-                PartnerLocationsDT = PartnerLocationsTables[Math.Abs(PartnerLocationDR.PartnerKey) % TPartnerContactDetails.NumberOfTables];
-                DataRow LocationDR = AMainDS.PLocation.Rows.Find(new object[] { PartnerLocationDR.SiteKey, PartnerLocationDR.LocationKey });
-
-                // Phone Extension: Ignore if value in the dumped data is either null or 0
-                if (PartnerLocationDR.IsExtensionNull())
-                {
-                    PhoneExtension = String.Empty;
-                }
-
-                PhoneExtension = PartnerLocationDR.Extension.ToString();
-
-                if (PhoneExtension == "0")
-                {
-                    PhoneExtension = String.Empty;
-                }
-
-                // Fax Extension: Ignore if value in the dumped data is either null or 0
-                if (PartnerLocationDR.IsFaxExtensionNull())
-                {
-                    FaxExtension = String.Empty;
-                }
-
-                FaxExtension = PartnerLocationDR.FaxExtension.ToString();
-
-                if (FaxExtension == "0")
-                {
-                    FaxExtension = String.Empty;
-                }
-
-                if (!PartnerLocationDR.IsTelephoneNumberNull())
-                {
-                    // Concatenate Phone Number and Phone Extension ONLY if both of them aren't null and Phone Extension isn't 0 either.
-                    TelephoneNumber = PartnerLocationDR.TelephoneNumber + PhoneExtension;
-                }
-
-                if (!PartnerLocationDR.IsFaxNumberNull())
-                {
-                    // Concatenate Fax Number and Fax Extension ONLY if both of them aren't null and Fax Extension isn't 0 either.
-                    FaxNumber = PartnerLocationDR.FaxNumber + FaxExtension;
-                }
-
-                // Create representation of key data of the p_partner_location row and add it to the TPartnerContactDetails.PartnerLocationRecords Data Structure
-                NewPartnerLocationDR = PartnerLocationsDT.NewRow();
-                NewPartnerLocationDR["p_partner_key_n"] = PartnerLocationDR.PartnerKey;
-                NewPartnerLocationDR["p_site_key_n"] = PartnerLocationDR.SiteKey;
-                NewPartnerLocationDR["p_location_key_i"] = PartnerLocationDR.LocationKey;
-
-                if (!PartnerLocationDR.IsDateEffectiveNull())
-                {
-                    NewPartnerLocationDR["p_date_effective_d"] = PartnerLocationDR.DateEffective;
-                }
-                else
-                {
-                    PartnerLocationDR.SetDateEffectiveNull();
-                }
-
-                if (!PartnerLocationDR.IsDateGoodUntilNull())
-                {
-                    NewPartnerLocationDR["p_date_good_until_d"] = PartnerLocationDR.DateGoodUntil;
-                }
-                else
-                {
-                    PartnerLocationDR.SetDateGoodUntilNull();
-                }
-
-                NewPartnerLocationDR["p_location_type_c"] = PartnerLocationDR.LocationType;
-                NewPartnerLocationDR["p_send_mail_l"] = PartnerLocationDR.SendMail;
-                NewPartnerLocationDR["p_telephone_number_c"] = TelephoneNumber;
-                NewPartnerLocationDR["p_fax_number_c"] = FaxNumber;
-                NewPartnerLocationDR["p_mobile_number_c"] = PartnerLocationDR.MobileNumber;
-                NewPartnerLocationDR["p_alternate_telephone_c"] = PartnerLocationDR.AlternateTelephone;
-                NewPartnerLocationDR["p_email_address_c"] = PartnerLocationDR.EmailAddress;
-                NewPartnerLocationDR["p_url_c"] = PartnerLocationDR.Url;
-                NewPartnerLocationDR["p_value_country_c"] = LocationDR["p_country_code_c"];
-
-                PartnerLocationsDT.Rows.Add(NewPartnerLocationDR);
-            }
-
-            // get data for entire country table
-            PCountryTable CountryTable = PCountryAccess.LoadAll(ATransaction);
-
-            string InternatAccessCode = null;
-            string SiteCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(ATransaction);
-            DataRow SiteCountryRow = CountryTable.Rows.Find(SiteCountryCode);
-
-            // get InternatAccessCode for site country
-            if (SiteCountryRow != null)
-            {
-                InternatAccessCode = SiteCountryRow[PCountryTable.GetInternatAccessCodeDBName()].ToString();
-            }
-
-            TPartnerContactDetails.CreateContactDetailsRow = CreatePartnerContactDetailRecord;
-            TPartnerContactDetails.EmptyStringIndicator = String.Empty;
-            TPartnerContactDetails.PartnerAttributeHoldingDataSet = AMainDS;
-            TPartnerContactDetails.CountryTable = CountryTable;
-            TPartnerContactDetails.SiteCountryCode = SiteCountryCode;
-            TPartnerContactDetails.SiteInternatAccessCode = InternatAccessCode;
-            TPartnerContactDetails.PopulatePPartnerAttribute(ATransaction.DataBaseObj, false);
-
-            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);
-        }
 
         /// <summary>
         /// Creates a PPartnerAttribute Record out of data that is held in a data structure that is a p_partner_attribute
@@ -193,7 +55,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="APPARec">Data structure that is p_partner_attribute representation.</param>
         /// <param name="AMainDS">DataSet to which the PPartnerAttribute Record should be added to.</param>
         /// <param name="ADataBase"></param>
-        public static void CreatePartnerContactDetailRecord(TPartnerContactDetails.PPartnerAttributeRecord APPARec,
+        public void CreatePartnerContactDetailRecord(PPartnerAttributeRecord APPARec,
             DataSet AMainDS, TDataBase ADataBase = null)
         {
             var MainDS = (PartnerImportExportTDS)AMainDS;
@@ -236,7 +98,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// p_partner_attribute records).
         /// </summary>
         /// <param name="APartnerLocationDT">An instance of the p_partner_location DataTable.</param>
-        public static void AddOldDBTableColumnsToPartnerLocation(DataTable APartnerLocationDT)
+        public void AddOldDBTableColumnsToPartnerLocation(DataTable APartnerLocationDT)
         {
             if (!APartnerLocationDT.Columns.Contains("p_telephone_number_c"))
             {
@@ -257,7 +119,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// if one was found, otherwise this is null.</param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns>False if the row should be imported as found in the import file, otherwise true.</returns>
-        public static bool ExistingPartnerAttributes(PPartnerAttributeRow AImportedPartnerAttribRow,
+        public bool ExistingPartnerAttributes(PPartnerAttributeRow AImportedPartnerAttribRow,
             out PPartnerAttributeRow AFoundPartnerAttribDR, TDBTransaction ATransaction)
         {
             PPartnerAttributeTable ExistingPartnerAttributeDT;
@@ -315,7 +177,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// </summary>
         /// <param name="AImportedPartnerAttributeDR">PPartnerAttribute Row that got populated from imported data.</param>
         /// <param name="AExistingPartnerAttributeDR">PPartnerAttribute Row from the DB.</param>
-        public static void TakeExistingPartnerAttributeRecordAndModifyIt(PPartnerAttributeRow AImportedPartnerAttributeDR,
+        public void TakeExistingPartnerAttributeRecordAndModifyIt(PPartnerAttributeRow AImportedPartnerAttributeDR,
             PPartnerAttributeRow AExistingPartnerAttributeDR)
         {
             // First step: Store some details of the to-be-imported record in Variables
@@ -355,6 +217,158 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // DataColumn holds different data in the 'Current' and 'Modified' versions of a DataColum, i.e. where
             // there is a real difference between the to-be-imported data and the data in the record that is already
             // in the DB.
+        }
+
+        /// <summary>
+        /// Holds data of a p_partner_attribute Record.
+        /// </summary>
+        /// <remarks>This can't be a struct because we need to be able to assign
+        /// values to the Index Property in an foreach loop.</remarks>
+        public class PPartnerAttributeRecord
+        {
+            /// <summary>
+            /// Insertion order of p_partner_attribute Records.
+            /// </summary>
+            public int InsertionOrderPerPartner
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Partner Key Column data.
+            /// </summary>
+            public Int64 PartnerKey
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Attribute Type Column data.
+            /// </summary>
+            public string AttributeType
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Sequence  Column data.
+            /// </summary>
+            public int Sequence
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Index Column data.
+            /// </summary>
+            public int Index
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Value Column data.
+            /// </summary>
+            public string Value
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Value Country Column data.
+            /// </summary>
+            public string ValueCountry
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Comment Column data.
+            /// </summary>
+            public string Comment
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Primary Column data.
+            /// </summary>
+            public bool Primary
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// WithinOrganisation Column data.
+            /// </summary>
+            public bool WithinOrganisation
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Specialised Column data.
+            /// </summary>
+            public bool Specialised
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Confidential Column data.
+            /// </summary>
+            public bool Confidential
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Current Column data.
+            /// </summary>
+            public bool Current
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// NoLongerCurrentFrom Column data.
+            /// </summary>
+            public DateTime ? NoLongerCurrentFrom
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// CreatedByUser Column data.
+            /// </summary>
+            public String CreatedByUser
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// CreatedDate Column data.
+            /// </summary>
+            public DateTime ? DateCreated
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// ModifiedByUser Column data.
+            /// </summary>
+            public String ModifiedByUser
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// ModifiedDate Column data.
+            /// </summary>
+            public DateTime ? DateModified
+            {
+                get; set;
+            }
         }
     }
 }

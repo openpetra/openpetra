@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,12 +42,9 @@ namespace Ict.Common
     /// </summary>
     public class StringHelper
     {
-        private static string[] DefaultCSVSeparators = new string[] {
+        private static readonly string[] DefaultCSVSeparators = new string[] {
             ",", ";", "/", "|", "-", ":"
         };
-
-        private static CultureInfo monthFirstCulture = null;
-        private static CultureInfo dayFirstCulture = null;
 
         /// <summary>
         /// This string is returned by the CSV parser if it cannot successfully parse a text CSV field - usually due to mis-matched quote marks.
@@ -2141,7 +2138,7 @@ namespace Ict.Common
             return FormatCurrency(new TVariant(value), format);
         }
 
-        private static DataTable CurrencyFormats = null;
+        private DataTable CurrencyFormats = null;
 
         /// <summary>
         /// Use this for displaying currency-sensitive amounts.
@@ -2149,7 +2146,7 @@ namespace Ict.Common
         /// <param name="AValue"></param>
         /// <param name="ACurrencyCode"></param>
         /// <returns></returns>
-        public static String FormatUsingCurrencyCode(decimal AValue, String ACurrencyCode)
+        public String FormatUsingCurrencyCode(decimal AValue, String ACurrencyCode)
         {
             String format = "->>>,>>>,>>>,>>9.99";
 
@@ -2169,7 +2166,7 @@ namespace Ict.Common
         /// <summary></summary>
         /// <param name="ACurrencyCode"></param>
         /// <returns></returns>
-        public static int DecimalPlacesForCurrency(String ACurrencyCode)
+        public int DecimalPlacesForCurrency(String ACurrencyCode)
         {
             int Ret = 2;
 
@@ -2199,7 +2196,7 @@ namespace Ict.Common
         /// <summary>
         /// If this is not given (during initialisation), a default format will be used.
         /// </summary>
-        public static DataTable CurrencyFormatTable
+        public DataTable CurrencyFormatTable
         {
             set
             {
@@ -2291,23 +2288,6 @@ namespace Ict.Common
             return ReturnValue;
         }
 
-/*
- *      private static ArrayList months = new ArrayList();
- *      /// <summary>
- *      /// initialize the localized month names
- *      /// not used at the moment; using .net localisation instead
- *      /// </summary>
- *      /// <param name="monthNames">an array of the month names</param>
- *      public static void SetLocalizedMonthNames(ArrayList monthNames)
- *      {
- *          months = new ArrayList();
- *
- *          foreach (string s in monthNames)
- *          {
- *              months.Add(s);
- *          }
- *      }
- */
         /// <summary>
         /// Finds a matching closing bracket in a String.
         /// </summary>
@@ -2762,16 +2742,8 @@ namespace Ict.Common
             }
 
             // We will try and parse our 'date' in the two cultures that work well with month-first and day-first
-            // These are static variables so we only need to initialise them once for the application
-            if (monthFirstCulture == null)
-            {
-                monthFirstCulture = StringHelper.GetCultureInfoForDateFormat("M/d/y");
-            }
-
-            if (dayFirstCulture == null)
-            {
-                dayFirstCulture = StringHelper.GetCultureInfoForDateFormat("d/M/y");
-            }
+            CultureInfo monthFirstCulture = StringHelper.GetCultureInfoForDateFormat("M/d/y");
+            CultureInfo dayFirstCulture = StringHelper.GetCultureInfoForDateFormat("d/M/y");
 
             // Note: When you examine the DateTimeFormats that these two cultures create there are more than 100 format strings
             //   that get checked.  In particular the date separator is unimportant, as is M or MM and d or dd

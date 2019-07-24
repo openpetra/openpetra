@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanp
+//       alanp, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -178,33 +178,5 @@ namespace Ict.Common.IO
         {
             return ACodePage == 1200 || ACodePage == 1201 || ACodePage == 12000 || ACodePage == 12001 || ACodePage == 65000 || ACodePage == 65001;
         }
-
-        #region Delegate for obtaining a user default boolean value
-
-        /// <summary>
-        /// Declaration of a delegate to retrieve a boolean value from the user defaults
-        /// </summary>
-        public delegate Boolean TRetrieveUserDefaultBoolean(String AKey, Boolean ADefault);
-
-        // Delegate for accessing boolean user preference
-        private static TRetrieveUserDefaultBoolean FRetrieveUserDefaultBoolean;
-
-        /// <summary>
-        /// Get/set the function pointer for retrieving a boolean user default
-        /// </summary>
-        public static TRetrieveUserDefaultBoolean RetrieveUserDefaultBoolean
-        {
-            get
-            {
-                return FRetrieveUserDefaultBoolean;
-            }
-
-            set
-            {
-                FRetrieveUserDefaultBoolean = value;
-            }
-        }
-
-        #endregion
     }
 }

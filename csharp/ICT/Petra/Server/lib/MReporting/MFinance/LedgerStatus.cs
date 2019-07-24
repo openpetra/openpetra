@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,17 +44,17 @@ namespace Ict.Petra.Server.MReporting.MFinance
     public class LedgerStatus
     {
         /// <summary>list of TGlmSequence System.Objects</summary>
-        public static TGlmSequenceCache GlmSequencesCache = new TGlmSequenceCache();
+        public TGlmSequenceCache GlmSequencesCache = new TGlmSequenceCache();
 
         /// <summary>
         /// cache of exchange rates
         /// </summary>
-        public static TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+        public TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
 
         /// <summary>
         /// cache of sql results for exchange rates
         /// </summary>
-        public static TSQLCache ExchangeRateCachedResultSets = new TSQLCache();
+        public TSQLCache ExchangeRateCachedResultSets = new TSQLCache();
     }
 
     /// <summary>
@@ -101,6 +101,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <param name="ANumberAccountingPeriods"></param>
         /// <param name="ANumberForwardingPeriods"></param>
         /// <param name="glmSequence">in relation to year, not currentFinancialYear</param>
+        /// <param name="myLedgerStatus"></param>
         public void MainConstructor(TDataBase databaseConnection,
             int period,
             int year,
@@ -109,7 +110,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             System.Int32 ACurrentPeriod,
             System.Int32 ANumberAccountingPeriods,
             System.Int32 ANumberForwardingPeriods,
-            TGlmSequence glmSequence)
+            TGlmSequence glmSequence,
+            LedgerStatus myLedgerStatus)
         {
             this.diffPeriod = diffPeriod;
             FCurrentFinancialYear = ACurrentFinancialYear;
@@ -125,7 +127,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             }
             else
             {
-                realGlmSequence = LedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, glmSequence, realYear);
+                realGlmSequence = myLedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, glmSequence, realYear);
             }
 
             // the period is in the last year
@@ -139,7 +141,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             {
                 realPeriod = FNumberAccountingPeriods + realPeriod;
                 realYear = realYear - 1;
-                realGlmSequence = LedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, realGlmSequence, realYear);
+                realGlmSequence = myLedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, realGlmSequence, realYear);
             }
 
             // forwarding periods are only allowed in the current year
@@ -147,12 +149,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
             {
                 realPeriod = realPeriod - FNumberAccountingPeriods;
                 realYear = realYear + 1;
-                realGlmSequence = LedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, realGlmSequence, realYear);
+                realGlmSequence = myLedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, realGlmSequence, realYear);
             }
 
             if (realGlmSequence != null)
             {
-                exchangeRateToIntl = LedgerStatus.ExchangeRateCache.GetCorporateExchangeRate(databaseConnection,
+                exchangeRateToIntl = myLedgerStatus.ExchangeRateCache.GetCorporateExchangeRate(databaseConnection,
                     realGlmSequence.ledger_number,
                     realYear,
                     realPeriod,
@@ -182,6 +184,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             System.Int32 ANumberForwardingPeriods,
             TGlmSequence glmSequence)
         {
+            LedgerStatus myLedgerStatus = new LedgerStatus();
             MainConstructor(databaseConnection,
                 period,
                 year,
@@ -190,7 +193,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 ACurrentPeriod,
                 ANumberAccountingPeriods,
                 ANumberForwardingPeriods,
-                glmSequence);
+                glmSequence,
+                myLedgerStatus);
         }
 
         /// <summary>
@@ -206,11 +210,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
             FCurrentPeriod = parameters.Get("param_current_period_i", column).ToInt();
             FNumberForwardingPeriods = parameters.Get("param_number_fwd_posting_periods_i", column).ToInt();
             Int32 glmSequenceNumber = parameters.Get("glm_sequence_i", column).ToInt();
-            realGlmSequence = LedgerStatus.GlmSequencesCache.GetGlmSequence(glmSequenceNumber);
+            LedgerStatus myLedgerStatus = new LedgerStatus();
+            realGlmSequence = myLedgerStatus.GlmSequencesCache.GetGlmSequence(glmSequenceNumber);
 
             if ((realGlmSequence != null) && (realGlmSequence.year != year))
             {
-                realGlmSequence = LedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, realGlmSequence, year);
+                realGlmSequence = myLedgerStatus.GlmSequencesCache.GetOtherYearGlmSequence(databaseConnection, realGlmSequence, year);
             }
 
             if (parameters.Exists("param_diff_period_i", column, -1))
@@ -226,7 +231,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 FCurrentPeriod,
                 FNumberAccountingPeriods,
                 FNumberForwardingPeriods,
-                realGlmSequence);
+                realGlmSequence,
+                myLedgerStatus);
         }
 
         /// <summary>
@@ -277,7 +283,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             FCurrentPeriod = parameters.Get("param_current_period_i", column).ToInt();
             FNumberForwardingPeriods = parameters.Get("param_number_of_accounting_periods_i", column).ToInt();
             Int32 glmSequenceNumber = parameters.Get("glm_sequence_i", column).ToInt();
-            realGlmSequence = LedgerStatus.GlmSequencesCache.GetGlmSequence(glmSequenceNumber);
+            LedgerStatus myLedgerStatus = new LedgerStatus();
+            realGlmSequence = myLedgerStatus.GlmSequencesCache.GetGlmSequence(glmSequenceNumber);
             MainConstructor(databaseConnection,
                 realPeriod,
                 year,
@@ -286,7 +293,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 FCurrentPeriod,
                 FNumberAccountingPeriods,
                 FNumberForwardingPeriods,
-                realGlmSequence);
+                realGlmSequence,
+                myLedgerStatus);
         }
 
         /// <summary>

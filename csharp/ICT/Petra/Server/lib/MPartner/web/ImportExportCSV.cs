@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,7 +32,6 @@ using Ict.Common;
 using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
-using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner;
@@ -55,11 +54,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     /// </summary>
     public class TPartnerImportCSV
     {
-        private static Int32 FLocationKey = -1;
-        private static TVerificationResultCollection ResultsCol;
-        private static String ResultsContext;
+        private Int32 FLocationKey = -1;
+        private TVerificationResultCollection ResultsCol;
+        private String ResultsContext;
 
-        private static void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
+        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
         {
             if (ASeverity != TResultSeverity.Resv_Status)
             {
@@ -69,7 +68,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, ASeverity));
         }
 
-        private static void AddVerificationResult(String AResultText)
+        private void AddVerificationResult(String AResultText)
         {
             AddVerificationResult(AResultText, TResultSeverity.Resv_Noncritical);
         }
@@ -82,11 +81,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AReferenceResults"></param>
         /// <returns></returns>
-        public static PartnerImportExportTDS ImportData(XmlNode ANode, string ADateFormat, ref TVerificationResultCollection AReferenceResults)
+        public PartnerImportExportTDS ImportData(XmlNode ANode, string ADateFormat, ref TVerificationResultCollection AReferenceResults)
         {
             PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
 
-            TPartnerImportCSV.FLocationKey = -1;
+            FLocationKey = -1;
             ResultsCol = AReferenceResults;
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
@@ -142,8 +141,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         ANode = ANode.NextSibling;
                     }
-
-                    CreatePartnerAttributes(ref ResultDS, Transaction);
                 });
 
             return ResultDS;
@@ -152,7 +149,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <summary>
         /// Create new partner, family, location and PartnerLocation records in MainDS
         /// </summary>
-        private static Int64 CreateNewFamily(XmlNode ANode, Boolean AFamilyForPerson, out int ALocationKey, ref PartnerImportExportTDS AMainDS,
+        private Int64 CreateNewFamily(XmlNode ANode, Boolean AFamilyForPerson, out int ALocationKey, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             Int64 FamilyKey = 0;
@@ -352,7 +349,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
             AMainDS.PLocation.Rows.Add(newLocation);
-            newLocation.LocationKey = TPartnerImportCSV.FLocationKey;
+            newLocation.LocationKey = FLocationKey;
             newLocation.Locality = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
             newLocation.StreetName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_STREET);
             newLocation.Address3 = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
@@ -361,10 +358,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newLocation.County = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTY);
             newLocation.CountryCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
-            PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
-            TPartnerContactDetails_LocationConversionHelper.AddOldDBTableColumnsToPartnerLocation(AMainDS.PPartnerLocation);
+            TPartnerContactDetails_LocationConversionHelper myHelper =
+                new TPartnerContactDetails_LocationConversionHelper();
 
-            partnerlocation.LocationKey = TPartnerImportCSV.FLocationKey;
+            PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+            myHelper.AddOldDBTableColumnsToPartnerLocation(AMainDS.PPartnerLocation);
+
+            partnerlocation.LocationKey = FLocationKey;
             partnerlocation.SiteKey = 0;
             partnerlocation.PartnerKey = newPartner.PartnerKey;
             partnerlocation.DateEffective = DateTime.Now.Date;
@@ -380,8 +380,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
 
-            ALocationKey = TPartnerImportCSV.FLocationKey;
-            TPartnerImportCSV.FLocationKey--;
+            ALocationKey = FLocationKey;
+            FLocationKey--;
 
             return newPartner.PartnerKey;
         }
@@ -396,7 +396,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AMainDS"></param>
         /// <param name="ATransaction"></param>
-        private static Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode, string ADateFormat,
+        private Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode, string ADateFormat,
             ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
         {
             Int64 PersonKey = 0;
@@ -533,28 +533,73 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             newPartnerLocation.SendMail = false;
 
-            newPartnerLocation["p_email_address_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'newPartnerLocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
-            newPartnerLocation["p_telephone_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'newPartnerLocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
-            newPartnerLocation["p_mobile_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'newPartnerLocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
+            string email = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            string phone = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
+            string mobile = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+
+            if (email.Length > 0)
+            {
+                PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
+                partnerAttributeRow.Index = 0;
+                partnerAttributeRow.Primary = true;
+                partnerAttributeRow.Value = email;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+
+                partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                partnerAttributeRow.Index = 9999;
+                partnerAttributeRow.Primary = false;
+                partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_EMAIL;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+            }
+
+            if (phone.Length > 0)
+            {
+                PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
+                partnerAttributeRow.Index = 0;
+                partnerAttributeRow.Primary = true;
+                partnerAttributeRow.Value = phone;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+
+                partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                partnerAttributeRow.Index = 9999;
+                partnerAttributeRow.Primary = false;
+                partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_PHONE;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+            }
+
+            if (mobile.Length > 0)
+            {
+                PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                partnerAttributeRow.Index = 0;
+                partnerAttributeRow.Primary = true;
+                partnerAttributeRow.Value = mobile;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+
+                partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
+                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                partnerAttributeRow.Index = 9999;
+                partnerAttributeRow.Primary = false;
+                partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
+            }
 
             AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
 
             return newPerson.PartnerKey;
         }
 
-        private static void CreatePartnerAttributes(ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
-        {
-            TPartnerContactDetails_LocationConversionHelper.PartnerAttributeLoadUsingTemplate =
-                PPartnerAttributeAccess.LoadUsingTemplate;
-
-            TPartnerContactDetails_LocationConversionHelper.ParsePartnerLocationsForContactDetails(AMainDS,
-                ATransaction);
-        }
-
-        private static void CreateSpecialTypes(XmlNode ANode,
+        private void CreateSpecialTypes(XmlNode ANode,
             Int64 APartnerKey,
             String ACSVKey,
             ref PartnerImportExportTDS AMainDS,
@@ -578,7 +623,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void CreateSpecialTypes(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
+        private void CreateSpecialTypes(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
         {
             // This previous code requires a format that doesn't conform to the documented standard:
 
@@ -599,7 +644,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             CreateSpecialTypes(ANode, APartnerKey, "SpecialType_", ref AMainDS, ATransaction);
         }
 
-        private static void CreateShortTermApplication(XmlNode ANode,
+        private void CreateShortTermApplication(XmlNode ANode,
             Int64 APartnerKey,
             string ADateFormat,
             ref PartnerImportExportTDS AMainDS,
@@ -767,7 +812,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
                     AddVerificationResult(string.Format("Bad arrival/departure date format in Application: {0} (Expected format: {1})", TimeString,
-                            APartnerKey), TResultSeverity.Resv_Critical);
+                            fmt), TResultSeverity.Resv_Critical);
                 }
 
                 DateTime TempTime;
@@ -829,7 +874,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void CreatePassport(XmlNode ANode, Int64 APartnerKey, string ADateFormat, ref PartnerImportExportTDS AMainDS,
+        private void CreatePassport(XmlNode ANode, Int64 APartnerKey, string ADateFormat, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             string PassportNum = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
@@ -905,7 +950,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void CreateSpecialNeeds(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
+        private void CreateSpecialNeeds(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             // only create special need record if data exists in import file
@@ -954,7 +999,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void CreateSubscriptions(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
+        private void CreateSubscriptions(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             int SubsCount = 0;
@@ -985,7 +1030,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void CreateContacts(XmlNode ANode,
+        private void CreateContacts(XmlNode ANode,
             Int64 APartnerKey,
             string ADateFormat,
             ref PartnerImportExportTDS AMainDS,
@@ -1040,7 +1085,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// Returns the gender of the currently selected partner
         /// </summary>
         /// <returns></returns>
-        private static string GetGenderCode(XmlNode ACurrentPartnerNode)
+        private string GetGenderCode(XmlNode ACurrentPartnerNode)
         {
             string gender = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_GENDER);
 
@@ -1056,7 +1101,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return MPartnerConstants.GENDER_UNKNOWN;
         }
 
-        private static string GetTitle(XmlNode ACurrentPartnerNode)
+        private string GetTitle(XmlNode ACurrentPartnerNode)
         {
             if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE))
             {
@@ -1077,7 +1122,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return "";
         }
 
-        private static string GetMaritalStatusCode(XmlNode ACurrentPartnerNode, TDBTransaction ATransaction)
+        private string GetMaritalStatusCode(XmlNode ACurrentPartnerNode, TDBTransaction ATransaction)
         {
             if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
             {
@@ -1113,7 +1158,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         #region Output CSV Data
 
-        private static void CreateOutputData(XmlNode ANode,
+        private void CreateOutputData(XmlNode ANode,
             Int64 APartnerKey,
             string APartnerClass,
             bool AIsFromFile,

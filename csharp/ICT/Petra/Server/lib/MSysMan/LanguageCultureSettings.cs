@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,30 +44,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool SetLanguageAndCulture(string ALanguageCode, string ACultureCode)
         {
-            TLanguageCulture.SetLanguageAndCulture(ALanguageCode, ACultureCode);
-
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode, true);
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UICULTURE, ACultureCode, true);
 
             return true;
-        }
-
-        /// <summary>
-        /// load the language and culture settings from the user defaults
-        /// </summary>
-        /// <returns>false if user has not selected any defaults</returns>
-        [RequireModulePermission("NONE")]
-        public static bool LoadLanguageAndCultureFromUserDefaults()
-        {
-            if (TUserDefaults.HasDefault(MSysManConstants.USERDEFAULT_UILANGUAGE))
-            {
-                string LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UILANGUAGE);
-                string CultureCode = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UICULTURE);
-                TLanguageCulture.SetLanguageAndCulture(LanguageCode, CultureCode);
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>

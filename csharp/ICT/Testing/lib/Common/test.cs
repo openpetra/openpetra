@@ -568,9 +568,10 @@ namespace Ict.Common.Testing
 
             // See the IMPORTANT NOTE at the top of this class concerning the use of Cultures and a PC's local regional settings.
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            StringHelper.CurrencyFormatTable = Tbl;
-            String TrlRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
-            String EurRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
+            StringHelper myStringHelper = new StringHelper();
+            myStringHelper.CurrencyFormatTable = Tbl;
+            String TrlRes = myStringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
+            String EurRes = myStringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
 
             NumberFormatInfo nfi = Thread.CurrentThread.CurrentCulture.NumberFormat;
             String expectedTrl = "1" + nfi.CurrencyGroupSeparator + "235";
@@ -580,8 +581,8 @@ namespace Ict.Common.Testing
 
             // Now try a different culture with default culture settings
             Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
-            TrlRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
-            EurRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
+            TrlRes = myStringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
+            EurRes = myStringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
             Assert.AreEqual("1.235", TrlRes);
             Assert.AreEqual("1.234,56", EurRes);
         }

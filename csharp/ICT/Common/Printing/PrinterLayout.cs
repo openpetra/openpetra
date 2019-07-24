@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -81,13 +81,13 @@ namespace Ict.Common.Printing
         public Int32 borderWidth;
 
         /// left border
-        public static int LEFT = 1;
+        public const int LEFT = 1;
         /// right border
-        public static int RIGHT = 2;
+        public const int RIGHT = 2;
         /// top border
-        public static int TOP = 4;
+        public const int TOP = 4;
         /// bottom border
-        public static int BOTTOM = 8;
+        public const int BOTTOM = 8;
 
         /// <summary>border: left = 1, right = 2, top = 4, bottom = 8</summary>
         public Int32 borderBitField;

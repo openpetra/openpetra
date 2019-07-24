@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,10 +60,18 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         protected bool FHasCriticalErrors;
 
-        /// <summary>
-        /// If a cancel request comes from the client, it sets this.
-        /// </summary>
-        public static Boolean FwasCancelled;
+        /// currently not implemented: this can be set to cancel the current operation
+        public static bool WasCancelled
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                // currently not implemented. could use the session to store the value
+            }
+        }
 
         /// <summary>
         /// This is the standard VerificationResultCollection for the info and the error messages.
@@ -98,7 +106,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AOperationName"></param>
         protected void RunPeriodEndSequence(AbstractPeriodEndOperation AOperation, string AOperationName)
         {
-            if (FwasCancelled)
+            if (WasCancelled)
             {
                 TLogging.Log(AOperationName + ": operation cancelled by user.");
                 return;
@@ -211,7 +219,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return !(FHasCriticalErrors | FInfoMode | TPeriodEndOperations.FwasCancelled);
+                return !(FHasCriticalErrors | FInfoMode | TPeriodEndOperations.WasCancelled);
             }
         }
 

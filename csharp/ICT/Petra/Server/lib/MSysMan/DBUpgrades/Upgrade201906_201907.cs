@@ -34,10 +34,10 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
     /// </summary>
     public static partial class TDBUpgrade
     {
-        /// Upgrade to version 2015-09
-        public static bool UpgradeDatabase201503_201509()
+        /// Upgrade to version 2019-07
+        public static bool UpgradeDatabase201906_201907()
         {
-            // there are various changes to the database structure
+            // drop some deprecated fields
             TDataBase db = DBAccess.Connect("TDBUpgrade");
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             bool SubmitOK = false;
@@ -46,11 +46,14 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                 ref SubmitOK,
                 delegate
                 {
-                    string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade201503_201509.sql").Split(new char[]{';'});
+                    string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade201906_201907.sql").Split(new char[]{';'});
 
                     foreach (string stmt in SqlStmts)
                     {
-                        db.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                        if (stmt.Trim().Length > 0)
+                        {
+                            db.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                        }
                     }
 
                     SubmitOK = true;

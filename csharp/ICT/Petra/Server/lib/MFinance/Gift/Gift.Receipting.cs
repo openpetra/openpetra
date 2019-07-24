@@ -94,8 +94,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             APDFReceipt = string.Empty;
             AHTMLReceipt = String.Empty;
 
-            TLanguageCulture.SetLanguageAndCulture(ALanguage, ALanguage);
-            TLanguageCulture.LoadLanguageAndCulture();
+            Catalog.Init(ALanguage, ALanguage);
 
             // get BaseCurrency
             System.Type typeofTable = null;
@@ -353,6 +352,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             // get details of the donor, and best address
 
+            StringHelper myStringHelper = new StringHelper();
+            myStringHelper.CurrencyFormatTable = ATransaction.DataBaseObj.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ATransaction);
+
             PLocationTable Location;
             string CountryName;
 
@@ -519,13 +521,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 Replace("#AMOUNTCURRENCY", currency).
                                 Replace("#AMOUNTINWORDS",
                         NumberToWords.AmountToWords(amount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                                Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(amount, currency)).
+                                Replace("#AMOUNT", myStringHelper.FormatUsingCurrencyCode(amount, currency)).
                                 Replace("#TAXDEDUCTAMOUNTINWORDS",
                         NumberToWords.AmountToWords(taxDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                                Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(taxDeductibleAmount, currency)).
+                                Replace("#TAXDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(taxDeductibleAmount, currency)).
                                 Replace("#TAXNONDEDUCTAMNTINWORDS",
                         NumberToWords.AmountToWords(nonDeductibleAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                                Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(nonDeductibleAmount, currency)).
+                                Replace("#TAXNONDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(nonDeductibleAmount, currency)).
                                 Replace("#COMMENTONE", commentOne).
                                 Replace("#COMMENTTWO", commentTwo).
                                 Replace("#COMMENTTHREE", commentThree).
@@ -555,15 +557,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     Replace("#AMOUNTCURRENCY", prevCurrency).
                                     Replace("#AMOUNTINWORDS",
                             NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                                    Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
+                                    Replace("#AMOUNT", myStringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
                                     Replace("#TAXDEDUCTAMOUNTINWORDS",
                             NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular,
                                 MinorUnitPlural)).
-                                    Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
+                                    Replace("#TAXDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
                                     Replace("#TAXNONDEDUCTAMNTINWORDS",
                             NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular,
                                 MinorUnitPlural)).
-                                    Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency));
+                                    Replace("#TAXNONDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency));
                         prevAmount = amount;
 
                         if (TaxDeductiblePercentageEnabled)
@@ -610,13 +612,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             Replace("#AMOUNTCURRENCY", prevCurrency).
                             Replace("#AMOUNTINWORDS",
                     NumberToWords.AmountToWords(prevAmount, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                            Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
+                            Replace("#AMOUNT", myStringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
                             Replace("#TAXDEDUCTAMOUNTINWORDS",
                     NumberToWords.AmountToWords(prevAmountTaxDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                            Replace("#TAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
+                            Replace("#TAXDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(prevAmountTaxDeduct, prevCurrency)).
                             Replace("#TAXNONDEDUCTAMNTINWORDS",
                     NumberToWords.AmountToWords(prevAmountNonDeduct, MajorUnitSingular, MajorUnitPlural, MinorUnitSingular, MinorUnitPlural)).
-                            Replace("#TAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency));
+                            Replace("#TAXNONDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(prevAmountNonDeduct, prevCurrency));
                 prevAmount = 0.0M;
 
                 if (TaxDeductiblePercentageEnabled)
@@ -627,9 +629,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             msg = msg.Replace("#OVERALLAMOUNTCURRENCY", ABaseCurrency).
-                  Replace("#OVERALLAMOUNT", StringHelper.FormatUsingCurrencyCode(sum, ABaseCurrency)).
-                  Replace("#OVERALLTAXDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(sumTaxDeduct, ABaseCurrency)).
-                  Replace("#OVERALLTAXNONDEDUCTAMOUNT", StringHelper.FormatUsingCurrencyCode(sumNonDeduct, ABaseCurrency));
+                  Replace("#OVERALLAMOUNT", myStringHelper.FormatUsingCurrencyCode(sum, ABaseCurrency)).
+                  Replace("#OVERALLTAXDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(sumTaxDeduct, ABaseCurrency)).
+                  Replace("#OVERALLTAXNONDEDUCTAMOUNT", myStringHelper.FormatUsingCurrencyCode(sumNonDeduct, ABaseCurrency));
 
             if ((ADonations.Rows.Count == 1) && msg.Contains("#DONATIONDATE"))
             {
@@ -771,6 +773,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction ATransaction)
         {
             SortedList <string, List <string>>FormValues = new SortedList <string, List <string>>();
+            StringHelper myStringHelper = new StringHelper();
+            myStringHelper.CurrencyFormatTable = ATransaction.DataBaseObj.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", ATransaction);
 
             // These are the fields that can be printed in the letter:
             FormValues.Add("AdresseeShortName", new List <string>());
@@ -878,7 +882,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DateEntered = "";                           // so if this gift has several details, I'll blank the subsequent lines.
 
                     string DonorComment = "";
-                    FormValues["GiftAmount"].Add(StringHelper.FormatUsingCurrencyCode(DetailRow.GiftTransactionAmount, AGiftCurrency));
+                    FormValues["GiftAmount"].Add(myStringHelper.FormatUsingCurrencyCode(DetailRow.GiftTransactionAmount, AGiftCurrency));
                     FormValues["GiftCurrency"].Add(AGiftCurrency);
                     FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
                     GiftTotal += DetailRow.GiftTransactionAmount;
@@ -937,10 +941,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 } // foreach GiftDetail
             } // foreach Gift
 
-            FormValues["GiftTotalAmount"].Add(StringHelper.FormatUsingCurrencyCode(GiftTotal, AGiftCurrency));
+            FormValues["GiftTotalAmount"].Add(myStringHelper.FormatUsingCurrencyCode(GiftTotal, AGiftCurrency));
             FormValues["GiftTotalCurrency"].Add(AGiftCurrency);
-            FormValues["TxdTotal"].Add(StringHelper.FormatUsingCurrencyCode(TxdTotal, AGiftCurrency));
-            FormValues["NonTxdTotal"].Add(StringHelper.FormatUsingCurrencyCode(NonTxdTotal, AGiftCurrency));
+            FormValues["TxdTotal"].Add(myStringHelper.FormatUsingCurrencyCode(TxdTotal, AGiftCurrency));
+            FormValues["NonTxdTotal"].Add(myStringHelper.FormatUsingCurrencyCode(NonTxdTotal, AGiftCurrency));
 
             return TFormLettersTools.PrintSimpleHTMLLetter(AHTMLTemplateFilename, FormValues);
         }

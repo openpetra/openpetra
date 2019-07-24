@@ -40,19 +40,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
     /// </summary>
     public class TBudgetConsolidateWebConnector
     {
-        /// <summary>
-        /// Main Budget tables dataset
-        /// </summary>
-        private static BudgetTDS FBudgetTDS = null;
-        private static GLPostingTDS FGLPostingDS = null;
+        private BudgetTDS FBudgetTDS = null;
+        private GLPostingTDS FGLPostingDS = null;
 
         /// <summary>
         /// load budgets
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool LoadBudgetForConsolidate(Int32 ALedgerNumber)
+        private bool LoadBudgetForConsolidate(Int32 ALedgerNumber)
         {
             FBudgetTDS = new BudgetTDS();
 
@@ -147,6 +143,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="AConsolidateAll"></param>
         [RequireModulePermission("FINANCE-3")]
         public static void ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll)
+        {
+            TBudgetConsolidateWebConnector myObject = new TBudgetConsolidateWebConnector();
+            myObject.LoadBudgetForConsolidate(ALedgerNumber);
+            myObject.ConsolidateBudgetsInternal(ALedgerNumber, AConsolidateAll);
+        }
+
+        private void ConsolidateBudgetsInternal(Int32 ALedgerNumber, bool AConsolidateAll)
         {
             TDBTransaction Transaction = new TDBTransaction();
             Boolean SubmissionOK = false;
@@ -274,7 +277,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ABudgetRow"></param>
         /// <param name="ALedgerNumber"></param>
         /// <returns>true if it seemed to go OK</returns>
-        private static bool UnPostBudget(ABudgetRow ABudgetRow, int ALedgerNumber)
+        private bool UnPostBudget(ABudgetRow ABudgetRow, int ALedgerNumber)
         {
             /* post the negative budget, which will result in an empty a_glm_period.budget */
 
@@ -323,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <summary>
         /// Post a budget
         /// </summary>
-        private static void PostBudget(int ALedgerNumber, ABudgetRow ABudgetRow, List <ABudgetPeriodRow>ABudgetPeriodRows)
+        private void PostBudget(int ALedgerNumber, ABudgetRow ABudgetRow, List <ABudgetPeriodRow>ABudgetPeriodRows)
         {
             FGLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
                 AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
@@ -368,7 +371,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="AGLMSequence"></param>
         /// <param name="APeriodNumber"></param>
         /// <param name="APeriodAmount"></param>
-        private static void AddBudgetValue(int AGLMSequence, int APeriodNumber, decimal APeriodAmount)
+        private void AddBudgetValue(int AGLMSequence, int APeriodNumber, decimal APeriodAmount)
         {
             AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
                 (AGeneralLedgerMasterPeriodRow)FGLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(
@@ -390,7 +393,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// </summary>
         /// <param name="AGLMSequence"></param>
         /// <param name="APeriodNumber"></param>
-        private static void ClearAllBudgetValues(int AGLMSequence, int APeriodNumber)
+        private void ClearAllBudgetValues(int AGLMSequence, int APeriodNumber)
         {
             AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
                 (AGeneralLedgerMasterPeriodRow)FGLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { AGLMSequence, APeriodNumber });

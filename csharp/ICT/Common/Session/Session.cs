@@ -47,14 +47,14 @@ namespace Ict.Common.Session
     public class TSession
     {
         [ThreadStaticAttribute]
-        private static string FSessionID;
+        private static string FSessionID; // STATIC_OK: only needed for the tests
         [ThreadStaticAttribute]
-        private static SortedList <string, string> FSessionValues;
+        private static SortedList <string, string> FSessionValues;  // STATIC_OK: only needed for the tests
         [ThreadStaticAttribute]
-        private static DateTime FSessionValidUntil;
+        private static DateTime FSessionValidUntil;  // STATIC_OK: only needed for the tests
 
         private const int SessionValidHours = 24;
-        
+
         private static SortedList <string, string> GetSessionValues(string ASessionID)
         {
             if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))

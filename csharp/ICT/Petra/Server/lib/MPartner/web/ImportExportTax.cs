@@ -90,7 +90,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             bool failIfInvalidPartner = Convert.ToBoolean(AParameters["FailIfInvalidPartner"]);
             bool overwriteExistingTaxCode = Convert.ToBoolean(AParameters["OverwriteExistingTaxCode"]);
             bool createExtract = Convert.ToBoolean(AParameters["CreateExtract"]);
-            bool createOutputFile = Convert.ToBoolean(AParameters["CreateOutFile"]);
             bool includePartnerDetails = Convert.ToBoolean(AParameters["IncludePartnerDetails"]);
 
             int emptyTaxCodeAction = Convert.ToInt32(AParameters["EmptyTaxCode"]);
