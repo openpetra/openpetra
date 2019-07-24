@@ -130,8 +130,6 @@ namespace Ict.Petra.Server.App.WebService
 
                 try
                 {
-                    TLanguageCulture.Init();
-
                     // initialise the cached tables
                     TSetupDelegates.Init();
                 }

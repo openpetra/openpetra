@@ -94,8 +94,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             APDFReceipt = string.Empty;
             AHTMLReceipt = String.Empty;
 
-            TLanguageCulture.SetLanguageAndCulture(ALanguage, ALanguage);
-            TLanguageCulture.LoadLanguageAndCulture();
+            Catalog.Init(ALanguage, ALanguage);
 
             // get BaseCurrency
             System.Type typeofTable = null;
