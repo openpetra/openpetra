@@ -534,6 +534,7 @@ namespace Ict.Common
         {
             PercentageDone = -1;
             AbsoluteOverallAmount = 100.0m;
+            StatusMessage = string.Empty;
             Caption = string.Empty;
             CancelJob = false;
             JobFinished = false;
