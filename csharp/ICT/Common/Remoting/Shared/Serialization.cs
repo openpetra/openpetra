@@ -207,7 +207,7 @@ namespace Ict.Common.Remoting.Shared
 
             if (o is TProgressState)
             {
-                return ((TProgressState)o).ToJson();
+                return JsonConvert.SerializeObject(o);
             }
 
             throw new Exception("cannot deserialize object to JSON of Type " + o.GetType().ToString());
