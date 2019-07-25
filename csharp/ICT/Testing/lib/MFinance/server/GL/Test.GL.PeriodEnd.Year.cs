@@ -326,9 +326,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     ref SubmissionOK,
                     delegate
                     {
-                        TLogging.Log("before problem");
                         TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber, db);
-                        TLogging.Log("after problem");
 
                         TLogging.Log("Closing year number " + countYear.ToString());
                         List <Int32>glBatches = new List <int>();
