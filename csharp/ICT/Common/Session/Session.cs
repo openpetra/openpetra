@@ -46,27 +46,27 @@ namespace Ict.Common.Session
     /// </summary>
     public class TSession
     {
-        [ThreadStaticAttribute]
+        // these variables are only used in the unit tests.
+        // they are only used if HttpContext.Current == null.
+        // they are used across threads, because we in the tests we want to access the session across threads.
         private static string FSessionID; // STATIC_OK: only needed for the tests
-        [ThreadStaticAttribute]
         private static SortedList <string, string> FSessionValues;  // STATIC_OK: only needed for the tests
-        [ThreadStaticAttribute]
         private static DateTime FSessionValidUntil;  // STATIC_OK: only needed for the tests
 
         private const int SessionValidHours = 24;
 
         private static SortedList <string, string> GetSessionValues(string ASessionID)
         {
-            if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))
+            if (HttpContext.Current == null)
             {
-                if ((HttpContext.Current.Session["SessionID"] != null) && (HttpContext.Current.Session["SessionID"].ToString() == ASessionID))
+                if ((FSessionID == ASessionID) && (FSessionValidUntil.CompareTo(DateTime.Now) > 0))
                 {
-                    return (SortedList <string, string>) HttpContext.Current.Session["SessionValues"];
+                    return FSessionValues;
                 }
             }
-            else if ((FSessionID == ASessionID) && (FSessionValidUntil.CompareTo(DateTime.Now) > 0))
+            else if ((HttpContext.Current.Session["SessionID"] != null) && (HttpContext.Current.Session["SessionID"].ToString() == ASessionID))
             {
-                return FSessionValues;
+                return (SortedList <string, string>) HttpContext.Current.Session["SessionValues"];
             }
 
             return null;
@@ -74,30 +74,33 @@ namespace Ict.Common.Session
 
         private static void SetSessionValues(string ASessionID, SortedList <string, string> AValues)
         {
-            if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))
+            if (HttpContext.Current == null)
+            {
+                if ((FSessionID == ASessionID) || (FSessionID == String.Empty))
+                {
+                    FSessionValidUntil = DateTime.Now.AddHours(SessionValidHours);
+                    FSessionID = ASessionID;
+                    FSessionValues = AValues;
+                }
+            }
+            else if (HttpContext.Current.Session != null)
             {
                 HttpContext.Current.Session["SessionID"] = ASessionID;
                 HttpContext.Current.Session["SessionValues"] = AValues;
-            }
-            else if ((FSessionID == ASessionID) || (FSessionID == String.Empty))
-            {
-                FSessionValidUntil = DateTime.Now.AddHours(SessionValidHours);
-                FSessionID = ASessionID;
-                FSessionValues = AValues;
             }
         }
 
         private static void ClearSession()
         {
-            if ((HttpContext.Current != null) && (HttpContext.Current.Session != null))
-            {
-                HttpContext.Current.Session.Clear();
-            }
-            else
+            if (HttpContext.Current == null)
             {
                 FSessionValidUntil = DateTime.Now.AddHours(-1);
                 FSessionID = String.Empty;
                 FSessionValues = null;
+            }
+            else if (HttpContext.Current.Session != null)
+            {
+                HttpContext.Current.Session.Clear();
             }
         }
 
@@ -145,7 +148,10 @@ namespace Ict.Common.Session
             TLogging.LogAtLevel(1, "Running InitThread for ASessionID = " + ASessionID);
             TLogging.LogAtLevel(1, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
 
-            FSessionID = ASessionID;
+            if (HttpContext.Current == null)
+            {
+                FSessionID = ASessionID;
+            }
         }
 
         private static bool HasValidSession(string ASessionID, TDataBase ADataBase = null)
