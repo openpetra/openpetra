@@ -63,7 +63,7 @@ namespace Ict.Common.DB
     public class TDataBase
     {
         /// this is for detecting open database connections that should have been closed.
-        private static int SNumberConnections = 0;
+        private static int SNumberConnections = 0; // STATIC_OK: only needed for debugging
 
         private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " +
                                                            "DB Transaction Properties: Valid: {0}, IsolationLevel: {1}; it got started on Thread {2} in AppDomain '{3}'.  "
