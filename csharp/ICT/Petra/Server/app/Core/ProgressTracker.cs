@@ -128,6 +128,8 @@ namespace Ict.Petra.Server.App.Core
             {
                 TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID, ADataBase)).ToObject<TProgressState>();
 
+                TLogging.SetStatusBarProcedure(null);
+
                 if (state.JobFinished == true)
                 {
                     if (TLogging.DebugLevel >= DEBUG_PROGRESS)
@@ -170,6 +172,8 @@ namespace Ict.Petra.Server.App.Core
                 }
 
                 TSession.SetVariable(PROGRESSTRACKER + AClientID, state, ADataBase);
+
+                TLogging.SetStatusBarProcedure(null);
 
                 return true;
             }
