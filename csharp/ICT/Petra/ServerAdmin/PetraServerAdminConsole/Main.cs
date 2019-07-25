@@ -872,9 +872,9 @@ namespace PetraServerAdminConsole
                 }
 
                 // Instantiate a remote object, which provides access to the server
-                THttpConnector.ServerAdminSecurityToken = NewSecurityToken();
-                THttpConnector.InitConnection(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
-                TRemote = new TMServerAdminNamespace().WebConnectors;
+                THttpConnector httpConnector = new THttpConnector(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
+                httpConnector.ServerAdminSecurityToken = NewSecurityToken();
+                TRemote = new TMServerAdminNamespace(httpConnector).WebConnectors;
 
                 try {
                     TRemote.LoginServerAdmin();

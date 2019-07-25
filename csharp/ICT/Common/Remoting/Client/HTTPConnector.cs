@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,14 +41,14 @@ namespace Ict.Common.Remoting.Client
     /// connect to the server and return a response
     public class THttpConnector
     {
-        private static string ServerURL = string.Empty;
+        private string ServerURL = string.Empty;
 
-        private static string FServerAdminSecurityToken = string.Empty;
+        private string FServerAdminSecurityToken = string.Empty;
 
         /// <summary>
         /// security token for access to serveradmin webconnector methods
         /// </summary>
-        public static string ServerAdminSecurityToken
+        public string ServerAdminSecurityToken
         {
             get
             {
@@ -60,17 +60,16 @@ namespace Ict.Common.Remoting.Client
             }
         }
 
-
         /// <summary>
         /// initialise the name of the server
         /// </summary>
         /// <param name="AServerURL"></param>
-        public static void InitConnection(string AServerURL)
+        public THttpConnector(string AServerURL)
         {
             ServerURL = AServerURL;
         }
 
-        private static NameValueCollection ConvertParameters(SortedList <string, object>parameters)
+        private NameValueCollection ConvertParameters(SortedList <string, object>parameters)
         {
             NameValueCollection result = new NameValueCollection();
 
@@ -88,7 +87,7 @@ namespace Ict.Common.Remoting.Client
             return result;
         }
 
-        private static string TrimResult(string result)
+        private string TrimResult(string result)
         {
             // returns <string xmlns="...">someresulttext</string>
             TLogging.LogAtLevel(1, "returned from server (unmodified): " +
@@ -122,7 +121,7 @@ namespace Ict.Common.Remoting.Client
         /// <summary>
         /// call a webconnector
         /// </summary>
-        public static List <object>CallWebConnector(
+        public List <object>CallWebConnector(
             string AModuleName,
             string methodname,
             SortedList <string, object>parameters, string expectedReturnType)
@@ -176,89 +175,6 @@ namespace Ict.Common.Remoting.Client
             }
 
             return resultObjects;
-        }
-
-        /// <summary>
-        /// call a method of a UIConnector
-        /// </summary>
-        public static List <object>CallUIConnectorMethod(
-            string ObjectID,
-            string AModuleName,
-            string UIConnectorClass,
-            string methodname,
-            SortedList <string, object>parameters, string expectedReturnType)
-        {
-            parameters.Add("UIConnectorObjectID", ObjectID.ToString());
-
-            return CallWebConnector(AModuleName, UIConnectorClass + "." + methodname, parameters, expectedReturnType);
-        }
-
-        /// <summary>
-        /// read a property of a UIConnector
-        /// </summary>
-        public static object ReadUIConnectorProperty(
-            string ObjectID,
-            string AModuleName,
-            string UIConnectorClass,
-            string propertyname,
-            string expectedReturnType)
-        {
-            SortedList <string, object>parameters = new SortedList <string, object>();
-            parameters.Add("UIConnectorObjectID", ObjectID);
-
-            return CallWebConnector(AModuleName, UIConnectorClass + ".Get" + propertyname, parameters, expectedReturnType)[0];
-        }
-
-        /// <summary>
-        /// write to a property of a UIConnector
-        /// </summary>
-        public static void WriteUIConnectorProperty(
-            string ObjectID,
-            string AModuleName,
-            string UIConnectorClass,
-            string propertyname,
-            object value)
-        {
-            SortedList <string, object>parameters = new SortedList <string, object>();
-            parameters.Add("UIConnectorObjectID", ObjectID);
-            parameters.Add("value", value);
-
-            CallWebConnector(AModuleName, UIConnectorClass + ".Set" + propertyname, parameters, "void");
-        }
-
-        /// <summary>
-        /// create a UIConnector on the server
-        /// </summary>
-        public static string CreateUIConnector(
-            string AModuleName,
-            string classname,
-            SortedList <string, object>parameters)
-        {
-            NameValueCollection Parameters =
-                ConvertParameters(parameters);
-
-            string result = THTTPUtils.PostRequest(ServerURL + "/server" + AModuleName + ".asmx/Create_" + classname, Parameters);
-
-            result = TrimResult(result);
-
-            TLogging.LogAtLevel(4, String.Format("CreateUIConnector called for Module '{0}' and Class '{1}'",
-                    AModuleName, classname));
-
-            return THttpBinarySerializer.DeserializeObject(result, "System.String").ToString();
-        }
-
-        /// <summary>
-        /// disconnect an object from the server, freeing up memory on the server
-        /// </summary>
-        public static void DisconnectUIConnector(string AModuleName, string ObjectID)
-        {
-            SortedList <string, object>Parameters = new SortedList <string, object>();
-            Parameters.Add("UIConnectorObjectID", ObjectID.ToString());
-
-            TLogging.LogAtLevel(4, String.Format("DisconnectUIConnector called for Module '{0}' with ObjectID '{1}'",
-                    AModuleName, ObjectID));
-
-            CallWebConnector(AModuleName, "DisconnectUIConnector", Parameters, "void");
         }
     }
 }
