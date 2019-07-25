@@ -66,7 +66,9 @@ namespace Ict.Common.Session
             }
             else if ((HttpContext.Current.Session["SessionID"] != null) && (HttpContext.Current.Session["SessionID"].ToString() == ASessionID))
             {
-                return (SortedList <string, string>) HttpContext.Current.Session["SessionValues"];
+                // we must get the session values each time from the database, for the reports' progress tracker to work.
+                //return (SortedList <string, string>) HttpContext.Current.Session["SessionValues"];
+                return null;
             }
 
             return null;
