@@ -410,10 +410,11 @@ namespace Ict.Common.Session
         /// returns true if variable exists and is not null
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        public static bool HasVariable(string name)
+        public static bool HasVariable(string name, TDataBase ADataBase = null)
         {
-            SortedList <string, string>session = GetSession();
+            SortedList <string, string>session = GetSession(ADataBase);
 
             if (session.Keys.Contains(name) && (session[name] != null))
             {
