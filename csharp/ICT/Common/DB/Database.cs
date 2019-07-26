@@ -322,12 +322,39 @@ namespace Ict.Common.DB
         /// simple overload for establishing a database connection using the settings from the configuration file
         public void EstablishDBConnection(String AConnectionName = "")
         {
-            EstablishDBConnection(TSrvSetting.RDMBSType,
-                TSrvSetting.PostgreSQLServer,
-                TSrvSetting.PostgreSQLServerPort,
-                TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername,
-                TSrvSetting.DBPassword,
+            TDBType DBType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType", "postgresql"));
+            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBHostOrFile", "localhost");
+            string DatabasePort = TAppSettingsManager.GetValue("Server.DBPort", "5432");
+            string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
+            string DBUsername = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
+            string DBPassword = TAppSettingsManager.GetValue("Server.DBPassword", string.Empty, false);
+
+            if (DBPassword == "PG_OPENPETRA_DBPWD")
+            {
+                // get the password from the file ~/.pgpass. This currently only works for PostgreSQL on Linux
+                using (StreamReader sr = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.Personal) +
+                           Path.DirectorySeparatorChar + ".pgpass"))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+
+                        if (line.StartsWith(DatabaseHostOrFile + ":" + DatabasePort + ":" + DatabaseName + ":" + DBUsername + ":")
+                            || line.StartsWith("*:" + DatabasePort + ":" + DatabaseName + ":" + DBUsername + ":"))
+                        {
+                            DBPassword = line.Substring(line.LastIndexOf(':') + 1);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            EstablishDBConnection(DBType,
+                DatabaseHostOrFile,
+                DatabasePort,
+                DatabaseName,
+                DBUsername,
+                DBPassword,
                 "",
                 true,
                 AConnectionName);

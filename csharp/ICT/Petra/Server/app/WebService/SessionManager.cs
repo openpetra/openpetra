@@ -99,7 +99,6 @@ namespace Ict.Petra.Server.App.WebService
             }
 
             new TAppSettingsManager(ConfigFileName);
-            new TSrvSetting();
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 

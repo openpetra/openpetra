@@ -101,24 +101,6 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         }
 
         /// <summary>
-        /// get the count of attemts to reconnect to the database
-        /// </summary>
-        [RequireModulePermission("SYSMAN")]
-        public static Int64 GetDBReconnectionAttemptsCounter()
-        {
-            return TServerManagerBase.TheServerManager.DBReconnectionAttemptsCounter;
-        }
-
-        /// <summary>
-        /// get the interval of checking the DB connection
-        /// </summary>
-        [RequireModulePermission("SYSMAN")]
-        public static Int64 GetDBConnectionCheckInterval()
-        {
-            return TServerManagerBase.TheServerManager.DBConnectionCheckInterval;
-        }
-
-        /// <summary>
         /// get list of clients
         /// </summary>
         [RequireModulePermission("SYSMAN")]
@@ -348,15 +330,6 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         public static void PerformTimedProcessingNow(string AProcessName)
         {
             TServerManagerBase.TheServerManager.PerformTimedProcessingNow(AProcessName);
-        }
-
-        /// <summary>
-        /// the host name of the smtp server
-        /// </summary>
-        [RequireModulePermission("SYSMAN")]
-        public static string GetSmtpHost()
-        {
-            return TServerManagerBase.TheServerManager.SmtpHost;
         }
     }
 }

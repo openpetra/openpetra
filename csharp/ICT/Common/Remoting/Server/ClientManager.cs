@@ -687,6 +687,8 @@ namespace Ict.Common.Remoting.Server
             ArrayList ClientList = new ArrayList();
             IDictionaryEnumerator ClientEnum;
 
+            Int32 ClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt32("Server.ClientIdleStatusAfterXMinutes", 5);
+
             System.Int16 ClientCounter;
             String AppDomainStatusString;
             String ClientServerConnectionTypeString;
@@ -755,7 +757,7 @@ namespace Ict.Common.Remoting.Server
                                 }
                                 else if (app.FAppDomainStatus == TSessionStatus.adsActive)
                                 {
-                                    if (LastActionTime.AddMinutes(TSrvSetting.ClientIdleStatusAfterXMinutes) > DateTime.Now)
+                                    if (LastActionTime.AddMinutes(ClientIdleStatusAfterXMinutes) > DateTime.Now)
                                     {
                                         AppDomainStatusString = "Active";
                                         LastClientAction = LastActionTime;
@@ -769,7 +771,7 @@ namespace Ict.Common.Remoting.Server
                                 }
                                 else if (app.FAppDomainStatus == TSessionStatus.adsIdle)
                                 {
-                                    if (LastActionTime.AddMinutes(TSrvSetting.ClientIdleStatusAfterXMinutes) < DateTime.Now)
+                                    if (LastActionTime.AddMinutes(ClientIdleStatusAfterXMinutes) < DateTime.Now)
                                     {
                                         AppDomainStatusString = "Idle";
                                         LastClientAction = LastActionTime;
