@@ -175,14 +175,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             out TVerificationResultCollection AMessages
             )
         {
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Importing Gift Batches"),
-                100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Initialising"),
-                0);
-
             TVerificationResultCollection Messages = new TVerificationResultCollection();
 
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
@@ -234,6 +226,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ref SubmissionOK,
                 delegate
                 {
+                    TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Importing Gift Batches"),
+                        100, db);
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Initialising"),
+                        0, db);
+                    
                     try
                     {
                         // Load supplementary tables that we are going to need for validation
@@ -596,7 +596,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 }
                             }  // if the CSV line qualifies
 
-                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob == true)
                             {
                                 CancelledByUser = true;
                                 break;
@@ -613,7 +613,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
-                                    (PercentDone > 98) ? 98 : PercentDone);
+                                    (PercentDone > 98) ? 98 : PercentDone, db);
                                 PreviousPercentDone = PercentDone;
                             }
 
@@ -640,7 +640,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Batch has critical errors"),
-                                0);
+                                0, db);
 
                             // Record error count
                             Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
@@ -772,7 +772,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Exception Occurred"),
-                            0);
+                            0, db);
 
                         SubmissionOK = false;
                     }
@@ -784,7 +784,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Gift batch import successful"),
-                                100);
+                                100, db);
                         }
                         else
                         {
@@ -794,10 +794,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Data could not be saved."),
-                                0);
+                                0, db);
                         }
 
-                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString(), db);
                     } // end of 'finally'
                 });
 
@@ -917,14 +917,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             out TVerificationResultCollection AMessages
             )
         {
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Importing Gift Batches"),
-                100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Initialising"),
-                5);
-
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
             TVerificationResultCollection Messages = new TVerificationResultCollection();
 
@@ -966,6 +958,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ref SubmissionOK,
                 delegate
                 {
+                    TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Importing Gift Batches"),
+                        100, db);
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Initialising"),
+                        5, db);
+                    
                     try
                     {
                         // Load supplementary tables that we are going to need for validation
@@ -1138,7 +1138,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 }
                             }
 
-                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob == true)
                             {
                                 CancelledByUser = true;
                                 break;
@@ -1155,7 +1155,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
-                                    (PercentDone > 98) ? 98 : PercentDone);
+                                    (PercentDone > 98) ? 98 : PercentDone, db);
                                 PreviousPercentDone = PercentDone;
                             }
 
@@ -1177,7 +1177,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Batch has critical errors"),
-                                100);
+                                100, db);
 
                             // Record error count
                             Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
@@ -1225,7 +1225,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Saving all data into the database"),
-                            100);
+                            100, db);
 
                         //Finally save pending changes (the last number is updated!)
                         ImportMessage = Catalog.GetString("Saving gift batch");
@@ -1296,7 +1296,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Exception Occurred"),
-                            0);
+                            0, db);
 
                         SubmissionOK = false;
                     }
@@ -1308,7 +1308,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Gift batch import successful"),
-                                100);
+                                100, db);
                         }
                         else
                         {
@@ -1318,10 +1318,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Data could not be saved."),
-                                0);
+                                0, db);
                         }
 
-                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString(), db);
                     } // finally
                 }); // WriteTransaction
 

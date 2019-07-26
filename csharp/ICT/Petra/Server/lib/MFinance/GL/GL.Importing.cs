@@ -133,14 +133,6 @@ namespace Ict.Petra.Server.MFinance.GL
             out TVerificationResultCollection AMessages
             )
         {
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Importing GL Batches"),
-                100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Initialising"),
-                5);
-
             TVerificationResultCollection Messages = new TVerificationResultCollection();
 
             GLBatchTDS MainDS = new GLBatchTDS();
@@ -194,6 +186,14 @@ namespace Ict.Petra.Server.MFinance.GL
             db.WriteTransaction(ref transaction, ref submissionOK,
                 delegate
                 {
+                    TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Importing GL Batches"),
+                        100, db);
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Initialising"),
+                        5, db);
+                    
                     try
                     {
                         // Load supplementary tables that we are going to need for validation
@@ -631,7 +631,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }  // if the CSV line qualifies
 
-                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob == true)
                             {
                                 CancelledByUser = true;
                                 break;
@@ -648,7 +648,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
-                                    (PercentDone > 98) ? 98 : PercentDone);
+                                    (PercentDone > 98) ? 98 : PercentDone, db);
                                 PreviousPercentDone = PercentDone;
                             }
 
@@ -675,7 +675,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Batch has critical errors"),
-                                0);
+                                0, db);
 
                             // Record error count
                             Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
@@ -795,7 +795,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Exception Occurred"),
-                            0);
+                            0, db);
                     } // catch
                     finally
                     {
@@ -804,7 +804,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         if (submissionOK)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Gift batch import successful"),
-                                100);
+                                100, db);
                         }
                         else
                         {
@@ -814,10 +814,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Data could not be saved."),
-                                0);
+                                0, db);
                         }
 
-                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString(), db);
                     } // end of 'finally'
                 }); // Begin Auto Transaction
 
@@ -857,14 +857,6 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             string ImportMessage = Catalog.GetString("Initialising");
 
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Importing GL Batches"),
-                100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Initialising"),
-                5);
-
             TVerificationResultCollection Messages = new TVerificationResultCollection();
 
             GLSetupTDS SetupDS = new GLSetupTDS();
@@ -901,6 +893,14 @@ namespace Ict.Petra.Server.MFinance.GL
                 db.WriteTransaction(ref Transaction, ref submissionOK,
                     delegate
                     {
+                        TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Importing GL Batches"),
+                            100, db);
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Initialising"),
+                            5, db);
+
                         // Construct our DataSet - we use all the journals for the batch so we can update the batch totals.
                         GLBatchTDS MainDS = new GLBatchTDS();
                         ABatchTable BatchTable = ABatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
@@ -998,7 +998,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 transactionsAdded++;
                             }  // if the CSV line qualifies
 
-                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob == true)
                             {
                                 CancelledByUser = true;
                                 break;
@@ -1015,7 +1015,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     String.Format(Catalog.GetString("Importing row {0}"), RowNumber),
-                                    (PercentDone > 98) ? 98 : PercentDone);
+                                    (PercentDone > 98) ? 98 : PercentDone, db);
                                 PreviousPercentDone = PercentDone;
                             }
 
@@ -1042,7 +1042,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Batch has critical errors"),
-                                0);
+                                0, db);
 
                             if (FImportLine == null)
                             {
@@ -1154,7 +1154,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString("Exception Occurred"),
-                    0);
+                    0, db);
             }
             finally
             {
@@ -1164,7 +1164,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                         Catalog.GetString("Gift batch import successful"),
-                        100);
+                        100, db);
                 }
                 else
                 {
@@ -1174,10 +1174,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                         Catalog.GetString("Data could not be saved."),
-                        0);
+                        0, db);
                 }
 
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString(), db);
             } // end of 'finally'
 
             // Set our 'out' parameters
