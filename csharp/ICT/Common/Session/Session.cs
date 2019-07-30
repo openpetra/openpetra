@@ -111,7 +111,6 @@ namespace Ict.Common.Session
         /// get the current session id. if it is not stored in the http context, check the thread
         private static string FindSessionID()
         {
-            TLogging.LogStackTrace();
             string sessionId;
 
             // only look in thread if there is no HttpContext.Current; otherwise Threads are reused.
