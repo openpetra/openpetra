@@ -280,8 +280,9 @@ namespace Ict.Common
         /// <returns>void</returns>
         public static void SetStatusBarProcedure(TStatusCallbackProcedure callbackfn)
         {
-            TLogging.StatusBarProcedure = callbackfn;
-            StatusBarProcedureValid = (callbackfn != null);
+            //TLogging.StatusBarProcedure = callbackfn;
+            //StatusBarProcedureValid = (callbackfn != null);
+            StatusBarProcedureValid = false;
         }
 
         /// <summary>
