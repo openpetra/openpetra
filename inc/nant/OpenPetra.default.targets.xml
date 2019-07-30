@@ -43,6 +43,7 @@
   
   <if test="${DBMS.Type == 'sqlite'}">
     <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
+    <property name="DBMS.DBSqliteSession" value="${SQLitedbSession.file}"/>
   </if>
 
   <property name="configFile" value="${dir.delivery}/web.config"/> 

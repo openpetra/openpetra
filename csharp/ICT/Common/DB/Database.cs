@@ -190,6 +190,15 @@ namespace Ict.Common.DB
             }
         }
 
+        /// return the filename or server name of the database
+        public String DsnOrServer
+        {
+            get
+            {
+                return FDsnOrServer;
+            }
+        }
+
         /// <summary>Tells whether it's save to execute any SQL command on the DB. It is
         /// updated when the DB connection's State changes.</summary>
         public bool ConnectionOK
