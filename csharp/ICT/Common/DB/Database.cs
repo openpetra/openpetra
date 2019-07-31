@@ -440,7 +440,7 @@ namespace Ict.Common.DB
                 }
 
                 SNumberConnections++;
-                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO, "number of connections " + SNumberConnections.ToString());
+                TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO, "number of database connections " + SNumberConnections.ToString());
 
                 // We take out a 'lock' on the following code sequence because only *this* guarantees complete thread safety -
                 // though we have a call to 'WaitForCoordinatedDBAccess' above this could be either not working for some
