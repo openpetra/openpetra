@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // pass ATransaction
             UserInfo.SetUserInfo(PetraPrincipal, ATransaction.DataBaseObj);
 
-            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken", ATransaction.DataBaseObj))
             {
                 // Login via server admin console authenticated by file token
                 APassword = String.Empty;

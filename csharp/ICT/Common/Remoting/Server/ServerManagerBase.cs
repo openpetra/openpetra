@@ -56,14 +56,6 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         public static IServerAdminInterface TheServerManager = null;
 
-        /// <summary>Keeps track of the number of times this Class has been
-        /// instantiated</summary>
-        private Int32 FNumberServerManagerInstances;
-
-        /// <summary>this is used to read resource strings from the resx file</summary>
-        /// <summary>this is to know if this is the real instance; for displaying the message SERVER STOPPED at the right time</summary>
-        private Boolean FFirstInstance;
-
         /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
         protected static Int64 FDBReconnectionAttemptsCounter = -1;
 
@@ -215,25 +207,9 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         public TServerManagerBase() : base()
         {
-            FNumberServerManagerInstances = 0;
             new TAppSettingsManager(false);
             new TLogging(TAppSettingsManager.GetValue("Server.LogFile", false));
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-            FFirstInstance = (FNumberServerManagerInstances == 0);
-            FNumberServerManagerInstances++;
-        }
-
-        /// <summary>
-        /// Default destructor.
-        /// </summary>
-        ~TServerManagerBase()
-        {
-            // THE VERY END OF THE SERVER :(
-            // only display this for the main instance!
-            if (FFirstInstance == true)
-            {
-                TLogging.Log(Catalog.GetString("SERVER STOPPED!"));
-            }
         }
 
         /// <summary>

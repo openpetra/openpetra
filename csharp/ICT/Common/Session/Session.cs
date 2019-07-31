@@ -285,7 +285,7 @@ namespace Ict.Common.Session
             bool NewConnection;
             TDataBase db = ConnectDB("GetSessionValuesFromDB", ADataBase, out NewConnection);
 
-            sessionID = GetSessionID(db);
+            string localSessionID = sessionID = GetSessionID(db);
            
             SortedList <string, string> result = null;
             result = GetSessionValues(sessionID);
@@ -299,14 +299,26 @@ namespace Ict.Common.Session
                 return result;
             }
 
-            OdbcParameter[] parameters = new OdbcParameter[1];
-            parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
-            parameters[0].Value = sessionID;
+            TDBTransaction t = new TDBTransaction();
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    OdbcParameter[] parameters = new OdbcParameter[1];
+                    parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+                    parameters[0].Value = localSessionID;
 
-            string sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
-            string jsonString = ADataBase.ExecuteScalar(sql, ADataBase.Transaction, parameters).ToString();
-            result = JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
-            SetSessionValues(sessionID, result);
+                    string sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
+                    try
+                    {
+                        string jsonString = db.ExecuteScalar(sql, t, parameters).ToString();
+                        result = JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
+                        SetSessionValues(localSessionID, result);
+                    }
+                    catch (Ict.Common.Exceptions.EOPDBException)
+                    {
+                        result = null;
+                    }
+                });
 
             if (NewConnection)
             {
@@ -440,7 +452,6 @@ namespace Ict.Common.Session
                 }
 
                 TLogging.LogAtLevel(1, "GetSessionID: new sessionID = " + sessionID);
-
             }
             else
             {
@@ -512,7 +523,7 @@ namespace Ict.Common.Session
 
             bool result = false;
 
-            if (session.Keys.Contains(name) && (session[name] != null))
+            if ((session != null) && session.Keys.Contains(name) && (session[name] != null))
             {
                 result = true;
             }
@@ -531,7 +542,7 @@ namespace Ict.Common.Session
             string sessionID;
             SortedList <string, string>session = GetSessionValuesFromDB(ADataBase, out sessionID);
 
-            if (session.Keys.Contains(name))
+            if ((session != null) && session.Keys.Contains(name))
             {
                 return TVariant.DecodeFromString(session[name]).ToObject();
             }
@@ -550,7 +561,7 @@ namespace Ict.Common.Session
             string sessionID;
             SortedList <string, string>session = GetSessionValuesFromDB(ADataBase, out sessionID);
 
-            if (session.Keys.Contains(name))
+            if ((session != null) && session.Keys.Contains(name))
             {
                 return TVariant.DecodeFromString(session[name]);
             }

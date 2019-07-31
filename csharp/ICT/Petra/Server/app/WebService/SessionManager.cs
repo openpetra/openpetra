@@ -69,7 +69,16 @@ namespace Ict.Petra.Server.App.WebService
         /// </summary>
         public TOpenPetraOrgSessionManager() : base()
         {
-            Init();
+            try
+            {
+                Init();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Exception in TOpenPetraOrgSessionManager.Init()");
+                TLogging.Log(e.ToString());
+                throw new Exception("Exception in TOpenPetraOrgSessionManager.Init()");
+            }
         }
 
         /// <summary>

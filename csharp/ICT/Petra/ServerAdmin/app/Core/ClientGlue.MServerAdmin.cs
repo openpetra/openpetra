@@ -97,20 +97,6 @@ namespace Ict.Petra.ServerAdmin.App.Core.RemoteObjects
                 return (System.Int64) Result[0];
             }
             /// forward the method call
-            public System.Int64 GetDBReconnectionAttemptsCounter()
-            {
-                SortedList<string, object> ActualParameters = new SortedList<string, object>();
-                List<object> Result = FHttpConnector.CallWebConnector("MServerAdmin", "TServerAdminWebConnector.GetDBReconnectionAttemptsCounter", ActualParameters, "System.Int64");
-                return (System.Int64) Result[0];
-            }
-            /// forward the method call
-            public System.Int64 GetDBConnectionCheckInterval()
-            {
-                SortedList<string, object> ActualParameters = new SortedList<string, object>();
-                List<object> Result = FHttpConnector.CallWebConnector("MServerAdmin", "TServerAdminWebConnector.GetDBConnectionCheckInterval", ActualParameters, "System.Int64");
-                return (System.Int64) Result[0];
-            }
-            /// forward the method call
             public ArrayList GetClientList()
             {
                 SortedList<string, object> ActualParameters = new SortedList<string, object>();
