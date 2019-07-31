@@ -129,8 +129,7 @@
               spawn="${spawnxsp}">
         <environment>
           <variable name="LD_LIBRARY_PATH" path="${dir.bin}"/>
-          <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-          <variable name="MONO_PATH" path="${MonoBinPath}\.."/>
+          <variable name="PATH" path="${environment::get-variable('PATH')};"/>
           <variable name="MONO_OPTIONS" value="--debug"/>
         </environment>
       </exec>
