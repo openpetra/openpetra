@@ -8,7 +8,7 @@
     "bootstrap": "^4.3.1",
     "browserify": "^16.3.0",
     "browserify-css": "^0.15.0",
-    "cypress": "^3.4.0",
+    "cypress": "^3.4.1",
     "font-awesome": "^4.7.0",
     "i18next": "^10.6.0",
     "i18next-browser-languagedetector": "^2.2.4",
