@@ -411,7 +411,7 @@ namespace Ict.Common.Session
                 db = ConnectDB("GetSessionID", ADataBase, out NewConnection);
             }
 
-            if ((sessionID != string.Empty) && !HasValidSession(sessionID, ADataBase))
+            if ((sessionID != string.Empty) && !HasValidSession(sessionID, db))
             {
                 TLogging.LogAtLevel(
                     1,
