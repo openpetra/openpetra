@@ -482,13 +482,12 @@ useful parameters
 
 <target name="enable-config-for-appveyor">
     <echo message="Target enable-config-for-appveyor started at: ${datetime::now()}" />
-  
+
     <echo file="OpenPetra.build.config">&lt;?xml version="1.0"?>
 &lt;project name="OpenPetra-userconfig">
     &lt;property name="DBMS.Type" value="sqlite"/>
     &lt;property name="DBMS.Password" value=""/>
     &lt;property name="Server.Port" value="${Server.Port}"/>
-    &lt;property name="external.NUnitConsole" value="c:\projects\openpetra\NUnit.Runners.2.6.1\tools\nunit-console-x86.exe" />
 &lt;/project>
     </echo>
     

@@ -1,17 +1,22 @@
 # see http://www.appveyor.com/docs/appveyor-yml
+image: Ubuntu1804
 version: 1.0.{build}
 clone_depth: 1
 init: []
 install:
-- nuget install NAnt.Portable
-- nuget install NAnt.Contrib.Portable
-- nuget install NUnit.Runners -Version 2.6.1
-- NAnt.Portable.0.92\NAnt enable-config-for-appveyor
+#- sudo echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+#- sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/mono-official-stable.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
+#- sudo apt-get -y install mono-devel mono-runtime
+- sudo apt-get -y install nant nunit-console
+# to avoid errors like: error CS0433: The imported type `System.CodeDom.Compiler.CompilerError' is defined multiple times
+- sudo rm -f /usr/lib/mono/4.5-api/System.dll
 platform: x86
 build_script:
-- NAnt.Portable.0.92\NAnt generateSolution
+- sed -i "s/4.0/4.5/g" inc/nant/OpenPetra.common.xml
+- nant enable-config-for-appveyor
+- nant generateSolution
 test_script:
-- NAnt.Portable.0.92\NAnt recreateDatabase resetDatabase
+- nant recreateDatabase resetDatabase
 # commented out the nant task: test
 before_deploy:
 - nant buildRPM
