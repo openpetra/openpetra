@@ -10,6 +10,12 @@
 <target name="remove_dlls">
   <!-- similar to inc/nant/OpenPetra.default.targets.xml -->
   <if test="${'unix'==platform::get-name()}" >
+      <if test="${not file::exists(dir.bin + '/libsodium.so')}">
+        <exec program="bash"
+            workingdir="${dir.bin}"
+            commandline="-c &quot;ln -s ${libsodium.so} libsodium.so&quot;"/>
+      </if>
+
       <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
       <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
       <delete file="${dir.bin}/sqlite3.dll" failonerror="false"/>
