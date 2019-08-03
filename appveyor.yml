@@ -7,13 +7,20 @@ install:
 #- sudo echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
 #- sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/mono-official-stable.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 #- sudo apt-get -y install mono-devel mono-runtime
-- sudo apt-get -y install nant nunit-console libsodium23 mono-xsp4 wkhtmltopdf
+- sudo apt-get -y install nant nunit-console libsodium23 mono-xsp4 wget xfonts-75dpi
+- wget https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && sudo dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb
 # to avoid errors like: error CS0433: The imported type `System.CodeDom.Compiler.CompilerError' is defined multiple times
 - sudo rm -f /usr/lib/mono/4.5-api/System.dll
+# prepare the config file
+- echo '<?xml version="1.0"?>' > OpenPetra.build.config
+- echo '<project name="OpenPetra-userconfig">' >> OpenPetra.build.config
+- echo '  <property name="DBMS.Type" value="sqlite"/>' >> OpenPetra.build.config
+- echo '  <property name="DBMS.Password" value=""/>' >> OpenPetra.build.config
+- echo '  <property name="Server.Port" value="9000"/>' >> OpenPetra.build.config
+- echo '  <property name="NETframework-version" value="4.5"/>' >> OpenPetra.build.config
+- echo '</project>' >> OpenPetra.build.config
 platform: x86
 build_script:
-- sed -i "s/4.0/4.5/g" inc/nant/OpenPetra.common.xml
-- nant enable-config-for-appveyor
 - nant generateSolution
 test_script:
 - nant recreateDatabase resetDatabase test-without-display
