@@ -1999,7 +1999,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref AVerificationResult,
                     RecurrGiftBatchTableInDataSet,
                     RecurrGiftTableInDataSet,
-                    RecurrGiftDetailTableInDataSet);
+                    RecurrGiftDetailTableInDataSet,
+                    ADataBase);
             }
             else
             {
@@ -2613,11 +2614,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ARecurringGiftBatchTableInDataSet"></param>
         /// <param name="ARecurringGiftTableInDataSet"></param>
         /// <param name="ARecurringGiftDetailTableInDataSet"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         private static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
             ref TVerificationResultCollection AVerificationResult, bool ARecurringGiftBatchTableInDataSet,
-            bool ARecurringGiftTableInDataSet, bool ARecurringGiftDetailTableInDataSet)
+            bool ARecurringGiftTableInDataSet, bool ARecurringGiftDetailTableInDataSet,
+            TDataBase ADataBase)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
@@ -2797,7 +2800,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
 
-                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                GiftBatchTDSAccess.SubmitChanges(AInspectDS, ADataBase);
 
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
@@ -2842,7 +2845,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                            GiftBatchTDSAccess.SubmitChanges(AInspectDS, ADataBase);
 
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
