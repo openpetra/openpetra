@@ -360,9 +360,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(FLedgerNumber,
                                                 giftBatch.GlEffectiveDate, out firstOfMonth))
                                         {
-                                            intlRateFromBase =
-                                                TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstOfMonth,
-                                                    giftBatch.GlEffectiveDate);
+                                            TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstOfMonth,
+                                                giftBatch.GlEffectiveDate,
+                                                out intlRateFromBase,
+                                                db);
 
                                             if (intlRateFromBase <= 0.0m)
                                             {
@@ -998,8 +999,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                         if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(FLedgerNumber,
                                 giftBatch.GlEffectiveDate, out firstOfMonth))
                         {
-                            intlRateFromBase = TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstOfMonth,
-                                giftBatch.GlEffectiveDate);
+                            TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstOfMonth,
+                                giftBatch.GlEffectiveDate,
+                                out intlRateFromBase,
+                                db);
                         }
 
                         ImportMessage = Catalog.GetString("Parsing first line");

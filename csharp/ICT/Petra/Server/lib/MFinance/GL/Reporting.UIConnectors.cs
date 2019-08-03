@@ -2593,11 +2593,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         LedgerNumber, AccountHierarchyCode, Transaction).Rows[0];
                     TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
 
-                    Decimal exchangeRateNow = TExchangeRateTools.GetCorporateExchangeRate(
+                    Decimal exchangeRateNow;
+                    TExchangeRateTools.GetCorporateExchangeRate(
                         ledgerInfo.BaseCurrency,
                         ledgerInfo.InternationalCurrency,
                         DateTime.Now.AddMonths(-1),
-                        DateTime.Now);
+                        DateTime.Now,
+                        out exchangeRateNow,
+                        DbAdapter.FPrivateDatabaseObj);
 
                     if (exchangeRateNow == 0)
                     {

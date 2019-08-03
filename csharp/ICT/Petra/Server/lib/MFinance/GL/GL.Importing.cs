@@ -514,10 +514,11 @@ namespace Ict.Petra.Server.MFinance.GL
                                             if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournal.DateEffective,
                                                     out firstDayOfMonth, db))
                                             {
-                                                intlRateFromBase =
-                                                    TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency,
-                                                        firstDayOfMonth,
-                                                        NewJournal.DateEffective);
+                                                TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency,
+                                                    firstDayOfMonth,
+                                                    NewJournal.DateEffective,
+                                                    out intlRateFromBase,
+                                                    db);
 
                                                 if (intlRateFromBase <= 0.0m)
                                                 {
@@ -941,9 +942,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournalRow.DateEffective,
                                     out firstDayOfMonth, db))
                             {
-                                intlRateFromBase =
-                                    TExchangeRateTools.GetCorporateExchangeRate(baseCurrency, intlCurrency, firstDayOfMonth,
-                                        NewJournalRow.DateEffective);
+                                TExchangeRateTools.GetCorporateExchangeRate(baseCurrency, intlCurrency, firstDayOfMonth,
+                                    NewJournalRow.DateEffective,
+                                    out intlRateFromBase,
+                                    db);
                             }
 
                             if (intlRateFromBase <= 0.0m)

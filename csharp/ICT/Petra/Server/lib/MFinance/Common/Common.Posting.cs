@@ -2639,10 +2639,13 @@ namespace Ict.Petra.Server.MFinance.Common
             DateTime StartOfCalendarMonth = new DateTime(EffectiveDate.Year, EffectiveDate.Month, 1);
 
             // used for setting AmountInIntlCurrency
-            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(
+            decimal IntlToBaseExchRate;
+            TExchangeRateTools.GetCorporateExchangeRate(
                 LedgerIntlCurrency, LedgerBaseCurrency,
                 StartOfCalendarMonth,
-                EffectiveDate);
+                EffectiveDate,
+                out IntlToBaseExchRate,
+                ATransaction.DataBaseObj);
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
             if (!ValidateGLBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPostRow, out AVerifications, ATransaction.DataBaseObj))
