@@ -426,6 +426,13 @@
         <property name="libsodium.so" value="/usr/lib/x86_64-linux-gnu/libsodium.so.23" overwrite="true"/>
     </if>
 
+    <!-- this is where wkhtmltopdf lives when installed from upstream rpm package on CentOS -->
+    <property name="external.wkhtmltopdf" value="/usr/local/bin/wkhtmltopdf" overwrite="false"/>
+    <if test="${not file::exists(external.wkhtmltopdf)}">
+        <!-- Ubuntu 18.04 -->
+        <property name="external.wkhtmltopdf" value="/usr/bin/wkhtmltopdf" overwrite="true"/>
+    </if>
+
     <!-- this could be the location of NUnit installed by rpm -->
     <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit3-console.exe"/>
     <if test="${not file::exists(search.NUnitConsole)}">

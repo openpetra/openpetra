@@ -304,7 +304,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             Process process = new Process();
-            process.StartInfo.FileName = "/usr/local/bin/wkhtmltopdf";
+            process.StartInfo.FileName = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/local/bin/wkhtmltopdf");
             process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
             process.Start();
             process.WaitForExit();
