@@ -57,11 +57,14 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>this Typed DataTable holds the cached System Defaults</summary>
         private SSystemDefaultsTable FSystemDefaultsDT = null;
 
+        private TDataBase FDataBase = null;
+
         /// <summary>
         /// constructor
         /// </summary>
-        public TSystemDefaults()
+        public TSystemDefaults(TDataBase ADataBase = null)
         {
+            FDataBase = ADataBase;
         }
 
         /// <summary>
@@ -379,9 +382,9 @@ namespace Ict.Petra.Server.App.Core
         ///
         /// </summary>
         /// <returns>void</returns>
-        private void LoadSystemDefaultsTable(TDataBase ADataBase = null)
+        private void LoadSystemDefaultsTable()
         {
-            TDataBase DBAccessObj = DBAccess.Connect("LoadSystemDefaultsTable", ADataBase);
+            TDataBase DBAccessObj = DBAccess.Connect("LoadSystemDefaultsTable", FDataBase);
             TDBTransaction ReadTransaction = new TDBTransaction();
 
             if (FSystemDefaultsDT != null)
@@ -395,7 +398,7 @@ namespace Ict.Petra.Server.App.Core
                     FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
                 });
 
-            if (ADataBase == null)
+            if (FDataBase == null)
             {
                 DBAccessObj.CloseDBConnection();
             }

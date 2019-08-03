@@ -32,6 +32,7 @@ using Ict.Common.Session;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.queries
@@ -172,7 +173,7 @@ namespace Ict.Petra.Server.MFinance.queries
             string YearEnd = String.Format("#{0:0000}-12-31#", Year);
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                new TSystemDefaults().GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
 
@@ -309,7 +310,7 @@ namespace Ict.Petra.Server.MFinance.queries
         public static DataTable TotalGiftsThroughFieldYear(TParameterList AParameters, TResultList AResults)
         {
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                new TSystemDefaults().GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
             Int32 NumberOfYears = AParameters.Get("param_NumberOfYears").ToInt32();

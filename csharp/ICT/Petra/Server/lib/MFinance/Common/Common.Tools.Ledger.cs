@@ -619,13 +619,14 @@ namespace Ict.Petra.Server.MFinance.Common
 
             #endregion Validate Arguments
 
-            string BankAccountCode = new TSystemDefaults().GetStringDefault(
+            TDataBase db = DBAccess.Connect("GetDefaultBankAccount", FDataBase);
+            TDBTransaction readTransaction = new TDBTransaction();
+
+            string BankAccountCode = new TSystemDefaults(db).GetStringDefault(
                 SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + FLedgerNumber.ToString());
 
             if (BankAccountCode.Length == 0)
             {
-                TDBTransaction readTransaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("GetDefaultBankAccount", FDataBase);
 
                 try
                 {

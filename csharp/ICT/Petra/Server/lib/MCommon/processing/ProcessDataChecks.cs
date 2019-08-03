@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MCommon.Processing
             {
                 DateTime LastRun =
                     TVariant.DecodeFromString(
-                        TSystemDefaultsConnector.GetStringDefault(
+                        new TSystemDefaults(ADataBaseObj).GetStringDefault(
                             PROCESSDATACHECK_LAST_RUN,
                             new TVariant(DateTime.MinValue).EncodeToString())).ToDate();
 
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MCommon.Processing
             TLogging.LogAtLevel(1, "TProcessDataChecks.Process: Checking Modules");
             CheckModule(ADataBaseObj, "DataCheck.MPartner.");
 
-            new TSystemDefaults().SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString(), ADataBaseObj);
+            new TSystemDefaults(ADataBaseObj).SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString(), ADataBaseObj);
         }
 
         private static void CheckModule(TDataBase ADataBaseObj, string AModule)

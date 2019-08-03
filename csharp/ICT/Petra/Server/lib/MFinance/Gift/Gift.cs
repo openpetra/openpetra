@@ -80,6 +80,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftInfo = "";
             ALastGiftDate = DateTime.MinValue;
 
+            TSystemDefaults SystemDefaults = new TSystemDefaults();
+
             LastGiftAvailable = GetLastGiftDetails(APartnerKey,
                 out LastGiftDate,
                 out LastGiftAmount,
@@ -95,7 +97,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 ALastGiftDate = LastGiftDate;
 
-                if (TSystemDefaultsConnector.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT).ToLower() == "true")
+                if (SystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT).ToLower() == "true")
                 {
                     // Check OpenPetra Module access to FINANCE-1 or Financial Development
                     if (UserInfo.GetUserInfo().IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
@@ -115,8 +117,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 if (LastGiftGivenToPartnerKey == -1)
                 {
                     // Split Gift
-                    if ((TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
-                        || (TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD)))
+                    if ((SystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
+                        || (SystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD)))
                     {
                         AGiftInfo = AGiftInfo + StrSplitGift;
                     }
@@ -124,7 +126,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 else
                 {
                     // Not a Split Gift
-                    if (TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
+                    if (SystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTRECIPIENT))
                     {
                         if (LastGiftGivenToPartnerKey != -1)
                         {
@@ -136,7 +138,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                     }
 
-                    if (TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD))
+                    if (SystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTFIELD))
                     {
                         if (LastGiftRecipientLedger != -1)
                         {

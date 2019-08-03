@@ -31,6 +31,7 @@ using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
@@ -599,7 +600,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             )
         {
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                new TSystemDefaults(ATransaction.DataBaseObj).GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             AGiftDetailRow giftDetail = AMainDS.AGiftDetail.NewRowTyped(true);
 
