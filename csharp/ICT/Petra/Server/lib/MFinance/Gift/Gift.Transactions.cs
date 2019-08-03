@@ -206,7 +206,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         ALedgerAccess.SubmitChanges(ledgerTable, Transaction);
                         ARecurringGiftBatchAccess.SubmitChanges(MainDS.ARecurringGiftBatch, Transaction);
                         MainDS.ARecurringGiftBatch.AcceptChanges();
-                        Transaction.Commit();
 
                         SubmissionOK = true;
                     });
