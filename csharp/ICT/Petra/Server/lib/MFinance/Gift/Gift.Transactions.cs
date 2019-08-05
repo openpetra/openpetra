@@ -106,7 +106,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions", ADataBase);
+            TDataBase db = DBAccess.Connect("CreateAGiftBatch", ADataBase);
             bool SubmissionOK = false;
 
             try
@@ -148,6 +148,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
 
             return MainDS;
@@ -214,6 +219,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
             }
 
             return MainDS;
@@ -291,7 +301,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainRecurringDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("SubmitRecurringGiftBatch");
             bool SubmissionOK = false;
 
             try
@@ -499,6 +509,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -571,7 +583,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DateTime CurrentYearEnd = CurrentYearEndPeriod.PeriodEndDate;
 
             TDBTransaction ReadTransaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("GetAvailableGiftYears");
 
             try
             {
@@ -614,6 +626,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return ReturnTable;
         }
 
@@ -639,7 +653,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadALedgerTable");
 
             try
             {
@@ -672,6 +686,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -712,7 +728,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadAGiftBatchForYearPeriod");
 
             try
             {
@@ -850,7 +866,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadAGiftBatchesForCurrentYear");
 
             try
             {
@@ -890,6 +906,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -915,7 +933,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadAGiftBatchesForCurrentYearPeriod");
 
             try
             {
@@ -957,6 +975,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -996,7 +1016,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadAGiftSingle");
 
             try
             {
@@ -1056,6 +1076,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 throw;
             }
 
+            db.CloseDBConnection();
+
             return MainDS;
         }
 
@@ -1085,7 +1107,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDSAGiftDetailTable LastGiftData = new GiftBatchTDSAGiftDetailTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadDonorLastPostedGift");
 
             db.ReadTransaction(
                 ref Transaction,
@@ -1122,6 +1144,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             LastGiftData.AcceptChanges();
 
+            db.CloseDBConnection();
+
             return LastGiftData;
         }
 
@@ -1148,7 +1172,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DataTable GiftTable = null;
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("DonorHasGiven");
 
             db.ReadTransaction(
                 ref Transaction,
@@ -1163,6 +1187,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     GiftTable = db.SelectDT(Query, AGiftTable.GetTableDBName(), Transaction);
                 });
+
+            db.CloseDBConnection();
 
             return (GiftTable != null) && (GiftTable.Rows.Count > 0);
         }
@@ -1195,7 +1221,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadAGiftBatchSingle");
 
             db.ReadTransaction(
                 ref Transaction,
@@ -1207,6 +1233,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             MainDS.AcceptChanges();
 
             ABatchIsUnposted = MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -1308,7 +1336,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadARecurringGiftBatch");
 
             try
             {
@@ -1339,6 +1367,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -1374,7 +1404,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadARecurringGiftBatchSingle");
 
             try
             {
@@ -1413,6 +1443,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return MainDS;
         }
@@ -1477,7 +1509,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string CostCentreCode = string.Empty;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("RetrieveCostCentreCodeForRecipient");
 
             try
             {
@@ -1502,6 +1534,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             APartnerIsMissingLink = PartnerIsMissingLink;
+
+            db.CloseDBConnection();
 
             return CostCentreCode;
         }
@@ -1568,7 +1602,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 APartnerIsMissingLink = !TGLSetupWebConnector.LoadCostCentrePartnerLinks(ALedgerNumber,
                     ARecipientPartnerKey,
-                    out PartnerCostCentreTbl);
+                    out PartnerCostCentreTbl,
+                    ATransaction.DataBaseObj);
 
                 if (!APartnerIsMissingLink && (PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
                 {
@@ -1577,7 +1612,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 else if (ARecipientLedgerNumber > 0)
                 {
                     //Valid ledger number table
-                    CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber, out CostCentreCode);
+                    CheckCostCentreDestinationForRecipient(ALedgerNumber, ARecipientLedgerNumber, out CostCentreCode,
+                    ATransaction.DataBaseObj);
                 }
             }
 
@@ -1823,7 +1859,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadDonorRecipientHistory");
 
             AMessages = new TVerificationResultCollection();
 
@@ -1941,6 +1977,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             MainDS.AcceptChanges();
             return MainDS;
@@ -3339,7 +3377,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataSet tempDataSet = new DataSet();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("CheckCostCentreLinkForRecipient");
 
             db.ReadTransaction(
                 ref Transaction,
@@ -3372,6 +3410,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             ACostCentreCode = CostCentreCode;
 
+            db.CloseDBConnection();
+
             return CostCentreExists;
         }
 
@@ -3393,11 +3433,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="ACostCentreCode"></param>
+        /// <param name="ADataBase"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool CheckCostCentreDestinationForRecipient(Int32 ALedgerNumber,
             Int64 APartnerKey,
-            out string ACostCentreCode)
+            out string ACostCentreCode,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -3423,7 +3465,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 TDBTransaction Transaction = new TDBTransaction();
-                TDataBase db = DBAccess.Connect("GiftTransactions");
+                TDataBase db = DBAccess.Connect("CheckCostCentreDestinationForRecipient", ADataBase);
                 db.ReadTransaction(
                     ref Transaction,
                     delegate
@@ -3445,6 +3487,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             CostCentreExists = true;
                         }
                     });
+
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
             catch (Exception ex)
             {
@@ -3688,7 +3735,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (IsUnposted && (giftDetail.GiftTransactionAmount > 0))
                     {
                         // get the current Recipient Fund Number
-                        giftDetail.RecipientField = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
+                        giftDetail.RecipientField = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered, ATransaction.DataBaseObj);
 
                         // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
                         if (!giftDetail.FixedGiftDestination && (giftDetail.RecipientLedgerNumber != giftDetail.RecipientField))
@@ -4010,7 +4057,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (giftDetail.GiftAmount > 0)
                     {
                         // get the current Recipient Fund Number
-                        giftDetail.RecipientField = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, DateTime.Today);
+                        giftDetail.RecipientField = GetRecipientFundNumberInner(MainDS, giftDetail.RecipientKey, DateTime.Today, ATransaction.DataBaseObj);
 
                         // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
                         if (giftDetail.RecipientLedgerNumber != giftDetail.RecipientField)
@@ -4331,7 +4378,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("AddToFeeTotals");
             TLedgerInfo info = new TLedgerInfo(ALedgerNumber, db);
             string LedgerBaseCurrency = info.GetLedgerBaseCurrency();
             int NumDecPlaces = 2;
@@ -4402,6 +4449,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
         }
 
         /// <summary>
@@ -4791,12 +4840,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftBatchNumber"></param>
         /// <param name="AGeneratedGlBatchNumber">If posting succeeds, this is the GL Batch</param>
         /// <param name="AVerifications"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>True if the batch posting went ahead</returns>
         [RequireModulePermission("FINANCE-2")]
         public static bool PostGiftBatch(Int32 ALedgerNumber,
             Int32 AGiftBatchNumber,
             out Int32 AGeneratedGlBatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -4821,7 +4872,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             List <Int32>GeneratedGLBatchNumbers = new List <int>();
 
-            bool postWasOk = PostGiftBatches(ALedgerNumber, GiftBatches, GeneratedGLBatchNumbers, out AVerifications);
+            bool postWasOk = PostGiftBatches(ALedgerNumber, GiftBatches, GeneratedGLBatchNumbers, out AVerifications, ADataBase);
 
             if (postWasOk)
             {
@@ -5315,7 +5366,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             PPartnerTable PartnerTbl = new PPartnerTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("LoadAllPartnerDataForBatch");
 
             db.ReadTransaction(
                 ref Transaction,
@@ -5340,6 +5391,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         PartnerTbl.AcceptChanges();
                     }
                 });
+
+            db.CloseDBConnection();
 
             return PartnerTbl;
         }
@@ -5595,6 +5648,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Arguments
 
             bool DataLoaded = false;
+            Int64 Result = -1;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -5634,11 +5688,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (DataLoaded)
                 {
-                    return GetRecipientFundNumberInner(MainDS, APartnerKey, AGiftDate);
+                    Result = GetRecipientFundNumberInner(MainDS, APartnerKey, AGiftDate, db);
                 }
                 else
                 {
-                    return 0;
+                    Result = 0;
                 }
             }
             catch (Exception ex)
@@ -5646,6 +5700,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
+
+            return Result;
         }
 
         private static Int64 GetRecipientFundNumberInner(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null, TDataBase ADataBase = null)
@@ -6084,7 +6142,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataTable InactiveKMsTable = AInactiveKMsTable;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("GiftTransactions");
+            TDataBase db = DBAccess.Connect("InactiveKeyMinistriesFoundInBatch");
 
             try
             {
@@ -6113,6 +6171,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            db.CloseDBConnection();
 
             return AInactiveKMsTable.Rows.Count > 0;
         }

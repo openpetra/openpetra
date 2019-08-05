@@ -172,7 +172,6 @@ namespace Tests.MFinance.Server.ICH
         [Test]
         public void TestExportGifts()
         {
-            TDataBase db = DBAccess.Connect("TestExportGifts");
             int LedgerNumber = FLedgerNumber;
             string CostCentre = "7300";
             string AcctCode = "0200";
@@ -188,8 +187,10 @@ namespace Tests.MFinance.Server.ICH
             CommonNUnitFunctions.ResetDatabase();
             TPetraServerConnector.Connect("../../etc/TestServer.config");
 
+            TDataBase db = DBAccess.Connect("TestExportGifts");
+
             // need to create gifts first
-            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
+            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate, db);
 
             //Perform stewardship calculation
             TVerificationResultCollection VerificationResults;

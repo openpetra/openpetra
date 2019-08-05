@@ -166,13 +166,15 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// Normally this will be obvious (because the import was successful) but some handled Exceptions imply that the data has changed
         /// behind the client's back!</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <param name="ADataBase"></param>
         /// <returns>false if error</returns>
         public bool ImportGiftBatches(
             Hashtable ARequestParams,
             String AImportString,
             out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
             out bool AClientRefreshRequired,
-            out TVerificationResultCollection AMessages
+            out TVerificationResultCollection AMessages,
+            TDataBase ADataBase = null
             )
         {
             TVerificationResultCollection Messages = new TVerificationResultCollection();
@@ -218,7 +220,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("ImportGiftBatches");
+            TDataBase db = DBAccess.Connect("ImportGiftBatches", ADataBase);
             bool SubmissionOK = false;
 
             db.WriteTransaction(
@@ -806,6 +808,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             AMessages = Messages;
             ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;
             AClientRefreshRequired = clientRefreshRequired;
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             return SubmissionOK;
         }
