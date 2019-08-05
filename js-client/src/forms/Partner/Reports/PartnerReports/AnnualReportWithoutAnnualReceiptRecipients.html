@@ -1,0 +1,46 @@
+<h2>{caption}</h2>
+
+
+<div class="container" id="reportfilter">
+	<div class="container group-container">
+		<div class="row">
+			<div class="col">
+				<span>{PublicationCode}:</span>
+			</div>
+			<div class="col">
+				<select name="PublicationCode" id="PublicationCode">
+				</select>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<span>{DonationStartDate}:</span>
+			</div>
+			<div class="col">
+				<input type="date" name="DonationStartDate" id="DonationStartDate">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<span>{DonationEndDate}:</span>
+			</div>
+			<div class="col">
+				<input type="date" name="DonationEndDate" id="DonationEndDate">
+			</div>
+		</div>
+	</div>
+
+	<button type="button" class="btn btn-primary" onclick="calculate_report()">{forms.report}</button>
+	<button type="button" class="btn" id='DownloadExcel' style="display:none" onclick="download_excel()">{forms.download_excel}</button>
+	<button type="button" class="btn" id='DownloadPDF' style="display:none" onclick="download_pdf()">{forms.download_pdf}</button>
+</div>
+
+<div class="container" id="report">
+	<div class="container group-container">
+		<div id="reporttxt"></div>
+	</div>
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/reports.js" charset="utf-8"></script>

@@ -1,0 +1,74 @@
+<h2>{caption}</h2>
+
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_check">
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+</div>
+
+
+<div class="container" id="reportfilter">
+	<div class="container group-container">
+		<div class="row">
+			<div class="col">
+				<span>{city}:</span>
+			</div>
+			<div class="col">
+				<input type="text" name="param_city">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox" name="param_active" checked>
+			</div>
+			<div class="col">
+				<span>{activePartnersOnly}</span>
+			</div>
+			<data value="param_active"></data>
+		</div>
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox" name="param_only_addresses_valid_on">
+			</div>
+			<div class="col">
+				<span>{onlyValidAddresses}</span>
+			</div>
+			<data value="param_only_addresses_valid_on"></data>
+		</div>
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox" name="param_excludeNoSolicitations">
+			</div>
+			<div class="col">
+				<span>{excludeNoSolicitations}</span>
+			</div>
+			<data value="param_excludeNoSolicitations"></data>
+		</div>
+	</div>
+
+	<button type="button" class="btn btn-primary" onclick="calculate_report()">{forms.report}</button>
+	<button type="button" class="btn" id='DownloadExcel' style="display:none" onclick="download_excel()">{forms.download_excel}</button>
+	<button type="button" class="btn" id='DownloadPDF' style="display:none" onclick="download_pdf()">{forms.download_pdf}</button>
+</div>
+
+<div class="container" id="report">
+	<div class="container group-container">
+		<div id="reporttxt"></div>
+	</div>
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/reports.js" charset="utf-8"></script>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<!--
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       Timotheus Pokorra <tp@tbits.net>
+//
+// Copyright 2017-2019 by TBits.net
+//
+// This file is part of OpenPetra.
+//
+// OpenPetra is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
+//
+-->
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="img/favicon.png">
+	<title>OpenPetra</title>
+
+	<link href="/css/login.css" rel="stylesheet">
+	<link href="/css/main.css" rel="stylesheet">
+	<link href="/css/sidebar.css" rel="stylesheet">
+	<link href="/dist/font-awesome.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- Begin of loading screen -->
+<div id="loading">
+	<img src="/img/favicon.png">
+	Loading...
+</div>
+<!-- End of loading screen -->
+
+<!-- Begin of login screen -->
+<div id="login" class="container" style="display:none">
+	<form class="form-signin">
+		<input type="text" class="form-control" placeholder="{email}" id="txtEmail" autofocus>
+		<input type="password" class="form-control" placeholder="{passwd}" id="txtPassword">
+		<button id="btnLogin" class="btn btn-lg btn-primary btn-block" type="submit">{signin}</button>
+	</form>
+
+	<div class="form-signin">
+		<span>{forgotpwd}</span> <a href="#" onClick="requestNewPassword()">{reqnewpwdclickhere}</a>
+	</div>
+
+	<div class="row">
+		<div class="col-sm">
+			<div class="bs-callout bs-callout-info">
+				<h4>{support_caption}</h4>
+				<p>{support_text}</p>
+			</div>
+		</div>
+		<div class="col-sm">
+			<div class="bs-callout bs-callout-info">
+				<h4>{manual_caption}</h4>
+				<p>{manual_text}</p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm">
+			<div class="bs-callout bs-callout-info">
+				<h4>{status_caption}</h4>
+				<p>{status_text}</p>
+			</div>
+		</div>
+		<div class="col-sm">
+			<div class="bs-callout bs-callout-info">
+				<h4>{roadmap_caption}</h4>
+				<p>{roadmap_text}</p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm">
+			<div class="bs-callout bs-callout-info">
+				<h4>{contribute_caption}</h4>
+				<p>{contribute_text}</p>
+			</div>
+		</div>
+		<div class="col-sm">
+			<div class="bs-callout bs-callout-info">
+				<h4>{sales_caption}</h4>
+				<p>{sales_text}</p>
+			</div>
+		</div>
+	</div>
+</div> <!-- /container -->
+<!-- End of login screen -->
+
+<!-- Begin of Request new password -->
+<div id="reqNewPwd" class="container" style="display:none">
+	<form class="form-signin">
+		<input type="email" class="form-control" placeholder="{email}" id="txtEmailRequestPwd" autofocus>
+		<button id="btnReqNewPwd" class="btn btn-lg btn-primary btn-block" type="submit">{requestNewPassword}</button>
+	</form>
+</div> <!-- /container -->
+<!-- End of Request new password -->
+
+<!-- Begin of setting new password -->
+<div id="setNewPwd" class="container" style="display:none">
+	<form class="form-signin">
+		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPassword1" autofocus>
+		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPassword2">
+		<button id="btnSetNewPwd" class="btn btn-lg btn-primary btn-block" type="submit">{setNewPassword}</button>
+	</form>
+</div> <!-- /container -->
+<!-- End of setting new password -->
+
+<!-- Begin of navigation bars -->
+<div id="main" style="display:none">
+<!-- Fixed navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="topnavigation">
+<a class="navbar-brand" href="/">{openpetra}</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+	<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navbarNav">
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item"><a id='mnuHome' class="nav-link" href="#">{home}</a></li>
+		<li class="nav-item"><a class="nav-link" href="https://www.openpetra.org" target="newwindow">{about}</a></li>
+		<li class="nav-item"><a class="nav-link" href="https://forum.openpetra.org" target="newwindow">{contact}</a></li>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{settings}</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+				<a id='mnuChangePassword' class="dropdown-item">{change_password}</a>
+				<a id='mnuChangeLanguage' class="dropdown-item">{change_language}</a>
+			</div>
+		</li>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span>{ledgerselect}</span>
+				<span id="current_ledger_field"></span>
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ledger_select_dropdown">
+				<!-- <a class="dropdown-item"></a> -->
+				<!-- Gets filled on site load with all avariable Ledgers -->
+			</div>
+		</li>
+	</ul>
+	<ul class="navbar-nav ml-auto">
+		<li class="nav-item"><a class="nav-link" id="logout" href="#">{logout}</a></li>
+	</ul>
+
+</div>
+</nav>
+
+<div class="container-fluid">
+	<div class="row">
+
+		<!-- Sidebar -->
+		<div class="col-md-3 collapse show" id="sidebar">
+			<div class="list-group border-0 card text-center text-md-left" id="LeftNavigation">
+			</div>
+		</div>
+
+		<!-- Page Content -->
+		<main class="col-md-9 main" id="tabControl" role="main">
+
+			<div class="tab-content" id="containerIFrames">
+			</div>
+
+		</main>
+	</div> <!-- /row -->
+</div> <!-- /container -->
+</div>
+<!-- End of navigation bars -->
+
+<script src="/dist/bundle.min.js"></script>
+
+<script type="text/javascript">
+	develop = 1;
+	// will be replaced by the build script for the release
+	currentrelease = "CURRENTRELEASE";
+
+	if (develop) {
+		WithVersion = "?" + Date.now();
+	} else {
+		WithVersion = "?" + currentrelease;
+	}
+
+	// enable caching
+	$.ajaxSetup({
+		cache: true
+	});
+
+	$.getScript('/src/lib/checkIE.js' + WithVersion);
+	$.getScript('/src/lib/string.js' + WithVersion);
+	$.getScript('/src/lib/ajax.js' + WithVersion);
+	$.getScript('/src/lib/auth.js' + WithVersion);
+	$.getScript('/src/lib/i18n.js' + WithVersion);
+	$.getScript('/src/lib/navigation.js' + WithVersion);
+	$.getScript('/src/lib/app.js' + WithVersion);
+	$.getScript('/src/lib/utils.js' + WithVersion);
+	
+</script>
+
+</body>
+</html>

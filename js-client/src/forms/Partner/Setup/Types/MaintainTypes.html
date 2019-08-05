@@ -1,0 +1,151 @@
+<h2>{caption}</h2>
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_row" onclick="open_detail(this)" id="type{val_p_type_code_c_clean}">
+
+		<div class="row">
+			<div class="col">{val_p_type_code_c}</div>
+			<div class="col-1">
+				<button class="btn btn-primary" onclick="open_edit('{val_p_type_code_c}')"><i class="fa fa-wrench"></i></button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="collapse_col"></div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="collapse tpl_view">
+		<div class="container group-container">
+			<div class="row">
+				<div class="col">{entry_name}</div><div class="col">{val_p_type_code_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{entry_dis}</div><div class="col">{val_p_type_description_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{entry_status}</div><div class="col">{val_p_valid_type_l}</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_check">
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle}</h3>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_name}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_type_code_c" readonly/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{entry_dis}
+							</div>
+							<div class="col">
+								<textarea name="p_type_description_c"></textarea>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-danger" onclick="delete_entry(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_new" tabindex="-1" role="dialog">
+		<div class="modal-dialog" roles="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-header">
+						<h3>{addtitle}</h3>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="content">
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_name}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_type_code_c">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_dis}</span>
+							</div>
+							<div class="col">
+								<textarea name="p_type_description_c"></textarea>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" onclick="save_new()">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<button id="new" class="btn btn-primary" onclick="open_new()">{forms.new}</button>
+		</td>
+	</tr>
+</table>
+
+<div id="modal_space"></div>
+
+<div class="container" id="browse">
+
+	<div class="row">
+		<div class="col-6"><b>{name}</b></div>
+		<hr>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

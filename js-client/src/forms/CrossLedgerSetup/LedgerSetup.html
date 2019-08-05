@@ -1,0 +1,251 @@
+<h2>{caption}</h2>
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_row" onclick="open_detail(this)" style="margin-bottom:-10px;">
+
+		<div class="row">
+			<div class="col">{val_a_ledger_name_c}</div>
+			<div class="col">{val_a_ledger_number_i}</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="collapse_col"></div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="collapse tpl_view">
+		<div class="container group-container">
+			<div class="row">
+				<div class="col">{entry_name}</div>
+				<div class="col">{val_a_ledger_name_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{entry_base_currency}</div>
+				<div class="col">{val_a_base_currency_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{entry_account_periods}</div>
+				<div class="col">{val_a_number_of_accounting_periods_i}</div>
+			</div>
+			<div class="row">
+				<div class="col">{entry_posting_periods}</div>
+				<div class="col">{val_a_number_fwd_posting_periods_i}</div>
+			</div>
+		</div>
+		<button class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
+		<button class="btn btn-primary" onclick="open_edit('{val_a_ledger_number_i}')">{forms.edit}</button>
+
+	</div>
+
+	<div class="tpl_check">
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle}</h3>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{number}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_number_i" readonly/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{name}
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_name_c">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{entry_base_currency}
+							</div>
+							<div class="col">
+								<input type="text" name="a_base_currency_c" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{entry_first_current_period}
+							</div>
+							<div class="col">
+								<input type="text" name="a_current_period_i" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{entry_account_periods}
+							</div>
+							<div class="col">
+								<input type="text" name="a_number_of_accounting_periods_i" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{entry_posting_periods}
+							</div>
+							<div class="col">
+								<input type="text" name="a_number_fwd_posting_periods_i" readonly>
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-danger" onclick="delete_entry(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_new" tabindex="-1" role="dialog">
+		<div class="modal-dialog" roles="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="modal-header">
+						<h3>{addtitle}</h3>
+					</div>
+				</div>
+				<div class="modal-body">
+					<div class="content">
+
+						<div class="row">
+							<div class="col">
+								<span>{number}</span>
+							</div>
+							<div class="col">
+								<input type="number" min="1" name="a_new_ledger_number_i">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_name}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_ledger_name_c">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_base_currency}</span>
+							</div>
+							<div class="col">
+                <input type="text" name="a_base_currency_c" value="EUR">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_country}</span>
+							</div>
+							<div class="col">
+                <input type="text" name="a_country_code_c" value="DE">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_date}</span>
+							</div>
+							<div class="col">
+                <input type="date" class="date" name="ACalendarStartDate" id="ACalendarStartDate">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_account_periods}</span>
+							</div>
+							<div class="col">
+                <input type="number" name="ANumberOfAccountingPeriods" value="12">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_first_current_period}</span>
+							</div>
+							<div class="col">
+                <input type="number" name="ACurrentPeriod" value="1">
+							</div>
+						</div>
+
+            <div class="row">
+							<div class="col">
+								<span>{entry_posting_periods}</span>
+							</div>
+							<div class="col">
+                <input type="number" name="a_number_fwd_posting_periods_i" value="8">
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" onclick="save_new()">{forms.save}</button>
+					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<button id="new" class="btn btn-primary" onclick="open_new()">{forms.new}</button>
+		</td>
+	</tr>
+</table>
+
+<div id="modal_space"></div>
+
+<div class="container" id="browse">
+
+	<div class="row">
+		<div class="col"><b>{name}</b></div>
+		<div class="col"><b>{number}</b></div>
+		<hr>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>
