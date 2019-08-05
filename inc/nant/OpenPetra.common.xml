@@ -182,7 +182,7 @@
     <include buildfile="${userconfig.file}" verbose="true" if="${file::exists(userconfig.file)}"/>
 </if>
 
-<property name="dir.jsclient" value="../../openpetra-client-js/" overwrite="false" />
+<property name="dir.jsclient" value="../js-client/" overwrite="false" />
 
 <!-- Version number -->
 <property name="ReleaseID" value="${OP::GetReleaseIDFromVersionTxt(dir.root)}" overwrite="false"  />

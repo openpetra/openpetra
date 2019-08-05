@@ -79,7 +79,7 @@ namespace Tests.MFinance.Server.Reporting
         [Test]
         public void TestAccountDetail()
         {
-            string testFile = "../../../openpetra-client-js/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
+            string testFile = "../../js-client/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
             string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.Results.html";
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
@@ -103,7 +103,7 @@ namespace Tests.MFinance.Server.Reporting
         [Test]
         public void TestAccountDetailSelectedAccount()
         {
-            string testFile = "../../../openpetra-client-js/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
+            string testFile = "../../js-client/src/forms/Finance/GeneralLedger/Reports/AccountDetail.json";
             string resultFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetailSelectedAccount.Results.html";
             int LedgerNumber = 43;
             TParameterList SpecificParameters = new TParameterList();
