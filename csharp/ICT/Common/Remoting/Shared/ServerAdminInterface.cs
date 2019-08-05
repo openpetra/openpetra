@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,20 +34,6 @@ namespace Ict.Common.Remoting.Shared
     /// <remarks>Comment Clients don't use this interface!</remarks>
     public interface IServerAdminInterface
     {
-        /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
-        Int64 DBReconnectionAttemptsCounter
-        {
-            get;
-        }
-
-        /// <summary>
-        /// DB Connection Check Interval (if this is 0 then no automatic checks are done).
-        /// </summary>
-        int DBConnectionCheckInterval
-        {
-            get;
-        }
-
         /// <summary>SiteKey of the OpenPetra DB that the Server is connected to.</summary>
         Int64 SiteKey
         {
@@ -244,14 +230,6 @@ namespace Ict.Common.Remoting.Shared
 
         /// Is the process job enabled?
         bool TimedProcessingJobEnabled(string AProcessName);
-
-        /// <summary>
-        /// the host name of the smtp server
-        /// </summary>
-        string SmtpHost
-        {
-            get;
-        }
 
         /// <summary>
         /// the daily start time for the timed processing

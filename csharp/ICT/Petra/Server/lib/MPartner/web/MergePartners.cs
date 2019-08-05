@@ -129,13 +129,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                new TSystemDefaults(ADataBase).GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // calculates each step's (optional and non-optional) percentage for the progress tracker
             TrackerPercent = 100 / (NumberOfCategories + 3);
             int CurrentCategory = 0;
-
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Merging Partners"), 100);
 
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
@@ -146,6 +144,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
+                    TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Merging Partners"), 100, db);
+
                     try
                     {
                         int numChanges = 0;
@@ -153,7 +153,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[0] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Destination"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeGiftDestination(AFromPartnerKey, AToPartnerKey, AFromPartnerClass, Transaction);
@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[1] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Info"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeGiftInfo(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -188,7 +188,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -196,7 +196,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[2] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: AP Info"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeAPInfo(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -210,7 +210,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -218,7 +218,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[3] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Motivations"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeMotivations(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -232,7 +232,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[4] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Extracts"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeExtracts(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -253,7 +253,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[5] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Greetings"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeGreetings(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -274,7 +274,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[6] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Contacts and Reminders"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeContactsAndReminders(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -296,7 +296,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -304,7 +304,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[7] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Interests"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeInterests(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -317,7 +317,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -325,7 +325,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[8] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner Locations"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergePartnerLocations(AFromPartnerKey, AToPartnerKey, ASiteKeys, ALocationKeys, Transaction);
@@ -338,7 +338,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -346,7 +346,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[9] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Types"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergePartnerTypes(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -360,7 +360,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -368,7 +368,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[10] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Subscriptions"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeSubscriptions(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -382,7 +382,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -390,7 +390,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[11] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Applications"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeApplications(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -404,7 +404,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -412,7 +412,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[12] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Personnel Data"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergePMData(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -426,7 +426,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -434,7 +434,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[13] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Jobs"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeJobs(AFromPartnerKey, AToPartnerKey, AFromPartnerClass, Transaction);
@@ -447,14 +447,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
 
                         // merge Partner class records
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner") + " (" +
-                            AFromPartnerClass.ToString() + ")", TrackerPercent * CurrentCategory);
+                            AFromPartnerClass.ToString() + ")", TrackerPercent * CurrentCategory, db);
                         CurrentCategory++;
                         numChanges = 0;
 
@@ -576,7 +576,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                         numChanges) + AFromPartnerClass.ToString(), TResultSeverity.Resv_Info));
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -584,7 +584,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[14] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Relationships"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeRelationships(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -598,14 +598,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
 
                         // merge PPartner records
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner (Common)"),
-                            TrackerPercent * CurrentCategory);
+                            TrackerPercent * CurrentCategory, db);
                         CurrentCategory++;
 
                         numChanges = MergePartner(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -618,7 +618,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                         numChanges), TResultSeverity.Resv_Info));
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -628,7 +628,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             if (AFromPartnerClass == TPartnerClass.VENUE)
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Merging: Venue - Buildings, Rooms and Allocations"), TrackerPercent * CurrentCategory);
+                                    Catalog.GetString("Merging: Venue - Buildings, Rooms and Allocations"), TrackerPercent * CurrentCategory, db);
 
                                 numChanges = MergeBuildingsAndRooms(AFromPartnerKey, AToPartnerKey, Transaction);
 
@@ -643,7 +643,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             CurrentCategory++;
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -651,7 +651,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[16] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Partner - Bank Accounts"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeBankAccounts(AFromPartnerKey, AToPartnerKey, AMainBankingDetailsKey, Transaction);
@@ -665,19 +665,19 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Merging: Partner - Recent and Last Partner Info"),
-                            TrackerPercent * CurrentCategory);
+                            TrackerPercent * CurrentCategory, db);
                         CurrentCategory++;
 
                         MergeRecentAndLastPartnerInfo(AFromPartnerKey, AToPartnerKey, Transaction);
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -690,7 +690,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     Catalog.GetString("Merging: Tax Deductibility Percentage"),
-                                    TrackerPercent * CurrentCategory);
+                                    TrackerPercent * CurrentCategory, db);
 
                                 numChanges = MergeTaxDeductibilityPercentage(AFromPartnerKey, AToPartnerKey, Transaction);
 
@@ -706,7 +706,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             CurrentCategory++;
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -714,7 +714,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[18] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Link to Cost Centre"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeLinkToCostCentre(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -728,7 +728,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -736,7 +736,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[19] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Graphic"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges = MergeGraphic(AFromPartnerKey, AToPartnerKey, Transaction);
@@ -749,7 +749,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -757,7 +757,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (ACategories[20] == true)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Contact Details"),
-                                TrackerPercent * CurrentCategory);
+                                TrackerPercent * CurrentCategory, db);
                             CurrentCategory++;
 
                             numChanges =
@@ -772,7 +772,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString(), db).CancelJob)
                         {
                             throw new CancelledByUserException();
                         }
@@ -826,7 +826,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                     finally
                     {
-                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString(), db);
                     }
                 });
 

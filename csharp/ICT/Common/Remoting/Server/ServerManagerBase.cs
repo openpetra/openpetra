@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,14 +56,6 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         public static IServerAdminInterface TheServerManager = null;
 
-        /// <summary>Keeps track of the number of times this Class has been
-        /// instantiated</summary>
-        private Int32 FNumberServerManagerInstances;
-
-        /// <summary>this is used to read resource strings from the resx file</summary>
-        /// <summary>this is to know if this is the real instance; for displaying the message SERVER STOPPED at the right time</summary>
-        private Boolean FFirstInstance;
-
         /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
         protected static Int64 FDBReconnectionAttemptsCounter = -1;
 
@@ -81,17 +73,6 @@ namespace Ict.Common.Remoting.Server
             set
             {
                 FDBReconnectionAttemptsCounter = value;
-            }
-        }
-
-        /// <summary>
-        /// DB Connection Check Interval (if this is 0 then no automatic checks are done).
-        /// </summary>
-        public int DBConnectionCheckInterval
-        {
-            get
-            {
-                return TSrvSetting.DBConnectionCheckInterval;
             }
         }
 
@@ -218,24 +199,6 @@ namespace Ict.Common.Remoting.Server
             }
         }
 
-        /// server is running as standalone, started with the client
-        public bool RunAsStandalone
-        {
-            get
-            {
-                return TSrvSetting.RunAsStandalone;
-            }
-        }
-
-        /// smtp server for sending email
-        public string SmtpHost
-        {
-            get
-            {
-                return TSrvSetting.SmtpHost;
-            }
-        }
-
         #endregion
 
         /// <summary>
@@ -244,26 +207,9 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         public TServerManagerBase() : base()
         {
-            FNumberServerManagerInstances = 0;
             new TAppSettingsManager(false);
-            new TSrvSetting();
-            new TLogging(TSrvSetting.ServerLogFile);
+            new TLogging(TAppSettingsManager.GetValue("Server.LogFile", false));
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-            FFirstInstance = (FNumberServerManagerInstances == 0);
-            FNumberServerManagerInstances++;
-        }
-
-        /// <summary>
-        /// Default destructor.
-        /// </summary>
-        ~TServerManagerBase()
-        {
-            // THE VERY END OF THE SERVER :(
-            // only display this for the main instance!
-            if (FFirstInstance == true)
-            {
-                TLogging.Log(Catalog.GetString("SERVER STOPPED!"));
-            }
         }
 
         /// <summary>
@@ -341,11 +287,10 @@ namespace Ict.Common.Remoting.Server
             const int SLEEP_TIME_PER_RETRY = 500; // 500 milliseconds = 0.5 seconds
             const int MAX_RETRIES = 100; // = 500 milliseconds * 100 = 50 seconds
             int Retries = 0;
+            Int32 ClientKeepAliveCheckIntervalInSeconds =
+                TAppSettingsManager.GetInt32("Server.ClientKeepAliveCheckIntervalInSeconds", 60);
 
             TLogging.Log(Catalog.GetString("CONTROLLED SHUTDOWN PROCEDURE INITIATED"));
-
-            // Stop the DB Connection check Timer (only if a check interval is specified).
-            StopCheckDBConnectionTimer();
 
             // Check if there are still Clients connected
             if (ClientsConnected > 0)
@@ -411,11 +356,11 @@ CheckAllClientsDisconnected:
                                 TLogging.Log("    " +
                                     String.Format(Catalog.GetString(
                                             "CONTROLLED SHUTDOWN: Waiting {0} seconds so the Server can be sure that all Clients have got the message that they need to close... ({1} more seconds to wait)"),
-                                        TSrvSetting.ClientKeepAliveCheckIntervalInSeconds / 1000,
-                                        (TSrvSetting.ClientKeepAliveCheckIntervalInSeconds -
-                                         ((TSrvSetting.ClientKeepAliveCheckIntervalInSeconds / 4) * (Counter - 1))) / 1000));
+                                        ClientKeepAliveCheckIntervalInSeconds / 1000,
+                                        (ClientKeepAliveCheckIntervalInSeconds -
+                                         ((ClientKeepAliveCheckIntervalInSeconds / 4) * (Counter - 1))) / 1000));
 
-                                Thread.Sleep(TSrvSetting.ClientKeepAliveCheckIntervalInSeconds / 4);
+                                Thread.Sleep(ClientKeepAliveCheckIntervalInSeconds / 4);
                             }
                         }
                         else
@@ -437,12 +382,6 @@ CheckAllClientsDisconnected:
             {
                 // No Clients connected anymore -> we can shut down the server.
                 TLogging.Log("  " + Catalog.GetString("CONTROLLED SHUTDOWN: There were no Clients connected, proceeding with shutdown immediately."));
-            }
-
-            if (DBConnectionCheckInterval != 0)
-            {
-                // Close the server's DB Polling Connection in an orderly fashion
-                CloseDBPollingConnection();
             }
 
             // We are now ready to stop the server.
@@ -478,22 +417,6 @@ CheckAllClientsDisconnected:
             new Thread(StopServerThread).Start();
 
             // Server application stops here !!!
-        }
-
-        /// <summary>
-        /// Stops the DB Connection check Timer (only if a check interval is specified).
-        /// </summary>
-        public virtual void StopCheckDBConnectionTimer()
-        {
-            // This needs to be implemented by an inheriting class in order for it to do something!
-        }
-
-        /// <summary>
-        /// Closes the DB Connection in an orderly fashion.
-        /// </summary>
-        public virtual void CloseDBPollingConnection()
-        {
-            // This needs to be implemented by an inheriting class in order for it to do something!
         }
 
         /// <summary>

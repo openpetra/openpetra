@@ -365,11 +365,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             TProgressTracker.InitProgressTracker(MyClientID,
                 Catalog.GetString("Load Bank Statement"),
-                100.0m);
+                100.0m, db);
 
             TProgressTracker.SetCurrentState(MyClientID,
                 Catalog.GetString("loading statement"),
-                0);
+                0, db);
 
             DataTable PartnerByDonorKey;
 
@@ -456,7 +456,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     TProgressTracker.SetCurrentState(MyClientID,
                         Catalog.GetString("finding matches") +
                         " " + count + "/" + ResultDataset.AEpTransaction.Rows.Count.ToString(),
-                        10.0m + (count * 80.0m / ResultDataset.AEpTransaction.Rows.Count));
+                        10.0m + (count * 80.0m / ResultDataset.AEpTransaction.Rows.Count), db);
                     count++;
 
                     BankImportTDSAEpTransactionRow tempTransactionRow =
@@ -646,7 +646,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
                 TProgressTracker.SetCurrentState(MyClientID,
                     Catalog.GetString("save matches"),
-                    90.0m);
+                    90.0m, db);
 
                 TempDataset.ThrowAwayAfterSubmitChanges = true;
                 // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
@@ -720,7 +720,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Transaction.Commit();
 
-            TProgressTracker.FinishJob(MyClientID);
+            TProgressTracker.FinishJob(MyClientID, db);
 
             return ResultDataset;
         }
@@ -1102,10 +1102,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             ABatchNumber = -1;
             string MyClientID = DomainManager.GClientID.ToString();
 
-            TProgressTracker.InitProgressTracker(MyClientID,
-                Catalog.GetString("Creating gift batch"),
-                MainDS.AEpTransaction.DefaultView.Count + 10);
-
             AVerificationResult = new TVerificationResultCollection();
 
             MainDS.AEpTransaction.DefaultView.RowFilter =
@@ -1121,7 +1117,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             DateTime BatchDateEffective = stmt.Date;
             TDataBase db = DBAccess.Connect("CreateGiftBatch", ADataBase);
-            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable);
+
+            TProgressTracker.InitProgressTracker(MyClientID,
+                Catalog.GetString("Creating gift batch"),
+                MainDS.AEpTransaction.DefaultView.Count + 10, db);
 
             if (!TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref BatchDateEffective, out DateEffectiveYearNumber,
                     out DateEffectivePeriodNumber,
@@ -1148,7 +1148,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         Catalog.GetString("Creating Gift Batch"),
                         String.Format(Catalog.GetString("There are no transactions for statement #{0}."), AStatementKey),
                         TResultSeverity.Resv_Info));
-                TProgressTracker.FinishJob(MyClientID);
+                TProgressTracker.FinishJob(MyClientID, db);
                 return false;
             }
 
@@ -1172,7 +1172,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                                 transactionRow.Description);
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                         Transaction.Rollback();
-                        TProgressTracker.FinishJob(MyClientID);
+                        TProgressTracker.FinishJob(MyClientID, db);
                         return false;
                     }
                 }
@@ -1222,7 +1222,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             {
                 TProgressTracker.SetCurrentState(MyClientID,
                     Catalog.GetString("Preparing the gifts"),
-                    counter++);
+                    counter++, db);
 
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
@@ -1316,11 +1316,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             TProgressTracker.SetCurrentState(MyClientID,
                 Catalog.GetString("Submit to database"),
-                counter++);
+                counter++, db);
 
             if (AVerificationResult.HasCriticalErrors)
             {
-                TProgressTracker.FinishJob(MyClientID);
+                TProgressTracker.FinishJob(MyClientID, db);
                 return false;
             }
 
@@ -1333,7 +1333,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             TSubmitChangesResult result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
                 out VerificationResultSubmitChanges);
 
-            TProgressTracker.FinishJob(MyClientID);
+            TProgressTracker.FinishJob(MyClientID, db);
 
             if (result == TSubmitChangesResult.scrOK)
             {

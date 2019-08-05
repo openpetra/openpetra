@@ -1,0 +1,113 @@
+body {
+  min-height: 2000px;
+}
+
+.list-group .nav {
+  display: none;
+}
+
+#main {
+  position: absolute;
+  top: 50px;
+  width: 100%;
+}
+
+#tabControl {
+  margin-left: 250px;
+  margin-top: 10px;
+}
+
+.dropdown-menu, .dropdown-item {
+    z-index: 1000;
+}
+
+.tpl_row{
+    margin-bottom:-10px;
+}
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 7680px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all 0.25s ease-out;
+    -moz-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+  }
+
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -200px;
+  }
+
+  .row-offcanvas-left.active {
+    left: 200px;
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 200px;
+    margin-left: 12px;
+  }
+}
+
+.modal.modal-wide .modal-dialog {
+  max-width: 90% !important;
+}
+.modal-wide .modal-body {
+  overflow-y: auto;
+}
+
+.hidden {
+  display: none;
+}
+
+.row {
+  margin-bottom: 10px;
+}
+
+#toolbar {
+  margin-bottom: 10px;
+}
+
+.group-container {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-bottom: 8px;
+  background: #e0e0e0;
+}
+
+.tab-pane {
+  margin-top: 10px;
+}
+
+.btn-window {
+  margin: 5px;
+  padding: 5px 10px;
+}
+
+.display_message {
+  background:white;
+  border-radius:5px;
+  border:2px solid black;
+}
+.display_message_success {
+  background:#88ee44!important;
+}
+
+.display_message_fail {
+  background:#ee8844!important;
+}
+
+.debit {
+  color:red!important;
+}
+.credit {
+  color:black!important;
+}
+.format_currency {
+  text-align:right;
+}

@@ -69,7 +69,16 @@ namespace Ict.Petra.Server.App.WebService
         /// </summary>
         public TOpenPetraOrgSessionManager() : base()
         {
-            Init();
+            try
+            {
+                Init();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Exception in TOpenPetraOrgSessionManager.Init()");
+                TLogging.Log(e.ToString());
+                throw new Exception("Exception in TOpenPetraOrgSessionManager.Init()");
+            }
         }
 
         /// <summary>
@@ -99,7 +108,6 @@ namespace Ict.Petra.Server.App.WebService
             }
 
             new TAppSettingsManager(ConfigFileName);
-            new TSrvSetting();
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 

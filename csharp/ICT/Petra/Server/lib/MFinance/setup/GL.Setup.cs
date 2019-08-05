@@ -1400,9 +1400,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="APartnerCostCentreTbl"></param>
+        /// <param name="ADataBase"></param>
         /// <returns>False when Partner of Type CostCentre but no links exist</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean LoadCostCentrePartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey, out DataTable APartnerCostCentreTbl)
+        public static Boolean LoadCostCentrePartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey, out DataTable APartnerCostCentreTbl,
+            TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -1432,7 +1434,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
             TDBTransaction Transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("LoadCostCentrePartnerLinks");
+            TDataBase db = DBAccess.Connect("LoadCostCentrePartnerLinks", ADataBase);
 
             try
             {
@@ -1493,7 +1495,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 throw;
             }
 
-            db.CloseDBConnection();
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
 
             //Set the out value
             APartnerCostCentreTbl = PartnerCostCentreTbl;

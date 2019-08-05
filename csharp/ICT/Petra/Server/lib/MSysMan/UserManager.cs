@@ -43,6 +43,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
@@ -235,7 +236,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // pass ATransaction
             UserInfo.SetUserInfo(PetraPrincipal, ATransaction.DataBaseObj);
 
-            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken", ATransaction.DataBaseObj))
             {
                 // Login via server admin console authenticated by file token
                 APassword = String.Empty;
@@ -451,7 +452,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         {
             int AProcessID;
             int FailedLoginsUntilAccountGetsLocked =
-                TSystemDefaultsConnector.GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED, 10);
+                new TSystemDefaults().GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED, 10);
             bool AccountLockedAtThisAttempt = false;
 
             // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +

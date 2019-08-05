@@ -273,10 +273,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             {
             }
 
-            TProgressTracker.InitProgressTracker(ClientID,
-                Catalog.GetString("Restoring Database..."),
-                tables.Count + 3);
-
             try
             {
                 // Open a separate DB Connection for the importing of the data...
@@ -287,20 +283,26 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     {
                         try
                         {
+                            TProgressTracker.InitProgressTracker(ClientID,
+                                Catalog.GetString("Restoring Database..."),
+                                tables.Count + 3,
+                                DBConnectionObj);
+
                             tables.Reverse();
 
                             TProgressTracker.SetCurrentState(ClientID,
                                 Catalog.GetString("Deleting current data..."),
-                                0);
+                                0,
+                                DBConnectionObj);
 
                             foreach (string table in tables)
                             {
                                 ReadWriteTransaction.DataBaseObj.ExecuteNonQuery("DELETE FROM pub_" + table, ReadWriteTransaction);
                             }
 
-                            if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
+                            if (TProgressTracker.GetCurrentState(ClientID, DBConnectionObj).CancelJob == true)
                             {
-                                TProgressTracker.FinishJob(ClientID);
+                                TProgressTracker.FinishJob(ClientID, DBConnectionObj);
 
                                 // As SubmissionResult is still false, a DB Transaction Rollback will get
                                 // executed automatically and the Method will be exited with return value 'false'!
@@ -315,7 +317,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                             TProgressTracker.SetCurrentState(ClientID,
                                 Catalog.GetString("Loading initial tables..."),
-                                1);
+                                1,
+                                DBConnectionObj);
 
                             // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
                             bool success = true;
@@ -338,9 +341,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                 return;
                             }
 
-                            if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
+                            if (TProgressTracker.GetCurrentState(ClientID, DBConnectionObj).CancelJob == true)
                             {
-                                TProgressTracker.FinishJob(ClientID);
+                                TProgressTracker.FinishJob(ClientID, DBConnectionObj);
 
                                 // As SubmissionResult is still false, a DB Transaction Rollback will get
                                 // executed automatically and the Method will be exited with return value 'false'!
@@ -359,13 +362,14 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             {
                                 TProgressTracker.SetCurrentState(ClientID,
                                     String.Format(Catalog.GetString("Loading Table {0}..."), table),
-                                    tableCounter);
+                                    tableCounter,
+                                    DBConnectionObj);
 
                                 tableCounter++;
 
-                                if (TProgressTracker.GetCurrentState(ClientID).CancelJob == true)
+                                if (TProgressTracker.GetCurrentState(ClientID, DBConnectionObj).CancelJob == true)
                                 {
-                                    TProgressTracker.FinishJob(ClientID);
+                                    TProgressTracker.FinishJob(ClientID, DBConnectionObj);
 
                                     // As SubmissionResult is still false, a DB Transaction Rollback will get
                                     // executed automatically and the Method will be exited with return value 'false'!
@@ -377,7 +381,8 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                             TProgressTracker.SetCurrentState(ClientID,
                                 Catalog.GetString("Loading Sequences..."),
-                                tables.Count + 5 + 3);
+                                tables.Count + 5 + 3,
+                                DBConnectionObj);
 
                             // set sequences appropriately, not lagging behind the imported data
                             foreach (string seq in TTableList.GetDBSequenceNames())
@@ -387,14 +392,15 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                             TProgressTracker.SetCurrentState(ClientID,
                                 Catalog.GetString("Finishing Restore..."),
-                                tables.Count + 5 + 4);
+                                tables.Count + 5 + 4,
+                                DBConnectionObj);
 
                             SubmissionResult = true;
 
                             // reset all cached tables
                             TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
 
-                            TProgressTracker.FinishJob(ClientID);
+                            TProgressTracker.FinishJob(ClientID, DBConnectionObj);
                         }
                         catch (Exception e)
                         {

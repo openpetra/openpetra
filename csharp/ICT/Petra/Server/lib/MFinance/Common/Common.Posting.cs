@@ -2363,10 +2363,6 @@ namespace Ict.Petra.Server.MFinance.Common
             TDataBase db = DBAccess.Connect("PostGLBatches", ADataBase);
             bool SubmissionOK = false;
 
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Posting GL batches"),
-                ABatchNumbers.Count * 3 + 1);
-
             try
             {
                 db.WriteTransaction(
@@ -2374,6 +2370,10 @@ namespace Ict.Petra.Server.MFinance.Common
                     ref SubmissionOK,
                     delegate
                     {
+                        TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Posting GL batches"),
+                            ABatchNumbers.Count * 3 + 1, db);
+
                         SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
 
                         Int32 BatchPeriod = -1;
@@ -2382,7 +2382,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Posting GL batches"),
-                                ABatchNumbers.IndexOf(BatchNumber) * 3);
+                                ABatchNumbers.IndexOf(BatchNumber) * 3, db);
 
                             GLBatchTDS mainDS = null;
 
@@ -2403,7 +2403,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Posting GL batches"),
-                                ABatchNumbers.IndexOf(BatchNumber) * 3 + 1);
+                                ABatchNumbers.IndexOf(BatchNumber) * 3 + 1, db);
 
                             mainDS.ThrowAwayAfterSubmitChanges = true;
                             GLBatchTDSAccess.SubmitChanges(mainDS, db);
@@ -2416,7 +2416,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Posting GL batches"),
-                            ABatchNumbers.Count * 3 - 1);
+                            ABatchNumbers.Count * 3 - 1, db);
 
                         SubmissionOK = true;
                     });
@@ -2437,7 +2437,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             finally
             {
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString(), db);
             }
 
             AVerifications = VerificationResult;
@@ -2639,10 +2639,13 @@ namespace Ict.Petra.Server.MFinance.Common
             DateTime StartOfCalendarMonth = new DateTime(EffectiveDate.Year, EffectiveDate.Month, 1);
 
             // used for setting AmountInIntlCurrency
-            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(
+            decimal IntlToBaseExchRate;
+            TExchangeRateTools.GetCorporateExchangeRate(
                 LedgerIntlCurrency, LedgerBaseCurrency,
                 StartOfCalendarMonth,
-                EffectiveDate);
+                EffectiveDate,
+                out IntlToBaseExchRate,
+                ATransaction.DataBaseObj);
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
             if (!ValidateGLBatchAndTransactions(ref AMainDS, PostingDS, ALedgerNumber, BatchToPostRow, out AVerifications, ATransaction.DataBaseObj))

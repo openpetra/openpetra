@@ -69,7 +69,9 @@ namespace Ict.Common.DB
                     throw new ArgumentException("AUsername", "AUsername must not be null or an empty string!");
                 }
 
-                AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" + "UID=" + AUsername + ";" + "PASSWORD=";
+                AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" +
+                    "Convert Zero Datetime=True;"+"UID=" +
+                    AUsername + ";" + "PASSWORD=";
             }
 
             try

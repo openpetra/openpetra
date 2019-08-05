@@ -726,8 +726,6 @@ namespace Tests.MFinance.Server.Gift
 
                     GiftBatchNumber = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction)[0].LastGiftBatchNumber;
                     GiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
-
-                    Transaction.Rollback();
                 });
 
             Assert.IsNotNull(
@@ -751,7 +749,6 @@ namespace Tests.MFinance.Server.Gift
                 {
                     AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, GiftDetailRow, Transaction);
                     ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
-                    Transaction.Commit();
                 });
 
             DataTable PartnerCostCentreTbl = null;

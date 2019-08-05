@@ -278,12 +278,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 ref ReadTransaction,
                 delegate
                 {
+                    TSystemDefaults SystemDefaults = new TSystemDefaults(ReadTransaction.DataBaseObj);
+
                     // Get hold of the two tables needed for the banking information:
                     // p_partner_banking_details
                     // p_banking_details
-                    FTaxDeductiblePercentageEnabled = TSystemDefaultsConnector.GetBooleanDefault(
+                    FTaxDeductiblePercentageEnabled = SystemDefaults.GetBooleanDefault(
                         SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-                    FGovIdEnabled = TSystemDefaultsConnector.GetBooleanDefault(
+                    FGovIdEnabled = SystemDefaults.GetBooleanDefault(
                         SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
                     PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                     PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
@@ -299,7 +301,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PTaxRow template = new PTaxTable().NewRowTyped(false);
 
                         template.PartnerKey = FPartnerKey;
-                        template.TaxType = TSystemDefaultsConnector.GetStringDefault(
+                        template.TaxType = SystemDefaults.GetStringDefault(
                             SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
 
                         PTaxAccess.LoadUsingTemplate(localDS, template, ReadTransaction);
@@ -1102,6 +1104,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
+                    TSystemDefaults SystemDefaults = new TSystemDefaults(ReadTransaction.DataBaseObj);
+
                     //
                     // Create DataRow for PPartner
                     //
@@ -1109,7 +1113,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     #region Calculations
 
                     // Determine Gift Processing settings
-                    GiftReceiptingDefaults = TSystemDefaultsConnector.GetStringDefault(
+                    GiftReceiptingDefaults = SystemDefaults.GetStringDefault(
                         TSystemDefaults.PARTNER_GIFTRECEIPTINGDEFAULTS);
 
                     if (GiftReceiptingDefaults != "")
@@ -1392,7 +1396,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (APartnerClass == TPartnerClass.PERSON)
                     {
-                        if (TSystemDefaultsConnector.GetBooleanDefault(
+                        if (SystemDefaults.GetBooleanDefault(
                                 SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLADDRESSES, false))
                         {
                             // Copy *ALL* Addresses (p_location and p_partner_location records) of the FAMILY of the new PERSON
@@ -1436,7 +1440,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 ReadTransaction);
                         }
 
-                        if (TSystemDefaultsConnector.GetBooleanDefault(
+                        if (SystemDefaults.GetBooleanDefault(
                                 SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLCONTACTDETAILS, false))
                         {
                             // Copy all Contact Details of the FAMILY to the PERSON (incl. 'Primary Contact Detail', but no

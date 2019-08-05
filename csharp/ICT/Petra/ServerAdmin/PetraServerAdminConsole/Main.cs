@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -752,16 +752,11 @@ namespace PetraServerAdminConsole
         /// <param name="ACurrentlyConnectedClients">Number of currently
         /// connected Clients.</param>
         /// <param name="ASiteKey">The SiteKey</param>
-        /// <param name="DBReconnectionAttemptsCounter">counter of db reconnection attempts</param>
-        /// <param name="DBConnectionCheckInterval">interval for checking the db connection</param>
-        static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients, out Int64 ASiteKey,
-            out Int64 DBReconnectionAttemptsCounter, out Int64 DBConnectionCheckInterval)
+        static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients, out Int64 ASiteKey)
         {
             ATotalConnectedClients = TRemote.GetClientsConnectedTotal();
             ACurrentlyConnectedClients = TRemote.GetClientsConnected();
             ASiteKey = TRemote.GetSiteKey();
-            DBReconnectionAttemptsCounter = TRemote.GetDBReconnectionAttemptsCounter();
-            DBConnectionCheckInterval = TRemote.GetDBConnectionCheckInterval();
         }
 
         private static string SecurityToken = string.Empty;
@@ -795,20 +790,11 @@ namespace PetraServerAdminConsole
             int TotalConnectedClients;
             int CurrentlyConnectedClients;
             Int64 SiteKey;
-            Int64 DBReconnectionAttemptsCounter;
-            Int64 DBConnectionCheckInterval;
 
-            RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients, out SiteKey,
-                out DBReconnectionAttemptsCounter, out DBConnectionCheckInterval);
+            RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients, out SiteKey);
 
             TLogging.Log(TRemote.GetServerInfoVersion());
             TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
-            TLogging.Log("  * " + Catalog.GetString(String.Format("DB Connection State: {0}",
-                        ((DBReconnectionAttemptsCounter == -1) ? String.Format("Not yet connected") :
-                         ((DBReconnectionAttemptsCounter == 0) ? String.Format("OK") :
-                          String.Format("BROKEN / Reconnection Attempt #" + DBReconnectionAttemptsCounter.ToString()))))) +
-                ((DBReconnectionAttemptsCounter == 0) ? (DBConnectionCheckInterval == 0) ?
-                 Catalog.GetString("  (at last DB action)") : Catalog.GetString("  (polling enabled)") : ""));
             TLogging.Log("  * " +
                 String.Format(Catalog.GetString("Client connections since Server start: {0}"), TotalConnectedClients.ToString()));
             TLogging.Log("  * " + String.Format(Catalog.GetString("Clients currently connected: {0}"), CurrentlyConnectedClients));
@@ -872,9 +858,9 @@ namespace PetraServerAdminConsole
                 }
 
                 // Instantiate a remote object, which provides access to the server
-                THttpConnector.ServerAdminSecurityToken = NewSecurityToken();
-                THttpConnector.InitConnection(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
-                TRemote = new TMServerAdminNamespace().WebConnectors;
+                THttpConnector httpConnector = new THttpConnector(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
+                httpConnector.ServerAdminSecurityToken = NewSecurityToken();
+                TRemote = new TMServerAdminNamespace(httpConnector).WebConnectors;
 
                 try {
                     TRemote.LoginServerAdmin();

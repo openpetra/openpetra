@@ -141,13 +141,8 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
     <property name="pgdump.exe" value="pg_dump" overwrite="false"/>
     <property name="MySQL.exe" value="mysql" overwrite="false"/>
     <property name="makensis.exe" value="makensis" overwrite="false"/>
-    <property name="MonoBinPath" value="/opt/mono/bin" overwrite="false"/>
     <property name="git" value="git" overwrite="false"/>
-
-    <property name="MonoExecutable.file" value="/opt/mono-openpetra/bin/mono" overwrite="false"/>
-    <if test="${not file::exists(MonoExecutable.file)}">
-        <property name="MonoExecutable.file" value="${framework::get-runtime-engine(framework::get-target-framework())}" overwrite="true"/>
-    </if>
+    <property name="MonoExecutable.file" value="${framework::get-runtime-engine(framework::get-target-framework())}" overwrite="true"/>
   </if>
   <if test="${'unix'!=platform::get-name()}">
     <echo>Unknown platform!</echo>
@@ -163,6 +158,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <property name="SQLitedbClean.file" value="${dir.sqlite}/clean.db" overwrite="false" />
 <property name="SQLitedbBase.file" value="${dir.sqlite}/base.db" overwrite="false" />
 <property name="SQLitedbWork.file" value="${dir.sqlite}/work.db" overwrite="false" />
+<property name="SQLitedbSession.file" value="${dir.sqlite}/session.db" overwrite="false" />
 <property name="BuildToolsExe.dir" value="${dir.bin}" overwrite="true" />
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="ThirdParty.dir" value="${dir.3rdParty}" overwrite="false" />

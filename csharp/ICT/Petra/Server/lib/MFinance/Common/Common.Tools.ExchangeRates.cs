@@ -370,10 +370,15 @@ namespace Ict.Petra.Server.MFinance.Common
             endOfPeriod = new DateTime(endOfPeriod.Year - (currentFinancialYear - pv_year_i), endOfPeriod.Month, endOfPeriod.Day);
 
             // get the corporate exchange rate between base and intl currency for the period
-            return TExchangeRateTools.GetCorporateExchangeRate(ledgerTable[0].IntlCurrency,
+            decimal IntlToBaseExchRate;
+            TExchangeRateTools.GetCorporateExchangeRate(ledgerTable[0].IntlCurrency,
                 ledgerTable[0].BaseCurrency,
                 startOfPeriod,
-                endOfPeriod);
+                endOfPeriod,
+                out IntlToBaseExchRate,
+                databaseConnection);
+
+            return IntlToBaseExchRate;
         }
 
         /// <summary>

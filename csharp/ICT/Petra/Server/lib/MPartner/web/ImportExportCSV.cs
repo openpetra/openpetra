@@ -298,7 +298,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (IsNewRecord)
             {
-                string[] giftReceiptingDefaults = TSystemDefaultsConnector.GetStringDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
+                string[] giftReceiptingDefaults = new TSystemDefaults(ATransaction.DataBaseObj).GetStringDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
                 newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
                 newPartner.ReceiptEachGift = giftReceiptingDefaults[1].ToUpper() == "YES" || giftReceiptingDefaults[1].ToUpper() == "TRUE";
             }
@@ -715,7 +715,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     GenAppRow.PartnerKey = APartnerKey;
                     GenAppRow.ApplicationKey = (int)ATransaction.DataBaseObj.GetNextSequenceValue("seq_application", ATransaction);
                     GenAppRow.OldLink =
-                        TSystemDefaultsConnector.GetSiteKeyDefault() + ";" + GenAppRow.ApplicationKey.ToString();
+                        new TSystemDefaults(ATransaction.DataBaseObj).GetSiteKeyDefault() + ";" + GenAppRow.ApplicationKey.ToString();
                     GenAppRow.RegistrationOffice = DomainManager.GSiteKey; // When this is imported, RegistrationOffice can't be null.
 
                     // and initialize record for ShortTermApp

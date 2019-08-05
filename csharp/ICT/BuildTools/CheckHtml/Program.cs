@@ -32,7 +32,7 @@ namespace Ict.Tools.CheckHtml
     class Program
     {
         private static String sampleCall =
-            "CheckHTML -formsdir:../../../openpetra-client-js/src/forms/";
+            "CheckHTML -formsdir:../../js-client/src/forms/";
 
         public static void Main(string[] args)
         {

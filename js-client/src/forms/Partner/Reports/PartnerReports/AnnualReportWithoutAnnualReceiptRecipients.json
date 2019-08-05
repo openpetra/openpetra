@@ -1,0 +1,5 @@
+[
+	{"name": "htmlfile", "value": "Partner/AnnualReportWithoutAnnualReceiptRecipients.html"},
+	{"name": "CalculateFromClass", "value": "Ict.Petra.Server.MReporting.MPartner.AnnualReportWithoutAnnualReceiptRecipients"},
+	{"name": "currentReport", "value": "eString:Annual Report without recipients of Annual Receipts"}
+]

@@ -40,7 +40,8 @@
 
 <target name="initConfigFiles-server">
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
-  
+
+  <property name="DBMS.DBSqliteSession" value="${SQLitedbSession.file}"/>
   <if test="${DBMS.Type == 'sqlite'}">
     <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
   </if>
@@ -128,8 +129,7 @@
               spawn="${spawnxsp}">
         <environment>
           <variable name="LD_LIBRARY_PATH" path="${dir.bin}"/>
-          <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
-          <variable name="MONO_PATH" path="${MonoBinPath}\.."/>
+          <variable name="PATH" path="${environment::get-variable('PATH')};"/>
           <variable name="MONO_OPTIONS" value="--debug"/>
         </environment>
       </exec>

@@ -90,7 +90,14 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                return JsonConvert.DeserializeObject<TConnectedClient>(TSession.GetVariant("ConnectedClient").ToJson());
+                TVariant v = TSession.GetVariant("ConnectedClient");
+
+                if (v.IsZeroOrNull())
+                {
+                    return null;
+                }
+
+                return JsonConvert.DeserializeObject<TConnectedClient>(v.ToJson());
             }
 
             set

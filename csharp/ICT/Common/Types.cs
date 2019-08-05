@@ -534,6 +534,7 @@ namespace Ict.Common
         {
             PercentageDone = -1;
             AbsoluteOverallAmount = 100.0m;
+            StatusMessage = string.Empty;
             Caption = string.Empty;
             CancelJob = false;
             JobFinished = false;
@@ -562,23 +563,6 @@ namespace Ict.Common
         /// if the job has finished, this is set to true. note: sometimes percentage might be inaccurate, or not present at all
         public bool JobFinished
         { get; set; }
-
-        /// format the value in JSON for the javascript client
-        public string ToJson()
-        {
-            string ReturnValue = "{";
-
-            ReturnValue += "\"PercentageDone\": " + PercentageDone.ToString() + ", ";
-            ReturnValue += "\"AbsoluteOverallAmount\": " + AbsoluteOverallAmount.ToString() + ", ";
-            ReturnValue += "\"StatusMessage\": \"" + StatusMessage.ToString() + "\", ";
-            ReturnValue += "\"Caption\": \"" + Caption.ToString() + "\", ";
-            ReturnValue += "\"CancelJob\": " + CancelJob.ToString().ToLower() + ", ";
-            ReturnValue += "\"JobFinished\": " + JobFinished.ToString().ToLower();
-
-            ReturnValue += "}";
-
-            return ReturnValue;
-        }
     }
 
     /// <summary>

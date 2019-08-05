@@ -78,7 +78,7 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerBySpecialTypes()
         {
-            string testFile = "../../../openpetra-client-js/src/forms/Partner/Reports/PartnerReports/PartnerBySpecialType.json";
+            string testFile = "../../js-client/src/forms/Partner/Reports/PartnerReports/PartnerBySpecialType.json";
             string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Results.html";
 
             TParameterList SpecificParameters = new TParameterList();
@@ -98,7 +98,7 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerByCity()
         {
-            string testFile = "../../../openpetra-client-js/src/forms/Partner/Reports/PartnerReports/PartnerByCity.json";
+            string testFile = "../../js-client/src/forms/Partner/Reports/PartnerReports/PartnerByCity.json";
             string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Results.html";
 
             TParameterList SpecificParameters = new TParameterList();

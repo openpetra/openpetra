@@ -1863,7 +1863,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
 
                     bool TaxDeductiblePercentageEnabled =
-                        TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                        new TSystemDefaults(DbAdapter.FPrivateDatabaseObj).GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
                     String Query = string.Empty;
 
@@ -2593,11 +2593,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         LedgerNumber, AccountHierarchyCode, Transaction).Rows[0];
                     TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
 
-                    Decimal exchangeRateNow = TExchangeRateTools.GetCorporateExchangeRate(
+                    Decimal exchangeRateNow;
+                    TExchangeRateTools.GetCorporateExchangeRate(
                         ledgerInfo.BaseCurrency,
                         ledgerInfo.InternationalCurrency,
                         DateTime.Now.AddMonths(-1),
-                        DateTime.Now);
+                        DateTime.Now,
+                        out exchangeRateNow,
+                        DbAdapter.FPrivateDatabaseObj);
 
                     if (exchangeRateNow == 0)
                     {
@@ -3160,7 +3163,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 MostRecentCompletedMonth = 0;
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                new TSystemDefaults(DbAdapter.FPrivateDatabaseObj).GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
 
@@ -3368,7 +3371,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Decimal MaxAmount = AParameters["param_max_amount"].ToDecimal();
 
             bool TaxDeductiblePercentageEnabled =
-                TSystemDefaultsConnector.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                new TSystemDefaults(DbAdapter.FPrivateDatabaseObj).GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             DataTable resultTable = new DataTable();
             String ExtractTables = " ";

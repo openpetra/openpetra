@@ -49,11 +49,11 @@
 
 <target name="install.js">
   <exec program="bash"
-        workingdir="${dir.root}/../openpetra-client-js"
+        workingdir="${dir.root}/js-client"
         commandline="-c &quot;npm run build&quot;" />
   
   <copy todir="/usr/local/openpetra/client">
-    <fileset basedir="${dir.root}/../openpetra-client-js">
+    <fileset basedir="${dir.root}/js-client">
       <include name="**/*" />
     </fileset>
   </copy>

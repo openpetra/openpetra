@@ -80,7 +80,7 @@ namespace Tests.MFinance.Server.ICH
         /// <summary>
         /// This will import a test gift batch, and post it.
         /// </summary>
-        public static int ImportAndPostGiftBatch(DateTime AGiftDateEffective)
+        public static int ImportAndPostGiftBatch(DateTime AGiftDateEffective, TDataBase ADataBase)
         {
             TGiftImporting importer = new TGiftImporting();
 
@@ -109,7 +109,7 @@ namespace Tests.MFinance.Server.ICH
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
             bool refreshRequired;
 
-            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out refreshRequired, out VerificationResult);
+            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out refreshRequired, out VerificationResult, ADataBase);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "error when importing gift batch:");
@@ -120,7 +120,7 @@ namespace Tests.MFinance.Server.ICH
 
             Int32 generatedGlBatchNumber;
 
-            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out generatedGlBatchNumber, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out generatedGlBatchNumber, out VerificationResult, ADataBase))
             {
                 string VerifResStr;
 
@@ -281,7 +281,7 @@ namespace Tests.MFinance.Server.ICH
                     TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, Transaction);
                 });
 
-            ImportAndPostGiftBatch(PeriodStartDate);
+            ImportAndPostGiftBatch(PeriodStartDate, db);
 
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber,

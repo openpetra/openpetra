@@ -31,6 +31,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -61,6 +62,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    TSystemDefaults SystemDefaults = new TSystemDefaults(DbAdapter.FPrivateDatabaseObj);
+
                     String CurrentDate = DateTime.Today.ToString(
                         "yyyy-MM-dd");
 
@@ -89,7 +92,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
                         "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
                         " AND p_partner_type.p_type_code_c LIKE '" +
-                        TSystemDefaultsConnector.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
+                        SystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
                         ") THEN True ELSE False END AS EXWORKER, " +
 
                         // true if the gift is restricted for the user
@@ -404,6 +407,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    TSystemDefaults SystemDefaults = new TSystemDefaults(DbAdapter.FPrivateDatabaseObj);
+                    
                     String recipientKeyFilter =
                         (ARecipientKey == -1) ?
                         ""
@@ -457,7 +462,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String pTaxFieldAsRequired = ", NULL AS TaxRef, NULL AS DOB, NULL AS Email";
                     String pTaxFieldFilterAsRequired = "";
 
-                    if (TSystemDefaultsConnector.GetBooleanDefault("GovIdEnabled",
+                    if (SystemDefaults.GetBooleanDefault("GovIdEnabled",
                             false))                                               // This gets the Austrian bPK field...
                     {
                         Boolean filterDonorList = false;
@@ -467,7 +472,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             filterDonorList = true;
                         }
 
-                        String taxTypeFieldValue = TSystemDefaultsConnector.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "bPK");
+                        String taxTypeFieldValue = SystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "bPK");
                         pTaxFieldAsRequired =
                             ", PUB_p_tax.p_tax_ref_c AS TaxRef, PUB_p_person.p_date_of_birth_d AS DOB, PUB_p_partner_attribute.p_value_c AS Email";
                         Boolean requireBpk = filterDonorList ? AParameters["param_chkRequireBpkCode"].ToBool() : false;

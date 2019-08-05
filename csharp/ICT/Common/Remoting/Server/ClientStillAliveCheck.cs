@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,27 +99,14 @@ namespace Ict.Common.Remoting.Server
             {
                 FClientObject = AConnectedClient;
                 ClientName = FClientObject.ClientName;
-                Int32 ClientStillAliveTimeout;
 
                 // Note: calls to TLogging here only go to the console. The log file doesn't get initialised in TLogging until TClientDomainManager.EstablishDBConnection()
                 TLogging.LogAtLevel(10, "TClientStillAliveCheck (for ClientName '" + ClientName + "'') created");
 
-                // Determine timeout limit (different for Clients connected via LAN or Remote)
-                if (AClientServerConnectionType == TClientServerConnectionType.csctRemote)
-                {
-                    ClientStillAliveTimeout = TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsRemote;
-                }
-                else if (AClientServerConnectionType == TClientServerConnectionType.csctLAN)
-                {
-                    ClientStillAliveTimeout = TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN;
-                }
-                else
-                {
-                    ClientStillAliveTimeout = TSrvSetting.ClientKeepAliveTimeoutAfterXSecondsLAN;
-                }
+                Int32 ClientStillAliveTimeout = TAppSettingsManager.GetInt32("Server.ClientKeepAliveTimeoutAfterXSeconds_LAN", 60);
 
                 UClientStillAliveTimeout = ClientStillAliveTimeout;
-                UClientStillAliveCheckInterval = TSrvSetting.ClientKeepAliveCheckIntervalInSeconds;
+                UClientStillAliveCheckInterval = TAppSettingsManager.GetInt32("Server.ClientKeepAliveCheckIntervalInSeconds", 60);
                 UTearDownAppDomain = ATearDownAppDomain;
 //                UTearDownAppDomainToken = ATearDownAppDomainToken;
 

@@ -1,0 +1,37 @@
+{
+  "name": "openpetra-client-js",
+  "version": "2018.2.0",
+  "description": "Client for OpenPetra running in the web browser",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.18.1",
+    "bootstrap": "^4.3.1",
+    "browserify": "^16.3.0",
+    "browserify-css": "^0.15.0",
+    "cypress": "^3.4.1",
+    "font-awesome": "^4.7.0",
+    "i18next": "^10.6.0",
+    "i18next-browser-languagedetector": "^2.2.4",
+    "i18next-xhr-backend": "^1.5.1",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.15.0",
+    "uglify-js": "^3.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build-debug": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js -d > dist/bundle.js",
+    "build-min": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js | uglifyjs -c > dist/bundle.min.js",
+    "build": "npm run build-debug && npm run build-min",
+    "test": "LANG=en CYPRESS_baseUrl=http://localhost ./node_modules/.bin/cypress run --config video=false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openpetra/openpetra-client-js.git"
+  },
+  "author": "Timotheus Pokorra <tp@tbits.net>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/openpetra/openpetra-client-js/issues"
+  },
+  "homepage": "https://github.com/openpetra/openpetra-client-js#readme"
+}

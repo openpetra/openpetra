@@ -1,0 +1,461 @@
+<h2>{caption}</h2>
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_row" onclick="open_detail(this)" id="partner{val_p_partner_key_n}">
+		<div class="row">
+			<div class="col-2">{val_p_partner_key_n}</div>
+			<div class="col-2">{val_p_status_code_c}</div>
+			<div class="col-8">{val_p_partner_short_name_c}</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<div class="collapse_col"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="collapse tpl_view">
+		<div class="container group-container">
+			<div class="row">
+				<div class="col">{partnerkey}</div><div class="col">{val_p_partner_key_n}</div>
+			</div>
+			<div class="row">
+				<div class="col">{partnername}</div><div class="col">{val_p_partner_short_name_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{partnerclass}</div><div class="col">{val_p_partner_class_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{streetname}</div><div class="col">{val_p_street_name_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{city}</div><div class="col">{val_p_postal_code_c} {val_p_city_c}</div>
+			</div>
+			<div class="row">
+				<div class="col">{lastdonation}</div><div class="col">{val_LastGiftDate}</div>
+			</div>
+		</div>
+		<button class="btn" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
+		<button id="btnEdit" class="btn btn-primary" onclick="open_edit('{val_p_partner_key_n}')">{forms.edit}</button>
+	</div>
+
+	<div class="tpl_check">
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+	<div class="tpl_empty_types">
+		<div class="row">
+			<div class="col">
+				{empty_types}
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_empty_subscriptions">
+		<div class="row">
+			<div class="col">
+				{empty_subscriptions}
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+		<h3>{edittitle}</h3>
+		</div>
+		<div class="modal-body">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-3">
+					<span>{partnerkey}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_partner_key_n" readonly/>
+				</div>
+				<div class="col-3">
+					<span>{partnerclass}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_partner_class_c" readonly/>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{forms.status}</span>
+				</div>
+				<div class="col-3">
+					<select name="p_status_code_c">
+						<option value="ACTIVE">ACTIVE</option>
+						<option value="INACTIVE">NOT ACTIVE</option>
+					</select>
+				</div>
+
+				<div class="col-3">
+					<span>{nosolicitations1}</span>
+				</div>
+				<div class="col-3">
+					<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkNoSolicitations" name="p_no_solicitations_l"> {nosolicitations2}</label>
+				</div>
+			</div>
+			<hr>
+
+			<div class="row FAMILY select_case">
+				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_title_c"/>
+				</div>
+			</div>
+
+			<div class="row FAMILY select_case">
+				<div class="col-3">
+					<span>{firstname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_first_name_c"/>
+				</div>
+				<div class="col-3">
+					<span>{familyname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PFamily_p_family_name_c"/>
+				</div>
+			</div>
+
+			<div class="row PERSON select_case">
+				<div class="col-3">
+					<span>{title}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PPerson_p_title_c"/>
+				</div>
+			</div>
+
+			<div class="row PERSON select_case">
+				<div class="col-3">
+					<span>{firstname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PPerson_p_first_name_c"/>
+				</div>
+				<div class="col-3">
+					<span>{familyname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PPerson_p_family_name_c"/>
+				</div>
+			</div>
+
+			<div class="row PERSON select_case">
+				<div class="col-3">
+					<span>{gender}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_gender_c"/>
+				</div>
+				<div class="col-3">
+					<span>{dateofbirth}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_date_of_birth_d"/>
+				</div>
+			</div>
+
+			<div class="row ORGANISATION select_case">
+				<div class="col-3">
+					<span>{forms.name}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_organisation_name_c"/>
+				</div>
+			</div>
+
+			<div class="row UNIT select_case">
+				<div class="col-3">
+					<span>{forms.name}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_unit_name_c"/>
+				</div>
+			</div>
+
+			<div class="row UNIT select_case">
+				<div class="col-3">
+					<span>{forms.description}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="PUnit_p_description_c"/>
+				</div>
+			</div>
+
+			<div class="row BANK select_case">
+				<div class="col-3">
+					<span>{forms.name}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="p_branch_name_c"/>
+				</div>
+			</div>
+
+			<ul class="nav nav-tabs" id="detailTab" role="tablist">
+				<li class="nav-item">
+					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{address}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#types" aria-controls="types" onclick="show_tab(this)">{types}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#financial" aria-controls="financial" onclick="show_tab(this)">{financedetails}</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</a>
+				</li>
+			</ul>
+
+			<div class="tab-content" id="edit_modal_tabs">
+				<div class="tab-pane active" id="addresses">
+					<div class="container">
+
+						<div class="row">
+							<div class="col-3">
+								<span>{streetname}</span>
+							</div>
+							<div class="col-3">
+								<input type="text" name="p_street_name_c" />
+							</div>
+
+							<div class="col-3">
+								<span>{mailingaddress}</span>
+							</div>
+							<div class="col-3">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkSendMail" name="p_send_mail_l"> {mailingaddress}</label>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-3">
+								<span>{city}</span>
+							</div>
+							<div class="col-3">
+								<input type="text" name="p_city_c"/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-3">
+								<span>{postalcode}</span>
+							</div>
+							<div class="col-3">
+								<input type="text" name="p_postal_code_c"/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-3">
+								<span>{countrycode}</span>
+							</div>
+							<div class="col-3">
+								<select name="p_country_code_c" id="CountryCode">
+								</select>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="tab-pane" id="contactdetails">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{email address}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_email_address_c" size="25"/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{phone landline}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_phone_landline_c" size="25" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{phone mobile}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_default_phone_mobile_c" size="25"/>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="tab-pane" id="subscriptions" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+				<div class="tab-pane" id="types" style="border-style: ridge;overflow-y:auto;max-height: 14em;"></div>
+				<div class="tab-pane" id="financial">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								<span>{receiptletterfrequency}</span>
+							</div>
+							<div class="col">
+								<select name="p_receipt_letter_frequency_c">
+									<option value="">{no_receiptletters}</option>
+									<option value="Annual">{annual_receiptletters}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{receiptforeachgift}</span>
+							</div>
+							<div class="col">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkReceiptEachGift" name="p_receipt_each_gift_l"> {eachgift}</label>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{anonymousdonor}</span>
+							</div>
+							<div class="col">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkAnonymousDonor" name="p_anonymous_donor_l"> {anonymous}</label>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{financecomment}</span>
+							</div>
+							<div class="col">
+								<textarea name="p_finance_comment_c" style="width:90%;height:7em;"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane text-center" id="comment">
+					<textarea name="PPartner_p_comment_c" style="width:90%;height:7em;" placeholder="{comment}"></textarea>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div class="modal-footer">
+			<button id="btnSave" class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+			<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+		</div>
+		</div>
+		</div>
+	</div>
+
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					{forms.new}
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" onclick="open_new_family()">{newfamily}</a>
+					<a class="dropdown-item" onclick="open_new_organisation()">{neworganisation}</a>
+				</div>
+			</div>
+			<button id="btnFilter" class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
+		</td>
+	</tr>
+</table>
+
+<div id="modal_space"></div>
+
+<div class="container collapse" id="tabfilter">
+	<div class="container group-container">
+	<div class="row">
+		<div class="col">
+			<span>{partnername}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="AFamilyNameOrOrganisation"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{city}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="ACity"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{postalcode}:</span>
+		</div>
+		<div class="col">
+			<input type="text" name="APostCode"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{partnerclass}:</span>
+		</div>
+		<div class="col">
+			<select name="APartnerClass">
+				<option value="">{forms.any}</option>
+				<!--<option value="PERSON">{PERSON}</option>-->
+				<option value="FAMILY" selected>{FAMILY}</option>
+				<option value="ORGANISATION">{ORGANISATION}</option>
+				<!--<option value="UNIT">{UNIT}</option>-->
+				<!--<option value="BANK">{BANK}</option>-->
+			</select>
+		</div>
+	</div>
+	</div>
+
+	<button type="button" class="btn" onclick="save_preset('MaintainPartners')">{forms.save_preset}</button>
+	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
+	<button id="btnSearch" type="button" class="btn btn-primary" onclick="display_list();$('#tabfilter').collapse('toggle')">{forms.search}</button>
+	<input type="hidden" name="AMaxRecords" value="25"/>
+</div>
+
+<div class="container" id="browse">
+	<div class="row">
+		<div class="col-2"><b>{partnerkey}</b></div>
+		<div class="col-2"><b>{partnerstatus}</b></div>
+		<div class="col-8"><b>{partnername}</b></div>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

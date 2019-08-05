@@ -67,12 +67,7 @@ namespace Ict.Common.DB
         {
             get
             {
-                if (!TSrvSetting.Initialized)
-                {
-                    new TSrvSetting();
-                }
-
-                return TSrvSetting.RDMBSType;
+                return CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType", "postgresql"));
             }
         }
 
@@ -92,20 +87,7 @@ namespace Ict.Common.DB
 
             TDataBase DBAccessObj = new TDataBase();
 
-            if (!TSrvSetting.Initialized)
-            {
-                new TSrvSetting();
-            }
-
-            DBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                TSrvSetting.PostgreSQLServer,
-                TSrvSetting.PostgreSQLServerPort,
-                TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername,
-                TSrvSetting.DBPassword,
-                "",
-                true,
-                AConnectionName);
+            DBAccessObj.EstablishDBConnection(AConnectionName);
 
             return DBAccessObj;
         }

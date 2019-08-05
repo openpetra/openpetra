@@ -1,0 +1,87 @@
+<h2>{caption}</h2>
+<link rel="stylesheet" href="/css/autocomplete.css">
+
+<div class="container" id="parameters">
+	<div class="row">
+		<div class="col">
+			<span>{date_from}</span>
+		</div>
+		<div class="col">
+			<input type="date" name="AStartDate" id="StartDate">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{date_until}</span>
+		</div>
+		<div class="col">
+			<input type="date" name="AEndDate" id="EndDate">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{one_partner}</span>
+		</div>
+		<div class="col">
+			<div class="autocomplete">
+				<input type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40"><button onclick="$('input[name=p_donor_name_c]').val('');$('input[name=p_donor_name_c]').attr('key-value',0)"><i class="fa fa-close"></i></button
+				<small class="form-text text-muted">{one_partner_help}</small>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{html_template}</span>
+		</div>
+		<div class="col">
+			<input type="file" name="AHTMLTemplate" id="HTMLTemplate">
+			<small class="form-text text-muted">{html_template_help}</small>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{logo}</span>
+		</div>
+		<div class="col">
+			<input type="file" name="ALogoImage" id="LogoImage">
+			<small class="form-text text-muted">{logo_help}</small>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{signature}</span>
+		</div>
+		<div class="col">
+			<input type="file" name="ASignatureImage" id="SignatureImage">
+			<small class="form-text text-muted">{signature_help}</small>
+		</div>
+	</div>
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts()">{AnnualReceipts}</button>
+		</td>
+	</tr>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">{forms.PleaseWait}</h4>
+      </div>
+      <div class="modal-body center-block">
+        {forms.WaitInfo}
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>
+
