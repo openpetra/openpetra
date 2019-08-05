@@ -9,6 +9,7 @@ install:
 #- sudo apt-get -y install mono-devel mono-runtime
 - sudo apt-get -y install nant nunit-console libsodium23 mono-xsp4 wget xfonts-75dpi
 - wget https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && sudo dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb
+- wget https://github.com/openpetra/demo-databases/raw/UsedForNUnitTests/demoWith1ledger.yml.gz
 # to avoid errors like: error CS0433: The imported type `System.CodeDom.Compiler.CompilerError' is defined multiple times
 - sudo rm -f /usr/lib/mono/4.5-api/System.dll
 # prepare the config file
