@@ -283,7 +283,6 @@ namespace Ict.Common.Session
         private static SortedList <string, string> GetSessionValuesFromDB(TDataBase ADataBase, out string sessionID)
         {
             bool NewConnection;
-            ADataBase = null;
             TDataBase db = ConnectDB("GetSessionValuesFromDB", ADataBase, out NewConnection);
 
             string localSessionID = sessionID = GetSessionID(db);
@@ -334,7 +333,6 @@ namespace Ict.Common.Session
         private static SortedList <string, string> GetSession(string ASessionID, TDataBase ADataBase = null)
         {
             bool NewConnection;
-            ADataBase = null;
             TDataBase db = ConnectDB("GetSession", ADataBase, out NewConnection);
 
             string dummy;
@@ -578,7 +576,6 @@ namespace Ict.Common.Session
         private static void RemoveSession(string ASessionID, TDataBase ADataBase = null)
         {
             bool NewConnection;
-            ADataBase = null;
             TDataBase db = ConnectDB("RemoveSession", ADataBase, out NewConnection);
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = false;
