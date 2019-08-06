@@ -48,16 +48,15 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AClientID"></param>
         /// <param name="ACaption"></param>
         /// <param name="AAbsoluteOverallAmount"></param>
-        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        static public TProgressState InitProgressTracker(string AClientID, string ACaption, decimal AAbsoluteOverallAmount = 100.0m, TDataBase ADataBase = null)
+        static public TProgressState InitProgressTracker(string AClientID, string ACaption, decimal AAbsoluteOverallAmount = 100.0m)
         {
             TProgressState state = new TProgressState();
 
             state.AbsoluteOverallAmount = AAbsoluteOverallAmount;
             state.Caption = ACaption;
 
-            TSession.SetVariable(PROGRESSTRACKER + AClientID, state, ADataBase);
+            TSession.SetVariable(PROGRESSTRACKER + AClientID, state);
 
             return state;
         }
@@ -66,13 +65,14 @@ namespace Ict.Petra.Server.App.Core
         /// get the current state, by clientID
         /// </summary>
         /// <param name="AClientID"></param>
-        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        static public TProgressState GetCurrentState(string AClientID, TDataBase ADataBase = null)
+        static public TProgressState GetCurrentState(string AClientID)
         {
-            if ((AClientID != null) && TSession.HasVariable(PROGRESSTRACKER + AClientID, ADataBase))
+            TSession.RefreshFromDatabase();
+
+            if ((AClientID != null) && TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID, ADataBase)).ToObject<TProgressState>();
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
                 if (state.PercentageDone > 100)
                 {
                     TLogging.Log("invalid percentage: " + state.PercentageDone.ToString());
@@ -93,12 +93,11 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AClientID"></param>
         /// <param name="AStatusMessage"></param>
         /// <param name="ACurrentAbsoluteAmount"></param>
-        /// <param name="ADataBase"></param>
-        static public void SetCurrentState(string AClientID, string AStatusMessage, Decimal ACurrentAbsoluteAmount, TDataBase ADataBase = null)
+        static public void SetCurrentState(string AClientID, string AStatusMessage, Decimal ACurrentAbsoluteAmount)
         {
-            if (TSession.HasVariable(PROGRESSTRACKER + AClientID, ADataBase))
+            if (TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID, ADataBase)).ToObject<TProgressState>();
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
 
                 if (AStatusMessage.Length > 0)
                 {
@@ -113,7 +112,7 @@ namespace Ict.Petra.Server.App.Core
                     Console.WriteLine(state.PercentageDone.ToString() + "%: " + state.StatusMessage);
                 }
 
-                TSession.SetVariable(PROGRESSTRACKER + AClientID, state, ADataBase);
+                TSession.SetVariable(PROGRESSTRACKER + AClientID, state);
             }
         }
 
@@ -121,12 +120,11 @@ namespace Ict.Petra.Server.App.Core
         /// the client can cancel the job
         /// </summary>
         /// <param name="AClientID"></param>
-        /// <param name="ADataBase"></param>
-        static public bool CancelJob(string AClientID, TDataBase ADataBase = null)
+        static public bool CancelJob(string AClientID)
         {
-            if (TSession.HasVariable(PROGRESSTRACKER + AClientID, ADataBase))
+            if (TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID, ADataBase)).ToObject<TProgressState>();
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
 
                 TLogging.SetStatusBarProcedure(null);
 
@@ -146,7 +144,7 @@ namespace Ict.Petra.Server.App.Core
                         TLogging.Log("Cancelled the job for " + AClientID);
                     }
 
-                    TSession.SetVariable(PROGRESSTRACKER + AClientID, state, ADataBase);
+                    TSession.SetVariable(PROGRESSTRACKER + AClientID, state);
 
                     return true;
                 }
@@ -158,11 +156,11 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// the server will set the job to finished
         /// </summary>
-        static public bool FinishJob(string AClientID, TDataBase ADataBase = null)
+        static public bool FinishJob(string AClientID)
         {
-            if (TSession.HasVariable(PROGRESSTRACKER + AClientID, ADataBase))
+            if (TSession.HasVariable(PROGRESSTRACKER + AClientID))
             {
-                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID, ADataBase)).ToObject<TProgressState>();
+                TProgressState state = ((JObject)TSession.GetVariable(PROGRESSTRACKER + AClientID)).ToObject<TProgressState>();
 
                 state.JobFinished = true;
 
@@ -171,7 +169,7 @@ namespace Ict.Petra.Server.App.Core
                     TLogging.Log("Finished the job for " + AClientID);
                 }
 
-                TSession.SetVariable(PROGRESSTRACKER + AClientID, state, ADataBase);
+                TSession.SetVariable(PROGRESSTRACKER + AClientID, state);
 
                 TLogging.SetStatusBarProcedure(null);
 

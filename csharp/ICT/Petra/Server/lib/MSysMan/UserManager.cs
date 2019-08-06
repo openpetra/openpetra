@@ -220,7 +220,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             catch (EUserNotExistantException)
             {
                 // pass ATransaction
-                UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"), ATransaction.DataBaseObj);
+                UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"));
 
                 // Logging
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
@@ -234,9 +234,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
 
             // pass ATransaction
-            UserInfo.SetUserInfo(PetraPrincipal, ATransaction.DataBaseObj);
+            UserInfo.SetUserInfo(PetraPrincipal);
 
-            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken", ATransaction.DataBaseObj))
+            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
                 // Login via server admin console authenticated by file token
                 APassword = String.Empty;
@@ -581,7 +581,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                         LoadUser(UserInfo.GetUserInfo().UserID, out UserDetails, Transaction);
                     });
 
-                UserInfo.SetUserInfo(UserDetails, Transaction.DataBaseObj);
+                UserInfo.SetUserInfo(UserDetails);
 
                 SubmitOK = true;
             }

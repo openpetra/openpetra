@@ -2372,7 +2372,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Posting GL batches"),
-                            ABatchNumbers.Count * 3 + 1, db);
+                            ABatchNumbers.Count * 3 + 1);
 
                         SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
 
@@ -2382,7 +2382,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Posting GL batches"),
-                                ABatchNumbers.IndexOf(BatchNumber) * 3, db);
+                                ABatchNumbers.IndexOf(BatchNumber) * 3);
 
                             GLBatchTDS mainDS = null;
 
@@ -2403,7 +2403,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Posting GL batches"),
-                                ABatchNumbers.IndexOf(BatchNumber) * 3 + 1, db);
+                                ABatchNumbers.IndexOf(BatchNumber) * 3 + 1);
 
                             mainDS.ThrowAwayAfterSubmitChanges = true;
                             GLBatchTDSAccess.SubmitChanges(mainDS, db);
@@ -2416,7 +2416,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Posting GL batches"),
-                            ABatchNumbers.Count * 3 - 1, db);
+                            ABatchNumbers.Count * 3 - 1);
 
                         SubmissionOK = true;
                     });
@@ -2437,7 +2437,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             finally
             {
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString(), db);
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
 
             AVerifications = VerificationResult;

@@ -48,93 +48,67 @@ namespace Ict.Common.Session
     /// </summary>
     public class TSession
     {
-        // these variables are only used in the unit tests.
-        // they are only used if HttpContext.Current == null.
-        // they are used across threads, because we in the tests we want to access the session across threads.
-        private static string FSessionID; // STATIC_OK: only needed for the tests
-        private static SortedList <string, string> FSessionValues;  // STATIC_OK: only needed for the tests
-        private static DateTime FSessionValidUntil;  // STATIC_OK: only needed for the tests
-
         private const int SessionValidHours = 24;
 
-        private static SortedList <string, string> GetSessionValues(string ASessionID)
+        // these variables are only used per thread, they are initialized for each request.
+        private static string FSessionID; // STATIC_OK: will be set for each request
+        private static SortedList <string, string> FSessionValues;  // STATIC_OK: will be set for each request
+
+        /// <summary>
+        /// Set the session id for this current thread.
+        /// Each request has its own thread.
+        /// Threads can be reused for different users.
+        /// </summary>
+        /// <param name="ASessionID"></param>
+        public static void InitThread(string ASessionID = null)
         {
-            if (HttpContext.Current == null)
+            TLogging.LogAtLevel(1, "Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
+
+            FSessionID = null;
+            FSessionValues = null;
+
+            string sessionID;
+
+            if (ASessionID == null)
             {
-                if ((FSessionID == ASessionID) && (FSessionValidUntil.CompareTo(DateTime.Now) > 0))
+                sessionID = FindSessionID();
+            }
+            else
+            {
+                sessionID = ASessionID;
+            }
+
+            TDataBase db = ConnectDB("SessionInitThread");
+
+            TDBTransaction t = new TDBTransaction();
+            bool SubmissionOK = false;
+
+            db.WriteTransaction(ref t,
+                ref SubmissionOK,
+                delegate
                 {
-                    return FSessionValues;
-                }
-            }
-            else if ((HttpContext.Current.Session["SessionID"] != null) && (HttpContext.Current.Session["SessionID"].ToString() == ASessionID))
-            {
-                // we must get the session values each time from the database, for the reports' progress tracker to work.
-                //return (SortedList <string, string>) HttpContext.Current.Session["SessionValues"];
-                return null;
-            }
+                    // get the session ID, or start a new session
+                    // load the session values from the database
+                    // update the session last access in the database
+                    // clean old sessions
+                    InitSession(sessionID, t);
 
-            return null;
+                    SubmissionOK = true;
+                });
+
+            db.CloseDBConnection();
+
         }
 
-        private static void SetSessionValues(string ASessionID, SortedList <string, string> AValues)
-        {
-            if (HttpContext.Current == null)
-            {
-                if ((FSessionID == ASessionID) || (FSessionID == String.Empty))
-                {
-                    FSessionValidUntil = DateTime.Now.AddHours(SessionValidHours);
-                    FSessionID = ASessionID;
-                    FSessionValues = AValues;
-                }
-            }
-            else if (HttpContext.Current.Session != null)
-            {
-                HttpContext.Current.Session["SessionID"] = ASessionID;
-                HttpContext.Current.Session["SessionValues"] = AValues;
-            }
-        }
-
-        private static void ClearSession()
-        {
-            if (HttpContext.Current == null)
-            {
-                FSessionValidUntil = DateTime.Now.AddHours(-1);
-                FSessionID = String.Empty;
-                FSessionValues = null;
-            }
-            else if (HttpContext.Current.Session != null)
-            {
-                HttpContext.Current.Session.Clear();
-            }
-        }
-
-        /// get the current session id. if it is not stored in the http context, check the thread
+        /// get the current session id from the http context
         private static string FindSessionID()
         {
-            string sessionId;
-
-            // only look in thread if there is no HttpContext.Current; otherwise Threads are reused.
-            if (HttpContext.Current == null)
+            if ((HttpContext.Current != null) && (HttpContext.Current.Request.Cookies.AllKeys.Contains("OpenPetraSessionID")))
             {
-                sessionId = FSessionID;
-
-                if ((sessionId != null) && (sessionId.Length > 0))
-                {
-                    TLogging.LogAtLevel(4, "FindSessionID: Session ID found in thread. SessionID = " + sessionId);
-
-                    return sessionId;
-                }
-
-                TLogging.LogAtLevel(1,
-                    "FindSessionID: Session ID not found in the thread!!! thread id: " + Thread.CurrentThread.ManagedThreadId.ToString());
-                return String.Empty;
-            }
-            else if (HttpContext.Current.Request.Cookies.AllKeys.Contains("OpenPetraSessionID"))
-            {
-                sessionId = HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
+                string sessionId = HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
                 if (sessionId != String.Empty)
                 {
-                    TLogging.LogAtLevel(4, "FindSessionID: Session ID found in HttpContext. SessionID = " + sessionId);
+                    TLogging.LogAtLevel(4, "FindSessionID: Session ID found in HttpContext. SessionID: " + sessionId);
                     return sessionId;
                 }
             }
@@ -144,18 +118,66 @@ namespace Ict.Common.Session
         }
 
         /// <summary>
-        /// set the session id for this current thread
+        /// gets the current session id, or creates a new session id if it does not exist yet.
+        /// loads the session values or initializes them.
+        /// clean old sessions from the database.
         /// </summary>
-        /// <param name="ASessionID"></param>
-        public static void InitThread(string ASessionID)
+        private static void InitSession(string ASessionID, TDBTransaction AWriteTransaction)
         {
-            TLogging.LogAtLevel(1, "Running InitThread for ASessionID = " + ASessionID);
-            TLogging.LogAtLevel(1, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
+            string sessionID = ASessionID;
 
-            if (HttpContext.Current == null)
+            // is that session still valid?
+            if ((sessionID != string.Empty) && !HasValidSession(sessionID, AWriteTransaction))
             {
-                FSessionID = ASessionID;
+                TLogging.LogAtLevel(1,"TSession: session ID is not valid anymore: " + sessionID);
+
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
+                }
             }
+
+            // we need a new session
+            if (sessionID == string.Empty)
+            {
+                sessionID = Guid.NewGuid().ToString();
+                TLogging.LogAtLevel(1, "TSession: Creating new session: " + sessionID);
+
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Request.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
+                    HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
+                }
+
+                CleanOldSessions(AWriteTransaction);
+
+                // store new session
+                FSessionID = sessionID;
+                FSessionValues = new SortedList <string, string>();
+                SaveSession(AWriteTransaction);
+            }
+            else
+            {
+                TLogging.LogAtLevel(1, "TSession: Loading valid session from database: " + sessionID);
+                FSessionID = sessionID;
+                LoadSession(AWriteTransaction);
+                UpdateLastAccessTime(AWriteTransaction);
+            }
+        }
+
+        private static bool HasValidSession(string ASessionID, TDBTransaction AReadTransaction)
+        {
+            string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_session_id_c = ? and s_valid_until_d > NOW()";
+            OdbcParameter[] parameters = new OdbcParameter[1];
+            parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+            parameters[0].Value = ASessionID;
+            
+            if (Convert.ToInt32(AReadTransaction.DataBaseObj.ExecuteScalar(sql, AReadTransaction, parameters)) == 1)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// establish a database connection to the alternative sqlite database for the sessions
@@ -220,261 +242,87 @@ namespace Ict.Common.Session
             return DBAccessObj;
         }
 
-        private static TDataBase ConnectDB(string AConnectionName, TDataBase ADataBase, out bool ANewConnection)
+        private static TDataBase ConnectDB(string AConnectionName)
         {
             // for SQLite, we use a different database for the session data, to avoid locking the database.
             if (DBAccess.DBType == TDBType.SQLite)
             {
-                if (ADataBase != null)
-                {
-                    if (ADataBase.DsnOrServer == TAppSettingsManager.GetValue("Server.DBSqliteSession", "localhost"))
-                    {
-                        ANewConnection = false;
-                        return ADataBase;
-                    }
-                }
-
-                ANewConnection = true;
-
                 return EstablishDBConnectionSqliteSessionDB(AConnectionName);
             }
 
-            ANewConnection = (ADataBase == null);
-
-            return DBAccess.Connect(AConnectionName, ADataBase);
+            return DBAccess.Connect(AConnectionName);
         }
 
-        private static bool HasValidSession(string ASessionID, TDataBase ADataBase)
+        private static void UpdateLastAccessTime(TDBTransaction AWriteTransaction)
         {
-            if (GetSessionValues(ASessionID) != null)
-            {
-                return true;
-            }
-
-            TDBTransaction t = new TDBTransaction();
-            bool SubmissionOK = false;
-            bool Result = false;
-
-            ADataBase.WriteTransaction(ref t,
-                ref SubmissionOK,
-                delegate
-                {
-                    string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_session_id_c = ? and s_valid_until_d > NOW()";
-                    OdbcParameter[] parameters = new OdbcParameter[1];
-                    parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
-                    parameters[0].Value = ASessionID;
-                    
-                    if (Convert.ToInt32(ADataBase.ExecuteScalar(sql, t, parameters)) == 1)
-                    {
-                        Result = true;
-                    }
-                    else
-                    {
-                        // clean all old sessions
-                        sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
-                        ADataBase.ExecuteNonQuery(sql, t);
-                        SubmissionOK = true;
-                    }
-                });
-
-            return Result;
+            OdbcParameter[] parameters = new OdbcParameter[2];
+            parameters[0] = new OdbcParameter("s_modification_id_t", OdbcType.DateTime);
+            parameters[0].Value = DateTime.Now;
+            parameters[1] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+            parameters[1].Value = FSessionID;
+            string sql = "UPDATE s_modification_id_t=? WHERE s_session_id_c = ?";
+            AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction, parameters);
         }
 
-        private static SortedList <string, string> GetSessionValuesFromDB(TDataBase ADataBase, out string sessionID)
+        private static void LoadSession(TDBTransaction AReadTransaction)
         {
-            bool NewConnection;
-            TDataBase db = ConnectDB("GetSessionValuesFromDB", ADataBase, out NewConnection);
+            OdbcParameter[] parameters = new OdbcParameter[1];
+            parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+            parameters[0].Value = FSessionID;
 
-            string localSessionID = sessionID = GetSessionID(db);
-           
-            SortedList <string, string> result = null;
-            result = GetSessionValues(sessionID);
-            if (result != null)
-            {
-                if (NewConnection)
-                {
-                    db.CloseDBConnection();
-                }
-
-                return result;
-            }
-
-            TDBTransaction t = new TDBTransaction();
-            db.ReadTransaction(ref t,
-                delegate
-                {
-                    OdbcParameter[] parameters = new OdbcParameter[1];
-                    parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
-                    parameters[0].Value = localSessionID;
-
-                    string sql = "SELECT COUNT(*) FROM s_session WHERE s_session_id_c = ?";
-
-                    if (Convert.ToInt32(db.ExecuteScalar(sql, t, parameters)) > 0)
-                    {
-                        sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
-                        string jsonString = db.ExecuteScalar(sql, t, parameters).ToString();
-                        result = JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
-                        SetSessionValues(localSessionID, result);
-                    }
-                    else
-                    {
-                        result = null;
-                    }
-                });
-
-            if (NewConnection)
-            {
-                db.CloseDBConnection();
-            }
-
-            return result;
+            string sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
+            string jsonString = AReadTransaction.DataBaseObj.ExecuteScalar(sql, AReadTransaction, parameters).ToString();
+            FSessionValues = JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
         }
 
-        private static SortedList <string, string> GetSession(string ASessionID, TDataBase ADataBase = null)
+        private static void SaveSession(TDBTransaction AWriteTransaction)
         {
-            bool NewConnection;
-            TDataBase db = ConnectDB("GetSession", ADataBase, out NewConnection);
-
-            string dummy;
-            SortedList <string, string> result = GetSessionValuesFromDB(db, out dummy);
-
-            if (result == null)
-            {
-                TDBTransaction t = new TDBTransaction();
-                bool SubmissionOK = false;
-
-                db.WriteTransaction(ref t,
-                    ref SubmissionOK,
-                    delegate
-                    {
-                        if (HasValidSession(ASessionID, db))
-                        {
-                            result = GetSession(ASessionID, db);
-                        }
-                        else
-                        {
-                            result = new SortedList <string, string>();
-                            SetSessionValues(ASessionID, result);
-                        }
-
-                        SubmissionOK = true;
-                    });
-            }
-
-            if (NewConnection)
-            {
-                db.CloseDBConnection();
-            }
-
-            return result;
-        }
-
-        private static void StoreSession(string ASessionID, SortedList <string, string> ASession, TDataBase ADataBase)
-        {
-            OdbcParameter[] parameters = new OdbcParameter[3];
-            parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
-            parameters[0].Value = JsonConvert.SerializeObject(ASession);
-            parameters[1] = new OdbcParameter("s_valid_until_d", OdbcType.DateTime);
-            parameters[1].Value = DateTime.Now.AddHours(SessionValidHours);
-            parameters[2] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
-            parameters[2].Value = ASessionID;
-
             string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_session_id_c = ?";
-            OdbcParameter[] parameters2 = new OdbcParameter[1];
-            parameters2[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
-            parameters2[0].Value = ASessionID;
+            OdbcParameter[] parameters = new OdbcParameter[1];
+            parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+            parameters[0].Value = FSessionID;
             
-            if (Convert.ToInt32(ADataBase.ExecuteScalar(sql, ADataBase.Transaction, parameters2)) == 1)
+            if (Convert.ToInt32(AWriteTransaction.DataBaseObj.ExecuteScalar(sql, AWriteTransaction, parameters)) == 1)
             {
-                sql = "UPDATE PUB_s_session SET s_session_values_c = ?, s_valid_until_d = ? WHERE s_session_id_c = ?";
+                parameters = new OdbcParameter[2];
+                parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
+                parameters[0].Value = JsonConvert.SerializeObject(FSessionValues);
+                parameters[1] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+                parameters[1].Value = FSessionID;
+                sql = "UPDATE PUB_s_session SET s_session_values_c = ? WHERE s_session_id_c = ?";
             }
             else
             {
-                sql = "INSERT INTO PUB_s_session (s_session_values_c, s_valid_until_d, s_session_id_c) VALUES (?,?,?)";
+                parameters = new OdbcParameter[3];
+                parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
+                parameters[0].Value = JsonConvert.SerializeObject(FSessionValues);
+                parameters[1] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+                parameters[1].Value = FSessionID;
+                parameters[2] = new OdbcParameter("s_valid_until_d", OdbcType.DateTime);
+                parameters[2].Value = DateTime.Now.AddHours(SessionValidHours);
+                sql = "INSERT INTO PUB_s_session (s_session_values_c, s_session_id_c, s_valid_until_d) VALUES (?,?,?)";
             }
 
-            ADataBase.ExecuteNonQuery(sql, ADataBase.Transaction, parameters);
-
-            SetSessionValues(ASessionID, ASession);
+            AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction, parameters);
         }
 
-        /// <summary>
-        /// gets the current session id, or creates a new session id if it does not exist yet
-        /// </summary>
-        public static string GetSessionID(TDataBase ADataBase = null)
+        /// clean all old sessions
+        static private void CleanOldSessions(TDBTransaction AWriteTransaction)
         {
-            string sessionID = FindSessionID();
-
-            bool NewConnection = false;
-            TDataBase db = null;
-            ADataBase = null;
-
-            if (sessionID != string.Empty)
-            {
-                db = ConnectDB("GetSessionID", ADataBase, out NewConnection);
-            }
-
-            if ((sessionID != string.Empty) && !HasValidSession(sessionID, db))
-            {
-                TLogging.LogAtLevel(
-                    1,
-                    "GetSessionID: client is using a session ID that is not valid anymore! (sessionID = " + sessionID +
-                    ") => throwing away current session id!");
-
-                // the client is using a session ID that is not valid anymore
-                // throw away current session id
-                InitThread(string.Empty);
-
-                if (HttpContext.Current != null)
-                {
-                    HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
-                }
-
-                sessionID = string.Empty;
-            }
-
-            if (NewConnection)
-            {
-                db.CloseDBConnection();
-            }
-
-            if (sessionID == string.Empty)
-            {
-                TLogging.LogAtLevel(1, "GetSessionID: sessionID == string.Empty! --> creating new session");
-                sessionID = Guid.NewGuid().ToString();
-
-                if (HttpContext.Current != null)
-                {
-                    HttpContext.Current.Request.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
-                    HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
-                }
-                else
-                {
-                    TLogging.LogAtLevel(4, "thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
-                    InitThread(sessionID);
-                }
-
-                TLogging.LogAtLevel(1, "GetSessionID: new sessionID = " + sessionID);
-            }
-            else
-            {
-                // TLogging.LogAtLevel(4, "GetSessionID: sessionID = " + sessionID);
-            }
-
-            return sessionID;
+            string sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
+            AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction);
         }
 
+
         /// <summary>
-        /// set a session variable
+        /// set a session variable.
+        /// store to database immediately
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        /// <param name="ADataBase"></param>
-        public static void SetVariable(string name, object value, TDataBase ADataBase = null)
+        public static void SetVariable(string name, object value)
         {
-            bool NewConnection;
-            ADataBase = null;
-            TDataBase db = ConnectDB("SessionSetVariable", ADataBase, out NewConnection);
+            TDataBase db = ConnectDB("SessionSetVariable");
 
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = false;
@@ -482,52 +330,33 @@ namespace Ict.Common.Session
             db.WriteTransaction(ref t, ref SubmissionOK,
                 delegate
                 {
-                    string sessionID = GetSessionID(db);
-                    SortedList <string, string>session;
-
-                    if (HasValidSession(sessionID, db))
+                    if (FSessionValues.Keys.Contains(name))
                     {
-                        session = GetSession(sessionID, db);
+                        FSessionValues[name] = (new TVariant(value)).EncodeToString();
                     }
                     else
                     {
-                        session = new SortedList <string, string>();
+                        FSessionValues.Add(name, (new TVariant(value)).EncodeToString());
                     }
 
-                    if (session.Keys.Contains(name))
-                    {
-                        session[name] = (new TVariant(value)).EncodeToString();
-                    }
-                    else
-                    {
-                        session.Add(name, (new TVariant(value)).EncodeToString());
-                    }
-
-                    StoreSession(sessionID, session, db);
+                    SaveSession(t);
 
                     SubmissionOK = true;
                 });
 
-            if (NewConnection)
-            {
-                db.CloseDBConnection();
-            }
+            db.CloseDBConnection();
         }
 
         /// <summary>
         /// returns true if variable exists and is not null
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        public static bool HasVariable(string name, TDataBase ADataBase = null)
+        public static bool HasVariable(string name)
         {
-            string sessionID;
-            SortedList <string, string>session = GetSessionValuesFromDB(ADataBase, out sessionID);
-
             bool result = false;
 
-            if ((session != null) && session.Keys.Contains(name) && (session[name] != null))
+            if ((FSessionValues != null) && FSessionValues.Keys.Contains(name) && (FSessionValues[name] != null))
             {
                 result = true;
             }
@@ -539,16 +368,12 @@ namespace Ict.Common.Session
         /// get a session variable
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        public static object GetVariable(string name, TDataBase ADataBase = null)
+        public static object GetVariable(string name)
         {
-            string sessionID;
-            SortedList <string, string>session = GetSessionValuesFromDB(ADataBase, out sessionID);
-
-            if ((session != null) && session.Keys.Contains(name))
+            if ((FSessionValues != null) && FSessionValues.Keys.Contains(name))
             {
-                return TVariant.DecodeFromString(session[name]).ToObject();
+                return TVariant.DecodeFromString(FSessionValues[name]).ToObject();
             }
 
             return null;
@@ -558,25 +383,41 @@ namespace Ict.Common.Session
         /// get a session variable, not decoded yet
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="ADataBase"></param>
         /// <returns></returns>
-        public static TVariant GetVariant(string name, TDataBase ADataBase = null)
+        public static TVariant GetVariant(string name)
         {
-            string sessionID;
-            SortedList <string, string>session = GetSessionValuesFromDB(ADataBase, out sessionID);
-
-            if ((session != null) && session.Keys.Contains(name))
+            if ((FSessionValues != null) && FSessionValues.Keys.Contains(name))
             {
-                return TVariant.DecodeFromString(session[name]);
+                return TVariant.DecodeFromString(FSessionValues[name]);
             }
 
             return new TVariant((object)null);
         }
 
-        private static void RemoveSession(string ASessionID, TDataBase ADataBase = null)
+        /// get the session values from the database again
+        public static void RefreshFromDatabase()
         {
-            bool NewConnection;
-            TDataBase db = ConnectDB("RemoveSession", ADataBase, out NewConnection);
+            TDataBase db = ConnectDB("SessionRefresh");
+            TDBTransaction t = new TDBTransaction();
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    LoadSession(t);
+                });
+
+            db.CloseDBConnection();
+        }
+
+        /// get the session id, to pass to a sub thread
+        public static string GetSessionID()
+        {
+            return FSessionID;
+        }
+
+        private static void RemoveSession()
+        {
+            TDataBase db = ConnectDB("RemoveSession");
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = false;
 
@@ -585,39 +426,33 @@ namespace Ict.Common.Session
                 {
                     OdbcParameter[] parameters = new OdbcParameter[1];
                     parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
-                    parameters[0].Value = ASessionID;
+                    parameters[0].Value = FSessionID;
 
                     string sql = "DELETE FROM  s_session WHERE s_session_id_c = ?";
                     db.ExecuteNonQuery(sql, t, parameters);
                     SubmissionOK = true;
                 });
 
-            SetSessionValues(ASessionID, null);
-    
-            if (NewConnection)
-            {
-                db.CloseDBConnection();
-            }
+            db.CloseDBConnection();
         }
 
         /// <summary>
-        /// clear the current session
+        /// close the current session
         /// </summary>
-        static public void Clear(TDataBase ADataBase = null)
+        public static void CloseSession()
         {
-            TLogging.LogAtLevel(1, "TSession.Clear got called");
+            TLogging.LogAtLevel(1, "TSession.CloseSession got called: " + FSessionID);
 
-            string sessionId = GetSessionID();
+            RemoveSession();
 
-            TLogging.LogAtLevel(1, "TSession.Clear: sessionID = " + sessionId);
+            FSessionID = String.Empty;
+            FSessionValues = null;
 
-            if (sessionId.Length > 0)
+            if (HttpContext.Current != null)
             {
-                RemoveSession(sessionId, ADataBase);
                 HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
                 HttpContext.Current.Response.Cookies.Remove("OpenPetraSessionID");
-                ClearSession();
-                TLogging.LogAtLevel(1, "TSession.Clear: cleared session with sessionID = " + sessionId);
+                HttpContext.Current.Session.Clear();
             }
         }
     }
