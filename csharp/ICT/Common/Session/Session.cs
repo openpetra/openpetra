@@ -283,6 +283,7 @@ namespace Ict.Common.Session
         private static SortedList <string, string> GetSessionValuesFromDB(TDataBase ADataBase, out string sessionID)
         {
             bool NewConnection;
+            ADataBase = null;
             TDataBase db = ConnectDB("GetSessionValuesFromDB", ADataBase, out NewConnection);
 
             string localSessionID = sessionID = GetSessionID(db);
@@ -307,14 +308,16 @@ namespace Ict.Common.Session
                     parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
                     parameters[0].Value = localSessionID;
 
-                    string sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
-                    try
+                    string sql = "SELECT COUNT(*) FROM s_session WHERE s_session_id_c = ?";
+
+                    if (Convert.ToInt32(db.ExecuteScalar(sql, t, parameters)) > 0)
                     {
+                        sql = "SELECT s_session_values_c FROM s_session WHERE s_session_id_c = ?";
                         string jsonString = db.ExecuteScalar(sql, t, parameters).ToString();
                         result = JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
                         SetSessionValues(localSessionID, result);
                     }
-                    catch (Ict.Common.Exceptions.EOPDBException)
+                    else
                     {
                         result = null;
                     }
@@ -331,6 +334,7 @@ namespace Ict.Common.Session
         private static SortedList <string, string> GetSession(string ASessionID, TDataBase ADataBase = null)
         {
             bool NewConnection;
+            ADataBase = null;
             TDataBase db = ConnectDB("GetSession", ADataBase, out NewConnection);
 
             string dummy;
@@ -405,6 +409,7 @@ namespace Ict.Common.Session
 
             bool NewConnection = false;
             TDataBase db = null;
+            ADataBase = null;
 
             if (sessionID != string.Empty)
             {
@@ -470,6 +475,7 @@ namespace Ict.Common.Session
         public static void SetVariable(string name, object value, TDataBase ADataBase = null)
         {
             bool NewConnection;
+            ADataBase = null;
             TDataBase db = ConnectDB("SessionSetVariable", ADataBase, out NewConnection);
 
             TDBTransaction t = new TDBTransaction();
@@ -572,6 +578,7 @@ namespace Ict.Common.Session
         private static void RemoveSession(string ASessionID, TDataBase ADataBase = null)
         {
             bool NewConnection;
+            ADataBase = null;
             TDataBase db = ConnectDB("RemoveSession", ADataBase, out NewConnection);
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = false;
