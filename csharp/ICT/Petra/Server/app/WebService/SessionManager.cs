@@ -86,8 +86,6 @@ namespace Ict.Petra.Server.App.WebService
         /// </summary>
         public static bool Init()
         {
-            TSession.InitThread();
-
             if (ConfigFileName == string.Empty)
             {
                 // make sure the correct config file is used
@@ -112,6 +110,7 @@ namespace Ict.Petra.Server.App.WebService
             new TAppSettingsManager(ConfigFileName);
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
+            TSession.InitThread();
 
             if (TLogging.DebugLevel >= 4)
             {

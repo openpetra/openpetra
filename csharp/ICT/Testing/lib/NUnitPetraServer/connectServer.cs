@@ -78,8 +78,6 @@ namespace Ict.Testing.NUnitPetraServer
             Int32 ClientID;
             Int64 SiteKey;
 
-            TSession.InitThread();
-
             if (File.Exists(AConfigName))
             {
                 new TAppSettingsManager(AConfigName);
@@ -95,6 +93,8 @@ namespace Ict.Testing.NUnitPetraServer
             }
 
             new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
+
+            TSession.InitThread();
 
             CommonNUnitFunctions.InitRootPath();
 
