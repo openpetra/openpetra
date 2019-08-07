@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Session;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 
@@ -111,6 +112,7 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
             string YmlFile = TAppSettingsManager.GetValue("YmlGzFile");
             string Action = TAppSettingsManager.GetValue("Action");
             TLogging.DebugLevel = TAppSettingsManager.GetInt32("Server.DebugLevel", 0);
+            TSession.InitThread();
 
             TServerManager.TheServerManager = new TServerManager();
 

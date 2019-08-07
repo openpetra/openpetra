@@ -64,7 +64,7 @@ namespace Ict.Common.Session
         {
             TLogging.LogAtLevel(1, "Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
 
-            FSessionID = null;
+            FSessionID = ASessionID;
             FSessionValues = null;
 
             string sessionID;
@@ -260,7 +260,7 @@ namespace Ict.Common.Session
             parameters[0].Value = DateTime.Now;
             parameters[1] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
             parameters[1].Value = FSessionID;
-            string sql = "UPDATE s_modification_id_t=? WHERE s_session_id_c = ?";
+            string sql = "UPDATE PUB_s_session SET s_modification_id_t = ? WHERE s_session_id_c = ?";
             AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction, parameters);
         }
 
