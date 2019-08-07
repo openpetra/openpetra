@@ -131,6 +131,8 @@ namespace Ict.Common.Session
             {
                 TLogging.LogAtLevel(1,"TSession: session ID is not valid anymore: " + sessionID);
 
+                sessionID = string.Empty;
+
                 if (HttpContext.Current != null)
                 {
                     HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
