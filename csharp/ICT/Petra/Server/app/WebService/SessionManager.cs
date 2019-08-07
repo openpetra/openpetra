@@ -129,6 +129,7 @@ namespace Ict.Petra.Server.App.WebService
             if ((HttpContext.Current != null) && (HttpContext.Current.Request.PathInfo == "/Login"))
             {
                 TSession.CloseSession();
+                TSession.InitThread();
             }
 
             if (TServerManager.TheServerManager == null)
