@@ -289,6 +289,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                             tables.Reverse();
 
+                            // ignore s_session table, to avoid locking during the restore
+                            tables.Remove("s_session");
+
                             TProgressTracker.SetCurrentState(ClientID,
                                 Catalog.GetString("Deleting current data..."),
                                 0);
@@ -312,9 +315,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             ymlParser.ParseCaptions();
 
                             tables.Reverse();
-
-                            // ignore s_session table, to avoid locking during the restore
-                            tables.Remove("s_session");
 
                             TProgressTracker.SetCurrentState(ClientID,
                                 Catalog.GetString("Loading initial tables..."),
