@@ -335,7 +335,7 @@
                 notnull="yes"/>
     <tablefield name="s_valid_until_d"
                 type="datetime"
-                descr="This is session is valid till this point in time"
+                descr="This session is valid till this point in time"
                 notnull="yes"/>
     <tablefield name="s_session_values_c"
                 type="text"

@@ -82,7 +82,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 return "OdbcType.Date";
             }
-            else if (tableField.strType == "timestamp")
+            else if (tableField.strType == "timestamp" || tableField.strType == "datetime")
             {
                 return "OdbcType.DateTime";
             }
