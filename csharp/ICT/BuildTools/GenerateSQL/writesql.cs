@@ -480,6 +480,12 @@ namespace GenerateSQL
                 }
             }
 
+            if ((field.strType == "datetime") && (ATargetDatabase == eDatabaseType.PostgreSQL))
+            {
+                // PostgreSQL does not have type datetime
+                field.strType = "timestamp";
+            }
+
             if ((field.strType == "varchar") && (field.iLength >= 10000))
             {
                 field.strType = "text";

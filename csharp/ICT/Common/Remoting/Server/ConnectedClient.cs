@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -296,7 +296,7 @@ namespace Ict.Common.Remoting.Server
             if (HttpContext.Current != null)
             {
                 TLogging.Log("EndSession (for client '" + this.ClientName + "'): Clearing Session");
-                TSession.Clear();
+                TSession.CloseSession();
             }
 
             FClientDisconnectionFinishedTime = DateTime.Now;

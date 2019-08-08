@@ -40,11 +40,11 @@ namespace Ict.Petra.Shared
     public class UserInfo
     {
         /// <summary>get user information from the session</summary>
-        public static TPetraPrincipal GetUserInfo(TDataBase ADataBase = null)
+        public static TPetraPrincipal GetUserInfo()
         {
             try
             {
-                object value = TSession.GetVariable("UserInfo", ADataBase);
+                object value = TSession.GetVariable("UserInfo");
 
                 if (value == null)
                 {
@@ -52,7 +52,7 @@ namespace Ict.Petra.Shared
                     return null;
                 }
 
-                return JsonConvert.DeserializeObject<TPetraPrincipal>(TSession.GetVariant("UserInfo", ADataBase).ToJson());
+                return JsonConvert.DeserializeObject<TPetraPrincipal>(TSession.GetVariant("UserInfo").ToJson());
             }
             catch (Exception e)
             {
@@ -63,9 +63,9 @@ namespace Ict.Petra.Shared
         }
 
         /// <summary>set user information in the session</summary>
-        public static void SetUserInfo(TPetraPrincipal value, TDataBase ADataBase = null)
+        public static void SetUserInfo(TPetraPrincipal value)
         {
-            TSession.SetVariable("UserInfo", value, ADataBase);
+            TSession.SetVariable("UserInfo", value);
         }
     }
 }

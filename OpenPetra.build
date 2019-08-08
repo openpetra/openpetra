@@ -456,7 +456,7 @@ useful parameters
 <target name="checkHtml">
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
     <ExecDotNet program="${dir.bin}/Ict.Tools.CheckHtml.exe" 
-        commandline="-formsdir:../openpetra-client-js/src/forms/"/>
+        commandline="-formsdir:js-client/src/forms/"/>
 </target>
 
 <target name="checkCode">

@@ -547,7 +547,7 @@ namespace Ict.Petra.Server.MFinance.queries
             TDataBase db = DBAccess.Connect("SelectGiftRecipients");
 
             // store the query in the session to be called again in SelectGiftDonors
-            TSession.SetVariable("QueryFinanceReport_SelectGiftRecipients", SqlQuery, db);
+            TSession.SetVariable("QueryFinanceReport_SelectGiftRecipients", SqlQuery);
 
             db.ReadTransaction(
                 ref Transaction,
@@ -600,7 +600,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("SelectGiftDonors");
-            string SqlQuery = TSession.GetVariable("QueryFinanceReport_SelectGiftRecipients", db).ToString();
+            string SqlQuery = TSession.GetVariable("QueryFinanceReport_SelectGiftRecipients").ToString();
             SqlQuery = SqlQuery.Replace("GROUP by ", "AND recipient.p_partner_key_n = " + recipientKey + " GROUP by ");
             db.ReadTransaction(
                 ref Transaction,

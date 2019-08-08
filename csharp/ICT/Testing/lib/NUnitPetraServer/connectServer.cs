@@ -31,6 +31,7 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
+using Ict.Common.Session;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
@@ -92,6 +93,8 @@ namespace Ict.Testing.NUnitPetraServer
             }
 
             new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
+
+            TSession.InitThread();
 
             CommonNUnitFunctions.InitRootPath();
 

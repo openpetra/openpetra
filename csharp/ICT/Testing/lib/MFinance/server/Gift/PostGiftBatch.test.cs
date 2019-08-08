@@ -137,7 +137,7 @@ namespace Tests.MFinance.Server.Gift
         public void TestPostGiftBatchWithMotivationDetailCostCentre()
         {
             TDataBase db = DBAccess.Connect("TestPostGiftBatchWithMotivationDetailCostCentre");
-            TPetraPrincipal userinfo = UserInfo.GetUserInfo(db);
+            TPetraPrincipal userinfo = UserInfo.GetUserInfo();
 
             // import a gift batch, that we will modify later
             TGiftImporting importer = new TGiftImporting();

@@ -110,6 +110,7 @@ namespace Ict.Petra.Server.App.WebService
             new TAppSettingsManager(ConfigFileName);
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
+            TSession.InitThread();
 
             if (TLogging.DebugLevel >= 4)
             {
@@ -127,7 +128,8 @@ namespace Ict.Petra.Server.App.WebService
             // if the Login Method is called: reset cookie, ignore any old session
             if ((HttpContext.Current != null) && (HttpContext.Current.Request.PathInfo == "/Login"))
             {
-                TSession.Clear();
+                TSession.CloseSession();
+                TSession.InitThread();
             }
 
             if (TServerManager.TheServerManager == null)
@@ -162,7 +164,7 @@ namespace Ict.Petra.Server.App.WebService
                     if (HttpContext.Current.Request.PathInfo == "/IsUserLoggedIn")
                     {
                         // we want a clean json response saying the user is not logged in
-                        TSession.Clear();
+                        TSession.CloseSession();
                         return true;
                     }
 
@@ -230,7 +232,7 @@ namespace Ict.Petra.Server.App.WebService
                 TLogging.Log(e.StackTrace);
                 TSession.SetVariable("LoggedIn", false);
 
-                TSession.Clear();
+                TSession.CloseSession();
                 return TClientManager.LoginErrorFromException(e);
             }
         }
@@ -349,7 +351,7 @@ namespace Ict.Petra.Server.App.WebService
 
             if (DomainManager.CurrentClient == null)
             {
-                TSession.Clear();
+                TSession.CloseSession();
             }
             else
             {

@@ -92,7 +92,7 @@ if (AInspectDS.{#TABLEVARIABLENAME} != null)
     
     TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
         TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-        UserInfo.GetUserInfo(SubmitChangesTransaction.DataBaseObj).UserID{#SEQUENCENAMEANDFIELD});
+        UserInfo.GetUserInfo().UserID{#SEQUENCENAMEANDFIELD});
 }
 {#ENDIFN UPDATESEQUENCEINOTHERTABLES}
 {#IFDEF UPDATESEQUENCEINOTHERTABLES}
@@ -117,7 +117,7 @@ if (AInspectDS.{#TABLEVARIABLENAME} != null)
         
         TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
             TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-            UserInfo.GetUserInfo(SubmitChangesTransaction.DataBaseObj).UserID{#SEQUENCENAMEANDFIELD});
+            UserInfo.GetUserInfo().UserID{#SEQUENCENAMEANDFIELD});
     }
     {#UPDATESEQUENCEINOTHERTABLES}
 }
