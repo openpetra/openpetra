@@ -368,6 +368,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             string LicenseCheckUrl = TAppSettingsManager.GetValue("LicenseCheck.Url", String.Empty, false);
             string LicenseUser = TAppSettingsManager.GetValue("Server.DBName");
 
+            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+            {
+                // don't check for the license, since this is called when upgrading the server as well.
+                LicenseCheckUrl = String.Empty;
+            }
+
             if ((LicenseCheckUrl != String.Empty) && (LicenseUser != "openpetra"))
             {
                 string url = LicenseCheckUrl + LicenseUser;
