@@ -18,7 +18,6 @@ install:
 - echo '  <property name="DBMS.Type" value="sqlite"/>' >> OpenPetra.build.config
 - echo '  <property name="DBMS.Password" value=""/>' >> OpenPetra.build.config
 - echo '  <property name="Server.Port" value="9000"/>' >> OpenPetra.build.config
-- echo '  <property name="NETframework-version" value="4.5"/>' >> OpenPetra.build.config
 - echo '</project>' >> OpenPetra.build.config
 platform: x86
 build_script:
