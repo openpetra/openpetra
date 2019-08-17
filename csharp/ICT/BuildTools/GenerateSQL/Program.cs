@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -123,8 +123,8 @@ namespace Ict.Tools.GenerateSQL
                 System.Console.WriteLine(
                     "        GenerateSQL -do:sql -dbms:postgresql -petraxml:u:/sql/datadefinition/petra.xml -outputFile:U:/setup/petra0300/petra.sql");
                 System.Console.WriteLine("Available database managment systems and their code:");
-                System.Console.WriteLine("  postgresql (Recommended)");
-                System.Console.WriteLine("  mysql (supported)");
+                System.Console.WriteLine("  mysql (recommended)");
+                System.Console.WriteLine("  postgresql (supported)");
                 System.Console.WriteLine("  sqlite (for the light version)");
                 System.Environment.Exit(-1);
             }
