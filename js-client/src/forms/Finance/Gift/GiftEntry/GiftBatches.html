@@ -47,7 +47,7 @@
 							<div class="col">{trans_donor}</div>
 							<div class="col">{trans_amount_in_base}</div>
 							<div class="col-1">
-								<button type="button" class="btn" onclick="$('.tpl_row .collapse').collapse('hide');">
+								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
 									<i class="fa fa-close"></i>
 								</button>
 							</div>
@@ -175,7 +175,7 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
-					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -262,7 +262,7 @@
 				<div class="modal-footer">
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
-					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -363,7 +363,7 @@
 				<div class="modal-footer">
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
-					<button class="btn" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -414,8 +414,8 @@
 		</div>
 	</div>
 	</div>
-	<button type="button" class="btn" onclick="save_preset('GiftBatches')">{forms.save_preset}</button>
-	<button type="button" class="btn" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
+	<button type="button" class="btn btn-light" onclick="save_preset('GiftBatches')">{forms.save_preset}</button>
+	<button type="button" class="btn btn-light" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
 	<button type="button" class="btn btn-primary" onclick="display_list('filter');$('#tabfilter').collapse('toggle')">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
 </div>
