@@ -1,7 +1,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
 // Copyright 2019 by SolidCharity.com
@@ -37,6 +37,12 @@ function load_preset() {
 		let y = {"APeriod":x["APeriod"]};
 		format_tpl($('#tabfilter'), y);
 		format_tpl($('#tabfilter'), x);
+		display_list();
+	} else {
+		// set periods: only open periods
+		$('select[name="APeriod"]').val(0);
+		// set batch status: only unposted batches
+		$('select[name="ABatchStatus"]').val('Unposted');
 		display_list();
 	}
 }
