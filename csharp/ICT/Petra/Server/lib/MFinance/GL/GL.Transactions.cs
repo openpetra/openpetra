@@ -203,10 +203,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="ACurrencyCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, Int32 ABatchNumber, out String ACurrencyCode)
         {
+            ACurrencyCode = String.Empty;
+            string CurrencyCode = String.Empty;
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -235,6 +239,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ref Transaction,
                     delegate
                     {
+                        CurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber, db);
+
                         ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
                         #region Validate Data
@@ -258,6 +264,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            ACurrencyCode = CurrencyCode;
 
             return MainDS;
         }
@@ -3126,7 +3134,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if ((action == "create") || (action == "edit"))
             {
-                MainDS = LoadABatch(ALedgerNumber, ABatchNumber);
+                string CurrencyCode;
+                MainDS = LoadABatch(ALedgerNumber, ABatchNumber, out CurrencyCode);
 
                 if (MainDS.ABatch.Rows.Count != 1)
                 {
