@@ -45,6 +45,12 @@ function load_preset() {
 		format_tpl($('#tabfilter'), y);
 		format_tpl($('#tabfilter'), x);
 		display_list();
+	} else {
+		// set periods: only open periods
+		$('select[name="ABatchPeriod"]').val(0);
+		// set batch status: only unposted batches
+		$('select[name="ABatchStatus"]').val('Unposted');
+		display_list();
 	}
 }
 
