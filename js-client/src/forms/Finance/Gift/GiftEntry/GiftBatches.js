@@ -62,6 +62,22 @@ function display_list(source) {
 	})
 }
 
+function updateBatch(BatchNumber) {
+	var x = {
+		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+		'ABatchNumber': BatchNumber};
+
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle ', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		item = data.result.AGiftBatch[0];
+		let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+		$('#Batch' + BatchNumber + " div").first().replaceWith(row.children()[0]);
+		format_currency(data.ACurrencyCode);
+		format_date();
+		open_gift_transactions($('#Batch' + BatchNumber), BatchNumber, true);
+	});
+}
+
 function format_date() {
 	$('.format_date').each(
 		function(x, obj) {
@@ -81,9 +97,9 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_gift_transactions(obj, number) {
+function open_gift_transactions(obj, number, reload = false) {
 	obj = $(obj);
-	if (obj.find('.collapse').is(':visible') ) {
+	if (!reload && obj.find('.collapse').is(':visible') ) {
 		return;
 	}
 	if (obj.find('[batch-status]').text() == "Posted" || obj.find('[batch-status]').text() == "Cancelled") {
@@ -105,7 +121,9 @@ function open_gift_transactions(obj, number) {
 		}
 		format_currency(data.ACurrencyCode);
 		format_date();
-		$('.tpl_row .collapse').collapse('hide');
+		if (!reload) {
+			$('.tpl_row .collapse').collapse('hide');
+		}
 		obj.find('.collapse').collapse('show')
 	})
 
@@ -285,7 +303,7 @@ function save_edit_batch(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -306,7 +324,7 @@ function save_edit_trans(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -327,7 +345,7 @@ function save_edit_trans_detail(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -342,13 +360,36 @@ function save_edit_trans_detail(obj_modal) {
 function delete_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload);
+	payload["action"] = "delete";
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			updateBatch(payload['ABatchNumber']);
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+	});
 }
 
 function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
+	payload["action"] = "delete";
+	payload["ARecipientKey"] = -1;
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			updateBatch(payload['ABatchNumber']);
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+	});
 }
 
 /////
