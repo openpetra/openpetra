@@ -62,12 +62,18 @@ function display_list(source) {
 	})
 }
 
+function updateGift(BatchNumber, GiftTransactionNumber) {
+	// somehow the original window stays gray when we return from this modal.
+	$('.modal-backdrop').remove();
+	edit_gift_trans(window.localStorage.getItem('current_ledger'), BatchNumber, GiftTransactionNumber);
+}
+
 function updateBatch(BatchNumber) {
 	var x = {
 		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
 		'ABatchNumber': BatchNumber};
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle ', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		item = data.result.AGiftBatch[0];
 		let row = format_tpl($("[phantom] .tpl_row").clone(), item);
@@ -177,7 +183,6 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
 	$('#modal_space').append(p);
-	$('.modal').modal('hide');
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
@@ -266,7 +271,7 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
 		for (trans of parsed.result.AGiftDetail) {
-			if (trans.a_gift_transaction_number_i == trans_id) {
+			if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
 				searched = trans;
 				break;
 			}
@@ -282,7 +287,6 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		}
 
 		$('#modal_space').append(tpl_edit_raw);
-		$('.modal').modal('hide');
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
 
@@ -344,7 +348,7 @@ function save_edit_trans_detail(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
+			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
@@ -383,7 +387,9 @@ function delete_trans_detail(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
+			$('#modal_space .tpl_edit_trans_detail').modal('hide');
+			$('#modal_space .tpl_edit_trans').modal('show');
+			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
