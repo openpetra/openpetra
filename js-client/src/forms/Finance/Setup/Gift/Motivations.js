@@ -44,6 +44,7 @@ function display_list() {
 }
 
 function updateGroup(GroupCode) {
+	GroupCode = GroupCode.toUpperCase();
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		AMotivationGroupCode: GroupCode
@@ -52,8 +53,18 @@ function updateGroup(GroupCode) {
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		item = data.result.AMotivationGroup[0];
-		let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-		$('#group' + GroupCode + " div").first().replaceWith(row.children()[0]);
+		let groupDiv = $('#group' + GroupCode + " div");
+		if (groupDiv.length) {
+			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			groupDiv.first().replaceWith(row.children()[0]);
+		} else {
+			$('.tpl_row .collapse').collapse('hide');
+			format_item(item);
+			groupDiv = $('#group' + GroupCode + " div");
+			$('html, body').animate({
+								scrollTop: (groupDiv.offset().top - 100)
+								}, 500);
+		}
 		format_currency(data.ACurrencyCode);
 		format_date();
 		open_motivations($('#group' + GroupCode), GroupCode, true);

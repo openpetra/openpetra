@@ -88,8 +88,18 @@ function updateBatch(BatchNumber) {
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch2', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		item = data.result.ABatch[0];
-		let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-		$('#Batch' + BatchNumber + " div").first().replaceWith(row.children()[0]);
+		let batchDiv = $('#Batch' + BatchNumber + " div");
+		if (batchDiv.length) {
+			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			batchDiv.first().replaceWith(row.children()[0]);
+		} else {
+			$('.tpl_row .collapse').collapse('hide');
+			format_item(item);
+			batchDiv = $('#Batch' + BatchNumber + " div");
+			$('html, body').animate({
+						scrollTop: (batchDiv.offset().top - 100)
+					}, 500);
+		}
 		format_currency(data.ACurrencyCode);
 		format_date();
 		open_transactions($('#Batch' + BatchNumber), BatchNumber, true);
