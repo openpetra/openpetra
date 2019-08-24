@@ -262,6 +262,7 @@
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
+        "GLBatchDateOutsideOfPeriod": "Das Datum ist außerhalb des offenen Buchungszeitraums!",
         "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
         "success_posted": "Der Stapel wurde erfolgreich gebucht",
         "import": "Transaktionen importieren",

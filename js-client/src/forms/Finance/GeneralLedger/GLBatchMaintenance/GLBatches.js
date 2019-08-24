@@ -293,9 +293,9 @@ function save_edit_batch(obj_modal) {
 			$('#modal_space .modal').modal('hide');
 			updateBatch(payload['ABatchNumber']);
 		}
-		if (parsed.result == "false") {
+		if (parsed.result == false) {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				display_message(i18next.t('GLBatches.' + msg.code), "fail");
 			}
 		}
 	});

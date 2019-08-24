@@ -2859,6 +2859,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     glbr.BatchYear = yearNumber;
                                     glbr.BatchPeriod = periodNumber;
                                 }
+                                else
+                                {
+                                    VerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
+                                            String.Format(Catalog.GetString("Cannot save Batch {0} because the date is outside of an open period"),
+                                                glbr.BatchNumber),
+                                            "GLBatchDateOutsideOfPeriod",
+                                            TResultSeverity.Resv_Critical));
+                                }
                             }
 
                             //TODO add validation as with gift

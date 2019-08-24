@@ -261,6 +261,7 @@
         "POSTED": "Posted",
         "UNPOSTED": "Unposted",
         "CANCELLED": "Cancelled",
+        "GLBatchDateOutsideOfPeriod": "The date is outside of the open periods!",
         "success_cancelled": "The Batch has been cancelled",
         "success_posted": "The Batch has been posted",
         "import": "Import transactions",
