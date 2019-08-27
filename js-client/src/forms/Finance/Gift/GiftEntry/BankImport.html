@@ -292,6 +292,9 @@
 <table id="toolbar">
 	<tr>
 		<td>
+			<button id="settings" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{forms.preset}</button>
+		</td>
+		<td>
 			<button id="new" class="btn btn-primary" onclick="$('#import_file').click()">{forms.import}</button>
 			<input type="file" hidden id="import_file" onchange="import_file(this)">
 		</td>
@@ -299,6 +302,111 @@
 </table>
 
 <div id="modal_space"></div>
+
+<div class="container collapse" id="tabsettings">
+	<div class="container group-container">
+	<div class="row">
+		<div class="col">
+			<span>{bankaccount}:</span>
+		</div>
+		<div class="col">
+			<div class="autocomplete">
+				<input type="text" name="a_bank_account_name_c" key-name="ABankAccountCode" value="" oninput="autocomplete_a(this)">
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{startAfterLine}:</span>
+		</div>
+	</div>
+	<div>
+		<div class="col">
+			<input name="AStartAfterLine" type="text" size="80"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{columnMeaning}:</span>
+		</div>
+	</div>
+	<div>
+		<div class="col">
+			<input name="AColumnMeaning" type="text" size="80"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{numberFormat}:</span>
+		</div>
+		<div class="col">
+			<select name="ANumberFormat">
+				<option value="European">{europeanNumberFormat}</option>
+				<option value="American">{americanNumberFormat}</option>
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{dateFormat}:</span>
+		</div>
+		<div class="col">
+			<select name="ADateFormat">
+				<option value="DMY">{dmy}</option>
+				<option value="MDY">{mdy}</option>
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{separator}:</span>
+		</div>
+		<div class="col">
+			<select name="ASeparator">
+				<option value=";">{semicolon}</option>
+				<option value=",">{comma}</option>
+				<option value="TAB">{tabulator}</option>
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<span>{encoding}:</span>
+		</div>
+		<div class="col">
+			<select name="AFileEncoding">
+				<option value="ISO-8859-1">{Latin-1}</option>
+				<option value="UTF-8">{UTF-8}</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="row">
+{examplefile}<br/><br/>
+	</div>
+	<div class="row">
+<pre>
+"Kontoumsätze Geschäfts- und Vereinskonto"
+
+"Kontoinhaber:";"Mein Verein e.V."
+"Kundennummer:";"1234567"
+
+"Umsätze ab";"Enddatum";"Kontonummer";"Saldo";"Währung"
+"01.07.2019";"31.07.2019";"1234567";"1.234,56";"EUR"
+"Weitere gewählte Suchoptionen:";"keine"
+
+
+"Buchungstag";"Wertstellungstag";"Verwendungszweck";"Umsatz";"Währung"
+"31.07.2019";"31.07.2019";"Heinrich Arndt SEPA-ÜBERWEISUNG SVWZ+ RINP Dauerauftrag Grundpatenschaft mein Patenkind";"30,00";"EUR";""
+"31.07.2019";"31.07.2019";"Werner Bastian SEPA-ÜBERWEISUNG SVWZ+ RINP Daue rauftrag Patenschaft";"30,00";"EUR";""
+"30.07.2019";"30.07.2019";"Arno Grosse SEPA-ÜBERWEISUNG SVWZ+ RINP Dauerauftrag S pende EREF+ 000000000000000 00002";"10,00";"EUR";""
+"* noch nicht ausgeführte Umsätze"
+</pre>
+	</div>
+	</div>
+	<button type="button" class="btn btn-light" onclick="save_preset('BankImport')">{forms.save_preset}</button>
+	<button type="button" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{forms.close}</button>
+</div>
 
 <div class="row">
 <div class="container collapse show" id="tabfilter">

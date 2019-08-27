@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,12 +31,14 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.IO;
+using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.BankImport.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.BankImport.Logic
 {
@@ -161,22 +163,46 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                 stmt.Filename = ABankStatementFilename.Substring(ABankStatementFilename.Length - AEpStatementTable.GetFilenameLength());
             }
 
+            if (ACurrencyCode == String.Empty)
+            {
+                // get the currency code from the ledger, or from the bank account
+                TDataBase db = DBAccess.Connect("ImportBankStatementHelper_Currency");
+                TDBTransaction Transaction = new TDBTransaction();
+                db.ReadTransaction(ref Transaction,
+                    delegate
+                    {
+                        AAccountTable AccountTable = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, ABankAccountCode, Transaction);
+                        if (AccountTable[0].ForeignCurrencyFlag)
+                        {
+                            ACurrencyCode = AccountTable[0].ForeignCurrencyCode;
+                        }
+                        else
+                        {
+                            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                            ACurrencyCode = LedgerTable[0].BaseCurrency;
+                        }
+                    });
+                
+                db.CloseDBConnection();
+            }
+
             stmt.LedgerNumber = ALedgerNumber;
             stmt.CurrencyCode = ACurrencyCode;
             stmt.BankAccountCode = ABankAccountCode;
             MainDS.AEpStatement.Rows.Add(stmt);
 
-            // TODO would need to allow the user to change the order&meaning of columns
+            // allow the user to change the order&meaning of columns
             string[] ColumnsUsage = AColumnsUsage.Split(new char[] { ',' });
             Dictionary<DateTime, List<AEpTransactionRow>> TransactionsPerMonth = new Dictionary<DateTime,List<AEpTransactionRow>>();
 
             bool startParsing = (AStartAfterLine == String.Empty);
+            AStartAfterLine = AStartAfterLine.Replace('"', '\'');
 
             for (; lineCounter < StatementData.Count; lineCounter++)
             {
                 string line = StatementData[lineCounter];
 
-                if (AStartAfterLine == line)
+                if (AStartAfterLine == line.Replace('"', '\''))
                 {
                     startParsing = true;
                     continue;

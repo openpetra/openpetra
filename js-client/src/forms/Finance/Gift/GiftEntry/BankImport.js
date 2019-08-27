@@ -1,10 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -24,6 +25,7 @@
 
 $('document').ready(function () {
 	display_dropdownlist();
+	load_preset();
 });
 
 function display_dropdownlist() {
@@ -40,6 +42,22 @@ function display_dropdownlist() {
 				item.a_filename_c + ' ' + printJSONDate(item.a_date_d) + '</option>') );
 		}
 	})
+}
+
+function load_preset() {
+	let x = {};
+	api.post('serverMFinance.asmx/TBankImportWebConnector_ReadSettings', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		data['a_bank_account_name_c'] = data['ABankAccountCode'];
+		format_tpl($('#tabsettings'), data);
+	});
+}
+
+function save_preset() {
+	var x = extract_data($('#tabsettings'));
+	api.post('serverMFinance.asmx/TBankImportWebConnector_SaveSettings', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+	});
 }
 
 function display_list() {
@@ -227,21 +245,22 @@ function import_file(self) {
 	  alert('The File APIs are not fully supported in this browser.');
 	}
 
+	var settings = extract_data($('#tabsettings'));
+
 	var reader = new FileReader();
 
 	reader.onload = function (event) {
 
 		p = {
 			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
-			'ABankAccountCode': '6200', // TODO
+			'ABankAccountCode': settings['ABankAccountCode'],
 			'ABankStatementFilename': filename,
 			'ACSVContent': event.target.result,
-			'ASeparator': ';',
-			'ADateFormat': "dmy",
-			"ANumberFormat": "European",
-			"ACurrencyCode": "EUR",
-			"AStartAfterLine": '"Buchungstag";"Wertstellungstag";"Verwendungszweck";"Umsatz";"Währung"',
-			"AColumnMeaning": "DateEffective,unused,Description,Amount,Currency" // TODO
+			'ASeparator': settings['ASeparator'],
+			'ADateFormat': settings['ADateFormat'],
+			"ANumberFormat": settings['ANumberFormat'],
+			"AStartAfterLine": settings['AStartAfterLine'],
+			"AColumnMeaning": settings['AColumnMeaning']
 			};
 
 		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCSVFile', p)
@@ -262,7 +281,7 @@ function import_file(self) {
 
 	}
 	// Read in the file as a data URL.
-	reader.readAsText(self[0].files[0], 'ISO-8859-1');
+	reader.readAsText(self[0].files[0], settings['AFileEncoding']);
 
 };
 
