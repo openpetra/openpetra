@@ -10,7 +10,7 @@
 			<div class="col format_currency">{val_a_transaction_amount_n}</div>
 			<div class="col-6">{val_a_description_c}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" onclick="edit_gift_trans({val_a_order_i})">
+				<button type="button" class="btn btn-primary" onclick="edit_gift_trans({val_a_statement_key_i},{val_a_order_i})">
 					<i class="fa fa-wrench"></i>
 				</button>
 			</div>
@@ -184,7 +184,6 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_trans(this)">{forms.delete}</button>
 					<button class="btn btn-primary" onclick="save_edit_trans(this)">{forms.save}</button>
 					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 			</div>

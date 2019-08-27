@@ -79,6 +79,12 @@ function display_list() {
 	})
 }
 
+function updateTransaction(StatementKey, OrderId) {
+	// somehow the original window stays gray when we return from this modal.
+	$('.modal-backdrop').remove();
+	edit_gift_trans(StatementKey, OrderId);
+}
+
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
@@ -101,7 +107,6 @@ function new_trans_detail(trans_order) {
 		p['a_detail_i'] = $('#modal_space .tpl_edit_trans .detail_col > *').length;
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), p );
 		$('#modal_space').append(tpl_edit_raw);
-		$('.modal').modal('hide');
 		let sclass = $('#modal_space > .tpl_edit_trans [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 		tpl_edit_raw.find('[action]').val('create');
@@ -112,10 +117,10 @@ function new_trans_detail(trans_order) {
 
 /////
 
-function edit_gift_trans(trans_order) {
+function edit_gift_trans(statement_key, trans_order) {
 	let x = {
 		"ALedgerNumber":window.localStorage.getItem('current_ledger'),
-		"AStatementKey":$('#bank_number_id').val(),
+		"AStatementKey":statement_key,
 		"AOrderNumber": trans_order
 	};
 	// on open of a edit modal, we get new data,
@@ -126,7 +131,7 @@ function edit_gift_trans(trans_order) {
 		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
 		transaction['p_donor_key_n'] = transaction['DonorKey'];
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
-console.log(transaction);
+
 		for (detail of parsed.ADetails) {
 			let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
 			tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
@@ -155,7 +160,6 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 		let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 		$('#modal_space').append(tpl_edit_raw);
-		$('.modal').modal('hide');
 		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, sclass);
@@ -201,8 +205,7 @@ function save_edit_trans_detail(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateTransaction(payload['AStatementKey'], payload['AOrder']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -223,8 +226,8 @@ function delete_trans_detail(obj_modal) {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		if (parsed.result) {
-			$('#modal_space .modal').modal('hide');
 			display_message(i18next.t('forms.deleted'), "success");
+			updateTransaction(payload['AStatementKey'], payload['AOrder']);
 		} else {
 			display_error(parsed.AVerificationResult);
 		}
@@ -319,10 +322,3 @@ function transform_to_gift() {
 	});
 
 }
-
-/////
-
-// when closing a detail we wanna reopen the transaction
-$(document).on('hidden.bs.modal', '.modal.tpl_edit_trans_detail', function () {
-	edit_gift_trans( $(this).find('[name=a_order_i]').val() );
-})
