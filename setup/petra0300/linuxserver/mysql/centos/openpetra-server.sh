@@ -297,8 +297,11 @@ initdb() {
     if [ "$OPENPETRA_DBHOST" == "localhost" ]
     then
       echo "initialise database"
-      systemctl start mariadb
-      systemctl enable mariadb
+      if [ $OPENPETRA_DBHOST == "localhost" ]
+      then
+        systemctl start mariadb
+        systemctl enable mariadb
+      fi
       echo "DROP DATABASE IF EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
