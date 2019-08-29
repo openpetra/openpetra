@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     public class TGiftSetupWebConnector
     {
         /// <summary>
-        /// returns all motivation groups and details for this ledger
+        /// returns all motivation groups and details for this ledger, or specific for one group
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AMotivationGroupCode">if this is set, only the details of the specified motivation group will be returned</param>
@@ -66,14 +66,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 delegate
                 {
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                    AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
                     if (AMotivationGroupCode.Length > 0)
                     {
+                        AMotivationGroupAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AMotivationGroupCode, Transaction);
                         AMotivationDetailAccess.LoadViaAMotivationGroup(MainDS, ALedgerNumber, AMotivationGroupCode, Transaction);
                     }
                     else
                     {
+                        AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                     }
 

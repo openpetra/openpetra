@@ -66,6 +66,60 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
     /// </summary>
     public class TBankImportWebConnector
     {
+        /// store settings in s_system_defaults
+        [RequireModulePermission("FINANCE-1")]
+        public static bool SaveSettings(
+            string ABankAccountCode,
+            string ASeparator,
+            string AFileEncoding,
+            string ADateFormat,
+            string ANumberFormat,
+            string AColumnMeaning,
+            string AStartAfterLine)
+        {
+            TDataBase db = DBAccess.Connect("BankImportSaveSettings");
+            TSystemDefaults defaults = new TSystemDefaults(db);
+
+            defaults.SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode, db);
+            defaults.SetSystemDefault("BANKIMPORT_SEPARATOR", ASeparator, db);
+            defaults.SetSystemDefault("BANKIMPORT_ENCODING", AFileEncoding, db);
+            defaults.SetSystemDefault("BANKIMPORT_DATEFORMAT", ADateFormat, db);
+            defaults.SetSystemDefault("BANKIMPORT_NUMBERFORMAT", ANumberFormat, db);
+            defaults.SetSystemDefault("BANKIMPORT_COLUMNMEANING", AColumnMeaning, db);
+            defaults.SetSystemDefault("BANKIMPORT_STARTAFTERLINE", AStartAfterLine, db);
+
+            db.CloseDBConnection();
+
+            return true;
+        }
+
+        /// retrieve settings from s_system_defaults
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ReadSettings(
+            out string ABankAccountCode,
+            out string ASeparator,
+            out string AFileEncoding,
+            out string ADateFormat,
+            out string ANumberFormat,
+            out string AColumnMeaning,
+            out string AStartAfterLine)
+        {
+            TDataBase db = DBAccess.Connect("BankImportReadSettings");
+            TSystemDefaults defaults = new TSystemDefaults(db);
+
+            ABankAccountCode = defaults.GetStringDefault("BANKIMPORT_BANKACCOUNTCODE", "6200");
+            ASeparator = defaults.GetStringDefault("BANKIMPORT_SEPARATOR", ";");
+            AFileEncoding = defaults.GetStringDefault("BANKIMPORT_ENCODING", "UTF-8");
+            ADateFormat = defaults.GetStringDefault("BANKIMPORT_DATEFORMAT", "DMY");
+            ANumberFormat = defaults.GetStringDefault("BANKIMPORT_NUMBERFORMAT", "European");
+            AColumnMeaning = defaults.GetStringDefault("BANKIMPORT_COLUMNMEANING", "DateEffective,unused,Description,Amount,Currency");
+            AStartAfterLine = defaults.GetStringDefault("BANKIMPORT_STARTAFTERLINE", "\"Buchungstag\";\"Wertstellungstag\";\"Verwendungszweck\";\"Umsatz\";\"Währung\"");
+
+            db.CloseDBConnection();
+
+            return true;
+        }
+
 
         /// <summary>
         /// import the data of a CSV file
@@ -77,7 +131,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// <param name="ASeparator"></param>
         /// <param name="ADateFormat">DMY or MDY</param>
         /// <param name="ANumberFormat">European or American</param>
-        /// <param name="ACurrencyCode">eg. EUR</param>
         /// <param name="AColumnMeaning"></param>
         /// <param name="AStartAfterLine">can be empty, otherwise only the lines after the line matching AStartAfterLine will be parsed</param>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
@@ -91,7 +144,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             string ASeparator,
             string ADateFormat,
             string ANumberFormat,
-            string ACurrencyCode,
             string AColumnMeaning,
             string AStartAfterLine,
             out Int32 AStatementKey,
@@ -105,7 +157,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 ASeparator,
                 ADateFormat,
                 ANumberFormat,
-                ACurrencyCode,
+                String.Empty,
                 AColumnMeaning,
                 AStartAfterLine,
                 out AStatementKey,

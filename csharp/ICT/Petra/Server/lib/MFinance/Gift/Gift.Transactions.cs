@@ -2492,6 +2492,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         row.Delete();
                     }
+                    else if (row.GiftTransactionNumber > AGiftTransactionNumber)
+                    {
+                        row.GiftTransactionNumber--;
+                    }
                 }
 
                 foreach (AGiftRow row in MainDS.AGift.Rows)
@@ -2499,6 +2503,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (row.GiftTransactionNumber == AGiftTransactionNumber)
                     {
                         row.Delete();
+                    }
+                    else if (row.GiftTransactionNumber > AGiftTransactionNumber)
+                    {
+                        row.GiftTransactionNumber--;
                     }
                 }
 
@@ -2618,6 +2626,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))
                     {
                         row.Delete();
+                    }
+                    else if ((row.GiftTransactionNumber == AGiftTransactionNumber) && row.DetailNumber > ADetailNumber)
+                    {
+                        row.DetailNumber--;
                     }
                 }
 

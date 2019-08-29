@@ -1,7 +1,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
 // Copyright 2019 by SolidCharity.com
@@ -45,6 +45,12 @@ function load_preset() {
 		format_tpl($('#tabfilter'), y);
 		format_tpl($('#tabfilter'), x);
 		display_list();
+	} else {
+		// set periods: only open periods
+		$('select[name="ABatchPeriod"]').val(0);
+		// set batch status: only unposted batches
+		$('select[name="ABatchStatus"]').val('Unposted');
+		display_list();
 	}
 }
 
@@ -74,6 +80,32 @@ function display_list(source) {
 	})
 }
 
+function updateBatch(BatchNumber) {
+	var x = {
+		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+		'ABatchNumber': BatchNumber};
+
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch2', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		item = data.result.ABatch[0];
+		let batchDiv = $('#Batch' + BatchNumber + " div");
+		if (batchDiv.length) {
+			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			batchDiv.first().replaceWith(row.children()[0]);
+		} else {
+			$('.tpl_row .collapse').collapse('hide');
+			format_item(item);
+			batchDiv = $('#Batch' + BatchNumber + " div");
+			$('html, body').animate({
+						scrollTop: (batchDiv.offset().top - 100)
+					}, 500);
+		}
+		format_currency(data.ACurrencyCode);
+		format_date();
+		open_transactions($('#Batch' + BatchNumber), BatchNumber, true);
+	});
+}
+
 function format_date() {
 	$('.format_date').each(
 		function(x, obj) {
@@ -95,9 +127,9 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_transactions(obj, number) {
+function open_transactions(obj, number, reload = false) {
 	obj = $(obj);
-	if (obj.find('.collapse').is(':visible') ) {
+	if (!reload && obj.find('.collapse').is(':visible') ) {
 		return;
 	}
 	if (obj.find('[batch-status]').text() == "Posted" ) {
@@ -129,7 +161,9 @@ function open_transactions(obj, number) {
 		}
 		format_currency(data.ACurrencyCode);
 		format_date();
-		$('.tpl_row .collapse').collapse('hide');
+		if (!reload) {
+			$('.tpl_row .collapse').collapse('hide');
+		}
 		obj.find('.collapse').collapse('show')
 	})
 
@@ -257,11 +291,11 @@ function save_edit_batch(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
-		if (parsed.result == "false") {
+		if (parsed.result == false) {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				display_message(i18next.t('GLBatches.' + msg.code), "fail");
 			}
 		}
 	});
@@ -289,7 +323,7 @@ function save_edit_trans(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
 		if (parsed.result == "false") {
 			for (msg of parsed.AVerificationResult) {
@@ -316,7 +350,7 @@ function delete_edit_trans(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.deleted'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
 		if (parsed.result == "false") {
 			for (msg of parsed.AVerificationResult) {
@@ -346,7 +380,7 @@ function importTransactions(batch_id, csv_file) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			display_list();
+			updateBatch(batch_id);
 		}
 		if (parsed.result == "false") {
 			for (msg of parsed.AVerificationResult) {

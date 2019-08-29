@@ -42,9 +42,13 @@
     </fileset>
   </copy>
 
+  <!-- when running from Dockerfile, we cannot restart since systemd is not running yet -->
+  <property name="with-restart" value="true" overwrite="false"/>
+  <if test="${with-restart}">
   <echo message="Restarting the OpenPetra server..."/>
   <exec program="bash"
     commandline="-c &quot;sudo systemctl restart openpetra;&quot;"/>
+  </if>
 </target>
 
 <target name="install.js">

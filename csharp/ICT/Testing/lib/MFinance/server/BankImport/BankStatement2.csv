@@ -1,0 +1,15 @@
+"Kontoumsätze Geschäfts- und Vereinskonto"
+
+"Kontoinhaber:";"Mein Verein e.V."
+"Kundennummer:";"1234567"
+
+"Umsätze ab";"Enddatum";"Kontonummer";"Saldo";"Währung"
+"01.07.2019";"31.07.2019";"1234567";"1.234,56";"EUR"
+"Weitere gewählte Suchoptionen:";"keine"
+
+
+"Buchungstag";"Wertstellungstag";"Verwendungszweck";"Umsatz";"Währung"
+"31.07.2019";"31.07.2019";"Heinrich Arndt SEPA-ÜBERWEISUNG SVWZ+ RINP Dauerauftrag Grundpatenschaft mein Patenkind";"30,00";"EUR";""
+"31.07.2019";"31.07.2019";"Werner Bastian SEPA-ÜBERWEISUNG SVWZ+ RINP Daue rauftrag Patenschaft";"30,00";"EUR";""
+"30.07.2019";"30.07.2019";"Arno Grosse SEPA-ÜBERWEISUNG SVWZ+ RINP Dauerauftrag S pende EREF+ 000000000000000 00002";"10,00";"EUR";""
+"* noch nicht ausgeführte Umsätze"

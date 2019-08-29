@@ -494,7 +494,7 @@ namespace Ict.Petra.Server.App.Core
                     DBConnectionObj.CloseDBConnection();
                 }
 
-                if (SubmissionOK)
+                if (SubmissionOK && (FSystemDefaultsDT != null))
                 {
                     // We need to ensure that the next time the System Defaults Caches gets accessed it is refreshed from the DB!!!
                     FSystemDefaultsDT.Clear();

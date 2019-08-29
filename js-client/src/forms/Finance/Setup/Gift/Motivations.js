@@ -1,9 +1,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -42,14 +43,42 @@ function display_list() {
 	})
 }
 
+function updateGroup(GroupCode) {
+	GroupCode = GroupCode.toUpperCase();
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AMotivationGroupCode: GroupCode
+	};
+
+	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		item = data.result.AMotivationGroup[0];
+		let groupDiv = $('#group' + GroupCode + " div");
+		if (groupDiv.length) {
+			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			groupDiv.first().replaceWith(row.children()[0]);
+		} else {
+			$('.tpl_row .collapse').collapse('hide');
+			format_item(item);
+			groupDiv = $('#group' + GroupCode + " div");
+			$('html, body').animate({
+								scrollTop: (groupDiv.offset().top - 100)
+								}, 500);
+		}
+		format_currency(data.ACurrencyCode);
+		format_date();
+		open_motivations($('#group' + GroupCode), GroupCode, true);
+	});
+}
+
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	$('#browse_container').append(row);
 }
 
-function open_motivations(obj, code) {
+function open_motivations(obj, code, reload = false) {
 	obj = $(obj);
-	if (obj.find('.collapse').is(':visible') ) {
+	if (!reload && obj.find('.collapse').is(':visible') ) {
 		return;
 	}
 	let x = {
@@ -67,7 +96,9 @@ function open_motivations(obj, code) {
 				place_to_put_content.append(motivation_row);
 			}
 		}
-		$('.tpl_row .collapse').collapse('hide');
+		if (!reload) {
+			$('.tpl_row .collapse').collapse('hide');
+		}
 		obj.find('.collapse').collapse('show');
 	})
 
@@ -164,7 +195,7 @@ function save_edit_group(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateGroup(payload['AMotivationGroupCode']);
 		} else {
 			for (msg of parsed.AVerificationResult) {
 				display_message(i18next.t(msg.code), "fail");
@@ -186,7 +217,7 @@ function save_edit_detail(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateGroup(payload['AMotivationGroupCode']);
 		} else {
 			for (msg of parsed.AVerificationResult) {
 				display_message(i18next.t(msg.code), "fail");

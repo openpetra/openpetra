@@ -480,20 +480,13 @@ namespace Ict.Petra.Server.MReporting
             }
 
             string BootstrapCSSContent = String.Empty;
-            string cssBootstrap = "/usr/local/openpetra/client/node_modules/bootstrap/dist/css/bootstrap.min.css";
-
-            if (!File.Exists(cssBootstrap))
-            {
-                cssBootstrap = "/usr/local/openpetra/client/css/bootstrap.min.css";
-            }
-
-            using (StreamReader sr = new StreamReader(cssBootstrap))
+            using (StreamReader sr = new StreamReader("/usr/local/openpetra/bootstrap-4.0/bootstrap.min.css"))
             {
                 BootstrapCSSContent = sr.ReadToEnd();
             }
 
             string BundledJSContent = string.Empty;
-            using (StreamReader sr = new StreamReader("/usr/local/openpetra/client/dist/bundle.min.js"))
+            using (StreamReader sr = new StreamReader("/usr/local/openpetra/bootstrap-4.0/bootstrap.bundle.min.js"))
             {
                 BundledJSContent = sr.ReadToEnd();
             }
@@ -512,7 +505,7 @@ namespace Ict.Petra.Server.MReporting
             }
 
             Process process = new Process();
-            process.StartInfo.FileName = "/usr/local/bin/wkhtmltopdf";
+            process.StartInfo.FileName = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/local/bin/wkhtmltopdf");
             process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
             process.Start();
             process.WaitForExit();

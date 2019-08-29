@@ -1,7 +1,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
 // Copyright 2019 by SolidCharity.com
@@ -38,6 +38,12 @@ function load_preset() {
 		format_tpl($('#tabfilter'), y);
 		format_tpl($('#tabfilter'), x);
 		display_list();
+	} else {
+		// set periods: only open periods
+		$('select[name="APeriod"]').val(0);
+		// set batch status: only unposted batches
+		$('select[name="ABatchStatus"]').val('Unposted');
+		display_list();
 	}
 }
 
@@ -54,6 +60,38 @@ function display_list(source) {
 		format_currency(data.ACurrencyCode);
 		format_date();
 	})
+}
+
+function updateGift(BatchNumber, GiftTransactionNumber) {
+	// somehow the original window stays gray when we return from this modal.
+	$('.modal-backdrop').remove();
+	edit_gift_trans(window.localStorage.getItem('current_ledger'), BatchNumber, GiftTransactionNumber);
+}
+
+function updateBatch(BatchNumber) {
+	var x = {
+		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+		'ABatchNumber': BatchNumber};
+
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		item = data.result.AGiftBatch[0];
+		let batchDiv = $('#Batch' + BatchNumber + " div");
+		if (batchDiv.length) {
+			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			batchDiv.first().replaceWith(row.children()[0]);
+		} else {
+			$('.tpl_row .collapse').collapse('hide');
+			format_item(item);
+			batchDiv = $('#Batch' + BatchNumber + " div");
+			$('html, body').animate({
+								scrollTop: (batchDiv.offset().top - 100)
+								}, 500);
+		}
+		format_currency(data.ACurrencyCode);
+		format_date();
+		open_gift_transactions($('#Batch' + BatchNumber), BatchNumber, true);
+	});
 }
 
 function format_date() {
@@ -75,9 +113,9 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_gift_transactions(obj, number) {
+function open_gift_transactions(obj, number, reload = false) {
 	obj = $(obj);
-	if (obj.find('.collapse').is(':visible') ) {
+	if (!reload && obj.find('.collapse').is(':visible') ) {
 		return;
 	}
 	if (obj.find('[batch-status]').text() == "Posted" || obj.find('[batch-status]').text() == "Cancelled") {
@@ -99,7 +137,9 @@ function open_gift_transactions(obj, number) {
 		}
 		format_currency(data.ACurrencyCode);
 		format_date();
-		$('.tpl_row .collapse').collapse('hide');
+		if (!reload) {
+			$('.tpl_row .collapse').collapse('hide');
+		}
 		obj.find('.collapse').collapse('show')
 	})
 
@@ -153,7 +193,6 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
 	$('#modal_space').append(p);
-	$('.modal').modal('hide');
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
@@ -242,7 +281,7 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
 		for (trans of parsed.result.AGiftDetail) {
-			if (trans.a_gift_transaction_number_i == trans_id) {
+			if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
 				searched = trans;
 				break;
 			}
@@ -258,7 +297,6 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		}
 
 		$('#modal_space').append(tpl_edit_raw);
-		$('.modal').modal('hide');
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
 
@@ -279,7 +317,7 @@ function save_edit_batch(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -300,7 +338,7 @@ function save_edit_trans(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -320,8 +358,8 @@ function save_edit_trans_detail(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
-			display_list();
+			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
+			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -336,13 +374,38 @@ function save_edit_trans_detail(obj_modal) {
 function delete_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload);
+	payload["action"] = "delete";
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .modal').modal('hide');
+			updateBatch(payload['ABatchNumber']);
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+	});
 }
 
 function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftsDetails', payload);
+	payload["action"] = "delete";
+	payload["ARecipientKey"] = -1;
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			$('#modal_space .tpl_edit_trans_detail').modal('hide');
+			$('#modal_space .tpl_edit_trans').modal('show');
+			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
+			updateBatch(payload['ABatchNumber']);
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+	});
 }
 
 /////
