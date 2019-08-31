@@ -337,8 +337,16 @@ function save_edit_trans(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
-			updateBatch(payload['ABatchNumber']);
+			if (mode=="edit") {
+				$('#modal_space .modal').modal('hide');
+				updateBatch(payload['ABatchNumber']);
+			} else if (mode=="create") {
+				// switch to edit mode
+				updateBatch(payload['ABatchNumber']);
+				p = $('#modal_space .modal');
+				p.find('[edit-only]').show();
+				p.find('[action]').val('edit');
+			}
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
