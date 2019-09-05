@@ -7,8 +7,6 @@ The goal of OpenPetra is to provide an easy to use software system for the admin
 
 To find out more about OpenPetra, please visit the webpage [www.openpetra.org](http://www.openpetra.org)
 
-The code for the Javascript client is in a separate repository, at [github.com/openpetra/openpetra-client-js](https://github.com/openpetra/openpetra-client-js).
-
 DEVELOPMENT SETUP
 -----------------
 
