@@ -331,6 +331,8 @@ namespace Ict.Petra.Server.App.WebService
             // make sure we are logged out. especially SYSADMIN could be logged in when a new user is created.
             Logout();
 
+            TSession.InitThread();
+
             TVerificationResultCollection VerificationResult;
             bool Result = TMaintenanceWebConnector.SetNewPassword(AUserID, AToken, ANewPassword, out VerificationResult);
             return "{" + "\"AVerificationResult\": " + THttpBinarySerializer.SerializeObject(VerificationResult)+ "," + "\"result\": "+THttpBinarySerializer.SerializeObject(Result)+ "}";
