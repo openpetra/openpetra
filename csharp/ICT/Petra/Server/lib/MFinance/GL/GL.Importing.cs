@@ -175,10 +175,6 @@ namespace Ict.Petra.Server.MFinance.GL
             Boolean gotFirstBatch = false;
             Boolean CancelledByUser = false;
 
-            // This needs to be initialised because we will be calling the method
-            TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
-            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
-
             // Get a new transaction
             TDBTransaction transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ImportGLBatches");

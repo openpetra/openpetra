@@ -44,7 +44,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <summary>
         /// Reference to the Delegate for invoking the simple data reader.
         /// </summary>
-        private static TSharedGetData FDelegateSharedGetData;
+        private static TSharedGetData FDelegateSharedGetData; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// This property is used to provide a function which invokes the simple data reader.

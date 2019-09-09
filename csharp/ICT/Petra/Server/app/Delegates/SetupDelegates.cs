@@ -65,15 +65,15 @@ namespace Ict.Petra.Server.App.Delegates
     /// </summary>
     public class TSetupDelegates
     {
-        private static Ict.Petra.Server.MCommon.Cacheable.TCacheable CachePopulatorCommon;
-        private static Ict.Petra.Server.MConference.Cacheable.TCacheable CachePopulatorConference;
-        private static Ict.Petra.Server.MFinance.Cacheable.TCacheable CachePopulatorFinance;
-        private static Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable CachePopulatorMailing;
-        private static Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable CachePopulatorPartner;
-        private static Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable CachePopulatorSubscriptions;
-        private static Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable CachePopulatorPersonnel;
-        private static Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable CachePopulatorUnits;
-        private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan;
+        private static Ict.Petra.Server.MCommon.Cacheable.TCacheable CachePopulatorCommon; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MConference.Cacheable.TCacheable CachePopulatorConference; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MFinance.Cacheable.TCacheable CachePopulatorFinance; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable CachePopulatorMailing; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable CachePopulatorPartner; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable CachePopulatorSubscriptions; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable CachePopulatorPersonnel; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable CachePopulatorUnits; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// init the static variables
@@ -92,6 +92,7 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedPartnerValidationHelper.PartnerOfTypeCCIsLinkedDelegate = @TPartnerServerLookups.PartnerOfTypeCCIsLinked;
             TSharedPartnerValidationHelper.PartnerHasCurrentGiftDestinationDelegate = @TPartnerServerLookups.PartnerHasCurrentGiftDestination;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
+            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;
 
@@ -107,12 +108,15 @@ namespace Ict.Petra.Server.App.Delegates
             CachePopulatorSysMan = new Ict.Petra.Server.MSysMan.Cacheable.TCacheable();
 
             TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @CachePopulatorCommon.GetCacheableTable;
-
             TSharedDataCache.TMFinance.GetCacheableFinanceTableDelegate = @CachePopulatorFinance.GetCacheableTable;
-
             TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate = @CachePopulatorPartner.GetCacheableTable;
             TSharedDataCache.TMPartner.GetCacheableMailingTableDelegate = @CachePopulatorMailing.GetCacheableTable;
             TSharedDataCache.TMPartner.GetCacheableSubscriptionsTableDelegate = @CachePopulatorSubscriptions.GetCacheableTable;
+            TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate = @CachePopulatorPersonnel.GetCacheableTable;
+            TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @CachePopulatorUnits.GetCacheableTable;
+            TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @CachePopulatorConference.GetCacheableTable;
+            TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
+
             TSharedDataCache.TMPartner.GetPartnerCalculationsSystemCategoryAttributeTypesDelegate =
                 @Ict.Petra.Shared.MPartner.Calculations.DetermineSystemCategoryAttributeTypes;
             TSharedDataCache.TMPartner.GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate =
@@ -121,13 +125,6 @@ namespace Ict.Petra.Server.App.Delegates
                 @Ict.Petra.Shared.MPartner.Calculations.DetermineEmailPartnerAttributeTypes;
             TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
                 @Ict.Petra.Shared.MPartner.Calculations.DeterminePhonePartnerAttributeTypes;
-
-            TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate = @CachePopulatorPersonnel.GetCacheableTable;
-            TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @CachePopulatorUnits.GetCacheableTable;
-
-            TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @CachePopulatorConference.GetCacheableTable;
-
-            TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
 
             TSmtpSender.GetSmtpSettings = @TSmtpSender.GetSmtpSettingsFromAppSettings;
         }

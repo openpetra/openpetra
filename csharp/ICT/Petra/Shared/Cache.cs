@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,7 +51,7 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Common table
             /// </summary>
-            private static TGetCacheableCommonTable FDelegateGetCacheableCommonTable;
+            private static TGetCacheableCommonTable FDelegateGetCacheableCommonTable; // STATIC_OK: will be set for each request
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable Common table
@@ -155,7 +155,7 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Finance table
             /// </summary>
-            private static TGetCacheableFinanceTable FDelegateGetCacheableFinanceTable;
+            private static TGetCacheableFinanceTable FDelegateGetCacheableFinanceTable; // STATIC_OK: will be set for each request
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable Finance table

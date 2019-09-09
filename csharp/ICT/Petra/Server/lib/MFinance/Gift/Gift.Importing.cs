@@ -215,10 +215,6 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             string ImportMessage = Catalog.GetString("Initialising");
 
-            // This needs to be initialised because we will be calling the method
-            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
-            TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
-
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ImportGiftBatches", ADataBase);
             bool SubmissionOK = false;

@@ -64,15 +64,15 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
-        private static TVerifyPartner FDelegateVerifyPartner;
+        private static TVerifyPartner FDelegateVerifyPartner; // STATIC_OK: will be set for each request
 
-        private static TPartnerHasActiveStatus FDelegatePartnerHasActiveStatus;
+        private static TPartnerHasActiveStatus FDelegatePartnerHasActiveStatus; // STATIC_OK: will be set for each request
 
-        private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC;
+        private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC; // STATIC_OK: will be set for each request
 
-        private static TPartnerOfTypeCCIsLinked FDelegatePartnerOfTypeCCIsLinked;
+        private static TPartnerOfTypeCCIsLinked FDelegatePartnerOfTypeCCIsLinked; // STATIC_OK: will be set for each request
 
-        private static TPartnerHasCurrentGiftDestination FDelegatePartnerHasCurrentGiftDestination;
+        private static TPartnerHasCurrentGiftDestination FDelegatePartnerHasCurrentGiftDestination; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Partner.
