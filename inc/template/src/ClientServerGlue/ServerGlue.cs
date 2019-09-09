@@ -45,7 +45,7 @@ public class TM{#TOPLEVELMODULE}WebService : System.Web.Services.WebService
     /// </summary>
     public TM{#TOPLEVELMODULE}WebService() : base()
     {
-        TOpenPetraOrgSessionManager.Init();
+        new TOpenPetraOrgSessionManager();
     }
 
     /// disconnect an UIConnector object

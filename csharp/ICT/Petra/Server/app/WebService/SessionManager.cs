@@ -82,9 +82,9 @@ namespace Ict.Petra.Server.App.WebService
         }
 
         /// <summary>
-        /// initialise the server once for everyone
+        /// initialise the server for each Web Request
         /// </summary>
-        public static bool Init()
+        private static bool Init()
         {
             if (ConfigFileName == string.Empty)
             {
@@ -132,63 +132,16 @@ namespace Ict.Petra.Server.App.WebService
                 TSession.InitThread();
             }
 
-            if (TServerManager.TheServerManager == null)
-            {
-                Catalog.Init();
+            Catalog.Init();
 
-                TServerManager.TheServerManager = new TServerManager();
+            TServerManager.TheServerManager = new TServerManager();
 
-                try
-                {
-                    // initialise the cached tables
-                    TSetupDelegates.Init();
-                }
-                catch (Exception e)
-                {
-                    TLogging.Log(e.Message);
-                    TLogging.Log(e.StackTrace);
-                    throw;
-                }
+            // initialise the cached tables
+            TSetupDelegates.Init();
 
-                TLogging.Log("Server has been initialised");
+            TLogging.LogAtLevel(4, "Server has been initialised");
 
-                return true;
-            }
-
-            if (DomainManager.CurrentClient != null)
-            {
-                if (DomainManager.CurrentClient.FAppDomainStatus == TSessionStatus.adsStopped)
-                {
-                    TLogging.Log("There is an attempt to reconnect to stopped session: " + DomainManager.CurrentClient.ClientName);
-
-                    if (HttpContext.Current.Request.PathInfo == "/IsUserLoggedIn")
-                    {
-                        // we want a clean json response saying the user is not logged in
-                        TSession.CloseSession();
-                        return true;
-                    }
-
-                    Dictionary<string, object> result = new Dictionary<string, object>();
-                    result.Add("resultcode", "error");
-                    result.Add("error", THTTPUtils.SESSION_ALREADY_CLOSED);
-                    HttpContext.Current.Response.Status = "403 " + THTTPUtils.SESSION_ALREADY_CLOSED;
-                    HttpContext.Current.Response.Write(JsonConvert.SerializeObject(result));
-                    HttpContext.Current.Response.Flush();
-                    HttpContext.Current.Response.Close();
-                    HttpContext.Current.Response.End();
-
-                    return false;
-                }
-
-//                TLogging.Log("Init(): WebService Method name that got called: " + HttpContext.Current.Request.PathInfo);
-
-                if (HttpContext.Current.Request.PathInfo != "/PollClientTasks")
-                {
-                    DomainManager.CurrentClient.UpdateLastAccessTime();
-                }
-            }
-
-            return false;
+            return true;
         }
 
         private eLoginEnum LoginInternal(string username, string password, Version AClientVersion,
