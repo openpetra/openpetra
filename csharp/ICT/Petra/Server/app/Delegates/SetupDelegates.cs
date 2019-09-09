@@ -107,6 +107,16 @@ namespace Ict.Petra.Server.App.Delegates
             CachePopulatorUnits = new Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable();
             CachePopulatorSysMan = new Ict.Petra.Server.MSysMan.Cacheable.TCacheable();
 
+            Ict.Petra.Server.MCommon.Cacheable.TCacheable.Init();
+            Ict.Petra.Server.MConference.Cacheable.TCacheable.Init();
+            Ict.Petra.Server.MFinance.Cacheable.TCacheable.Init();
+            Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable.Init();
+            Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable.Init();
+            Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable.Init();
+            Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable.Init();
+            Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable.Init();
+            Ict.Petra.Server.MSysMan.Cacheable.TCacheable.Init();
+
             TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @CachePopulatorCommon.GetCacheableTable;
             TSharedDataCache.TMFinance.GetCacheableFinanceTableDelegate = @CachePopulatorFinance.GetCacheableTable;
             TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate = @CachePopulatorPartner.GetCacheableTable;

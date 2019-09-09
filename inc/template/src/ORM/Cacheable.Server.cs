@@ -28,17 +28,14 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
     public class T{#SUBMODULE}CacheableWebConnector
     {
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private static Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS} FCachePopulator = null;
+        private static Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS} FCachePopulator = null; // STATIC_OK: will be set for each request
         
         /// <summary>
-        /// init static object
+        /// init static object, must be called by TSetupDelegates
         /// </summary>
         private static void Init()
         {
-            if (FCachePopulator == null)
-            {
-                FCachePopulator = new Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS}();
-            }
+            FCachePopulator = new Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS}();
         }
 
         /// <summary>
@@ -64,8 +61,6 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
-            Init();
-
             DataTable ReturnValue = FCachePopulator.GetCacheableTable(
                 ACacheableTable, AHashCode, ARefreshFromDB, out AType, null);
 
@@ -108,8 +103,6 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
             System.Int32 ALedgerNumber,
             out System.Type AType)
         {
-            Init();
-
             DataTable ReturnValue = FCachePopulator.GetCacheableTable(
                 ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType, null);
 
@@ -158,7 +151,6 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
                                                                       ref TTypedDataTable ASubmitTable,
                                                                       out TVerificationResultCollection AVerificationResult)
         {
-            Init();
             return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
         }
         
@@ -190,7 +182,6 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
                                                                       System.Int32 ALedgerNumber,
                                                                       out TVerificationResultCollection AVerificationResult)
         {
-            Init();
             return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, ALedgerNumber, out AVerificationResult);
         }
 {#ENDIF WITHLEDGER}
