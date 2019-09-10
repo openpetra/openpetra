@@ -33,7 +33,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         /// <summary>
         /// init static object, must be called by TSetupDelegates
         /// </summary>
-        private static void Init()
+        public static void Init()
         {
             FCachePopulator = new Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS}();
         }

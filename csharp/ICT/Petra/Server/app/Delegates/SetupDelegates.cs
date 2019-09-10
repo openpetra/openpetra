@@ -49,6 +49,15 @@ using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Server.MPersonnel.Unit.Cacheable;
 using Ict.Petra.Server.MSysMan.Cacheable;
+using Ict.Petra.Server.MCommon.Cacheable.WebConnectors;
+using Ict.Petra.Server.MConference.Cacheable.WebConnectors;
+using Ict.Petra.Server.MFinance.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPartner.Mailing.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPartner.Partner.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPartner.Subscriptions.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPersonnel.Person.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPersonnel.Unit.Cacheable.WebConnectors;
+using Ict.Petra.Server.MSysMan.Cacheable.WebConnectors;
 
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MFinance.GL;
@@ -107,15 +116,15 @@ namespace Ict.Petra.Server.App.Delegates
             CachePopulatorUnits = new Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable();
             CachePopulatorSysMan = new Ict.Petra.Server.MSysMan.Cacheable.TCacheable();
 
-            Ict.Petra.Server.MCommon.Cacheable.TCacheable.Init();
-            Ict.Petra.Server.MConference.Cacheable.TCacheable.Init();
-            Ict.Petra.Server.MFinance.Cacheable.TCacheable.Init();
-            Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable.Init();
-            Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable.Init();
-            Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable.Init();
-            Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable.Init();
-            Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable.Init();
-            Ict.Petra.Server.MSysMan.Cacheable.TCacheable.Init();
+            Ict.Petra.Server.MCommon.Cacheable.WebConnectors.TCommonCacheableWebConnector.Init();
+            Ict.Petra.Server.MConference.Cacheable.WebConnectors.TConferenceCacheableWebConnector.Init();
+            Ict.Petra.Server.MFinance.Cacheable.WebConnectors.TFinanceCacheableWebConnector.Init();
+            Ict.Petra.Server.MPartner.Mailing.Cacheable.WebConnectors.TMailingCacheableWebConnector.Init();
+            Ict.Petra.Server.MPartner.Partner.Cacheable.WebConnectors.TPartnerCacheableWebConnector.Init();
+            Ict.Petra.Server.MPartner.Subscriptions.Cacheable.WebConnectors.TSubscriptionsCacheableWebConnector.Init();
+            Ict.Petra.Server.MPersonnel.Person.Cacheable.WebConnectors.TPersonCacheableWebConnector.Init();
+            Ict.Petra.Server.MPersonnel.Unit.Cacheable.WebConnectors.TUnitCacheableWebConnector.Init();
+            Ict.Petra.Server.MSysMan.Cacheable.WebConnectors.TSysManCacheableWebConnector.Init();
 
             TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @CachePopulatorCommon.GetCacheableTable;
             TSharedDataCache.TMFinance.GetCacheableFinanceTableDelegate = @CachePopulatorFinance.GetCacheableTable;
