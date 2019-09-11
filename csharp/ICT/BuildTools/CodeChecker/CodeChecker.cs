@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,10 +135,15 @@ namespace Ict.Tools.CodeChecker
                         && !file.Contains("csharp/ICT/Petra/Tools") && !file.Contains("csharp/ICT/Petra/ServerAdmin"))
                     {
                         bool firstFileMatch = true;
-                        RegExpToFind = new Regex(@"static (?!readonly)(?!partial)(?!extern).*[;=]\n");
+                        RegExpToFind = new Regex(@"(?m)^.*static (?!readonly)(?!partial)(?!extern).*[;=]\n");
 
                         foreach (Match matchInfo in RegExpToFind.Matches(contents))
                         {
+                            if (matchInfo.Value.Trim().StartsWith("//"))
+                            {
+                                continue;
+                            }
+
                             if (file.Contains("csharp/ICT/Common/Session/Session.cs") && matchInfo.Value.Contains("// STATIC_OK"))
                             {
                                 // this is an allowed exception, in Ict.Common.Session.TSession
