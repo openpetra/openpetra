@@ -1328,6 +1328,7 @@ namespace Ict.Common.Testing
             ErrCodeInfo TestResult = null;
             string Testname;
             string VerificationProblemListing;
+            ErrorCodeInventory.Init();
 
             #region GetErrorInfo
 
