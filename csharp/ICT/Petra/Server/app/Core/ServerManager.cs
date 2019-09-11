@@ -78,9 +78,6 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public TServerManager() : base()
         {
-            TCacheableTablesManager.InitializeUnit();
-            TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
-
             Assembly SysManAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan");
             Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.TImportExportManager");
             FImportExportManager = (IImportExportManager)Activator.CreateInstance(ImportExportType,

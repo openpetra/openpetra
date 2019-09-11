@@ -29,6 +29,8 @@ using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Application.WebConnectors;
@@ -144,6 +146,9 @@ namespace Ict.Petra.Server.App.Delegates
                 @Ict.Petra.Shared.MPartner.Calculations.DetermineEmailPartnerAttributeTypes;
             TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
                 @Ict.Petra.Shared.MPartner.Calculations.DeterminePhonePartnerAttributeTypes;
+
+            TCacheableTablesManager.Init();
+            TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
 
             TSmtpSender.GetSmtpSettings = @TSmtpSender.GetSmtpSettingsFromAppSettings;
         }

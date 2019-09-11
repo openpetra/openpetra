@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,13 +32,6 @@ using Ict.Common.Exceptions;
 namespace Ict.Common.Remoting.Server
 {
     /// <summary>
-    /// Delegate Type that allows the 'FirstChanceException' Event Handler, <see cref="TExceptionHandling.FirstChanceHandler"/>,
-    /// to provide a vital notification to the Server when broken-DB-Connection-related Exceptions are encountered - this gets
-    /// hooked up in Method 'TServer.StartServer' and in the Constructor of the 'TRemoteLoader' Class!
-    /// </summary>
-    public delegate void TDelegateDBConnectionBroken(object AContext, Exception AException);
-
-    /// <summary>
     /// Contains procedures for structured Exception handling. They are
     /// intended to be used as 'last resort' in case an Exception that was thrown
     /// anywhere in the Application wasn't caught anywhere.
@@ -46,13 +39,6 @@ namespace Ict.Common.Remoting.Server
     public class TExceptionHandling
     {
         private const String FALLBACK_LOGFILE_NAME = "PetraServer.log";
-
-        /// <summary>
-        /// Event that allows the 'FirstChanceException' Event Handler, <see cref="FirstChanceHandler"/>, to provide a vital
-        /// notification to the Server when broken-DB-Connection-related Exceptions are encountered - this gets
-        /// hooked up in Method 'TServer.StartServer' and in the Constructor of the 'TRemoteLoader' Class!
-        /// </summary>
-        public static event TDelegateDBConnectionBroken DBConnectionBrokenCallback;
 
         /// <summary>
         /// Logs an Exception and a StackTrace to the Server logfile.
@@ -118,26 +104,13 @@ namespace Ict.Common.Remoting.Server
         /// Event Handler that gets called before the Common Language Runtime (CLR) begins searching for Event
         /// Handlers. This special Event gets hooked up for all AppDomains of the server (incl. the Default
         /// Application Domain of the server exe).
-        /// <para>
-        /// In case an Exception was caused by an unavailable DB Connection the <see cref="DBConnectionBrokenCallback"/>
-        /// Event gets raised, which gets subscribed to in the TServerManager.StartServer Method and in the
-        /// Constructor of the 'TRemoteLoader' Class in order to kick off the attempts of restoring the broken
-        /// DB Connection.
-        /// </para>
         /// </summary>
         /// <param name="ASource">Provided automatically by .NET.</param>
         /// <param name="AEventArgs">Provided automatically by .NET. (The Exception Property of this Argument
         /// holds the Exception that just occurred.)</param>
         public static void FirstChanceHandler(object ASource, FirstChanceExceptionEventArgs AEventArgs)
         {
-            if (TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(AEventArgs.Exception))
-            {
-                if (DBConnectionBrokenCallback != null)
-                {
-                    DBConnectionBrokenCallback(ASource, AEventArgs.Exception);
-                }
-            }
-            else if (AEventArgs.Exception is OutOfMemoryException)
+            if (AEventArgs.Exception is OutOfMemoryException)
             {
                 TLogging.Log(String.Format("FirstChanceException event raised because of an *out of memory condition* in {0}: {1}",
                         AppDomain.CurrentDomain.FriendlyName, AEventArgs.Exception.Message));

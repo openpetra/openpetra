@@ -62,8 +62,6 @@ namespace Ict.Petra.Server.App.WebService
     [ScriptService]
     public class TOpenPetraOrgSessionManager : System.Web.Services.WebService
     {
-        private static string ConfigFileName = string.Empty;
-
         /// <summary>
         /// constructor, which is called for each http request
         /// </summary>
@@ -86,25 +84,24 @@ namespace Ict.Petra.Server.App.WebService
         /// </summary>
         private static bool Init()
         {
-            if (ConfigFileName == string.Empty)
-            {
-                // make sure the correct config file is used
-                if (Environment.CommandLine.Contains("/appconfigfile="))
-                {
-                    // this happens when we use fastcgi-mono-server4
-                    ConfigFileName = Environment.CommandLine.Substring(
-                        Environment.CommandLine.IndexOf("/appconfigfile=") + "/appconfigfile=".Length);
+            string ConfigFileName = string.Empty;
 
-                    if (ConfigFileName.IndexOf(" ") != -1)
-                    {
-                        ConfigFileName = ConfigFileName.Substring(0, ConfigFileName.IndexOf(" "));
-                    }
-                }
-                else
+            // make sure the correct config file is used
+            if (Environment.CommandLine.Contains("/appconfigfile="))
+            {
+                // this happens when we use fastcgi-mono-server4
+                ConfigFileName = Environment.CommandLine.Substring(
+                    Environment.CommandLine.IndexOf("/appconfigfile=") + "/appconfigfile=".Length);
+
+                if (ConfigFileName.IndexOf(" ") != -1)
                 {
-                    // this is the normal behaviour when running with local http server
-                    ConfigFileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config";
+                    ConfigFileName = ConfigFileName.Substring(0, ConfigFileName.IndexOf(" "));
                 }
+            }
+            else
+            {
+                // this is the normal behaviour when running with local http server
+                ConfigFileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config";
             }
 
             new TAppSettingsManager(ConfigFileName);
@@ -136,7 +133,7 @@ namespace Ict.Petra.Server.App.WebService
 
             TServerManager.TheServerManager = new TServerManager();
 
-            // initialise the cached tables
+            // initialise the cached tables and the delegates
             TSetupDelegates.Init();
 
             TLogging.LogAtLevel(4, "Server has been initialised");
