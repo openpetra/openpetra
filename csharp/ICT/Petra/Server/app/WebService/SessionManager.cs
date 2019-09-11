@@ -131,6 +131,8 @@ namespace Ict.Petra.Server.App.WebService
 
             Catalog.Init();
 
+            ErrorCodeInventory.Init();
+
             TServerManager.TheServerManager = new TServerManager();
 
             // initialise the cached tables and the delegates

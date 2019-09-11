@@ -87,13 +87,13 @@ namespace Ict.Petra.Server.App.Delegates
         private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan; // STATIC_OK: will be set for each request
 
         /// <summary>
-        /// init the static variables
+        /// Initialize the static variables.
+        /// Set up Error Codes and Data Validation Delegates for a Web Request.
+        /// This setting-up makes use of the fact that this Method is called only once,
+        /// at the start of each Web Request in TOpenPetraOrgSessionManager.Init()
         /// </summary>
         public static void Init()
         {
-            // Set up Error Codes and Data Validation Delegates for a Client's AppDomain.
-            // This setting-up makes use of the fact that this Method is called only once,
-            // namely directly after the Client logged in successfully.
             ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
 
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
