@@ -34,7 +34,7 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Session;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
-
+using Ict.Petra.Server.App.Delegates;
 
 namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
 {
@@ -114,7 +114,12 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
             TLogging.DebugLevel = TAppSettingsManager.GetInt32("Server.DebugLevel", 0);
             TSession.InitThread();
 
+            ErrorCodeInventory.Init();
+
             TServerManager.TheServerManager = new TServerManager();
+
+            // initialise the cached tables and the delegates
+            TSetupDelegates.Init();
 
             bool ExitWithError = false;
 

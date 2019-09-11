@@ -54,17 +54,13 @@ namespace Ict.Common
         /// </summary>
         private static Dictionary <string, Type>CataloguedTypes = null; // STATIC_OK: will be set for each request
 
-        static ErrorCodeInventory()
-        {
-            ErrorCodeInventory.RegisteredTypes.Add(new Ict.Common.CommonErrorCodes().GetType());
-        }
-
         /// make sure we have empty static variables at the start of each web request
         public static void Init()
         {
             ErrorCodeCatalogue = new Dictionary <string, ErrCodeInfo>();
             RegisteredTypes = new List <Type>();
             CataloguedTypes = new Dictionary <string, Type>();
+            RegisteredTypes.Add(new Ict.Common.CommonErrorCodes().GetType());
         }
 
         /// <summary>
