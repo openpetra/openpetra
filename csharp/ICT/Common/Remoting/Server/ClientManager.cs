@@ -1124,7 +1124,7 @@ namespace Ict.Common.Remoting.Server
 // TODORemoting               Monitor.Exit(UConnectClientMonitor);
             }
 
-            ConnectedClient.StartSession(new TDelegateTearDownAppDomain(DisconnectClient));
+            ConnectedClient.StartSession();
 
             #region Logging
 
