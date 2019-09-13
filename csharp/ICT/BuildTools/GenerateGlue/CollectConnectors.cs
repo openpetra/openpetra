@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,30 +58,7 @@ namespace GenerateSharedCode
                     {
                         if (t.Name.EndsWith("UIConnector"))
                         {
-                            string ServerNamespace = t.UserData.ToString();
-                            string ServerNamespaceWithClassName = ServerNamespace + "." + t.Name;
-                            string key = ServerNamespaceWithClassName;
-
-                            if (Result.ContainsKey(ServerNamespaceWithClassName))
-                            {
-                                // there is already the other part of the partial class
-
-                                TypeDeclaration partialType = Result[ServerNamespaceWithClassName];
-
-                                Result.Remove(ServerNamespaceWithClassName);
-
-                                foreach (INode child in partialType.Children)
-                                {
-                                    t.AddChild(child);
-                                }
-                            }
-
-                            Result.Add(key, t);
-
-                            if (TLogging.DebugLevel > 1)
-                            {
-                                // TLogging.Log("adding new Connector " + key);
-                            }
+                            // deprecated. not implemented anymore.
                         }
                         // either a webconnector, or a partial class
                         else
@@ -101,27 +78,7 @@ namespace GenerateSharedCode
                             }
                             else if (t.Name.EndsWith("UIConnector"))
                             {
-                                // this could be the partial class of a UIConnector
-                                // try to find a key that starts with this type
-                                bool foundType = false;
-
-                                foreach (string k in Result.Keys)
-                                {
-                                    if (k == key)
-                                    {
-                                        foundType = true;
-
-                                        foreach (INode child in t.Children)
-                                        {
-                                            Result[k].AddChild(child);
-                                        }
-                                    }
-                                }
-
-                                if (!foundType)
-                                {
-                                    Result.Add(key, t);
-                                }
+                                // deprecated. not implemented anymore
                             }
                             else
                             {
