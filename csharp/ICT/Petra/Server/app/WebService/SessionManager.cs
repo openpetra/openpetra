@@ -41,6 +41,7 @@ using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Session;
+using Ict.Common.Printing;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
@@ -103,6 +104,12 @@ namespace Ict.Petra.Server.App.WebService
                 // this is the normal behaviour when running with local http server
                 ConfigFileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config";
             }
+
+            TLogWriter.ResetStaticVariables();
+            TLogging.ResetStaticVariables();
+            TTypedDataTable.ResetStaticVariables();
+            TPdfPrinter.ResetStaticVariables();
+            THTTPUtils.ResetStaticVariables();
 
             new TAppSettingsManager(ConfigFileName);
             new TLogging(TSrvSetting.ServerLogFile);
