@@ -110,6 +110,8 @@ namespace Ict.Petra.Server.App.WebService
             TTypedDataTable.ResetStaticVariables();
             TPdfPrinter.ResetStaticVariables();
             THTTPUtils.ResetStaticVariables();
+            TSharedDataCache.TMPartner.ResetStaticVariables();
+            TServerManagerBase.ResetStaticVariables();
 
             new TAppSettingsManager(ConfigFileName);
             new TLogging(TSrvSetting.ServerLogFile);

@@ -103,7 +103,7 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Conference table
             /// </summary>
-            private static TGetCacheableConferenceTable FDelegateGetCacheableConferenceTable;
+            private static TGetCacheableConferenceTable FDelegateGetCacheableConferenceTable; // STATIC_OK: will be set for each request
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable Conference table
@@ -221,17 +221,25 @@ namespace Ict.Petra.Shared
                 TGetCacheableDataTableFromCache ACacheRetriever = null);
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FSystemCategorySettingsConcatStr = null;
+            private static string FSystemCategorySettingsConcatStr = null; // STATIC_OK: will be set for each request
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FPartnerContactDetailAttributeTypesConcatStr = null;
+            private static string FPartnerContactDetailAttributeTypesConcatStr = null; // STATIC_OK: will be set for each request
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FEmailPartnerAttributesConcatStr = null;
+            private static string FEmailPartnerAttributesConcatStr = null; // STATIC_OK: will be set for each request
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FPhonePartnerAttributesConcatStr = null;
+            private static string FPhonePartnerAttributesConcatStr = null; // STATIC_OK: will be set for each request
 
+            /// reset the static variables for each Web Request call.
+            public static void ResetStaticVariables()
+            {
+                FSystemCategorySettingsConcatStr = null;
+                FPartnerContactDetailAttributeTypesConcatStr = null;
+                FEmailPartnerAttributesConcatStr = null;
+                FPhonePartnerAttributesConcatStr = null;
+            }
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable mailing table
@@ -576,12 +584,12 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable personnel table
             /// </summary>
-            private static TGetCacheablePersonnelTable FDelegateGetCacheablePersonnelTable;
+            private static TGetCacheablePersonnelTable FDelegateGetCacheablePersonnelTable; // STATIC_OK: will be set for each request
 
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Units table
             /// </summary>
-            private static TGetCacheableUnitsTable FDelegateGetCacheableUnitsTable;
+            private static TGetCacheableUnitsTable FDelegateGetCacheableUnitsTable; // STATIC_OK: will be set for each request
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable personnel table
@@ -667,7 +675,7 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable SysMan table
             /// </summary>
-            private static TGetCacheableSysManTable FDelegateGetCacheableSysManTable;
+            private static TGetCacheableSysManTable FDelegateGetCacheableSysManTable; // STATIC_OK: will be set for each request
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable SysMan table
