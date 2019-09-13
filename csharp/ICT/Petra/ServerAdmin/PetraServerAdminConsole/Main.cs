@@ -73,51 +73,8 @@ namespace PetraServerAdminConsole
         /// <returns>true if shutdown was completed</returns>
         public static bool ShutDownControlled(bool AWithUserInteraction)
         {
-            bool ack = false;
-
-            if (AWithUserInteraction == true)
-            {
-                Console.WriteLine(Environment.NewLine + "-> CONTROLLED SHUTDOWN  (gets all connected clients to disconnect) <-");
-                Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
-
-                if (Console.ReadLine() == "YES")
-                {
-                    Console.WriteLine();
-                    ack = true;
-                }
-            }
-            else
-            {
-                ack = true;
-            }
-
-            if (ack == true)
-            {
-                TLogging.Log("CONTROLLED SHUTDOWN PROCEDURE INITIATED...");
-
-                if (!TRemote.StopServerControlled(true))
-                {
-                    Console.WriteLine("     Shutdown cancelled!");
-                    Console.Write(ServerAdminPrompt);
-                    return false;
-                }
-
-                if (AWithUserInteraction == true)
-                {
-                    Console.WriteLine();
-                    TLogging.Log("SERVER STOPPED!");
-                    Console.WriteLine();
-                    Console.Write("Press ENTER to end PETRAServerADMIN...");
-                    Console.ReadLine();
-                    return true;
-                }
-            }
-            else
-            {
-                Console.WriteLine("     Shutdown cancelled!");
-                Console.Write(ServerAdminPrompt);
-            }
-
+            Console.WriteLine("     Currently not implemented!");
+            Console.Write(ServerAdminPrompt);
             return false;
         }
 

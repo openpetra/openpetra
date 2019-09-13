@@ -112,6 +112,7 @@ namespace Ict.Petra.Server.App.WebService
             THTTPUtils.ResetStaticVariables();
             TSharedDataCache.TMPartner.ResetStaticVariables();
             TServerManagerBase.ResetStaticVariables();
+            TClientManager.ResetStaticVariables();
 
             new TAppSettingsManager(ConfigFileName);
             new TLogging(TSrvSetting.ServerLogFile);
