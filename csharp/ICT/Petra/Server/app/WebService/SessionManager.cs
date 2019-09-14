@@ -88,7 +88,15 @@ namespace Ict.Petra.Server.App.WebService
             string ConfigFileName = string.Empty;
 
             // make sure the correct config file is used
-            if (Environment.CommandLine.Contains("/appconfigfile="))
+            string Instance = HttpContext.Current.Request.Url.ToString().Replace("http://", "");
+            Instance = Instance.Substring(0, Instance.IndexOf(".")).Replace("op", "op_");
+            ConfigFileName = "/home/" + Instance + "/etc/PetraServerConsole.config";
+
+            if (File.Exists(ConfigFileName))
+            {
+                // we are in a multi tenant hosting scenario
+            }
+            else if (Environment.CommandLine.Contains("/appconfigfile="))
             {
                 // this happens when we use fastcgi-mono-server4
                 ConfigFileName = Environment.CommandLine.Substring(
