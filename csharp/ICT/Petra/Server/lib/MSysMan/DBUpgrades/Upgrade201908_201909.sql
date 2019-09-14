@@ -1,0 +1,20 @@
+CREATE TABLE `s_report_result` (
+  `s_report_id_c` varchar(192) NOT NULL,
+  `s_session_id_c` varchar(128) NOT NULL,
+  `s_valid_until_d` datetime NOT NULL,
+  `s_parameter_list_c` text,
+  `s_result_html_c` text,
+  `s_success_l` tinyint(1) DEFAULT '0',
+  `s_error_message_c` text,
+  `s_date_created_d` date DEFAULT NULL,
+  `s_created_by_c` varchar(20) DEFAULT NULL,
+  `s_date_modified_d` date DEFAULT NULL,
+  `s_modified_by_c` varchar(20) DEFAULT NULL,
+  `s_modification_id_t` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`s_report_id_c`),
+  UNIQUE KEY `inx_s_report_result_pk0` (`s_report_id_c`),
+  KEY `inx_s_report_result_fkcr_key1` (`s_created_by_c`),
+  KEY `inx_s_report_result_fkmd_key2` (`s_modified_by_c`),
+  CONSTRAINT `s_report_result_fkcr` FOREIGN KEY (`s_created_by_c`) REFERENCES `s_user` (`s_user_id_c`),
+  CONSTRAINT `s_report_result_fkmd` FOREIGN KEY (`s_modified_by_c`) REFERENCES `s_user` (`s_user_id_c`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
