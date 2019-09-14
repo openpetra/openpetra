@@ -67,9 +67,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// prints the current id of the row that is being calculated;
         /// </summary>
         [RequireModulePermission("NONE")]
-        public static TProgressState Progress(string ReportClientUID)
+        public static TProgressState GetProgress(string AReportID)
         {
-            return TProgressTracker.GetCurrentState(ReportClientUID);
+            return TProgressTracker.GetCurrentState(AReportID);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             // need to initialize the database session
             TSession.InitThread(ASessionID);
 
-            TDataBase db = DBAccess.Connect("TReportGeneratorUIConnector");
+            TDataBase db = DBAccess.Connect("TReportGeneratorWebConnector");
             
             TDBTransaction Transaction = new TDBTransaction();
             bool Success = false;
@@ -214,6 +214,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     SReportResultAccess.SubmitChanges(table, Transaction);
                     Submit = true;
                 });
+
+            db.CloseDBConnection();
 
             TProgressTracker.FinishJob(AReportID);
         }

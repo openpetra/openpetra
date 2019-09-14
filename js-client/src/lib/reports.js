@@ -89,7 +89,7 @@ function check_for_report(AReportID) {
 
 	api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetProgress', r).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		if (!parsed.JobFinished) {
+		if (!parsed.result.JobFinished) {
 			// console.log("Report progress: " + parsed.Caption + ' ' + parsed.StatusMessage);
 			setTimeout(function() { check_for_report(AReportID); }, 1000);
 		}

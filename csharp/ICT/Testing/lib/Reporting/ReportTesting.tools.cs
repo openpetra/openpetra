@@ -118,7 +118,7 @@ namespace Tests.MReporting.Tools
             string ReportID = TReportGeneratorWebConnector.Create();
             TReportGeneratorWebConnector.Start(ReportID, Parameters.ToDataTable());
 
-            while (!TReportGeneratorWebConnector.Progress(ReportID).JobFinished)
+            while (!TReportGeneratorWebConnector.GetProgress(ReportID).JobFinished)
             {
                 Thread.Sleep(500);
             }
