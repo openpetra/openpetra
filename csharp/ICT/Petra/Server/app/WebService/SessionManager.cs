@@ -88,8 +88,15 @@ namespace Ict.Petra.Server.App.WebService
             string ConfigFileName = string.Empty;
 
             // make sure the correct config file is used
-            string Instance = HttpContext.Current.Request.Url.ToString().Replace("http://", "");
+            string Instance = HttpContext.Current.Request.Url.ToString().Replace("http://", "").Replace("https://", "");
             Instance = Instance.Substring(0, Instance.IndexOf(".")).Replace("op", "op_");
+
+            // for demo etc
+            if (!Instance.StartsWith("op_"))
+            {
+                Instance = "op_" + Instance;
+            }
+
             ConfigFileName = "/home/" + Instance + "/etc/PetraServerConsole.config";
 
             if (File.Exists(ConfigFileName))
