@@ -7,6 +7,7 @@ export OpenPetraPath=/usr/local/openpetra
 export documentroot=$OpenPetraPath/server
 export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
+export OPENPETRA_PORT=7000
 
 generatepwd() {
   dd bs=1024 count=1 if=/dev/urandom status=none | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1
@@ -14,20 +15,8 @@ generatepwd() {
 
 if [ -z "$OP_CUSTOMER" ]
 then
-  export OP_CUSTOMER=openpetra
+  # we are starting or stopping openpetra, independant of an instance
   export userName=openpetra
-  export OPENPETRA_DBUSER=petraserver
-  export OPENPETRA_DBNAME=openpetra
-  export OPENPETRA_URL=localhost
-  export OPENPETRA_HTTP_URL=http://localhost
-  export OPENPETRA_PORT=9000
-  export OPENPETRA_HTTP_PORT=80
-  export OPENPETRA_DBHOST=localhost
-  config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
-  if [ -f $config ]
-  then
-    export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
-  fi
 else
   config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
   if [ -f $config ]
@@ -38,7 +27,6 @@ else
     export OPENPETRA_DBNAME=`cat $config | grep DBName | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
-    export OPENPETRA_PORT=`cat $config | grep "Server.Port" | awk -F'"' '{print $4}'`
   elif [ -z $OPENPETRA_DBUSER ]
   then
     echo "cannot find $config"
@@ -61,10 +49,10 @@ fi
 # start the openpetra server
 start() {
     echo "Starting OpenPetra server"
-    if [ "`whoami`" = "$userName" ]
+    if [ "`whoami`" = "openpetra" ]
     then
       cd $documentroot
-      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenPetraPath/bin fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null &
+      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenPetraPath/bin fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=$OpenPetraPath/etc/common.config /logfile=/var/log/mono.log /loglevels=Standard >& /dev/null &
       # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
 
       # improve speed of initial request by user by forcing to load all assemblies now
@@ -82,7 +70,7 @@ start() {
 # stop the openpetra server
 stop() {
     echo "Stopping OpenPetra server"
-    if [ "`whoami`" = "$userName" ]
+    if [ "`whoami`" = "openpetra" ]
     then
       cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop
     else
@@ -211,7 +199,6 @@ init() {
        | sed -e "s/OPENPETRA_DBNAME/$OPENPETRA_DBNAME/" \
        | sed -e "s/OPENPETRA_DBPORT/$OPENPETRA_DBPORT/" \
        | sed -e "s~PG_OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
-       | sed -e "s~OPENPETRA_PORT~$OPENPETRA_PORT~" \
        | sed -e "s~OPENPETRA_URL~$OPENPETRA_URL~" \
        | sed -e "s~OPENPETRA_EMAILDOMAIN~$OPENPETRA_EMAILDOMAIN~" \
        | sed -e "s/USERNAME/$userName/" \
@@ -221,7 +208,11 @@ init() {
        | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_HTTP_PORT/#" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
-    chown -R $userName:$userName /home/$userName
+    chown -R $userName:openpetra /home/$userName
+    chmod g+r -R /home/$userName
+    chmod g+rx /home/$userName
+    chmod g+rwx /home/$userName/log
+    chmod g+rx /home/$userName/backup
 
     # configure nginx
     if [ $OPENPETRA_HTTP_PORT == 80 ]
@@ -262,24 +253,12 @@ server {
          fastcgi_pass 127.0.0.1:$OPENPETRA_PORT;
          include /etc/nginx/fastcgi_params;
          sub_filter_types text/html text/css text/xml;
-         sub_filter 'http://127.0.0.1:$OPENPETRA_PORT' '$OPENPETRA_HTTP_URL/api';
-         sub_filter 'http://localhost/api' '$OPENPETRA_HTTP_URL/api';
+         sub_filter 'http://$OPENPETRA_URL:$OPENPETRA_HTTP_PORT/api' '$OPENPETRA_HTTP_URL/api';
     }
 }
 FINISH
     systemctl restart nginx
     systemctl enable nginx
-
-    if [[ "$OP_CUSTOMER" != "openpetra" ]]
-    then
-      # create the service script
-      cp /usr/lib/systemd/system/openpetra.service /usr/lib/systemd/system/${OP_CUSTOMER}.service
-      sed -i "s~OpenPetra Server~OpenPetra Server for $userName~g" /usr/lib/systemd/system/${OP_CUSTOMER}.service
-      sed -i "s~User=openpetra~User=$userName\nEnvironment=OP_CUSTOMER=$userName~g" /usr/lib/systemd/system/${OP_CUSTOMER}.service
-    fi
-    systemctl enable ${OP_CUSTOMER}
-    systemctl start ${OP_CUSTOMER}
-
 }
 
 # this will overwrite all existing data
