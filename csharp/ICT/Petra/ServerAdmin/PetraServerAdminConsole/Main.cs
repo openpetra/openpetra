@@ -272,9 +272,9 @@ namespace PetraServerAdminConsole
             return TRemote.ClearConnectionPoolAndGetNumberOfDBConnections();
         }
 
-        private static void SetPassword(string AUserID, string APassword)
+        private static bool SetPassword(string AUserID, string APassword)
         {
-            TRemote.SetPassword(AUserID, APassword);
+            return TRemote.SetPassword(AUserID, APassword);
         }
 
         private static void AddUser(string AUserId)
@@ -888,7 +888,10 @@ namespace PetraServerAdminConsole
                     }
                     else if (TAppSettingsManager.GetValue("Command") == "SetPassword")
                     {
-                        SetPassword(TAppSettingsManager.GetValue("UserID"), TAppSettingsManager.GetValue("NewPassword"));
+                        if (!SetPassword(TAppSettingsManager.GetValue("UserID"), TAppSettingsManager.GetValue("NewPassword")))
+                        {
+                            throw new Exception("SetPassword did not work, perhaps too easy password?");
+                        }
                     }
                     else if (TAppSettingsManager.GetValue("Command") == "AddUser")
                     {
