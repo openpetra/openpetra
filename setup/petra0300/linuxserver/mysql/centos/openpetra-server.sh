@@ -317,11 +317,11 @@ FINISH
     if [ -z $SYSADMIN_PWD ]
     then
       SYSADMIN_PWD="CHANGEME"
+      echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
+    else
+      su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
     fi
 
-    su - $userName -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD'"
-
-    echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
 }
 
 # this will update the current database
