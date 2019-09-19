@@ -60,7 +60,8 @@ namespace Ict.Common
             ErrorCodeCatalogue = new Dictionary <string, ErrCodeInfo>();
             RegisteredTypes = new List <Type>();
             CataloguedTypes = new Dictionary <string, Type>();
-            RegisteredTypes.Add(new Ict.Common.CommonErrorCodes().GetType());
+            RegisteredTypes.Add(typeof(Ict.Common.CommonErrorCodes));
+            BuildErrorCodeInventory(typeof(Ict.Common.CommonErrorCodes));
         }
 
         /// <summary>
@@ -180,8 +181,6 @@ namespace Ict.Common
             ErrCodeInfo ErrCodeDetails = null;
             ErrCodeCategory ErrCodeCat;
             string ErrCodeValue;
-
-//TLogging.Log("BuildErrorCodeInventory: AErrorCodesType Type: " + AErrorCodesType.Name);
 
             FieldInfo[] ErrcodesFields = AErrorCodesType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
 

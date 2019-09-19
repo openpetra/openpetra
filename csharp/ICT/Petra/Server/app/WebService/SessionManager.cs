@@ -157,6 +157,8 @@ namespace Ict.Petra.Server.App.WebService
             Catalog.Init();
 
             ErrorCodeInventory.Init();
+            ErrorCodeInventory.BuildErrorCodeInventory(typeof(Ict.Petra.Shared.PetraErrorCodes));
+            ErrorCodeInventory.BuildErrorCodeInventory(typeof(Ict.Common.Verification.TStringChecks));
 
             TServerManager.TheServerManager = new TServerManager();
 
