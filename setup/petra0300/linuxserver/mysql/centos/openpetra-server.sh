@@ -7,7 +7,7 @@ export OpenPetraPath=/usr/local/openpetra
 export documentroot=$OpenPetraPath/server
 export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
-export OPENPETRA_PORT=7000
+export OPENPETRA_PORT=6700
 
 generatepwd() {
   dd bs=1024 count=1 if=/dev/urandom status=none | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1
