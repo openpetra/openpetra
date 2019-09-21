@@ -81,22 +81,22 @@ stop() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
-    su - openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
+    su openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
 }
 
 # dump the database to a yml.gz file
 dumpYmlGz() {
-    su - openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile"
+    su openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile"
 }
 
 # display the status to check for logged in users etc
 status() {
-    su - openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
+    su openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
 }
 
 # display a menu to check for logged in users etc
 menu() {
-    su - openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+    su openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
 # export variables for debugging to use mysql on the command line
@@ -319,14 +319,14 @@ FINISH
       SYSADMIN_PWD="CHANGEME"
       echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
     else
-      su - openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
+      su openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
     fi
 
 }
 
 # this will update the current database
 upgradedb() {
-    su - openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
+    su openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
 }
 
 case "$1" in
