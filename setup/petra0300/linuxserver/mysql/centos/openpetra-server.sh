@@ -212,7 +212,8 @@ init() {
     chmod g+r -R /home/$userName
     chmod g+rx /home/$userName
     chmod g+rwx /home/$userName/log
-    chmod g+rx /home/$userName/backup
+    chmod g+rwx /home/$userName/tmp
+    chmod g+rwx /home/$userName/backup
 
     # configure nginx
     if [ $OPENPETRA_HTTP_PORT == 80 ]
