@@ -232,6 +232,17 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
+        /// LockSysadmin
+        /// </summary>
+        public override bool LockSysadmin()
+        {
+            // we need a GUserInfo object for submitting the changes to the database later on
+            UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"));
+
+            return FUserManager.LockSysadmin();
+        }
+
+        /// <summary>
         /// AddUser
         /// </summary>
         public override bool AddUser(string AUserID, string APassword = "")

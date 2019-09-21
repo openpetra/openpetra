@@ -238,6 +238,13 @@ namespace Ict.Petra.ServerAdmin.App.Core.RemoteObjects
                 return (System.Boolean) Result[0];
             }
             /// forward the method call
+            public System.Boolean LockSysadmin()
+            {
+                SortedList<string, object> ActualParameters = new SortedList<string, object>();
+                List<object> Result = FHttpConnector.CallWebConnector("MServerAdmin", "TServerAdminWebConnector.LockSysadmin", ActualParameters, "System.Boolean");
+                return (System.Boolean) Result[0];
+            }
+            /// forward the method call
             public System.Boolean AddUser(System.String AUserID)
             {
                 SortedList<string, object> ActualParameters = new SortedList<string, object>();

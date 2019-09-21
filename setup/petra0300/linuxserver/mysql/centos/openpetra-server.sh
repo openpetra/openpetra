@@ -315,7 +315,11 @@ FINISH
            -e "DELETE FROM s_user WHERE s_user_id_c <> 'SYSADMIN'" $OPENPETRA_DBNAME
     fi
 
-    if [ -z $SYSADMIN_PWD ]
+    if [ "$LOCK_SYSADMIN" == 1 ]
+    then
+      # for hosted environment, the sysadmin user will only be unlocked for a new customer
+      su openpetra -c "cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LockSysadmin"
+    elif [ -z $SYSADMIN_PWD ]
     then
       SYSADMIN_PWD="CHANGEME"
       echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"

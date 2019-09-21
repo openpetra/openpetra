@@ -198,6 +198,12 @@ namespace Ict.Common.Remoting.Shared
         bool SetPassword(string AUserID, string APassword);
 
         /// <summary>
+        /// lock the user SYSADMIN for unassigned instance
+        /// </summary>
+        /// <returns></returns>
+        bool LockSysadmin();
+
+        /// <summary>
         /// add a new user
         /// </summary>
         /// <returns></returns>

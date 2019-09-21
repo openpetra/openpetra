@@ -452,6 +452,15 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>
+        /// LockSysadmin
+        /// </summary>
+        public virtual bool LockSysadmin()
+        {
+            // implemented in derived class
+            return false;
+        }
+
+        /// <summary>
         /// AddUser
         /// </summary>
         public virtual bool AddUser(string AUserId, string APassword = "")

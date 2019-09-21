@@ -272,6 +272,11 @@ namespace PetraServerAdminConsole
             return TRemote.ClearConnectionPoolAndGetNumberOfDBConnections();
         }
 
+        private static bool LockSysadmin()
+        {
+            return TRemote.LockSysadmin();
+        }
+
         private static bool SetPassword(string AUserID, string APassword)
         {
             return TRemote.SetPassword(AUserID, APassword);
@@ -891,6 +896,13 @@ namespace PetraServerAdminConsole
                         if (!SetPassword(TAppSettingsManager.GetValue("UserID"), TAppSettingsManager.GetValue("NewPassword")))
                         {
                             throw new Exception("SetPassword did not work, perhaps too easy password?");
+                        }
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "LockSysadmin")
+                    {
+                        if (!LockSysadmin())
+                        {
+                            throw new Exception("LockSysadmin did not work");
                         }
                     }
                     else if (TAppSettingsManager.GetValue("Command") == "AddUser")
