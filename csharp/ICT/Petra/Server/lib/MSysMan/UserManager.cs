@@ -385,8 +385,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 string result = THTTPUtils.ReadWebsite(url);
 
                 bool valid = result.Contains("\"valid\":true");
+                bool gratis = result.Contains("\"gratis\":true");
 
-                if (!valid)
+                if (!valid && !gratis)
                 {
                     TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
                         Catalog.GetString("User wanted to log in, but the license is expired. ") +
