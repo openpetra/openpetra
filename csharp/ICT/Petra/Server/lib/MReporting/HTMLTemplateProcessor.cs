@@ -309,7 +309,7 @@ namespace Ict.Petra.Server.MReporting
                              !(parameter.Length > 2 && parameter.Substring(parameter.Length - 2) == "_i") &&
                              (newvalue.TypeVariant == eVariantTypes.eString))
                     {
-                        strValue = Quotes + newvalue.ToString() + Quotes;
+                        strValue = Quotes + newvalue.ToString().Replace('*', '%') + Quotes;
                     }
                     else if (
                         (newvalue.TypeVariant == eVariantTypes.eCurrency) ||

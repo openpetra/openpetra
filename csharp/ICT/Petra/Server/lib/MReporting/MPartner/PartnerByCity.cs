@@ -47,6 +47,11 @@ namespace Ict.Petra.Server.MReporting.MPartner
             TParameterList parameterlist,
             TDBTransaction ATransaction)
         {
+            if (parameterlist.Get("param_city").ToString() == "")
+            {
+                throw new Exception("invalid parameters");
+            }
+
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
             // get all the partners
