@@ -47,7 +47,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             TParameterList parameterlist,
             TDBTransaction ATransaction)
         {
-            if (parameterlist.Get("param_city").ToString() == "")
+            if (parameterlist.Get("param_city").ToString().Replace("*","").Replace("%","").Trim() == String.Empty)
             {
                 throw new Exception("invalid parameters");
             }
