@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -41,9 +42,9 @@ function modal_spinner(){
 }
 
 function download_pdf() {
-	let UIConnectorUID = window.localStorage.getItem('current_report_UIConnectorUID');
-	let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
-	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadPDF', r).then(function (data) {
+	let ReportID = window.localStorage.getItem('current_report_ReportID');
+	let r = {'AReportID': ReportID, 'AWrapColumn': 'true'};
+	api.post('serverMReporting.asmx/TReportGeneratorWebConnector_DownloadPDF', r).then(function (data) {
 		report = data.data.d;
 		var link = document.createElement("a");
 		link.style = "display: none";
@@ -56,9 +57,9 @@ function download_pdf() {
 }
 
 function download_excel() {
-	let UIConnectorUID = window.localStorage.getItem('current_report_UIConnectorUID');
-	let r = {'UIConnectorObjectID': UIConnectorUID};
-	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadExcel', r).then(function (data) {
+	let ReportID = window.localStorage.getItem('current_report_ReportID');
+	let r = {'AReportID': ReportID};
+	api.post('serverMReporting.asmx/TReportGeneratorWebConnector_DownloadExcel', r).then(function (data) {
 		report = data.data.d;
 		var link = document.createElement("a");
 		link.style = "display: none";
@@ -70,30 +71,39 @@ function download_excel() {
 	});
 }
 
-function print_report(UIConnectorUID) {
-	let r = {'UIConnectorObjectID': UIConnectorUID, 'AWrapColumn': 'true'};
-	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_DownloadHTML', r).then(function (data) {
+function print_report(AReportID) {
+	let r = {'AReportID': AReportID, 'AWrapColumn': 'true'};
+	api.post('serverMReporting.asmx/TReportGeneratorWebConnector_DownloadHTML', r).then(function (data) {
 		report = data.data.d;
 		$('#reporttxt').html(report);
 	});
-	window.localStorage.setItem('current_report_UIConnectorUID', UIConnectorUID);
+	window.localStorage.setItem('current_report_ReportID', AReportID);
 	$('#DownloadExcel').show();
 	$('#DownloadPDF').show();
 	myPleaseWaitDiv.hidePleaseWait();
 }
 
-function check_for_report(UIConnectorUID) {
-	let r = {'UIConnectorObjectID': UIConnectorUID
+function check_for_report(AReportID) {
+	let r = {'AReportID': AReportID
 	};
 
-	api.post('serverMReporting.asmx/TReportGeneratorUIConnector_GetProgress', r).then(function (data) {
+	api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetProgress', r).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		if (!parsed.JobFinished) {
+		if (!parsed.result.JobFinished) {
 			// console.log("Report progress: " + parsed.Caption + ' ' + parsed.StatusMessage);
-			setTimeout(function() { check_for_report(UIConnectorUID); }, 1000);
-		}
-		else {
-			print_report(UIConnectorUID);
+			setTimeout(function() { check_for_report(AReportID); }, 1000);
+		} else {
+			api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetSuccess', r).then(function (data) {
+				parsed = JSON.parse(data.data.d);
+				if (parsed == true) {
+					print_report(AReportID);
+				} else {
+					api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetErrorMessage', r).then(function (data) {
+						display_message(i18next.t(data.data.d), "fail");
+						myPleaseWaitDiv.hidePleaseWait();
+					});
+				}
+			});
 		}
 	});
 }
@@ -145,16 +155,16 @@ function calculate_report_common(report_common_params_file, specific_params) {
 function start_calculate_report(param_table) {
 	// send request
 	let r = {}
-	api.post('serverMReporting.asmx/Create_TReportGeneratorUIConnector', r).then(function (data) {
-		let UIConnectorUID = data.data.d;
+	api.post('serverMReporting.asmx/TReportGeneratorWebConnector_Create', r).then(function (data) {
+		let ReportID = data.data.d;
 
-		let r = {'UIConnectorObjectID': UIConnectorUID,
+		let r = {'AReportID': ReportID,
 			'AParameters': JSON.stringify(param_table)
 		};
 
-		api.post('serverMReporting.asmx/TReportGeneratorUIConnector_Start', r).then(function (data) {
+		api.post('serverMReporting.asmx/TReportGeneratorWebConnector_Start', r).then(function (data) {
 			myPleaseWaitDiv.showPleaseWait();
-			setTimeout(function() { check_for_report(UIConnectorUID); }, 1000);
+			setTimeout(function() { check_for_report(ReportID); }, 1000);
 		});
 	});
 }

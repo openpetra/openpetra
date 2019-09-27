@@ -44,7 +44,6 @@ namespace Ict.Petra.Server.MCommon.Processing
     {
         private const string PROCESSDATACHECK_LAST_RUN = "PROCESSDATACHECK_LAST_RUN";
         private const float SENDREPORTFORDAYS_TOUSERS = 14.0f;
-        private static DateTime Errors_SinceDate;
 
         /// <summary>
         /// Gets called in regular intervals from a Timer in Class TTimedProcessing.
@@ -69,8 +68,6 @@ namespace Ict.Petra.Server.MCommon.Processing
                     return;
                 }
             }
-
-            Errors_SinceDate = DateTime.Today.AddDays(-1 * SENDREPORTFORDAYS_TOUSERS);
 
             TLogging.LogAtLevel(1, "TProcessDataChecks.Process: Checking Modules");
             CheckModule(ADataBaseObj, "DataCheck.MPartner.");
@@ -178,6 +175,7 @@ namespace Ict.Petra.Server.MCommon.Processing
                 });
 
             string excelfile = TAppSettingsManager.GetValue("DataChecks.TempPath") + "/errors" + AUserId + ".xlsx";
+            DateTime Errors_SinceDate = DateTime.Today.AddDays(-1 * SENDREPORTFORDAYS_TOUSERS);
 
             DataView v = new DataView(AErrors,
                 "(CreatedBy='" + AUserId + "' AND ModifiedBy IS NULL AND DateCreated > #" + Errors_SinceDate.ToString("MM/dd/yyyy") + "#) " +
@@ -243,6 +241,7 @@ namespace Ict.Petra.Server.MCommon.Processing
         {
             // get all users that have created or modified the records in the past week(s)
             List <String>Users = new List <string>();
+            DateTime Errors_SinceDate = DateTime.Today.AddDays(-1 * SENDREPORTFORDAYS_TOUSERS);
 
             foreach (DataRow r in AErrors.Rows)
             {

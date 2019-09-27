@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,23 +40,28 @@ namespace Ict.Common
         /// <see cref="Ict.Common.CommonErrorCodes" /> Class and the
         /// 'Ict.Petra.Shared.PetraErrorCodes' Class when Method
         /// <see cref="BuildErrorCodeInventory" /> of this Class called!</description>
-        public static Dictionary <string, ErrCodeInfo>ErrorCodeCatalogue = new Dictionary <string, ErrCodeInfo>();
+        public static Dictionary <string, ErrCodeInfo>ErrorCodeCatalogue = null; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// Contains all Types which are registered to contain Error Code constants.
         /// </summary>
         /// <remarks>IMPORTANT: Only Error Code Constants of Types which are registered can be used with
         /// Method <see cref="M:ErrorCodes.GetErrorInfo(string)" />!</remarks>
-        public static List <Type>RegisteredTypes = new List <Type>();
+        public static List <Type>RegisteredTypes = null; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// Internal lookup for Types that have been parsed for Error Codes.
         /// </summary>
-        private static Dictionary <string, Type>CataloguedTypes = new Dictionary <string, Type>();
+        private static Dictionary <string, Type>CataloguedTypes = null; // STATIC_OK: will be set for each request
 
-        static ErrorCodeInventory()
+        /// make sure we have empty static variables at the start of each web request
+        public static void Init()
         {
-            ErrorCodeInventory.RegisteredTypes.Add(new Ict.Common.CommonErrorCodes().GetType());
+            ErrorCodeCatalogue = new Dictionary <string, ErrCodeInfo>();
+            RegisteredTypes = new List <Type>();
+            CataloguedTypes = new Dictionary <string, Type>();
+            RegisteredTypes.Add(typeof(Ict.Common.CommonErrorCodes));
+            BuildErrorCodeInventory(typeof(Ict.Common.CommonErrorCodes));
         }
 
         /// <summary>
@@ -176,8 +181,6 @@ namespace Ict.Common
             ErrCodeInfo ErrCodeDetails = null;
             ErrCodeCategory ErrCodeCat;
             string ErrCodeValue;
-
-//TLogging.Log("BuildErrorCodeInventory: AErrorCodesType Type: " + AErrorCodesType.Name);
 
             FieldInfo[] ErrcodesFields = AErrorCodesType.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
 

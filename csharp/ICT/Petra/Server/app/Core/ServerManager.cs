@@ -78,9 +78,6 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public TServerManager() : base()
         {
-            TCacheableTablesManager.InitializeUnit();
-            TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
-
             Assembly SysManAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan");
             Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.TImportExportManager");
             FImportExportManager = (IImportExportManager)Activator.CreateInstance(ImportExportType,
@@ -232,6 +229,17 @@ namespace Ict.Petra.Server.App.Core
             UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"));
 
             return FUserManager.SetPassword(AUserID, APassword);
+        }
+
+        /// <summary>
+        /// LockSysadmin
+        /// </summary>
+        public override bool LockSysadmin()
+        {
+            // we need a GUserInfo object for submitting the changes to the database later on
+            UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"));
+
+            return FUserManager.LockSysadmin();
         }
 
         /// <summary>

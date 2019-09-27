@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -102,13 +102,13 @@ namespace Ict.Common
         /// <summary>
         /// some log messages will be only displayed at a certain DebugLevel
         /// </summary>
-        public static int DebugLevel = 0;
+        public static int DebugLevel = 0; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// No logging of messages to Console.Error? Set this to true if the PetraServer runs as a Windows Service
         /// to prevent Bug #5846!
         /// </summary>
-        private static bool FNoLoggingToConsoleError = false;
+        private static bool FNoLoggingToConsoleError = false; // STATIC_OK: will be set for each request
 
         /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
         public static int DL
@@ -151,29 +151,29 @@ namespace Ict.Common
         /// </summary>
         public delegate void TLogNewMessageCallback();
 
-        private static TLogWriter ULogWriter = null;
-        private static String ULogFileName;
-        private static String UUserNamePrefix = DEFAULTUSERNAMEPREFIX;
-        private static String ULogTextAsString = null;
-        private static Int32 ULogPageNumber = 1;
-        private static TLogNewMessageCallback UNewMessageCallback = null;
+        private static TLogWriter ULogWriter = null; // STATIC_OK: will be set for each request
+        private static String ULogFileName; // STATIC_OK: will be set for each request
+        private static String UUserNamePrefix = DEFAULTUSERNAMEPREFIX; // STATIC_OK: will be set for each request
+        private static String ULogTextAsString = null; // STATIC_OK: will be set for each request
+        private static Int32 ULogPageNumber = 1; // STATIC_OK: will be set for each request
+        private static TLogNewMessageCallback UNewMessageCallback = null; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// This can provide information about the context of the program situation when a log message is displayed.
         /// Use SetContext for setting and resetting the context information.
         ///
         /// </summary>
-        private static String Context;
+        private static String Context; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// This is a procedure that is called with the text as a parameter. It can be used to update a status bar.
         /// </summary>
-        private static TStatusCallbackProcedure StatusBarProcedure;
+        private static TStatusCallbackProcedure StatusBarProcedure; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// This is variable indicates if StatusBarProcedure was set to a valid value. Although it could be out of date...
         /// </summary>
-        private static bool StatusBarProcedureValid;
+        private static bool StatusBarProcedureValid; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// property for the prefix that describes the
@@ -192,8 +192,24 @@ namespace Ict.Common
             }
         }
 
-
         #region TLogging
+
+        /// reset the static variables for each Web Request call.
+        public static void ResetStaticVariables()
+        {
+            DebugLevel = 0;
+            FNoLoggingToConsoleError = false;
+            ULogWriter = null;
+            ULogFileName = String.Empty;
+            UUserNamePrefix = DEFAULTUSERNAMEPREFIX;
+            ULogTextAsString = null;
+            ULogPageNumber = 1;
+            UNewMessageCallback = null;
+            Context = String.Empty;
+            StatusBarProcedure = null;
+            StatusBarProcedureValid = false;
+        }
+
 
         /// <summary>
         /// Creates a Console-only logger.
@@ -652,165 +668,4 @@ namespace Ict.Common
         {
         }
     }
-
-    #region TPerformanceTester
-
-    /// <summary>
-    /// For timing the length of methods/processes.  A convenient syntax is to use a using clause such as
-    ///   using (TPerformanceTester.Start("A descriptive message"))
-    ///   {
-    ///   }
-    /// This will log the time of each of the braces and the elapsed time between them.
-    ///
-    /// If you want to have a different closing message containing additional information you can do it with...
-    ///   using (TPerformanceTester tester = TPerformanceTester.Start("A descriptive message"))
-    ///   {
-    ///      tester.CompletionMessage = "More information about variable values...";
-    ///   }
-    /// </summary>
-    public class TPerformanceTester : IDisposable
-    {
-        private Stopwatch FStopwatch = new Stopwatch();
-        private Action <TimeSpan>FCallback = null;
-        private String FLog = string.Empty;
-        private int FMyTicketNum = -1;
-        private int FDebugLevel = 0;
-        private bool FWriteClosingLog = false;
-
-        // static variable for class
-        private static int TicketNum = 0;
-
-        #region Class constructors
-
-        /// <summary>
-        /// Instantiator
-        /// </summary>
-        public TPerformanceTester()
-        {
-            FStopwatch.Start();
-        }
-
-        /// <summary>
-        /// Start the stopwatch and specify a string to enter in the log on completion
-        /// </summary>
-        /// <param name="ALog">A message identifier</param>
-        /// <param name="ADebugLevel">Log level</param>
-        public TPerformanceTester(String ALog, int ADebugLevel = 0) : this()
-        {
-            if (ADebugLevel >= TLogging.DebugLevel)
-            {
-                FLog = ALog;
-                FDebugLevel = ADebugLevel;
-                FMyTicketNum = TPerformanceTester.TicketNum++;
-                TLogging.LogAtLevel(FDebugLevel, string.Format("Tkt {0} S - {1}", FMyTicketNum, FLog));
-                FWriteClosingLog = true;
-            }
-        }
-
-        /// <summary>
-        /// Start the stopwatch and specify action delegate to run after stopping the stopwatch
-        /// </summary>
-        /// <param name="ACallback"></param>
-        public TPerformanceTester(Action <TimeSpan>ACallback) : this()
-        {
-            FCallback = ACallback;
-        }
-
-        #endregion
-
-        #region Static methods to create a class instance
-
-        /// <summary>
-        /// Start the stopwatch and specify a string to enter in the log on completion
-        /// </summary>
-        /// <param name="ALog"></param>
-        /// <returns></returns>
-        public static TPerformanceTester Start(String ALog)
-        {
-            return new TPerformanceTester(ALog);
-        }
-
-        /// <summary>
-        /// Start the stopwatch and specify a string to enter in the log on completion
-        /// </summary>
-        /// <param name="ALog"></param>
-        /// <param name="ALogAtLevel"></param>
-        /// <returns></returns>
-        public static TPerformanceTester Start(String ALog, int ALogAtLevel = 0)
-        {
-            if ((ALogAtLevel == 0) || (ALogAtLevel >= TLogging.DebugLevel))
-            {
-                return new TPerformanceTester(ALog, ALogAtLevel);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Start the stopwatch and specify action delegate to run after stopping the stopwatch
-        /// </summary>
-        /// <param name="ACallback"></param>
-        /// <returns></returns>
-        public static TPerformanceTester Start(Action <TimeSpan>ACallback)
-        {
-            return new TPerformanceTester(ACallback);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Reset the ticket number to 0
-        /// </summary>
-        public static void ResetTicket()
-        {
-            TLogging.Log("Resetting ticket number ...");
-            TicketNum = 0;
-        }
-
-        /// <summary>
-        /// Dispose.  This will be called automatically if the class instance is created in a 'using' clause.
-        /// </summary>
-        public void Dispose()
-        {
-            FStopwatch.Stop();
-
-            if (FWriteClosingLog)
-            {
-                TLogging.LogAtLevel(FDebugLevel,
-                    string.Format("Tkt {0} E - {1} - {2}", FMyTicketNum, FLog, "Elapsed time:" + FStopwatch.Elapsed.TotalSeconds.ToString()));
-            }
-            else if (FCallback != null)
-            {
-                FCallback(ElapsedTimeSpan);
-            }
-        }
-
-        /// <summary>
-        /// Return the elapsed time
-        /// </summary>
-        public TimeSpan ElapsedTimeSpan
-        {
-            get
-            {
-                return FStopwatch.Elapsed;
-            }
-        }
-
-        /// <summary>
-        /// By default the completion message is the same as the start message, but you can set a different message using this property.
-        /// For example the completion message may contain additional state information or the values of important variables.
-        /// </summary>
-        public string CompletionMessage
-        {
-            set
-            {
-                if (FWriteClosingLog)
-                {
-                    FLog = value;
-                }
-            }
-        }
-    }
-
-    #endregion
 }

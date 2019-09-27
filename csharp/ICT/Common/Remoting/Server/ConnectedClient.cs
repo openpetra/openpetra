@@ -251,15 +251,12 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// start the session
-        public void StartSession(TDelegateTearDownAppDomain ATearDownAppDomain)
+        public void StartSession()
         {
             FTasksManager = new TClientTasksManager();
             FPollClientTasks = new TPollClientTasks(FTasksManager);
 
             FClientConnectionStartTime = DateTime.Now;
-
-            // Start ClientStillAliveCheck Thread
-            new ClientStillAliveCheck.TClientStillAliveCheck(this, FClientServerConnectionType, ATearDownAppDomain);
 
             SessionStatus = TSessionStatus.adsActive;
             FClientConnectionFinishedTime = DateTime.Now;
@@ -288,7 +285,6 @@ namespace Ict.Common.Remoting.Server
 
             // TODORemoting
             // release all UIConnector objects
-            ClientStillAliveCheck.TClientStillAliveCheck.StopClientStillAliveCheckThread();
 
             TLogging.Log("EndSession (for client '" + this.ClientName + "'): Checking whether there is a HttpSession.Current object");
 

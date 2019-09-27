@@ -43,6 +43,11 @@ namespace Ict.Common.Remoting.Server
         bool SetPassword(string AUserID, string APassword);
 
         /// <summary>
+        /// Lock the user SYSADMIN
+        /// </summary>
+        bool LockSysadmin();
+
+        /// <summary>
         /// Adds a new user
         /// </summary>
         bool AddUser(string AUserID, string APassword = "");

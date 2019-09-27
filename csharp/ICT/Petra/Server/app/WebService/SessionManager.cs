@@ -41,6 +41,7 @@ using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Session;
+using Ict.Common.Printing;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
@@ -62,8 +63,6 @@ namespace Ict.Petra.Server.App.WebService
     [ScriptService]
     public class TOpenPetraOrgSessionManager : System.Web.Services.WebService
     {
-        private static string ConfigFileName = string.Empty;
-
         /// <summary>
         /// constructor, which is called for each http request
         /// </summary>
@@ -82,30 +81,53 @@ namespace Ict.Petra.Server.App.WebService
         }
 
         /// <summary>
-        /// initialise the server once for everyone
+        /// initialise the server for each Web Request
         /// </summary>
-        public static bool Init()
+        private static bool Init()
         {
-            if (ConfigFileName == string.Empty)
-            {
-                // make sure the correct config file is used
-                if (Environment.CommandLine.Contains("/appconfigfile="))
-                {
-                    // this happens when we use fastcgi-mono-server4
-                    ConfigFileName = Environment.CommandLine.Substring(
-                        Environment.CommandLine.IndexOf("/appconfigfile=") + "/appconfigfile=".Length);
+            string ConfigFileName = string.Empty;
 
-                    if (ConfigFileName.IndexOf(" ") != -1)
-                    {
-                        ConfigFileName = ConfigFileName.Substring(0, ConfigFileName.IndexOf(" "));
-                    }
-                }
-                else
+            // make sure the correct config file is used
+            string Instance = HttpContext.Current.Request.Url.ToString().Replace("http://", "").Replace("https://", "");
+            Instance = Instance.Substring(0, Instance.IndexOf(".")).Replace("op", "op_");
+
+            // for demo etc
+            if (!Instance.StartsWith("op_"))
+            {
+                Instance = "op_" + Instance;
+            }
+
+            ConfigFileName = "/home/" + Instance + "/etc/PetraServerConsole.config";
+
+            if (File.Exists(ConfigFileName))
+            {
+                // we are in a multi tenant hosting scenario
+            }
+            else if (Environment.CommandLine.Contains("/appconfigfile="))
+            {
+                // this happens when we use fastcgi-mono-server4
+                ConfigFileName = Environment.CommandLine.Substring(
+                    Environment.CommandLine.IndexOf("/appconfigfile=") + "/appconfigfile=".Length);
+
+                if (ConfigFileName.IndexOf(" ") != -1)
                 {
-                    // this is the normal behaviour when running with local http server
-                    ConfigFileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config";
+                    ConfigFileName = ConfigFileName.Substring(0, ConfigFileName.IndexOf(" "));
                 }
             }
+            else
+            {
+                // this is the normal behaviour when running with local http server
+                ConfigFileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config";
+            }
+
+            TLogWriter.ResetStaticVariables();
+            TLogging.ResetStaticVariables();
+            TTypedDataTable.ResetStaticVariables();
+            TPdfPrinter.ResetStaticVariables();
+            THTTPUtils.ResetStaticVariables();
+            TSharedDataCache.TMPartner.ResetStaticVariables();
+            TServerManagerBase.ResetStaticVariables();
+            TClientManager.ResetStaticVariables();
 
             new TAppSettingsManager(ConfigFileName);
             new TLogging(TSrvSetting.ServerLogFile);
@@ -132,63 +154,20 @@ namespace Ict.Petra.Server.App.WebService
                 TSession.InitThread();
             }
 
-            if (TServerManager.TheServerManager == null)
-            {
-                Catalog.Init();
+            Catalog.Init();
 
-                TServerManager.TheServerManager = new TServerManager();
+            ErrorCodeInventory.Init();
+            ErrorCodeInventory.BuildErrorCodeInventory(typeof(Ict.Petra.Shared.PetraErrorCodes));
+            ErrorCodeInventory.BuildErrorCodeInventory(typeof(Ict.Common.Verification.TStringChecks));
 
-                try
-                {
-                    // initialise the cached tables
-                    TSetupDelegates.Init();
-                }
-                catch (Exception e)
-                {
-                    TLogging.Log(e.Message);
-                    TLogging.Log(e.StackTrace);
-                    throw;
-                }
+            TServerManager.TheServerManager = new TServerManager();
 
-                TLogging.Log("Server has been initialised");
+            // initialise the cached tables and the delegates
+            TSetupDelegates.Init();
 
-                return true;
-            }
+            TLogging.LogAtLevel(4, "Server has been initialised");
 
-            if (DomainManager.CurrentClient != null)
-            {
-                if (DomainManager.CurrentClient.FAppDomainStatus == TSessionStatus.adsStopped)
-                {
-                    TLogging.Log("There is an attempt to reconnect to stopped session: " + DomainManager.CurrentClient.ClientName);
-
-                    if (HttpContext.Current.Request.PathInfo == "/IsUserLoggedIn")
-                    {
-                        // we want a clean json response saying the user is not logged in
-                        TSession.CloseSession();
-                        return true;
-                    }
-
-                    Dictionary<string, object> result = new Dictionary<string, object>();
-                    result.Add("resultcode", "error");
-                    result.Add("error", THTTPUtils.SESSION_ALREADY_CLOSED);
-                    HttpContext.Current.Response.Status = "403 " + THTTPUtils.SESSION_ALREADY_CLOSED;
-                    HttpContext.Current.Response.Write(JsonConvert.SerializeObject(result));
-                    HttpContext.Current.Response.Flush();
-                    HttpContext.Current.Response.Close();
-                    HttpContext.Current.Response.End();
-
-                    return false;
-                }
-
-//                TLogging.Log("Init(): WebService Method name that got called: " + HttpContext.Current.Request.PathInfo);
-
-                if (HttpContext.Current.Request.PathInfo != "/PollClientTasks")
-                {
-                    DomainManager.CurrentClient.UpdateLastAccessTime();
-                }
-            }
-
-            return false;
+            return true;
         }
 
         private eLoginEnum LoginInternal(string username, string password, Version AClientVersion,
@@ -301,7 +280,7 @@ namespace Ict.Petra.Server.App.WebService
 
         /// <summary>set the initial email address for user SYSADMIN</summary>
         [WebMethod(EnableSession = true)]
-        public bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode, string AAuthToken)
+        public bool SetInitialSysadminEmail(string AEmailAddress, string AFirstName, string ALastName, string ALanguageCode, string AAuthToken)
         {
             string requiredToken = TAppSettingsManager.GetValue("AuthTokenForInitialisation");
             if ((AAuthToken != requiredToken) || (requiredToken == String.Empty) )
@@ -309,7 +288,7 @@ namespace Ict.Petra.Server.App.WebService
                 return false;
             }
 
-            if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress, ALanguageCode))
+            if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress, AFirstName, ALastName, ALanguageCode))
             {
                 return RequestNewPassword(AEmailAddress);
             }

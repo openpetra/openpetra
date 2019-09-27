@@ -101,6 +101,11 @@ namespace Ict.Testing.NUnitPetraServer
             Catalog.Init();
             TServerManager.TheServerManager = new TServerManager();
 
+            ErrorCodeInventory.Init();
+
+            // initialise the cached tables and the delegates
+            TSetupDelegates.Init();
+
             TDataBase db = DBAccess.Connect(
                 "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
 

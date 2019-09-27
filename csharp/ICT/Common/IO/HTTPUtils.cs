@@ -132,7 +132,13 @@ namespace Ict.Common.IO
         /// and set to null only in <see cref="ResetSession" />. Other than that this
         /// static Field is only read!
         /// </remarks>
-        public static Cookie OverallCookie = null;
+        public static Cookie OverallCookie = null; // STATIC_OK: will be set for each request
+
+        /// reset the static variables for each Web Request call.
+        public static void ResetStaticVariables()
+        {
+            OverallCookie = null;
+        }
 
         /// <summary>
         /// Throws away the previous client session cookies!

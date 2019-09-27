@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -309,7 +309,14 @@ namespace Ict.Petra.Server.MReporting
                              !(parameter.Length > 2 && parameter.Substring(parameter.Length - 2) == "_i") &&
                              (newvalue.TypeVariant == eVariantTypes.eString))
                     {
-                        strValue = Quotes + newvalue.ToString() + Quotes;
+                        if (newvalue.ToString() != "*NOTUSED*")
+                        {
+                            strValue = Quotes + newvalue.ToString().Replace('*', '%') + Quotes;
+                        }
+                        else
+                        {
+                            strValue = Quotes + newvalue.ToString() + Quotes;
+                        }
                     }
                     else if (
                         (newvalue.TypeVariant == eVariantTypes.eCurrency) ||

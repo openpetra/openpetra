@@ -284,6 +284,15 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         }
 
         /// <summary>
+        /// lock the sysadmin user. creating an instance that is not intended for use yet.
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static bool LockSysadmin()
+        {
+            return TServerManagerBase.TheServerManager.LockSysadmin();
+        }
+
+        /// <summary>
         /// add a new user
         /// </summary>
         /// <returns></returns>

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,23 +87,23 @@ namespace Ict.Petra.Shared
     public class TCacheableTablesManager : ICacheableTablesManager
     {
         /// a static instance for this class
-        public static TCacheableTablesManager GCacheableTablesManager;
+        public static TCacheableTablesManager GCacheableTablesManager; // STATIC_OK: will be set for each request
 
         /// <summary>Holds all cached tables (typed/untyped DataTable), plus one Typed DataTable for the 'Table of Contents' of the Cache</summary>
-        private static CacheableTablesTDS UDataCacheDataSet;
+        private static CacheableTablesTDS UDataCacheDataSet; // STATIC_OK: will be set for each request
 
         /// <summary>'Table of Contents' of the Cache, used for managing the state of cached  DataTables</summary>
-        private static CacheableTablesTDSContentsTable UDataCacheContentsDT;
+        private static CacheableTablesTDSContentsTable UDataCacheContentsDT; // STATIC_OK: will be set for each request
 
         /// <summary>Maximum size that the Cache shouldn't exceed</summary>
-        private static Int32 UMaxCacheSize;
+        private static Int32 UMaxCacheSize; // STATIC_OK: will be set for each request
 
         /// <summary>Maximum time that a DataTable in the Cache should be cached</summary>
-        private static TimeSpan UMaxTimeInCache;
+        private static TimeSpan UMaxTimeInCache; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// </summary>
-        public static void InitializeUnit()
+        public static void Init()
         {
             UDataCacheDataSet = new CacheableTablesTDS("CacheableTables");
             UDataCacheContentsDT = UDataCacheDataSet.Contents;

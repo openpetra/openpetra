@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MFinance.GL
             out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVerificationResult,
             TDataBase ADataBase = null);
-        private static StewardshipCalculation FStewardshipCalculationDelegate;
+        private static StewardshipCalculation FStewardshipCalculationDelegate; // STATIC_OK: will be set for each request
 
         /// <summary>
         ///

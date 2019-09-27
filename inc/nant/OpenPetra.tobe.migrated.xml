@@ -87,6 +87,8 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   <property name="CachedTableParameters" value="-petraxml:${PetraXML.file} -outputshared:${dir.root}/csharp/ICT/Petra/Shared -TemplateDir:${dir.incdir.template.src}"/>
   <ExecDotNet program="${tool-generateORM}" commandline="-do:cachedtables ${CachedTableParameters} -cachedef:${dir.root}/csharp/ICT/Petra/Definitions/CacheableTablesAndLists.yaml"/>
   <delete file="${dir.bin}/Ict.Petra.Shared.dll" />
+  <delete file="${dir.bin}/Ict.Petra.Server.lib.MPartner.data.dll" />
+  <delete file="${dir.bin}/Ict.Petra.Server.lib.MPersonnel.dll" />
   <delete file="${dir.bin}/Ict.Petra.Server.lib.MFinance.data.dll" />
   <delete file="${dir.bin}/Ict.Petra.Server.lib.MConference.dll" />
   <delete file="${dir.bin}/Ict.Petra.Server.lib.MCommon.dll" />
