@@ -130,8 +130,16 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     ReturnValue = true;
                 }
             }
+            catch (TargetInvocationException TExc)
+            {
+                TLogging.Log("TargetInvocationException in GenerateResult: ");
+                TLogging.Log(TExc.InnerException.Message);
+                AErrorMessage = TExc.InnerException.Message;
+                AException = TExc.InnerException;
+            }
             catch (Exception Exc)
             {
+                TLogging.Log("in GenerateResult");
                 TLogging.Log(Exc.ToString());
                 TLogging.Log(Exc.StackTrace);
 
@@ -139,8 +147,6 @@ namespace Ict.Petra.Server.MReporting.Calculator
                 {
                     FParameters.Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogAfterException.json");
                 }
-
-                Console.WriteLine(Exc.StackTrace);
 
                 AErrorMessage = Exc.Message;
                 AException = Exc;

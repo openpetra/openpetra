@@ -92,9 +92,18 @@ function check_for_report(AReportID) {
 		if (!parsed.result.JobFinished) {
 			// console.log("Report progress: " + parsed.Caption + ' ' + parsed.StatusMessage);
 			setTimeout(function() { check_for_report(AReportID); }, 1000);
-		}
-		else {
-			print_report(AReportID);
+		} else {
+			api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetSuccess', r).then(function (data) {
+				parsed = JSON.parse(data.data.d);
+				if (parsed == true) {
+					print_report(AReportID);
+				} else {
+					api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetErrorMessage', r).then(function (data) {
+						display_message(i18next.t(data.data.d), "fail");
+						myPleaseWaitDiv.hidePleaseWait();
+					});
+				}
+			});
 		}
 	});
 }
