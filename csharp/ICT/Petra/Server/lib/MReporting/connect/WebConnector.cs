@@ -189,31 +189,42 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 */
 
-            // store the report result
-            db.WriteTransaction(ref Transaction,
-                ref Submit,
-                delegate
-                {
-                    // delete report results that are expired.
-                    string sql = "DELETE FROM PUB_s_report_result WHERE s_valid_until_d < NOW()";
-                    db.ExecuteNonQuery(sql, Transaction);
-                    
-                    // TODO: only keep maximum of 10 report results per user (s_created_by_c)
+            try
+            {
+                // store the report result
+                db.WriteTransaction(ref Transaction,
+                    ref Submit,
+                    delegate
+                    {
+                        // delete report results that are expired.
+                        string sql = "DELETE FROM PUB_s_report_result WHERE s_valid_until_d < NOW()";
+                        db.ExecuteNonQuery(sql, Transaction);
+                        
+                        // TODO: only keep maximum of 10 report results per user (s_created_by_c)
 
-                    // store success, store parameter list, store html document
-                    SReportResultTable table = new SReportResultTable();
-                    SReportResultRow row = table.NewRowTyped();
-                    row.ReportId = AReportID;
-                    row.SessionId = TSession.GetSessionID();
-                    row.ValidUntil = DateTime.Now.AddHours(12);
-                    row.ParameterList = AParameterList.ToJson();
-                    row.ResultHtml = HTMLOutput;
-                    row.Success = Success;
-                    row.ErrorMessage = ErrorMessage;
-                    table.Rows.Add(row);
-                    SReportResultAccess.SubmitChanges(table, Transaction);
-                    Submit = true;
-                });
+                        // store success, store parameter list, store html document
+                        SReportResultTable table = new SReportResultTable();
+                        SReportResultRow row = table.NewRowTyped();
+                        row.ReportId = AReportID;
+                        row.SessionId = TSession.GetSessionID();
+                        row.ValidUntil = DateTime.Now.AddHours(12);
+                        row.ParameterList = AParameterList.ToJson();
+                        row.ResultHtml = HTMLOutput;
+                        row.Success = Success;
+                        row.ErrorMessage = ErrorMessage;
+                        table.Rows.Add(row);
+                        SReportResultAccess.SubmitChanges(table, Transaction);
+                        Submit = true;
+                    });
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("Problem storing report result: " + Exc.ToString());
+                TLogging.Log(Exc.StackTrace, TLoggingType.ToLogfile);
+
+                Success = false;
+                ErrorMessage = Exc.Message;
+            }
 
             db.CloseDBConnection();
 
