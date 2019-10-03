@@ -375,6 +375,26 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
         }
 
+        /// lock the user SYSADMIN while this instance is not assigned to a customer yet
+        [NoRemoting]
+        public static bool LockSysadmin()
+        {
+            TDataBase db = DBAccess.Connect("LockSysadmin");
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmissionOK = true;
+
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    string sqlUpdate = "UPDATE s_user SET s_account_locked_l = 1, s_retired_l = 1, s_password_hash_c = 'invalid' WHERE s_user_id_c = 'SYSADMIN'";
+                    db.ExecuteNonQuery(sqlUpdate, Transaction);
+                });
+
+            db.CloseDBConnection();
+
+            return true;
+        }
+
         /// <summary>
         /// Compares the new password with existing password - are they the same?
         /// </summary>
@@ -876,7 +896,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// set initial email address for user SYSADMIN
         /// </summary>
         [NoRemoting]
-        public static bool SetInitialSysadminEmail(string AEmailAddress, string ALanguageCode)
+        public static bool SetInitialSysadminEmail(string AEmailAddress, string AFirstName, string ALastName, string ALanguageCode)
         {
             TDataBase db = DBAccess.Connect("InitialSysadminEmail");
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "InitialSysadminEmail");
@@ -896,12 +916,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     return false;
                 }
 
-                string sqlUpdate = "UPDATE s_user SET s_email_address_c = ?, s_language_code_c = ? WHERE s_user_id_c = 'SYSADMIN'";
-                OdbcParameter[] parameters = new OdbcParameter[2];
+                string sqlUpdate = "UPDATE s_user SET s_account_locked_l = 0, s_retired_l = 0, s_password_hash_c = 'invalid', s_email_address_c = ?, s_first_name_c = ?, s_last_name_c = ?, s_language_code_c = ? WHERE s_user_id_c = 'SYSADMIN'";
+                OdbcParameter[] parameters = new OdbcParameter[4];
                 parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
                 parameters[0].Value = AEmailAddress;
-                parameters[1] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
-                parameters[1].Value = ALanguageCode;
+                parameters[1] = new OdbcParameter("FirstName", OdbcType.VarChar);
+                parameters[1].Value = AFirstName;
+                parameters[2] = new OdbcParameter("LastName", OdbcType.VarChar);
+                parameters[2].Value = ALastName;
+                parameters[3] = new OdbcParameter("LanguageCode", OdbcType.VarChar);
+                parameters[3].Value = ALanguageCode;
                 db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
 
                 return true;

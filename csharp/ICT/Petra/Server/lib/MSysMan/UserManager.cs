@@ -298,7 +298,11 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // an attack vector called 'timing attack')
             if (UserDR.AccountLocked || UserDR.Retired)
             {
-                if (UserDR.AccountLocked)
+                if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+                {
+                    // this is ok. we need to be able to activate the sysadmin account on SetInitialSysadminEmail
+                }
+                else if (UserDR.AccountLocked)
                 {
                     // Logging
                     TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_LOCKED_USER,
@@ -381,8 +385,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 string result = THTTPUtils.ReadWebsite(url);
 
                 bool valid = result.Contains("\"valid\":true");
+                bool gratis = result.Contains("\"gratis\":true");
 
-                if (!valid)
+                if (!valid && !gratis)
                 {
                     TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
                         Catalog.GetString("User wanted to log in, but the license is expired. ") +
@@ -664,6 +669,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         {
             TVerificationResultCollection VerificationResult;
             return TMaintenanceWebConnector.SetUserPassword(AUserID, APassword, true, true, string.Empty, string.Empty, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Lock the SYSADMIN user
+        /// </summary>
+        /// <remarks>Gets called from TServerManager.LockSysadmin() Method, which is used to 
+        /// lock the SYSADMIN user while the instance is not assigned to a customer yet.</remarks>
+        public bool LockSysadmin()
+        {
+            return TMaintenanceWebConnector.LockSysadmin();
         }
 
         /// <summary>

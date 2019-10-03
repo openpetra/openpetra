@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -678,6 +678,12 @@ namespace Ict.Petra.Shared.MReporting
                 jsonString = sr.ReadToEnd();
             }
 
+            LoadFromJson(jsonString);
+        }
+
+        /// load from json
+        public void LoadFromJson(String jsonString)
+        {
             try
             {
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -725,12 +731,8 @@ namespace Ict.Petra.Shared.MReporting
             Fparameters.Sort();
         }
 
-        /// <summary>
-        /// Write all the parameters to a text file (json format);
-        /// used for storing settings
-        /// </summary>
-        /// <param name="filename">relative or absolute filename</param>
-        public void Save(String filename)
+        /// export to JSON
+        public string ToJson()
         {
             List<Object> list = new List<object>();
 
@@ -760,6 +762,18 @@ namespace Ict.Petra.Shared.MReporting
                                      Replace("," + Environment.NewLine + "    ", ", ").
                                      Replace(Environment.NewLine + "  }", "}").
                                      Replace(Environment.NewLine + "  ", Environment.NewLine + "\t");
+
+            return data;
+        }
+
+        /// <summary>
+        /// Write all the parameters to a text file (json format);
+        /// used for storing settings
+        /// </summary>
+        /// <param name="filename">relative or absolute filename</param>
+        public void Save(String filename)
+        {
+            string data = ToJson();
             using (StreamWriter sw = new StreamWriter(filename))
             {
                 sw.Write(data);

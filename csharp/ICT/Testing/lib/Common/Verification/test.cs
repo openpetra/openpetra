@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +47,7 @@ namespace Ict.Common.Verification.Testing
         {
             Catalog.Init();
             new TLogging("../../log/test.log");
+            ErrorCodeInventory.Init();
         }
 
         #region Helper Methods for Test Cases of this Unit Test

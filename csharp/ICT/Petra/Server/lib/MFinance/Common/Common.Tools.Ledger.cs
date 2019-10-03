@@ -53,16 +53,11 @@ namespace Ict.Petra.Server.MFinance.Common
         int FLedgerNumber;
 
         //Used for extracting ledger name irrespective of current active Ledger
-        static ReaderWriterLockSlim FReadWriteLock = new ReaderWriterLockSlim();
-        static Dictionary <int, string>FLedgerNamesDict = new Dictionary <int, string>();
-        static Dictionary <int, string>FLedgerCountryCodeDict = new Dictionary <int, string>();
-        static Dictionary <int, string>FLedgerBaseCurrencyDict = new Dictionary <int, string>();
+        Dictionary <int, string>FLedgerNamesDict = new Dictionary <int, string>();
+        Dictionary <int, string>FLedgerCountryCodeDict = new Dictionary <int, string>();
+        Dictionary <int, string>FLedgerBaseCurrencyDict = new Dictionary <int, string>();
 
-        //
-        // Several utilities may each have their own TLedgerInfo object, so several objects can be created for the same ledger.
-        // This static DataTable attempts to ensure that they all see the same view of the world.
-
-        static private ALedgerTable FLedgerTbl = null;
+        private ALedgerTable FLedgerTbl = null;
         DataView FMyDataView = null;
         ALedgerRow FLedgerRow;
 
@@ -95,105 +90,55 @@ namespace Ict.Petra.Server.MFinance.Common
                 return;
             }
 
-            //Prepare a temp dictionaries for minimum time in lock
-            Dictionary <int, string>LedgerNamesDictTemp = new Dictionary <int, string>();
-            Dictionary <int, string>LedgerCountryCodesDictTemp = new Dictionary <int, string>();
-            Dictionary <int, string>LedgerBaseCurrencyDictTemp = new Dictionary <int, string>();
-
-            //Take a backup for reversion purposes if error occurs
-            Dictionary <int, string>LedgerNamesDictBackup = null;
-            Dictionary <int, string>LedgerCountryCodesDictBackup = null;
-            Dictionary <int, string>LedgerBaseCurrencyDictBackup = null;
+            if (LedgerDictPrePopulated)
+            {
+                FLedgerNamesDict.Clear();
+                FLedgerCountryCodeDict.Clear();
+                FLedgerBaseCurrencyDict.Clear();
+            }
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("PopulateLedgerDictionaries", FDataBase);
 
-            try
-            {
-                db.ReadTransaction(
-                    ref Transaction,
-                    delegate
-                    {
-                        String strSql = "SELECT a_ledger_number_i, p_partner_short_name_c, a_country_code_c, a_base_currency_c" +
-                                        " FROM PUB_a_ledger, PUB_p_partner" +
-                                        " WHERE PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n;";
-
-                        DataTable ledgerData = db.SelectDT(strSql, "GetLedgerName_TempTable", Transaction);
-
-                        #region Validate Data
-
-                        if ((ledgerData == null) || (ledgerData.Rows.Count == 0))
-                        {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Ledger and Partner data does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true)));
-                        }
-
-                        #endregion Validate Data
-
-                        int currentLedger = 0;
-                        string currentLedgerName = string.Empty;
-                        string currentLedgerCountryCode = string.Empty;
-                        string currentLedgerBaseCurrency = string.Empty;
-
-                        for (int i = 0; i < ledgerData.Rows.Count; i++)
-                        {
-                            currentLedger = Convert.ToInt32(ledgerData.Rows[i][ALedgerTable.GetLedgerNumberDBName()]);
-                            currentLedgerName = Convert.ToString(ledgerData.Rows[i][PPartnerTable.GetPartnerShortNameDBName()]);
-                            currentLedgerCountryCode = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetCountryCodeDBName()]);
-                            currentLedgerBaseCurrency = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetBaseCurrencyDBName()]);
-
-                            LedgerNamesDictTemp.Add(currentLedger, currentLedgerName);
-                            LedgerCountryCodesDictTemp.Add(currentLedger, currentLedgerCountryCode);
-                            LedgerBaseCurrencyDictTemp.Add(currentLedger, currentLedgerBaseCurrency);
-                        }
-
-                        bool lockEntered = false;
-
-                        try
-                        {
-                            if (FReadWriteLock.TryEnterWriteLock(10))
-                            {
-                                lockEntered = true;
-
-                                if (LedgerDictPrePopulated)
-                                {
-                                    //Backup dictionaries
-                                    LedgerNamesDictBackup = new Dictionary <int, string>(FLedgerNamesDict);
-                                    LedgerCountryCodesDictBackup = new Dictionary <int, string>(FLedgerCountryCodeDict);
-                                    LedgerBaseCurrencyDictBackup = new Dictionary <int, string>(FLedgerBaseCurrencyDict);
-
-                                    FLedgerNamesDict.Clear();
-                                    FLedgerCountryCodeDict.Clear();
-                                    FLedgerBaseCurrencyDict.Clear();
-                                }
-
-                                FLedgerNamesDict = new Dictionary <int, string>(LedgerNamesDictTemp);
-                                FLedgerCountryCodeDict = new Dictionary <int, string>(LedgerCountryCodesDictTemp);
-                                FLedgerBaseCurrencyDict = new Dictionary <int, string>(LedgerBaseCurrencyDictTemp);
-                            }
-                        }
-                        finally
-                        {
-                            if (lockEntered)
-                            {
-                                FReadWriteLock.ExitWriteLock();
-                            }
-                        }
-                    });
-            }
-            catch (Exception ex)
-            {
-                if (LedgerNamesDictBackup != null)
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
                 {
-                    FLedgerNamesDict = new Dictionary <int, string>(LedgerNamesDictBackup);
-                    FLedgerCountryCodeDict = new Dictionary <int, string>(LedgerCountryCodesDictBackup);
-                    FLedgerBaseCurrencyDict = new Dictionary <int, string>(LedgerBaseCurrencyDictBackup);
-                }
+                    String strSql = "SELECT a_ledger_number_i, p_partner_short_name_c, a_country_code_c, a_base_currency_c" +
+                                    " FROM PUB_a_ledger, PUB_p_partner" +
+                                    " WHERE PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n;";
 
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
+                    DataTable ledgerData = db.SelectDT(strSql, "GetLedgerName_TempTable", Transaction);
+
+                    #region Validate Data
+
+                    if ((ledgerData == null) || (ledgerData.Rows.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Ledger and Partner data does not exist or could not be accessed!"),
+                                Utilities.GetMethodName(true)));
+                    }
+
+                    #endregion Validate Data
+
+                    int currentLedger = 0;
+                    string currentLedgerName = string.Empty;
+                    string currentLedgerCountryCode = string.Empty;
+                    string currentLedgerBaseCurrency = string.Empty;
+
+                    for (int i = 0; i < ledgerData.Rows.Count; i++)
+                    {
+                        currentLedger = Convert.ToInt32(ledgerData.Rows[i][ALedgerTable.GetLedgerNumberDBName()]);
+                        currentLedgerName = Convert.ToString(ledgerData.Rows[i][PPartnerTable.GetPartnerShortNameDBName()]);
+                        currentLedgerCountryCode = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetCountryCodeDBName()]);
+                        currentLedgerBaseCurrency = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetBaseCurrencyDBName()]);
+
+                        FLedgerNamesDict.Add(currentLedger, currentLedgerName);
+                        FLedgerCountryCodeDict.Add(currentLedger, currentLedgerCountryCode);
+                        FLedgerBaseCurrencyDict.Add(currentLedger, currentLedgerBaseCurrency);
+                    }
+
+                });
 
             if (FDataBase == null)
             {
@@ -265,11 +210,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 PopulateLedgerDictionaries();
 
-                FReadWriteLock.EnterReadLock();
-
                 LedgerBaseCurrency = FLedgerBaseCurrencyDict[FLedgerNumber];
-
-                FReadWriteLock.ExitReadLock();
             }
             catch (Exception ex)
             {
@@ -302,11 +243,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 PopulateLedgerDictionaries();
 
-                FReadWriteLock.EnterReadLock();
-
                 LedgerCountryCode = FLedgerCountryCodeDict[FLedgerNumber];
-
-                FReadWriteLock.ExitReadLock();
             }
             catch (Exception ex)
             {
@@ -332,7 +269,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     delegate
                     {
                         //Reload all ledgers each time
-                        FLedgerTbl = ALedgerAccess.LoadAll(Transaction); // FLedgerTbl is static - this refreshes *any and all* TLedgerInfo objects.
+                        FLedgerTbl = ALedgerAccess.LoadAll(Transaction);
 
                         #region Validate Data 1
 

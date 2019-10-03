@@ -35,7 +35,7 @@ SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
 	AND ({param_today} &lt;= pl.p_date_good_until_d OR pl.p_date_good_until_d IS NULL)
 #endif
 #if {param_city}
-	AND LOWER(loc.p_city_c) = LOWER({param_city})
+	AND LOWER(loc.p_city_c) LIKE LOWER({param_city})
 #endif
 #if {param_country}
 	AND {LISTCMP param_country loc.p_country_code_c}

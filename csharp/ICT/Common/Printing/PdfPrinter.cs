@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,6 +69,12 @@ namespace Ict.Common.Printing
         private XStringFormat FXRight;
         private XStringFormat FXCenter;
         private XPen FXBlackPen;
+
+        /// reset the static variables for each Web Request call.
+        public static void ResetStaticVariables()
+        {
+            MonoFontResolver.ResetStaticVariables();
+        }
 
         /// <summary>
         /// constructor
@@ -821,10 +827,18 @@ namespace Ict.Common.Printing
 
     class MonoFontResolver: PdfSharp.Fonts.IFontResolver
     {
-        static string _FontDirectory = "";
+        static string _FontDirectory = ""; // STATIC_OK: will be set for each request
         
-        static List<string> _FontDirectories = new List<string>();
-        static List<string> _FontFiles = new List<string>();
+        static List<string> _FontDirectories = new List<string>(); // STATIC_OK: will be set for each request
+        static List<string> _FontFiles = new List<string>(); // STATIC_OK: will be set for each request
+
+        /// reset the static variables for each Web Request call.
+        public static void ResetStaticVariables()
+        {
+            _FontDirectory = "";
+            _FontDirectories = new List<string>();
+            _FontFiles = new List<string>();
+        }
 
         static string FontDirectory
         {

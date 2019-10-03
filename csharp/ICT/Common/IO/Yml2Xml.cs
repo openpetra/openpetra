@@ -607,7 +607,7 @@ namespace Ict.Common.IO
             return s;
         }
 
-        private static bool PrintedOriginalError = false;
+        private bool PrintedOriginalError = false;
 
         /// <summary>
         /// this function just parses a YML file into an empty XmlDocument (created with CreateXmlDocument).

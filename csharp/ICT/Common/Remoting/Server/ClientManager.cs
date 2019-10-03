@@ -41,19 +41,6 @@ namespace Ict.Common.Remoting.Server
     /// <summary>
     /// Main class for Client connection and disconnection and other Client actions.
     ///
-    /// For each Client that connects a separate AppDomain is created, into which
-    /// one DLL for the management of the Client AppDomain is loaded, plus a DLL for
-    /// each Petra Module.
-    /// From then on all Client calls go only into the DLL's in the Client AppDomain,
-    /// except for notifying the Server that the Client wants to disconnect.
-    ///
-    /// For each active Client connection an TRunningAppDomain entry in a SortedList
-    /// is maintained. This SortedList can be iterated to find out all currently
-    /// active Client connections or details about a connected Client.
-    ///
-    /// TClientManager gets remoted and can be accessed via an Interface from a
-    /// Client application such as PetraClient_Experimenting.exe
-    ///
     /// TClientManager is also used by TServerManager to perform actions on connected
     /// Clients and to request information about Clients.
     ///
@@ -72,24 +59,10 @@ namespace Ict.Common.Remoting.Server
 
         #endregion
 
-        private static IUserManager UUserManager = null;
-        private static IErrorLog UErrorLog = null;
-        private static ILoginLog ULoginLog = null;
-        private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null;
-
-        /// <summary>Used for ThreadLocking a critical part of the Client Connection code to make sure that this code is executed by exactly one Client at any given time</summary>
-        private static System.Object UConnectClientMonitor = new System.Object();
-
-        /// <summary>
-        /// Holds a TConnectedClient object for each Client that is currently connected to the Petra Server.
-        /// IMPORTANT: to access this SortedList in a threadsave manner using an IDictionaryEnumerator,
-        /// it is important that this is done only within a
-        /// block of code that is encapsulated using Monitor.TryEnter(UClientObjects.SyncRoot)!!!
-        /// </summary>
-        private static SortedList UClientObjects = SortedList.Synchronized(new SortedList());
-
-        /// <summary>Holds the total number of Clients that connected to the Petra Server since the start of the Petra Server.</summary>
-        private static System.Int32 FClientsConnectedTotal;
+        private static IUserManager UUserManager = null; // STATIC_OK: will be set for each request
+        private static IErrorLog UErrorLog = null; // STATIC_OK: will be set for each request
+        private static ILoginLog ULoginLog = null; // STATIC_OK: will be set for each request
+        private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null; // STATIC_OK: will be set for each request
 
         /// <summary>
         /// Called by TClientManager to request the number of Clients that are currently
@@ -100,42 +73,8 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                System.Int32 ReturnValue;
-                Int16 ClientCounter;
-                IDictionaryEnumerator ClientEnum;
-
-                if (UClientObjects != null)
-                {
-                    ClientCounter = 0;
-                    ClientEnum = UClientObjects.GetEnumerator();
-                    try
-                    {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
-                        {
-                            // Iterate over all Clients and count the ones that are currently connected
-                            while (ClientEnum.MoveNext())
-                            {
-                                TConnectedClient app = ((TConnectedClient)ClientEnum.Value);
-
-                                if ((app.FAppDomainStatus == TSessionStatus.adsActive) || (app.FAppDomainStatus == TSessionStatus.adsIdle))
-                                {
-                                    ClientCounter++;
-                                }
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        Monitor.Exit(UClientObjects.SyncRoot);
-                    }
-                    ReturnValue = ClientCounter;
-                }
-                else
-                {
-                    ReturnValue = 0;
-                }
-
-                return ReturnValue;
+                // TODO: calculate the currently open sessions from the s_session table???
+                return -1;
             }
         }
 
@@ -148,7 +87,8 @@ namespace Ict.Common.Remoting.Server
         {
             get
             {
-                return FClientsConnectedTotal;
+                // TODO: calculate the sessions within the last 24 hours from the s_session table???
+                return -1;
             }
         }
 
@@ -257,6 +197,15 @@ namespace Ict.Common.Remoting.Server
             }
 
             return ReturnValue;
+        }
+
+        /// reset the static variables for each Web Request call.
+        public static void ResetStaticVariables()
+        {
+            UUserManager = null;
+            UErrorLog = null;
+            ULoginLog = null;
+            UMaintenanceLogonMessage = null;
         }
 
         /// <summary>
@@ -410,30 +359,9 @@ namespace Ict.Common.Remoting.Server
         /// </returns>
         public static bool ServerDisconnectClient(System.Int32 AClientID, String AReason, out String ACantDisconnectReason)
         {
-            bool ReturnValue;
-
-            ReturnValue = false;
-            try
-            {
-                if ((UClientObjects.Contains((object)AClientID))
-                    && (((TConnectedClient)UClientObjects[(object)AClientID]).SessionStatus != TSessionStatus.adsStopped))
-                {
-                    // this.DisconnectClient would not work here since we are executing inside a static function...
-                    ReturnValue = TClientManager.DisconnectClient(AClientID, AReason, out ACantDisconnectReason);
-                }
-                else
-                {
-                    ACantDisconnectReason = "Client with ClientID: " + AClientID.ToString() + " not found in list of connected Clients!";
-                    TLogging.Log("ServerDisconnectClient call: " + ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                    ReturnValue = false;
-                }
-            }
-            catch (Exception Exp)
-            {
-                ACantDisconnectReason = "Exception occurred while disconnecting Client with ClientID: " + AClientID.ToString() + ": " + Exp.ToString();
-                TLogging.Log("ServerDisconnectClient call: " + ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
-            }
-            return ReturnValue;
+            // TODO: perhaps allow the closing of a session, writing to s_session table?
+            ACantDisconnectReason = "not implemented";
+            return false;
         }
 
         /// <summary>
@@ -473,86 +401,8 @@ namespace Ict.Common.Remoting.Server
             System.Int16 ATaskPriority,
             System.Int32 AExceptClientID = -1)
         {
-            Int32 ReturnValue;
-            TConnectedClient SessionEntry;
-            IDictionaryEnumerator ClientEnum;
-
-            ReturnValue = -2;
-
-            if (UClientObjects == null)
-            {
-                // this happens for the webserver with ext.net
-                return ReturnValue;
-            }
-
-            if ((AClientID == -1) || (UClientObjects.Contains((object)AClientID)))
-            {
-                if (AClientID == (int)-1)
-                {
-                    ClientEnum = UClientObjects.GetEnumerator();
-                    try
-                    {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
-                        {
-                            // Iterate over all Clients that are currently connected
-                            while (ClientEnum.MoveNext())
-                            {
-                                SessionEntry = ((TConnectedClient)ClientEnum.Value);
-
-                                // ...and the ClientID isn't the one to except from
-                                if ((SessionEntry.ClientID != AExceptClientID)
-                                    && ((SessionEntry.SessionStatus == TSessionStatus.adsActive)
-                                        || (SessionEntry.SessionStatus == TSessionStatus.adsIdle)))
-                                {
-                                    ReturnValue = SessionEntry.FTasksManager.ClientTaskAdd(ATaskGroup,
-                                        ATaskCode,
-                                        ATaskParameter1,
-                                        ATaskParameter2,
-                                        ATaskParameter3,
-                                        ATaskParameter4,
-                                        ATaskPriority);
-                                }
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        Monitor.Exit(UClientObjects.SyncRoot);
-                    }
-                }
-                else
-                {
-                    SessionEntry = (TConnectedClient)UClientObjects[(object)AClientID];
-
-                    // Send Notification Message  if an AppDomain for the ClientID exists...
-                    if (SessionEntry != null)
-                    {
-                        // ...and the ClientID isn't the one to except from
-                        if ((SessionEntry.ClientID != AExceptClientID)
-                            && ((SessionEntry.SessionStatus == TSessionStatus.adsActive)
-                                || (SessionEntry.SessionStatus == TSessionStatus.adsIdle)))
-                        {
-                            ReturnValue = SessionEntry.FTasksManager.ClientTaskAdd(ATaskGroup,
-                                ATaskCode,
-                                ATaskParameter1,
-                                ATaskParameter2,
-                                ATaskParameter3,
-                                ATaskParameter4,
-                                ATaskPriority);
-                        }
-                        else
-                        {
-                            ReturnValue = -1;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                ReturnValue = -2;
-            }
-
-            return ReturnValue;
+            // Currently not implemented
+            return -1;
         }
 
         /// <summary>
@@ -578,59 +428,8 @@ namespace Ict.Common.Remoting.Server
             System.Int16 ATaskPriority,
             System.Int32 AExceptClientID)
         {
-            Int32 ReturnValue;
-            IDictionaryEnumerator ClientEnum;
-
-            ReturnValue = -2;
-            ClientEnum = UClientObjects.GetEnumerator();
-
-            try
-            {
-                if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
-                {
-                    // Iterate over all Clients that are currently connected
-                    while (ClientEnum.MoveNext())
-                    {
-                        TConnectedClient SessionEntry = (TConnectedClient)ClientEnum.Value;
-
-                        // Process Clients whose UserID is the one we look for
-                        if (SessionEntry.UserID == AUserID)
-                        {
-                            // ...and the ClientID isn't the one to except from
-                            if ((SessionEntry.ClientID != AExceptClientID)
-                                && ((SessionEntry.SessionStatus == TSessionStatus.adsActive)
-                                    || (SessionEntry.SessionStatus == TSessionStatus.adsIdle)))
-                            {
-                                if (TLogging.DL >= 5)
-                                {
-                                    Console.WriteLine(
-                                        "TClientManager.QueueClientTask: queuing Task for UserID '" + AUserID + "' (ClientID: " +
-                                        SessionEntry.ClientID.ToString());
-                                }
-
-                                ReturnValue = QueueClientTask(SessionEntry.ClientID,
-                                    ATaskGroup,
-                                    ATaskCode,
-                                    ATaskParameter1,
-                                    ATaskParameter2,
-                                    ATaskParameter3,
-                                    ATaskParameter4,
-                                    ATaskPriority);
-                            }
-                            else
-                            {
-                                ReturnValue = -1;
-                            }
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                Monitor.Exit(UClientObjects.SyncRoot);
-            }
-
-            return ReturnValue;
+            // Currently not implemented
+            return -1;
         }
 
         /// <summary>
@@ -684,174 +483,8 @@ namespace Ict.Common.Remoting.Server
         /// </returns>
         public static ArrayList BuildClientList(Boolean AListDisconnectedClients)
         {
+            // TODO: use information from s_session table???
             ArrayList ClientList = new ArrayList();
-            IDictionaryEnumerator ClientEnum;
-
-            Int32 ClientIdleStatusAfterXMinutes = TAppSettingsManager.GetInt32("Server.ClientIdleStatusAfterXMinutes", 5);
-
-            System.Int16 ClientCounter;
-            String AppDomainStatusString;
-            String ClientServerConnectionTypeString;
-            DateTime LastActionTime;
-            DateTime LastClientAction;
-            try
-            {
-                if (UClientObjects != null)
-                {
-                    ClientCounter = 0;
-                    ClientEnum = UClientObjects.GetEnumerator();
-                    try
-                    {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
-                        {
-                            // Iterate over all Clients
-                            while (ClientEnum.MoveNext())
-                            {
-                                TConnectedClient app = ((TConnectedClient)ClientEnum.Value);
-
-                                if (((AListDisconnectedClients)
-                                     && ((app.FAppDomainStatus == TSessionStatus.adsActive)
-                                         || (app.FAppDomainStatus == TSessionStatus.adsIdle)
-                                         || (app.FAppDomainStatus == TSessionStatus.adsConnectingLoginVerification)
-                                         || (app.FAppDomainStatus == TSessionStatus.adsConnectingLoginOK)))
-                                    || ((!AListDisconnectedClients)
-                                        && (!((app.FAppDomainStatus == TSessionStatus.adsActive)
-                                              || (app.FAppDomainStatus == TSessionStatus.adsIdle)
-                                              || (app.FAppDomainStatus == TSessionStatus.adsConnectingLoginVerification)
-                                              || (app.FAppDomainStatus == TSessionStatus.adsConnectingLoginOK)))))
-                                {
-                                    // Client has got the wrong AppDomainStatus > skip it
-                                    continue;
-                                }
-
-                                ClientCounter++;
-
-                                LastActionTime = DateTime.MinValue;
-
-                                if ((app.FAppDomainStatus == TSessionStatus.adsActive) || (app.FAppDomainStatus == TSessionStatus.adsIdle))
-                                {
-                                    try
-                                    {
-                                        LastActionTime = app.LastActionTime;
-                                    }
-                                    catch (System.Runtime.Remoting.RemotingException)
-                                    {
-                                        LastClientAction = DateTime.MinValue;
-                                    }
-                                    catch (Exception)
-                                    {
-                                        throw;
-                                    }
-                                }
-
-                                // Determine/update Client AppDomain's Status
-                                if (app.FAppDomainStatus == TSessionStatus.adsConnectingLoginVerification)
-                                {
-                                    AppDomainStatusString = "Connecting...(1)";
-                                    LastClientAction = app.FClientConnectionStartTime;
-                                }
-                                else if (app.FAppDomainStatus == TSessionStatus.adsConnectingLoginOK)
-                                {
-                                    AppDomainStatusString = "Connecting...(2)";
-                                    LastClientAction = app.FClientConnectionStartTime;
-                                }
-                                else if (app.FAppDomainStatus == TSessionStatus.adsActive)
-                                {
-                                    if (LastActionTime.AddMinutes(ClientIdleStatusAfterXMinutes) > DateTime.Now)
-                                    {
-                                        AppDomainStatusString = "Active";
-                                        LastClientAction = LastActionTime;
-                                    }
-                                    else
-                                    {
-                                        AppDomainStatusString = "Idle";
-                                        app.FAppDomainStatus = TSessionStatus.adsIdle;
-                                        LastClientAction = LastActionTime;
-                                    }
-                                }
-                                else if (app.FAppDomainStatus == TSessionStatus.adsIdle)
-                                {
-                                    if (LastActionTime.AddMinutes(ClientIdleStatusAfterXMinutes) < DateTime.Now)
-                                    {
-                                        AppDomainStatusString = "Idle";
-                                        LastClientAction = LastActionTime;
-                                    }
-                                    else
-                                    {
-                                        AppDomainStatusString = "Active";
-                                        app.FAppDomainStatus = TSessionStatus.adsActive;
-                                        LastClientAction = LastActionTime;
-                                    }
-                                }
-                                else if (app.FAppDomainStatus == TSessionStatus.adsDisconnectingDBClosing)
-                                {
-                                    AppDomainStatusString = "Disconnecting(1)";
-                                    LastClientAction = app.FClientDisconnectionStartTime;
-                                }
-                                else if (app.FAppDomainStatus == TSessionStatus.adsStopped)
-                                {
-                                    AppDomainStatusString = "Disconnected!";
-                                    LastClientAction = app.FClientDisconnectionFinishedTime;
-                                }
-                                else
-                                {
-                                    AppDomainStatusString = "[Unknown]";
-                                    LastClientAction = DateTime.MinValue;
-                                }
-
-                                if (app.FClientServerConnectionType == TClientServerConnectionType.csctRemote)
-                                {
-                                    ClientServerConnectionTypeString = "Rem.";
-                                }
-                                else if (app.FClientServerConnectionType == TClientServerConnectionType.csctLocal)
-                                {
-                                    ClientServerConnectionTypeString = "Locl";
-                                }
-                                else
-                                {
-                                    ClientServerConnectionTypeString = "LAN";
-                                }
-
-                                // Fill array with Client formatted information
-
-                                //String[] currentClient = (String[])ClientList[ClientCounter];
-                                String[] currentClient = new string[8];
-
-                                currentClient[0] = app.FClientID.ToString();
-                                currentClient[1] = app.FClientName;
-                                currentClient[2] = AppDomainStatusString;
-                                currentClient[3] = app.FClientConnectionStartTime.ToString("dd/MM HH:mm:ss");
-
-                                if (LastClientAction != DateTime.MinValue)
-                                {
-                                    currentClient[4] = LastClientAction.ToString("dd/MM HH:mm:ss");
-                                }
-                                else
-                                {
-                                    currentClient[4] = "N/A";
-                                }
-
-                                currentClient[5] = app.FClientComputerName;
-                                currentClient[6] = app.FClientIPAddress;
-
-                                currentClient[7] = ClientServerConnectionTypeString;
-
-                                ClientList.Add(currentClient);
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        Monitor.Exit(UClientObjects.SyncRoot);
-                    }
-                }
-            }
-            catch (Exception exp)
-            {
-                TLogging.Log("Error while building Client list!  Exception: " + exp.ToString(), TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                throw;
-            }
-
             return ClientList;
         }
 
@@ -953,24 +586,13 @@ namespace Ict.Common.Remoting.Server
                     #endregion
 
                     #region Variable assignments
-                    AClientID = (short)FClientsConnectedTotal;
-                    FClientsConnectedTotal++;
+                    // we are not really using the ClientID anymore, but the session ID!
+                    AClientID = (short)0;
                     string ClientName = AUserName.ToUpper() + "_" + AClientID.ToString();
                     #endregion
-                    try
-                    {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
-                        {
-                            ConnectedClient = new TConnectedClient(AClientID, AUserName.ToUpper(), ClientName, AClientComputerName, AClientIPAddress,
-                                AClientServerConnectionType, ClientName);
-                            // Add the new Client to UClientObjects SortedList
-                            UClientObjects.Add((object)AClientID, ConnectedClient);
-                        }
-                    }
-                    finally
-                    {
-                        Monitor.Exit(UClientObjects.SyncRoot);
-                    }
+
+                    ConnectedClient = new TConnectedClient(AClientID, AUserName.ToUpper(), ClientName, AClientComputerName, AClientIPAddress,
+                        AClientServerConnectionType, ClientName);
 
                     #region Client Version vs. Server Version check
 
@@ -1124,7 +746,7 @@ namespace Ict.Common.Remoting.Server
 // TODORemoting               Monitor.Exit(UConnectClientMonitor);
             }
 
-            ConnectedClient.StartSession(new TDelegateTearDownAppDomain(DisconnectClient));
+            ConnectedClient.StartSession();
 
             #region Logging
 
@@ -1134,10 +756,7 @@ namespace Ict.Common.Remoting.Server
             if (TLogging.DL >= 4)
             {
                 TLogging.Log(
-                    "Client '" + AUserName + "' successfully connected (took " +
-                    ConnectedClient.FClientConnectionFinishedTime.Subtract(
-                        ((TConnectedClient)UClientObjects[(object)AClientID]).FClientConnectionStartTime).
-                    TotalSeconds.ToString() + " sec). ClientID: " + AClientID.ToString(),
+                    "Client '" + AUserName + "' successfully connected. ClientID: " + AClientID.ToString(),
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
             else
@@ -1219,76 +838,9 @@ namespace Ict.Common.Remoting.Server
         /// </returns>
         public static Boolean DisconnectClient(System.Int32 AClientID, String AReason, out String ACantDisconnectReason)
         {
-            Boolean ReturnValue;
-            TConnectedClient SessionEntry;
-
-            ACantDisconnectReason = "";
-
-            if (TLogging.DL >= 4)
-            {
-                TLogging.Log("Trying to disconnect client (ClientID: " + AClientID.ToString() + ") for the reason: " + AReason);
-            }
-
-            SessionEntry = (TConnectedClient)UClientObjects[(object)AClientID];
-            TLogging.Log("DisconnectClient: SessionEntry.ClientName='" + SessionEntry.ClientName + "'");
-
-            if (SessionEntry == null)
-            {
-                ACantDisconnectReason = "Can't disconnect ClientID: " + AClientID.ToString() +
-                                        ": Client List entry for this ClientID is empty (should not happen)!";
-                TLogging.Log(ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                return false;
-            }
-
-            if (SessionEntry.FAppDomainStatus == TSessionStatus.adsStopped)
-            {
-                ACantDisconnectReason = "Can't disconnect ClientID " + AClientID.ToString() + " (for the reason '" +
-                                        AReason + "'): Client is already disconnected!" +
-                                        (AReason == CLIENTINITIATED_DISCONNECTION ?
-                                        "  [non-critical]  (This message got recorded because a user has now closed a Client exe instance "
-                                        +
-                                        "which was already disconnected. It might have been disconnected earlier because of a "
-                                        +
-                                        "very serious error, or it could have failed to contact the server regularly.)" : "");
-                TLogging.Log(ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                return false;
-            }
-
-            try
-            {
-                if (Monitor.TryEnter(SessionEntry.DisconnectClientMonitor, 5000))
-                {
-                    try
-                    {
-                        // Release all memory associated with this session
-                        SessionEntry.EndSession();
-
-                        ReturnValue = true;
-                    }
-                    catch (Exception Exp)
-                    {
-                        ACantDisconnectReason = "DisconnectClient call for ClientID: " + AClientID.ToString() + ": Exception occured: " +
-                                                Exp.ToString();
-                        TLogging.Log(ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                        ReturnValue = false;
-                    }
-                }
-                else
-                {
-                    ACantDisconnectReason = "Can't disconnect ClientID: " + AClientID.ToString() +
-                                            ": Client is already being scheduled for disconnection!";
-                    TLogging.Log(ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                    ReturnValue = false;
-
-                    // don't do anything else here since one attempt to start the client
-                    // disconnection is enough!
-                }
-            }
-            finally
-            {
-                Monitor.Exit(SessionEntry.DisconnectClientMonitor);
-            }
-            return ReturnValue;
+            // TODO disconnect client by dropping the session from s_session table???
+            ACantDisconnectReason = "NotImplemented";
+            return false;
         }
 
         /// <summary>

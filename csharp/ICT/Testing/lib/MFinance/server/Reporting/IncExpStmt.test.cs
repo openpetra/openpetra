@@ -43,7 +43,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;
 using Ict.Common.Data;
-using Ict.Petra.Server.MReporting.UIConnectors;
+using Ict.Petra.Server.MReporting.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
 using Tests.MReporting.Tools;

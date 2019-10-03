@@ -73,51 +73,8 @@ namespace PetraServerAdminConsole
         /// <returns>true if shutdown was completed</returns>
         public static bool ShutDownControlled(bool AWithUserInteraction)
         {
-            bool ack = false;
-
-            if (AWithUserInteraction == true)
-            {
-                Console.WriteLine(Environment.NewLine + "-> CONTROLLED SHUTDOWN  (gets all connected clients to disconnect) <-");
-                Console.Write("     Enter YES to perform shutdown (anything else to leave command): ");
-
-                if (Console.ReadLine() == "YES")
-                {
-                    Console.WriteLine();
-                    ack = true;
-                }
-            }
-            else
-            {
-                ack = true;
-            }
-
-            if (ack == true)
-            {
-                TLogging.Log("CONTROLLED SHUTDOWN PROCEDURE INITIATED...");
-
-                if (!TRemote.StopServerControlled(true))
-                {
-                    Console.WriteLine("     Shutdown cancelled!");
-                    Console.Write(ServerAdminPrompt);
-                    return false;
-                }
-
-                if (AWithUserInteraction == true)
-                {
-                    Console.WriteLine();
-                    TLogging.Log("SERVER STOPPED!");
-                    Console.WriteLine();
-                    Console.Write("Press ENTER to end PETRAServerADMIN...");
-                    Console.ReadLine();
-                    return true;
-                }
-            }
-            else
-            {
-                Console.WriteLine("     Shutdown cancelled!");
-                Console.Write(ServerAdminPrompt);
-            }
-
+            Console.WriteLine("     Currently not implemented!");
+            Console.Write(ServerAdminPrompt);
             return false;
         }
 
@@ -315,9 +272,14 @@ namespace PetraServerAdminConsole
             return TRemote.ClearConnectionPoolAndGetNumberOfDBConnections();
         }
 
-        private static void SetPassword(string AUserID, string APassword)
+        private static bool LockSysadmin()
         {
-            TRemote.SetPassword(AUserID, APassword);
+            return TRemote.LockSysadmin();
+        }
+
+        private static bool SetPassword(string AUserID, string APassword)
+        {
+            return TRemote.SetPassword(AUserID, APassword);
         }
 
         private static void AddUser(string AUserId)
@@ -931,7 +893,17 @@ namespace PetraServerAdminConsole
                     }
                     else if (TAppSettingsManager.GetValue("Command") == "SetPassword")
                     {
-                        SetPassword(TAppSettingsManager.GetValue("UserID"), TAppSettingsManager.GetValue("NewPassword"));
+                        if (!SetPassword(TAppSettingsManager.GetValue("UserID"), TAppSettingsManager.GetValue("NewPassword")))
+                        {
+                            throw new Exception("SetPassword did not work, perhaps too easy password?");
+                        }
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "LockSysadmin")
+                    {
+                        if (!LockSysadmin())
+                        {
+                            throw new Exception("LockSysadmin did not work");
+                        }
                     }
                     else if (TAppSettingsManager.GetValue("Command") == "AddUser")
                     {

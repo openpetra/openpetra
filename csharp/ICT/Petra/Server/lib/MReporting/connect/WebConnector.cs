@@ -27,17 +27,21 @@ using System.IO;
 using System.Xml;
 using System.Drawing.Printing;
 using System.Collections.Generic;
+using Ict.Common.Data;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MReporting.Calculator;
 using Ict.Petra.Server.MReporting.MFinance;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Ict.Petra.Server.MSysMan.Data.Access;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
@@ -51,114 +55,97 @@ using Npgsql;
 using OfficeOpenXml;
 using HtmlAgilityPack;
 
-namespace Ict.Petra.Server.MReporting.UIConnectors
+namespace Ict.Petra.Server.MReporting.WebConnectors
 {
     /// <summary>
     /// the connector for the report generation
     /// </summary>
-    public class TReportGeneratorUIConnector
+    public static class TReportGeneratorWebConnector
     {
-        private TRptDataCalculator FDatacalculator;
-        private TParameterList FParameterList;
-        private string FHTMLOutput;
-        private HtmlDocument FHTMLDocument;
-        private String FErrorMessage = string.Empty;
-        private Exception FException = null;
-        private Boolean FSuccess;
-        private String FProgressID;
-
-        /// constructor needed for the interface
-        public TReportGeneratorUIConnector()
-        {
-        }
-
         /// <summary>
         /// to show the progress of the report calculation;
         /// prints the current id of the row that is being calculated;
         /// </summary>
-        public TProgressState Progress
+        [RequireModulePermission("NONE")]
+        public static TProgressState GetProgress(string AReportID)
         {
-            get
-            {
-                return TProgressTracker.GetCurrentState(FProgressID);
-            }
+            return TProgressTracker.GetCurrentState(AReportID);
+        }
+
+        /// <summary>
+        /// prepare a UID for the report
+        /// </summary>
+        /// <returns>ReportClientUID</returns>
+        [RequireModulePermission("NONE")]
+        public static string Create()
+        {
+            string session = TSession.GetSessionID();
+
+            string ReportID = "ReportCalculation" + session + Guid.NewGuid();
+            TProgressTracker.InitProgressTracker(ReportID, string.Empty, -1.0m);
+
+            return ReportID;
         }
 
         /// <summary>
         /// Calculates the report, which is specified in the parameters table
-        ///
         /// </summary>
-        /// <returns>void</returns>
-        public void Start(System.Data.DataTable AParameters)
+        /// <returns>ReportClientUID</returns>
+        [RequireModulePermission("NONE")]
+        public static string Start(string AReportID, System.Data.DataTable AParameters)
         {
-            FProgressID = "ReportCalculation" + Guid.NewGuid();
-            TProgressTracker.InitProgressTracker(FProgressID, string.Empty, -1.0m);
+            string session = TSession.GetSessionID();
 
-            FParameterList = new TParameterList();
-            FParameterList.LoadFromDataTable(AParameters);
-
-            FSuccess = false;
+            TParameterList ParameterList = new TParameterList();
+            ParameterList.LoadFromDataTable(AParameters);
 
             String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
             String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
 
-            FDatacalculator = new TRptDataCalculator(PathStandardReports, PathCustomReports);
+            TRptDataCalculator Datacalculator = new TRptDataCalculator(PathStandardReports, PathCustomReports);
 
-            // setup the logging to go to the TProgressTracker
-            TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
-
-            string session = TSession.GetSessionID();
             ThreadStart myThreadStart = delegate {
-                Run(session);
+                Run(session, AReportID, Datacalculator, ParameterList);
             };
             Thread TheThread = new Thread(myThreadStart);
             TheThread.CurrentCulture = Thread.CurrentThread.CurrentCulture;
-            TheThread.Name = FProgressID + "_" + UserInfo.GetUserInfo().UserID + "__TReportGeneratorUIConnector.Start_Thread";
+            TheThread.Name = AReportID + "_" + UserInfo.GetUserInfo().UserID + "__TReportGeneratorUIConnector.Start_Thread";
             TLogging.LogAtLevel(7, TheThread.Name + " starting.");
             TheThread.Start();
-        }
 
-        /// <summary>
-        /// Signal that the Report calculation should be cancelled.
-        /// </summary>
-        public void Cancel()
-        {
-            if (FParameterList != null)
-            {
-                // This variable will be picked up regularly during generation, in TRptDataCalcLevel.calculate in
-                // Ict.Petra.Server.MReporting.Calculation. (It can be null if Cancel gets called before FParameterList is
-                // available.)
-                FParameterList.Add("CancelReportCalculation", new TVariant(true));
-            }
+            return AReportID;
         }
 
         /// <summary>
         /// run the report
         /// </summary>
-        private void Run(string ASessionID)
+        private static void Run(string ASessionID, string AReportID, TRptDataCalculator ADatacalculator, TParameterList AParameterList)
         {
             // need to initialize the database session
             TSession.InitThread(ASessionID);
-            IsolationLevel Level;
 
-            FSuccess = false;
-
-            TDataBase db = DBAccess.Connect("TReportGeneratorUIConnector");
+            TDataBase db = DBAccess.Connect("TReportGeneratorWebConnector");
             
             TDBTransaction Transaction = new TDBTransaction();
+            bool Success = false;
+            bool Submit = true;
+            string HTMLOutput = String.Empty;
+            HtmlDocument HTMLDocument = new HtmlDocument();
+            string ErrorMessage = String.Empty;
 
             try
             {
                 db.ReadTransaction(ref Transaction,
                     delegate
                     {
-                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FHTMLOutput, out FHTMLDocument, ref FErrorMessage, ref FException, Transaction))
+                        Exception myException = null;
+                        if (ADatacalculator.GenerateResult(ref AParameterList, ref HTMLOutput, out HTMLDocument, ref ErrorMessage, ref myException, Transaction))
                         {
-                            FSuccess = true;
+                            Success = true;
                         }
                         else
                         {
-                            TLogging.Log(FErrorMessage);
+                            TLogging.Log(ErrorMessage);
                         }
                     });
             }
@@ -167,11 +154,11 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 TLogging.Log("Problem calculating report: " + Exc.ToString());
                 TLogging.Log(Exc.StackTrace, TLoggingType.ToLogfile);
 
-                FSuccess = false;
-                FErrorMessage = Exc.Message;
-                FException = Exc;
+                Success = false;
+                ErrorMessage = Exc.Message;
             }
 
+/*
             if (TDBExceptionHelper.IsTransactionSerialisationException(FException))
             {
                 // do nothing - we want this exception to bubble up
@@ -200,50 +187,128 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     FException = null;
                 }
             }
+*/
 
-            TProgressTracker.FinishJob(FProgressID);
+            try
+            {
+                // store the report result
+                db.WriteTransaction(ref Transaction,
+                    ref Submit,
+                    delegate
+                    {
+                        // delete report results that are expired.
+                        string sql = "DELETE FROM PUB_s_report_result WHERE s_valid_until_d < NOW()";
+                        db.ExecuteNonQuery(sql, Transaction);
+                        
+                        // TODO: only keep maximum of 10 report results per user (s_created_by_c)
+
+                        // store success, store parameter list, store html document
+                        SReportResultTable table = new SReportResultTable();
+                        SReportResultRow row = table.NewRowTyped();
+                        row.ReportId = AReportID;
+                        row.SessionId = TSession.GetSessionID();
+                        row.ValidUntil = DateTime.Now.AddHours(12);
+                        row.ParameterList = AParameterList.ToJson();
+                        row.ResultHtml = HTMLOutput;
+                        row.Success = Success;
+                        row.ErrorMessage = ErrorMessage;
+                        table.Rows.Add(row);
+                        SReportResultAccess.SubmitChanges(table, Transaction);
+                        Submit = true;
+                    });
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("Problem storing report result: " + Exc.ToString());
+                TLogging.Log(Exc.StackTrace, TLoggingType.ToLogfile);
+
+                Success = false;
+                ErrorMessage = Exc.Message;
+            }
+
+            db.CloseDBConnection();
+
+            TProgressTracker.FinishJob(AReportID);
+        }
+
+        private static SReportResultRow GetReportResult(string AReportID, TDataBase ADataBase)
+        {
+            SReportResultRow Row = null;
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetReportResult", ADataBase);
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    SReportResultTable resultTable = SReportResultAccess.LoadByPrimaryKey(AReportID, t);
+
+                    if (resultTable.Rows.Count == 1)
+                    {
+                        Row = resultTable[0];
+                    }
+                });
+
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
+            return Row;
         }
 
         /// <summary>
         /// get the environment variables after report calculation
         /// </summary>
         [NoRemoting]
-        public TParameterList GetParameter()
+        public static TParameterList GetParameter(string AReportID, TDataBase ADataBase)
         {
-            return FParameterList;
+            SReportResultRow Row = GetReportResult(AReportID, ADataBase);
+            TParameterList ParameterList = new TParameterList();
+
+            if (Row != null)
+            {
+                ParameterList.LoadFromJson(Row.ParameterList);
+            }
+
+            return ParameterList;
         }
 
         /// <summary>
         /// see if the report calculation finished successfully
         /// </summary>
-        public Boolean GetSuccess()
+        [RequireModulePermission("NONE")]
+        public static Boolean GetSuccess(string AReportID, TDataBase ADataBase = null)
         {
-            return FSuccess;
+            SReportResultRow Row = GetReportResult(AReportID, ADataBase);
+
+            if (Row != null)
+            {
+                return Row.Success;
+            }
+
+            return false;
         }
 
         /// <summary>
         /// error message that happened during report calculation
         /// </summary>
-        public String GetErrorMessage(out Exception AException)
+        [RequireModulePermission("NONE")]
+        public static String GetErrorMessage(string AReportID, TDataBase ADataBase = null)
         {
-            AException = FException;
+            SReportResultRow Row = GetReportResult(AReportID, ADataBase);
 
-            return FErrorMessage;
+            if (Row != null)
+            {
+                return Row.ErrorMessage;
+            }
+
+            return String.Empty;
         }
 
-        /// <summary>
-        /// for displaying the progress
-        /// </summary>
-        /// <returns>void</returns>
-        private void WriteToStatusBar(String s)
-        {
-            TProgressTracker.SetCurrentState(FProgressID, s, -1.0m);
-        }
-
-        private bool ExportToExcelFile(string AFilename)
+        private static bool ExportToExcelFile(string AFilename, HtmlDocument AHTMLDocument)
         {
             // transform the HTML output to xlsx file
-            ExcelPackage ExcelDoc = HTMLTemplateProcessor.HTMLToCalc(FHTMLDocument);
+            ExcelPackage ExcelDoc = HTMLTemplateProcessor.HTMLToCalc(AHTMLDocument);
 
             if (ExcelDoc != null)
             {
@@ -259,51 +324,77 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             return false;
         }
 
-        private bool PrintToPDF(string AFilename)
+        private static bool PrintToPDF(string AFilename, HtmlDocument AHTMLDocument)
         {
             // transform the HTML output to pdf file
-            HTMLTemplateProcessor.HTMLToPDF(FHTMLDocument, AFilename);
+            HTMLTemplateProcessor.HTMLToPDF(AHTMLDocument, AFilename);
 
             return true;
         }
 
         /// Download the result of the report as HTML
-        public string DownloadHTML()
+        [RequireModulePermission("NONE")]
+        public static string DownloadHTML(string AReportID, TDataBase ADataBase = null)
         {
-            return FHTMLOutput;
+            SReportResultRow Row = GetReportResult(AReportID, ADataBase);
+
+            if (Row != null)
+            {
+                return Row.ResultHtml;
+            }
+            
+            return String.Empty;
         }
 
         /// Download the result of the report as PDF File in base64 encoding
-        public string DownloadPDF()
+        [RequireModulePermission("NONE")]
+        public static string DownloadPDF(string AReportID, TDataBase ADataBase = null)
         {
-            string PDFFile = TFileHelper.GetTempFileName(
-                FParameterList.Get("currentReport").ToString(),
-                ".pdf");
+            SReportResultRow Row = GetReportResult(AReportID, ADataBase);
 
-            if (PrintToPDF(PDFFile))
+            if (Row != null)
             {
-                byte[] data = System.IO.File.ReadAllBytes(PDFFile);
-                string result = Convert.ToBase64String(data);
-                System.IO.File.Delete(PDFFile);
-                return result;
+                HtmlDocument HTMLDocument = new HtmlDocument();
+                HTMLDocument.LoadHtml(Row.ResultHtml);
+
+                string PDFFile = TFileHelper.GetTempFileName(
+                    AReportID,
+                    ".pdf");
+
+                if (PrintToPDF(PDFFile, HTMLDocument))
+                {
+                    byte[] data = System.IO.File.ReadAllBytes(PDFFile);
+                    string result = Convert.ToBase64String(data);
+                    System.IO.File.Delete(PDFFile);
+                    return result;
+                }
             }
 
             return String.Empty;
         }
 
         /// Download the result of the report as Excel File in base64 encoding
-        public string DownloadExcel()
+        [RequireModulePermission("NONE")]
+        public static string DownloadExcel(string AReportID, TDataBase ADataBase = null)
         {
-            string ExcelFile = TFileHelper.GetTempFileName(
-                FParameterList.Get("currentReport").ToString(),
-                ".xls");
+            SReportResultRow Row = GetReportResult(AReportID, ADataBase);
 
-            if (ExportToExcelFile(ExcelFile))
+            if (Row != null)
             {
-                byte[] data = System.IO.File.ReadAllBytes(ExcelFile);
-                string result = Convert.ToBase64String(data);
-                System.IO.File.Delete(ExcelFile);
-                return result;
+                HtmlDocument HTMLDocument = new HtmlDocument();
+                HTMLDocument.LoadHtml(Row.ResultHtml);
+
+                string ExcelFile = TFileHelper.GetTempFileName(
+                    AReportID,
+                    ".xls");
+
+                if (ExportToExcelFile(ExcelFile, HTMLDocument))
+                {
+                    byte[] data = System.IO.File.ReadAllBytes(ExcelFile);
+                    string result = Convert.ToBase64String(data);
+                    System.IO.File.Delete(ExcelFile);
+                    return result;
+                }
             }
 
             return String.Empty;
@@ -312,7 +403,8 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// send report as email
         /// </summary>
-        public Boolean SendEmail(string AEmailAddresses,
+        [RequireModulePermission("NONE")]
+        public static Boolean SendEmail(string AReportID, string AEmailAddresses,
             bool AAttachExcelFile,
             bool AAttachPDF,
             out TVerificationResultCollection AVerification)
@@ -320,7 +412,18 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             TSmtpSender EmailSender = null;
             string EmailBody = "";
 
+            SReportResultRow Row = GetReportResult(AReportID, null);
+            TParameterList ParameterList = new TParameterList();
             AVerification = new TVerificationResultCollection();
+
+            if (Row == null)
+            {
+                return false;
+            }
+            
+            ParameterList.LoadFromJson(Row.ParameterList);
+            HtmlDocument HTMLDocument = new HtmlDocument();
+            HTMLDocument.LoadHtml(Row.ResultHtml);
 
             try
             {
@@ -331,10 +434,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 if (AAttachExcelFile)
                 {
                     string ExcelFile = TFileHelper.GetTempFileName(
-                        FParameterList.Get("currentReport").ToString(),
+                        ParameterList.Get("currentReport").ToString(),
                         ".xlsx");
 
-                    if (ExportToExcelFile(ExcelFile))
+                    if (ExportToExcelFile(ExcelFile, HTMLDocument))
                     {
                         FilesToAttach.Add(ExcelFile);
                     }
@@ -343,10 +446,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 if (AAttachPDF)
                 {
                     string PDFFile = TFileHelper.GetTempFileName(
-                        FParameterList.Get("currentReport").ToString(),
+                        ParameterList.Get("currentReport").ToString(),
                         ".pdf");
 
-                    if (PrintToPDF(PDFFile))
+                    if (PrintToPDF(PDFFile, HTMLDocument))
                     {
                         FilesToAttach.Add(PDFFile);
                     }
@@ -395,7 +498,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
                 if (EmailSender.SendEmail(
                         AEmailAddresses,
-                        FParameterList.Get("currentReport").ToString(),
+                        ParameterList.Get("currentReport").ToString(),
                         EmailBody,
                         FilesToAttach.ToArray()))
                 {

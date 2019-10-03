@@ -64,7 +64,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// This will be setup by CallForwarding, to allow me to call the FastReportsWrapper from here.
         /// </summary>
-        public static PrintReportOnClient PrintReportOnClientDelegate;
+        // public static PrintReportOnClient PrintReportOnClientDelegate;
 
         private const int POSTING_LOGLEVEL = 1;
 

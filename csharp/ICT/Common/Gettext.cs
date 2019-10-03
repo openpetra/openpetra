@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,9 @@ namespace Ict.Common
     /// </summary>
     public class Catalog
     {
-        static GettextResourceManager catalog = null;
+#if USE_GETTEXT_CATALOG
+        // static GettextResourceManager catalog = null;
+#endif
 
         /// <summary>
         /// True when the Resource Manager was initialised with the given language
@@ -44,7 +46,10 @@ namespace Ict.Common
         {
             get
             {
+                return false;
+#if USE_GETTEXT_CATALOG
                 return catalog != null;
+#endif
             }
         }
 
@@ -146,6 +151,8 @@ namespace Ict.Common
         /// </summary>
         public static string GetString(string AEnglishMessage)
         {
+            return AEnglishMessage;
+#if USE_GETTEXT_CATALOG
             if (catalog == null)
             {
                 return AEnglishMessage;
@@ -164,6 +171,7 @@ namespace Ict.Common
             }
 
             return result;
+#endif
         }
 
         /// <summary>
@@ -183,6 +191,8 @@ namespace Ict.Common
         {
             bool Plural = treatZeroAsPlural ? ((n != 1) && (n != -1)) : (((n != 1) && (n != -1)) && (n != 0));
 
+            return Plural ? msgidPlural : msgid;
+#if USE_GETTEXT_CATALOG
             if (catalog == null)
             {
                 return Plural ? msgidPlural : msgid;
@@ -236,6 +246,7 @@ namespace Ict.Common
 
                 return result;
             }
+#endif
         }
     }
 }

@@ -29,6 +29,8 @@ using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Application.WebConnectors;
@@ -49,6 +51,15 @@ using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Server.MPersonnel.Unit.Cacheable;
 using Ict.Petra.Server.MSysMan.Cacheable;
+using Ict.Petra.Server.MCommon.Cacheable.WebConnectors;
+using Ict.Petra.Server.MConference.Cacheable.WebConnectors;
+using Ict.Petra.Server.MFinance.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPartner.Mailing.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPartner.Partner.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPartner.Subscriptions.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPersonnel.Person.Cacheable.WebConnectors;
+using Ict.Petra.Server.MPersonnel.Unit.Cacheable.WebConnectors;
+using Ict.Petra.Server.MSysMan.Cacheable.WebConnectors;
 
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MFinance.GL;
@@ -65,26 +76,24 @@ namespace Ict.Petra.Server.App.Delegates
     /// </summary>
     public class TSetupDelegates
     {
-        private static Ict.Petra.Server.MCommon.Cacheable.TCacheable CachePopulatorCommon;
-        private static Ict.Petra.Server.MConference.Cacheable.TCacheable CachePopulatorConference;
-        private static Ict.Petra.Server.MFinance.Cacheable.TCacheable CachePopulatorFinance;
-        private static Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable CachePopulatorMailing;
-        private static Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable CachePopulatorPartner;
-        private static Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable CachePopulatorSubscriptions;
-        private static Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable CachePopulatorPersonnel;
-        private static Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable CachePopulatorUnits;
-        private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan;
+        private static Ict.Petra.Server.MCommon.Cacheable.TCacheable CachePopulatorCommon; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MConference.Cacheable.TCacheable CachePopulatorConference; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MFinance.Cacheable.TCacheable CachePopulatorFinance; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable CachePopulatorMailing; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable CachePopulatorPartner; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable CachePopulatorSubscriptions; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable CachePopulatorPersonnel; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable CachePopulatorUnits; // STATIC_OK: will be set for each request
+        private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan; // STATIC_OK: will be set for each request
 
         /// <summary>
-        /// init the static variables
+        /// Initialize the static variables.
+        /// Set up Error Codes and Data Validation Delegates for a Web Request.
+        /// This setting-up makes use of the fact that this Method is called only once,
+        /// at the start of each Web Request in TOpenPetraOrgSessionManager.Init()
         /// </summary>
         public static void Init()
         {
-            // Set up Error Codes and Data Validation Delegates for a Client's AppDomain.
-            // This setting-up makes use of the fact that this Method is called only once,
-            // namely directly after the Client logged in successfully.
-            ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
-
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
             TSharedPartnerValidationHelper.PartnerHasActiveStatusDelegate = @TPartnerServerLookups.PartnerHasActiveStatus;
@@ -92,6 +101,7 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedPartnerValidationHelper.PartnerOfTypeCCIsLinkedDelegate = @TPartnerServerLookups.PartnerOfTypeCCIsLinked;
             TSharedPartnerValidationHelper.PartnerHasCurrentGiftDestinationDelegate = @TPartnerServerLookups.PartnerHasCurrentGiftDestination;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
+            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
             TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;
 
@@ -106,13 +116,26 @@ namespace Ict.Petra.Server.App.Delegates
             CachePopulatorUnits = new Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable();
             CachePopulatorSysMan = new Ict.Petra.Server.MSysMan.Cacheable.TCacheable();
 
+            Ict.Petra.Server.MCommon.Cacheable.WebConnectors.TCommonCacheableWebConnector.Init();
+            Ict.Petra.Server.MConference.Cacheable.WebConnectors.TConferenceCacheableWebConnector.Init();
+            Ict.Petra.Server.MFinance.Cacheable.WebConnectors.TFinanceCacheableWebConnector.Init();
+            Ict.Petra.Server.MPartner.Mailing.Cacheable.WebConnectors.TMailingCacheableWebConnector.Init();
+            Ict.Petra.Server.MPartner.Partner.Cacheable.WebConnectors.TPartnerCacheableWebConnector.Init();
+            Ict.Petra.Server.MPartner.Subscriptions.Cacheable.WebConnectors.TSubscriptionsCacheableWebConnector.Init();
+            Ict.Petra.Server.MPersonnel.Person.Cacheable.WebConnectors.TPersonCacheableWebConnector.Init();
+            Ict.Petra.Server.MPersonnel.Unit.Cacheable.WebConnectors.TUnitCacheableWebConnector.Init();
+            Ict.Petra.Server.MSysMan.Cacheable.WebConnectors.TSysManCacheableWebConnector.Init();
+
             TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @CachePopulatorCommon.GetCacheableTable;
-
             TSharedDataCache.TMFinance.GetCacheableFinanceTableDelegate = @CachePopulatorFinance.GetCacheableTable;
-
             TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate = @CachePopulatorPartner.GetCacheableTable;
             TSharedDataCache.TMPartner.GetCacheableMailingTableDelegate = @CachePopulatorMailing.GetCacheableTable;
             TSharedDataCache.TMPartner.GetCacheableSubscriptionsTableDelegate = @CachePopulatorSubscriptions.GetCacheableTable;
+            TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate = @CachePopulatorPersonnel.GetCacheableTable;
+            TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @CachePopulatorUnits.GetCacheableTable;
+            TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @CachePopulatorConference.GetCacheableTable;
+            TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
+
             TSharedDataCache.TMPartner.GetPartnerCalculationsSystemCategoryAttributeTypesDelegate =
                 @Ict.Petra.Shared.MPartner.Calculations.DetermineSystemCategoryAttributeTypes;
             TSharedDataCache.TMPartner.GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate =
@@ -122,12 +145,8 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
                 @Ict.Petra.Shared.MPartner.Calculations.DeterminePhonePartnerAttributeTypes;
 
-            TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate = @CachePopulatorPersonnel.GetCacheableTable;
-            TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @CachePopulatorUnits.GetCacheableTable;
-
-            TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @CachePopulatorConference.GetCacheableTable;
-
-            TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
+            TCacheableTablesManager.Init();
+            TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
 
             TSmtpSender.GetSmtpSettings = @TSmtpSender.GetSmtpSettingsFromAppSettings;
         }

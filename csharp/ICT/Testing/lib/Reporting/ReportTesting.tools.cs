@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,7 +43,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Shared.MFinance;
 using Ict.Common.Data;
-using Ict.Petra.Server.MReporting.UIConnectors;
+using Ict.Petra.Server.MReporting.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -98,7 +98,6 @@ namespace Tests.MReporting.Tools
             // important: otherwise month names are in different language, etc
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
 
-            TReportGeneratorUIConnector ReportGenerator = new TReportGeneratorUIConnector();
             TParameterList Parameters = new TParameterList();
 
             if (AReportParameterJsonFile.IndexOf(".json") == -1)
@@ -116,18 +115,19 @@ namespace Tests.MReporting.Tools
 
             Parameters.Add(ASpecificParameters);
 
-            ReportGenerator.Start(Parameters.ToDataTable());
+            string ReportID = TReportGeneratorWebConnector.Create();
+            TReportGeneratorWebConnector.Start(ReportID, Parameters.ToDataTable());
 
-            while (!ReportGenerator.Progress.JobFinished)
+            while (!TReportGeneratorWebConnector.GetProgress(ReportID).JobFinished)
             {
                 Thread.Sleep(500);
             }
 
-            Assert.IsTrue(ReportGenerator.GetSuccess(), "Report did not run successfully");
+            Assert.IsTrue(TReportGeneratorWebConnector.GetSuccess(ReportID), "Report did not run successfully");
 
             using (StreamWriter sw = new StreamWriter(resultFile))
             {
-                sw.Write(ReportGenerator.DownloadHTML());
+                sw.Write(TReportGeneratorWebConnector.DownloadHTML(ReportID));
             }
         }
 

@@ -345,6 +345,48 @@
                 descr=""
                 thisFields="s_session_id_c"/>
   </table>
+  <table name="s_report_result"
+         descr="Report Results"
+         area="Petra Data"
+         label="Report Results"
+         dumpname="s_report_result"
+         group="sysman">
+    <tablefield name="s_report_id_c"
+                type="varchar"
+                descr="This is the identifier of the report result"
+                format="X(96)"
+                notnull="yes"/>
+    <tablefield name="s_session_id_c"
+                type="varchar"
+                descr="This is the identifier of the session"
+                format="X(64)"
+                notnull="yes"/>
+    <tablefield name="s_valid_until_d"
+                type="datetime"
+                descr="This session is valid till this point in time"
+                notnull="yes"/>
+    <tablefield name="s_parameter_list_c"
+                type="text"
+                descr="Parameters list in json"/>
+    <tablefield name="s_result_html_c"
+                type="text"
+                descr="result represented in HTML"/>
+    <tablefield name="s_success_l"
+                type="bit"
+                descr="Did the report finish successfully to be calculated?"
+                format="Yes/No"
+                label="Finished successfully?"
+                help="Report finished sucessfully?"
+                initial="no"/>
+    <tablefield name="s_error_message_c"
+                type="text"
+                descr="in case of failure, this contains the error message"/>
+               
+    <!-- Constraints on table s_report_result -->
+    <primarykey name="s_report_result_pk"
+                descr=""
+                thisFields="s_report_id_c"/>
+  </table>
   <table name="s_user"
          descr="List of users"
          area="Petra Data"
