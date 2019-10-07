@@ -1,0 +1,10 @@
+Neuer Zugang zu OpenPetra
+Hallo {FirstName} {LastName},
+Jemand hat einen Zugang zu https://{Domain} mit Ihrer E-Mail Adresse angefordert.
+
+Fall Sie das nicht getan haben, bitten wir Sie, diese E-Mail zu ignorieren!
+
+Ansonsten klicken Sie bitte auf diese Adresse, um die Anmeldung vollständig durchzuführen:
+https://{Domain}?UserId={UserId}&SelfSignupPasswordToken={Token}
+
+Dies ist eine automatisch verschickte E-Mail.

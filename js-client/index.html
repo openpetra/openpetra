@@ -49,6 +49,8 @@
 
 <!-- Begin of login screen -->
 <div id="login" class="container" style="display:none">
+	<button id="btnSignUp" class="btn btn-lg btn-primary float-right" onClick="requestSignUp()">{signup}</button>
+
 	<form class="form-signin">
 		<input type="text" class="form-control" placeholder="{email}" id="txtEmail" autofocus>
 		<input type="password" class="form-control" placeholder="{passwd}" id="txtPassword">
@@ -112,6 +114,19 @@
 	</form>
 </div> <!-- /container -->
 <!-- End of Request new password -->
+
+<!-- Begin of Sign Up -->
+<div id="signUp" class="container" style="display:none">
+	<form class="form-signin">
+		<input type="email" class="form-control" placeholder="{email}" id="txtEmailSignUp" autofocus>
+		<input type="text" class="form-control" placeholder="{firstname}" id="txtFirstName">
+		<input type="text" class="form-control" placeholder="{lastname}" id="txtLastName">
+		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPassword1">
+		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPassword2">
+		<button id="btnSignUpSubmit" class="btn btn-lg btn-primary btn-block" type="submit">{signup}</button>
+	</form>
+</div> <!-- /container -->
+<!-- End of Sign Up -->
 
 <!-- Begin of setting new password -->
 <div id="setNewPwd" class="container" style="display:none">

@@ -427,8 +427,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// creates a user, either using the default authentication with the database or with the optional authentication plugin dll
         /// </summary>
         [NoRemoting]
-        public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName,
-            string AModulePermissions, string AClientComputerName, string AClientIPAddress, TDataBase ADataBase = null)
+        public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName, string ALanguageCode,
+            string AModulePermissions,
+            string AToken, out string AUserID, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = DBAccess.Connect("CreateUser", ADataBase);
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
@@ -442,6 +443,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             newUser.UserId = AUsername;
             newUser.FirstName = AFirstName;
             newUser.LastName = AFamilyName;
+            newUser.LanguageCode = ALanguageCode;
+            
+            if (AToken != String.Empty)
+            {
+                newUser.PasswordResetToken = AToken;
+                newUser.AccountLocked = true;
+            }
 
             if (AUsername.Contains("@"))
             {
@@ -450,6 +458,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                  Replace(".", string.Empty).
                                  Replace("_", string.Empty).ToUpper();
             }
+
+            AUserID = newUser.UserId;
 
             ReadWriteTransaction = DBConnectionObj.GetNewOrExistingTransaction(
                 IsolationLevel.Serializable, out NewTransaction, "CreateUser");
@@ -474,7 +484,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     if (APassword.Length > 0)
                     {
-                        SetNewPasswordHashAndSaltForUser(newUser, APassword, AClientComputerName, AClientIPAddress, ReadWriteTransaction);
+                        SetNewPasswordHashAndSaltForUser(newUser, APassword, string.Empty, string.Empty, ReadWriteTransaction);
 
                         if (AModulePermissions != TMaintenanceWebConnector.DEMOMODULEPERMISSIONS)
                         {
@@ -569,7 +579,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         TUserAccountActivityLog.USER_ACTIVITY_USER_RECORD_CREATED,
                         String.Format(Catalog.GetString("The user record for the new user {0} got created by user {1}. "),
                             newUser.UserId, UserInfo.GetUserInfo().UserID) +
-                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        String.Format(ResourceTexts.StrRequestCallerInfo, string.Empty, string.Empty),
                         ReadWriteTransaction);
 
                     SubmissionOK = true;
@@ -1106,6 +1116,67 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// sign up for self service
+        /// </summary>
+        [NoRemoting]
+        public static bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode)
+        {
+            TDataBase db = DBAccess.Connect("SignUpSelfService");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SignUpSelfService");
+            string UserID;
+            bool Result = true;
+
+            UserInfo.SetUserInfo(new TPetraPrincipal("SELFSERVICE"));
+
+            try
+            {
+                // Create s_user entry. and permission PARTNER_SELFSERVICE
+                // s_user still not enabled, AccountLocked
+                // don't create partner yet
+                if (!CreateUser(AEmailAddress, APassword, AFirstName, ALastName, ALanguageCode, "PARTNER_SELFSERVICE",
+                    "PLACEHOLDERTOKEN", out UserID, db))
+                {
+                    Result = false;
+                }
+                else
+                {
+                    // set token on s_user. 
+                    string token = SaveNewToken(UserID, db, Transaction);
+
+                    // send the email with the link for setting the password
+                    string Domain = TAppSettingsManager.GetValue("Server.Url");
+                    string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
+                    Dictionary<string, string> emailparameters = new Dictionary<string, string>();
+                    emailparameters.Add("UserId", UserID);
+                    emailparameters.Add("FirstName", AFirstName);
+                    emailparameters.Add("LastName", ALastName);
+                    emailparameters.Add("Domain", Domain);
+                    emailparameters.Add("Token", token);
+                    
+                    new TSmtpSender().SendEmailFromTemplate(
+                        "no-reply@" + EMailDomain,
+                        "OpenPetra Admin",
+                        AEmailAddress,
+                        "selfservicesignup",
+                        ALanguageCode,
+                        emailparameters);
+                }
+
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SetNewPassword " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
+            
+            return Result;
+        }
+
+        /// <summary>
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
         [RequireModulePermission("SYSMAN")]
@@ -1163,9 +1234,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                             {
                                 if (user.PwdSchemeVersion == 0)
                                 {
+                                    string UserID;
                                     // in fact, PasswordHash is expected to be the password in clear text
                                     CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty,
-                                        AClientComputerName, AClientIPAddress, SubmitChangesTransaction.DataBaseObj);
+                                        string.Empty, string.Empty,
+                                        out UserID,
+                                        SubmitChangesTransaction.DataBaseObj);
                                     // this is a hack: the user is not stored here, but in CreateUser
                                     user.AcceptChanges();
                                 }

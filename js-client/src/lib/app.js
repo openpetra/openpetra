@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//	   Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -80,6 +81,31 @@ function resetPassword() {
 	return false;
 }
 
+function selfSignUp() {
+	
+	var url = new URL(window.location.href);
+	var SelfSignupPasswordToken = url.searchParams.get("SelfSignupPasswordToken");
+	var UserId = url.searchParams.get("UserId");
+	if (SelfSignupPasswordToken != null) {
+		// delete our session to be logged out
+		window.localStorage.setItem('username', '');
+		window.localStorage.setItem('authenticated', 0);
+
+		$("#selfSignUpStep2").show();
+		$("#btnSelfSignUpStep2").click(function(e) {
+			e.preventDefault();
+			pwd1=$("#txtPassword1").val();
+			pwd2=$("#txtPassword2").val();
+			if (pwd1 != pwd2) {
+				display_message(i18next.t('login.passwords_dont_match'), "fail");
+			} else {
+				auth.setNewPassword(UserId, ResetPasswordToken, pwd1);
+			}
+		});
+		return true;
+	}
+	return false;
+}
 
 auth.checkAuth(function(isAuthenticated) {
 	$("#loading").hide();
@@ -121,6 +147,27 @@ function requestNewPassword() {
 			display_message(i18next.t('login.enterValidEmail'), "fail");
 		} else {
 			auth.requestNewPassword(user);
+		}
+
+	});
+}
+
+function requestSignUp() {
+	$("#login").hide();
+	$("#signUp").show();
+	$("#btnSignUpSubmit").click(function(e) {
+		e.preventDefault();
+		userEmail=$("#txtEmailSignUp").val();
+		firstName=$("#txtFirstName").val();
+		lastName=$("#txtLastName").val();
+		pwd1=$("#txtPassword1").val();
+		pwd2=$("#txtPassword2").val();
+		if ((pwd1 != pwd2) || (pwd1 == '')) {
+			display_message(i18next.t('login.passwords_dont_match'), "fail");
+		} else if (userEmail == "" || userEmail.indexOf('@') == -1) {
+			display_message(i18next.t('login.enterValidEmail'), "fail");
+		} else {
+			auth.signUp(userEmail, firstName, lastName, pwd1);
 		}
 
 	});

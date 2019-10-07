@@ -688,13 +688,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// PetraMultiStart.exe application for the creation of test users for that application.</remarks>
         public bool AddUser(string AUserID, string APassword = "")
         {
+            string UserID;
             return TMaintenanceWebConnector.CreateUser(AUserID,
                 APassword,
                 string.Empty,
                 string.Empty,
                 string.Empty,
+                TMaintenanceWebConnector.DEMOMODULEPERMISSIONS,
                 string.Empty,
-                TMaintenanceWebConnector.DEMOMODULEPERMISSIONS);
+                out UserID);
         }
 
         /// <summary>

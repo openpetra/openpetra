@@ -303,6 +303,13 @@ namespace Ict.Petra.Server.App.WebService
             return TMaintenanceWebConnector.RequestNewPassword(AEmailAddress);
         }
 
+        /// <summary>send out an e-mail for creating a self-service account</summary>
+        [WebMethod(EnableSession = true)]
+        public bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode)
+        {
+            return TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode);
+        }
+
         /// <summary>set a new password with a token that was sent via e-mail</summary>
         [WebMethod(EnableSession = true)]
         public string SetNewPassword(string AUserID, string AToken, string ANewPassword)
