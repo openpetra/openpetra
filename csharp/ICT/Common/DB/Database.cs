@@ -2569,6 +2569,7 @@ namespace Ict.Common.DB
             bool ACommitTransaction = false)
         {
             int NumberOfRowsAffected = 0;
+            bool Success = false;
 
             if ((ATransaction == null) && (ACommitTransaction == true))
             {
@@ -2608,6 +2609,8 @@ namespace Ict.Common.DB
                         {
                             TLogging.Log("Number of rows affected: " + NumberOfRowsAffected.ToString());
                         }
+
+                        Success = true;
                     }
                     catch (Exception exp)
                     {
@@ -2630,13 +2633,6 @@ namespace Ict.Common.DB
 
                         LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing non-query SQL statement.");
                     }
-
-                    if (ACommitTransaction)
-                    {
-                        ATransaction.Commit();
-                    }
-
-                    return NumberOfRowsAffected;
                 }
             }
             finally
@@ -2646,6 +2642,18 @@ namespace Ict.Common.DB
                     ReleaseCoordinatedDBAccess();
                 }
             }
+
+            if (Success)
+            {
+                if (ACommitTransaction)
+                {
+                    ATransaction.Commit();
+                }
+
+                return NumberOfRowsAffected;
+            }
+
+            return 0;
         }
 
         #endregion

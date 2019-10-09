@@ -326,7 +326,7 @@ namespace Ict.Common.DB
                 // MSDN says: "Try/Catch exception handling should always be used when rolling back a
                 // transaction. A Rollback generates an InvalidOperationException if the connection is
                 // terminated or if the transaction has already been rolled back on the server."
-                TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
+                TLogging.Log("Exception while attempting Transaction commit: " + Exc.ToString());
             }
         }
 
