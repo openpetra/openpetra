@@ -760,6 +760,12 @@ namespace Ict.Common.IO
                         TLogging.LogAtLevel(1, "Trying to send E-Mail to " +
                                             AEmail.To.ToString() + " from " + AEmail.From.ToString());
 
+                        if (!AEmail.From.ToString().Substring(AEmail.From.ToString().IndexOf("@")).Contains("."))
+                        {
+                            // invalid Email domain, eg. local
+                            return false;
+                        }
+
                         // for office365, this takes about 15 seconds
                         FSmtpClient.Send(AEmail);
 

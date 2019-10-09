@@ -1140,7 +1140,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 }
                 else
                 {
-                    // set token on s_user. 
+                    // set token on s_user.
                     string token = SaveNewToken(UserID, db, Transaction);
 
                     // send the email with the link for setting the password
@@ -1152,14 +1152,19 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     emailparameters.Add("LastName", ALastName);
                     emailparameters.Add("Domain", Domain);
                     emailparameters.Add("Token", token);
+               
+                    TSmtpSender sender = new TSmtpSender();
                     
-                    new TSmtpSender().SendEmailFromTemplate(
+                    if (!sender.SendEmailFromTemplate(
                         "no-reply@" + EMailDomain,
                         "OpenPetra Admin",
                         AEmailAddress,
                         "selfservicesignup",
                         ALanguageCode,
-                        emailparameters);
+                        emailparameters))
+                    {
+                        throw new Exception("failure sending email. perhaps wrong EMailDomain? " + EMailDomain);
+                    }
                 }
 
             }
