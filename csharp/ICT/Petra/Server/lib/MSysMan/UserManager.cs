@@ -191,28 +191,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             string EmailAddress = AUserID;
 
-            if (EmailAddress.Contains("@"))
-            {
-                // try to find unique User for this e-mail address
-                string sql = "SELECT s_user_id_c FROM PUB_s_user WHERE UPPER(s_email_address_c) = ?";
-
-                OdbcParameter[] parameters = new OdbcParameter[1];
-                parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
-                parameters[0].Value = EmailAddress.ToUpper();
-
-                DataTable result = ATransaction.DataBaseObj.SelectDT(sql, "user", ATransaction, parameters);
-
-                if (result.Rows.Count == 1)
-                {
-                    AUserID = result.Rows[0][0].ToString();
-                }
-                else
-                {
-                    TLogging.Log("Login with E-Mail address failed for " + EmailAddress + ". " +
-                        "We found " + result.Rows.Count.ToString() + " matching rows for this address.");
-                }
-            }
-
             try
             {
                 UserDR = LoadUser(AUserID, out PetraPrincipal, ATransaction);

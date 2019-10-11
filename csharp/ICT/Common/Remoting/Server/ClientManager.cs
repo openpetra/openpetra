@@ -502,6 +502,40 @@ namespace Ict.Common.Remoting.Server
             return BuildClientList(AListDisconnectedClients);
         }
 
+        private static string GetUserIDFromEmail(string AUserEmail)
+        {
+            TDataBase db = DBAccess.Connect("GetUserIDFromEmail");
+            TDBTransaction Transaction = new TDBTransaction();
+            string UserID = AUserEmail;
+
+            DBConnectionObj.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    string sql = "SELECT s_user_id_c FROM PUB_s_user WHERE UPPER(s_email_address_c) = ?";
+
+                    OdbcParameter[] parameters = new OdbcParameter[1];
+                    parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
+                    parameters[0].Value = AUserEmail.ToUpper();
+
+                    DataTable result = db.SelectDT(sql, "user", Transaction, parameters);
+
+                    if (result.Rows.Count == 1)
+                    {
+                        UserID = result.Rows[0][0].ToString();
+                    }
+                    else
+                    {
+                        TLogging.Log("Login with E-Mail address failed for " + AUserEmail + ". " +
+                            "We found " + result.Rows.Count.ToString() + " matching rows for this address.");
+                        throw new Exception("multiple users are matching this email address");
+                    }
+                });
+
+            db.CloseDBConnection();
+            
+            return UserID;
+        }
+
         /// <summary>
         /// Called by a Client to request connection to the Petra Server.
         ///
@@ -584,6 +618,12 @@ namespace Ict.Common.Remoting.Server
                     }
 
                     #endregion
+
+                    // check for username, if it is an email address
+                    if (AUserName.Contains('@'))
+                    {
+                        AUserName = GetUserIDFromEmail(AUserName);
+                    }
 
                     #region Variable assignments
                     // we are not really using the ClientID anymore, but the session ID!
