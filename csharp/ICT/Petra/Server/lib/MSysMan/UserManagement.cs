@@ -34,18 +34,23 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Security;
 using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
-using Ict.Common.Remoting.Shared;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 {
@@ -1178,6 +1183,137 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 db.CloseDBConnection();
             }
             
+            return Result;
+        }
+
+        /// create a new partner
+        [NoRemoting]
+        private static PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS, TDataBase ADataBase)
+        {
+            PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
+
+            // get a new partner key
+            Int64 newPartnerKey = -1;
+
+            do
+            {
+                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey, ADataBase);
+                TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, newPartnerKey, ref newPartnerKey, ADataBase);
+                PartnerRow.PartnerKey = newPartnerKey;
+            } while (newPartnerKey == -1);
+
+            PartnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+
+            AMainDS.PPartner.Rows.Add(PartnerRow);
+
+            TLogging.LogAtLevel(2, "Creating new partner: " + PartnerRow.PartnerKey.ToString());
+
+            return PartnerRow;
+        }
+
+        private static PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS, TDataBase ADataBase, string AFirstName, string AFamilyName)
+        {
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
+
+            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+            PartnerRow.PartnerShortName = AFamilyName + "," + AFirstName;
+
+            PFamilyRow FamilyRow = AMainDS.PFamily.NewRowTyped();
+            FamilyRow.PartnerKey = PartnerRow.PartnerKey;
+            FamilyRow.FamilyName = AFamilyName;
+            FamilyRow.FirstName = AFirstName;
+            AMainDS.PFamily.Rows.Add(FamilyRow);
+
+            return PartnerRow;
+        }
+
+        /// create a new location
+        public static void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
+        {
+            PLocationRow LocationRow = AMainDS.PLocation.NewRowTyped();
+
+            LocationRow.SiteKey = DomainManager.GSiteKey;
+            LocationRow.LocationKey = -1;
+            LocationRow.CountryCode = "99";
+            AMainDS.PLocation.Rows.Add(LocationRow);
+
+            PPartnerLocationRow PartnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
+            PartnerLocationRow.SiteKey = LocationRow.SiteKey;
+            PartnerLocationRow.PartnerKey = APartnerKey;
+            PartnerLocationRow.LocationKey = LocationRow.LocationKey;
+            AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+        }
+
+        /// <summary>confirm the e-mail address for the self service account</summary>
+        [NoRemoting]
+        public static bool SignUpSelfServiceConfirm(string AUserID, string AToken)
+        {
+            TDataBase db = DBAccess.Connect("SignUpSelfServiceConfirm");
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmissionOK = false;
+            bool Result = false;
+
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    // check if token is valid, and user still not activated
+                    SUserTable UserDT = SUserAccess.LoadByPrimaryKey(AUserID, Transaction);
+
+                    if (UserDT.Rows.Count != 1)
+                    {
+                        return;
+                    }
+
+                    SUserRow UserDR = UserDT[0];
+
+                    if (UserDR.AccountLocked == false)
+                    {
+                        // the account has already been activated
+                        Result = true;
+                        return;
+                    }
+
+                    if (!((UserDR.PasswordResetToken == AToken) && (UserDR.PasswordResetValidUntil >= DateTime.Today)))
+                    {
+                        // invalid token
+                        return;
+                    }
+
+                    try
+                    {
+                        // create partner record, and link to user record
+                        PartnerEditTDS MainDS = new PartnerEditTDS();
+                        PPartnerRow PartnerDR = CreateNewFamilyPartner(MainDS, db, UserDR.FirstName, UserDR.LastName);
+                        CreateNewLocation(PartnerDR.PartnerKey, MainDS);
+                        PartnerEditTDSAccess.SubmitChanges(MainDS, db);
+
+                        // activate user record
+                        UserDR.PartnerKey = PartnerDR.PartnerKey;
+                        UserDR.PasswordResetToken = "";
+                        UserDR.SetPasswordResetValidUntilNull();
+                        UserDR.AccountLocked = false;
+                        SUserAccess.SubmitChanges(UserDT, Transaction);
+
+                        TUserAccountActivityLog.AddUserAccountActivityLogEntry(UserDR.UserId,
+                            TUserAccountActivityLog.USER_CONFIRMED_SELF_SERVICE,
+                            String.Format(Catalog.GetString(
+                                    "The user {0} got confirmed."), UserDR.UserId),
+                            Transaction);
+
+                        SubmissionOK = true;
+                        Result = true;
+                    }
+                    catch (Exception Exc)
+                    {
+                        TLogging.Log("An Exception occured during SignUpSelfServiceConfirm:" + Environment.NewLine +
+                            Exc.ToString());
+
+                        throw;
+                    }
+                });
+
+            db.CloseDBConnection();
+
             return Result;
         }
 

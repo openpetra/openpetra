@@ -14,6 +14,8 @@
         "errorPwdResetEmailSent": "There was an error, no new password has been sent!",
         "successSignUp": "An email with your access details has been sent!",
         "errorSignUp": "There was an error, we cannot currently give you access.",
+        "successSignUpConfirmed": "Your account has been activated, please login with your E-Mail address and password!",
+        "errorSignUpConfirmed": "The account could not be activated.",
         "newpasswd1": "New password",
         "newpasswd2": "Repeat new password",
         "passwords_dont_match": "The passwords don't match!",

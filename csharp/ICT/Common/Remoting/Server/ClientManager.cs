@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Odbc;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
@@ -508,7 +509,7 @@ namespace Ict.Common.Remoting.Server
             TDBTransaction Transaction = new TDBTransaction();
             string UserID = AUserEmail;
 
-            DBConnectionObj.ReadTransaction(ref Transaction,
+            db.ReadTransaction(ref Transaction,
                 delegate
                 {
                     string sql = "SELECT s_user_id_c FROM PUB_s_user WHERE UPPER(s_email_address_c) = ?";

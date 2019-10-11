@@ -14,6 +14,8 @@
         "errorPwdResetEmailSent": "Es gab einen Fehler, es wurde kein neues Passwort verschickt",
         "successSignUp": "Eine E-Mail wurde verschickt, mit Ihren Zugangsdaten",
         "errorSignUp": "Es gab einen Fehler, der Zugang ist momentan nicht möglich",
+        "successSignUpConfirmed": "Der Zugang wurde aktiviert, melden Sie sich nun mit Ihrer E-Mail Adresse und Ihrem Passwort an!",
+        "errorSignUpConfirmed": "Der Zugang konnte nicht aktiviert werden.",
         "newpasswd1": "Neues Passwort",
         "newpasswd2": "Neues Passwort wiederholen",
         "passwords_dont_match": "Die Passwörter stimmen nicht überein!",

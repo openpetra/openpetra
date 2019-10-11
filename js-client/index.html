@@ -118,11 +118,11 @@
 <!-- Begin of Sign Up -->
 <div id="signUp" class="container" style="display:none">
 	<form class="form-signin">
-		<input type="email" class="form-control" placeholder="{email}" id="txtEmailSignUp" autofocus>
-		<input type="text" class="form-control" placeholder="{firstname}" id="txtFirstName">
-		<input type="text" class="form-control" placeholder="{lastname}" id="txtLastName">
-		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPassword1">
-		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPassword2">
+		<input type="email" class="form-control" placeholder="{email}" id="txtEmailSignUp" autofocus required>
+		<input type="text" class="form-control" placeholder="{firstname}" id="txtFirstName" required>
+		<input type="text" class="form-control" placeholder="{lastname}" id="txtLastName" required>
+		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPassword1" required>
+		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPassword2" required>
 		<button id="btnSignUpSubmit" class="btn btn-lg btn-primary btn-block" type="submit">{signup}</button>
 	</form>
 </div> <!-- /container -->

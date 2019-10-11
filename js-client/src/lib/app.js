@@ -81,27 +81,31 @@ function resetPassword() {
 	return false;
 }
 
+function reloadMainPage() {
+	window.location.replace('/');
+}
+
 function selfSignUp() {
-	
 	var url = new URL(window.location.href);
 	var SelfSignupPasswordToken = url.searchParams.get("SelfSignupPasswordToken");
 	var UserId = url.searchParams.get("UserId");
 	if (SelfSignupPasswordToken != null) {
-		// delete our session to be logged out
-		window.localStorage.setItem('username', '');
-		window.localStorage.setItem('authenticated', 0);
-
-		$("#selfSignUpStep2").show();
-		$("#btnSelfSignUpStep2").click(function(e) {
-			e.preventDefault();
-			pwd1=$("#txtPassword1").val();
-			pwd2=$("#txtPassword2").val();
-			if (pwd1 != pwd2) {
-				display_message(i18next.t('login.passwords_dont_match'), "fail");
-			} else {
-				auth.setNewPassword(UserId, ResetPasswordToken, pwd1);
-			}
-		});
+		api.post('serverSessionManager.asmx/SignUpSelfServiceConfirm',
+			{AUserID: UserId,
+				AToken: SelfSignupPasswordToken
+			})
+			.then(function(response) {
+				var result = JSON.parse(response.data.d);
+				if (result == true) {
+					display_message(i18next.t('login.successSignUpConfirmed'), "success");
+					setTimeout(reloadMainPage, 5000);
+				} else {
+					display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
+				}
+			})
+			.catch(function(error) {
+				display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
+			});
 		return true;
 	}
 	return false;
@@ -110,7 +114,7 @@ function selfSignUp() {
 auth.checkAuth(function(isAuthenticated) {
 	$("#loading").hide();
 	$(window).scrollTop(0);
-	if (!resetPassword()) {
+	if (!resetPassword() && !selfSignUp()) {
 		$("#login").show();
 		if (window.location.hostname.indexOf("demo.") !== -1)
 		{
@@ -128,7 +132,7 @@ auth.checkAuth(function(isAuthenticated) {
 	setTimeout(keepConnection, 5000);
 	$("#loading").hide();
 
-	if (!resetPassword()) {
+	if (!resetPassword() && !selfSignUp()) {
 		// load the navigation bars now.
 		// we don't want the navigation bars displayed if the user is not logged in
 		$("#main").show();

@@ -50,6 +50,7 @@ using Ict.Petra.Shared.Security;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
+using Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
@@ -184,6 +185,11 @@ namespace Ict.Petra.Server.App.WebService
 
             try
             {
+                if (username.ToUpper() == "SELFSERVICE")
+                {
+                    throw new Exception("Login with user SELFSERVICE is not permitted");
+                }
+
                 TConnectedClient CurrentClient = TClientManager.ConnectClient(
                     username.ToUpper(), password.Trim(),
                     HttpContext.Current.Request.UserHostName,
@@ -307,7 +313,37 @@ namespace Ict.Petra.Server.App.WebService
         [WebMethod(EnableSession = true)]
         public bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode)
         {
-            return TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode);
+            try
+            {
+                return TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode);
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during SignUpSelfService:" + Environment.NewLine +
+                    Exc.ToString());
+
+                throw;
+            }
+        }
+
+        /// <summary>confirm the e-mail address for the self service account</summary>
+        [WebMethod(EnableSession = true)]
+        public bool SignUpSelfServiceConfirm(string AUserID, string AToken)
+        {
+            try
+            {
+                TServerAdminWebConnector.LoginServerAdmin("SELFSERVICE");
+                bool Result = TMaintenanceWebConnector.SignUpSelfServiceConfirm(AUserID, AToken);
+                Logout();
+                return Result;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during SignUpSelfServiceConfirm:" + Environment.NewLine +
+                    Exc.ToString());
+
+                throw;
+            }
         }
 
         /// <summary>set a new password with a token that was sent via e-mail</summary>

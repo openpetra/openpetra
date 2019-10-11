@@ -214,7 +214,11 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // pass ATransaction
             UserInfo.SetUserInfo(PetraPrincipal);
 
-            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+            if (AUserID == "SELFSERVICE")
+            {
+                APassword = String.Empty;
+            }
+            else if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
                 // Login via server admin console authenticated by file token
                 APassword = String.Empty;
@@ -276,7 +280,11 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // an attack vector called 'timing attack')
             if (UserDR.AccountLocked || UserDR.Retired)
             {
-                if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+                if (AUserID == "SELFSERVICE")
+                {
+                    // this is ok.
+                }
+                else if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
                 {
                     // this is ok. we need to be able to activate the sysadmin account on SetInitialSysadminEmail
                 }
