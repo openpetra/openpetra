@@ -1131,8 +1131,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string UserID;
             bool Result = true;
 
-            UserInfo.SetUserInfo(new TPetraPrincipal("SELFSERVICE"));
-
             try
             {
                 // Create s_user entry. and permission PARTNERSELFSERVICE

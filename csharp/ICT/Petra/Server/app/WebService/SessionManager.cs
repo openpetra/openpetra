@@ -315,7 +315,10 @@ namespace Ict.Petra.Server.App.WebService
         {
             try
             {
-                return TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode);
+                TServerAdminWebConnector.LoginServerAdmin("SELFSERVICE");
+                bool Result = TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode);
+                Logout();
+                return Result;
             }
             catch (Exception Exc)
             {
