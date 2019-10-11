@@ -239,6 +239,7 @@ server {
     root $OpenPetraPath/client;
 
     location / {
+         rewrite ^/Selfservice.*$ /;
          rewrite ^/Settings.*$ /;
          rewrite ^/Partner.*$ /;
          rewrite ^/Finance.*$ /;
