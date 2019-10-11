@@ -124,6 +124,56 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return MainDS;
         }
 
+        private static Int64 GetOwnPartnerKeyForUser()
+        {
+            Int64 PartnerKey = -1;
+            TDBTransaction Transaction = new TDBTransaction();
+
+            DBAccess.ReadTransaction( ref Transaction,
+                delegate
+                {
+                    string sql = "SELECT p_partner_key_n FROM PUB_s_user WHERE s_user_id_c = ?";
+
+                    OdbcParameter[] parameters = new OdbcParameter[1];
+                    parameters[0] = new OdbcParameter("UserID", OdbcType.VarChar);
+                    parameters[0].Value = UserInfo.GetUserInfo().UserID;
+
+                    DataTable result = Transaction.DataBaseObj.SelectDT(sql, "user", Transaction, parameters);
+
+                    if (result.Rows.Count == 1)
+                    {
+                        PartnerKey = Convert.ToInt64(result.Rows[0][0]);
+                    }
+                });
+
+            if (PartnerKey == -1)
+            {
+                throw new Exception("cannot find partner for this user");
+            }
+
+            return PartnerKey;
+        }
+
+        /// <summary>
+        /// return the existing data of my own partner record for self service
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PARTNERSELFSERVICE")]
+        public static PartnerEditTDS GetPartnerDetailsSelfService(
+            out List<string> ASubscriptions,
+            out List<string> APartnerTypes,
+            out string ADefaultEmailAddress,
+            out string ADefaultPhoneMobile,
+            out string ADefaultPhoneLandline)
+        {
+            return GetPartnerDetails(GetOwnPartnerKeyForUser(),
+                out ASubscriptions,
+                out APartnerTypes,
+                out ADefaultEmailAddress,
+                out ADefaultPhoneMobile,
+                out ADefaultPhoneLandline);
+        }
+
         /// <summary>
         /// return the existing data of a partner
         /// </summary>
@@ -307,6 +357,35 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             PartnerEditTDSAccess.SubmitChanges(AMainDS);
+        }
+
+        /// <summary>
+        /// return the existing data of my own partner record for self service
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PARTNERSELFSERVICE")]
+        public static bool SavePartnerSelfService(PartnerEditTDS AMainDS,
+            List<string> ASubscriptions,
+            List<string> APartnerTypes,
+            bool ASendMail,
+            string ADefaultEmailAddress,
+            string ADefaultPhoneMobile,
+            string ADefaultPhoneLandline,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            if (AMainDS.PPartner[0].PartnerKey != GetOwnPartnerKeyForUser())
+            {
+                throw new Exception("No permission to edit this partner");
+            }
+
+            return SavePartner(AMainDS,
+                ASubscriptions,
+                APartnerTypes,
+                ASendMail,
+                ADefaultEmailAddress,
+                ADefaultPhoneMobile,
+                ADefaultPhoneLandline,
+                out AVerificationResult);
         }
 
         /// <summary>

@@ -1,6 +1,9 @@
 OpenPetra:
     MainMenu:
         # Department
+        SelfService: {fa-icon=address-book, PermissionsRequired=PARTNERSELFSERVICE}
+                Partners:
+                        MaintainPartnerSelfService:
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
                 Partners:
                     Maintain:

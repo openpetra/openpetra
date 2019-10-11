@@ -50,6 +50,7 @@ i18next
   });
 
 function translateElement(obj, form) {
+   if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
    placeholder=$(obj).attr('placeholder');
    if (placeholder !== undefined && placeholder[0] == '{') {
      placeholder = placeholder.substring(1, placeholder.length-1);
@@ -73,6 +74,7 @@ function updateContent() {
 }
 
 function translate(html, form) {
+  if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
   pos = -1;
   while ((pos = html.indexOf('{', pos+1)) > -1) {
     pos2 = html.indexOf('}', pos);

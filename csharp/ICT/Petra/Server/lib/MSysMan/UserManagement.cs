@@ -1135,10 +1135,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             try
             {
-                // Create s_user entry. and permission PARTNER_SELFSERVICE
+                // Create s_user entry. and permission PARTNERSELFSERVICE
                 // s_user still not enabled, AccountLocked
                 // don't create partner yet
-                if (!CreateUser(AEmailAddress, APassword, AFirstName, ALastName, ALanguageCode, "PARTNER_SELFSERVICE",
+                if (!CreateUser(AEmailAddress, APassword, AFirstName, ALastName, ALanguageCode, "PARTNERSELFSERVICE",
                     "PLACEHOLDERTOKEN", out UserID, db))
                 {
                     Result = false;
@@ -1228,7 +1228,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// create a new location
-        public static void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
+        private static void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
         {
             PLocationRow LocationRow = AMainDS.PLocation.NewRowTyped();
 
