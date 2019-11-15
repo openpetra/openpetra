@@ -296,6 +296,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                 Catalog.GetString("Deleting current data..."),
                                 0);
 
+                            // need to reset connection between s_user and p_partner to avoid broken foreign key
+                            ReadWriteTransaction.DataBaseObj.ExecuteNonQuery("UPDATE pub_s_user SET p_partner_key_n = NULL", ReadWriteTransaction);
+
                             foreach (string table in tables)
                             {
                                 ReadWriteTransaction.DataBaseObj.ExecuteNonQuery("DELETE FROM pub_" + table, ReadWriteTransaction);
