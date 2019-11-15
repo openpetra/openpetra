@@ -312,14 +312,16 @@ namespace Ict.Petra.Server.App.WebService
 
         /// <summary>send out an e-mail for creating a self-service account</summary>
         [WebMethod(EnableSession = true)]
-        public bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode)
+        public string SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode, out TVerificationResultCollection AVerification)
         {
+            AVerification = new TVerificationResultCollection();
+
             try
             {
                 TServerAdminWebConnector.LoginServerAdmin("SELFSERVICE");
-                bool Result = TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode);
+                bool Result = TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode, out AVerification);
                 Logout();
-                return Result;
+                return "{" + "\"AVerification\": " + THttpBinarySerializer.SerializeObject(AVerification)+ "," + "\"result\": "+THttpBinarySerializer.SerializeObject(Result)+ "}";
             }
             catch (Exception Exc)
             {

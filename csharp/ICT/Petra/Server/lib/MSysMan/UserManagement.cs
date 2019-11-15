@@ -1159,15 +1159,29 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// sign up for self service
         /// </summary>
         [NoRemoting]
-        public static bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode)
+        public static bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode, out TVerificationResultCollection AVerification)
         {
             TDataBase db = DBAccess.Connect("SignUpSelfService");
+            AVerification = new TVerificationResultCollection();
 
             if (!SignUpSelfServiceEnabled(db))
             {
                 TLogging.Log("SignUpSelfService is not enabled");
+                AVerification.Add(new TVerificationResult("SignUpSelfService",
+                                    "SignUpSelfService is not enabled",
+                                    "SignUpSelfService.NotEnabled",
+                                    TResultSeverity.Resv_Critical));                
                 return false;
             }
+
+            // Password quality check
+            TVerificationResult VerificationResult;
+            if (!TSharedSysManValidation.CheckPasswordQuality(APassword, out VerificationResult))
+            {
+                AVerification.Add(VerificationResult);
+                return false;
+            }
+            
 
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SignUpSelfService");
             string UserID;

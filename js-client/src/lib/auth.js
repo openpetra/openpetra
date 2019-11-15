@@ -112,13 +112,13 @@ class Auth {
 					ALanguageCode: currentLng()})
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
-				if (result == true) {
+				if (result.result == true) {
 					display_message(i18next.t('login.successSignUp'), "success");
 					setTimeout(function() {
 						window.location.reload();
 						}, 3000);
 				} else {
-					display_message(i18next.t('login.errorSignUp'), "fail");
+					display_error(result.AVerification);
 				}
 			})
 			.catch(function(error) {
