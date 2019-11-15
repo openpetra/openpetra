@@ -47,6 +47,7 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Security;
 using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
@@ -1121,6 +1122,36 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// has self service been enabled?
+        /// </summary>
+        [NoRemoting]
+        public static bool SignUpSelfServiceEnabled()
+        {
+            TDataBase db = DBAccess.Connect("SignUpSelfServiceEnabled");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted, 0, "SignUpSelfService");
+            string UserID;
+            bool Result = false;
+
+            try
+            {
+                TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+                Result = SystemDefaults.GetBooleanDefault(
+                                SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, false);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SignUpSelfServiceEnabled " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
+
+            return Result;
+        }
+
+        /// <summary>
         /// sign up for self service
         /// </summary>
         [NoRemoting]
@@ -1180,7 +1211,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 db.CloseDBConnection();
             }
-            
+
             return Result;
         }
 

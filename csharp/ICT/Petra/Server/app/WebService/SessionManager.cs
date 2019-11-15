@@ -278,6 +278,7 @@ namespace Ict.Petra.Server.App.WebService
             }
             else
             {
+                result.Add("selfsignupEnabled", TMaintenanceWebConnector.SignUpSelfServiceEnabled()?"true":"false");
                 result.Add("resultcode", "error");
             }
 

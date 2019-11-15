@@ -96,7 +96,7 @@ class Auth {
 							window.localStorage.setItem('authenticated', 0);
 							window.location.reload();
 						}
-						fnNonUser();
+						fnNonUser(result.selfsignupEnabled == "true");
 					}
 				})
 				.catch(function(error) {

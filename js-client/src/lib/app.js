@@ -111,11 +111,12 @@ function selfSignUp() {
 	return false;
 }
 
-auth.checkAuth(function(isAuthenticated) {
+auth.checkAuth(function(selfsignupEnabled) {
 	$("#loading").hide();
 	$(window).scrollTop(0);
 	if (!resetPassword() && !selfSignUp()) {
 		$("#login").show();
+		if (selfsignupEnabled) $("#btnSignUp").show();
 		if (window.location.hostname.indexOf("demo.") !== -1)
 		{
 			$("#txtEmail").val("demo");
