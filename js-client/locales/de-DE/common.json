@@ -88,6 +88,7 @@
         "LedgerSetup_label": "Konfiguration des Hauptbuches",
         "SystemManager_label": "System einrichten",
         "Settings_label": "Einstellungen",
+        "MaintainSettings_label": "System Einstellungen",
         "Users_label": "Benutzer",
         "Database_label": "Datenbank",
         "FindPartners_label": "Partner suchen",

@@ -88,6 +88,7 @@
         "LedgerSetup_label": "Configuration of Ledgers",
         "SystemManager_label": "System Management",
         "Settings_label": "Settings",
+        "MaintainSettings_label": "System Settings",
         "Users_label": "Users",
         "Database_label": "Database",
         "FindPartners_label": "Find Partners",
