@@ -410,11 +410,11 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AKey">Name of new or existing System Default.</param>
         /// <param name="AValue">String Value.</param>
         /// <param name="ADataBase"></param>
-        public void SetSystemDefault(String AKey, String AValue, TDataBase ADataBase = null)
+        public bool SetSystemDefault(String AKey, String AValue, TDataBase ADataBase = null)
         {
             bool SystemDefaultAdded;
 
-            SetSystemDefault(AKey, AValue, out SystemDefaultAdded, ADataBase);
+            return SetSystemDefault(AKey, AValue, out SystemDefaultAdded, ADataBase);
         }
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
         /// <param name="ADataBase"></param>
         /// <remarks>SystemDefault Names are not case sensitive.</remarks>
-        public void SetSystemDefault(String AKey, String AValue, out bool AAdded, TDataBase ADataBase = null)
+        public bool SetSystemDefault(String AKey, String AValue, out bool AAdded, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;
             TDBTransaction WriteTransaction = new TDBTransaction();
@@ -501,6 +501,8 @@ namespace Ict.Petra.Server.App.Core
                     FSystemDefaultsDT = null;
                 }
             }
+
+            return SubmissionOK;
         }
     }
 }

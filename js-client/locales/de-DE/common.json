@@ -87,6 +87,7 @@
         "Ledger_label": "Hauptbuch",
         "LedgerSetup_label": "Konfiguration des Hauptbuches",
         "SystemManager_label": "System einrichten",
+        "Settings_label": "Einstellungen",
         "Users_label": "Benutzer",
         "Database_label": "Datenbank",
         "FindPartners_label": "Partner suchen",
@@ -158,6 +159,12 @@
         "wrong": "Das alte Password wurde nicht korrekt eingegeben",
         "unknown": "Unbekannter Fehler ",
         "success": "Das Passwort wurde erfolgreich geändert"
+    },
+
+    "MaintainSettings": {
+        "caption": "System Einstellungen",
+        "SelfSignUpEnabled": "Selbstregistrierung",
+        "SelfSignUpEnabledYes": "Eingeschaltet"
     },
 
     "MaintainUsers": {

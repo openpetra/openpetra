@@ -93,6 +93,8 @@ OpenPetra:
                     LedgerSetup:
 
         SystemManager: {fa-icon=sliders, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+                Settings:
+                        MaintainSettings:
                 Users:
                         MaintainUsers:
                 Database:

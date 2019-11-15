@@ -87,6 +87,7 @@
         "Ledger_label": "Ledger",
         "LedgerSetup_label": "Configuration of Ledgers",
         "SystemManager_label": "System Management",
+        "Settings_label": "Settings",
         "Users_label": "Users",
         "Database_label": "Database",
         "FindPartners_label": "Find Partners",
@@ -158,6 +159,12 @@
         "wrong": "The current password was not entered correctly",
         "unknown": "unknown error code",
         "success": "Password has been changed successfully"
+    },
+
+    "MaintainSettings": {
+        "caption": "System Settings",
+        "SelfSignUpEnabled": "Self Service Sign Up",
+        "SelfSignUpEnabledYes": "Enabled"
     },
 
     "MaintainUsers": {

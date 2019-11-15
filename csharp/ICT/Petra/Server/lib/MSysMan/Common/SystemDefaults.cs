@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default that should be checked.</param>
         /// <returns>True if the System Default is defined, false if it isn't.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static bool IsSystemDefaultDefined(String ASystemDefaultName)
         {
             return new TSystemDefaults().IsSystemDefaultDefined(ASystemDefaultName);
@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <returns>The value of the System Default, or SharedConstants.SYSDEFAULT_NOT_FOUND if the
         /// specified System Default doesn't exist.
         /// </returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static String GetSystemDefault(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetSystemDefault(ASystemDefaultName);
@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <remarks>SystemDefault Names are not case sensitive.</remarks>
         /// <returns>The value of the System Default, or the value of <paramref name="ADefault" /> if the
         /// specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
             return new TSystemDefaults().GetSystemDefault(ASystemDefaultName, ADefault);
@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <returns>The value of the System Default as a bool, or the value of <paramref name="ADefault" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static bool GetBooleanDefault(String ASystemDefaultName, bool ADefault)
         {
             return new TSystemDefaults().GetBooleanDefault(ASystemDefaultName, ADefault);
@@ -108,7 +108,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <returns>The value of the System Default as a bool, or true if the specified System Default
         /// was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static bool GetBooleanDefault(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetBooleanDefault(ASystemDefaultName);
@@ -121,7 +121,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <returns>The value of the System Default as a char, or the value of <paramref name="ADefault" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Char GetCharDefault(String ASystemDefaultName, System.Char ADefault)
         {
             return new TSystemDefaults().GetCharDefault(ASystemDefaultName, ADefault);
@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <returns>The value of the System Default as a char, or the space character if the specified System Default
         /// was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Char GetCharDefault(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetCharDefault(ASystemDefaultName);
@@ -146,7 +146,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <returns>The value of the System Default as a double, or the value of <paramref name="ADefault" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static double GetDoubleDefault(String ASystemDefaultName, double ADefault)
         {
             return new TSystemDefaults().GetDoubleDefault(ASystemDefaultName, ADefault);
@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <returns>The value of the System Default as a double, or 0.0 if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static double GetDoubleDefault(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetDoubleDefault(ASystemDefaultName);
@@ -170,7 +170,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <returns>The value of the System Default as an Int16, or the value of <paramref name="ADefault" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int16 GetInt16Default(String ASystemDefaultName, System.Int16 ADefault)
         {
             return new TSystemDefaults().GetInt16Default(ASystemDefaultName, ADefault);
@@ -181,7 +181,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <returns>The value of the System Default as an Int16, or 0 if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int16 GetInt16Default(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetInt16Default(ASystemDefaultName);
@@ -194,7 +194,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <returns>The value of the System Default as an Int32, or the value of <paramref name="ADefault" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int32 GetInt32Default(String ASystemDefaultName, System.Int32 ADefault)
         {
             return new TSystemDefaults().GetInt32Default(ASystemDefaultName, ADefault);
@@ -205,7 +205,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <returns>The value of the System Default as an Int32, or 0 if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int32 GetInt32Default(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetInt32Default(ASystemDefaultName);
@@ -220,7 +220,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <see cref="GetSiteKeyDefault"/> Method!</remarks>
         /// <returns>The value of the System Default as an Int64, or the value of <paramref name="ADefault" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int64 GetInt64Default(String ASystemDefaultName, System.Int64 ADefault)
         {
             return new TSystemDefaults().GetInt64Default(ASystemDefaultName, ADefault);
@@ -233,7 +233,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <remarks><em>Do not inquire the 'SiteKey' System Default with this Method!</em> Rather, always use the
         /// <see cref="GetSiteKeyDefault"/> Method!</remarks>
         /// <returns>The value of the System Default as an Int64, or 0 if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static System.Int64 GetInt64Default(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetInt64Default(ASystemDefaultName);
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <returns>The value of the System Default as a string, or the value of <paramref name="ADefault" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static String GetStringDefault(String ASystemDefaultName, String ADefault)
         {
             return new TSystemDefaults().GetStringDefault(ASystemDefaultName, ADefault);
@@ -258,7 +258,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <returns>The value of the System Default as a string, or <see cref="string.Empty" />
         /// if the specified System Default was not found.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static String GetStringDefault(String ASystemDefaultName)
         {
             return new TSystemDefaults().GetStringDefault(ASystemDefaultName);
@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// Note: The SiteKey can get changed by a user with the necessary priviledges while being logged
         /// in to OpenPetra and this gets reflected when this Method gets called.</remarks>
         /// <returns>The SiteKey of the Site.</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static Int64 GetSiteKeyDefault()
         {
             return new TSystemDefaults().GetSiteKeyDefault();
@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <returns>System Defaults Typed DataTable.
         /// </returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("SYSMAN")]
         public static SSystemDefaultsTable GetSystemDefaults()
         {
             return new TSystemDefaults().GetSystemDefaultsTable();
@@ -293,10 +293,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// </summary>
         /// <param name="AKey">Name of new or existing System Default.</param>
         /// <param name="AValue">String Value.</param>
-        [RequireModulePermission("NONE")]
-        public static void SetSystemDefault(String AKey, String AValue)
+        [RequireModulePermission("SYSMAN")]
+        public static bool SetSystemDefault(String AKey, String AValue)
         {
-            new TSystemDefaults().SetSystemDefault(AKey, AValue);
+            return new TSystemDefaults().SetSystemDefault(AKey, AValue);
         }
 
         /// <summary>
@@ -305,10 +305,10 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// <param name="AKey">Name of new or existing System Default.</param>
         /// <param name="AValue">String Value.</param>
         /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
-        [RequireModulePermission("NONE")]
-        public static void SetSystemDefault(String AKey, String AValue, out bool AAdded)
+        [RequireModulePermission("SYSMAN")]
+        public static bool SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
-            new TSystemDefaults().SetSystemDefault(AKey, AValue, out AAdded);
+            return new TSystemDefaults().SetSystemDefault(AKey, AValue, out AAdded);
         }
     }
 }
