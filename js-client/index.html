@@ -5,9 +5,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2017-2019 by TBits.net
+// Copyright 2017-2018 by TBits.net
+// Copyright 2019 SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -219,12 +220,13 @@
 	$.getScript('/src/lib/checkIE.js' + WithVersion);
 	$.getScript('/src/lib/string.js' + WithVersion);
 	$.getScript('/src/lib/ajax.js' + WithVersion);
-	$.getScript('/src/lib/auth.js' + WithVersion);
-	$.getScript('/src/lib/i18n.js' + WithVersion);
-	$.getScript('/src/lib/navigation.js' + WithVersion);
-	$.getScript('/src/lib/app.js' + WithVersion);
-	$.getScript('/src/lib/utils.js' + WithVersion);
-	
+	$.getScript('/src/lib/auth.js' + WithVersion, function(e) {
+		$.getScript('/src/lib/i18n.js' + WithVersion);
+		$.getScript('/src/lib/navigation.js' + WithVersion);
+		$.getScript('/src/lib/app.js' + WithVersion);
+		$.getScript('/src/lib/utils.js' + WithVersion);
+	});
+
 </script>
 
 </body>
