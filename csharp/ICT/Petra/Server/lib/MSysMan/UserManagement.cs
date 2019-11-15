@@ -1125,9 +1125,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// has self service been enabled?
         /// </summary>
         [NoRemoting]
-        public static bool SignUpSelfServiceEnabled()
+        public static bool SignUpSelfServiceEnabled(TDataBase ADataBase = null)
         {
-            TDataBase db = DBAccess.Connect("SignUpSelfServiceEnabled");
+            TDataBase db = DBAccess.Connect("SignUpSelfServiceEnabled", ADataBase);
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted, 0, "SignUpSelfService");
             string UserID;
             bool Result = false;
@@ -1137,6 +1137,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 TSystemDefaults SystemDefaults = new TSystemDefaults(db);
                 Result = SystemDefaults.GetBooleanDefault(
                                 SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, false);
+                Transaction.Rollback();
             }
             catch (Exception e)
             {
@@ -1145,7 +1146,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             finally
             {
-                db.CloseDBConnection();
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
 
             return Result;
@@ -1158,6 +1162,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         public static bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode)
         {
             TDataBase db = DBAccess.Connect("SignUpSelfService");
+
+            if (!SignUpSelfServiceEnabled(db))
+            {
+                TLogging.Log("SignUpSelfService is not enabled");
+                return false;
+            }
+
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SignUpSelfService");
             string UserID;
             bool Result = true;
