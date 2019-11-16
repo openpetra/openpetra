@@ -4,6 +4,11 @@
 #
 
 export OpenPetraPath=/usr/local/openpetra
+if [ ! -d $OpenPetraPath ]; then
+  # non-root installation
+  dirname=`dirname $0`
+  export OpenPetraPath=$dirname
+fi
 export documentroot=$OpenPetraPath/server
 export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
@@ -17,6 +22,12 @@ if [ -z "$OP_CUSTOMER" ]
 then
   # we are starting or stopping openpetra, independant of an instance
   export userName=openpetra
+  if [ ! -d /usr/local/openpetra ]; then
+    # non-root installation
+    # get location of this script, to find out the proper user
+    dirname=`dirname $0`
+    export userName=`basename $dirname`
+  fi
 else
   config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
   if [ -f $config ]
@@ -49,10 +60,10 @@ fi
 # start the openpetra server
 start() {
     echo "Starting OpenPetra server"
-    if [ "`whoami`" = "openpetra" ]
+    if [ "`whoami`" = "$userName" ]
     then
       cd $documentroot
-      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenPetraPath/bin fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=$OpenPetraPath/etc/common.config /logfile=/var/log/mono.log /loglevels=Standard >& /dev/null &
+      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$documentroot/bin fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=$OpenPetraPath/etc/common.config /logfile=/var/log/mono.log /loglevels=Standard >& /dev/null &
       # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
 
       # improve speed of initial request by user by forcing to load all assemblies now
@@ -62,7 +73,7 @@ start() {
       # this process must not end, otherwise systemd stops the server
       tail -f /dev/null
     else
-      echo "Error: can only start the server as user openpetra"
+      echo "Error: can only start the server as user $userName"
       exit -1
     fi
 }
@@ -70,11 +81,11 @@ start() {
 # stop the openpetra server
 stop() {
     echo "Stopping OpenPetra server"
-    if [ "`whoami`" = "openpetra" ]
+    if [ "`whoami`" = "$userName" ]
     then
-      cd $OpenPetraPath/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop
+      cd $documentroot/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop
     else
-      echo "Error: can only stop the server as user openpetra"
+      echo "Error: can only stop the server as user $userName"
       exit -1
     fi
 }
