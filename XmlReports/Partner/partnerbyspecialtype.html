@@ -15,13 +15,25 @@
 SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
 	PUB_p_partner.p_partner_short_name_c AS ShortName,
 	PUB_p_partner.p_partner_class_c AS PartnerClass,
-	loc.*
-	FROM  PUB_p_partner, PUB_p_partner_location pl, PUB_p_location loc, PUB_p_partner_type as ptype
+	loc.*,
+	PartnerAttributePhone.p_value_c AS Phone,
+	PartnerAttributeMobile.p_value_c AS Mobile,
+	PartnerAttributeEMail.p_value_c AS EMail
+	FROM  PUB_p_partner, PUB_p_partner_location pl, PUB_p_location loc, PUB_p_partner_type as ptype,
+		PUB_p_partner_attribute AS PartnerAttributePhone,
+		PUB_p_partner_attribute AS PartnerAttributeMobile,
+		PUB_p_partner_attribute AS PartnerAttributeEMail
 	WHERE ptype.p_partner_key_n = PUB_p_partner.p_partner_key_n
 		AND NOT PUB_p_partner.p_partner_key_n = 0 
 		AND pl.p_partner_key_n = pub_p_partner.p_partner_key_n
 		AND pl.p_location_key_i = loc.p_location_key_i
 		AND pl.p_site_key_n = loc.p_site_key_n
+		AND PartnerAttributePhone.p_partner_key_n = PUB_p_partner.p_partner_key_n
+		AND PartnerAttributePhone.p_attribute_type_c = "Phone"
+		AND PartnerAttributeMobile.p_partner_key_n = PUB_p_partner.p_partner_key_n
+		AND PartnerAttributeMobile.p_attribute_type_c = "Mobile Phone"
+		AND PartnerAttributeEMail.p_partner_key_n = PUB_p_partner.p_partner_key_n
+		AND PartnerAttributeEMail.p_attribute_type_c = "E-Mail"
 
 #if {param_exclude_specialtypes}
 	AND NOT {LISTCMP param_exclude_specialtypes ptype.p_type_code_c}
@@ -57,9 +69,11 @@ ORDER BY 1
 	<div class="col-2">Name</div>
 	<div class="col-2">Street</div>
 	<div class="col-1">Post Code</div>
-	<div class="col-2">City</div>
-	<div class="col-2">Country</div>
+	<div class="col-1">City</div>
+	<div class="col-1">Country</div>
 	<div class="col-1">Phone</div>
+	<div class="col-1">Mobile</div>
+	<div class="col-1">E-Mail</div>
 </div>
 <div class="row">
 	<div class="col-12">
@@ -72,9 +86,11 @@ ORDER BY 1
 		<div class="col-2">{ShortName}</div>
 		<div class="col-2">{p_street_name_c}</div>
 		<div class="col-1">{p_postal_code_c}</div>
-		<div class="col-2">{p_city_c}</div>
-		<div class="col-2">{p_country_code_c}</div>
+		<div class="col-1">{p_city_c}</div>
+		<div class="col-1">{p_country_code_c}</div>
 		<div class="col-1">{Phone}</div>
+		<div class="col-1">{Mobile}</div>
+		<div class="col-1">{EMail}</div>
 	</div>
 </div>
 
