@@ -68,10 +68,11 @@ namespace Ict.Petra.ServerAdmin.App.Core.RemoteObjects
             }
 
             /// forward the method call
-            public System.Boolean LoginServerAdmin()
+            public System.Boolean LoginServerAdmin(string AUserID)
             {
                 SortedList<string, object> ActualParameters = new SortedList<string, object>();
                 ActualParameters.Add("AServerAdminSecurityToken", FHttpConnector.ServerAdminSecurityToken);
+                ActualParameters.Add("AUserID", AUserID);
                 List<object> Result = FHttpConnector.CallWebConnector("MServerAdmin", "TServerAdminWebConnector.LoginServerAdmin", ActualParameters, "System.Boolean");
                 return (System.Boolean) Result[0];
             }

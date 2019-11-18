@@ -825,7 +825,7 @@ namespace PetraServerAdminConsole
                 TRemote = new TMServerAdminNamespace(httpConnector).WebConnectors;
 
                 try {
-                    TRemote.LoginServerAdmin();
+                    TRemote.LoginServerAdmin("SYSADMIN");
                 }
                 catch (Exception)
                 {
