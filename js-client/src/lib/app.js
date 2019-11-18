@@ -121,6 +121,8 @@ auth.checkAuth(function(selfsignupEnabled) {
 		{
 			$("#txtEmail").val("demo");
 			$("#txtPassword").val("demo");
+			$("#hintdemo").show();
+			$("#hintdemo2").show();
 		}
 		$("#btnLogin").click(function(e) {
 			e.preventDefault();
