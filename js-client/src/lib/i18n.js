@@ -101,5 +101,7 @@ function currentLng() {
 }
 
 i18next.on('languageChanged', () => {
-  updateContent();
+  updateContent(); 
+  var flag = currentLng() == "de" ? "🇩🇪" : "🇬🇧";
+  $("#chlang span").text(flag);
 });

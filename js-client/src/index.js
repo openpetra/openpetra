@@ -24,6 +24,7 @@
 
 var css = require('../css/app.css');
 $ = require('jquery');
+require("flag-icon-css");
 require('bootstrap');
 i18next = require('i18next');
 axios = require('axios');
