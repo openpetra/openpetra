@@ -151,10 +151,10 @@ var new_entry_data = {};
 function new_batch() {
 	if (!allow_modal()) {return}
 	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateAGiftBatch', x).then(
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateARecurringGiftBatch', x).then(
 		function (data) {
 			parsed = JSON.parse(data.data.d);
-			batch = parsed['result']['AGiftBatch'][0];
+			batch = parsed['result']['ARecurringGiftBatch'][0];
 			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 			$('#modal_space').html(p);
 			p.find('input[name=a_bank_account_code_c]').attr('readonly', false);
@@ -211,22 +211,14 @@ function edit_batch(batch_id) {
 			};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle', r).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatchSingle', r).then(function (data) {
 		parsed = JSON.parse(data.data.d)
-		let batch = parsed.result.AGiftBatch[0];
+		let batch = parsed.result.ARecurringGiftBatch[0];
 
 		batch['a_account_name_c'] = batch['a_bank_account_code_c'];
 		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
 
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
-		if (parsed.ABatchIsUnposted) {
-			tpl_m.find('.only_show_when_posted').hide();
-		}
-		else {
-				tpl_m.find('.posted_readonly').attr('readonly', true);
-				tpl_m.find('.not_show_when_posted').hide();
-		}
-		
 
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
@@ -318,7 +310,7 @@ function save_edit_batch(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainBatches', payload).then(function (result) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");

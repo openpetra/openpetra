@@ -112,28 +112,10 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{batchstatus}</span>
-							</div>
-							<div class="col">
-								<input class="" type="text" name="a_batch_status_c" value="" readonly>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
 								<span>{batchname}</span>
 							</div>
 							<div class="col">
 								<input class="posted_readonly" type="text" name="a_batch_description_c" value="" size="30">
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{batchdate}</span>
-							</div>
-							<div class="col">
-								<input class="posted_readonly" type="date" name="a_gl_effective_date_d" value="">
 							</div>
 						</div>
 
@@ -176,7 +158,7 @@
 				<div class="modal-footer">
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
 					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
-			</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -375,10 +357,8 @@
 <div class="container" id="browse">
 	<div class="row">
 		<div class="col"><b>{batchnumber}</b></div>
-		<div class="col"><b>{batchdate}</b></div>
 		<div class="col"><b>{batchname}</b></div>
 		<div class="col"><b>{batchtotal}</b></div>
-		<div class="col"><b>{batchstatus}</b></div>
 	<div class="col-1"></div>
 	</div>
 
