@@ -65,6 +65,7 @@ function open_detail(obj) {
 }
 
 function open_new() {
+	if (!allow_modal()) {return}
 	r = {};
 	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_CreateUserWithInitialPermissions', r ).then(function (data) {
 
@@ -96,6 +97,7 @@ function open_new() {
 }
 
 function open_edit(s_user_id_c) {
+	if (!allow_modal()) {return}
 	r = {'AUserId': s_user_id_c};
 	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_LoadUserAndModulePermissions', r ).then(function (data) {
 
