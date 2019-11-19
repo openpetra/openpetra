@@ -19,21 +19,21 @@ SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
 	PartnerAttributePhone.p_value_c AS Phone,
 	PartnerAttributeMobile.p_value_c AS Mobile,
 	PartnerAttributeEMail.p_value_c AS EMail
-	FROM  PUB_p_partner, PUB_p_partner_location pl, PUB_p_location loc, PUB_p_partner_type as ptype,
-		PUB_p_partner_attribute AS PartnerAttributePhone,
-		PUB_p_partner_attribute AS PartnerAttributeMobile,
-		PUB_p_partner_attribute AS PartnerAttributeEMail
+	FROM  PUB_p_partner_location pl, PUB_p_location loc, PUB_p_partner_type as ptype,
+		PUB_p_partner LEFT JOIN PUB_p_partner_attribute AS PartnerAttributePhone
+			ON PartnerAttributePhone.p_partner_key_n = PUB_p_partner.p_partner_key_n
+			AND PartnerAttributePhone.p_attribute_type_c = "Phone"
+		LEFT JOIN PUB_p_partner_attribute AS PartnerAttributeMobile
+			ON PartnerAttributeMobile.p_partner_key_n = PUB_p_partner.p_partner_key_n
+			AND PartnerAttributeMobile.p_attribute_type_c = "Mobile Phone"
+		LEFT JOIN PUB_p_partner_attribute AS PartnerAttributeEMail
+			ON PartnerAttributeEMail.p_partner_key_n = PUB_p_partner.p_partner_key_n
+			AND PartnerAttributeEMail.p_attribute_type_c = "E-Mail"
 	WHERE ptype.p_partner_key_n = PUB_p_partner.p_partner_key_n
 		AND NOT PUB_p_partner.p_partner_key_n = 0 
 		AND pl.p_partner_key_n = pub_p_partner.p_partner_key_n
 		AND pl.p_location_key_i = loc.p_location_key_i
 		AND pl.p_site_key_n = loc.p_site_key_n
-		AND PartnerAttributePhone.p_partner_key_n = PUB_p_partner.p_partner_key_n
-		AND PartnerAttributePhone.p_attribute_type_c = "Phone"
-		AND PartnerAttributeMobile.p_partner_key_n = PUB_p_partner.p_partner_key_n
-		AND PartnerAttributeMobile.p_attribute_type_c = "Mobile Phone"
-		AND PartnerAttributeEMail.p_partner_key_n = PUB_p_partner.p_partner_key_n
-		AND PartnerAttributeEMail.p_attribute_type_c = "E-Mail"
 
 #if {param_exclude_specialtypes}
 	AND NOT {LISTCMP param_exclude_specialtypes ptype.p_type_code_c}
