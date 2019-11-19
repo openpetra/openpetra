@@ -1,0 +1,396 @@
+<h2>{caption}</h2>
+<link rel="stylesheet" href="/css/autocomplete.css">
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<!-- Batch line in list, with collapse list of transactions -->
+	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
+		<div class="row">
+			<div class="col">{val_a_batch_number_i}</div>
+			<div class="col format_date">{val_a_gl_effective_date_d}</div>
+			<div class="col">{val_a_batch_description_c}</div>
+			<div class="col format_currency">{val_GiftBatchTotal}</div>
+			<div class="col" batch-status>{val_a_batch_status_c}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
+				<div class="row">
+					<div class="col">
+						<button type="button" class="btn btn-primary not_show_when_posted" style="margin-top:0.5em;" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
+							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
+						</button>
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="export_batch({val_a_batch_number_i})">
+							<span>{forms.export}&nbsp;</span><i class="fa fa-table"></i>
+						</button>
+						<button type="button" class="btn btn-warning only_show_when_posted" style="margin-top:0.5em;" onclick="adjust_batch({val_a_batch_number_i})">
+							<span>{GLBatches.batch_adjust}&nbsp;</span><i class="fa fa-toggle-right"></i>
+						</button>
+						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
+							<span>{forms.post}&nbsp;</span><i class="fa fa-lock"></i>
+						</button>
+						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="cancel_batch({val_a_batch_number_i})">
+							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fa fa-ban"></i>
+						</button>
+					</div>
+					<div class="col"></div>
+				</div>
+				<div class="row">
+					<div class="col"><b>
+						<div class ="row">
+							<div class="col">{trans_number}</div>
+							<div class="col">{trans_date}</div>
+							<div class="col">{trans_donor}</div>
+							<div class="col">{trans_amount_in_base}</div>
+							<div class="col-1">
+								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
+									<i class="fa fa-close"></i>
+								</button>
+							</div>
+						</div>
+					</div></b>
+				</div>
+				<div class="row">
+					<div class="col content_col"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_gift">
+		<div class="row">
+			<div class="col">{val_a_gift_transaction_number_i}</div>
+			<div class="col format_date">{val_a_date_entered_d}</div>
+			<div class="col">{val_DonorName}</div>
+			<div class="col format_currency">{val_GiftTotal}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans({val_a_ledger_number_i}, {val_a_batch_number_i}, {val_a_gift_transaction_number_i})">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_trans_detail">
+		<div class="row">
+			<div class="col">{val_a_motivation_group_code_c} {val_a_motivation_detail_code_c}</div>
+			<div class="col format_curr">{val_a_gift_transaction_amount_n}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
+					<i class="fa fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- modal for editing the batch -->
+	<div class="modal modal-wide fade tpl_edit_batch" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<input type="hidden" name="a_ledger_number_i" value="">
+
+						<div class="row">
+							<div class="col">
+								<span>{batchnumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_batch_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{batchstatus}</span>
+							</div>
+							<div class="col">
+								<input class="" type="text" name="a_batch_status_c" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{batchname}</span>
+							</div>
+							<div class="col">
+								<input class="posted_readonly" type="text" name="a_batch_description_c" value="" size="30">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{batchdate}</span>
+							</div>
+							<div class="col">
+								<input class="posted_readonly" type="date" name="a_gl_effective_date_d" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{bank_account_code}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="posted_readonly" type="text" name="a_account_name_c" key-name="a_bank_account_code_c" value="" oninput="autocomplete_a(this)">
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{bank_ccenter_code}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="posted_readonly" type="text" name="a_cost_center_name_c" key-name="a_bank_cost_centre_c" value="" oninput="autocomplete_cc(this)">
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{batchhash}</span>
+							</div>
+							<div class="col">
+								<div>
+									<input class="posted_readonly" type="text" name="a_batch_total_n" value="">
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
+					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- modal for editing transaction -->
+	<div class="modal modal-wide fade tpl_edit_trans" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_trans}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<input type="hidden" name="a_ledger_number_i" value="">
+
+						<div class="row">
+							<div class="col">
+								<span>{batchnumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_batch_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_number}</span>
+							</div>
+							<div class="col">
+								<input class="posted_readonly" type="text" name="a_gift_transaction_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_date}</span>
+							</div>
+							<div class="col">
+								<input class="posted_readonly" type="date" name="a_date_entered_d" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_donor_key}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+								</div>
+							</div>
+						</div>
+
+						<!-- details -->
+
+						<div class="row" edit-only>
+							<div class="col" id="Batch{val_a_batch_number_i}Gift{val_a_gift_transaction_number_i}">
+								<h4>Detail</h4>
+								<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
+									<span>{forms.new}</span>
+									<i class="fa fa-plus"></i>
+								</button>
+
+								<div class="row">
+									<div class="col">{trans_motivation}</div>
+									<div class="col">{trans_amount_in_base}</div>
+									<div class="col-1"></div>
+								</div>
+
+								<div class="detail_col"></div>
+							</div>
+
+						</div>
+
+						<!-- /details -->
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
+					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
+					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_trans_detail" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_trans_detail}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<input type="hidden" name="a_ledger_number_i" value="">
+
+						<div class="row">
+							<div class="col">
+								<span>{batchnumber}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_batch_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_number}</span>
+							</div>
+							<div class="col">
+								<input class="posted_readonly" type="text" name="a_gift_transaction_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_detail}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_detail_number_i" value="" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_amount_in_base}</span>
+							</div>
+							<div class="col">
+								<input class="posted_readonly" type="number" step="0.01" name="a_gift_transaction_amount_n" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_description}</span>
+							</div>
+							<div class="col">
+								<input class="posted_readonly" type="text" name="a_gift_comment_one_c" value="">
+							</div>
+						</div>
+
+						<div class="row" requireClass>
+							<div class="col">
+								<span>{motivation_group_code}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="posted_readonly" type="text" name="a_motivation_group_code_c" key-name="a_motivation_group_code_c" value="" oninput="autocomplete_motivation_group(this)">
+								</div>
+							</div>
+						</div>
+
+						<div class="row" requireClass>
+							<div class="col">
+								<span>{motivation_detail_code}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
+					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
+					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<table id="toolbar">
+	<tr>
+		<td>
+			<button id="new" class="btn btn-primary" onclick="new_batch()">{forms.new}</button>
+		</td>
+	</tr>
+</table>
+
+<div id="modal_space"></div>
+
+<div class="container" id="browse">
+	<div class="row">
+		<div class="col"><b>{batchnumber}</b></div>
+		<div class="col"><b>{batchdate}</b></div>
+		<div class="col"><b>{batchname}</b></div>
+		<div class="col"><b>{batchtotal}</b></div>
+		<div class="col"><b>{batchstatus}</b></div>
+	<div class="col-1"></div>
+	</div>
+
+	<div id="browse_container">
+
+	</div>
+
+</div>
+
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>
