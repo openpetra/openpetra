@@ -55,7 +55,6 @@ function display_list(source) {
 		// on reload, clear content
 		$('#browse_container').html('');
 		for (item of data.result.ARecurringGiftBatch) {
-			console.log(data);
 			format_item(item);
 		}
 		format_currency(item.a_currency_code_c);
@@ -131,7 +130,7 @@ function open_gift_transactions(obj, number, reload = false) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
-		for (item of data.result.AGift) {
+		for (item of data.result.ARecurringGift) {
 			let transaction_row = $('[phantom] .tpl_gift').clone();
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
@@ -310,8 +309,6 @@ function save_edit_batch(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
-
-	console.log(payload);
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
