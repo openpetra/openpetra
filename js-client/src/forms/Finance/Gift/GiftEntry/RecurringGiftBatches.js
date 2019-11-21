@@ -55,9 +55,10 @@ function display_list(source) {
 		// on reload, clear content
 		$('#browse_container').html('');
 		for (item of data.result.ARecurringGiftBatch) {
+			console.log(data);
 			format_item(item);
 		}
-		format_currency(data.ACurrencyCode);
+		format_currency(item.a_currency_code_c);
 		format_date();
 	})
 }

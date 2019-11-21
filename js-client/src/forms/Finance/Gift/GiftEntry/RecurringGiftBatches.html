@@ -7,10 +7,8 @@
 	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
-			<div class="col format_date">{val_a_gl_effective_date_d}</div>
 			<div class="col">{val_a_batch_description_c}</div>
-			<div class="col format_currency">{val_GiftBatchTotal}</div>
-			<div class="col" batch-status>{val_a_batch_status_c}</div>
+			<div class="col format_currency">{val_a_batch_total_n}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
 					<i class="fa fa-wrench"></i>
