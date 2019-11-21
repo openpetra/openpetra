@@ -130,7 +130,8 @@ function open_gift_transactions(obj, number, reload = false) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
-		for (item of data.result.ARecurringGift) {
+		for (var item of data.result.ARecurringGift) {
+			console.log(item);
 			let transaction_row = $('[phantom] .tpl_gift').clone();
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
