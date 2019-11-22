@@ -280,7 +280,12 @@ namespace Ict.Petra.Server.app.JSClient
 
             while (DepartmentNode != null)
             {
-                result.Add(DepartmentNode.Name, AddFolder(DepartmentNode, userinfo));
+                Dictionary<string, object> Folder = AddFolder(DepartmentNode, userinfo);
+
+                if (Folder != null)
+                {
+                    result.Add(DepartmentNode.Name, AddFolder(DepartmentNode, userinfo));
+                }
 
                 DepartmentNode = DepartmentNode.NextSibling;
             }
@@ -305,7 +310,7 @@ namespace Ict.Petra.Server.app.JSClient
             // TODO icon?
 
             // enabled/disabled based on permissions
-            bool enabled = true;	
+            bool enabled = true;
             if ((TYml2Xml.HasAttribute(AFolderNode, "Enabled"))
                 && (TYml2Xml.GetAttribute(AFolderNode, "Enabled").ToLower() == "false"))
             {
@@ -314,6 +319,11 @@ namespace Ict.Petra.Server.app.JSClient
             else
             {
                 enabled = HasAccessPermission(AFolderNode, AUserInfo, false);
+            }
+
+            if (!enabled)
+            {
+                return null;
             }
 
             Dictionary<string, object> folder = new Dictionary<string, object>();

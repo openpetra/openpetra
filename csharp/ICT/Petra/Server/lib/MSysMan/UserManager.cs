@@ -191,28 +191,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             string EmailAddress = AUserID;
 
-            if (EmailAddress.Contains("@"))
-            {
-                // try to find unique User for this e-mail address
-                string sql = "SELECT s_user_id_c FROM PUB_s_user WHERE UPPER(s_email_address_c) = ?";
-
-                OdbcParameter[] parameters = new OdbcParameter[1];
-                parameters[0] = new OdbcParameter("EmailAddress", OdbcType.VarChar);
-                parameters[0].Value = EmailAddress.ToUpper();
-
-                DataTable result = ATransaction.DataBaseObj.SelectDT(sql, "user", ATransaction, parameters);
-
-                if (result.Rows.Count == 1)
-                {
-                    AUserID = result.Rows[0][0].ToString();
-                }
-                else
-                {
-                    TLogging.Log("Login with E-Mail address failed for " + EmailAddress + ". " +
-                        "We found " + result.Rows.Count.ToString() + " matching rows for this address.");
-                }
-            }
-
             try
             {
                 UserDR = LoadUser(AUserID, out PetraPrincipal, ATransaction);
@@ -236,7 +214,11 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // pass ATransaction
             UserInfo.SetUserInfo(PetraPrincipal);
 
-            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+            if (AUserID == "SELFSERVICE")
+            {
+                APassword = String.Empty;
+            }
+            else if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
                 // Login via server admin console authenticated by file token
                 APassword = String.Empty;
@@ -688,13 +670,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// PetraMultiStart.exe application for the creation of test users for that application.</remarks>
         public bool AddUser(string AUserID, string APassword = "")
         {
+            string UserID;
             return TMaintenanceWebConnector.CreateUser(AUserID,
                 APassword,
                 string.Empty,
                 string.Empty,
                 string.Empty,
+                TMaintenanceWebConnector.DEMOMODULEPERMISSIONS,
                 string.Empty,
-                TMaintenanceWebConnector.DEMOMODULEPERMISSIONS);
+                out UserID);
         }
 
         /// <summary>

@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//	   Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -67,8 +68,8 @@ function resetPassword() {
 		$("#setNewPwd").show();
 		$("#btnSetNewPwd").click(function(e) {
 			e.preventDefault();
-			pwd1=$("#txtPassword1").val();
-			pwd2=$("#txtPassword2").val();
+			pwd1=$("#txtPasswordReset1").val();
+			pwd2=$("#txtPasswordReset2").val();
 			if (pwd1 != pwd2) {
 				display_message(i18next.t('login.passwords_dont_match'), "fail");
 			} else {
@@ -80,16 +81,48 @@ function resetPassword() {
 	return false;
 }
 
+function reloadMainPage() {
+	window.location.replace('/');
+}
 
-auth.checkAuth(function(isAuthenticated) {
+function selfSignUp() {
+	var url = new URL(window.location.href);
+	var SelfSignupPasswordToken = url.searchParams.get("SelfSignupPasswordToken");
+	var UserId = url.searchParams.get("UserId");
+	if (SelfSignupPasswordToken != null) {
+		api.post('serverSessionManager.asmx/SignUpSelfServiceConfirm',
+			{AUserID: UserId,
+				AToken: SelfSignupPasswordToken
+			})
+			.then(function(response) {
+				var result = JSON.parse(response.data.d);
+				if (result == true) {
+					display_message(i18next.t('login.successSignUpConfirmed'), "success");
+					setTimeout(reloadMainPage, 5000);
+				} else {
+					display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
+				}
+			})
+			.catch(function(error) {
+				display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
+			});
+		return true;
+	}
+	return false;
+}
+
+auth.checkAuth(function(selfsignupEnabled) {
 	$("#loading").hide();
 	$(window).scrollTop(0);
-	if (!resetPassword()) {
+	if (!resetPassword() && !selfSignUp()) {
 		$("#login").show();
+		if (selfsignupEnabled) $("#btnSignUp").show();
 		if (window.location.hostname.indexOf("demo.") !== -1)
 		{
 			$("#txtEmail").val("demo");
 			$("#txtPassword").val("demo");
+			$("#hintdemo").show();
+			$("#hintdemo2").show();
 		}
 		$("#btnLogin").click(function(e) {
 			e.preventDefault();
@@ -102,7 +135,7 @@ auth.checkAuth(function(isAuthenticated) {
 	setTimeout(keepConnection, 5000);
 	$("#loading").hide();
 
-	if (!resetPassword()) {
+	if (!resetPassword() && !selfSignUp()) {
 		// load the navigation bars now.
 		// we don't want the navigation bars displayed if the user is not logged in
 		$("#main").show();
@@ -121,6 +154,27 @@ function requestNewPassword() {
 			display_message(i18next.t('login.enterValidEmail'), "fail");
 		} else {
 			auth.requestNewPassword(user);
+		}
+
+	});
+}
+
+function requestSignUp() {
+	$("#login").hide();
+	$("#signUp").show();
+	$("#btnSignUpSubmit").click(function(e) {
+		e.preventDefault();
+		userEmail=$("#txtEmailSignUp").val();
+		firstName=$("#txtFirstName").val();
+		lastName=$("#txtLastName").val();
+		pwd1=$("#txtPasswordSignUp1").val();
+		pwd2=$("#txtPasswordSignUp2").val();
+		if ((pwd1 != pwd2) || (pwd1 == '')) {
+			display_message(i18next.t('login.passwords_dont_match'), "fail");
+		} else if (userEmail == "" || userEmail.indexOf('@') == -1) {
+			display_message(i18next.t('login.enterValidEmail'), "fail");
+		} else {
+			auth.signUp(userEmail, firstName, lastName, pwd1);
 		}
 
 	});

@@ -34,18 +34,24 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Security;
 using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
-using Ict.Common.Remoting.Shared;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 {
@@ -427,8 +433,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// creates a user, either using the default authentication with the database or with the optional authentication plugin dll
         /// </summary>
         [NoRemoting]
-        public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName,
-            string AModulePermissions, string AClientComputerName, string AClientIPAddress, TDataBase ADataBase = null)
+        public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName, string ALanguageCode,
+            string AModulePermissions,
+            string AToken, out string AUserID, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = DBAccess.Connect("CreateUser", ADataBase);
             TDBTransaction ReadWriteTransaction = new TDBTransaction();
@@ -442,6 +449,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             newUser.UserId = AUsername;
             newUser.FirstName = AFirstName;
             newUser.LastName = AFamilyName;
+            newUser.LanguageCode = ALanguageCode;
+            
+            if (AToken != String.Empty)
+            {
+                newUser.PasswordResetToken = AToken;
+                newUser.AccountLocked = true;
+            }
 
             if (AUsername.Contains("@"))
             {
@@ -450,6 +464,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                  Replace(".", string.Empty).
                                  Replace("_", string.Empty).ToUpper();
             }
+
+            AUserID = newUser.UserId;
 
             ReadWriteTransaction = DBConnectionObj.GetNewOrExistingTransaction(
                 IsolationLevel.Serializable, out NewTransaction, "CreateUser");
@@ -474,7 +490,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     if (APassword.Length > 0)
                     {
-                        SetNewPasswordHashAndSaltForUser(newUser, APassword, AClientComputerName, AClientIPAddress, ReadWriteTransaction);
+                        SetNewPasswordHashAndSaltForUser(newUser, APassword, string.Empty, string.Empty, ReadWriteTransaction);
 
                         if (AModulePermissions != TMaintenanceWebConnector.DEMOMODULEPERMISSIONS)
                         {
@@ -569,7 +585,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         TUserAccountActivityLog.USER_ACTIVITY_USER_RECORD_CREATED,
                         String.Format(Catalog.GetString("The user record for the new user {0} got created by user {1}. "),
                             newUser.UserId, UserInfo.GetUserInfo().UserID) +
-                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        String.Format(ResourceTexts.StrRequestCallerInfo, string.Empty, string.Empty),
                         ReadWriteTransaction);
 
                     SubmissionOK = true;
@@ -1106,6 +1122,256 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// has self service been enabled?
+        /// </summary>
+        [NoRemoting]
+        public static bool SignUpSelfServiceEnabled(TDataBase ADataBase = null)
+        {
+            TDataBase db = DBAccess.Connect("SignUpSelfServiceEnabled", ADataBase);
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted, 0, "SignUpSelfService");
+            string UserID;
+            bool Result = false;
+
+            try
+            {
+                TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+                Result = SystemDefaults.GetBooleanDefault(
+                                SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, false);
+                Transaction.Rollback();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SignUpSelfServiceEnabled " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+            }
+
+            return Result;
+        }
+
+        /// <summary>
+        /// sign up for self service
+        /// </summary>
+        [NoRemoting]
+        public static bool SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode, out TVerificationResultCollection AVerification)
+        {
+            TDataBase db = DBAccess.Connect("SignUpSelfService");
+            AVerification = new TVerificationResultCollection();
+
+            if (!SignUpSelfServiceEnabled(db))
+            {
+                TLogging.Log("SignUpSelfService is not enabled");
+                AVerification.Add(new TVerificationResult("SignUpSelfService",
+                                    "SignUpSelfService is not enabled",
+                                    "SignUpSelfService.NotEnabled",
+                                    TResultSeverity.Resv_Critical));                
+                return false;
+            }
+
+            // Password quality check
+            TVerificationResult VerificationResult;
+            if (!TSharedSysManValidation.CheckPasswordQuality(APassword, out VerificationResult))
+            {
+                AVerification.Add(VerificationResult);
+                return false;
+            }
+            
+
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SignUpSelfService");
+            string UserID;
+            bool Result = true;
+
+            try
+            {
+                // Create s_user entry. and permission PARTNERSELFSERVICE
+                // s_user still not enabled, AccountLocked
+                // don't create partner yet
+                if (!CreateUser(AEmailAddress, APassword, AFirstName, ALastName, ALanguageCode, "PARTNERSELFSERVICE",
+                    "PLACEHOLDERTOKEN", out UserID, db))
+                {
+                    Result = false;
+                }
+                else
+                {
+                    // set token on s_user.
+                    string token = SaveNewToken(UserID, db, Transaction);
+
+                    // send the email with the link for setting the password
+                    string Domain = TAppSettingsManager.GetValue("Server.Url");
+                    string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
+                    Dictionary<string, string> emailparameters = new Dictionary<string, string>();
+                    emailparameters.Add("UserId", UserID);
+                    emailparameters.Add("FirstName", AFirstName);
+                    emailparameters.Add("LastName", ALastName);
+                    emailparameters.Add("Domain", Domain);
+                    emailparameters.Add("Token", token);
+               
+                    TSmtpSender sender = new TSmtpSender();
+                    
+                    if (!sender.SendEmailFromTemplate(
+                        "no-reply@" + EMailDomain,
+                        "OpenPetra Admin",
+                        AEmailAddress,
+                        "selfservicesignup",
+                        ALanguageCode,
+                        emailparameters))
+                    {
+                        throw new Exception("failure sending email. perhaps wrong EMailDomain? " + EMailDomain);
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SetNewPassword " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
+
+            return Result;
+        }
+
+        /// create a new partner
+        [NoRemoting]
+        private static PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS, TDataBase ADataBase)
+        {
+            PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
+
+            // get a new partner key
+            Int64 newPartnerKey = -1;
+
+            do
+            {
+                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey, ADataBase);
+                TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, newPartnerKey, ref newPartnerKey, ADataBase);
+                PartnerRow.PartnerKey = newPartnerKey;
+            } while (newPartnerKey == -1);
+
+            PartnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+
+            AMainDS.PPartner.Rows.Add(PartnerRow);
+
+            TLogging.LogAtLevel(2, "Creating new partner: " + PartnerRow.PartnerKey.ToString());
+
+            return PartnerRow;
+        }
+
+        private static PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS, TDataBase ADataBase, string AFirstName, string AFamilyName)
+        {
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, ADataBase);
+
+            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+            PartnerRow.PartnerShortName = AFamilyName + "," + AFirstName;
+
+            PFamilyRow FamilyRow = AMainDS.PFamily.NewRowTyped();
+            FamilyRow.PartnerKey = PartnerRow.PartnerKey;
+            FamilyRow.FamilyName = AFamilyName;
+            FamilyRow.FirstName = AFirstName;
+            AMainDS.PFamily.Rows.Add(FamilyRow);
+
+            return PartnerRow;
+        }
+
+        /// create a new location
+        private static void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
+        {
+            PLocationRow LocationRow = AMainDS.PLocation.NewRowTyped();
+
+            LocationRow.SiteKey = DomainManager.GSiteKey;
+            LocationRow.LocationKey = -1;
+            LocationRow.CountryCode = "99";
+            AMainDS.PLocation.Rows.Add(LocationRow);
+
+            PPartnerLocationRow PartnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
+            PartnerLocationRow.SiteKey = LocationRow.SiteKey;
+            PartnerLocationRow.PartnerKey = APartnerKey;
+            PartnerLocationRow.LocationKey = LocationRow.LocationKey;
+            AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+        }
+
+        /// <summary>confirm the e-mail address for the self service account</summary>
+        [NoRemoting]
+        public static bool SignUpSelfServiceConfirm(string AUserID, string AToken)
+        {
+            TDataBase db = DBAccess.Connect("SignUpSelfServiceConfirm");
+            TDBTransaction Transaction = new TDBTransaction();
+            bool SubmissionOK = false;
+            bool Result = false;
+
+            db.WriteTransaction(ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    // check if token is valid, and user still not activated
+                    SUserTable UserDT = SUserAccess.LoadByPrimaryKey(AUserID, Transaction);
+
+                    if (UserDT.Rows.Count != 1)
+                    {
+                        return;
+                    }
+
+                    SUserRow UserDR = UserDT[0];
+
+                    if (UserDR.AccountLocked == false)
+                    {
+                        // the account has already been activated
+                        Result = true;
+                        return;
+                    }
+
+                    if (!((UserDR.PasswordResetToken == AToken) && (UserDR.PasswordResetValidUntil >= DateTime.Today)))
+                    {
+                        // invalid token
+                        return;
+                    }
+
+                    try
+                    {
+                        // create partner record, and link to user record
+                        PartnerEditTDS MainDS = new PartnerEditTDS();
+                        PPartnerRow PartnerDR = CreateNewFamilyPartner(MainDS, db, UserDR.FirstName, UserDR.LastName);
+                        CreateNewLocation(PartnerDR.PartnerKey, MainDS);
+                        PartnerEditTDSAccess.SubmitChanges(MainDS, db);
+
+                        // activate user record
+                        UserDR.PartnerKey = PartnerDR.PartnerKey;
+                        UserDR.PasswordResetToken = "";
+                        UserDR.SetPasswordResetValidUntilNull();
+                        UserDR.AccountLocked = false;
+                        SUserAccess.SubmitChanges(UserDT, Transaction);
+
+                        TUserAccountActivityLog.AddUserAccountActivityLogEntry(UserDR.UserId,
+                            TUserAccountActivityLog.USER_CONFIRMED_SELF_SERVICE,
+                            String.Format(Catalog.GetString(
+                                    "The user {0} got confirmed."), UserDR.UserId),
+                            Transaction);
+
+                        SubmissionOK = true;
+                        Result = true;
+                    }
+                    catch (Exception Exc)
+                    {
+                        TLogging.Log("An Exception occured during SignUpSelfServiceConfirm:" + Environment.NewLine +
+                            Exc.ToString());
+
+                        throw;
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            return Result;
+        }
+
+        /// <summary>
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
         [RequireModulePermission("SYSMAN")]
@@ -1163,9 +1429,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                             {
                                 if (user.PwdSchemeVersion == 0)
                                 {
+                                    string UserID;
                                     // in fact, PasswordHash is expected to be the password in clear text
                                     CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty,
-                                        AClientComputerName, AClientIPAddress, SubmitChangesTransaction.DataBaseObj);
+                                        string.Empty, string.Empty,
+                                        out UserID,
+                                        SubmitChangesTransaction.DataBaseObj);
                                     // this is a hack: the user is not stored here, but in CreateUser
                                     user.AcceptChanges();
                                 }

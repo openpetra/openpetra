@@ -50,6 +50,7 @@ i18next
   });
 
 function translateElement(obj, form) {
+   if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
    placeholder=$(obj).attr('placeholder');
    if (placeholder !== undefined && placeholder[0] == '{') {
      placeholder = placeholder.substring(1, placeholder.length-1);
@@ -66,13 +67,14 @@ function translateElement(obj, form) {
 function updateContent() {
   // specify the elements that should be translated
   $('#login input, #login button, #login h4, #login p, #login div a, #login span').each(function () { translateElement($(this), 'login'); });
-  $('#reqNewPwd input, #reqNewPwd button, #setNewPwd input, #setNewPwd button').each(function () { translateElement($(this), 'login'); });
+  $('#reqNewPwd input, #reqNewPwd button, #setNewPwd input, #setNewPwd button, #signUp input, #signUp button').each(function () { translateElement($(this), 'login'); });
   $('#topnavigation a').each(function () { translateElement($(this), 'navigation'); });
   $('#sidebar span, #sidebar a').each(function () { translateElement($(this), 'navigation'); });
   $('.nav-link span').each(function () { translateElement($(this), 'navigation'); });
 }
 
 function translate(html, form) {
+  if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
   pos = -1;
   while ((pos = html.indexOf('{', pos+1)) > -1) {
     pos2 = html.indexOf('}', pos);
@@ -100,4 +102,6 @@ function currentLng() {
 
 i18next.on('languageChanged', () => {
   updateContent();
+  var flag = currentLng() == "de" ? "🇩🇪" : "🇬🇧";
+  $("#chlang span").text(flag);
 });

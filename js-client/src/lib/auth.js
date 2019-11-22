@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -95,13 +96,34 @@ class Auth {
 							window.localStorage.setItem('authenticated', 0);
 							window.location.reload();
 						}
-						fnNonUser();
+						fnNonUser(result.selfsignupEnabled == "true");
 					}
 				})
 				.catch(function(error) {
 					console.log(error);
 				});
 		}
+	}
+
+	signUp(userEmail, firstname, lastname, pwd) {
+		api.post('serverSessionManager.asmx/SignUpSelfService',
+			{AEmailAddress: userEmail,
+					AFirstName: firstname, ALastName: lastname, APassword: pwd,
+					ALanguageCode: currentLng()})
+			.then(function(response) {
+				var result = JSON.parse(response.data.d);
+				if (result.result == true) {
+					display_message(i18next.t('login.successSignUp'), "success");
+					setTimeout(function() {
+						window.location.reload();
+						}, 3000);
+				} else {
+					display_error(result.AVerification);
+				}
+			})
+			.catch(function(error) {
+				display_message(i18next.t('login.errorSignUp'), "fail");
+			});
 	}
 
 	requestNewPassword(txtEmail) {

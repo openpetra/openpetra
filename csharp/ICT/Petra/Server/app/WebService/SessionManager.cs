@@ -50,6 +50,7 @@ using Ict.Petra.Shared.Security;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
+using Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
@@ -184,6 +185,11 @@ namespace Ict.Petra.Server.App.WebService
 
             try
             {
+                if (username.ToUpper() == "SELFSERVICE")
+                {
+                    throw new Exception("Login with user SELFSERVICE is not permitted");
+                }
+
                 TConnectedClient CurrentClient = TClientManager.ConnectClient(
                     username.ToUpper(), password.Trim(),
                     HttpContext.Current.Request.UserHostName,
@@ -272,6 +278,7 @@ namespace Ict.Petra.Server.App.WebService
             }
             else
             {
+                result.Add("selfsignupEnabled", TMaintenanceWebConnector.SignUpSelfServiceEnabled()?"true":"false");
                 result.Add("resultcode", "error");
             }
 
@@ -301,6 +308,48 @@ namespace Ict.Petra.Server.App.WebService
         public bool RequestNewPassword(string AEmailAddress)
         {
             return TMaintenanceWebConnector.RequestNewPassword(AEmailAddress);
+        }
+
+        /// <summary>send out an e-mail for creating a self-service account</summary>
+        [WebMethod(EnableSession = true)]
+        public string SignUpSelfService(string AEmailAddress, string AFirstName, string ALastName, string APassword, string ALanguageCode, out TVerificationResultCollection AVerification)
+        {
+            AVerification = new TVerificationResultCollection();
+
+            try
+            {
+                TServerAdminWebConnector.LoginServerAdmin("SELFSERVICE");
+                bool Result = TMaintenanceWebConnector.SignUpSelfService(AEmailAddress, AFirstName, ALastName, APassword, ALanguageCode, out AVerification);
+                Logout();
+                return "{" + "\"AVerification\": " + THttpBinarySerializer.SerializeObject(AVerification)+ "," + "\"result\": "+THttpBinarySerializer.SerializeObject(Result)+ "}";
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during SignUpSelfService:" + Environment.NewLine +
+                    Exc.ToString());
+
+                throw;
+            }
+        }
+
+        /// <summary>confirm the e-mail address for the self service account</summary>
+        [WebMethod(EnableSession = true)]
+        public bool SignUpSelfServiceConfirm(string AUserID, string AToken)
+        {
+            try
+            {
+                TServerAdminWebConnector.LoginServerAdmin("SELFSERVICE");
+                bool Result = TMaintenanceWebConnector.SignUpSelfServiceConfirm(AUserID, AToken);
+                Logout();
+                return Result;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during SignUpSelfServiceConfirm:" + Environment.NewLine +
+                    Exc.ToString());
+
+                throw;
+            }
         }
 
         /// <summary>set a new password with a token that was sent via e-mail</summary>

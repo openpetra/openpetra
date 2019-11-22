@@ -26,76 +26,14 @@
 var last_opened_entry_data = {};
 
 $('document').ready(function () {
-	load_preset();
-	display_list();
+	open_edit();
 });
 
-function load_preset() {
-	var x = window.localStorage.getItem('MaintainPartners');
-	if (x != null) {
-		x = JSON.parse(x);
-		format_tpl($('#tabfilter'), x);
-	}
-}
-
-function display_list(source) {
-	var x = extract_data($('#tabfilter'));
-	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
-	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		// on reload, clear content
-		$('#browse_container').html('');
-		for (item of data.result) {
-			// format a partner for every entry
-			format_item(item);
-		}
-	})
-}
-
-function format_item(item) {
-	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
-	$('#browse_container').append(row);
-	$('#partner'+item['p_partner_key_n']).find('.collapse_col').append(view);
-}
-
-function open_detail(obj) {
-	obj = $(obj);
-	if (obj.find('.collapse').is(':visible') ) {
-		$('.tpl_row .collapse').collapse('hide');
-		return;
-	}
-	$('.tpl_row .collapse').collapse('hide');
-	obj.find('.collapse').collapse('show')
-}
-
-function open_new_family() {
-	r = {
-			APartnerClass: "FAMILY"
-		};
-	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
-		parsed = JSON.parse(data.data.d);
-		display_partner(parsed);
-	});
-}
-
-function open_new_organisation() {
-	r = {
-			APartnerClass: "ORGANISATION"
-		};
-	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
-		parsed = JSON.parse(data.data.d);
-		display_partner(parsed);
-	});
-}
-
-function open_edit(partner_id) {
-	var r = {
-				APartnerKey: partner_id,
-			};
+function open_edit() {
+	var r = {};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
-	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetails', r).then(function (data) {
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetailsSelfService', r).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		display_partner(parsed);
 	})
@@ -194,7 +132,7 @@ function save_entry(obj_modal) {
 			 'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c
 			 };
 
-	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartnerSelfService', r).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
 			$('#modal_space .modal').modal('hide');

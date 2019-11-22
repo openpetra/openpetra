@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2019 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -216,6 +216,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_DEVELOPERSONLY = "DevelopersOnly";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_SELFSIGNUPENABLED = "SelfSignUpEnabled";
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_EXWORKERSPECIALTYPE = "EXWORKERSPECIALTYPE";

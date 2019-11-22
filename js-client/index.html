@@ -5,9 +5,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2017-2019 by TBits.net
+// Copyright 2017-2018 by TBits.net
+// Copyright 2019 SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -49,11 +50,22 @@
 
 <!-- Begin of login screen -->
 <div id="login" class="container" style="display:none">
+	<button id="btnSignUp" class="btn btn-lg btn-primary float-right" style="display:none" onClick="requestSignUp()">{signup}</button>
+
 	<form class="form-signin">
 		<input type="text" class="form-control" placeholder="{email}" id="txtEmail" autofocus>
 		<input type="password" class="form-control" placeholder="{passwd}" id="txtPassword">
+
+		<div class="form-signin alert alert-danger" id="hintdemo" style="display:none" role="alert">
+			<p>{demo_instance_alert}</p>
+		</div>
+
 		<button id="btnLogin" class="btn btn-lg btn-primary btn-block" type="submit">{signin}</button>
 	</form>
+
+	<div class="form-signin alert alert-info" id="hintdemo2" style="display:none" role="alert">
+		<p>{demo_instance_info}</p>
+	</div>
 
 	<div class="form-signin">
 		<span>{forgotpwd}</span> <a href="#" onClick="requestNewPassword()">{reqnewpwdclickhere}</a>
@@ -113,11 +125,24 @@
 </div> <!-- /container -->
 <!-- End of Request new password -->
 
+<!-- Begin of Sign Up -->
+<div id="signUp" class="container" style="display:none">
+	<form class="form-signin">
+		<input type="email" class="form-control" placeholder="{email}" id="txtEmailSignUp" autofocus required>
+		<input type="text" class="form-control" placeholder="{firstname}" id="txtFirstName" required>
+		<input type="text" class="form-control" placeholder="{lastname}" id="txtLastName" required>
+		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPasswordSignUp1" required>
+		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPasswordSignUp2" required>
+		<button id="btnSignUpSubmit" class="btn btn-lg btn-primary btn-block" type="submit">{signup}</button>
+	</form>
+</div> <!-- /container -->
+<!-- End of Sign Up -->
+
 <!-- Begin of setting new password -->
 <div id="setNewPwd" class="container" style="display:none">
 	<form class="form-signin">
-		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPassword1" autofocus>
-		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPassword2">
+		<input type="password" class="form-control" placeholder="{newpasswd1}" id="txtPasswordReset1" autofocus>
+		<input type="password" class="form-control" placeholder="{newpasswd2}" id="txtPasswordReset2">
 		<button id="btnSetNewPwd" class="btn btn-lg btn-primary btn-block" type="submit">{setNewPassword}</button>
 	</form>
 </div> <!-- /container -->
@@ -156,6 +181,7 @@
 		</li>
 	</ul>
 	<ul class="navbar-nav ml-auto">
+		<li class="nav-item"><a class="nav-link" id="chlang" href="#" onclick="(new Navigation()).OpenForm('Settings/ChangeLanguage')"><span class="flag-icon"></span></a></li>
 		<li class="nav-item"><a class="nav-link" id="logout" href="#">{logout}</a></li>
 	</ul>
 
@@ -204,12 +230,13 @@
 	$.getScript('/src/lib/checkIE.js' + WithVersion);
 	$.getScript('/src/lib/string.js' + WithVersion);
 	$.getScript('/src/lib/ajax.js' + WithVersion);
-	$.getScript('/src/lib/auth.js' + WithVersion);
-	$.getScript('/src/lib/i18n.js' + WithVersion);
-	$.getScript('/src/lib/navigation.js' + WithVersion);
-	$.getScript('/src/lib/app.js' + WithVersion);
-	$.getScript('/src/lib/utils.js' + WithVersion);
-	
+	$.getScript('/src/lib/auth.js' + WithVersion, function(e) {
+		$.getScript('/src/lib/i18n.js' + WithVersion);
+		$.getScript('/src/lib/navigation.js' + WithVersion);
+		$.getScript('/src/lib/app.js' + WithVersion);
+		$.getScript('/src/lib/utils.js' + WithVersion);
+	});
+
 </script>
 
 </body>

@@ -46,15 +46,20 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// login the server admin console without a password
         /// </summary>
         [CheckServerAdminToken]
-        public static bool LoginServerAdmin()
+        public static bool LoginServerAdmin(string AUserID="SYSADMIN")
         {
             string WelcomeMessage;
             bool SystemEnabled;
             Int32 ClientID;
             Int64 SiteKey;
 
+            if (!(AUserID == "SYSADMIN" || AUserID == "SELFSERVICE"))
+            {
+                return false;
+            }
+
             TConnectedClient CurrentClient = TClientManager.ConnectClient(
-                "SYSADMIN", string.Empty,
+                AUserID, string.Empty,
                 HttpContext.Current.Request.UserHostName,
                 HttpContext.Current.Request.UserHostAddress,
                 TFileVersionInfo.GetApplicationVersion().ToVersion(),

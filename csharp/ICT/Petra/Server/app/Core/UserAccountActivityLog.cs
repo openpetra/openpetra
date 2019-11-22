@@ -65,6 +65,8 @@ namespace Ict.Petra.Server.App.Core.Security
         public const string USER_ACTIVITY_USER_ACCOUNT_GOT_LOCKED = "USER_ACCOUNT_GOT_LOCKED";
         /// <summary>'Locked' state of the user account got changed to 'Unlocked' by a system administrator.</summary>
         public const string USER_ACTIVITY_USER_ACCOUNT_GOT_UNLOCKED = "USER_ACCOUNT_GOT_UNLOCKED";
+        /// self sign up succeeded
+        public const string USER_CONFIRMED_SELF_SERVICE = "USER_CONFIRMED_SELF_SERVICE";
 
         /// <summary>
         /// Adds an entry to the 'User Account Activity Log' table (s_user_account_activity).

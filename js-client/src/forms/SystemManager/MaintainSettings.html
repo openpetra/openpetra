@@ -1,0 +1,22 @@
+<h2>{caption}</h2>
+
+<div class="frame">
+
+	<div class="container" id="system_settings">
+
+	<div class="form-group row">
+		<div class="col">
+			{SelfSignUpEnabled}
+		</div>
+		<div class="col">
+			<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkSelfSignUpEnabled" name="SelfSignUpEnabled"> {SelfSignUpEnabledYes}</label>
+		</div>
+	</div>
+
+	<button class="btn btn-primary" id="btnSubmitSettings" onClick="submit()">{forms.save}</button>
+	</div>
+
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

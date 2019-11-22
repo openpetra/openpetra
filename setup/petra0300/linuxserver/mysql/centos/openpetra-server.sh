@@ -235,10 +235,12 @@ FINISH
 server {
     listen $OPENPETRA_HTTP_PORT;
     server_name $OPENPETRA_URL;
+    server_name localhost;
 
     root $OpenPetraPath/client;
 
     location / {
+         rewrite ^/Selfservice.*$ /;
          rewrite ^/Settings.*$ /;
          rewrite ^/Partner.*$ /;
          rewrite ^/Finance.*$ /;

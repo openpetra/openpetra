@@ -1,14 +1,23 @@
 {
     "login": {
         "signin": "Sign in",
+        "signup": "Sign up",
         "email": "Email address",
         "passwd": "Password",
+        "firstname": "First Name",
+        "lastname": "Surname",
         "forgotpwd": "Forgot your password?",
         "reqnewpwdclickhere": "click here!",
         "requestNewPassword": "Request a new password",
+        "demo_instance_alert": "This is a demo instance!<br/>You must never enter real data here, because the data is completely in the public!<br/>The data is being deleted each night.",
+        "demo_instance_info": "Use the user <b>demo</b> and password <b>demo</b>, or the user <b>sysadmin</b> with password <b>CHANGEME</b>",
         "enterValidEmail": "Please enter a valid e-mail address!",
         "successPwdResetEmailSent": "A new password has been sent!",
         "errorPwdResetEmailSent": "There was an error, no new password has been sent!",
+        "successSignUp": "An email with your access details has been sent!",
+        "errorSignUp": "There was an error, we cannot currently give you access.",
+        "successSignUpConfirmed": "Your account has been activated, please login with your E-Mail address and password!",
+        "errorSignUpConfirmed": "The account could not be activated.",
         "newpasswd1": "New password",
         "newpasswd2": "Repeat new password",
         "passwords_dont_match": "The passwords don't match!",
@@ -43,6 +52,7 @@
         "change_language": "Change Language",
         "logout": "Logout",
         "notimplementedyet": "not implemented yet",
+        "SelfService_label": "Self Service",
         "Partner_label": "Partner",
         "Partners_label": "Partners",
         "Types_label":"Categories",
@@ -79,6 +89,8 @@
         "Ledger_label": "Ledger",
         "LedgerSetup_label": "Configuration of Ledgers",
         "SystemManager_label": "System Management",
+        "Settings_label": "Settings",
+        "MaintainSettings_label": "System Settings",
         "Users_label": "Users",
         "Database_label": "Database",
         "FindPartners_label": "Find Partners",
@@ -150,6 +162,12 @@
         "wrong": "The current password was not entered correctly",
         "unknown": "unknown error code",
         "success": "Password has been changed successfully"
+    },
+
+    "MaintainSettings": {
+        "caption": "System Settings",
+        "SelfSignUpEnabled": "Self Service Sign Up",
+        "SelfSignUpEnabledYes": "Enabled"
     },
 
     "MaintainUsers": {

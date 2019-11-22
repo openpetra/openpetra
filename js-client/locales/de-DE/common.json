@@ -1,14 +1,23 @@
 {
     "login": {
         "signin": "Anmelden",
+        "signup": "Registrieren",
         "email": "E-Mail Adresse",
         "passwd": "Passwort",
+        "firstname": "Vorname",
+        "lastname": "Nachname",
         "forgotpwd": "Passwort vergessen?",
         "reqnewpwdclickhere": "Hier klicken!",
         "requestNewPassword": "Neues Passwort anfordern",
+        "demo_instance_alert": "Dies ist eine Demo Instanz!<br/>Bitte auf keinen Fall echte Daten eingeben, weil die Daten von jedermann gelesen werden können!<br/>Die Daten werden jede Nacht gelöscht.",
+        "demo_instance_info": "Anmeldung mit Benutzer <b>demo</b> und Passwort <b>demo</b>, oder mit Benutzer <b>sysadmin</b> und Passwort <b>CHANGEME</b>",
         "enterValidEmail": "Bitte gültige E-Mail Adresse eingeben!",
         "successPwdResetEmailSent": "Ein neues Passwort wurde verschickt!",
         "errorPwdResetEmailSent": "Es gab einen Fehler, es wurde kein neues Passwort verschickt",
+        "successSignUp": "Eine E-Mail wurde verschickt, mit Ihren Zugangsdaten",
+        "errorSignUp": "Es gab einen Fehler, der Zugang ist momentan nicht möglich",
+        "successSignUpConfirmed": "Der Zugang wurde aktiviert, melden Sie sich nun mit Ihrer E-Mail Adresse und Ihrem Passwort an!",
+        "errorSignUpConfirmed": "Der Zugang konnte nicht aktiviert werden.",
         "newpasswd1": "Neues Passwort",
         "newpasswd2": "Neues Passwort wiederholen",
         "passwords_dont_match": "Die Passwörter stimmen nicht überein!",
@@ -43,6 +52,7 @@
         "change_language": "Sprache wechseln",
         "logout": "Abmelden",
         "notimplementedyet": "Noch nicht verfügbar",
+        "SelfService_label": "Selbstverwaltung",
         "Partner_label": "Partner",
         "Partners_label": "Partner",
         "Types_label": "Kategorien",
@@ -79,6 +89,8 @@
         "Ledger_label": "Hauptbuch",
         "LedgerSetup_label": "Konfiguration des Hauptbuches",
         "SystemManager_label": "System einrichten",
+        "Settings_label": "Einstellungen",
+        "MaintainSettings_label": "System Einstellungen",
         "Users_label": "Benutzer",
         "Database_label": "Datenbank",
         "FindPartners_label": "Partner suchen",
@@ -150,6 +162,12 @@
         "wrong": "Das alte Password wurde nicht korrekt eingegeben",
         "unknown": "Unbekannter Fehler ",
         "success": "Das Passwort wurde erfolgreich geändert"
+    },
+
+    "MaintainSettings": {
+        "caption": "System Einstellungen",
+        "SelfSignUpEnabled": "Selbstregistrierung",
+        "SelfSignUpEnabledYes": "Eingeschaltet"
     },
 
     "MaintainUsers": {
