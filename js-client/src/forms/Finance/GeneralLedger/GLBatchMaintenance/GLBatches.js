@@ -173,6 +173,7 @@ function open_transactions(obj, number, reload = false) {
 
 var new_entry_data = {};
 function new_batch() {
+	if (!allow_modal()) {return}
 	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_CreateABatch', x).then(
 		function (data) {
@@ -189,6 +190,7 @@ function new_batch() {
 };
 
 function new_trans(batch_number, batch_date) {
+	if (!allow_modal()) {return}
 	ledger_number = window.localStorage.getItem('current_ledger');
 	new_entry_data = [];
 	new_entry_data['a_ledger_number_i'] = ledger_number;
@@ -206,6 +208,7 @@ function new_trans(batch_number, batch_date) {
 /////
 
 function edit_batch(batch_id) {
+	if (!allow_modal()) {return}
 	var x = window.localStorage.getItem('GLBatches');
 	if (x == null) {
 		x = extract_data( $('#tabfilter') );
@@ -240,6 +243,7 @@ function edit_batch(batch_id) {
 }
 
 function edit_trans(batch_id, trans_id) {
+	if (!allow_modal()) {return}
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":batch_id};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search

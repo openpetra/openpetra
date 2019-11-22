@@ -9,6 +9,8 @@
         "forgotpwd": "Passwort vergessen?",
         "reqnewpwdclickhere": "Hier klicken!",
         "requestNewPassword": "Neues Passwort anfordern",
+        "demo_instance_alert": "Dies ist eine Demo Instanz!<br/>Bitte auf keinen Fall echte Daten eingeben, weil die Daten von jedermann gelesen werden können!<br/>Die Daten werden jede Nacht gelöscht.",
+        "demo_instance_info": "Anmeldung mit Benutzer <b>demo</b> und Passwort <b>demo</b>, oder mit Benutzer <b>sysadmin</b> und Passwort <b>CHANGEME</b>",
         "enterValidEmail": "Bitte gültige E-Mail Adresse eingeben!",
         "successPwdResetEmailSent": "Ein neues Passwort wurde verschickt!",
         "errorPwdResetEmailSent": "Es gab einen Fehler, es wurde kein neues Passwort verschickt",

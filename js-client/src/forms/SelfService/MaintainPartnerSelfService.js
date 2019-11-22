@@ -40,6 +40,7 @@ function open_edit() {
 }
 
 function display_partner(parsed) {
+	if (!allow_modal()) {return}
 	// make a deep copy of the server data and set it as a global var.
 	last_opened_entry_data = $.extend(true, {}, parsed);
 	let m = $('[phantom] .tpl_edit').clone();

@@ -169,3 +169,22 @@ function b64DecodeUnicode(str) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
     }).join(''))
 }
+
+// returns true of false,
+// after returning true, it will return false for the next X sec,
+// use this function for functions that open new modals, to prevent overlapping or load errors
+var modal_aquire = true;
+var modal_timeout = 1;
+function allow_modal() {
+
+	if (!modal_aquire) {return false;}
+	modal_aquire = false;
+
+	setTimeout(function () {
+  		modal_aquire = true;
+	}, modal_timeout*1000);
+
+	return true;	
+
+}
+

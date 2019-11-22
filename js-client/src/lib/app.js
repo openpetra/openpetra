@@ -68,8 +68,8 @@ function resetPassword() {
 		$("#setNewPwd").show();
 		$("#btnSetNewPwd").click(function(e) {
 			e.preventDefault();
-			pwd1=$("#txtPassword1").val();
-			pwd2=$("#txtPassword2").val();
+			pwd1=$("#txtPasswordReset1").val();
+			pwd2=$("#txtPasswordReset2").val();
 			if (pwd1 != pwd2) {
 				display_message(i18next.t('login.passwords_dont_match'), "fail");
 			} else {
@@ -121,6 +121,8 @@ auth.checkAuth(function(selfsignupEnabled) {
 		{
 			$("#txtEmail").val("demo");
 			$("#txtPassword").val("demo");
+			$("#hintdemo").show();
+			$("#hintdemo2").show();
 		}
 		$("#btnLogin").click(function(e) {
 			e.preventDefault();
@@ -165,8 +167,8 @@ function requestSignUp() {
 		userEmail=$("#txtEmailSignUp").val();
 		firstName=$("#txtFirstName").val();
 		lastName=$("#txtLastName").val();
-		pwd1=$("#txtPassword1").val();
-		pwd2=$("#txtPassword2").val();
+		pwd1=$("#txtPasswordSignUp1").val();
+		pwd2=$("#txtPasswordSignUp2").val();
 		if ((pwd1 != pwd2) || (pwd1 == '')) {
 			display_message(i18next.t('login.passwords_dont_match'), "fail");
 		} else if (userEmail == "" || userEmail.indexOf('@') == -1) {

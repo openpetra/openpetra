@@ -108,6 +108,7 @@ function open_motivations(obj, code, reload = false) {
 
 var new_entry_data = {};
 function new_group() {
+	if (!allow_modal()) {return}
 	let x = {a_ledger_number_i :window.localStorage.getItem('current_ledger')};
 	// console.log(parsed);
 	let p = format_tpl( $('[phantom] .tpl_edit_group').clone(), x );
@@ -119,6 +120,7 @@ function new_group() {
 };
 
 function new_motivation(group_code) {
+	if (!allow_modal()) {return}
 	let x = {a_ledger_number_i:window.localStorage.getItem('current_ledger'), a_motivation_group_code_c:group_code};
 	let p = format_tpl( $('[phantom] .tpl_edit_motivation').clone(), x);
 	$('#modal_space').html(p);
@@ -131,6 +133,7 @@ function new_motivation(group_code) {
 /////
 
 function edit_group(group_code) {
+	if (!allow_modal()) {return}
 	var r = {
 				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				AMotivationGroupCode: group_code
@@ -154,6 +157,7 @@ function edit_group(group_code) {
 }
 
 function edit_motivation(group_id, detail_id) {
+	if (!allow_modal()) {return}
 	let x = {
 			"ALedgerNumber":window.localStorage.getItem('current_ledger'),
 			"AMotivationGroupCode":group_id
