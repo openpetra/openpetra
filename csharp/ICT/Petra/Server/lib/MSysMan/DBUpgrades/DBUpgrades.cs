@@ -40,16 +40,15 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         /// <summary>
         /// get current database version
         /// </summary>
-        private static TFileVersionInfo GetCurrentDBVersion()
+        private static TFileVersionInfo GetCurrentDBVersion(TDataBase ADataBase)
         {
-            TDataBase db = DBAccess.Connect("GetCurrentDBVersion");
             TDBTransaction Transaction = new TDBTransaction();
             string currentVersion = String.Empty;
-            db.ReadTransaction(
+            ADataBase.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
-                    currentVersion = (string)db.ExecuteScalar(
+                    currentVersion = (string)ADataBase.ExecuteScalar(
                         "SELECT s_default_value_c FROM s_system_defaults where s_default_code_c='CurrentDatabaseVersion'",
                         Transaction);
                 });
@@ -60,18 +59,17 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         /// <summary>
         /// set current database version
         /// </summary>
-        private static bool SetCurrentDBVersion(TFileVersionInfo ANewVersion)
+        private static bool SetCurrentDBVersion(TFileVersionInfo ANewVersion, TDataBase ADataBase)
         {
             TDBTransaction transaction = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("TDBUpgrades_SetCurrentDBVersion");
             bool SubmitOK = true;
-            db.WriteTransaction(ref transaction, ref SubmitOK,
+            ADataBase.WriteTransaction(ref transaction, ref SubmitOK,
                 delegate
                 {
                     string newVersionSql =
                         String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
                             ANewVersion.ToStringDotsHyphen());
-                    db.ExecuteNonQuery(newVersionSql, transaction);
+                    ADataBase.ExecuteNonQuery(newVersionSql, transaction);
                 });
 
             return true;
@@ -81,10 +79,12 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         public bool UpgradeDatabase()
         {
             bool upgraded = false;
+            
+            TDataBase db = DBAccess.Connect("UpgradeDatabase");
 
             while (true)
             {
-                TFileVersionInfo originalDBVersion = GetCurrentDBVersion();
+                TFileVersionInfo originalDBVersion = GetCurrentDBVersion(db);
                 TFileVersionInfo currentDBVersion = originalDBVersion;
                 TLogging.LogAtLevel(1, "current DB version: " + currentDBVersion.ToStringDotsHyphen());
 
@@ -112,13 +112,14 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
 
                         TLogging.Log("Database Upgrade: applying method " + m.Name);
 
-                        bool result = (bool)m.Invoke(null, BindingFlags.Static, null, null, null);
+                        object[] parameters = new object[]{db};
+                        bool result = (bool)m.Invoke(null, BindingFlags.Static, null, parameters, null);
 
                         if (result == true)
                         {
                             upgraded = true;
                             currentDBVersion = testDBVersion;
-                            SetCurrentDBVersion(currentDBVersion);
+                            SetCurrentDBVersion(currentDBVersion, db);
                         }
 
                         break;
@@ -130,6 +131,8 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                 {
                     break;
                 }
+
+                db.CloseDBConnection();
             }
 
             return upgraded;

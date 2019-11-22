@@ -35,14 +35,13 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
     public static partial class TDBUpgrade
     {
         /// Upgrade to version 2019-09
-        public static bool UpgradeDatabase201908_201909()
+        public static bool UpgradeDatabase201908_201909(TDataBase ADataBase)
         {
             // new table s_report_result
-            TDataBase db = DBAccess.Connect("TDBUpgrade");
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             bool SubmitOK = false;
 
-            db.WriteTransaction(ref SubmitChangesTransaction,
+            ADataBase.WriteTransaction(ref SubmitChangesTransaction,
                 ref SubmitOK,
                 delegate
                 {
@@ -52,7 +51,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                     {
                         if (stmt.Trim().Length > 0)
                         {
-                            db.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                            ADataBase.ExecuteNonQuery(stmt, SubmitChangesTransaction);
                         }
                     }
 

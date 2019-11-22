@@ -35,14 +35,13 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
     public static partial class TDBUpgrade
     {
         /// Upgrade to version 2019-10
-        public static bool UpgradeDatabase201909_201910()
+        public static bool UpgradeDatabase201909_201910(TDataBase ADataBase)
         {
             // new module PARTNERSELFSERVICE and new user SELFSERVICE
-            TDataBase db = DBAccess.Connect("TDBUpgrade");
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             bool SubmitOK = false;
 
-            db.WriteTransaction(ref SubmitChangesTransaction,
+            ADataBase.WriteTransaction(ref SubmitChangesTransaction,
                 ref SubmitOK,
                 delegate
                 {
@@ -52,12 +51,14 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                     {
                         if (stmt.Trim().Length > 0)
                         {
-                            db.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                            ADataBase.ExecuteNonQuery(stmt, SubmitChangesTransaction);
                         }
                     }
 
                     SubmitOK = true;
                 });
+
+            
             return true;
         }
     }
