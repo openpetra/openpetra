@@ -29,25 +29,12 @@
 <target name="install" depends="install.net, install.js"/>
 
 <target name="install.net">
-  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
-
-  <if test="${not directory::exists('/usr/local/openpetra/bin')}">
-    <fail message="this only works if the openpetra rpm package has been installed already"/>
-  </if>
-
-  <call target="prepareSetupDirForTarFile"/>
-  <copy todir="/usr/local/openpetra">
-    <fileset basedir="${dir.setup}">
-      <include name="**/*" />
-    </fileset>
-  </copy>
-
   <!-- when running from Dockerfile, we cannot restart since systemd is not running yet -->
   <property name="with-restart" value="true" overwrite="false"/>
   <if test="${with-restart}">
-  <echo message="Restarting the OpenPetra server..."/>
-  <exec program="bash"
-    commandline="-c &quot;sudo systemctl restart openpetra;&quot;"/>
+    <echo message="Restarting the OpenPetra server..."/>
+    <exec program="bash"
+      commandline="-c &quot;sudo systemctl restart openpetra;&quot;"/>
   </if>
 </target>
 
@@ -55,12 +42,6 @@
   <exec program="bash"
         workingdir="${dir.root}/js-client"
         commandline="-c &quot;npm run build&quot;" />
-  
-  <copy todir="/usr/local/openpetra/client">
-    <fileset basedir="${dir.root}/js-client">
-      <include name="**/*" />
-    </fileset>
-  </copy>
 </target>
 
 <!-- Linux -->
