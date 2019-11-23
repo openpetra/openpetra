@@ -5,6 +5,8 @@ INTRODUCTION
 ------------
 The goal of OpenPetra is to provide an easy to use software system for the administration of non-profit organisations.
 
+You can manage your contacts (CRM) and your accounts (ERP) with OpenPetra. We have a special focus on processing and receipting donations. More features are being implemented as the demand for OpenPetra grows.
+
 To find out more about OpenPetra, please visit the webpage [www.openpetra.org](http://www.openpetra.org)
 
 DEMO
