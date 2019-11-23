@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenPetra Server
+After=postgresql.service
+Wants=postgresql.service
+
+[Service]
+User=OPENPETRA_USER
+ExecStart=OPENPETRA_SERVER_BIN start
+ExecStop=OPENPETRA_SERVER_BIN stop
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
