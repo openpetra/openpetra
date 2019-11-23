@@ -13,38 +13,19 @@ DEVELOPMENT SETUP
 These are the steps required to setup a development environment on CentOS7:
 
 ```
-# install required packages
-yum install epel-release git
-yum install mono-devel nant nunit xsp libsodium
-
-# clone the code repositories
-git clone --depth 10 https://github.com/openpetra/openpetra.git
-git clone https://github.com/openpetra/openpetra-client-js.git
-
-cd openpetra
-
-# setup the basic configuration
-vi OpenPetra.build.config
-
-    <?xml version="1.0"?>
-    <project name="OpenPetra-userconfig">
-        <property name="DBMS.Type" value="sqlite"/>
-        <property name="Server.DebugLevel" value="0"/>
-    </project>
-
-# this will take a couple of minutes while code is generated and the solution gets compiled
-nant generateSolution
-
-# create a fresh sqlite database
-nant recreateDatabase resetDatabase
-
-# run the server with xsp4
-nant start
-# stop the server
-nant stop
+curl https://getopenpetra.com | bash -s devenv
 ```
 
-You can test your OpenPetra installation at http://localhost:9000 and http://localhost:9000/api
+You can test your OpenPetra installation at http://localhost and http://localhost/api/. 
+The default user is DEMO and password DEMO, or user SYSADMIN and password CHANGEME.
+
+For development, do this to get a list of available commands:
+
+```
+su - op_dev
+cd openpetra
+nant help
+```
 
 LICENSE
 -------
