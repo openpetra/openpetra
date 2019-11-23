@@ -7,6 +7,21 @@ The goal of OpenPetra is to provide an easy to use software system for the admin
 
 To find out more about OpenPetra, please visit the webpage [www.openpetra.org](http://www.openpetra.org)
 
+DEMO
+----
+
+You are welcome to try the demo at https://demo.openpetra.org. This is a public service, so don't enter any real data!
+
+OPENPETRA AS A SERVICE
+----------------------
+
+Please have a look at https://www.openpetra.com for your own free test installation of OpenPetra, with unlimited testing period!
+
+COMMUNITY
+---------
+
+There is an english forum at https://forum.openpetra.org, and for german speakers we have https://forum.openpetra.de
+
 DEVELOPMENT SETUP
 -----------------
 
@@ -16,9 +31,6 @@ These are the steps required to setup a development environment on CentOS7:
 curl https://getopenpetra.com | bash -s devenv
 ```
 
-You can test your OpenPetra installation at http://localhost and http://localhost/api/. 
-The default user is DEMO and password DEMO, or user SYSADMIN and password CHANGEME.
-
 For development, do this to get a list of available commands:
 
 ```
@@ -26,6 +38,9 @@ su - op_dev
 cd openpetra
 nant help
 ```
+
+You can test your OpenPetra installation at http://localhost and http://localhost/api/. 
+The default user is DEMO and password DEMO, or user SYSADMIN and password CHANGEME.
 
 LICENSE
 -------
