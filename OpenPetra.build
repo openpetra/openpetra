@@ -430,7 +430,15 @@ useful parameters
   <echo message="Target test-client (outer) started at: ${datetime::now()}" />
   
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
-  <nant inheritall="false" target="test-client" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+
+  <!-- to avoid timeout, need to make sure everything gets compiled on the web request -->
+  <exec program="bash"
+        workingdir="${dir.root}/js-client"
+        commandline="-c &quot;curl --silent --retry 5 http://localhost:${Http.Port}/api/serverSessionManager.asmx/IsUserLoggedIn&quot;" />
+
+  <exec program="bash"
+        workingdir="${dir.root}/js-client"
+        commandline="-c &quot;LANG=en CYPRESS_baseUrl=http://localhost:${Http.Port} ./node_modules/.bin/cypress run --config video=false&quot;" />
   
   <echo message="Target test-client (outer) finished at: ${datetime::now()}" />
 </target>
