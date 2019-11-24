@@ -16,6 +16,11 @@ export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 export OPENPETRA_PORT=6700
 
+if [[ ! -z "`cat /usr/lib/systemd/system/openpetra.service | grep postgresql`" ]]; then
+    export OPENPETRA_DBPORT=5432
+    export OPENPETRA_RDBMSType=postgresql
+fi
+
 generatepwd() {
   dd bs=1024 count=1 if=/dev/urandom status=none | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1
 }
@@ -130,7 +135,7 @@ mysqlscript() {
 }
 
 # backup the mysql database
-backup() {
+mysqlbackup() {
     echo `date` "Writing to " $backupfile
     cat > /home/$userName/.my.cnf <<FINISH
 [mysqldump]
@@ -143,7 +148,7 @@ FINISH
 }
 
 # restore the mysql database
-restore() {
+mysqlrestore() {
     echo "This will overwrite your database!!!"
     echo "Please enter 'yes' if that is ok:"
     read response
@@ -172,6 +177,61 @@ restore() {
     else
         mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > /home/$userName/log/mysqlload.log
     fi
+
+    echo `date` "Finished!"
+}
+
+# backup the postgresql database
+postgresqlbackup() {
+    echo `date` "Writing to " $backupfile
+    # loading of this dump will show errors about existing data tables etc.
+    # could have 2 calls: --data-only and --schema-only.
+    su - $userName -c "pg_dump -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
+    echo `date` "Finished!"
+}
+
+# restore the postgresql database
+postgresqlrestore() {
+    echo "This will overwrite your database!!!"
+    echo "Please enter 'yes' if that is ok:"
+    read response
+    if [ "$response" != 'yes' ]
+    then
+        echo "Cancelled the restore"
+        exit
+    fi
+    echo `date` "Start restoring from " $backupfile
+    echo "dropping tables and sequences..."
+
+    delCommand="SELECT 'DROP TABLE ' || n.nspname || '.' || c.relname || ' CASCADE;' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'r' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
+    su - $userName -c "psql -t -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -c \"$delCommand\" > /tmp/deleteAllTables.sql"
+
+    delCommand="SELECT 'DROP SEQUENCE ' || n.nspname || '.' || c.relname || ';' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'S' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
+    su - $userName -c "psql -t -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -c \"$delCommand\" > /tmp/deleteAllSequences.sql"
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f /tmp/deleteAllTables.sql"
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f /tmp/deleteAllSequences.sql"
+
+    rm /tmp/deleteAllTables.sql
+    rm /tmp/deleteAllSequences.sql
+
+    export PGOPTIONS='--client-min-messages=warning'
+
+    #if pgdump was called with data-only, we would need to create the tables here
+    #echo "creating tables..."
+    #su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
+
+    echo "loading data..."
+    echo $backupfile|grep -qE '\.gz$'
+    if [ $? -eq 0 ]
+    then
+        su - $userName -c "cat $backupfile | gunzip | psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q > /home/$userName/log/pgload.log"
+    else
+        su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $backupfile > /home/$userName/log/pgload.log"
+    fi
+
+    #if pgdump was called with data-only, we would need to create the contraints and indexes here
+    #echo "enabling indexes and constraints..."
+    #su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
 
     echo `date` "Finished!"
 }
@@ -278,25 +338,14 @@ FINISH
 }
 
 # this will overwrite all existing data
-initdb() {
-    if [ -z "$OPENPETRA_DBPWD" ]
-    then
-      echo "please define a password for your OpenPetra database, eg. OPENPETRA_PWD=topsecret openpetra-server init"
-      exit -1
-    fi
-
-    echo "preparing OpenPetra database..."
-
+mysqlinitdb() {
     mkdir -p $OpenPetraPath/tmp
 
     if [ "$OPENPETRA_DBHOST" == "localhost" ]
     then
       echo "initialise database"
-      if [ $OPENPETRA_DBHOST == "localhost" ]
-      then
-        systemctl start mariadb
-        systemctl enable mariadb
-      fi
+      systemctl start mariadb
+      systemctl enable mariadb
       echo "DROP DATABASE IF EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
@@ -316,6 +365,74 @@ insert into s_user_module_access_permission(s_user_id_c, s_module_id_c, s_can_ac
 insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSADMIN', true);
 FINISH
     mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/tmp/init-MySQL.sql
+}
+
+# this will overwrite all existing data
+postgresqlinitdb() {
+
+    if [ "$OPENPETRA_DBHOST" == "localhost" ]
+    then
+      echo "initialise database"
+      postgresql-setup initdb
+      systemctl start postgresql
+      systemctl enable postgresql
+
+      if [ ! "`cat /var/lib/pgsql/data/pg_hba.conf | grep '^host  '$OPENPETRA_DBNAME' '$OPENPETRA_DBUSER'  ::1/128   md5'`" ]; then 
+        echo "local  $OPENPETRA_DBNAME $OPENPETRA_DBUSER   md5" > /var/lib/pgsql/data/pg_hba.conf.new 
+        echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  ::1/128   md5" >> /var/lib/pgsql/data/pg_hba.conf.new 
+        echo "host  $OPENPETRA_DBNAME $OPENPETRA_DBUSER  127.0.0.1/32   md5" >> /var/lib/pgsql/data/pg_hba.conf.new 
+        cat /var/lib/pgsql/data/pg_hba.conf >> /var/lib/pgsql/data/pg_hba.conf.new 
+        mv -f /var/lib/pgsql/data/pg_hba.conf.new /var/lib/pgsql/data/pg_hba.conf 
+        systemctl restart postgresql
+        su - postgres -c "psql -q -p $OPENPETRA_DBPORT -c \"CREATE USER \\\"$OPENPETRA_DBUSER\\\" PASSWORD '$OPENPETRA_DBPWD'\"" 
+        su - postgres -c "createdb -p $OPENPETRA_DBPORT -T template0 --encoding UTF8 -O $OPENPETRA_DBUSER $OPENPETRA_DBNAME"
+      fi 
+    fi
+
+    addPwd=1
+    if [ -f /home/$userName/.pgpass ]
+    then
+        if [ "`cat /home/$userName/.pgpass | grep '^*:'$OPENPETRA_DBPORT':'$OPENPETRA_DBNAME':'$OPENPETRA_DBUSER':'`" ]; then
+            addPwd=0
+        fi
+    fi
+    if [ $addPwd -eq 1 ]
+    then
+        echo "*:$OPENPETRA_DBPORT:$OPENPETRA_DBNAME:$OPENPETRA_DBUSER:$OPENPETRA_DBPWD" >> /home/$userName/.pgpass
+    fi
+    chown -R $userName:$userName /home/$userName
+    chmod 600 /home/$userName/.pgpass
+    chown $userName /home/$userName/.pgpass
+
+    echo "creating tables..."
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
+    echo "enabling indexes and constraints..."
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
+
+    # insert initial data so that loadymlgz will work
+    cat > $OpenPetraPath/db30/init-PostgreSQL.sql <<FINISH
+insert into s_user(s_user_id_c) values ('SYSADMIN');
+insert into s_module(s_module_id_c) values ('SYSMAN');
+insert into s_user_module_access_permission(s_user_id_c, s_module_id_c, s_can_access_l) values('SYSADMIN', 'SYSMAN', true);
+insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSADMIN', true);
+FINISH
+    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/init-PostgreSQL.sql"
+}
+
+initdb() {
+    if [ -z "$OPENPETRA_DBPWD" ]
+    then
+      echo "please define a password for your OpenPetra database, eg. OPENPETRA_PWD=topsecret openpetra-server init"
+      exit -1
+    fi
+
+    echo "preparing OpenPetra database..."
+
+    if [[ "$OPENPETRA_RDBMSType" == "mysql" ]]; then
+        mysqlinitdb
+    elif [[ "$OPENPETRA_RDBMSType" == "postgresql" ]]; then
+        postgresqlinitdb
+    fi
 
     # load the clean database with sysadmin user but without ledger, partners etc
     ymlgzfile=$OpenPetraPath/db/clean.yml.gz
@@ -341,8 +458,7 @@ FINISH
     else
       su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
     fi
-
-}
+}    
 
 # this will update the current database
 upgradedb() {
@@ -362,10 +478,21 @@ case "$1" in
         start
         ;;
     backup)
-        backup
+        if [[ "$OPENPETRA_RDBMSType" == "mysql" ]]; then
+            mysqlbackup
+        elif [[ "$OPENPETRA_RDBMSType" == "postgresql" ]]; then
+            postgresqlbackup
+        fi
         ;;
     restore)
-        restore
+        if [[ "$OPENPETRA_RDBMSType" == "mysql" ]]; then
+            mysqlrestore
+        elif [[ "$OPENPETRA_RDBMSType" == "postgresql" ]]; then
+            postgresqlrestore
+        fi
+        ;;
+    mysql)
+        mysqlscript
         ;;
     generatepwd)
         generatepwd
@@ -387,9 +514,6 @@ case "$1" in
         ;;
     menu)
         menu
-        ;;
-    mysql)
-        mysqlscript
         ;;
     status)
         status
