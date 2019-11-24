@@ -4,9 +4,9 @@ After=mariadb.service
 Wants=mariadb.service
 
 [Service]
-User=openpetra
-ExecStart=/usr/bin/openpetra-server start
-ExecStop=/usr/bin/openpetra-server stop
+User=OPENPETRA_USER
+ExecStart=OPENPETRA_SERVER_BIN start
+ExecStop=OPENPETRA_SERVER_BIN stop
 RestartSec=5
 
 [Install]

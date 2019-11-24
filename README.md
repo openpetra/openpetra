@@ -5,7 +5,24 @@ INTRODUCTION
 ------------
 The goal of OpenPetra is to provide an easy to use software system for the administration of non-profit organisations.
 
+You can manage your contacts (CRM) and your accounts (ERP) with OpenPetra. We have a special focus on processing and receipting donations. More features are being implemented as the demand for OpenPetra grows.
+
 To find out more about OpenPetra, please visit the webpage [www.openpetra.org](http://www.openpetra.org)
+
+DEMO
+----
+
+You are welcome to try the demo at https://demo.openpetra.org. This is a public service, so don't enter any real data!
+
+OPENPETRA AS A SERVICE
+----------------------
+
+Please have a look at https://www.openpetra.com for your own free test installation of OpenPetra, with unlimited testing period!
+
+COMMUNITY
+---------
+
+There is an english forum at https://forum.openpetra.org, and for german speakers we have https://forum.openpetra.de
 
 DEVELOPMENT SETUP
 -----------------
@@ -13,38 +30,19 @@ DEVELOPMENT SETUP
 These are the steps required to setup a development environment on CentOS7:
 
 ```
-# install required packages
-yum install epel-release git
-yum install mono-devel nant nunit xsp libsodium
-
-# clone the code repositories
-git clone --depth 10 https://github.com/openpetra/openpetra.git
-git clone https://github.com/openpetra/openpetra-client-js.git
-
-cd openpetra
-
-# setup the basic configuration
-vi OpenPetra.build.config
-
-    <?xml version="1.0"?>
-    <project name="OpenPetra-userconfig">
-        <property name="DBMS.Type" value="sqlite"/>
-        <property name="Server.DebugLevel" value="0"/>
-    </project>
-
-# this will take a couple of minutes while code is generated and the solution gets compiled
-nant generateSolution
-
-# create a fresh sqlite database
-nant recreateDatabase resetDatabase
-
-# run the server with xsp4
-nant start
-# stop the server
-nant stop
+curl https://getopenpetra.com | bash -s devenv
 ```
 
-You can test your OpenPetra installation at http://localhost:9000 and http://localhost:9000/api
+For development, do this to get a list of available commands:
+
+```
+su - op_dev
+cd openpetra
+nant help
+```
+
+You can test your OpenPetra installation at http://localhost and http://localhost/api/. 
+The default user is DEMO and password DEMO, or user SYSADMIN and password CHANGEME.
 
 LICENSE
 -------

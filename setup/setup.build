@@ -29,38 +29,43 @@
 <target name="install" depends="install.net, install.js"/>
 
 <target name="install.net">
-  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
+  <!-- drop non-linux dlls from bin -->
+  <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
+  <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
+  <delete file="${dir.bin}/sqlite3.dll" failonerror="false"/>
+  <delete file="${dir.bin}/libsodium.dll" failonerror="false"/>
+  <delete file="${dir.bin}/libsodium-64.dll" failonerror="false"/>
 
-  <if test="${not directory::exists('/usr/local/openpetra/bin')}">
-    <fail message="this only works if the openpetra rpm package has been installed already"/>
+  <!-- set symbolic link for libsodium -->
+  <if test="${not file::exists(dir.bin + '/libsodium.so')}">
+    <exec program="bash"
+        workingdir="${dir.bin}"
+        commandline="-c &quot;ln -s ${libsodium.so} libsodium.so&quot;"/>
   </if>
-
-  <call target="prepareSetupDirForTarFile"/>
-  <copy todir="/usr/local/openpetra">
-    <fileset basedir="${dir.setup}">
-      <include name="**/*" />
-    </fileset>
-  </copy>
-
+  
   <!-- when running from Dockerfile, we cannot restart since systemd is not running yet -->
   <property name="with-restart" value="true" overwrite="false"/>
   <if test="${with-restart}">
-  <echo message="Restarting the OpenPetra server..."/>
-  <exec program="bash"
-    commandline="-c &quot;sudo systemctl restart openpetra;&quot;"/>
+    <echo message="Restarting the OpenPetra server..."/>
+    <exec program="bash"
+      commandline="-c &quot;sudo systemctl restart openpetra;&quot;"/>
   </if>
 </target>
 
 <target name="install.js">
+  <if test="${not directory::exists(dir.root + '/js-client/node-modules')}">
+    <exec program="bash"
+          workingdir="${dir.root}/js-client"
+          commandline="-c &quot;npm set progress=false&quot;" />
+    <!-- set CI=1 to avoid too much output from installing cypress. see https://github.com/cypress-io/cypress/issues/1243#issuecomment-365560861 -->
+    <exec program="bash"
+          workingdir="${dir.root}/js-client"
+          commandline="-c &quot;( CI=1 npm install --quiet )&quot;" />
+  </if>
+
   <exec program="bash"
         workingdir="${dir.root}/js-client"
         commandline="-c &quot;npm run build&quot;" />
-  
-  <copy todir="/usr/local/openpetra/client">
-    <fileset basedir="${dir.root}/js-client">
-      <include name="**/*" />
-    </fileset>
-  </copy>
 </target>
 
 <!-- Linux -->

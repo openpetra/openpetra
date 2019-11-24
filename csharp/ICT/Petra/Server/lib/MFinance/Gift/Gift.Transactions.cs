@@ -509,8 +509,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
-
-            db.CloseDBConnection();
+            finally
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -2407,6 +2409,58 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return true;
         }
 
+        /// <summary>
+        /// this will save and delete a recurring gift batch
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainRecurringBatches(
+            string action,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            string ABatchDescription,
+            string ABankAccountCode,
+            string ABankCostCentre,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            GiftBatchTDS MainDS = LoadARecurringGiftBatchSingle(ALedgerNumber, ABatchNumber);
+            AVerificationResult = new TVerificationResultCollection();
+
+            if ((action == "create") || (action == "edit"))
+            {
+
+                if (MainDS.ARecurringGiftBatch.Rows.Count != 1)
+                {
+                    return false;
+                }
+
+                ARecurringGiftBatchRow row = MainDS.ARecurringGiftBatch[0];
+
+                row.BatchDescription = ABatchDescription;
+                row.BankAccountCode = ABankAccountCode;
+                row.BankCostCentre = ABankCostCentre;
+
+                try
+                {
+                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// this will create, save and delete a gift transaction
@@ -2534,6 +2588,117 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// this will create, save and delete a recurring gift transaction
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainRecurringGifts(
+            string action,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber,
+            Int64 ADonorKey,
+            string AReference,
+            string AIBAN,
+            string ASEPAMandate,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            GiftBatchTDS MainDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                ARecurringGiftRow row = MainDS.ARecurringGift.NewRowTyped();
+                row.LedgerNumber = ALedgerNumber;
+                row.BatchNumber = ABatchNumber;
+                row.GiftTransactionNumber = AGiftTransactionNumber;
+                row.DonorKey = ADonorKey;
+                row.Reference = AReference;
+                // TODO: set IBAN of main bank account of partner
+                // TODO: set SEPAMandate in p_data_label_value_partner
+                // UpdateSEPAMandate(ALedgerNumber, ADonorKey, AIBAN, ASEPAMandate);
+                MainDS.ARecurringGift.Rows.Add(row);
+
+                // TODO update recurring gift batch last transaction number???
+
+                try
+                {
+                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "edit")
+            {
+                foreach (ARecurringGiftRow row in MainDS.ARecurringGift.Rows)
+                {
+                    if (row.GiftTransactionNumber == AGiftTransactionNumber)
+                    {
+                        row.DonorKey = ADonorKey;
+                        row.Reference = AReference;
+                    }
+                }
+
+                try
+                {
+                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                foreach (ARecurringGiftDetailRow row in MainDS.ARecurringGiftDetail.Rows)
+                {
+                    if (row.GiftTransactionNumber == AGiftTransactionNumber)
+                    {
+                        row.Delete();
+                    }
+                    else if (row.GiftTransactionNumber > AGiftTransactionNumber)
+                    {
+                        row.GiftTransactionNumber--;
+                    }
+                }
+
+                foreach (ARecurringGiftRow row in MainDS.ARecurringGift.Rows)
+                {
+                    if (row.GiftTransactionNumber == AGiftTransactionNumber)
+                    {
+                        row.Delete();
+                    }
+                    else if (row.GiftTransactionNumber > AGiftTransactionNumber)
+                    {
+                        row.GiftTransactionNumber--;
+                    }
+                }
+
+                try
+                {
+                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// this will create, save and delete a gift detail
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
@@ -2622,6 +2787,129 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             else if (action == "delete")
             {
                 foreach (AGiftDetailRow row in MainDS.AGiftDetail.Rows)
+                {
+                    if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))
+                    {
+                        row.Delete();
+                    }
+                    else if ((row.GiftTransactionNumber == AGiftTransactionNumber) && row.DetailNumber > ADetailNumber)
+                    {
+                        row.DetailNumber--;
+                    }
+                }
+
+                try
+                {
+                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// this will create, save and delete a recurring gift detail
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MaintainRecurringGiftDetails(
+            string action,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber,
+            Int32 ADetailNumber,
+            Decimal AGiftTransactionAmount,
+            string AGiftCommentOne,
+            string AMotivationGroupCode,
+            string AMotivationDetailCode,
+            Int64 ARecipientKey,
+            DateTime AStartDonations,
+            DateTime? AEndDonations,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            GiftBatchTDS MainDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                ARecurringGiftDetailRow row = MainDS.ARecurringGiftDetail.NewRowTyped();
+                row.LedgerNumber = ALedgerNumber;
+                row.BatchNumber = ABatchNumber;
+                row.GiftTransactionNumber = AGiftTransactionNumber;
+                row.DetailNumber = ADetailNumber;
+                row.GiftAmount = AGiftTransactionAmount;
+                row.GiftCommentOne = AGiftCommentOne;
+                row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
+                row.MotivationGroupCode = AMotivationGroupCode;
+                row.MotivationDetailCode = AMotivationDetailCode;
+                row.RecipientKey = ARecipientKey;
+                row.StartDonations = AStartDonations;
+                if (AEndDonations.HasValue)
+                {
+                    row.EndDonations = AEndDonations.Value;
+                }
+                MainDS.ARecurringGiftDetail.Rows.Add(row);
+
+                // TODO update recurring gift last detail number???
+
+                try
+                {
+                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "edit")
+            {
+                foreach (ARecurringGiftDetailRow row in MainDS.ARecurringGiftDetail.Rows)
+                {
+                    if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))
+                    {
+                        row.GiftAmount = AGiftTransactionAmount;
+                        row.GiftCommentOne = AGiftCommentOne;
+                        row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
+                        row.MotivationGroupCode = AMotivationGroupCode;
+                        row.MotivationDetailCode = AMotivationDetailCode;
+                        row.RecipientKey = ARecipientKey;
+                        row.StartDonations = AStartDonations;
+                        if (AEndDonations.HasValue)
+                        {
+                            row.EndDonations = AEndDonations.Value;
+                        }
+                        else
+                        {
+                            row.SetEndDonationsNull();
+                        }
+                    }
+                }
+
+                try
+                {
+                    SaveGiftBatchTDS(ref MainDS, out AVerificationResult);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                foreach (ARecurringGiftDetailRow row in MainDS.ARecurringGiftDetail.Rows)
                 {
                     if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))
                     {

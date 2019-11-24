@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenPetra Server
+
+[Service]
+User=OPENPETRA_USER
+ExecStart=OPENPETRA_SERVER_BIN start
+ExecStop=OPENPETRA_SERVER_BIN stop
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

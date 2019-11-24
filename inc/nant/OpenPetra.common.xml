@@ -291,6 +291,8 @@
           overwrite="false" />
 
 <!-- Server configuration -->
+<property name="Http.Port" value="80" 
+          overwrite="false" />
 <property name="Server.Port" value="9000" 
           overwrite="false" />
 <property name="Server.DebugLevel" value="0" 
