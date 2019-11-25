@@ -420,7 +420,7 @@ FINISH
 }
 
 initdb() {
-    if [ -z "$OPENPETRA_DBPWD" ]
+    if [ -z "$OPENPETRA_DBPWD" -a "$OPENPETRA_DBMS" != "sqlite" ]
     then
       echo "please define a password for your OpenPetra database, eg. OPENPETRA_PWD=topsecret openpetra-server init"
       exit -1
