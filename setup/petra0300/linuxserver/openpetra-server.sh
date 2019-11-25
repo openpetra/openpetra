@@ -40,6 +40,7 @@ else
   if [ -f $config ]
   then
     export userName=$OP_CUSTOMER
+    export OPENPETRA_RDBMSType=`cat $config | grep RDBMSType | awk -F'"' '{print $4}'`
     export OPENPETRA_DBHOST=`cat $config | grep DBHostOrFile | awk -F'"' '{print $4}'`
     export OPENPETRA_DBUSER=`cat $config | grep DBUserName | awk -F'"' '{print $4}'`
     export OPENPETRA_DBNAME=`cat $config | grep DBName | awk -F'"' '{print $4}'`
