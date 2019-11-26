@@ -207,7 +207,7 @@ namespace Ict.Common.DB.Testing
                     sql =
                         "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c, a_gl_effective_date_d) "
                         +
-                        "VALUES (43, 990, 'TEST', '6000', 1, 'EUR', '4300', CURRENT_DATE()),(43, 991, 'TEST', '6000', 1, 'EUR', '4300', CURRENT_DATE())";
+                        "VALUES (43, 990, 'TEST', '6000', 1, 'EUR', '4300', NOW()),(43, 991, 'TEST', '6000', 1, 'EUR', '4300', NOW())";
                     db.ExecuteNonQuery(sql, t);
                 });
 
