@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # description: Starts and stops the OpenPetra server running with Mono
 #
