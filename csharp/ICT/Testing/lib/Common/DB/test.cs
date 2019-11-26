@@ -205,9 +205,9 @@ namespace Ict.Common.DB.Testing
                 delegate
                 {
                     sql =
-                        "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
+                        "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c, a_gl_effective_date_d) "
                         +
-                        "VALUES (43, 990, 'TEST', '6000', 1, 'EUR', '4300'),(43, 991, 'TEST', '6000', 1, 'EUR', '4300')";
+                        "VALUES (43, 990, 'TEST', '6000', 1, 'EUR', '4300', CURRENT_DATE()),(43, 991, 'TEST', '6000', 1, 'EUR', '4300', CURRENT_DATE())";
                     db.ExecuteNonQuery(sql, t);
                 });
 
