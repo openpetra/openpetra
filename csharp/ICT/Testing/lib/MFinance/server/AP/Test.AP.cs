@@ -304,6 +304,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             ACostCentreCode = AMainDS.AApDocumentDetail[0].CostCentreCode;
         }
 
+        private static int DocumentCounter = 1;
+
         /// <summary>
         /// Creates a AP document for the supplier specified with APartnerKey.
         /// </summary>
@@ -335,7 +337,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                 });
 
-            AMainDS.AApDocument[0].DocumentCode = ADocumentCode + DateTime.Now.Ticks.ToString();
+            AMainDS.AApDocument[0].DocumentCode = ADocumentCode + (DocumentCounter++).ToString();
 
             AMainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
                     FLedgerNumber,
