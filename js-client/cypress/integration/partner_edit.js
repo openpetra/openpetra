@@ -1,10 +1,13 @@
 describe('find and edit partner', function() {
   it('logs in with user demo and modifies partner', function() {
+    cy.server()
     cy.visit('/Partner/Partners/Maintain/MaintainPartners')
     cy.get('#txtEmail').should("be.visible")
     cy.get('#txtEmail').type('demo')
     cy.get('#txtPassword').type('demo')
+    cy.route('POST','**/Login').as('Login')
     cy.get('#btnLogin').click()
+    cy.wait('@Login')
     cy.get('#logout').should("be.visible")
 
     cy.get('#btnFilter').click()
