@@ -26,7 +26,9 @@ describe('find and edit partner', function() {
         .should('not.be.checked')
         .check()
 
+    cy.route('POST','**SavePartner').as('SavePartner')
     cy.get('#modal_space #btnSave').click()
+    cy.wait('@SavePartner')
     cy.get('#message').should("be.visible").should("contain", 'Successfully saved')
 
     cy.visit('/Partner/Partners/Maintain/MaintainPartners')
@@ -46,7 +48,9 @@ describe('find and edit partner', function() {
         .should('be.checked')
         .uncheck()
 
+    cy.route('POST','**SavePartner').as('SavePartner2')
     cy.get('#modal_space #btnSave').click()
+    cy.wait('@SavePartner2')
     cy.get('#message').should("be.visible")
     cy.get('#message').should("contain", 'Successfully saved')
 
