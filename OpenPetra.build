@@ -438,7 +438,7 @@ useful parameters
 
   <exec program="bash"
         workingdir="${dir.root}/js-client"
-        commandline="-c &quot;LANG=en CYPRESS_baseUrl=http://localhost:${Http.Port} ./node_modules/.bin/cypress run --config video=false&quot;" />
+        commandline="-c &quot;LANG=en_US.utf8 CYPRESS_baseUrl=http://localhost:${Http.Port} ./node_modules/.bin/cypress run --config video=false&quot;" />
   
   <echo message="Target test-client (outer) finished at: ${datetime::now()}" />
 </target>
