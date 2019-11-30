@@ -19,8 +19,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "build-debug": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js -d > dist/bundle.js && chmod a+rx dist && chmod a+r -R dist",
-    "build-min": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js | uglifyjs -c > dist/bundle.min.js && chmod a+rx dist && chmod a+r -R dist",
+    "build-debug": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js -d > dist/bundle.js && chmod a+rx -R dist fonts",
+    "build-min": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js | uglifyjs -c > dist/bundle.min.js && chmod a+rx -R dist fonts",
     "build": "npm run build-debug && npm run build-min",
     "test": "LANG=en CYPRESS_baseUrl=http://localhost ./node_modules/.bin/cypress run --config video=false"
   },
