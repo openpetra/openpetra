@@ -4524,7 +4524,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     ccRow.CostCentreCode + " (" +
                                     ccRow.CostCentreName + "), " +
                                     "was: " + (CurrentValue * DebitCredit).ToString("#.##") + ", " +
-                                    "would be: " + (glmpRow.ActualBase * DebitCredit).ToString("#.##") +
+                                    "would be: " + (glmpRow.ActualBase * DebitCredit).ToString("#.##") + ", " +
+                                    "difference: " + Math.Abs( (CurrentValue * DebitCredit) - (glmpRow.ActualBase * DebitCredit) ).ToString("#.##") + 
                                     "<br/>";
                             }
                         }
