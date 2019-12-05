@@ -102,7 +102,7 @@
         "CostCenterTree_label":"Maintain the Cost Centres",
         "MonthEnd_label": "Close the current period",
         "YearEnd_label": "Run the year end",
-	"RecurringGiftBatches_label":"Recurring donations"
+        "RecurringGiftBatches_label":"Recurring donations"
     },
     "forms": {
         "search":"Search",
