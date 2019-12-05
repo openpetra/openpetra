@@ -29,7 +29,11 @@
         </Table>
 
         <Table sqltable="a_recurring_gift_batch"/>
-        <Table sqltable="a_recurring_gift"/>
+        <Table sqltable="a_recurring_gift">
+            <CustomField name="DonorName" type="String"/>
+            <CustomField name="GiftTotal" type="Decimal"/>
+        </Table>
+
         <Table sqltable="a_recurring_gift_detail">
             <CustomField name="DonorKey" type="Int64"/>
             <CustomField name="DonorName" type="String"/>

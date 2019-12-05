@@ -23,29 +23,8 @@
 //
 
 $('document').ready(function () {
-	get_available_years(
-		function() {
-			load_preset();
-		});
+		display_list();
 });
-
-function load_preset() {
-	var x = window.localStorage.getItem('GiftBatches');
-	if (x != null) {
-		x = JSON.parse(x);
-		// first set the period so that it can be used when the year has been selected
-		let y = {"APeriod":x["APeriod"]};
-		format_tpl($('#tabfilter'), y);
-		format_tpl($('#tabfilter'), x);
-		display_list();
-	} else {
-		// set periods: only open periods
-		$('select[name="APeriod"]').val(0);
-		// set batch status: only unposted batches
-		$('select[name="ABatchStatus"]').val('Unposted');
-		display_list();
-	}
-}
 
 function display_list(source) {
 	var x = extract_data($('#tabfilter'));
@@ -171,7 +150,8 @@ function new_trans(ledger_number, batch_number) {
 	let x = {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
-		a_gift_transaction_number_i: $("#Batch" + batch_number + " .tpl_gift").length + 1
+		a_gift_transaction_number_i: $("#Batch" + batch_number + " .tpl_gift").length + 1,
+		
 	};
 	var today = new Date();
 	today.setUTCHours(0, 0, 0, 0);
@@ -356,6 +336,8 @@ function save_edit_trans_detail(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
+	payload['AStartDonations'] = "2019-01-01";
+	payload['AEndDonations'] = "null";
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {
