@@ -2945,6 +2945,48 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                                     batchNumber = gltr.BatchNumber;
 
+                                    // check that transaction is inside the same period as the GL date effective of the batch
+                                    int BatchPeriod = -1;
+                                    if (GLBatchTableInDataSet)
+                                    {
+                                        foreach (ABatchRow glbr in InspectDS.ABatch.Rows)
+                                        {
+                                            if ((glbr.LedgerNumber == LedgerNumber) && (glbr.BatchNumber == batchNumber))
+                                            {
+                                                BatchPeriod = glbr.BatchPeriod;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string CurrencyCode;
+                                        GLBatchTDS TempDS = LoadABatchAJournalATransaction(LedgerNumber, batchNumber, out CurrencyCode);
+                                        BatchPeriod = TempDS.ABatch[0].BatchPeriod;
+                                    }
+
+                                    if (BatchPeriod > -1)
+                                    {
+                                        DateTime PostingPeriodStartDate, PostingPeriodEndDate;
+                                        TFinancialYear.GetStartAndEndDateOfPeriod(LedgerNumber,
+                                            BatchPeriod,
+                                            out PostingPeriodStartDate,
+                                            out PostingPeriodEndDate,
+                                            Transaction);
+
+                                        if ((gltr.TransactionDate < PostingPeriodStartDate) || (gltr.TransactionDate > PostingPeriodEndDate))
+                                        {
+                                            VerificationResult.Add(new TVerificationResult(
+                                                    Catalog.GetString("Invalid transaction date"),
+                                                    String.Format(
+                                                        "invalid transaction date for transaction: {0:d-MMM-yyyy} must be inside period {1} ({2:d-MMM-yyyy} till {3:d-MMM-yyyy})",
+                                                        gltr.TransactionDate,
+                                                        BatchPeriod,
+                                                        PostingPeriodStartDate,
+                                                        PostingPeriodEndDate),
+                                                    TResultSeverity.Resv_Critical));
+                                        }
+                                    }
+
                                     //Prepare to test for valid account and cost centre code
                                     if ((accountsAndCostCentresDS.AAccount == null) || (accountsAndCostCentresDS.AAccount.Count == 0))
                                     {
