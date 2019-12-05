@@ -281,6 +281,7 @@
         "CANCELLED": "Cancelled",
         "GLBatchDateOutsideOfPeriod": "The date is outside of the open periods!",
         "success_cancelled": "The Batch has been cancelled",
+        "success_revert": "The Batch has been revert",
         "success_posted": "The Batch has been posted",
         "import": "Import transactions",
         "isPosted": "We cannot edit batches that have been posted already"
