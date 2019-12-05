@@ -284,7 +284,7 @@
         "GLBatchDateOutsideOfPeriod": "Das Datum ist außerhalb des offenen Buchungszeitraums!",
         "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
         "success_posted": "Der Stapel wurde erfolgreich gebucht",
-        "success_revert": "Der Stapel wurde erfolgreich zurück gebucht",
+        "success_revert": "Ein Stapel mit entgegengesetzten Transaktionen wurde erfolgreich angelegt und kann nun gebucht werden.",
         "import": "Transaktionen importieren",
         "isPosted": "Gepostete Batches können nicht bearbeitet werden"
     },
