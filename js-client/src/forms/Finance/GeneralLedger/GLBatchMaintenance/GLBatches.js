@@ -328,10 +328,9 @@ function save_edit_trans(obj_modal) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
 			updateBatch(payload['ABatchNumber']);
-		}
-		if (parsed.result == "false") {
+		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				display_message(i18next.t(msg.code ? msg.code : msg.message), "fail");
 			}
 		}
 
