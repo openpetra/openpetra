@@ -111,3 +111,6 @@ body {
 .format_currency {
   text-align:right;
 }
+
+.container-list > * { background-color: #00000022; }
+.container-list > *:nth-child(even) { background-color: #00000033; }
