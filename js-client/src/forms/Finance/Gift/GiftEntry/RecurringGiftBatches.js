@@ -114,7 +114,7 @@ function open_gift_transactions(obj, number, reload = false) {
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
-		format_currency(data.ACurrencyCode);
+		format_currency(data.ACurrencyCode ? data.ACurrencyCode : "EUR");
 		format_date();
 		if (!reload) {
 			$('.tpl_row .collapse').collapse('hide');
@@ -151,7 +151,7 @@ function new_trans(ledger_number, batch_number) {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
 		a_gift_transaction_number_i: $("#Batch" + batch_number + " .tpl_gift").length + 1,
-		
+
 	};
 	var today = new Date();
 	today.setUTCHours(0, 0, 0, 0);
@@ -178,6 +178,8 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 	$('#modal_space').append(p);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
+
+	p.find('[name=AStartDonations]').val(new Date().toDateInputValue());
 	p.modal('show');
 };
 
@@ -336,8 +338,7 @@ function save_edit_trans_detail(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
-	payload['AStartDonations'] = "2019-01-01";
-	payload['AEndDonations'] = "null";
+	payload['AEndDonations'] = payload['AEndDonations'] ? payload['AEndDonations'] : "null"; // if no date is given give "null" as a string
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {

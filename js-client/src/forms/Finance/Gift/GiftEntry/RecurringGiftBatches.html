@@ -237,6 +237,7 @@
 		</div>
 	</div>
 
+	<!-- modal for editing transaction details -->
 	<div class="modal modal-wide fade tpl_edit_trans_detail" tabindex="-1" role="dialog">
 		<input type="hidden" action value="create">
 		<div class="modal-dialog" role="document">
@@ -292,6 +293,24 @@
 							</div>
 							<div class="col">
 								<input class="posted_readonly" type="text" name="a_gift_comment_one_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{detail_date_start}</span>
+							</div>
+							<div class="col">
+								<input type="date" name="AStartDonations" required />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{detail_date_end}</span>
+							</div>
+							<div class="col">
+								<input type="date" name="AEndDonations" value="" />
 							</div>
 						</div>
 
