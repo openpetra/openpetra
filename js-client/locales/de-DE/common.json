@@ -354,6 +354,8 @@
       "trans_motivation": "Verwendungszweck",
       "motivation_group_code":"Verwendungszweck Gruppe",
       "motivation_detail_code":"Verwendungszweck Detail",
+      "detail_date_start":"Gültig ab",
+      "detail_date_end":"Gültig bis",
       "trans_narrative_code": "Bemerkung",
       "trans_donor_key":"Spender Schlüssel",
       "trans_donor":"Spendername",

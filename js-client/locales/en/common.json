@@ -354,6 +354,8 @@
       "trans_motivation": "Motivation Group and Detail",
       "motivation_group_code":"Motivation Group Code",
       "motivation_detail_code":"Motivation Detail Code",
+      "detail_date_start":"Valid from",
+      "detail_date_end":"Valid until",
       "trans_narrative_code": "Comment",
       "trans_donor_key":"Donor Key",
       "trans_donor":"Donor Name",
