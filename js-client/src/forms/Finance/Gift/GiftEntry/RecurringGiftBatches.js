@@ -229,13 +229,11 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 			return alert('ERROR');
 		}
 
-		// TODO: fix name as soon Server gives these Fields
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 
 		for (var detail of parsed.result.ARecurringGiftDetail) {
-			console.log(detail);
 			if (detail.a_gift_transaction_number_i == trans_id) {
 
 				let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
