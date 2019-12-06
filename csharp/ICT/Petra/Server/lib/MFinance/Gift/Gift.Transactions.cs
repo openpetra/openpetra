@@ -2831,7 +2831,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ABatchNumber,
             Int32 AGiftTransactionNumber,
             Int32 ADetailNumber,
-            Decimal AGiftTransactionAmount,
+            Decimal AGiftAmount,
             string AGiftCommentOne,
             string AMotivationGroupCode,
             string AMotivationDetailCode,
@@ -2850,7 +2850,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.BatchNumber = ABatchNumber;
                 row.GiftTransactionNumber = AGiftTransactionNumber;
                 row.DetailNumber = ADetailNumber;
-                row.GiftAmount = AGiftTransactionAmount;
+                row.GiftAmount = AGiftAmount;
                 row.GiftCommentOne = AGiftCommentOne;
                 row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
                 row.MotivationGroupCode = AMotivationGroupCode;
@@ -2880,7 +2880,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     if ((row.GiftTransactionNumber == AGiftTransactionNumber) && (row.DetailNumber == ADetailNumber))
                     {
-                        row.GiftAmount = AGiftTransactionAmount;
+                        row.GiftAmount = AGiftAmount;
                         row.GiftCommentOne = AGiftCommentOne;
                         row.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_OFFICE;
                         row.MotivationGroupCode = AMotivationGroupCode;
