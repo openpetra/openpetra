@@ -205,7 +205,14 @@ function format_currency(currencyCode) {
 	)
 };
 
-function format_date() {
+function format_date(from_string) {
+  if (from_string != undefined) {
+    let t = /\((.+)\)/g.exec(from_string);
+    if (t && t.length > 1) {
+      return new Date(parseInt(t[1])).toDateInputValue();
+    } else { return ""; }
+  }
+
 	$('.format_date').each(
 		function(x, obj) {
 			obj = $(obj);
