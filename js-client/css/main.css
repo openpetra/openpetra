@@ -114,3 +114,18 @@ body {
 
 .container-list > * { background-color: #00000022; }
 .container-list > *:nth-child(even) { background-color: #00000033; }
+
+.home .row a {
+  margin: 1em;
+  display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.home .row a i {
+  font-size: 300%;
+}
+
+/* debug zum sehn */
+.home .row a i:before {
+  content: "\f2b9";
+}

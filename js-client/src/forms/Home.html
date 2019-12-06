@@ -6,7 +6,30 @@
 <p>{favourites}
 <br/>
 {example}:
-<ul>
+
+<div class="container container-list home">
+
+  <div class="row">
+    <div class="col">
+      <a href='javascript:nav.OpenForm("Partner/Partners/Maintain/MaintainPartners", "{navigation.ImportExport_label}")'><i class="fa fa-file-import"></i><span>{navigation.ImportExport_label}</span></a>
+    </div>
+    <div class="col">
+      <a href='javascript:nav.OpenForm("Partner/Partners/Maintain/MaintainPartners", "{navigation.CreatePartner_label}")'><i class="fa fa-user-plus"></i><span>{navigation.CreatePartner_label}</span></a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <a href='javascript:nav.OpenForm("Finance/Gift/GiftEntry/BankImport", "{navigation.BankImport_label}")'><i class="fa fa-money-check-alt"></i><span>{navigation.BankImport_label}</span></a>
+    </div>
+    <div class="col">
+      <a href='javascript:nav.OpenForm("Finance/GeneralLedger/PeriodEnd/MonthEnd", "{navigation.PeriodEnd_label}")'><i class="fa fa-file-invoice"></i><span>{navigation.PeriodEnd_label}</span></a>
+    </div>
+  </div>
+
+</div>
+
+<ul hidden>
     <li><a href='javascript:nav.OpenForm("Settings/ChangePassword", "{navigation.change_password}")'>{navigation.change_password}</a></li>
     <li><a href='javascript:nav.OpenForm("Partner/Partners/Maintain/MaintainPartners", "{navigation.MaintainPartners_label}")'>{navigation.MaintainPartners_label}</a></li>
     <li><a href='javascript:nav.OpenForm("Finance/GeneralLedger/GLBatchMaintenance/GLBatches", "{navigation.GLBatches_label}")'>{navigation.GLBatches_label}</a></li>
@@ -16,8 +39,6 @@
     <!--<li><a href='javascript:nav.OpenForm("Finance/GeneralLedger/Reports/AccountDetailReport", "{navigation.AccountDetail_label}")'>{navigation.AccountDetail_label}</a></li>-->
 </ul>
 </p>
-
-
 
 <footer class="footer">
     <div class="container">
