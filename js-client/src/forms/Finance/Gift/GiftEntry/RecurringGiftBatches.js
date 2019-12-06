@@ -73,20 +73,6 @@ function updateBatch(BatchNumber) {
 	});
 }
 
-function format_date() {
-	$('.format_date').each(
-		function(x, obj) {
-			obj = $(obj);
-			let t = /\((.+)\)/g.exec(obj.text());
-			if (t == null || t.length <=1) {return}
-
-			time = new Date(parseInt(t[1])).toLocaleDateString();
-			obj.text(time);
-
-		}
-	)
-};
-
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	$('#browse_container').append(row);
@@ -253,10 +239,10 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 	if (!allow_modal()) {return}
 
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
-	api.post('aserverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
-		for (trans of parsed.result.AGiftDetail) {
+		for (trans of parsed.result.ARecurringGiftDetail) {
 			if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
 				searched = trans;
 				break;
@@ -266,11 +252,9 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 			return alert('ERROR');
 		}
 
+		searched["AStartDonations"] = format_date(searched["a_start_donations_d"]);
+		searched["AEndDonations"] = format_date(searched["a_end_donations_d"]);
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
-		if (!parsed.ABatchIsUnposted) {
-			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
-			tpl_edit_raw.find('.not_show_when_posted').hide();
-		}
 
 		$('#modal_space').append(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
