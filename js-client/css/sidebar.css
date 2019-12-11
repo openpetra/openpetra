@@ -46,8 +46,8 @@
 
 /* closed state */
 #sidebar .list-group .list-group-item[aria-expanded="false"]::after {
-  content: " \f0d7";
-  font-family: FontAwesome;
+  content: " \2304";
+  font-size: 2.0;
   display: inline;
   text-align: right;
   padding-left: 5px;
@@ -59,8 +59,7 @@
   background-color: #222;
 }
 #sidebar .list-group .list-group-item[aria-expanded="true"]::after {
-  content: " \f0da";
-  font-family: FontAwesome;
+  content: " \203A";
   display: inline;
   text-align: right;
   padding-left: 5px;
