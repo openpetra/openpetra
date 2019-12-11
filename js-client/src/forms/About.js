@@ -3,7 +3,6 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2017-2018 by TBits.net
 // Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
@@ -23,4 +22,9 @@
 //
 
 $('document').ready(function () {
+  let x = {};
+  api.post('serverSessionManager.asmx/GetVersion', x).then(function (data) {
+    version = data.data.d;
+    $('.version').html( version );
+  });
 });

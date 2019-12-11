@@ -160,8 +160,6 @@
 <div class="collapse navbar-collapse" id="navbarNav">
 	<ul class="navbar-nav mr-auto">
 		<li class="nav-item"><a id='mnuHome' class="nav-link" href="#">{home}</a></li>
-		<li class="nav-item"><a class="nav-link" href="https://www.openpetra.org" target="newwindow">{about}</a></li>
-		<li class="nav-item"><a class="nav-link" href="https://forum.openpetra.org" target="newwindow">{contact}</a></li>
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{settings}</a>
 			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -181,8 +179,16 @@
 		</li>
 	</ul>
 	<ul class="navbar-nav ml-auto">
-		<li class="nav-item"><a class="nav-link" id="chlang" href="#" onclick="(new Navigation()).OpenForm('Settings/ChangeLanguage')"><span class="flag-icon"></span></a></li>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownHelp" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{help}</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+				<a id="mnuHelpManual"  class="dropdown-item" href="{manualurl}" target="newwindow">{manual}</a>
+				<a id="mnuHelpContact" class="dropdown-item" href="https://forum.openpetra.org" target="newwindow">{contact}</a>
+				<a id="mnuHelpAbout" class="dropdown-item">{about}</a>
+			</div>
+		</li>
 		<li class="nav-item"><a class="nav-link" id="logout" href="#">{logout}</a></li>
+		<li class="nav-item"><a class="nav-link" id="chlang" href="#" onclick="(new Navigation()).OpenForm('Settings/ChangeLanguage')"><span class="flag-icon"></span></a></li>
 	</ul>
 
 </div>

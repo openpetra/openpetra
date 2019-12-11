@@ -222,6 +222,7 @@ class Navigation {
 		this.AddMenuItemHandler('mnuChangePassword', "Settings/ChangePassword", i18next.t("navigation.change_password"));
 		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/ChangeLanguage", i18next.t("navigation.change_language"));
 		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.home"));
+		this.AddMenuItemHandler('mnuHelpAbout', "About", i18next.t("navigation.about"));
 
 		this.UpdateLocation();
 	}

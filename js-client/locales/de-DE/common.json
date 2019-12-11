@@ -43,7 +43,10 @@
     "navigation": {
         "openpetra": "OpenPetra",
         "home": "Start",
-        "about": "Über",
+        "help": "Hilfe",
+        "about": "Über OpenPetra",
+        "manual": "Handbuch",
+        "manualurl": "https://handbuch.openpetra.de",
         "contact": "Kontakt",
         "settings": "Einstellungen",
         "ledgerselect":"gewähltes Hauptbuch:",
@@ -143,12 +146,13 @@
       "edit": "Änderungen sind fehlgeschlagen"
     },
     "Home": {
-        "welcome": "Willkommen bei OpenPetra!",
-        "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> ist eine einfach zu benutzende Softwareanwendung für die Verwaltung von Vereinen, Missionen und Hilfswerken, und steht unter der GPL Lizenz.",
+    },
+    "About": {
+        "caption": "Über OpenPetra",
+        "description": "<a href='https://www.openpetra.org' target='_blank'>OpenPetra</a> ist eine einfach zu benutzende Softwareanwendung für die Verwaltung von Vereinen, Missionen und Hilfswerken, und steht unter der GPL Lizenz.",
         "target": "OpenPetra läuft in den gängigen Browsern, und es ist egal welches Betriebssystem oder welche Bildschirmgröße Sie benutzen.",
-        "favourites": "Hier sollen Sie in Zukunft Ihre wichtigsten Formulare hinterlegen können, die Sie jeden Tag benutzen.",
-        "current_version": "OpenPetra Version",
-        "example": "zum Beispiel"
+        "subscription": "Auf <a href='https://www.openpetra.com' target='_blank'>OpenPetra.com</a> können Sie eine OpenPetra Instanz mieten, inklusive Aktualisierungen und Backups, und auch bezahlten Support erhalten.",
+        "current_version": "Installierte OpenPetra Version"
     },
     "ChangePassword": {
         "caption": "Passwort ändern",
