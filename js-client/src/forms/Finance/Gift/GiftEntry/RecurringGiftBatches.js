@@ -52,7 +52,7 @@ function updateBatch(BatchNumber) {
 		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
 		'ABatchNumber': BatchNumber};
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatch', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatchSingle', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		var item = data.result.ARecurringGiftBatch[0];
 		let batchDiv = $('#Batch' + BatchNumber + " div");
