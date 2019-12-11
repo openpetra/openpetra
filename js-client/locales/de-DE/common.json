@@ -56,24 +56,24 @@
         "logout": "Abmelden",
         "notimplementedyet": "Noch nicht verfügbar",
         "SelfService_label": "Selbstverwaltung",
-        "Partner_label": "Partner",
-        "Partners_label": "Partner",
+        "Partner_label": "Kontakte",
+        "Partners_label": "Kontakte",
         "Types_label": "Kategorien",
         "Maintain_label": "Verwalten",
-        "MaintainPartners_label": "Partner verwalten",
+        "MaintainPartners_label": "Kontakte verwalten",
         "MaintainPublications_label": "Abonnements verwalten",
         "MaintainTypes_label": "Kategorien verwalten",
-        "CreatePartner_label": "Partner anlegen",
+        "CreatePartner_label": "Kontakt anlegen",
         "ImportExport_label": "Importieren/Exportieren",
         "Subscription_label": "Abonnements",
         "Reports_label": "Berichte",
         "PartnerReports_label": "Berichte",
-        "PartnerByCity_label": "Partner pro Stadt",
-        "PartnerBySpecialType_label": "Partner mit Kategorien",
-        "PartnerBySubscription_label": "Partner mit Abonnements",
-        "AnnualReportWithoutAnnualReceiptRecipients_label": "Partner Adressen für Jahresrückblick ohne Spender",
+        "PartnerByCity_label": "Kontakte pro Stadt",
+        "PartnerBySpecialType_label": "Kontakte mit Kategorien",
+        "PartnerBySubscription_label": "Kontakte mit Abonnements",
+        "AnnualReportWithoutAnnualReceiptRecipients_label": "Adressen für Jahresrückblick ohne Spender",
         "Setup_label": "Konfiguration",
-        "Partner-related_label": "Konfiguration von Partnerdaten",
+        "Partner-related_label": "Konfiguration von Kontaktdaten",
         "Subscription-related_label": "Konfiguration von Abonnements",
         "Address-related_label": "Konfiguration von Adressen",
         "Finance_label": "Buchhaltung",
@@ -96,12 +96,12 @@
         "MaintainSettings_label": "System Einstellungen",
         "Users_label": "Benutzer",
         "Database_label": "Datenbank",
-        "FindPartners_label": "Partner suchen",
+        "FindPartners_label": "Kontakt suchen",
         "AccountDetail_label": "Bericht über die Kontenbewegungen",
         "Motivations_label": "Verwendungszwecke verwalten",
-        "switchledger":"Aktiver Ledger wurde geändert auf:",
+        "switchledger":"Aktives Hauptbuch wurde geändert auf:",
         "BankImport_label":"Kontoauszüge importieren",
-        "ImportPartners_label":"Partner importieren",
+        "ImportPartners_label":"Kontakte importieren",
         "LedgerInfo_label":"Hauptbuch Statusinformationen",
         "AccountTree_label":"Kontenrahmen verwalten",
         "CostCenterTree_label":"Kostenstellen verwalten",
@@ -203,12 +203,12 @@
     },
 
     "MaintainPartners": {
-        "caption": "Partner verwalten",
-        "edittitle": "Partner bearbeiten",
-        "addtitle": "Partner anlegen",
+        "caption": "Kontakte verwalten",
+        "edittitle": "Kontakt bearbeiten",
+        "addtitle": "Kontakt anlegen",
         "newfamily": "Familie hinzufügen",
         "neworganisation": "Organisation hinzufügen",
-        "partnerkey": "Partner Nummer",
+        "partnerkey": "Kontakt Nummer",
         "partnername": "Name",
         "city": "Stadt",
         "postalcode": "Postleitzahl",
@@ -217,7 +217,7 @@
         "mailingaddress": "Gültige Adresse",
         "nosolicitations1": "Kontaktaufnahme",
         "nosolicitations2": "Keine unaufgeforderte Kontaktierung/Werbung erwünscht",
-        "partnerclass": "Partner Klasse",
+        "partnerclass": "Kontakt Klasse",
         "partnerstatus": "Status",
         "streetname": "Straße und Hausnummer",
         "PERSON": "PERSON",
@@ -228,9 +228,9 @@
         "addresses": "Adressen",
         "address": "Adresse",
         "subscriptions": "Abonnements",
-        "empty_subscriptions": "Es sind noch keine Abonnements eingerichtet worden, das kann unter Partner / Konfiguration erledigt werden.",
+        "empty_subscriptions": "Es sind noch keine Abonnements eingerichtet worden, das kann unter Kontakte / Konfiguration erledigt werden.",
         "types": "Kategorien",
-        "empty_types": "Es sind noch keine Kategorien eingerichtet worden, das kann unter Partner / Konfiguration erledigt werden.",
+        "empty_types": "Es sind noch keine Kategorien eingerichtet worden, das kann unter Kontakte / Konfiguration erledigt werden.",
         "comment": "Anmerkungen",
         "financedetails": "Finanzen",
         "receiptletterfrequency": "Wie oft sollen Spendenbescheinigungen geschickt werden?",
@@ -439,23 +439,23 @@
     },
 
     "PartnerBySpecialType":{
-      "caption":"Partner mit Kategorien",
+      "caption":"Kontakte mit Kategorien",
       "partnertypes":"Kategorien",
-      "activePartnersOnly":"Nur aktive Partner",
+      "activePartnersOnly":"Nur aktive Kontakte",
       "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
-      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+      "excludeNoSolicitations":"Ohne Kontakte die nicht mit Zusendungen belästigt werden wollen"
     },
 
     "PartnerByCity":{
-      "caption":"Partner pro Stadt",
+      "caption":"Kontakte pro Stadt",
       "city":"Stadt",
-      "activePartnersOnly":"Nur aktive Partner",
+      "activePartnersOnly":"Nur aktive Kontakte",
       "onlyValidAddresses":"Nur mit für den Versand gültigen Adressen",
-      "excludeNoSolicitations":"Ohne Partner die nicht mit Zusendungen belästigt werden wollen"
+      "excludeNoSolicitations":"Ohne Kontakte die nicht mit Zusendungen belästigt werden wollen"
     },
 
     "AnnualReportWithoutAnnualReceiptRecipients": {
-      "caption": "Partner Adressen für Jahresrückblick ohne Spender",
+      "caption": "Adressen für Jahresrückblick ohne Spender",
       "PublicationCode": "Abonnement",
       "DonationStartDate": "Anfangsdatum der Jahresspendenbescheinigungen",
       "DonationEndDate": "Enddatum der Jahresspendenbescheinigungen"
@@ -550,10 +550,10 @@
     },
 
     "ImportPartners":{
-      "importUser":"Partner aus CSV Datei importieren",
+      "importUser":"Kontakte aus CSV Datei importieren",
       "examplefile":"Hier ist ein Beispiel, um das erwartete Format zu beschreiben:",
-      "upload_partner_success":"Partner wurden erfolgreich importiert!",
-      "upload_partner_fail":"Partner konnten nicht importiert werden."
+      "upload_partner_success":"Kontakte wurden erfolgreich importiert!",
+      "upload_partner_fail":"Kontakte konnten nicht importiert werden."
     },
 
     "LedgerInfo":{
