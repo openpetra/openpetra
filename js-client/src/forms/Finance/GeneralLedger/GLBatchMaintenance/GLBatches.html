@@ -12,7 +12,7 @@
 			<div class="col" batch-status>{val_a_batch_status_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
-					<i class="fa fa-wrench"></i>
+					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
 		</div>
@@ -21,26 +21,26 @@
 				<div class="row">
 					<div class="col">
 						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="new_trans({val_a_batch_number_i}, '{val_a_date_effective_d}')">
-							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
+							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
 						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="importTransactions({val_a_batch_number_i})">
-							<span>{import}&nbsp;</span><i class="fa fa-file"></i>
+							<span>{import}&nbsp;</span><i class="fas fa-file"></i>
 						</button>
 						<button type="button" class="btn btn-warning only_show_when_not_posted" style="margin-top:0.5em;" onclick="batch_cancel({val_a_batch_number_i})">
-							<span>{batch_cancel}&nbsp;</span><i class="fa fa-ban"></i>
+							<span>{batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
 						<button type="button" class="btn btn-primary btn-warning only_show_when_posted" style="margin-top:0.5em;" onclick="batch_reverse({val_a_batch_number_i}, '{val_a_date_effective_d}')">
-							<span>{batch_reverse}&nbsp;</span><i class="fa fa-unlock"></i>
+							<span>{batch_reverse}&nbsp;</span><i class="fas fa-unlock"></i>
 						</button>
 						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="test_post({val_a_batch_number_i})">
-							<span>{batch_test_post}&nbsp;</span><i class="fa fa-question"></i>
+							<span>{batch_test_post}&nbsp;</span><i class="fas fa-question"></i>
 						</button>
 						<button type="button" class="btn btn-primary btn-warning only_show_when_not_posted" style="margin-top:0.5em;" onclick="batch_post({val_a_batch_number_i})">
-							<span>{batch_post}&nbsp;</span><i class="fa fa-lock"></i>
+							<span>{batch_post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
 						<div class="import_space" style="display:none;">
 							<span style="margin-top:1em;">{message_import_howto}</span>
-							<button type="button" class="btn btn-light" onclick="$(this).closest('.import_space').css('display', 'none')"><i class="fa fa-close"></i></button>
+							<button type="button" class="btn btn-light" onclick="$(this).closest('.import_space').css('display', 'none')"><i class="fas fa-times"></i></button>
 							<textarea rows="8" cols="80"></textarea>
 							<button type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).siblings('textarea').val() )">{forms.import}</button>
 						</div>
@@ -58,7 +58,7 @@
 							<div class="col-3">{trans_narrative_code}</div>
 							<div class="col-1">
 								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
-									<i class="fa fa-close"></i>
+									<i class="fas fa-times"></i>
 								</button>
 							</div>
 						</div>
@@ -82,7 +82,7 @@
 			<div class="col-3">{val_a_narrative_c}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_trans({val_a_batch_number_i}, {val_a_transaction_number_i})">
-					<i class="fa fa-wrench"></i>
+					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
 		</div>

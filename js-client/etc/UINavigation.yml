@@ -59,7 +59,7 @@ OpenPetra:
                     #    PostcodeRanges: {ActionOpenScreen=TFrmPostcodeRangeSetup}
                     #    PostcodeRegions: {ActionOpenScreen=TFrmPostcodeRegionSetup}
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {fa-icon=money, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
+        Finance: {fa-icon=money-bill-alt, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
                 GeneralLedger:
                     Info:
                         LedgerInfo:
@@ -93,7 +93,7 @@ OpenPetra:
                 Ledger:
                     LedgerSetup:
 
-        SystemManager: {fa-icon=sliders, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+        SystemManager: {fa-icon=sliders-h, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
                 Settings:
                         MaintainSettings:
                 Users:

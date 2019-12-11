@@ -25,7 +25,7 @@
 
 var myPleaseWaitDiv;
 myPleaseWaitDiv = myPleaseWaitDiv || (function () {
-    var pleaseWaitDiv = $('<div class="modal fade" tabindex="-1" role="dialog" id="spinnerModal"><div class="modal-dialog modal-dialog-centered text-center" role="document"><span class="fa fa-spinner fa-spin fa-3x w-100"></span></div></div>');
+    var pleaseWaitDiv = $('<div class="modal fade" tabindex="-1" role="dialog" id="spinnerModal"><div class="modal-dialog modal-dialog-centered text-center" role="document"><span class="fas fa-spinner fa-spin fa-3x w-100"></span></div></div>');
     return {
         showPleaseWait: function() {
             pleaseWaitDiv.modal('show');

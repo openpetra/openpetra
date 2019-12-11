@@ -234,9 +234,9 @@ function format_chk() {
 			if (t == null || t.length <=1) {return}
 
 			if (t == "false") {
-				obj.html("<i class='fa fa-circle-thin'></i>");
+				obj.html("<i class='fas fa-circle-thin'></i>");
 			} else {
-				obj.html("<i class='fa fa-check-circle'></i>");
+				obj.html("<i class='fas fa-check-circle'></i>");
 			}
 
 		}

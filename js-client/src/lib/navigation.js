@@ -159,9 +159,9 @@ class Navigation {
 	AddMenuGroup(name, title, icon, enabled)
 	{
 		if (!enabled) {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
 		} else {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
 		}
 	}
 
@@ -182,14 +182,14 @@ class Navigation {
 
 	AddMenuItem(parent, name, title, tabtitle, icon)
 	{
-		$("#mnuLst" + parent).append("<a href='/#" + name + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fa fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		$("#mnuLst" + parent).append("<a href='/#" + name + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
 	// eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
 	AddMenuItemForm(parent, name, form, title, tabtitle, icon)
 	{
-		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fa fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, parent + "/" + form, tabtitle);
 	}
 

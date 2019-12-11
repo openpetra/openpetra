@@ -11,7 +11,7 @@
 			<div class="col format_currency">{val_a_batch_total_n}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
-					<i class="fa fa-wrench"></i>
+					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
 		</div>
@@ -20,19 +20,19 @@
 				<div class="row">
 					<div class="col">
 						<button type="button" class="btn btn-primary not_show_when_posted" style="margin-top:0.5em;" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
-							<span>{forms.new}&nbsp;</span><i class="fa fa-plus"></i>
+							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="export_batch({val_a_batch_number_i})">
-							<span>{forms.export}&nbsp;</span><i class="fa fa-table"></i>
+							<span>{forms.export}&nbsp;</span><i class="fas fa-table"></i>
 						</button>
 						<button type="button" class="btn btn-warning only_show_when_posted" style="margin-top:0.5em;" onclick="adjust_batch({val_a_batch_number_i})">
-							<span>{GLBatches.batch_adjust}&nbsp;</span><i class="fa fa-toggle-right"></i>
+							<span>{GLBatches.batch_adjust}&nbsp;</span><i class="fas fa-toggle-right"></i>
 						</button>
 						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
-							<span>{forms.post}&nbsp;</span><i class="fa fa-lock"></i>
+							<span>{forms.post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
 						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="cancel_batch({val_a_batch_number_i})">
-							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fa fa-ban"></i>
+							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
 					</div>
 					<div class="col"></div>
@@ -45,7 +45,7 @@
 							<div class="col">{trans_amount_in_base}</div>
 							<div class="col-1">
 								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
-									<i class="fa fa-close"></i>
+									<i class="fas fa-times"></i>
 								</button>
 							</div>
 						</div>
@@ -65,7 +65,7 @@
 			<div class="col format_currency">{val_GiftTotal}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans({val_a_ledger_number_i}, {val_a_batch_number_i}, {val_a_gift_transaction_number_i})">
-					<i class="fa fa-wrench"></i>
+					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
 		</div>
@@ -77,7 +77,7 @@
 			<div class="col format_curr">{val_a_gift_amount_n}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
-					<i class="fa fa-wrench"></i>
+					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
 		</div>
@@ -209,7 +209,7 @@
 								<h4>Detail</h4>
 								<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
 									<span>{forms.new}</span>
-									<i class="fa fa-plus"></i>
+									<i class="fas fa-plus"></i>
 								</button>
 
 								<div class="row">
