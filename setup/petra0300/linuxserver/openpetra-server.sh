@@ -35,7 +35,7 @@ then
     dirname=`dirname $0`
     export userName=`basename $dirname`
   fi
-else
+elif [ "$1" != "init" ]; then
   config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
   if [ -f $config ]
   then
@@ -238,17 +238,13 @@ postgresqlrestore() {
 }
 
 init() {
-    if [ -z "$OPENPETRA_URL" ]
+    if [ -z "$OPENPETRA_DBPWD" ]
     then
-      echo "please define the URL for your OpenPetra, eg. OPENPETRA_URL=demo.openpetra.org openpetra-server init"
+      echo "please define a password for your OpenPetra database, eg. OPENPETRA_DBPWD=topsecret openpetra-server init"
       exit -1
     fi
 
-    if [ -z "$OPENPETRA_DBPWD" ]
-    then
-      echo "please define a password for your OpenPetra database, eg. OPENPETRA_PWD=topsecret openpetra-server init"
-      exit -1
-    fi
+    userName=$OP_CUSTOMER
 
     if [ -f /home/$userName/etc/PetraServerConsole.config ]
     then
@@ -256,7 +252,7 @@ init() {
       exit -1
     fi
 
-    echo "preparing OpenPetra server..."
+    echo "preparing OpenPetra instance..."
 
     useradd --home /home/$userName $userName
     mkdir -p /home/$userName/log
@@ -265,7 +261,7 @@ init() {
     mkdir -p /home/$userName/backup
 
     # copy config files (server, serveradmin.config) to etc, with adjustments
-    cat $OpenPetraPath/etc/PetraServerConsole.config \
+    cat $OpenPetraPath/templates/PetraServerConsole.config \
        | sed -e "s/OPENPETRA_PORT/$OPENPETRA_PORT/" \
        | sed -e "s/OPENPETRA_RDBMSType/$OPENPETRA_RDBMSType/" \
        | sed -e "s/OPENPETRA_DBHOST/$OPENPETRA_DBHOST/" \
@@ -277,7 +273,7 @@ init() {
        | sed -e "s~OPENPETRA_EMAILDOMAIN~$OPENPETRA_EMAILDOMAIN~" \
        | sed -e "s/USERNAME/$userName/" \
        > /home/$userName/etc/PetraServerConsole.config
-    cat $OpenPetraPath/etc/PetraServerAdminConsole.config \
+    cat $OpenPetraPath/templates/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
        | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_HTTP_PORT/#" \
        > /home/$userName/etc/PetraServerAdminConsole.config
@@ -288,54 +284,6 @@ init() {
     chmod g+rwx /home/$userName/log
     chmod g+rwx /home/$userName/tmp
     chmod g+rwx /home/$userName/backup
-
-    # configure nginx
-    if [ $OPENPETRA_HTTP_PORT == 80 ]
-    then
-      # let the default nginx server run on another port
-      sed -i "s/listen\(.*\)80/listen\181/g" /etc/nginx/nginx.conf
-    fi
-
-    if [[ "`grep SCRIPT_FILENAME /etc/nginx/fastcgi_params`" == "" ]]
-    then
-      cat >> /etc/nginx/fastcgi_params <<FINISH
-fastcgi_param  PATH_INFO          "";
-fastcgi_param  SCRIPT_FILENAME    \$document_root\$fastcgi_script_name;
-FINISH
-    fi
-
-    mkdir -p /etc/nginx/conf.d
-    cat > /etc/nginx/conf.d/$userName.conf <<FINISH
-server {
-    listen $OPENPETRA_HTTP_PORT;
-    server_name $OPENPETRA_URL;
-    server_name localhost;
-
-    root $OpenPetraPath/client;
-
-    location / {
-         rewrite ^/Selfservice.*$ /;
-         rewrite ^/Settings.*$ /;
-         rewrite ^/Partner.*$ /;
-         rewrite ^/Finance.*$ /;
-         rewrite ^/CrossLedger.*$ /;
-         rewrite ^/System.*$ /;
-         rewrite ^/.git/.*$ / redirect;
-         rewrite ^/etc/.*$ / redirect;
-    }
-
-    location /api {
-         index index.html index.htm default.aspx Default.aspx;
-         fastcgi_index Default.aspx;
-         fastcgi_pass 127.0.0.1:$OPENPETRA_PORT;
-         include /etc/nginx/fastcgi_params;
-         sub_filter_types text/html text/css text/xml;
-         sub_filter 'http://$OPENPETRA_URL:$OPENPETRA_HTTP_PORT/api' '$OPENPETRA_HTTP_URL/api';
-    }
-}
-FINISH
-    systemctl restart nginx
-    systemctl enable nginx
 }
 
 # this will overwrite all existing data
@@ -459,7 +407,7 @@ initdb() {
     else
       su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
     fi
-}    
+}
 
 # this will update the current database
 upgradedb() {
