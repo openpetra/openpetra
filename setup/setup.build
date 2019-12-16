@@ -96,6 +96,7 @@
   <mkdir dir="${dir.setup}/server/bin"/>
   <mkdir dir="${dir.setup}/server/api"/>
   <mkdir dir="${dir.setup}/client"/>
+  <mkdir dir="${dir.setup}/client/etc"/>
   <mkdir dir="${dir.setup}/templates"/>
   <mkdir dir="${dir.setup}/bootstrap-4.0"/>
 
@@ -240,6 +241,9 @@
         <include name="*.html" />
     </fileset>
   </copy>
+
+  <copy file="${dir.root}/js-client/etc/UINavigation.yml"
+        tofile="${dir.setup}/client/etc/UINavigation.yml"/>
 
   <copy todir="${dir.setup}/client">
     <fileset basedir="${dir.root}/js-client/">
