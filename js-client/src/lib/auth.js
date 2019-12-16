@@ -39,6 +39,7 @@ class Auth {
 					window.localStorage.setItem('username', username);
 					window.localStorage.setItem('authenticated', Date.now());
 					window.localStorage.setItem('mustchangepassword', result.mustchangepassword);
+					window.localStorage.setItem('ModulePermissions', result.ModulePermissions);
 
 					if (result.mustchangepassword === true) {
 						window.location.replace('/Settings/ChangePassword');

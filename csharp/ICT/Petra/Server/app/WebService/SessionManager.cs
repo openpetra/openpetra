@@ -237,6 +237,12 @@ namespace Ict.Petra.Server.App.WebService
             Dictionary<string, object> result = new Dictionary<string, object>();
             result.Add("resultcode", resultCode.ToString());
             result.Add("mustchangepassword", MustChangePassword);
+
+            if (resultCode == eLoginEnum.eLoginSucceeded)
+            {
+                result.Add("ModulePermissions", UserInfo.GetUserInfo().GetPermissions());
+            }
+
             return JsonConvert.SerializeObject(result);
         }
 
