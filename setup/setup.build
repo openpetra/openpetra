@@ -94,8 +94,10 @@
   <mkdir dir="${dir.setup}/formletters"/>
   <mkdir dir="${dir.setup}/server"/>
   <mkdir dir="${dir.setup}/server/bin"/>
+  <mkdir dir="${dir.setup}/server/api"/>
   <mkdir dir="${dir.setup}/client"/>
   <mkdir dir="${dir.setup}/templates"/>
+  <mkdir dir="${dir.setup}/bootstrap-4.0"/>
 
   <echo file="${dir.setup}/server/bin/version.txt">${ReleaseVersion}</echo>
   <copy todir="${dir.setup}/server/bin">
@@ -133,13 +135,13 @@
   </copy>
   <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>
   
-  <copy todir="${dir.setup}/server">
+  <copy todir="${dir.setup}/server/api">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
        <include name="*.asmx" />
        <include name="*.aspx" />
     </fileset>
   </copy>
-  <copy todir="${dir.setup}/server" flatten="true">
+  <copy todir="${dir.setup}/server/api" flatten="true">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Plugins">
        <include name="**/*.asmx" />
     </fileset>
@@ -169,6 +171,11 @@
         <include name="*.png" />
     </fileset>
   </copy>
+
+  <!-- need Bootstrap 4.0 for the wkhtmltopdf reports -->
+  <exec program="bash"
+        workingdir="${dir.setup}/bootstrap-4.0"
+        commandline="-c &quot;mkdir tmp; cd tmp; curl --silent --location https://github.com/twbs/bootstrap/releases/download/v4.0.0/bootstrap-4.0.0-dist.zip > bootstrap-4.0.0-dist.zip; unzip bootstrap-4.0.0-dist.zip; mv js/bootstrap.bundle.min.js ..; mv css/bootstrap.min.css .. ; cd .. ; rm -Rf tmp&quot;"/>
 
   <exec program="bash"
         workingdir="${dir.setup}/db"
@@ -254,11 +261,9 @@
   </copy>
   <copy todir="${dir.setup}/client">
     <fileset basedir="${dir.root}/js-client/">
-        <include name="node_modules/**" />
         <include name="webfonts/**" />
         <include name="img/**" />
         <include name="etc/**" />
-        <exclude name="**/@cypress/**" />
     </fileset>
   </copy>
 
