@@ -33,8 +33,7 @@ class Navigation {
 		$(window).scrollTop(0);
 	}
 
-	// TODO: something about parameters
-	OpenForm(name, title, pushState=true)
+	OpenForm(name, title, pushState=true, parameter="")
 	{
 		if (this.debug) {
 			console.log("OpenForm: " + name + " title: " + title);
@@ -69,8 +68,9 @@ class Navigation {
 			this.loadNavigationPage(name);
 		}
 
-		var stateObj = { name: name, title: title };
+		var stateObj = { name: name, title: title, parameter: parameter };
 		var newUrl = name.replace(/_/g, '/');
+		if (parameter != '') newUrl += "?" + parameter;
 		if (newUrl == "Home") { newUrl = ''; }
 		newUrl = window.location.protocol + '//' + window.location.hostname + '/' + newUrl;
 		if (window.location.protocol + '//' + window.location.hostname + '/' + window.location.pathname != newUrl && pushState) {
