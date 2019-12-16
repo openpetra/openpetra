@@ -94,6 +94,7 @@
   <mkdir dir="${dir.setup}/formletters"/>
   <mkdir dir="${dir.setup}/server"/>
   <mkdir dir="${dir.setup}/server/bin"/>
+  <mkdir dir="${dir.setup}/server/api"/>
   <mkdir dir="${dir.setup}/client"/>
   <mkdir dir="${dir.setup}/templates"/>
   <mkdir dir="${dir.setup}/bootstrap-4.0"/>
@@ -134,13 +135,13 @@
   </copy>
   <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>
   
-  <copy todir="${dir.setup}/server">
+  <copy todir="${dir.setup}/server/api">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
        <include name="*.asmx" />
        <include name="*.aspx" />
     </fileset>
   </copy>
-  <copy todir="${dir.setup}/server" flatten="true">
+  <copy todir="${dir.setup}/server/api" flatten="true">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Plugins">
        <include name="**/*.asmx" />
     </fileset>
