@@ -305,7 +305,9 @@ mysqlinitdb() {
       rm -f $OpenPetraPath/tmp/createdb-MySQL.sql
     fi
     echo "creating tables..."
-    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db/createdb-MySQL.sql
+    createScript=$OpenPetraPath/db/createdb-MySQL.sql
+    if [ ! -f $createScript ]; then createScript=$OpenPetraPath/delivery/db/createdb-MySQL.sql; fi
+    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $createScript
 
     echo "initial data..."
     # insert initial data so that loadymlgz will work
