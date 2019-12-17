@@ -385,29 +385,32 @@ initdb() {
         postgresqlinitdb
     fi
 
-    # load the clean database with sysadmin user but without ledger, partners etc
-    ymlgzfile=$OpenPetraPath/db/clean.yml.gz
-    loadYmlGz
+    if [ -f $OpenPetraPathBin/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe ]; then
 
-    # if url does not start with demo.
-    if [[ ! $OPENPETRA_URL == demo.* ]]
-    then
-      mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
+      # load the clean database with sysadmin user but without ledger, partners etc
+      ymlgzfile=$OpenPetraPath/db/clean.yml.gz
+      loadYmlGz
+
+      # if url does not start with demo.
+      if [[ ! $OPENPETRA_URL == demo.* ]]
+      then
+        mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
            -e "UPDATE s_user SET s_password_needs_change_l = 1 WHERE s_user_id_c = 'SYSADMIN'" $OPENPETRA_DBNAME
-      mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
+        mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
            -e "DELETE FROM s_user WHERE s_user_id_c <> 'SYSADMIN'" $OPENPETRA_DBNAME
-    fi
+      fi
 
-    if [ "$LOCK_SYSADMIN" == 1 ]
-    then
-      # for hosted environment, the sysadmin user will only be unlocked for a new customer
-      su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LockSysadmin"
-    elif [ -z $SYSADMIN_PWD ]
-    then
-      SYSADMIN_PWD="CHANGEME"
-      echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
-    else
-      su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
+      if [ "$LOCK_SYSADMIN" == 1 ]
+      then
+        # for hosted environment, the sysadmin user will only be unlocked for a new customer
+        su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LockSysadmin"
+      elif [ -z $SYSADMIN_PWD ]
+      then
+        SYSADMIN_PWD="CHANGEME"
+        echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
+      else
+        su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
+      fi
     fi
 }
 
