@@ -23,4 +23,19 @@
 //
 
 $('document').ready(function () {
+	// get the permissions
+	permissions = window.localStorage.getItem('ModulePermissions').split("\n");
+	$('#homeRow').children('div').each(function () {
+		classes = " " + $(this).attr('class') + " ";
+		hide = true;
+		for (var i = 0; i < permissions.length; i++) {
+
+			if (classes.includes(" " + permissions[i] + " ")) {
+				hide = false;
+			}
+		}
+		if (hide) {
+			$(this).hide();
+		}
+	});
 });

@@ -272,6 +272,8 @@ init() {
        | sed -e "s~OPENPETRA_URL~$OPENPETRA_URL~" \
        | sed -e "s~OPENPETRA_EMAILDOMAIN~$OPENPETRA_EMAILDOMAIN~" \
        | sed -e "s/USERNAME/$userName/" \
+       | sed -e "s#/usr/local/openpetra/bin#$OPENPETRA_HOME/server/bin#" \
+       | sed -e "s#/usr/local/openpetra#$OPENPETRA_HOME#" \
        > /home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/templates/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \

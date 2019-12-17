@@ -27,7 +27,12 @@ var last_opened_entry_data = {};
 
 $('document').ready(function () {
 	load_preset();
-	display_list();
+
+	if (window.location.href.endsWith('?NewFamily')) {
+		open_new_family();
+	} else {
+		display_list();
+	}
 });
 
 function load_preset() {
