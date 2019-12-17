@@ -254,7 +254,7 @@ init() {
 
     echo "preparing OpenPetra instance..."
 
-    useradd --home /home/$userName $userName
+    useradd --home /home/$userName -G openpetra $userName
     mkdir -p /home/$userName/log
     mkdir -p /home/$userName/tmp
     mkdir -p /home/$userName/etc
@@ -280,12 +280,14 @@ init() {
        | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_HTTP_PORT/#" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
+    touch /home/$userName/log/Server.log
     chown -R $userName:openpetra /home/$userName
     chmod g+r -R /home/$userName
     chmod g+rx /home/$userName
     chmod g+rwx /home/$userName/log
     chmod g+rwx /home/$userName/tmp
     chmod g+rwx /home/$userName/backup
+    chmod g+s /home/$userName/log
 }
 
 # this will overwrite all existing data
