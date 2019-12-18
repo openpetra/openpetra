@@ -10,6 +10,90 @@ Besuchen Sie bitte die Projektwebseite <a href="https://www.openpetra.org/de/">h
 
 Bitte melden Sie Probleme mit der neuesten Version im Forum: <a href="https://forum.openpetra.de">https://forum.openpetra.de</a><br/>
 
+<h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra.org</h2>
+
+<h3>Version 2019.10: vom 22. November 2019</h3>
+
+Diese Version hätte eigentlich schon Ende Oktober fertig sein sollen, aber besser spät als nie...<br>
+Die größte Neuerung in dieser Version ist die Möglichkeit, dass Partner sich selber verwalten können: Falls man diese Einstellung in den Systemeinstellungen als Benutzer SYSADMIN aktiviert, dann können sich Ihre Unterstützer und Mitglieder selber in OpenPetra registrieren, und dann auch ihre Kontaktdaten selber eintragen! Sie können selbstverständlich nur ihre eigenen Daten sehen. Diese Funktion kann noch ausgebaut werden, daher bin ich interessiert an Rückmeldungen!</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+<ul><li>Selbstbedienung für Partner: registrieren, und die eigenen Daten pflegen</li>
+<li>Der Bericht "Partner mit Kategorien" gibt nun auch die E-Mail Adressen und Telefonnummern aus.</li>
+<li>Menüpunkte werden gar nicht mehr angezeigt, wenn der Benutzer sie eh nicht benutzen darf. Bisher wurden sie ausgegraut gezeigt.</li>
+<li>demo.openpetra.org: Klare Ansage: keine echten Daten eingeben. Die Datenbank wird jede Nacht zurückgesetzt.</li>
+<li>demo.openpetra.org: Es wird nun eine Flagge in der Menüleiste gezeigt, um das Umschalten der Sprache zu erleichtern.</li>
+<li>Fehler bei Dialogen gehoben, falls der Schalter doppelt geklickt wurde.</li>
+<li>Fehler behoben: Manchmal wurde der Anmeldebildschirm nicht angezeigt.</li></ul>
+
+<p>Einige dieser Verbesserungen wurden durch die Teilnehmer der Mitgliederversammlung des <a href="https://luki.org/" rel=" nofollow ugc">LuKi e.V.</a> angeregt, vielen Dank für die Rückmeldungen!</p>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem <a href="https://github.com/openpetra/openpetra/milestone/6?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2019.10</a> zu finden!</p>
+
+<h3>Version 2019.09: vom 3. Oktober 2019</h3>
+<p>In dieser neuen Version von OpenPetra geht es hauptsächlich um die Mandantenfähigkeit.</p>
+
+<p>Dadurch ist es mir möglich, ohne hohe Kosten das Hosten von OpenPetra anzubieten, weil ich mehrere Kunden mit einem einzigen Mono Dienst versorgen kann, dadurch wird weniger RAM und CPU benötigt. Als Folge daraus ist der kostenlose Testzugang auf <a href="https://www.openpetra.com" rel=" nofollow ugc">OpenPetra.com</a> nun <strong>zeitlich unbeschränkt</strong>! Dadurch können auch Vereine außerhalb des SEPA-Raums OpenPetra benutzen, auch wenn wir noch keine Zahlungen von dort annehmen können. Natürlich freue ich mich über jeden zahlenden Kunden (ab 5 Euro im Monat), dadurch kann der Dienst wachsen!</p>
+
+<p>Veränderungen in dieser Version:</p>
+
+<ul><li>Ein Mono Dienst kann nun für mehrere Kunden genutzt werden. Dadurch wird mandantenfähiges Hosting möglich, wo jeder Kunde eine eigene Konfigurationsdatei und Datenbank hat.</li>
+<li>Wir mussten die Berechnung der Berichte umstellen, damit wir ohne UIConnector und statische Variablen arbeiten können, sondern pro Anfrage das Ergebnis geliefert wird. Dazu wurde die neue Tabelle s_report_result hinzugefügt.</li>
+<li>Neue Instanzen, die noch keinem Kunden zugeordnet sind, erlauben keine Anmeldung mit Benutzer SYSADMIN.</li>
+<li>Neue Kunden erhalten nun eine E-Mail mit ihrem Namen in der Anrede, mit dem Link zum Neusetzen des Passwortes für SYSADMIN. Bisher war die Anrede in dieser E-Mail leer, und sah verwirrend aus.</li></ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem <a href="https://github.com/openpetra/openpetra/milestone/5?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2019.09</a> zu finden!</p>
+
+<h3>Version 2019.07: vom 10. August 2019</h3>
+Die Veröffentlichung dieser Version war eigentlich für Ende Juli geplant, aber es hat dann doch länger gedauert, bis alles bereit war.<br>
+Dieses mal wurde nicht so viele neue Funktionen eingebaut, sondern im technischen Bereich geschahen einige Aufräumarbeiten und Verbesserungen.</p>
+
+<p>Funktionale Änderungen:</p>
+<ul><li>Die Benutzerschnittstelle für den Jahresabschluß wurde verbessert und dem Monatsabschluß angeglichen.</li>
+<li>Die Formatierung von Beträgen wurde verbessert, es gab einen Fehler für Beträge unter 10 Euro.</li></ul>
+
+<p>Technische Änderungen:</p>
+<ul><li>Die Unterstützung für MySQL wurde verbessert.</li>
+<li>Ein paar schon bisher als veraltete Datenbankfelder wurden endlich komplett entfernt (z.B. p_partner_location.p_email_address_c, das nun über Partner Contact Attributes umgesetzt wird).</li>
+<li>Wir unterstützen nun auch Ubuntu als Entwicklungsumgebung. Ich lasse die CI Tests auf Github mit Appveyor (siehe ci.openpetra.org) laufen, das nun auch Ubuntu für die Tests anbietet. Dadurch wird die Qualität von OpenPetra verbessert, denn es wurden bereits ein paar Fehler entdeckt, die auf den CI Läufen mit CentOS auf dem LightBuildServer (<a href="https://lbs.solidcharity.com/package/solidcharity/openpetra/openpetra-test-server-mysql" rel=" nofollow ugc">siehe OpenPetra Test des Servers mit MySQL</a>) nicht zu Tage traten.</li>
+<li>Ich arbeite an einem Projekt, um statische Variablen zu ersetzen. Dies wird es erlauben, viele unterschiedliche Kunden in einer einzigen OpenPetra Instanz zu betreiben. Dieses Projekt ist noch nicht abgeschlossen (siehe <a href="https://forum.openpetra.org/d/869-refactoring-of-static-variables" rel=" nofollow ugc">Fortschrittsmeldungen im englischen Forum</a>), aber die aktuelle Version enthält schon angepassten Code, und die Tests funktionieren alle noch.</li>
+<li>Ich habe das openpetra-client-js Projekt in das Hauptprojekt von OpenPetra auf Github verschoben, um die Komplexität zu verringern. Der Client ist nun hier zu finden: <a href="https://github.com/openpetra/openpetra/tree/master/js-client" rel=" nofollow ugc">https://github.com/openpetra/openpetra/tree/master/js-client</a></li></ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem <a href="https://github.com/openpetra/openpetra/milestone/3?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2019.07</a> zu finden!</p>
+
+<h3>Version 2019.06: vom 29. Juni 2019</h3>
+<p>Das sind die wichtigsten Änderungen, die Teil der Veröffentlichung im Juni 2019 sind:</p>
+<ul>
+<li>Die Anmeldung eines Benutzers wird nun in der Datenbank verwaltet, und nicht mehr im Arbeitsspeicher. Das bedeutet, dass angemeldete Benutzer sich nach einem Neustart des Servers nicht mehr neu anmelden müssen.</li>
+<li>Kleine Korrektur bei der Verarbeitung von Kontoauszügen: Kontobewegungen, die am Ende des Monats gebucht werden, und erst im neuen Monat auf unserem Konto eintreffen, werden korrekt im neuen Monat verbucht.</li>
+<li>Einige Korrekturen, damit PostgreSQL als Datenbank eingesetzt werden kann.</li>
+<li>Der Client zeigt jetzt eine Fehlermeldung, wenn man noch den Browser IE11 oder älter benutzt.</li>
+</ul>
+<p>Hier ist eine detailierte Übersicht aller Änderungen in dieser neuen Version: <a href="https://github.com/openpetra/openpetra/issues?utf8=%E2%9C%93&amp;q=is%3Aissue+milestone%3ARelease_2019-06+is%3Aclosed+" target="_blank" rel="noopener noreferrer">Gelöste Aufgaben im Meilenstein 2019.06</a>
+
+<h3>Version 2019.05: vom 27. Mai 2019</h3>
+<p>Das sind die wichtigsten Änderungen, die Teil der Veröffentlichung im Mai 2019 sind:</p>
+<ul>
+<li>Einen Änderungsstapel anlegen für einen gebuchten Spendenstapel</li>
+<li>Einen Spendenstapel als Excel Datei exportieren</li>
+<li>Den Gesamtbetrag, und die Beträge der einzelnen Spenden des Spendenstapels anzeigen</li>
+<li>Es werden gebuchte Spendenstapel deutlicher als schreibgeschützt gezeigt</li>
+<li>Beim Abschluss des Monats wurden Verbesserungen vorgenommen, man kann jetzt direkt sehen, welchen Datumsbereich die aktuelle Periode abdeckt.</li>
+<li>Im Hintergrund wurde ganz viel Quelltext überarbeitet, um die Datenbankverbindungen zu modernisieren. Es gibt jetzt viele Datenbankverbindungen, statt dem bisherigen Versuch, nur eine Datenverbindung so oft wie möglich wiederzuverwenden.</li>
+</ul>
+<p>Hier ist eine detailierte Übersicht aller Änderungen in dieser neuen Version: <a href="https://github.com/openpetra/openpetra/issues?utf8=%E2%9C%93&amp;q=is%3Aissue+milestone%3ARelease_2019-05+is%3Aclosed+" target="_blank" rel="noopener noreferrer">Gelöste Aufgaben im Meilenstein 2019.05</a>
+
+<h3>Version 2019.02: vom 5. Februar 2019</h3>
+<p>Das sind die wichtigsten Änderungen, die im Januar 2019 umgesetzt wurden:</p>
+<ul>
+<li>Jährliche Spendenbescheinigungen wurden umgesetzt.</li>
+<li>Es gibt jetzt einen Adress-Bericht für den Jahresrückblick, der ohne die Spender ist, die sowieso die Jahresspendenbescheinigung erhalten.</li>
+<li>Man kann jetzt in der Partnersuche die letzte Spende sehen.</li>
+<li>Beim Anlegen und Bearbeiten von Partnern wird jetzt das Land korrekt verarbeitet.</li>
+<li>Das Handbuch wurde auf <a href="https://handbuch.openpetra.de" target="_blank" rel="noopener">https://handbuch.openpetra.de</a> erweitert.</li>
+</ul>
+
 <h2>Bemerkungen zu den Testversionen (Beta-Versionen) von OpenPetra.org</h2>
 
 <h3>Beta 2017.02.4: 16. März 2017</h3>
