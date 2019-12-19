@@ -15,6 +15,7 @@ export documentroot=$OpenPetraPath/server
 export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 export OPENPETRA_PORT=6700
+export OPENPETRA_USER_PREFIX=op_
 
 if [[ ! -z "`cat /usr/lib/systemd/system/openpetra.service | grep postgresql`" ]]; then
     export OPENPETRA_DBPORT=5432
@@ -237,6 +238,27 @@ postgresqlrestore() {
     echo `date` "Finished!"
 }
 
+backup() {
+    if [[ "$OPENPETRA_RDBMSType" == "mysql" ]]; then
+        mysqlbackup
+    elif [[ "$OPENPETRA_RDBMSType" == "postgresql" ]]; then
+        postgresqlbackup
+    fi
+}
+
+backupall() {
+    for d in /home/$OPENPETRA_USER_PREFIX*; do
+        if [ -d $d ]; then
+            export OP_CUSTOMER=`basename $d`
+            export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`.sql.gz
+            backup
+            rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='5 days ago' +%Y%m%d`*.sql.gz
+            rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='6 days ago' +%Y%m%d`*.sql.gz
+            rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='7 days ago' +%Y%m%d`*.sql.gz
+        fi
+    done
+}
+
 init() {
     if [ -z "$OPENPETRA_DBPWD" ]
     then
@@ -434,11 +456,10 @@ case "$1" in
         start
         ;;
     backup)
-        if [[ "$OPENPETRA_RDBMSType" == "mysql" ]]; then
-            mysqlbackup
-        elif [[ "$OPENPETRA_RDBMSType" == "postgresql" ]]; then
-            postgresqlbackup
-        fi
+        backup
+        ;;
+    backupall)
+        backupall
         ;;
     restore)
         if [[ "$OPENPETRA_RDBMSType" == "mysql" ]]; then
@@ -475,7 +496,7 @@ case "$1" in
         status
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|restore|init|initdb|upgradedb|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|upgradedb|loadYmlGz|dumpYmlGz}"
         exit 1
         ;;
 esac
