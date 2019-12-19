@@ -523,6 +523,7 @@ case "$1" in
         ;;
     update)
         updateall
+        ;;
     loadYmlGz)
         loadYmlGz
         ;;
