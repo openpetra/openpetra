@@ -16,6 +16,7 @@ export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 export OPENPETRA_PORT=6700
 export OPENPETRA_USER_PREFIX=op_
+export THIS_SCRIPT=$0
 
 if [[ ! -z "`cat /usr/lib/systemd/system/openpetra.service | grep postgresql`" ]]; then
     export OPENPETRA_DBPORT=5432
@@ -33,7 +34,7 @@ then
   if [ ! -d /usr/local/openpetra ]; then
     # non-root installation
     # get location of this script, to find out the proper user
-    dirname=`dirname $0`
+    dirname=`dirname $THIS_SCRIPT`
     export userName=`basename $dirname`
   fi
 elif [ "$1" != "init" ]; then
@@ -251,10 +252,47 @@ backupall() {
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
             export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`.sql.gz
-            backup
+            $THIS_SCRIPT backup
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='5 days ago' +%Y%m%d`*.sql.gz
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='6 days ago' +%Y%m%d`*.sql.gz
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='7 days ago' +%Y%m%d`*.sql.gz
+        fi
+    done
+}
+
+# this will update the binary files, and each database
+update() {
+    updated_binary=0
+
+    # first try to update the rpm package
+    . /etc/os-release
+    if [[ "$OS" == "CentOS Linux" ]]; then
+        package=`rpm -qa --qf "%{NAME}\n" | grep openpetranow-mysql`
+        if [ ! -z $package ]; then
+            updated_binary=1
+            yum -y update --enablerepo="LBS-solidcharity-openpetra" $package || exit -1
+        fi
+    fi
+
+    # upgrade binary tarball
+    if [ $updated_binary -eq 0 ]; then
+        cd $OpenPetraPath
+        curl --silent --location https://getopenpetra.com/openpetra-latest-bin.tar.gz > openpetra-latest-bin.tar.gz || exit -1
+        rm -Rf openpetra-2*
+	tar xzf openpetra-latest-bin.tar.gz || exit -1
+        for d in openpetra-201*; do
+            alias cp=cp
+            cp -f $d/* $OpenPetraPath
+            rm -Rf $d
+        done
+    fi
+
+    systemctl restart openpetra
+
+    for d in /home/$OPENPETRA_USER_PREFIX*; do
+        if [ -d $d ]; then
+            export OP_CUSTOMER=`basename $d`
+            $THIS_SCRIPT upgradedb
         fi
     done
 }
@@ -440,7 +478,7 @@ initdb() {
 
 # this will update the current database
 upgradedb() {
-    su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
+    su $OP_CUSTOMER -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$OP_CUSTOMER/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
 }
 
 case "$1" in
@@ -483,6 +521,8 @@ case "$1" in
     upgradedb)
         upgradedb
         ;;
+    update)
+        updateall
     loadYmlGz)
         loadYmlGz
         ;;
@@ -496,7 +536,7 @@ case "$1" in
         status
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|upgradedb|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|update|upgradedb|loadYmlGz|dumpYmlGz}"
         exit 1
         ;;
 esac
