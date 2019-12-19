@@ -9,7 +9,7 @@
     "bootstrap": "^4.4.1",
     "browserify": "^16.5.0",
     "browserify-css": "^0.15.0",
-    "cypress": "^3.7.0",
+    "cypress": "3.7.0",
     "i18next": "^10.6.0",
     "i18next-browser-languagedetector": "^2.2.4",
     "i18next-xhr-backend": "^1.5.1",
