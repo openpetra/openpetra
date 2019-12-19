@@ -270,7 +270,7 @@ update() {
         package=`rpm -qa --qf "%{NAME}\n" | grep openpetranow-mysql`
         if [ ! -z $package ]; then
             updated_binary=1
-            yum -y update --enablerepo="LBS-solidcharity-openpetra" $package || exit -1
+            yum -y update --enablerepo="lbs-solidcharity-openpetra" $package || exit -1
         fi
     fi
 
