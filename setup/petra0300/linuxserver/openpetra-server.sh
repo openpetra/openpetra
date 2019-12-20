@@ -102,6 +102,7 @@ stop() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
+    echo "loading database from $ymlgzfile"
     su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile" || exit -1
 }
 
