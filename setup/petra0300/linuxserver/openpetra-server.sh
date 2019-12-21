@@ -349,6 +349,7 @@ init() {
     chmod g+rwx /home/$userName/tmp
     chmod g+rwx /home/$userName/backup
     chmod g+s /home/$userName/log
+    chmod g+rw /home/$userName/log/Server.log
 }
 
 # this will overwrite all existing data
