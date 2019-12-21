@@ -2,10 +2,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       CJ <cj@tbits.net>
 //
 // Copyright 2017-2019 by TBits.net
+// Coypright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -223,6 +224,7 @@ class Navigation {
 		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/ChangeLanguage", i18next.t("navigation.change_language"));
 		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.home"));
 		this.AddMenuItemHandler('mnuHelpAbout', "About", i18next.t("navigation.about"));
+		this.AddMenuItemHandler('mnuHelpReleaseNotes', "ReleaseNotes", i18next.t("navigation.releasenotes"));
 
 		this.UpdateLocation();
 	}

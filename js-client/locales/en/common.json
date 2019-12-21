@@ -46,6 +46,7 @@
         "help": "Help",
         "about": "About OpenPetra",
         "manual": "Manuals",
+        "releasenotes": "Release Notes",
         "manualurl": "https://docs.openpetra.org",
         "contact": "Contact",
         "settings": "Settings",
@@ -154,6 +155,9 @@
         "target": "OpenPetra runs on the main stream browsers, independant of Operating System or screen size.",
         "subscription": "At <a href='https://www.openpetra.com' target='_blank'>OpenPetra.com</a> you can subscribe to get your hosted OpenPetra instance with backups and regular updates, and you also get paid support.",
         "current_version": "OpenPetra version"
+    },
+    "ReleaseNotes": {
+        "releasenotes_url": "releasenotes.html"
     },
     "ChangePassword": {
         "caption": "Change password",

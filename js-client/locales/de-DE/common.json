@@ -29,7 +29,7 @@
         "support_caption": "Unterstützung",
         "support_text": "Falls Sie Fragen oder Anregungen haben, besuchen Sie uns doch im <a href='https://forum.openpetra.de' target='_new'>öffentlichen OpenPetra Forum</a> und reden Sie dort mit uns!",
         "manual_caption": "Handbuch",
-        "manual_text": "Es gibt ein <a href='https://handbuch.openpetra.de' target='_new'>Handbuch</a>, dass Ihnen bei den ersten Schritten mit OpenPetra hilft, aber auch die tiefergehenden Konzepte von OpenPetra erklärt.",
+        "manual_text": "Es gibt ein <a href='https://handbuch.openpetra.de' target='_new'>Handbuch</a>, das Ihnen bei den ersten Schritten mit OpenPetra hilft, aber auch die tiefergehenden Konzepte von OpenPetra erklärt.",
         "status_caption": "Stand von OpenPetra",
         "status_text": "Bitte beachten Sie, dass OpenPetra noch längst nicht fertig ist. Wir wollen Ihnen OpenPetra so früh wie möglich zur Verfügung stellen, damit wir nicht an Ihren Bedürfnissen vorbeientwickeln.",
         "roadmap_caption": "Neue Funktionen",
@@ -46,6 +46,7 @@
         "help": "Hilfe",
         "about": "Über OpenPetra",
         "manual": "Handbuch",
+        "releasenotes": "Versionshinweise",
         "manualurl": "https://handbuch.openpetra.de",
         "contact": "Kontakt",
         "settings": "Einstellungen",
@@ -154,6 +155,9 @@
         "target": "OpenPetra läuft in den gängigen Browsern, und es ist egal welches Betriebssystem oder welche Bildschirmgröße Sie benutzen.",
         "subscription": "Auf <a href='https://www.openpetra.com' target='_blank'>OpenPetra.com</a> können Sie eine OpenPetra Instanz mieten, inklusive Aktualisierungen und Backups, und auch bezahlten Support erhalten.",
         "current_version": "Installierte OpenPetra Version"
+    },
+    "ReleaseNotes": {
+        "releasenotes_url": "releasenotes_de.html"
     },
     "ChangePassword": {
         "caption": "Passwort ändern",

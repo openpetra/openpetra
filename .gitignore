@@ -26,6 +26,7 @@ obj
 *.pidb
 *.orig
 *.userprefs
+js-client/releasenotes
 /tmp
 /var
 /delivery
