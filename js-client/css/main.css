@@ -75,6 +75,28 @@ html {
 #topnavigation {
   min-height: 50px;
 }
+.top-icon {
+  text-align: center;
+}
+.topnav-icontext {
+  white-space: nowrap;
+  max-width: 40px;
+  display: block;
+  text-overflow: ellipsis;
+  overflow:hidden;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.nav-item {
+  margin-top: 5x;
+  margin-bottom: -10px;
+}
+
+.dropdown-item i {
+  margin-left: -15px;
+  margin-right: 5px;
+}
 
 #toolbar {
   margin-bottom: 10px;

@@ -32,6 +32,12 @@ class Navigation {
 		this.currentrelease = "CURRENTRELEASE";
 		this.classesLoaded = [];
 		$(window).scrollTop(0);
+
+		$('li.nav-item a').click(function(e) {
+			$('li.nav-item a').removeClass('active');
+			$(this).addClass('active');
+			
+		});
 	}
 
 	OpenForm(name, title, pushState=true, parameter="")
@@ -93,13 +99,29 @@ class Navigation {
 		var currentPage = null;
 		var caption = null;
 
+		// highlight the icon in the top navbar
+		if (path.length > 0 && path[0] != '') {
+			var module = path[0];
+			$('li.nav-item a').removeClass('active');
+			$('li.nav-item a[id=mnu'+module+']').addClass('active');
+		}
+
 		if (path.length == 2) {
 			var navigation = JSON.parse(window.localStorage.getItem('navigation'));
 
-			if (path[0] in navigation) {
-				if (path[1] in navigation[path[0]].items) {
+			var module = path[0];
+			var submodule = path[1];
+			if (module == '') {
+				module = path[1];
+				submodule = '';
+			}
+
+			if (module in navigation) {
+				if (submodule in navigation[module].items) {
 					currentPage = window.location.pathname.substring(1);
-					caption = navigation[path[0]].caption + ": " + navigation[path[0]].items[path[1]].caption;
+					caption = navigation[module].caption + ": " + navigation[module].items[submodule].caption;
+				} else {
+					currentPage = module;
 				}
 			}
 		}
@@ -225,6 +247,10 @@ class Navigation {
 		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.home"));
 		this.AddMenuItemHandler('mnuHelpAbout', "About", i18next.t("navigation.about"));
 		this.AddMenuItemHandler('mnuHelpReleaseNotes', "ReleaseNotes", i18next.t("navigation.releasenotes"));
+
+		this.AddMenuItemHandler('mnuPartner', "Partner", i18next.t("navigation.Partner_label"));
+		this.AddMenuItemHandler('mnuFinance', "Finance", i18next.t("navigation.Finance_label"));
+		this.AddMenuItemHandler('mnuSystemManager', "SystemManager", i18next.t("navigation.SystemManager_label"));
 
 		this.UpdateLocation();
 	}
