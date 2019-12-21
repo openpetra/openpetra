@@ -1,6 +1,9 @@
 body {
   min-height: 2000px;
 }
+html {
+  font-size: 0.86rem;
+}
 
 .list-group .nav {
   display: none;
@@ -67,6 +70,10 @@ body {
 
 .row {
   margin-bottom: 10px;
+}
+
+#topnavigation {
+  min-height: 50px;
 }
 
 #toolbar {
