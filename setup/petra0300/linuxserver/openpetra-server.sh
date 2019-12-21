@@ -102,7 +102,7 @@ stop() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
-    echo "loading database from $ymlgzfile"
+    echo "loading database from $ymlgzfile with config /home/$userName/etc/PetraServerConsole.config"
     su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile" || exit -1
 }
 
@@ -262,12 +262,12 @@ backupall() {
 }
 
 # this will update the binary files, and each database
-update() {
+updateall() {
     updated_binary=0
 
     # first try to update the rpm package
     . /etc/os-release
-    if [[ "$OS" == "CentOS Linux" ]]; then
+    if [[ "$NAME" == "CentOS Linux" ]]; then
         package=`rpm -qa --qf "%{NAME}\n" | grep openpetranow-mysql`
         if [ ! -z $package ]; then
             updated_binary=1
@@ -283,7 +283,7 @@ update() {
 	tar xzf openpetra-latest-bin.tar.gz || exit -1
         for d in openpetra-201*; do
             alias cp=cp
-            cp -f $d/* $OpenPetraPath
+            cp -Rf $d/* $OpenPetraPath
             rm -Rf $d
         done
     fi
