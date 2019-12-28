@@ -108,7 +108,7 @@ namespace Ict.Petra.Server.app.JSClient
 
                 if (Folder != null)
                 {
-                    result.Add(DepartmentNode.Name, AddFolder(DepartmentNode, userinfo));
+                    result.Add(DepartmentNode.Name, Folder);
                 }
 
                 DepartmentNode = DepartmentNode.NextSibling;
@@ -129,10 +129,59 @@ namespace Ict.Petra.Server.app.JSClient
             }
         }
 
+        private Dictionary<string, object> GetChildItems(XmlNode AFolderNode)
+        {
+            Dictionary<string, object> items = new Dictionary<string, object>();
+
+            foreach (XmlNode child in AFolderNode.ChildNodes)
+            {
+                Dictionary<string, object> item = new Dictionary<string, object>();
+                item.Add("caption", GetCaption(child, true));
+                TLogging.Log(child.Name + " " + child.ChildNodes.Count.ToString());
+                if (child.ChildNodes.Count > 0) TLogging.Log(child.ChildNodes[0].ChildNodes.Count.ToString());
+                if (child.ChildNodes.Count == 1 && child.ChildNodes[0].ChildNodes.Count == 0)
+                {
+                    item.Add("form", child.ChildNodes[0].Name);
+                }
+                else if (child.ChildNodes.Count > 0)
+                {
+                    item.Add("items", GetChildItems(child));
+                }
+                else
+                {
+                    item.Add("form", child.Name);
+                }
+
+                string Action = TXMLParser.GetAttribute(child, "Action");
+
+                if (Action.Length > 0)
+                {
+                    item.Add("action", Action);
+                }
+
+                string form = TXMLParser.GetAttribute(child, "Form");
+
+                if (form.Length > 0)
+                {
+                    item["form"] = form;
+                }
+
+                string path = TXMLParser.GetAttribute(child, "Path");
+
+                if (path.Length > 0)
+                {
+                    item["path"] = path;
+                }
+
+                items.Add(child.Name, item);
+            }
+
+            return items;
+        }
+
+
         private Dictionary<string, object> AddFolder(XmlNode AFolderNode, TPetraPrincipal AUserInfo)
         {
-            // TODO icon?
-
             // enabled/disabled based on permissions
             bool enabled = true;
             if ((TYml2Xml.HasAttribute(AFolderNode, "Enabled"))
@@ -159,24 +208,12 @@ namespace Ict.Petra.Server.app.JSClient
                 folder.Add("enabled", "false");
             }
 
-            Dictionary<string, object> items = new Dictionary<string, object>();
-
-            foreach (XmlNode child in AFolderNode.ChildNodes)
-            {
-                Dictionary<string, object> item = new Dictionary<string, object>();
-                item.Add("caption", GetCaption(child, true));
-                if (child.ChildNodes.Count == 1 && child.ChildNodes[0].ChildNodes.Count == 0)
-                {
-                    item.Add("form", child.ChildNodes[0].Name);
-                }
-                items.Add(child.Name, item);
-            }
-
-            folder.Add("items", items);
+            folder.Add("items", GetChildItems(AFolderNode));
 
             return folder;
         }
 
+#if notused
         private StringBuilder AddSection(string path, XmlNode ASectionNode, string AUserId)
         {
             // TODO icon?
@@ -296,5 +333,6 @@ namespace Ict.Petra.Server.app.JSClient
 
             return ScreenContent.ToString();
         }
+#endif
     }
 }

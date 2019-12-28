@@ -30,6 +30,8 @@ $('document').ready(function () {
 
 	if (window.location.href.endsWith('?NewFamily')) {
 		open_new_family();
+	} else if (window.location.href.endsWith('?NewOrganisation')) {
+		open_new_organisation();
 	} else {
 		display_list();
 	}

@@ -82,6 +82,22 @@
   padding-left: 40px;
 }
 
+h1.sidebar {
+  color: rgb(204, 204, 204);
+  display: inline;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 24px;
+  margin: 10px;
+}
+
+#sidebar a.sidebar-item {
+    background-color: #333741;
+    color: #ccc;
+    border-color: #2c2c2c;
+}
+
 @media (max-width:768px) {
     #sidebar {
         min-width: 35px;

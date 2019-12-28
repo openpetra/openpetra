@@ -33,11 +33,9 @@ class Navigation {
 		this.classesLoaded = [];
 		$(window).scrollTop(0);
 
-		$('li.nav-item a').click(function(e) {
-			$('li.nav-item a').removeClass('active');
-			$(this).addClass('active');
-			
-		});
+		this.module = null;
+		this.submodule = null;
+		this.getCurrentModule();
 	}
 
 	OpenForm(name, title, pushState=true, parameter="")
@@ -93,6 +91,25 @@ class Navigation {
 		$(window).scrollTop(0);
 	};
 
+	getCurrentModule() {
+		var path = window.location.pathname.substring(1);
+		path = path.split('/')
+
+		if (path.length > 0 && path[0] != '') {
+			this.module = path[0];
+		}
+		if (path.length == 2) {
+			this.module = path[0];
+			this.submodule = path[1];
+			if (this.module == '') {
+				this.module = path[1];
+				this.submodule = '';
+			}
+		}
+
+		return [this.module, this.submodule];
+	}
+
 	IsNavigationPage(path) {
 		path = path.split('/')
 
@@ -100,28 +117,18 @@ class Navigation {
 		var caption = null;
 
 		// highlight the icon in the top navbar
-		if (path.length > 0 && path[0] != '') {
-			var module = path[0];
+		if (this.module != null) {
 			$('li.nav-item a').removeClass('active');
-			$('li.nav-item a[id=mnu'+module+']').addClass('active');
+			$('li.nav-item a[id=mnu'+this.module+']').addClass('active');
 		}
 
 		if (path.length == 2) {
 			var navigation = JSON.parse(window.localStorage.getItem('navigation'));
 
-			var module = path[0];
-			var submodule = path[1];
-			if (module == '') {
-				module = path[1];
-				submodule = '';
-			}
-
-			if (module in navigation) {
-				if (submodule in navigation[module].items) {
+			if (this.module in navigation) {
+				if (this.submodule in navigation[this.module].items) {
 					currentPage = window.location.pathname.substring(1);
-					caption = navigation[module].caption + ": " + navigation[module].items[submodule].caption;
-				} else {
-					currentPage = module;
+					caption = navigation[this.module].caption + ": " + navigation[this.module].items[this.submodule].caption;
 				}
 			}
 		}
@@ -179,21 +186,19 @@ class Navigation {
 		}
 	}
 
-	AddMenuGroup(name, title, icon, enabled)
+	AddModuleToTopBar(name, title, icon, enabled)
 	{
-		if (!enabled) {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
-		} else {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
+		if (enabled) {
+			$("#ModuleNavBar").append("<li class='nav-item'><a id='mnu" + name + "' class='nav-link top-icon href='#' title='" + title + "'><i class='fas fa-" + icon + "'></i><span class='topnav-icontext'>" + title + "</span></a></li>");
 		}
 	}
 
-	AddMenuItemHandler(mnuItem, frmName, title) {
+	AddMenuItemHandler(mnuItem, frmName, title, parameter) {
 		var self = this;
 		$('#' + mnuItem).click(function(event) {
 			event.preventDefault();
 
-			self.OpenForm(frmName, title);
+			self.OpenForm(frmName, title, true, parameter);
 
 			// hide the menu if we are on mobile screen (< 768 px width)
 			if ($(document).width() < 768) {
@@ -205,30 +210,33 @@ class Navigation {
 
 	AddMenuItem(parent, name, title, tabtitle, icon)
 	{
-		$("#mnuLst" + parent).append("<a href='/#" + name + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		$("#LeftNavigation").append("<a href='#" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
 	// eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
-	AddMenuItemForm(parent, name, form, title, tabtitle, icon)
+	AddMenuItemForm(folderid, name, parent, item, title, tabtitle, icon)
 	{
-		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
-		this.AddMenuItemHandler(name, parent + "/" + form, tabtitle);
+		var url = folderid + "/" + parent.name + "/" + item.form;
+		if (item.hasOwnProperty('path')) {
+			url = item.path + "/" + item.form;
+		}
+		$("#LeftNavigation").append("<a href='/" + url + "' class='sidebar-item' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		this.AddMenuItemHandler(name, url, tabtitle, item.action);
 	}
 
-	displayNavigation(navigation) {
-		for (var folderid in navigation) {
-			var folder = navigation[folderid];
-			this.AddMenuGroup(folderid, i18next.t('navigation.'+folder.caption), folder.icon, folder.enabled != "false");
-			if (folder.enabled == "false") {
-				continue;
-			}
-			var items = folder.items;
-			for (var itemid in items) {
-				var item = items[itemid];
+	displayNavigationSideBarItem(folderid, parent, folder) {
+		var items = parent.items;
+		for (var itemid in items) {
+			var item = items[itemid];
+			var title = i18next.t('navigation.' + item.caption);
 
+			if (item.hasOwnProperty('items') && item.items.count > 0) {
+				$("#LeftNavigation").append("<h1 class='sidebar'>" + title + "</h2>");
+				this.displayNavigationSideBarItem(folderid, item, folder);
+			} else {
 				if (item.form != null) {
-					this.AddMenuItemForm(folderid, folderid + "_" + itemid, item.form,
+					this.AddMenuItemForm(folderid, folderid + "_" + itemid, parent, item,
 						i18next.t('navigation.' + item.caption),
 						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
 						folder.icon);
@@ -239,6 +247,37 @@ class Navigation {
 						folder.icon);
 				}
 			}
+		}
+	}
+
+	displayNavigationSideBar(navigation) {
+		$("#LeftNavigation").html('');
+
+		var folder = navigation[this.module];
+		if (folder == null) return;
+
+		if (folder.enabled == "false") {
+			return;
+		}
+
+		var items = folder.items;
+		for (var itemid in items) {
+			var item = items[itemid];
+			item['name'] = itemid;
+			var title = i18next.t('navigation.' + item.caption);
+
+			$("#LeftNavigation").append("<h1 class='sidebar'>" + title + "</h2>");
+
+			this.displayNavigationSideBarItem(this.module, item, folder);
+		}
+
+	}
+
+	displayNavigationTopBar(navigation) {
+		for (var folderid in navigation) {
+
+			var folder = navigation[folderid];
+			this.AddModuleToTopBar(folderid, i18next.t('navigation.'+folder.caption), folder.icon, folder.enabled != "false");
 		}
 
 		// link the items in the top menu
@@ -251,6 +290,16 @@ class Navigation {
 		this.AddMenuItemHandler('mnuPartner', "Partner", i18next.t("navigation.Partner_label"));
 		this.AddMenuItemHandler('mnuFinance', "Finance", i18next.t("navigation.Finance_label"));
 		this.AddMenuItemHandler('mnuSystemManager', "SystemManager", i18next.t("navigation.SystemManager_label"));
+
+		var self = this;
+
+		// select module in top bar: make it active, deactivate other modules
+		$('#ModuleNavBar li.nav-item a').click(function(e) {
+			$('#ModuleNavBar li.nav-item a').removeClass('active');
+			$(this).addClass('active');
+			self.getCurrentModule();
+			self.displayNavigationSideBar(navigation);
+		});
 
 		this.UpdateLocation();
 	}
@@ -286,7 +335,8 @@ class Navigation {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
 					window.localStorage.setItem('navigation', JSON.stringify(result.navigation));
-					self.displayNavigation(result.navigation);
+					self.displayNavigationTopBar(result.navigation);
+					self.displayNavigationSideBar(result.navigation);
 					window.onpopstate = function(e) {
 						if (e.state != null) {
 							nav.OpenForm(e.state.name, e.state.title, false);
@@ -306,6 +356,14 @@ $('document').ready(function () {
 	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
 		return; // User is not logged in
 	}
+
+	// check for FINANCE-1 permission. else: hide the ledger selection
+	permissions = window.localStorage.getItem('ModulePermissions');
+	if ((permissions == null) || !(" " + permissions.replace(/\n/g, ' ') + " ").includes(" FINANCE-1 ")) {
+		$('#LedgerSelection').hide();
+		return;
+	}
+
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
 		data = JSON.parse(data.data.d);
 		let dump = $('#ledger_select_dropdown').html('');

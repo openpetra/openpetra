@@ -1,79 +1,41 @@
 OpenPetra:
     MainMenu:
-        # Department
+        # Modules
         SelfService: {fa-icon=address-book, PermissionsRequired=PARTNERSELFSERVICE}
                 Partners:
                         MaintainPartnerSelfService:
+        #Home: {fa-icon=home}
+        #        Partners:
+        #            AddNewFamily: {ActionClick=NewPartner_Family}
+        #            AddNewOrganisation: {ActionClick=NewPartner_Organisation}
+        #            MaintainPartners:
+        #        Finance:
+        #            BankImport:
+
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
                 Partners:
-                    Maintain:
-                        MaintainPartners:
-                        MergePartners: {ActionOpenScreen=TFrmMergePartnersDialog}
-                        DeletePartner: {ActionClick=TPartnerMain.DeletePartnerRecord}
-                    #CreatePartner:
-                    #    AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family}
-                    #    AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person}
-                    #    AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
-                    #    AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
-                    ImportExport:
-                        ImportPartners:
-                    #Subscriptions:
-                    #    CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
-                    PartnerReports:
+                    AddNewFamily: {Form: MaintainPartners, Action=NewFamily}
+                    AddNewOrganisation: {Form: MaintainPartners, Action=NewOrganisation}
+                    MaintainPartners:
+                    ImportPartners:
+                    Reports:
                         PartnerByCity:
                         PartnerBySpecialType:
                         PartnerBySubscription:
                         AnnualReportWithoutAnnualReceiptRecipients:
-
-                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
-                    Types:
-                        MaintainTypes:
-                        ContactAttributes: {ActionOpenScreen=TFrmContactAttributeSetup}
-                        Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCountrySetup}
-                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLanguageCodeSetup}
-                        Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmFrequencySetup}
-                        PartnerStatus: {ActionOpenScreen=TFrmPartnerStatusSetup}
-                        Acquisition:   {ActionOpenScreen=TFrmAcquisitionCodeSetup}
-                        SpecialTypes:  {ActionOpenScreen=TFrmPartnerTypeSetup}
-                        Denomination:  {ActionOpenScreen=TFrmDenominationCodeSetup}
-                        Business:      {ActionOpenScreen=TFrmBusinessCodeSetup}
-                        Occupation:    {ActionOpenScreen=TFrmOccupationCodeSetup}
-                        MaritalStatus: {ActionOpenScreen=TFrmMaritalStatusSetup}
-                        RelationshipCategory: {ActionOpenScreen=TFrmRelationCategorySetup}
-                        Relationship:  {ActionOpenScreen=TFrmRelationshipSetup}
-                        ContactMethod: {ActionOpenScreen=TFrmContactMethodSetup}
-                        InterestCategory: {ActionOpenScreen=TFrmInterestCategorySetup}
-                        Interest: {ActionOpenScreen=TFrmInterestSetup}
-
-                    Subscription:
-                        MaintainPublications:
-                        PublicationCosts: {ActionOpenScreen=TFrmPublicationCostSetup}
-                        ReasonSubscriptionGiven: {ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}
-                        ReasonSubscriptionCancelled: {ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}
-
-                    #Address-related:
-                    #    AddresseeTypes: {ActionOpenScreen=TFrmAddresseeTypeSetup}
-                    #    LocationTypes: {ActionOpenScreen=TFrmLocationTypeSetup}
-                    #    InternationalPostalTypes: {ActionOpenScreen=TFrmInternationalPostalTypeSetup}
-                    #    PostcodeRanges: {ActionOpenScreen=TFrmPostcodeRangeSetup}
-                    #    PostcodeRegions: {ActionOpenScreen=TFrmPostcodeRegionSetup}
-        # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {fa-icon=money-bill-alt, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
+                    MaintainTypes: {Path: Partner/Setup/Types}
+                Subscriptions:
+                    AddNewPublication: {Form: MaintainPublications, Action=NewPublication, Path: Partner/Setup/Subscription}
+                    MaintainPublications: {Path: Partner/Setup/Subscription}
+        Finance: {fa-icon=money-bill-alt, PermissionsRequired=FINANCE-1}
                 GeneralLedger:
-                    Info:
-                        LedgerInfo:
-                    GLBatchMaintenance:
-                        GLBatches:
+                    LedgerInfo:
+                    GLBatches:
                     PeriodEnd:
                         MonthEnd:
                         YearEnd:
                     Reports:
                         AccountDetail:
-                        TrialBalance:
-                        SurplusDeficit:
-                        BalanceSheetStandard:
-                        IncomeExpenseStatement:
                 Gift:
                     GiftEntry:
                         GiftBatches:
@@ -89,11 +51,11 @@ OpenPetra:
                         CostCenterTree:
                     Gift:
                         Motivations:
-        CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
-                Ledger:
-                    LedgerSetup:
+                CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
+                        Ledger:
+                            LedgerSetup:
 
-        SystemManager: {fa-icon=sliders-h, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+        SystemManager: {fa-icon=sliders-h, PermissionsRequired=SYSMAN}
                 Settings:
                         MaintainSettings:
                 Users:
