@@ -18,10 +18,10 @@ OpenPetra:
                     AddNewOrganisation: {Form: MaintainPartners, Action=NewOrganisation}
                     MaintainPartners:
                     ImportPartners:
-                    Reports:
+                    Reports: {Path: Partner/Reports/PartnerReports}
                         PartnerByCity:
                         PartnerBySpecialType:
-                        PartnerBySubscription:
+                        #PartnerBySubscription:
                         AnnualReportWithoutAnnualReceiptRecipients:
                     MaintainTypes: {Path: Partner/Setup/Types}
                 Subscriptions:

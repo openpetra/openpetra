@@ -93,9 +93,18 @@ h1.sidebar {
 }
 
 #sidebar a.sidebar-item {
-    background-color: #333741;
-    color: #ccc;
-    border-color: #2c2c2c;
+  background-color: #333741;
+  color: #ccc;
+  border-color: #2c2c2c;
+  white-space: nowrap;
+  max-width: 200px;
+  display: block;
+  text-overflow: ellipsis;
+  overflow:hidden;
+}
+
+#sidebar a.indent1 {
+  margin-left: 20px;
 }
 
 @media (max-width:768px) {

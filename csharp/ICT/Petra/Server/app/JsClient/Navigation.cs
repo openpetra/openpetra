@@ -166,7 +166,7 @@ namespace Ict.Petra.Server.app.JSClient
                     item["form"] = form;
                 }
 
-                string path = TXMLParser.GetAttribute(child, "Path");
+                string path = TXMLParser.GetAttributeRecursive(child, "Path", true);
 
                 if (path.Length > 0)
                 {

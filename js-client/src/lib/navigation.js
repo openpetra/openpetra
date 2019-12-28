@@ -208,44 +208,44 @@ class Navigation {
 		});
 	}
 
-	AddMenuItem(parent, name, title, tabtitle, icon)
+	AddMenuItem(parent, name, title, tabtitle, icon, indent)
 	{
-		$("#LeftNavigation").append("<a href='#" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
+		$("#LeftNavigation").append("<a href='#' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
 	// eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
-	AddMenuItemForm(folderid, name, parent, item, title, tabtitle, icon)
+	AddMenuItemForm(folderid, name, parent, item, title, tabtitle, icon, indent)
 	{
 		var url = folderid + "/" + parent.name + "/" + item.form;
 		if (item.hasOwnProperty('path')) {
 			url = item.path + "/" + item.form;
 		}
-		$("#LeftNavigation").append("<a href='/" + url + "' class='sidebar-item' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		$("#LeftNavigation").append("<a href='/" + url + "' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, url, tabtitle, item.action);
 	}
 
-	displayNavigationSideBarItem(folderid, parent, folder) {
+	displayNavigationSideBarItem(folderid, parent, folder, indent = 0) {
 		var items = parent.items;
 		for (var itemid in items) {
 			var item = items[itemid];
 			var title = i18next.t('navigation.' + item.caption);
 
-			if (item.hasOwnProperty('items') && item.items.count > 0) {
-				$("#LeftNavigation").append("<h1 class='sidebar'>" + title + "</h2>");
-				this.displayNavigationSideBarItem(folderid, item, folder);
+			if (item.form != null) {
+				this.AddMenuItemForm(folderid, folderid + "_" + itemid, parent, item,
+					i18next.t('navigation.' + item.caption),
+					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+					folder.icon,
+					indent);
 			} else {
-				if (item.form != null) {
-					this.AddMenuItemForm(folderid, folderid + "_" + itemid, parent, item,
-						i18next.t('navigation.' + item.caption),
-						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
-						folder.icon);
-				} else {
-					this.AddMenuItem(folderid, folderid + "_" + itemid,
-						i18next.t('navigation.' + item.caption),
-						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
-						folder.icon);
-				}
+				this.AddMenuItem(folderid, folderid + "_" + itemid,
+					i18next.t('navigation.' + item.caption),
+					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+					folder.icon,
+					indent);
+			}
+			if (item.hasOwnProperty('items')) {
+				this.displayNavigationSideBarItem(folderid, item, folder, indent + 1);
 			}
 		}
 	}
@@ -266,7 +266,7 @@ class Navigation {
 			item['name'] = itemid;
 			var title = i18next.t('navigation.' + item.caption);
 
-			$("#LeftNavigation").append("<h1 class='sidebar'>" + title + "</h2>");
+			$("#LeftNavigation").append("<h1 class='sidebar'>" + title + "</h1>");
 
 			this.displayNavigationSideBarItem(this.module, item, folder);
 		}
