@@ -45,7 +45,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                 delegate
                 {
                     // fix for motivation details, new details have not been activated
-                    string stmt = "update a_motivation_detail set a_motivation_status_l = 1;"
+                    string stmt = "update a_motivation_detail set a_motivation_status_l = 1";
                     ADataBase.ExecuteNonQuery(stmt, SubmitChangesTransaction);
 
                     SubmitOK = true;
