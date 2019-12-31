@@ -1,10 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -96,6 +97,10 @@ function save_new() {
 				if (parsed.result == true) {
 					display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
 					se.modal('hide');
+					// reload permissions so that the current user has access to the new ledger
+					api.post("serverMSysMan.asmx/TUserManagerWebConnector_ReloadUserInfo", request);
+					// from lib/navigation.js, call LoadAvailableLedgerDropDown
+					LoadAvailableLedgerDropDown();
 					display_list();
 				} else {
 					display_error(parsed.AVerificationResult, 'fail');

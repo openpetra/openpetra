@@ -280,6 +280,10 @@ $('document').ready(function () {
 	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
 		return; // User is not logged in
 	}
+	LoadAvailableLedgerDropDown();
+});
+
+function LoadAvailableLedgerDropDown() {
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
 		data = JSON.parse(data.data.d);
 		let dump = $('#ledger_select_dropdown').html('');
@@ -301,8 +305,8 @@ $('document').ready(function () {
 		} else {
 			$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
 		}
-	})
-});
+	});
+}
 
 function change_standard_ledger(ledger_id) {
 	window.localStorage.setItem('current_ledger', ledger_id);
