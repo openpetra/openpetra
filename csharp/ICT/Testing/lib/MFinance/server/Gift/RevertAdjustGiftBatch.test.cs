@@ -157,7 +157,7 @@ namespace Tests.MFinance.Server.Gift
             int AdjustBatchNumber;
             TAdjustmentWebConnector.GiftRevertAdjust(FLedgerNumber,
                 GiftBatchNumber, -1, -1, false, -1,
-                DateTime.Today, GiftAdjustmentFunctionEnum.AdjustGift,
+                DateTime.Today, GiftAdjustmentFunctionEnum.AdjustGiftBatch,
                 false, -1.0m, out AdjustBatchNumber);
 
             bool BatchIsUnposted;
