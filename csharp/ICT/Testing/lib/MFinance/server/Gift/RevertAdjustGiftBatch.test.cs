@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -156,7 +156,7 @@ namespace Tests.MFinance.Server.Gift
 
             int AdjustBatchNumber;
             TAdjustmentWebConnector.GiftRevertAdjust(FLedgerNumber,
-                GiftBatchNumber, -1, false, -1,
+                GiftBatchNumber, -1, -1, false, -1,
                 DateTime.Today, GiftAdjustmentFunctionEnum.AdjustGift,
                 false, -1.0m, out AdjustBatchNumber);
 

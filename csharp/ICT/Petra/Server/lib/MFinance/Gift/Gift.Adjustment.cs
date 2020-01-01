@@ -318,6 +318,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="AGiftTransactionNumber"></param>
         /// <param name="AGiftDetailNumber"></param>
         /// <param name="ABatchSelected"></param>
         /// <param name="ANewBatchNumber"></param>
@@ -331,6 +332,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool GiftRevertAdjust(
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber,
             Int32 AGiftDetailNumber,
             bool ABatchSelected,
             Int32 ANewBatchNumber,
@@ -421,7 +423,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             {
                                 AGiftRow oldGift = (AGiftRow)giftRow.Row;
 
-                                if (oldGift.RowState != DataRowState.Added)
+                                if ((oldGift.RowState != DataRowState.Added)
+                                    && (AFunction != GiftAdjustmentFunctionEnum.AdjustGift)
+                                        || (oldGift.GiftTransactionNumber == AGiftTransactionNumber))
                                 {
                                     AGiftRow gift = GiftDS.AGift.NewRowTyped(true);
                                     DataUtilities.CopyAllColumnValuesWithoutPK(oldGift, gift);
@@ -477,6 +481,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 cycle++;
                             } while ((cycle < 2)
                                      && (AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGift)
+                                         || AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGiftBatch)
                                          || AFunction.Equals(GiftAdjustmentFunctionEnum.FieldAdjust)
                                          || AFunction.Equals(GiftAdjustmentFunctionEnum.TaxDeductiblePctAdjust)));
                         }
@@ -543,6 +548,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGift))
             {
                 ReturnValue.BatchDescription = Catalog.GetString("Gift Adjustment");
+            }
+            else if (AFunction.Equals(GiftAdjustmentFunctionEnum.AdjustGiftBatch))
+            {
+                ReturnValue.BatchDescription = Catalog.GetString("Gift Batch Adjustment");
             }
             else if (AFunction.Equals(GiftAdjustmentFunctionEnum.FieldAdjust))
             {

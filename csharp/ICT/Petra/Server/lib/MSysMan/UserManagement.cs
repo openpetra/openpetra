@@ -1129,7 +1129,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         {
             TDataBase db = DBAccess.Connect("SignUpSelfServiceEnabled", ADataBase);
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted, 0, "SignUpSelfService");
-            string UserID;
             bool Result = false;
 
             try

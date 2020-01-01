@@ -215,6 +215,7 @@ function save_edit_detail(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
 	payload['action'] = mode;
+	payload['AMotivationStatus'] = true;
 
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);

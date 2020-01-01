@@ -357,6 +357,10 @@ $('document').ready(function () {
 		return; // User is not logged in
 	}
 
+	LoadAvailableLedgerDropDown();
+});
+
+function LoadAvailableLedgerDropDown() {
 	// check for FINANCE-1 permission. else: hide the ledger selection
 	permissions = window.localStorage.getItem('ModulePermissions');
 	if ((permissions == null) || !(" " + permissions.replace(/\n/g, ' ') + " ").includes(" FINANCE-1 ")) {
@@ -385,8 +389,8 @@ $('document').ready(function () {
 		} else {
 			$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
 		}
-	})
-});
+	});
+}
 
 function change_standard_ledger(ledger_id) {
 	window.localStorage.setItem('current_ledger', ledger_id);

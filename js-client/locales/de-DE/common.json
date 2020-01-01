@@ -334,6 +334,8 @@
       "edittitle_trans":"Spende bearbeiten",
       "trans_description":"Beschreibung",
       "edittitle_trans_detail":"Spendendetails bearbeiten",
+      "adjustgift": "Spende korrigieren",
+      "giftadjusted": "Es gibt nun einen neuen Spendenstapel mit der Korrektur, den Sie bearbeiten und buchen können!",
       "success_adjust":  "Der Stapel wurde zur Korrektur kopiert",
       "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
       "success_posted": "Der Stapel wurde erfolgreich gebucht"

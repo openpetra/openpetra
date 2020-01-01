@@ -333,6 +333,8 @@
       "edittitle_trans":"Edit transaction",
       "trans_description":"Transaction Comment",
       "edittitle_trans_detail":"Edit transaction details",
+      "adjustgift": "Adjust Donation",
+      "giftadjusted": "There is now an adjustment gift batch, that you can modify and post.",
       "success_adjust":  "An adjustment batch has been created",
       "success_cancelled": "The Batch has been cancelled",
       "success_posted": "The Batch has been posted",

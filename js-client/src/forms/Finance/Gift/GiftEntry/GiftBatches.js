@@ -237,6 +237,7 @@ function edit_batch(batch_id) {
 
 function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	if (!allow_modal()) {return}
+
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
@@ -258,7 +259,9 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
-		if (!parsed.ABatchIsUnposted) {
+		if (parsed.ABatchIsUnposted) {
+			tpl_edit_raw.find('.only_show_when_posted').hide();
+		} else {
 			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
 			tpl_edit_raw.find('.not_show_when_posted').hide();
 		}
@@ -275,7 +278,6 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
-
 	})
 }
 
@@ -560,11 +562,12 @@ function adjust_batch(batch_id) {
 	var r = {
 				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ABatchNumber: batch_id,
+				AGiftTransactionNumber: -1,
 				AGiftDetailNumber: -1,
 				ABatchSelected: false,
 				ANewBatchNumber: -1,
 				ANewGLDateEffective: "null",
-				AFunction: "AdjustGift",
+				AFunction: "AdjustGiftBatch",
 				ANoReceipt: false,
 				ANewPct: 0.0
 			};
@@ -577,6 +580,37 @@ function adjust_batch(batch_id) {
 		}
 		else if (parsed.result < 0) {
 			display_error(parsed.AVerificationMessages);
+		}
+	});
+}
+
+function adjust_trans(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+	let payload = translate_to_server( extract_data(obj) );
+	var r = {
+				ALedgerNumber: payload['ALedgerNumber'],
+				ABatchNumber: payload['ABatchNumber'],
+				AGiftTransactionNumber: payload['AGiftTransactionNumber'],
+				AGiftDetailNumber: -1,
+				ABatchSelected: false,
+				ANewBatchNumber: -1,
+				ANewGLDateEffective: "null",
+				AFunction: "AdjustGift",
+				ANoReceipt: false,
+				ANewPct: 0.0
+			};
+
+	api.post('serverMFinance.asmx/TAdjustmentWebConnector_GiftRevertAdjust', r).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('GiftBatches.giftadjusted'), "success");
+			$('#modal_space .tpl_edit_trans_detail').modal('hide');
+			$('#modal_space .tpl_edit_trans').modal('show');
+			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
+			updateBatch(payload['ABatchNumber']);
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }

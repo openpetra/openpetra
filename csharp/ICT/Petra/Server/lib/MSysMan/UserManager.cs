@@ -559,7 +559,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// Causes an immediately reload of the UserInfo that is stored in the session
         /// </summary>
         [RequireModulePermission("NONE")]
-        public static TPetraPrincipal ReloadUserInfo()
+        public static bool ReloadUserInfo()
         {
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ReloadUserInfo");
@@ -584,7 +584,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 throw;
             }
 
-            return UserDetails;
+            return true;
         }
 
         /// <summary>
