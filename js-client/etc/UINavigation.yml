@@ -29,31 +29,30 @@ OpenPetra:
                     MaintainPublications: {Path: Partner/Setup/Subscription}
         Finance: {fa-icon=money-bill-alt, PermissionsRequired=FINANCE-1}
                 GeneralLedger:
-                    LedgerInfo:
-                    GLBatches:
-                    PeriodEnd:
+                    LedgerInfo: {Path=Finance/GeneralLedger/Info}
+                    GLBatches: {Path=Finance/GeneralLedger/GLBatchMaintenance}
+                    PeriodEnd: {Path=Finance/GeneralLedger/PeriodEnd}
                         MonthEnd:
                         YearEnd:
-                    Reports:
+                    Reports: {Path=Finance/GeneralLedger/Reports}
                         AccountDetail:
                 Gift:
-                    GiftEntry:
+                    GiftEntry: {Path=Finance/Gift/GiftEntry}
                         GiftBatches:
                         RecurringGiftBatches:
                         BankImport:
-                    GiftReceipting:
+                    GiftReceipting: {Path=Finance/Gift/GiftReceipting}
                         PrintAnnualReceipts:
-                        DonorRecipientHistory:
+                        #DonorRecipientHistory:
                 Setup:
-                    GL:
-                        LedgerSettings:
+                    GL: {Path=Finance/Setup/GL}
+                        #LedgerSettings:
                         AccountTree:
                         CostCenterTree:
-                    Gift:
+                    Gift: {Path=Finance/Setup/Gift}
                         Motivations:
                 CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
-                        Ledger:
-                            LedgerSetup:
+                    LedgerSetup: {Path=CrossLedgerSetup}
 
         SystemManager: {fa-icon=sliders-h, PermissionsRequired=SYSMAN, Path=SystemManager}
                 Settings:
