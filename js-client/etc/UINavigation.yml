@@ -1,16 +1,23 @@
 OpenPetra:
     MainMenu:
         # Modules
-        SelfService: {fa-icon=address-book, PermissionsRequired=PARTNERSELFSERVICE}
-                Partners:
-                        MaintainPartnerSelfService: {Path=SelfService}
         Home: {fa-icon=home}
-                Partners: {Path=Partner/Partners}
+                SelfService: {PermissionsRequired=PARTNERSELFSERVICE}
+                        MaintainPartnerSelfService: {Path=SelfService}
+                Partners: {PermissionsRequired=PTNRUSER, Path=Partner/Partners}
                     AddNewFamily: {Form=MaintainPartners, Action=NewFamily}
                     AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation}
                     MaintainPartners:
-                Finance: {Path=Finance/Gift/GiftEntry}
+                Finance: {PermissionsRequired=PTNRUSER, Path=Finance/Gift/GiftEntry}
                     BankImport:
+                Settings: {PermissionsRequired=SYSMAN, Path=SystemManager}
+                        MaintainSettings:
+                        MaintainUsers:
+                        ImportAndExportDatabase:
+
+        SelfService: {fa-icon=address-book, PermissionsRequired=PARTNERSELFSERVICE}
+                SelfService:
+                        MaintainPartnerSelfService: {Path=SelfService}
 
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
                 Partners:

@@ -129,17 +129,22 @@ namespace Ict.Petra.Server.app.JSClient
             }
         }
 
-        private Dictionary<string, object> GetChildItems(XmlNode AFolderNode)
+        private Dictionary<string, object> GetChildItems(XmlNode AFolderNode, TPetraPrincipal AUserInfo)
         {
             Dictionary<string, object> items = new Dictionary<string, object>();
 
             foreach (XmlNode child in AFolderNode.ChildNodes)
             {
+                if (!HasAccessPermission(child, AUserInfo))
+                {
+                    continue;
+                }
+
                 Dictionary<string, object> item = new Dictionary<string, object>();
                 item.Add("caption", GetCaption(child, true));
                 if (child.ChildNodes.Count > 0)
                 {
-                    item.Add("items", GetChildItems(child));
+                    item.Add("items", GetChildItems(child, AUserInfo));
                 }
                 else
                 {
@@ -202,7 +207,7 @@ namespace Ict.Petra.Server.app.JSClient
                 folder.Add("enabled", "false");
             }
 
-            folder.Add("items", GetChildItems(AFolderNode));
+            folder.Add("items", GetChildItems(AFolderNode, AUserInfo));
 
             return folder;
         }

@@ -58,6 +58,7 @@
         "logout": "Logout",
         "notimplementedyet": "not implemented yet",
         "SelfService_label": "Self Service",
+        "MaintainPartnerSelfService_label": "Maintain your own details",
         "Partner_label": "Partner",
         "Partners_label": "Partners",
         "Types_label":"Categories",
