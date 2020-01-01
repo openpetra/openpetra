@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -137,13 +137,7 @@ namespace Ict.Petra.Server.app.JSClient
             {
                 Dictionary<string, object> item = new Dictionary<string, object>();
                 item.Add("caption", GetCaption(child, true));
-                TLogging.Log(child.Name + " " + child.ChildNodes.Count.ToString());
-                if (child.ChildNodes.Count > 0) TLogging.Log(child.ChildNodes[0].ChildNodes.Count.ToString());
-                if (child.ChildNodes.Count == 1 && child.ChildNodes[0].ChildNodes.Count == 0)
-                {
-                    item.Add("form", child.ChildNodes[0].Name);
-                }
-                else if (child.ChildNodes.Count > 0)
+                if (child.ChildNodes.Count > 0)
                 {
                     item.Add("items", GetChildItems(child));
                 }

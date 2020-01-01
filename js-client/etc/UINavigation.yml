@@ -55,7 +55,7 @@ OpenPetra:
                         Ledger:
                             LedgerSetup:
 
-        SystemManager: {fa-icon=sliders-h, PermissionsRequired=SYSMAN}
+        SystemManager: {fa-icon=sliders-h, PermissionsRequired=SYSMAN, Path=SystemManager}
                 Settings:
                         MaintainSettings:
                 Users:
