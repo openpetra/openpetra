@@ -43,6 +43,7 @@
     "navigation": {
         "openpetra": "OpenPetra",
         "home": "Start",
+        "Home_label": "Start",
         "help": "Hilfe",
         "about": "Über OpenPetra",
         "manual": "Handbuch",

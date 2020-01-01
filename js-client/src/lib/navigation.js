@@ -92,6 +92,8 @@ class Navigation {
 	};
 
 	getCurrentModule() {
+		this.module = "Home";
+
 		var path = window.location.pathname.substring(1);
 		path = path.split('/')
 
@@ -197,7 +199,6 @@ class Navigation {
 		var self = this;
 		$('#' + mnuItem).click(function(event) {
 			event.preventDefault();
-
 			self.OpenForm(frmName, title, true, parameter);
 
 			// hide the menu if we are on mobile screen (< 768 px width)
@@ -283,10 +284,10 @@ class Navigation {
 		// link the items in the top menu
 		this.AddMenuItemHandler('mnuChangePassword', "Settings/ChangePassword", i18next.t("navigation.change_password"));
 		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/ChangeLanguage", i18next.t("navigation.change_language"));
-		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.home"));
 		this.AddMenuItemHandler('mnuHelpAbout', "About", i18next.t("navigation.about"));
 		this.AddMenuItemHandler('mnuHelpReleaseNotes', "ReleaseNotes", i18next.t("navigation.releasenotes"));
 
+		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.Home_label"));
 		this.AddMenuItemHandler('mnuPartner', "Partner", i18next.t("navigation.Partner_label"));
 		this.AddMenuItemHandler('mnuFinance', "Finance", i18next.t("navigation.Finance_label"));
 		this.AddMenuItemHandler('mnuSystemManager', "SystemManager", i18next.t("navigation.SystemManager_label"));
@@ -297,7 +298,10 @@ class Navigation {
 		$('#ModuleNavBar li.nav-item a').click(function(e) {
 			$('#ModuleNavBar li.nav-item a').removeClass('active');
 			$(this).addClass('active');
-			self.getCurrentModule();
+			var id=$(this).prop('id');
+			if (id.startsWith("mnu")) {
+				self.module = id.substring(3);
+			}
 			self.displayNavigationSideBar(navigation);
 		});
 

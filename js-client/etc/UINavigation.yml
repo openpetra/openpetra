@@ -3,30 +3,30 @@ OpenPetra:
         # Modules
         SelfService: {fa-icon=address-book, PermissionsRequired=PARTNERSELFSERVICE}
                 Partners:
-                        MaintainPartnerSelfService:
-        #Home: {fa-icon=home}
-        #        Partners:
-        #            AddNewFamily: {ActionClick=NewPartner_Family}
-        #            AddNewOrganisation: {ActionClick=NewPartner_Organisation}
-        #            MaintainPartners:
-        #        Finance:
-        #            BankImport:
+                        MaintainPartnerSelfService: {Path=SelfService}
+        Home: {fa-icon=home}
+                Partners: {Path=Partner/Partners}
+                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily}
+                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation}
+                    MaintainPartners:
+                Finance: {Path=Finance/Gift/GiftEntry}
+                    BankImport:
 
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
                 Partners:
-                    AddNewFamily: {Form: MaintainPartners, Action=NewFamily}
-                    AddNewOrganisation: {Form: MaintainPartners, Action=NewOrganisation}
+                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily}
+                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation}
                     MaintainPartners:
                     ImportPartners:
-                    Reports: {Path: Partner/Reports/PartnerReports}
+                    Reports: {Path=Partner/Reports/PartnerReports}
                         PartnerByCity:
                         PartnerBySpecialType:
                         #PartnerBySubscription:
                         AnnualReportWithoutAnnualReceiptRecipients:
-                    MaintainTypes: {Path: Partner/Setup/Types}
+                    MaintainTypes: {Path=Partner/Setup/Types}
                 Subscriptions:
-                    AddNewPublication: {Form: MaintainPublications, Action=NewPublication, Path: Partner/Setup/Subscription}
-                    MaintainPublications: {Path: Partner/Setup/Subscription}
+                    AddNewPublication: {Form=MaintainPublications, Action=NewPublication, Path=Partner/Setup/Subscription}
+                    MaintainPublications: {Path=Partner/Setup/Subscription}
         Finance: {fa-icon=money-bill-alt, PermissionsRequired=FINANCE-1}
                 GeneralLedger:
                     LedgerInfo: {Path=Finance/GeneralLedger/Info}
