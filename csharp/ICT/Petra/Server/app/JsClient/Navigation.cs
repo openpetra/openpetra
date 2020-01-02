@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.app.JSClient
             }
         }
 
-        private Dictionary<string, object> GetChildItems(XmlNode AFolderNode, TPetraPrincipal AUserInfo)
+        private Dictionary<string, object> GetChildItems(XmlNode AFolderNode, string APath, TPetraPrincipal AUserInfo)
         {
             Dictionary<string, object> items = new Dictionary<string, object>();
 
@@ -144,7 +144,7 @@ namespace Ict.Petra.Server.app.JSClient
                 item.Add("caption", GetCaption(child, true));
                 if (child.ChildNodes.Count > 0)
                 {
-                    item.Add("items", GetChildItems(child, AUserInfo));
+                    item.Add("items", GetChildItems(child, APath + "/" + child.Name, AUserInfo));
                 }
                 else
                 {
@@ -158,6 +158,13 @@ namespace Ict.Petra.Server.app.JSClient
                     item.Add("action", Action);
                 }
 
+                string Icon = TXMLParser.GetAttributeRecursive(child, "fa-icon", false);
+
+                if (Icon.Length > 0)
+                {
+                    item.Add("icon", Icon);
+                }
+
                 string form = TXMLParser.GetAttribute(child, "Form");
 
                 if (form.Length > 0)
@@ -165,11 +172,18 @@ namespace Ict.Petra.Server.app.JSClient
                     item["form"] = form;
                 }
 
-                string path = TXMLParser.GetAttributeRecursive(child, "Path", true);
+                string path = TXMLParser.GetAttributeRecursive(child, "Path", false);
 
-                if (path.Length > 0)
+                if (path.Length == 0)
                 {
-                    item["path"] = path;
+                    path = APath;
+                }
+
+                item.Add("path", path);
+
+                if (File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + path.Replace('_', '/') + "/" + child.Name + ".html"))
+                {
+                    item["htmlexists"] = true;
                 }
 
                 items.Add(child.Name, item);
@@ -207,7 +221,12 @@ namespace Ict.Petra.Server.app.JSClient
                 folder.Add("enabled", "false");
             }
 
-            folder.Add("items", GetChildItems(AFolderNode, AUserInfo));
+            folder.Add("items", GetChildItems(AFolderNode, AFolderNode.Name, AUserInfo));
+
+            if (File.Exists(TAppSettingsManager.GetValue("Forms.Path") + "/" + AFolderNode.Name + ".html"))
+            {
+                folder["htmlexists"] = true;
+            }
 
             return folder;
         }

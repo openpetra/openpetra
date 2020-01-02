@@ -3,17 +3,22 @@ OpenPetra:
         # Modules
         Home: {fa-icon=home}
                 SelfService: {PermissionsRequired=PARTNERSELFSERVICE}
-                        MaintainPartnerSelfService: {Path=SelfService}
+                        MaintainPartnerSelfService: {Path=SelfService, fa-icon=user}
                 Partners: {PermissionsRequired=PTNRUSER, Path=Partner/Partners}
-                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily}
-                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation}
-                    MaintainPartners:
-                Finance: {PermissionsRequired=PTNRUSER, Path=Finance/Gift/GiftEntry}
-                    BankImport:
+                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily, fa-icon=user-plus}
+                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation, fa-icon=folder-plus}
+                    ImportPartners: {fa-icon=file-import}
+                    MaintainPartners: {fa-icon=user}
+                Finance: {PermissionsRequired=PTNRUSER}
+                    BankImport: {Path=Finance/Gift/GiftEntry, fa-icon=file-import}
+                    GLBatches: {Path=Finance/GeneralLedger/GLBatchMaintenance, fa-icon=money-bill-alt}
+                    GiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=money-check-alt}
+                    MonthEnd: {Path=Finance/GeneralLedger/PeriodEnd, fa-icon=clipboard-check}
                 Settings: {PermissionsRequired=SYSMAN, Path=SystemManager}
-                        MaintainSettings:
-                        MaintainUsers:
-                        ImportAndExportDatabase:
+                        MaintainSettings: {fa-icon=sliders-h}
+                        CreateUser: {Form=MaintainUsers, Action=NewUser, fa-icon=user-plus}
+                        MaintainUsers: {fa-icon=user}
+                        ImportAndExportDatabase: {fa-icon=file-import}
 
         SelfService: {fa-icon=address-book, PermissionsRequired=PARTNERSELFSERVICE}
                 SelfService:
@@ -21,50 +26,52 @@ OpenPetra:
 
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
                 Partners:
-                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily}
-                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation}
-                    MaintainPartners:
-                    ImportPartners:
+                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily, fa-icon=user-plus}
+                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation, fa-icon=folder-plus}
+                    MaintainPartners: {fa-icon=user}
+                    ImportPartners: {fa-icon=file-import}
                     Reports: {Path=Partner/Reports/PartnerReports}
                         PartnerByCity:
                         PartnerBySpecialType:
                         #PartnerBySubscription:
                         AnnualReportWithoutAnnualReceiptRecipients:
-                    MaintainTypes: {Path=Partner/Setup/Types}
+                    MaintainTypes: {Path=Partner/Setup/Types, fa-icon=wrench}
                 Subscriptions:
-                    AddNewPublication: {Form=MaintainPublications, Action=NewPublication, Path=Partner/Setup/Subscription}
-                    MaintainPublications: {Path=Partner/Setup/Subscription}
+                    AddNewPublication: {Form=MaintainPublications, Action=NewPublication, Path=Partner/Setup/Subscription, fa-icon=plus-square}
+                    MaintainPublications: {Path=Partner/Setup/Subscription, fa-icon=screwdriver}
         Finance: {fa-icon=money-bill-alt, PermissionsRequired=FINANCE-1}
                 GeneralLedger:
-                    LedgerInfo: {Path=Finance/GeneralLedger/Info}
+                    LedgerInfo: {Path=Finance/GeneralLedger/Info, fa-icon=info}
                     GLBatches: {Path=Finance/GeneralLedger/GLBatchMaintenance}
-                    PeriodEnd: {Path=Finance/GeneralLedger/PeriodEnd}
-                        MonthEnd:
-                        YearEnd:
-                    Reports: {Path=Finance/GeneralLedger/Reports}
+                    PeriodEnd: {Path=Finance/GeneralLedger/PeriodEnd, fa-icon=clipboard-check}
+                        MonthEnd: {fa-icon=clipboard-check}
+                        YearEnd: {fa-icon=calendar-check}
+                    Reports: {Path=Finance/GeneralLedger/Reports, fa-icon=file-alt}
                         AccountDetail:
                 Gift:
-                    GiftEntry: {Path=Finance/Gift/GiftEntry}
-                        GiftBatches:
-                        RecurringGiftBatches:
-                        BankImport:
-                    GiftReceipting: {Path=Finance/Gift/GiftReceipting}
-                        PrintAnnualReceipts:
-                        #DonorRecipientHistory:
+                    #GiftEntry: {Path=Finance/Gift/GiftEntry}
+                    GiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=money-check-alt}
+                    RecurringGiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=redo}
+                    BankImport: {Path=Finance/Gift/GiftEntry, fa-icon=file-import}
+                    PrintAnnualReceipts: {Path=Finance/Gift/GiftReceipting, fa-icon=file-invoice}
+                    #GiftReceipting: {Path=Finance/Gift/GiftReceipting}
+                    #    PrintAnnualReceipts:
+                    #    #DonorRecipientHistory:
                 Setup:
-                    GL: {Path=Finance/Setup/GL}
+                    #GL:
                         #LedgerSettings:
-                        AccountTree:
-                        CostCenterTree:
-                    Gift: {Path=Finance/Setup/Gift}
-                        Motivations:
+                        AccountTree: {Path=Finance/Setup/GL, fa-icon=wrench}
+                        CostCenterTree: {Path=Finance/Setup/GL, fa-icon=screwdriver}
+                    #Gift: {Path=Finance/Setup/Gift}
+                        Motivations: {Path=Finance/Setup/Gift, fa-icon=hammer}
                 CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
                     LedgerSetup: {Path=CrossLedgerSetup}
 
         SystemManager: {fa-icon=sliders-h, PermissionsRequired=SYSMAN, Path=SystemManager}
                 Settings:
-                        MaintainSettings:
+                        MaintainSettings: {fa-icon=sliders-h}
                 Users:
-                        MaintainUsers:
+                        CreateUser: {Form=MaintainUsers, Action=NewUser, fa-icon=user-plus}
+                        MaintainUsers: {fa-icon=user}
                 Database:
-                        ImportAndExportDatabase:
+                        ImportAndExportDatabase: {fa-icon=file-import}

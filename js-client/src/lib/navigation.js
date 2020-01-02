@@ -6,7 +6,7 @@
 //       CJ <cj@tbits.net>
 //
 // Copyright 2017-2019 by TBits.net
-// Coypright 2019 by SolidCharity.com
+// Coypright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -35,7 +35,7 @@ class Navigation {
 
 		this.module = null;
 		this.submodule = null;
-		this.getCurrentModule();
+		this.getCurrentModule(window.location.pathname);
 	}
 
 	OpenForm(name, title, pushState=true, parameter="")
@@ -44,8 +44,11 @@ class Navigation {
 			console.log("OpenForm: " + name + " title: " + title);
 		}
 
+		this.ActivateModuleInTopbar();
+		this.getCurrentModule(name);
+
 		// fetch screen content from the server
-		var navPage = this.IsNavigationPage(name.replace(/_/g, '/'));
+		var navPage = this.GetNavigationPage(name);
 		if (navPage == null) {
 			var refresh = "";
 			self = this;
@@ -68,9 +71,9 @@ class Navigation {
 					$.getScript("/src/forms/" + name + '.js' + refresh);
 			});
 		}
-		else // fetch navigation page
+		else // fetch navigation page / dash board
 		{
-			this.loadNavigationPage(name);
+			this.loadDashboard(name);
 		}
 
 		var stateObj = { name: name, title: title, parameter: parameter };
@@ -91,55 +94,103 @@ class Navigation {
 		$(window).scrollTop(0);
 	};
 
-	getCurrentModule() {
-		this.module = "Home";
+	transformPath(path) {
+		path = path.replace(/_/g, '/');
+		if (path[0] == '/') {
+			// drop leading slash
+			path = path.substring(1);
+		}
+		if (path == "") {
+			path = "Home";
+		}
+		return path.split('/');
+	}
 
-		var path = window.location.pathname.substring(1);
-		path = path.split('/')
+	getCurrentModule(path) {
+		var path = this.transformPath(path);
 
-		if (path.length > 0 && path[0] != '') {
+		if (path.length > 0) {
 			this.module = path[0];
 		}
-		if (path.length == 2) {
-			this.module = path[0];
+		if (path.length > 1) {
 			this.submodule = path[1];
-			if (this.module == '') {
-				this.module = path[1];
-				this.submodule = '';
-			}
+		}
+
+		if (this.module == "CrossLedgerSetup") {
+			this.module = "Finance";
 		}
 
 		return [this.module, this.submodule];
 	}
 
-	IsNavigationPage(path) {
-		path = path.split('/')
+	FindNavigationItem(search, node, path) {
+		var items = node.items;
+		for (var itemid in items) {
+			var item = items[itemid];
 
+			if (path + "/" + itemid == search)
+			{
+				return node.items[itemid];
+			}
+
+			var testnode = this.FindNavigationItem(search, item, path + "/" + itemid);
+			if (testnode != null) {
+				return testnode;
+			}
+		}
+
+		return null;
+	}
+
+	GetNavigationItem(path) {
+		path = this.transformPath(path);
+
+		var navigation = JSON.parse(window.localStorage.getItem('navigation'));
+
+		var node = null;
+		if (path.length == 1) {
+			node = navigation[this.module];
+		} else {
+			node = this.FindNavigationItem(path.join("/"), navigation[this.module], this.module);
+		}
+
+		if (node != null && !node.hasOwnProperty('htmlexists')) {
+			node['htmlexists'] = false;
+		}
+
+		if (node != null && this.debug) {
+			console.log("GetNavigationItem:");
+			console.log(node);
+		}
+
+		return node;
+	}
+
+	GetNavigationPage(path) {
 		var currentPage = null;
 		var caption = null;
 
+		var node = this.GetNavigationItem(path);
+
+		if (node != null && node['htmlexists'] != true) {
+			currentPage = window.location.pathname.substring(1);
+			var navigation = JSON.parse(window.localStorage.getItem('navigation'));
+			caption = i18next.t('navigation.' + navigation[this.module].caption);
+			if (node.caption != navigation[this.module].caption) {
+				caption += ": " + i18next.t('navigation.' + node.caption);
+			}
+			return [currentPage, caption];
+		}
+
+		return null;
+	}
+
+	ActivateModuleInTopbar() {
 		// highlight the icon in the top navbar
 		if (this.module != null) {
 			$('li.nav-item a').removeClass('active');
 			$('li.nav-item a[id=mnu'+this.module+']').addClass('active');
 		}
-
-		if (path.length == 2) {
-			var navigation = JSON.parse(window.localStorage.getItem('navigation'));
-
-			if (this.module in navigation) {
-				if (this.submodule in navigation[this.module].items) {
-					currentPage = window.location.pathname.substring(1);
-					caption = navigation[this.module].caption + ": " + navigation[this.module].items[this.submodule].caption;
-				}
-			}
-		}
-
-		if (currentPage == null) {
-			return null;
-		}
-
-		return [currentPage, caption];
 	}
 
 	// this is called on a reload of the page, we want to jump to the right location, depending on the URL
@@ -155,7 +206,7 @@ class Navigation {
 		if (currentPage == null && window.location.pathname.length > 1) {
 			var path = window.location.pathname.substring(1);
 
-			currentPage = this.IsNavigationPage(path);
+			currentPage = this.GetNavigationPage(path);
 			if (currentPage != null) {
 				caption = currentPage[1];
 				currentPage = currentPage[0];
@@ -170,7 +221,6 @@ class Navigation {
 			if (currentPage != null) {
 				this.OpenForm(currentPage, caption);
 			}
-
 		}
 
 		// check if this is a form, add frm to path
@@ -182,6 +232,7 @@ class Navigation {
 			currentPage = frmName;
 		}
 
+		// currentPage has not been set above. so go to the default page, which is home.
 		if (currentPage == null) {
 			// load home page or Dashboard
 			this.OpenForm("Home", i18next.t("navigation.home"));
@@ -199,6 +250,7 @@ class Navigation {
 		var self = this;
 		$('#' + mnuItem).click(function(event) {
 			event.preventDefault();
+
 			self.OpenForm(frmName, title, true, parameter);
 
 			// hide the menu if we are on mobile screen (< 768 px width)
@@ -209,18 +261,24 @@ class Navigation {
 		});
 	}
 
-	AddMenuItem(parent, name, title, tabtitle, icon, indent)
+	AddMenuItem(folderid, parent, item, title, tabtitle, icon, indent)
 	{
+		var url = folderid + "/" + parent.name + "/" + item.caption.replace("_label","");
+		name = url.replace(/\//g, '_');
 		$("#LeftNavigation").append("<a href='#' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
 	// eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
-	AddMenuItemForm(folderid, name, parent, item, title, tabtitle, icon, indent)
+	AddMenuItemForm(folderid, parent, item, title, tabtitle, icon, indent)
 	{
 		var url = folderid + "/" + parent.name + "/" + item.form;
 		if (item.hasOwnProperty('path')) {
 			url = item.path + "/" + item.form;
+		}
+		name = url.replace(/\//g, '_');
+		if (item.action != '') {
+			name += "_" + item.action;
 		}
 		$("#LeftNavigation").append("<a href='/" + url + "' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, url, tabtitle, item.action);
@@ -233,13 +291,13 @@ class Navigation {
 			var title = i18next.t('navigation.' + item.caption);
 
 			if (item.form != null) {
-				this.AddMenuItemForm(folderid, folderid + "_" + itemid, parent, item,
+				this.AddMenuItemForm(folderid, parent, item,
 					i18next.t('navigation.' + item.caption),
 					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
 					folder.icon,
 					indent);
 			} else {
-				this.AddMenuItem(folderid, folderid + "_" + itemid,
+				this.AddMenuItem(folderid, parent, item,
 					i18next.t('navigation.' + item.caption),
 					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
 					folder.icon,
@@ -308,7 +366,80 @@ class Navigation {
 		this.UpdateLocation();
 	}
 
-	loadNavigationPage(navpage) {
+	addCard(item) {
+		var html = "";
+		html += '<div class="col-lg-6 col-xl-4">';
+		html += '<div class="card">';
+		html += '<div class="card-header">' + i18next.t('navigation.' + item.caption) + '</div>';
+		html += '<div class="card-content">';
+
+		for (var childitemid in item.items) {
+			var child = item.items[childitemid];
+			var caption = i18next.t('navigation.' + child.caption);
+
+			if (child.action != undefined && child.form != undefined) {
+				html += "<a href='javascript:nav.OpenForm(\"" +
+					child.path + "/" + child.form +
+					"\", \"" + caption + "\", true, \"" + child.action + "\")'>" +
+					"<i class='fas fa-" + child.icon + "'></i>" +
+					"<span>" + caption + "</span></a>";
+			} else {
+				var path = child.path + "/" + childitemid;
+				if (child.form == undefined) {
+					path = child.path;
+				}
+				html += "<a href='javascript:nav.OpenForm(\"" +
+					path +
+					"\", \"" + caption + "\")'>" +
+					"<i class='fas fa-" + child.icon + "'></i>" +
+					"<span>" + caption + "</span></a>";
+			}
+		}
+
+		html += '</div>';
+		html += '</div>';
+		html += '</div>';
+
+		return html;
+	}
+
+	loadDashboard(navpage) {
+		var node = this.GetNavigationItem(navpage);
+
+		if (node != null && node['htmlexists'] != true) {
+
+			var hasGrandChildren = false;
+			for (var itemid in node.items) {
+				var item = node.items[itemid];
+				for (var childitemid in item.items) {
+					var child = item.items[childitemid];
+					hasGrandChildren = true;
+				}
+			}
+
+			var html = '<div class="container container-list dashboard">';
+			html += '<div id="dashboardRow" class="row">';
+
+			if (!hasGrandChildren) {
+				html += this.addCard(node);
+			} else {
+				var items = node.items;
+				for (var itemid in items) {
+					var item = items[itemid];
+					html += this.addCard(item);
+				}
+			}
+
+			html += '</div>';
+			html += '</div>';
+
+			$("#containerIFrames").html(html);
+		}
+
+		return;
+
+		// TODO: implement real dash board, with graphs, and configurable
+/*
 		// TODO: store pages per user? see window.localStorage?
 		self = this;
 		navpage = navpage.replace(/\//g, '_')
@@ -328,6 +459,7 @@ class Navigation {
 			.catch(function(error) {
 				console.log(error);
 			});
+*/
 	}
 
 	loadNavigation() {
