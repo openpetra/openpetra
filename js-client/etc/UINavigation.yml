@@ -1,102 +1,77 @@
 OpenPetra:
     MainMenu:
-        # Department
+        # Modules
+        Home: {fa-icon=home}
+                SelfService: {PermissionsRequired=PARTNERSELFSERVICE}
+                        MaintainPartnerSelfService: {Path=SelfService, fa-icon=user}
+                Partners: {PermissionsRequired=PTNRUSER, Path=Partner/Partners}
+                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily, fa-icon=user-plus}
+                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation, fa-icon=folder-plus}
+                    ImportPartners: {fa-icon=file-import}
+                    MaintainPartners: {fa-icon=user}
+                Finance: {PermissionsRequired=PTNRUSER}
+                    BankImport: {Path=Finance/Gift/GiftEntry, fa-icon=file-import}
+                    GLBatches: {Path=Finance/GeneralLedger/GLBatchMaintenance, fa-icon=money-bill-alt}
+                    GiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=money-check-alt}
+                    MonthEnd: {Path=Finance/GeneralLedger/PeriodEnd, fa-icon=clipboard-check}
+                Settings: {PermissionsRequired=SYSMAN, Path=SystemManager}
+                        MaintainSettings: {fa-icon=sliders-h}
+                        CreateUser: {Form=MaintainUsers, Action=NewUser, fa-icon=user-plus}
+                        MaintainUsers: {fa-icon=user}
+                        ImportAndExportDatabase: {fa-icon=file-import}
+
         SelfService: {fa-icon=address-book, PermissionsRequired=PARTNERSELFSERVICE}
-                Partners:
-                        MaintainPartnerSelfService:
+                SelfService:
+                        MaintainPartnerSelfService: {Path=SelfService}
+
         Partner: {fa-icon=address-book, PermissionsRequired=PTNRUSER}
                 Partners:
-                    Maintain:
-                        MaintainPartners:
-                        MergePartners: {ActionOpenScreen=TFrmMergePartnersDialog}
-                        DeletePartner: {ActionClick=TPartnerMain.DeletePartnerRecord}
-                    #CreatePartner:
-                    #    AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family}
-                    #    AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person}
-                    #    AddNewOrganisation: {ActionClick=TPartnerMain.NewPartner_Organisation}
-                    #    AddNewChurch: {ActionClick=TPartnerMain.NewPartner_Church}
-                    ImportExport:
-                        ImportPartners:
-                    #Subscriptions:
-                    #    CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
-                    PartnerReports:
+                    AddNewFamily: {Form=MaintainPartners, Action=NewFamily, fa-icon=user-plus}
+                    AddNewOrganisation: {Form=MaintainPartners, Action=NewOrganisation, fa-icon=folder-plus}
+                    MaintainPartners: {fa-icon=user}
+                    ImportPartners: {fa-icon=file-import}
+                    Reports: {Path=Partner/Reports/PartnerReports}
                         PartnerByCity:
                         PartnerBySpecialType:
-                        PartnerBySubscription:
+                        #PartnerBySubscription:
                         AnnualReportWithoutAnnualReceiptRecipients:
-
-                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup}
-                    Types:
-                        MaintainTypes:
-                        ContactAttributes: {ActionOpenScreen=TFrmContactAttributeSetup}
-                        Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCountrySetup}
-                        Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLanguageCodeSetup}
-                        Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmFrequencySetup}
-                        PartnerStatus: {ActionOpenScreen=TFrmPartnerStatusSetup}
-                        Acquisition:   {ActionOpenScreen=TFrmAcquisitionCodeSetup}
-                        SpecialTypes:  {ActionOpenScreen=TFrmPartnerTypeSetup}
-                        Denomination:  {ActionOpenScreen=TFrmDenominationCodeSetup}
-                        Business:      {ActionOpenScreen=TFrmBusinessCodeSetup}
-                        Occupation:    {ActionOpenScreen=TFrmOccupationCodeSetup}
-                        MaritalStatus: {ActionOpenScreen=TFrmMaritalStatusSetup}
-                        RelationshipCategory: {ActionOpenScreen=TFrmRelationCategorySetup}
-                        Relationship:  {ActionOpenScreen=TFrmRelationshipSetup}
-                        ContactMethod: {ActionOpenScreen=TFrmContactMethodSetup}
-                        InterestCategory: {ActionOpenScreen=TFrmInterestCategorySetup}
-                        Interest: {ActionOpenScreen=TFrmInterestSetup}
-
-                    Subscription:
-                        MaintainPublications:
-                        PublicationCosts: {ActionOpenScreen=TFrmPublicationCostSetup}
-                        ReasonSubscriptionGiven: {ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}
-                        ReasonSubscriptionCancelled: {ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}
-
-                    #Address-related:
-                    #    AddresseeTypes: {ActionOpenScreen=TFrmAddresseeTypeSetup}
-                    #    LocationTypes: {ActionOpenScreen=TFrmLocationTypeSetup}
-                    #    InternationalPostalTypes: {ActionOpenScreen=TFrmInternationalPostalTypeSetup}
-                    #    PostcodeRanges: {ActionOpenScreen=TFrmPostcodeRangeSetup}
-                    #    PostcodeRegions: {ActionOpenScreen=TFrmPostcodeRegionSetup}
-        # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {fa-icon=money-bill-alt, DependsOnLedger=true, PermissionsRequired=FINANCE-1}
+                    MaintainTypes: {Path=Partner/Setup/Types, fa-icon=wrench}
+                Subscriptions:
+                    AddNewPublication: {Form=MaintainPublications, Action=NewPublication, Path=Partner/Setup/Subscription, fa-icon=plus-square}
+                    MaintainPublications: {Path=Partner/Setup/Subscription, fa-icon=screwdriver}
+        Finance: {fa-icon=money-bill-alt, PermissionsRequired=FINANCE-1}
                 GeneralLedger:
-                    Info:
-                        LedgerInfo:
-                    GLBatchMaintenance:
-                        GLBatches:
-                    PeriodEnd:
-                        MonthEnd:
-                        YearEnd:
-                    Reports:
+                    LedgerInfo: {Path=Finance/GeneralLedger/Info, fa-icon=info}
+                    GLBatches: {Path=Finance/GeneralLedger/GLBatchMaintenance}
+                    PeriodEnd: {Path=Finance/GeneralLedger/PeriodEnd, fa-icon=clipboard-check}
+                        MonthEnd: {fa-icon=clipboard-check}
+                        YearEnd: {fa-icon=calendar-check}
+                    Reports: {Path=Finance/GeneralLedger/Reports, fa-icon=file-alt}
                         AccountDetail:
-                        TrialBalance:
-                        SurplusDeficit:
-                        BalanceSheetStandard:
-                        IncomeExpenseStatement:
                 Gift:
-                    GiftEntry:
-                        GiftBatches:
-                        RecurringGiftBatches:
-                        BankImport:
-                    GiftReceipting:
-                        PrintAnnualReceipts:
-                        DonorRecipientHistory:
+                    #GiftEntry: {Path=Finance/Gift/GiftEntry}
+                    GiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=money-check-alt}
+                    RecurringGiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=redo}
+                    BankImport: {Path=Finance/Gift/GiftEntry, fa-icon=file-import}
+                    PrintAnnualReceipts: {Path=Finance/Gift/GiftReceipting, fa-icon=file-invoice}
+                    #GiftReceipting: {Path=Finance/Gift/GiftReceipting}
+                    #    PrintAnnualReceipts:
+                    #    #DonorRecipientHistory:
                 Setup:
-                    GL:
-                        LedgerSettings:
-                        AccountTree:
-                        CostCenterTree:
-                    Gift:
-                        Motivations:
-        CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
-                Ledger:
-                    LedgerSetup:
+                    #GL:
+                        #LedgerSettings:
+                        AccountTree: {Path=Finance/Setup/GL, fa-icon=wrench}
+                        CostCenterTree: {Path=Finance/Setup/GL, fa-icon=screwdriver}
+                    #Gift: {Path=Finance/Setup/Gift}
+                        Motivations: {Path=Finance/Setup/Gift, fa-icon=hammer}
+                CrossLedgerSetup: {fa-icon=key, PermissionsRequired="FINANCE-1"}
+                    LedgerSetup: {Path=CrossLedgerSetup}
 
-        SystemManager: {fa-icon=sliders-h, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+        SystemManager: {fa-icon=sliders-h, PermissionsRequired=SYSMAN, Path=SystemManager}
                 Settings:
-                        MaintainSettings:
+                        MaintainSettings: {fa-icon=sliders-h}
                 Users:
-                        MaintainUsers:
+                        CreateUser: {Form=MaintainUsers, Action=NewUser, fa-icon=user-plus}
+                        MaintainUsers: {fa-icon=user}
                 Database:
-                        ImportAndExportDatabase:
+                        ImportAndExportDatabase: {fa-icon=file-import}

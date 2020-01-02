@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1026,7 +1026,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     emailparameters.Add("LastName", LastName);
                     emailparameters.Add("Domain", Domain);
                     emailparameters.Add("Token", token);
-                    
+
+                    if (TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
+                    {
+                        TLogging.Log("There is no configuration for SmtpHost. The url for requesting the new password for user " + UserID + " is " +
+                            Domain+"?UserId="+UserID+"&ResetPasswordToken="+token);
+                        throw new Exception("No SMTP configured, please check log file for details");
+                    }
+
                     new TSmtpSender().SendEmailFromTemplate(
                         "no-reply@" + EMailDomain,
                         "OpenPetra Admin",
@@ -1180,7 +1187,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 AVerification.Add(VerificationResult);
                 return false;
             }
-            
 
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SignUpSelfService");
             string UserID;
@@ -1210,9 +1216,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     emailparameters.Add("LastName", ALastName);
                     emailparameters.Add("Domain", Domain);
                     emailparameters.Add("Token", token);
-               
+
+                    if (TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
+                    {
+                        TLogging.Log("There is no configuration for SmtpHost. The url for confirming new user " + UserID + " is " +
+                            Domain+"?UserId="+UserID+"&SelfSignupPasswordToken="+token);
+                        throw new Exception("No SMTP configured, please check log file for details");
+                    }
+
                     TSmtpSender sender = new TSmtpSender();
-                    
+
                     if (!sender.SendEmailFromTemplate(
                         "no-reply@" + EMailDomain,
                         "OpenPetra Admin",

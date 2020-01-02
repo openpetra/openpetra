@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -417,6 +417,7 @@ namespace Ict.Petra.Server.App.WebService
             return JsonConvert.SerializeObject(result);
         }
 
+#if notused
         /// <summary>load a specific navigation page</summary>
         [WebMethod(EnableSession = true)]
         public string LoadNavigationPage(string ANavigationPage)
@@ -443,6 +444,7 @@ namespace Ict.Petra.Server.App.WebService
                 
             return JsonConvert.SerializeObject(result);
         }
+#endif
 
         /// <summary>client gets tasks, and lets the server know that it is still connected</summary>
         [WebMethod(EnableSession = true)]

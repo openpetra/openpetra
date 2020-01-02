@@ -158,15 +158,9 @@
 </button>
 
 <div class="collapse navbar-collapse" id="navbarNav">
-	<ul class="navbar-nav mr-auto">
-		<li class="nav-item"><a id='mnuHome' class="nav-link" href="#">{home}</a></li>
-		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{settings}</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-				<a id='mnuChangePassword' class="dropdown-item">{change_password}</a>
-				<a id='mnuChangeLanguage' class="dropdown-item">{change_language}</a>
-			</div>
-		</li>
+	<ul class="navbar-nav mr-auto" id="ModuleNavBar">
+	</ul>
+	<ul class="navbar-nav mr-auto" id="LedgerSelection">
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSettings" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				<span>{ledgerselect}</span>
@@ -180,15 +174,22 @@
 	</ul>
 	<ul class="navbar-nav ml-auto">
 		<li class="nav-item dropdown">
-			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownHelp" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{help}</a>
-			<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownHelp" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-question-circle"></i></a>
+			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
 				<a id="mnuHelpManual"  class="dropdown-item" href="{manualurl}" target="newwindow">{manual}</a>
 				<a id="mnuHelpReleaseNotes"  class="dropdown-item">{releasenotes}</a>
 				<a id="mnuHelpContact" class="dropdown-item" href="https://forum.openpetra.org" target="newwindow">{contact}</a>
 				<a id="mnuHelpAbout" class="dropdown-item">{about}</a>
 			</div>
 		</li>
-		<li class="nav-item"><a class="nav-link" id="logout" href="#">{logout}</a></li>
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user"></i></a>
+			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+				<a id='mnuChangePassword' class="dropdown-item">{change_password}</a>
+				<a id='mnuChangeLanguage' class="dropdown-item">{change_language}</a>
+				<a id="logout" class="dropdown-item"><i class="fas fa-sign-out-alt"></i><span>{logout}</span></a>
+			</div>
+		</li>
 		<li class="nav-item"><a class="nav-link" id="chlang" href="#" onclick="(new Navigation()).OpenForm('Settings/ChangeLanguage')"><span class="flag-icon"></span></a></li>
 	</ul>
 

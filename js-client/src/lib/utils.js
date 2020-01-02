@@ -1,10 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -188,3 +189,14 @@ function allow_modal() {
 
 }
 
+function RemoveBackDropOnBrowserBack() {
+		$(window).on('popstate', function (event) {  //pressed back button
+			if(event.state!==null) {
+				$('.modal-backdrop').remove();
+			}
+		});
+}
+
+$('document').ready(function () {
+	RemoveBackDropOnBrowserBack();
+});

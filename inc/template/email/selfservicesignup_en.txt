@@ -1,11 +1,11 @@
 New OpenPetra account
 Dear {FirstName} {LastName},
 Someone has requested an account with your e-mail address
-at https://{Domain}
+at {Domain}
 
 If this was not you, please ignore this e-mail.
 
 If it was you, please go to this link, and you will be able complete your sign-up process!
-https://{Domain}?UserId={UserId}&SelfSignupPasswordToken={Token}
+{Domain}?UserId={UserId}&SelfSignupPasswordToken={Token}
 
 This is an automated e-mail.

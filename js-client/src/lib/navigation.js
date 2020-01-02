@@ -6,7 +6,7 @@
 //       CJ <cj@tbits.net>
 //
 // Copyright 2017-2019 by TBits.net
-// Coypright 2019 by SolidCharity.com
+// Coypright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -32,6 +32,10 @@ class Navigation {
 		this.currentrelease = "CURRENTRELEASE";
 		this.classesLoaded = [];
 		$(window).scrollTop(0);
+
+		this.module = null;
+		this.submodule = null;
+		this.getCurrentModule(window.location.pathname);
 	}
 
 	OpenForm(name, title, pushState=true, parameter="")
@@ -40,8 +44,11 @@ class Navigation {
 			console.log("OpenForm: " + name + " title: " + title);
 		}
 
+		this.ActivateModuleInTopbar();
+		this.getCurrentModule(name);
+
 		// fetch screen content from the server
-		var navPage = this.IsNavigationPage(name.replace(/_/g, '/'));
+		var navPage = this.GetNavigationPage(name);
 		if (navPage == null) {
 			var refresh = "";
 			self = this;
@@ -64,9 +71,9 @@ class Navigation {
 					$.getScript("/src/forms/" + name + '.js' + refresh);
 			});
 		}
-		else // fetch navigation page
+		else // fetch navigation page / dash board
 		{
-			this.loadNavigationPage(name);
+			this.loadDashboard(name);
 		}
 
 		var stateObj = { name: name, title: title, parameter: parameter };
@@ -87,28 +94,103 @@ class Navigation {
 		$(window).scrollTop(0);
 	};
 
-	IsNavigationPage(path) {
-		path = path.split('/')
+	transformPath(path) {
+		path = path.replace(/_/g, '/');
+		if (path[0] == '/') {
+			// drop leading slash
+			path = path.substring(1);
+		}
+		if (path == "") {
+			path = "Home";
+		}
+		return path.split('/');
+	}
 
-		var currentPage = null;
-		var caption = null;
+	getCurrentModule(path) {
+		var path = this.transformPath(path);
 
-		if (path.length == 2) {
-			var navigation = JSON.parse(window.localStorage.getItem('navigation'));
+		if (path.length > 0) {
+			this.module = path[0];
+		}
+		if (path.length > 1) {
+			this.submodule = path[1];
+		}
 
-			if (path[0] in navigation) {
-				if (path[1] in navigation[path[0]].items) {
-					currentPage = window.location.pathname.substring(1);
-					caption = navigation[path[0]].caption + ": " + navigation[path[0]].items[path[1]].caption;
-				}
+		if (this.module == "CrossLedgerSetup") {
+			this.module = "Finance";
+		}
+
+		return [this.module, this.submodule];
+	}
+
+	FindNavigationItem(search, node, path) {
+		var items = node.items;
+		for (var itemid in items) {
+			var item = items[itemid];
+
+			if (path + "/" + itemid == search)
+			{
+				return node.items[itemid];
+			}
+
+			var testnode = this.FindNavigationItem(search, item, path + "/" + itemid);
+			if (testnode != null) {
+				return testnode;
 			}
 		}
 
-		if (currentPage == null) {
-			return null;
+		return null;
+	}
+
+	GetNavigationItem(path) {
+		path = this.transformPath(path);
+
+		var navigation = JSON.parse(window.localStorage.getItem('navigation'));
+
+		var node = null;
+		if (path.length == 1) {
+			node = navigation[this.module];
+		} else {
+			node = this.FindNavigationItem(path.join("/"), navigation[this.module], this.module);
 		}
 
-		return [currentPage, caption];
+		if (node != null && !node.hasOwnProperty('htmlexists')) {
+			node['htmlexists'] = false;
+		}
+
+		if (node != null && this.debug) {
+			console.log("GetNavigationItem:");
+			console.log(node);
+		}
+
+		return node;
+	}
+
+	GetNavigationPage(path) {
+		var currentPage = null;
+		var caption = null;
+
+		var node = this.GetNavigationItem(path);
+
+		if (node != null && node['htmlexists'] != true) {
+			currentPage = window.location.pathname.substring(1);
+			var navigation = JSON.parse(window.localStorage.getItem('navigation'));
+			caption = i18next.t('navigation.' + navigation[this.module].caption);
+			if (node.caption != navigation[this.module].caption) {
+				caption += ": " + i18next.t('navigation.' + node.caption);
+			}
+			return [currentPage, caption];
+		}
+
+		return null;
+	}
+
+	ActivateModuleInTopbar() {
+		// highlight the icon in the top navbar
+		if (this.module != null) {
+			$('li.nav-item a').removeClass('active');
+			$('li.nav-item a[id=mnu'+this.module+']').addClass('active');
+		}
 	}
 
 	// this is called on a reload of the page, we want to jump to the right location, depending on the URL
@@ -124,7 +206,7 @@ class Navigation {
 		if (currentPage == null && window.location.pathname.length > 1) {
 			var path = window.location.pathname.substring(1);
 
-			currentPage = this.IsNavigationPage(path);
+			currentPage = this.GetNavigationPage(path);
 			if (currentPage != null) {
 				caption = currentPage[1];
 				currentPage = currentPage[0];
@@ -139,7 +221,6 @@ class Navigation {
 			if (currentPage != null) {
 				this.OpenForm(currentPage, caption);
 			}
-
 		}
 
 		// check if this is a form, add frm to path
@@ -151,27 +232,26 @@ class Navigation {
 			currentPage = frmName;
 		}
 
+		// currentPage has not been set above. so go to the default page, which is home.
 		if (currentPage == null) {
 			// load home page or Dashboard
 			this.OpenForm("Home", i18next.t("navigation.home"));
 		}
 	}
 
-	AddMenuGroup(name, title, icon, enabled)
+	AddModuleToTopBar(name, title, icon, enabled)
 	{
-		if (!enabled) {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
-		} else {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
+		if (enabled) {
+			$("#ModuleNavBar").append("<li class='nav-item'><a id='mnu" + name + "' class='nav-link top-icon href='#' title='" + title + "'><i class='fas fa-" + icon + "'></i><span class='topnav-icontext'>" + title + "</span></a></li>");
 		}
 	}
 
-	AddMenuItemHandler(mnuItem, frmName, title) {
+	AddMenuItemHandler(mnuItem, frmName, title, parameter) {
 		var self = this;
 		$('#' + mnuItem).click(function(event) {
 			event.preventDefault();
 
-			self.OpenForm(frmName, title);
+			self.OpenForm(frmName, title, true, parameter);
 
 			// hide the menu if we are on mobile screen (< 768 px width)
 			if ($(document).width() < 768) {
@@ -181,55 +261,185 @@ class Navigation {
 		});
 	}
 
-	AddMenuItem(parent, name, title, tabtitle, icon)
+	AddMenuItem(folderid, parent, item, title, tabtitle, icon, indent)
 	{
-		$("#mnuLst" + parent).append("<a href='/#" + name + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		var url = folderid + "/" + parent.name + "/" + item.caption.replace("_label","");
+		name = url.replace(/\//g, '_');
+		$("#LeftNavigation").append("<a href='#' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
 	// eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
-	AddMenuItemForm(parent, name, form, title, tabtitle, icon)
+	AddMenuItemForm(folderid, parent, item, title, tabtitle, icon, indent)
 	{
-		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
-		this.AddMenuItemHandler(name, parent + "/" + form, tabtitle);
+		var url = folderid + "/" + parent.name + "/" + item.form;
+		if (item.hasOwnProperty('path')) {
+			url = item.path + "/" + item.form;
+		}
+		name = url.replace(/\//g, '_');
+		if (item.action != '') {
+			name += "_" + item.action;
+		}
+		$("#LeftNavigation").append("<a href='/" + url + "' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		this.AddMenuItemHandler(name, url, tabtitle, item.action);
 	}
 
-	displayNavigation(navigation) {
-		for (var folderid in navigation) {
-			var folder = navigation[folderid];
-			this.AddMenuGroup(folderid, i18next.t('navigation.'+folder.caption), folder.icon, folder.enabled != "false");
-			if (folder.enabled == "false") {
-				continue;
-			}
-			var items = folder.items;
-			for (var itemid in items) {
-				var item = items[itemid];
+	displayNavigationSideBarItem(folderid, parent, folder, indent = 0) {
+		var items = parent.items;
+		for (var itemid in items) {
+			var item = items[itemid];
+			var title = i18next.t('navigation.' + item.caption);
 
-				if (item.form != null) {
-					this.AddMenuItemForm(folderid, folderid + "_" + itemid, item.form,
-						i18next.t('navigation.' + item.caption),
-						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
-						folder.icon);
-				} else {
-					this.AddMenuItem(folderid, folderid + "_" + itemid,
-						i18next.t('navigation.' + item.caption),
-						i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
-						folder.icon);
-				}
+			if (item.form != null) {
+				this.AddMenuItemForm(folderid, parent, item,
+					i18next.t('navigation.' + item.caption),
+					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+					folder.icon,
+					indent);
+			} else {
+				this.AddMenuItem(folderid, parent, item,
+					i18next.t('navigation.' + item.caption),
+					i18next.t('navigation.'+folder.caption) + ": "+ i18next.t('navigation.'+item.caption),
+					folder.icon,
+					indent);
 			}
+			if (item.hasOwnProperty('items')) {
+				this.displayNavigationSideBarItem(folderid, item, folder, indent + 1);
+			}
+		}
+	}
+
+	displayNavigationSideBar(navigation) {
+		$("#LeftNavigation").html('');
+
+		var folder = navigation[this.module];
+		if (folder == null) return;
+
+		if (folder.enabled == "false") {
+			return;
+		}
+
+		var items = folder.items;
+		for (var itemid in items) {
+			var item = items[itemid];
+			item['name'] = itemid;
+			var title = i18next.t('navigation.' + item.caption);
+
+			$("#LeftNavigation").append("<h1 class='sidebar'>" + title + "</h1>");
+
+			this.displayNavigationSideBarItem(this.module, item, folder);
+		}
+
+	}
+
+	displayNavigationTopBar(navigation) {
+		for (var folderid in navigation) {
+
+			var folder = navigation[folderid];
+			this.AddModuleToTopBar(folderid, i18next.t('navigation.'+folder.caption), folder.icon, folder.enabled != "false");
 		}
 
 		// link the items in the top menu
 		this.AddMenuItemHandler('mnuChangePassword', "Settings/ChangePassword", i18next.t("navigation.change_password"));
 		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/ChangeLanguage", i18next.t("navigation.change_language"));
-		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.home"));
 		this.AddMenuItemHandler('mnuHelpAbout', "About", i18next.t("navigation.about"));
 		this.AddMenuItemHandler('mnuHelpReleaseNotes', "ReleaseNotes", i18next.t("navigation.releasenotes"));
+
+		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.Home_label"));
+		this.AddMenuItemHandler('mnuPartner', "Partner", i18next.t("navigation.Partner_label"));
+		this.AddMenuItemHandler('mnuFinance', "Finance", i18next.t("navigation.Finance_label"));
+		this.AddMenuItemHandler('mnuSystemManager', "SystemManager", i18next.t("navigation.SystemManager_label"));
+
+		var self = this;
+
+		// select module in top bar: make it active, deactivate other modules
+		$('#ModuleNavBar li.nav-item a').click(function(e) {
+			$('#ModuleNavBar li.nav-item a').removeClass('active');
+			$(this).addClass('active');
+			var id=$(this).prop('id');
+			if (id.startsWith("mnu")) {
+				self.module = id.substring(3);
+			}
+			self.displayNavigationSideBar(navigation);
+		});
 
 		this.UpdateLocation();
 	}
 
-	loadNavigationPage(navpage) {
+	addCard(item) {
+		var html = "";
+		html += '<div class="col-lg-6 col-xl-4">';
+		html += '<div class="card">';
+		html += '<div class="card-header">' + i18next.t('navigation.' + item.caption) + '</div>';
+		html += '<div class="card-content">';
+
+		for (var childitemid in item.items) {
+			var child = item.items[childitemid];
+			var caption = i18next.t('navigation.' + child.caption);
+
+			if (child.action != undefined && child.form != undefined) {
+				html += "<a href='javascript:nav.OpenForm(\"" +
+					child.path + "/" + child.form +
+					"\", \"" + caption + "\", true, \"" + child.action + "\")'>" +
+					"<i class='fas fa-" + child.icon + "'></i>" +
+					"<span>" + caption + "</span></a>";
+			} else {
+				var path = child.path + "/" + childitemid;
+				if (child.form == undefined) {
+					path = child.path;
+				}
+				html += "<a href='javascript:nav.OpenForm(\"" +
+					path +
+					"\", \"" + caption + "\")'>" +
+					"<i class='fas fa-" + child.icon + "'></i>" +
+					"<span>" + caption + "</span></a>";
+			}
+		}
+
+		html += '</div>';
+		html += '</div>';
+		html += '</div>';
+
+		return html;
+	}
+
+	loadDashboard(navpage) {
+		var node = this.GetNavigationItem(navpage);
+
+		if (node != null && node['htmlexists'] != true) {
+
+			var hasGrandChildren = false;
+			for (var itemid in node.items) {
+				var item = node.items[itemid];
+				for (var childitemid in item.items) {
+					var child = item.items[childitemid];
+					hasGrandChildren = true;
+				}
+			}
+
+			var html = '<div class="container container-list dashboard">';
+			html += '<div id="dashboardRow" class="row">';
+
+			if (!hasGrandChildren) {
+				html += this.addCard(node);
+			} else {
+				var items = node.items;
+				for (var itemid in items) {
+					var item = items[itemid];
+					html += this.addCard(item);
+				}
+			}
+
+			html += '</div>';
+			html += '</div>';
+
+			$("#containerIFrames").html(html);
+		}
+
+		return;
+
+		// TODO: implement real dash board, with graphs, and configurable
+/*
 		// TODO: store pages per user? see window.localStorage?
 		self = this;
 		navpage = navpage.replace(/\//g, '_')
@@ -249,6 +459,7 @@ class Navigation {
 			.catch(function(error) {
 				console.log(error);
 			});
+*/
 	}
 
 	loadNavigation() {
@@ -260,7 +471,8 @@ class Navigation {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
 					window.localStorage.setItem('navigation', JSON.stringify(result.navigation));
-					self.displayNavigation(result.navigation);
+					self.displayNavigationTopBar(result.navigation);
+					self.displayNavigationSideBar(result.navigation);
 					window.onpopstate = function(e) {
 						if (e.state != null) {
 							nav.OpenForm(e.state.name, e.state.title, false);
@@ -280,10 +492,18 @@ $('document').ready(function () {
 	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
 		return; // User is not logged in
 	}
+
 	LoadAvailableLedgerDropDown();
 });
 
 function LoadAvailableLedgerDropDown() {
+	// check for FINANCE-1 permission. else: hide the ledger selection
+	permissions = window.localStorage.getItem('ModulePermissions');
+	if ((permissions == null) || !(" " + permissions.replace(/\n/g, ' ') + " ").includes(" FINANCE-1 ")) {
+		$('#LedgerSelection').hide();
+		return;
+	}
+
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
 		data = JSON.parse(data.data.d);
 		let dump = $('#ledger_select_dropdown').html('');

@@ -67,6 +67,11 @@ function translateElement(obj, form) {
      html = html.substring(1, html.length-1);
      $(obj).attr('href', i18next.t(form + '.' + html));
    }
+   html = $(obj).attr('title');
+   if (html !== undefined && html[0] == '{') {
+     html = html.substring(1, html.length-1);
+     $(obj).attr('title', i18next.t(form + '.' + html));
+   }
 }
 
 // this function will translate the index.html
@@ -77,6 +82,7 @@ function updateContent() {
   $('#topnavigation a').each(function () { translateElement($(this), 'navigation'); });
   $('#sidebar span, #sidebar a').each(function () { translateElement($(this), 'navigation'); });
   $('.nav-link span').each(function () { translateElement($(this), 'navigation'); });
+  $('.dropdown-item span').each(function () { translateElement($(this), 'navigation'); });
 }
 
 function translate(html, form) {

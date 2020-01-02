@@ -82,6 +82,7 @@ function display_partner(parsed) {
 
 	m.find('.select_case').hide();
 	m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
+
 	$('#modal_space').html(m);
 	$('#modal_space .modal').modal('show');
 }
