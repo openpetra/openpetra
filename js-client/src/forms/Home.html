@@ -1,7 +1,17 @@
 <div class="container container-list home">
 
   <div id="homeRow" class="row">
-    <div class="col-lg-6 col-xl-4 PTNRUSER">
+    <div class="col-lg-6 col-xl-4 PARTNERSELFSERVICE hidden">
+        <div class="card">
+            <div class="card-header">{navigation.SelfService_label}</div>
+            <div class="card-content">
+                <a href='javascript:nav.OpenForm("SelfService/MaintainPartnerSelfService", "{navigation.MaintainPartnerSelfService_label}")'><i class="fas fa-user"></i><span>{navigation.MaintainPartnerSelfService_label}</span></a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-xl-4 PTNRUSER hidden">
         <div class="card">
             <div class="card-header">{navigation.Partner_label}</div>
             <div class="card-content">
@@ -11,7 +21,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6 col-xl-4 FINANCE-1">
+    <div class="col-lg-6 col-xl-4 FINANCE-1 hidden">
         <div class="card">
             <div class="card-header">{navigation.Finance_label}</div>
             <div class="card-content">
@@ -20,7 +30,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6 col-xl-4 SYSMAN">
+    <div class="col-lg-6 col-xl-4 SYSMAN hidden">
         <div class="card">
             <div class="card-header">{navigation.SystemManager_label}</div>
             <div class="card-content">

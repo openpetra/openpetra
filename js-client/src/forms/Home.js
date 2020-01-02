@@ -36,6 +36,8 @@ $('document').ready(function () {
 		}
 		if (hide) {
 			$(this).hide();
+		} else {
+			$(this).show();
 		}
 	});
 });
