@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -313,6 +313,9 @@ namespace GenerateSQL
             List <TTable>tables = AStore.GetTables();
             tables = TTableSort.TopologicalSort(AStore, tables);
             tables.Reverse();
+
+            // drop link between s_user and p_partner, for example used for self-service
+            sw.WriteLine("UPDATE s_user SET p_partner_key_n = NULL;");
 
             foreach (TTable t in tables)
             {
