@@ -1,12 +1,38 @@
-<p>{welcome}</p>
+<div class="container container-list home">
 
-<p>{description}</p>
-<p>{target}</p>
+  <div id="homeRow" class="row">
+    <div class="col-lg-6 col-xl-4 PTNRUSER">
+        <div class="card">
+            <div class="card-header">{navigation.Partner_label}</div>
+            <div class="card-content">
+                <a href='javascript:nav.OpenForm("Partner/Partners/ImportExport/ImportPartners", "{navigation.ImportPartners_label}")'><i class="fas fa-file-import"></i><span>{navigation.ImportPartners_label}</span></a>
+                <a href='javascript:nav.OpenForm("Partner/Partners/Maintain/MaintainPartners", "{navigation.CreatePartner_label}", true, "NewFamily")'><i class="fas fa-user-plus"></i><span>{navigation.CreatePartner_label}</span></a>
 
-<p>{favourites}
-<br/>
-{example}:
-<ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-4 FINANCE-1">
+        <div class="card">
+            <div class="card-header">{navigation.Finance_label}</div>
+            <div class="card-content">
+                <a href='javascript:nav.OpenForm("Finance/Gift/GiftEntry/BankImport", "{navigation.BankImport_label}")'><i class="fas fa-money-check-alt"></i><span>{navigation.BankImport_label}</span></a>
+                <a href='javascript:nav.OpenForm("Finance/GeneralLedger/PeriodEnd/MonthEnd", "{navigation.MonthEnd_label}")'><i class="fas fa-file-invoice"></i><span>{navigation.MonthEnd_label}</span></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-xl-4 SYSMAN">
+        <div class="card">
+            <div class="card-header">{navigation.SystemManager_label}</div>
+            <div class="card-content">
+                <a href='javascript:nav.OpenForm("SystemManager/MaintainUsers", "{navigation.CreateUser_label}", true, "NewUser")'><i class="fas fa-user-plus"></i><span>{navigation.CreateUser_label}</span></a>
+            </div>
+        </div>
+    </div>
+  </div>
+
+</div>
+
+<ul hidden>
     <li><a href='javascript:nav.OpenForm("Settings/ChangePassword", "{navigation.change_password}")'>{navigation.change_password}</a></li>
     <li><a href='javascript:nav.OpenForm("Partner/Partners/Maintain/MaintainPartners", "{navigation.MaintainPartners_label}")'>{navigation.MaintainPartners_label}</a></li>
     <li><a href='javascript:nav.OpenForm("Finance/GeneralLedger/GLBatchMaintenance/GLBatches", "{navigation.GLBatches_label}")'>{navigation.GLBatches_label}</a></li>
@@ -17,10 +43,3 @@
 </ul>
 </p>
 
-
-
-<footer class="footer">
-    <div class="container">
-        {current_version}: <span class="version"></span>
-    </div>
-</footer>

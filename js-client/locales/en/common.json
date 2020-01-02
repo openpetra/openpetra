@@ -43,7 +43,11 @@
     "navigation": {
         "openpetra": "OpenPetra",
         "home": "Home",
-        "about": "About",
+        "help": "Help",
+        "about": "About OpenPetra",
+        "manual": "Manuals",
+        "releasenotes": "Release Notes",
+        "manualurl": "https://docs.openpetra.org",
         "contact": "Contact",
         "settings": "Settings",
         "ledgerselect":"Selected Ledger:",
@@ -92,6 +96,7 @@
         "Settings_label": "Settings",
         "MaintainSettings_label": "System Settings",
         "Users_label": "Users",
+        "CreateUser_label": "Create user",
         "Database_label": "Database",
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
@@ -103,7 +108,8 @@
         "AccountTree_label":"Maintain the Chart of Accounts",
         "CostCenterTree_label":"Maintain the Cost Centres",
         "MonthEnd_label": "Close the current period",
-        "YearEnd_label": "Run the year end"
+        "YearEnd_label": "Run the year end",
+        "RecurringGiftBatches_label":"Recurring donations"
     },
     "forms": {
         "search":"Search",
@@ -142,12 +148,16 @@
       "edit": "Changes could not be saved"
     },
     "Home": {
-        "welcome": "Welcome to OpenPetra!",
+    },
+    "About": {
+        "caption": "About OpenPetra",
         "description": "<a href='http://www.openpetra.org' target='_blank'>OpenPetra</a> is an easy to use software system for the administration of non-profit organisations, licensed under the GPL.",
         "target": "OpenPetra runs on the main stream browsers, independant of Operating System or screen size.",
-        "favourites": "In the future, you will be able to add here some of your favourite screens, that you use every day.",
-        "current_version": "OpenPetra version",
-        "example": "for example"
+        "subscription": "At <a href='https://www.openpetra.com' target='_blank'>OpenPetra.com</a> you can subscribe to get your hosted OpenPetra instance with backups and regular updates, and you also get paid support.",
+        "current_version": "OpenPetra version"
+    },
+    "ReleaseNotes": {
+        "releasenotes_url": "releasenotes.html"
     },
     "ChangePassword": {
         "caption": "Change password",
@@ -281,6 +291,7 @@
         "CANCELLED": "Cancelled",
         "GLBatchDateOutsideOfPeriod": "The date is outside of the open periods!",
         "success_cancelled": "The Batch has been cancelled",
+        "success_revert": "A reversal batch has been created and can now be posted.",
         "success_posted": "The Batch has been posted",
         "import": "Import transactions",
         "isPosted": "We cannot edit batches that have been posted already"
@@ -313,6 +324,49 @@
       "trans_motivation": "Motivation Group and Detail",
       "motivation_group_code":"Motivation Group Code",
       "motivation_detail_code":"Motivation Detail Code",
+      "trans_narrative_code": "Comment",
+      "trans_donor_key":"Donor Key",
+      "trans_donor":"Donor Name",
+      "edittitle_trans":"Edit transaction",
+      "trans_description":"Transaction Comment",
+      "edittitle_trans_detail":"Edit transaction details",
+      "adjustgift": "Adjust Donation",
+      "giftadjusted": "There is now an adjustment gift batch, that you can modify and post.",
+      "success_adjust":  "An adjustment batch has been created",
+      "success_cancelled": "The Batch has been cancelled",
+      "success_posted": "The Batch has been posted",
+      "ledgernumber":"Ledgernumber"
+    },
+
+    "RecurringGiftBatches": {
+      "edittitle":"Edit recurring batch",
+      "caption":"Maintain recurring donations",
+      "year": "Year",
+      "period": "Month",
+      "batch_status": "Batch Status",
+      "POSTED": "Posted",
+      "UNPOSTED": "Unposted",
+      "CANCELLED": "Cancelled",
+      "batchnumber":"Batchnumber",
+      "batchdate":"Batch booking date",
+      "batchname":"Batch description",
+      "batchstatus":"Batch status",
+      "batchhash":"Check Total",
+      "batchtotal":"Batch Total",
+      "bank_account_code": "Bank Account",
+      "bank_ccenter_code": "Bank Cost Centre",
+      "trans_number": "Transaction number",
+      "trans_detail": "Detail number",
+      "trans_date": "Entrydate",
+      "trans_ref": "Reference",
+      "trans_amount_in_base": "Amount",
+      "trans_account_code": "Account",
+      "trans_ccenter_code": "Cost centre",
+      "trans_motivation": "Motivation Group and Detail",
+      "motivation_group_code":"Motivation Group Code",
+      "motivation_detail_code":"Motivation Detail Code",
+      "detail_date_start":"Valid from",
+      "detail_date_end":"Valid until",
       "trans_narrative_code": "Comment",
       "trans_donor_key":"Donor Key",
       "trans_donor":"Donor Name",

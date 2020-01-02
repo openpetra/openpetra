@@ -432,13 +432,19 @@ useful parameters
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
 
   <!-- to avoid timeout, need to make sure everything gets compiled on the web request -->
+  <echo message="try: curl --silent --retry 5 http://localhost:${Http.Port}/api/serverSessionManager.asmx/IsUserLoggedIn"/>
   <exec program="bash"
         workingdir="${dir.root}/js-client"
-        commandline="-c &quot;curl --silent --retry 5 http://localhost:${Http.Port}/api/serverSessionManager.asmx/IsUserLoggedIn&quot;" />
+        commandline="-c &quot;curl --silent --retry 5 http://localhost:${Http.Port}/api/serverSessionManager.asmx/IsUserLoggedIn || exit -1&quot;" />
 
   <exec program="bash"
         workingdir="${dir.root}/js-client"
-        commandline="-c &quot;LANG=en CYPRESS_baseUrl=http://localhost:${Http.Port} ./node_modules/.bin/cypress run --config video=false&quot;" />
+        commandline="-c &quot;./node_modules/.bin/cypress run --config video=false&quot;">
+        <environment>
+          <variable name="LANG" value="en_US.utf8"/>
+          <variable name="CYPRESS_baseUrl" value="http://localhost:${Http.Port}"/>
+        </environment>
+  </exec>
   
   <echo message="Target test-client (outer) finished at: ${datetime::now()}" />
 </target>

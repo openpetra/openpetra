@@ -527,6 +527,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerattr.PartnerKey = SaveDS.PPartner[0].PartnerKey;
                 partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
                 partnerattr.Value = ADefaultEmailAddress;
+                partnerattr.Index = 0;
                 SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
             }
 
@@ -536,6 +537,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerattr.PartnerKey = SaveDS.PPartner[0].PartnerKey;
                 partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
                 partnerattr.Value = ADefaultPhoneLandline;
+                partnerattr.Index = 0;
                 SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
             }
 
@@ -545,6 +547,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerattr.PartnerKey = SaveDS.PPartner[0].PartnerKey;
                 partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
                 partnerattr.Value = ADefaultPhoneMobile;
+                partnerattr.Index = 0;
                 SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
             }
 

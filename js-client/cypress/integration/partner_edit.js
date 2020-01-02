@@ -1,10 +1,13 @@
 describe('find and edit partner', function() {
   it('logs in with user demo and modifies partner', function() {
+    cy.server()
     cy.visit('/Partner/Partners/Maintain/MaintainPartners')
     cy.get('#txtEmail').should("be.visible")
     cy.get('#txtEmail').type('demo')
     cy.get('#txtPassword').type('demo')
+    cy.route('POST','**/Login').as('Login')
     cy.get('#btnLogin').click()
+    cy.wait('@Login')
     cy.get('#logout').should("be.visible")
 
     cy.get('#btnFilter').click()
@@ -23,7 +26,9 @@ describe('find and edit partner', function() {
         .should('not.be.checked')
         .check()
 
+    cy.route('POST','**SavePartner').as('SavePartner')
     cy.get('#modal_space #btnSave').click()
+    cy.wait('@SavePartner')
     cy.get('#message').should("be.visible").should("contain", 'Successfully saved')
 
     cy.visit('/Partner/Partners/Maintain/MaintainPartners')
@@ -43,7 +48,9 @@ describe('find and edit partner', function() {
         .should('be.checked')
         .uncheck()
 
+    cy.route('POST','**SavePartner').as('SavePartner2')
     cy.get('#modal_space #btnSave').click()
+    cy.wait('@SavePartner2')
     cy.get('#message').should("be.visible")
     cy.get('#message').should("contain", 'Successfully saved')
 

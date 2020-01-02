@@ -630,6 +630,11 @@ namespace Ict.Petra.Shared.MFinance
             ReverseGift,
 
         /// <summary>
+        /// Adjust a gift batch
+        /// </summary>
+            AdjustGiftBatch,
+
+        /// <summary>
         /// Adjust a single gift
         /// </summary>
             AdjustGift,

@@ -1294,6 +1294,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     gift.DonorKey = match.DonorKey;
                     gift.DateEntered = transactionRow.DateEffective;
                     gift.Reference = MatchedGiftReference;
+
+                    if (gift.Reference.Length > AGiftTable.GetReferenceLength())
+                    {
+                        gift.Reference = gift.Reference.Substring(0, AGiftTable.GetReferenceLength());
+                    }
+
                     GiftDS.AGift.Rows.Add(gift);
                     giftbatchRow.LastGiftNumber++;
 

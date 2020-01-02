@@ -61,6 +61,12 @@ function translateElement(obj, form) {
      html = html.substring(1, html.length-1);
      $(obj).html(i18next.t(form + '.' + html));
    }
+   // a href must be replaced, eg. for the link to the manual
+   html = $(obj).attr('href');
+   if (html !== undefined && html[0] == '{') {
+     html = html.substring(1, html.length-1);
+     $(obj).attr('href', i18next.t(form + '.' + html));
+   }
 }
 
 // this function will translate the index.html

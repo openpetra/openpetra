@@ -205,7 +205,14 @@ function format_currency(currencyCode) {
 	)
 };
 
-function format_date() {
+function format_date(from_string) {
+  if (from_string != undefined) {
+    let t = /\((.+)\)/g.exec(from_string);
+    if (t && t.length > 1) {
+      return new Date(parseInt(t[1])).toDateInputValue();
+    } else { return ""; }
+  }
+
 	$('.format_date').each(
 		function(x, obj) {
 			obj = $(obj);
@@ -227,9 +234,9 @@ function format_chk() {
 			if (t == null || t.length <=1) {return}
 
 			if (t == "false") {
-				obj.html("<i class='fa fa-circle-thin'></i>");
+				obj.html("<i class='fas fa-circle-thin'></i>");
 			} else {
-				obj.html("<i class='fa fa-check-circle'></i>");
+				obj.html("<i class='fas fa-check-circle'></i>");
 			}
 
 		}
@@ -281,3 +288,9 @@ function update_requireClass(object, class_) {
 	object.find('[requireClass]').hide();
 	object.find('.'+class_).show();
 }
+
+Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+});

@@ -4,23 +4,23 @@
   "description": "Client for OpenPetra running in the web browser",
   "main": "index.js",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.0",
     "axios": "^0.18.1",
-    "bootstrap": "^4.3.1",
-    "browserify": "^16.3.0",
+    "bootstrap": "^4.4.1",
+    "browserify": "^16.5.0",
     "browserify-css": "^0.15.0",
-    "cypress": "^3.4.1",
-    "font-awesome": "^4.7.0",
+    "cypress": "3.7.0",
     "i18next": "^10.6.0",
     "i18next-browser-languagedetector": "^2.2.4",
     "i18next-xhr-backend": "^1.5.1",
     "jquery": "^3.4.1",
-    "popper.js": "^1.15.0",
-    "uglify-js": "^3.6.0"
+    "popper.js": "^1.16.0",
+    "uglify-js": "^3.7.2"
   },
   "devDependencies": {},
   "scripts": {
-    "build-debug": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js -d > dist/bundle.js",
-    "build-min": "mkdir -p dist && mkdir -p fonts && cp -f node_modules/font-awesome/css/font-awesome.min.css dist && cp -f node_modules/font-awesome/fonts/* fonts && browserify -t browserify-css src/index.js | uglifyjs -c > dist/bundle.min.js",
+    "build-debug": "mkdir -p dist && mkdir -p webfonts && cp -f node_modules/\\@fortawesome/fontawesome-free/css/all.min.css dist/fontawesome.min.css && cp -f node_modules/\\@fortawesome/fontawesome-free/webfonts/* webfonts && browserify -t browserify-css src/index.js -d > dist/bundle.js && chmod a+rx -R dist webfonts",
+    "build-min": "mkdir -p dist && mkdir -p webfonts && cp -f node_modules/\\@fortawesome/fontawesome-free/css/all.min.css dist/fontawesome.min.css && cp -f node_modules/\\@fortawesome/fontawesome-free/webfonts/* webfonts && browserify -t browserify-css src/index.js | uglifyjs -c > dist/bundle.min.js && chmod a+rx -R dist webfonts",
     "build": "npm run build-debug && npm run build-min",
     "test": "LANG=en CYPRESS_baseUrl=http://localhost ./node_modules/.bin/cypress run --config video=false"
   },

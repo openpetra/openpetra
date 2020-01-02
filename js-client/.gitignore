@@ -1,6 +1,7 @@
 node_modules
 dist
 fonts
+webfonts
 cypress/screenshots
 cypress/plugins
 cypress/support

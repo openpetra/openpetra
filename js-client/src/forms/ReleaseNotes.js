@@ -3,7 +3,6 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2017-2018 by TBits.net
 // Copyright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
@@ -23,19 +22,13 @@
 //
 
 $('document').ready(function () {
-	// get the permissions
-	permissions = window.localStorage.getItem('ModulePermissions').split("\n");
-	$('#homeRow').children('div').each(function () {
-		classes = " " + $(this).attr('class') + " ";
-		hide = true;
-		for (var i = 0; i < permissions.length; i++) {
 
-			if (classes.includes(" " + permissions[i] + " ")) {
-				hide = false;
-			}
-		}
-		if (hide) {
-			$(this).hide();
-		}
-	});
+  var releasenotes = axios.create({
+    baseURL: '/releasenotes/'
+  });
+
+  let x = {};
+  releasenotes.get(i18next.t('ReleaseNotes.releasenotes_url'),x).then(function(data) {
+    $('#contentReleaseNotes').html(data.data);
+  });
 });

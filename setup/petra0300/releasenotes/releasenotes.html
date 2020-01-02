@@ -1,14 +1,103 @@
 <html>
 <head>
 <title>OpenPetra.org Release Notes</title>
+
+<style>
+#main {max-width: 800px; margin-left: auto; margin-right: auto}
+</style>
+
 </head>
 <body>
-Login with User ID <b>demo</b> and password is <b>demo</b> as well.<br/>
-Please also read the <a href="https://wiki.openpetra.org/index.php?title=Basic_Tutorial">Tutorial online</a>!<br/>
 
-For more information, see the project website at <a href="https://www.openpetra.org">https://www.openpetra.org</a><br/>
+<div id="main">
+<h2>Monthly Releases of OpenPetra</h2>
 
-Please report any issues with the latest version in the forum: <a href="https://forum.openpetra.org">https://forum.openpetra.org</a><br/>
+<h3>Release 2019.10: November 22nd, 2019</h3>
+
+<p>This release was scheduled for the end of October, but better late than never...!</p>
+
+<p>The main new feature in this release is the new optional self service for partners: If you enable this option in the System Settings as user SYSADMIN, then your members or supporters can sign up themselves in OpenPetra, and can enter their contact details themselves! They cannot see any other data, but their own. This could be extended, so if you have interest in this function, please let me know!</p>
+
+<p>So here is the list of changes for this release:</p>
+
+<ul><li>Self Service for Partners: sign up, maintain their own data</li>
+<li>Report "Partner With Categories" now prints the e-mail addresses and phone numbers</li>
+<li>Don't display menu items if the user does not have permission. Previously they were greyed out.</li>
+<li>demo.openpetra.org: make it very clear: no sensitive data. data is reset each night</li>
+<li>demo.openpetra.org: Language switcher is now visual with flags.</li>
+<li>fixed issue with modal dialog if button is clicked twice</li>
+<li>fixed: sometimes the login dialog was not displayed</li></ul>
+
+<p>For more details about the issues solved in this release, visit the <a href="https://github.com/openpetra/openpetra/milestone/6?closed=1" rel=" nofollow ugc">Milestone at Github for release 2019.10</a>!</p>
+
+<h3>Release 2019.09: October 3rd, 2019</h3>
+<p>This release is mainly about multi-tenancy. <br>
+This allows me to host OpenPetra without much cost, because I can serve multiple customers with one Mono service, needing less RAM and CPU. As a result, the free testing period at <a href="https://www.openpetra.com" rel=" nofollow ugc">OpenPetra.com</a> is now <strong>indefinite</strong>! This makes it easier for people outside the SEPA area, to still use OpenPetra, even if we cannot accept payments at this time. Still I would very much like paying customers (from 5 Euro a month), which allows us to grow the service!</p>
+
+<p>Changes in this release:</p>
+
+<ul><li>Allow one Mono process to run for multiple instances. This allows multi-tenancy, with each customer having his own config file and database.</li>
+<li>We needed to redesign the way the reports were calculated, to work without UIConnector and static variables, but per request. New table s_report_result has been added.</li>
+<li>New instances, that are not assigned to customers yet, don't allow login with user SYSADMIN.</li>
+<li>New customers will receive an email notification with their name, with the link to set the password for SYSADMIN. Previously, the text of that email was broken, and without a name of recipient.</li></ul>
+
+<p>For more details about the issues solved in this release, visit the <a href="https://github.com/openpetra/openpetra/milestone/5?closed=1" rel=" nofollow ugc">Milestone at Github for release 2019.09</a>!</p>
+
+<h3>Release 2019.07: August 10th, 2019</h3>
+<p>This release was scheduled for the end of July, but it has taken more time to get the release ready.<br>
+Not much functionality was changed, but again a lot in the technical area has been tidied up and improved.</p>
+
+<p>functional changes:</p>
+<ul><li>the UI of the year end has been improved and looks now similar to the month end.</li>
+<li>The formatting of amounts has been improved, there was a bug for amounts less than 10 Euros.</li></ul>
+
+<p>technical changes:</p>
+<ul><li>support for MySQL has been improved.</li>
+<li>some deprecated database fields have finally been dropped (eg. p_partner_location.p_email_address_c, which now is implemented with the partner contact attributes).</li>
+<li>we have support now for Ubuntu as development environment. I run the CI tests on Github with Appveyor (see <a href="https://ci.openpetra.org" rel=" nofollow ugc">https://ci.openpetra.org</a>), which now offers Ubuntu containers for the tests. This helps to improve the overall quality of the code, since some issues have come to the surface, that were not visible with the CI runs on CentOS with the LightBuildServer (see <a href="https://lbs.solidcharity.com/package/solidcharity/openpetra/openpetra-test-server-mysql" rel=" nofollow ugc">OpenPetra Test of the server with mysql</a>)</li>
+<li>I am working on a project to replace static variables. This will allow to host multiple tenants on a single OpenPetra server instance. This project is ongoing (<a href="https://forum.openpetra.org/d/869-refactoring-of-static-variables" rel=" nofollow ugc">see updates in the forum</a>), but this release contains the updated code already, and it does pass the tests.</li>
+<li>I moved the openpetra-client-js repository into the main openpetra repository, to make life easier. It is now here: <a href="https://github.com/openpetra/openpetra/tree/master/js-client" rel=" nofollow ugc">https://github.com/openpetra/openpetra/tree/master/js-client</a></li></ul>
+
+<p>For more details about the issues solved in this release, visit the <a href="https://github.com/openpetra/openpetra/milestone/3?closed=1" rel=" nofollow ugc">Milestone at Github for release 2019.07</a>!</p>
+
+
+<h3>Release 2019.06: June 29th, 2019</h3>
+
+These are the major changes that are part of the release in June 2019:<br/>
+<ul>
+<li>Sessions are now stored and managed in the database, not in memory. This means that sessions now survive a server restart.</li>
+<li>Small fix for importing bank statements, for transactions that have the date submitted and date posted across two months.</li>
+<li>A number of fixes to supporting PostgreSQL as database backend.</li>
+<li>The client will now show an error message if the user is still using IE 11 or older.</li>
+</ul>
+
+For more details, see the issues closed in this release: <a href="https://github.com/openpetra/openpetra/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3ARelease_2019-06+is%3Aclosed+">Issues closed in Milestone 2019.06</a>
+
+<h3>Release 2019.05: May 27th, 2019</h3>
+
+These are the major changes that are part of the release in May 2019:<br/>
+<ul>
+<li>Create an adjustment batch for a posted Gift batch</li>
+<li>Export Gift batches to Excel file</li>
+<li>Show total amount, and amounts of gifts for the Gift batch</li>
+<li>Avoid editing posted/read only Gift batches.</li>
+<li>Fixes for closing month/period, improved UI showing the dates of the current period.</li>
+<li>In the background, much of the code was refactored to not reuse database connections across a user session, but for each request a new database connection is opened. This is how it should be done nowadays.</li>
+</ul>
+
+For more details, see the issues closed in this release: <a href="https://github.com/openpetra/openpetra/issues?utf8=%E2%9C%93&q=is%3Aissue+milestone%3ARelease_2019-05+is%3Aclosed+">Issues closed in Milestone 2019.05</a>
+
+
+<h3>Release 2019.02: February 5th, 2019</h3>
+
+These are the major changes that happened in January 2019:<br/>
+<ul>
+<li>annual receipts have been implemented.</li>
+<li>an address report was implemented for publications, excluding the people that receive an annual receipt.</li>
+<li>artner find now shows the last donation.</li>
+<li>partner edit has a fix to process the country code correctly.</li>
+<li>the manual was started at https://docs.openpetra.org</li>
+</ul>
 
 <h2>Release Notes OpenPetra.org (Beta)</h2>
 
@@ -150,8 +239,8 @@ For a detailed list of all bugs solved for this release, see <a href="http://ope
 <br/>
 
 OpenPetra has received more testing than ever. Many problems that were identified by the testers got addressed and have been solved. 
-As a result the application is more stable overall and we increased OpenPetras’ version number to 0.3.0 to indicate that. 
-Still, any use of the application at this stage must be seen as ‘experimental’.
+As a result the application is more stable overall and we increased OpenPetrasÂ’ version number to 0.3.0 to indicate that. 
+Still, any use of the application at this stage must be seen as Â‘experimentalÂ’.
 <p/>
 
 <p><b>Major improvements in this version</b></p>
@@ -709,5 +798,7 @@ You can create a new partner, add an address, and save the partner.<br/>
 Then you can go in the Partner Main screen in the menu to &quot;Partner&quot; / &quot;Find & Maintain Partner&quot;.<br/>
 Search for the partner you just created.<br/>
 To edit the partner, double click on the row in the result grid.<br/>
+</div>
+
 </body>
 </html>

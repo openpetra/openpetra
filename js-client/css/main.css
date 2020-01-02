@@ -1,6 +1,9 @@
 body {
   min-height: 2000px;
 }
+html {
+  font-size: 0.86rem;
+}
 
 .list-group .nav {
   display: none;
@@ -69,6 +72,10 @@ body {
   margin-bottom: 10px;
 }
 
+#topnavigation {
+  min-height: 50px;
+}
+
 #toolbar {
   margin-bottom: 10px;
 }
@@ -111,3 +118,18 @@ body {
 .format_currency {
   text-align:right;
 }
+
+#browse > .container-list > * { background-color: #00000022; }
+#browse > .container-list > *:nth-child(even) { background-color: #00000033; }
+
+.home .row a {
+  margin: 1em;
+  display: flex;
+	flex-direction: column;
+	align-items: center;
+  text-decoration: none;
+}
+.home .row a i {
+  font-size: 300%;
+}
+

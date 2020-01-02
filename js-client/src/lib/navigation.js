@@ -2,10 +2,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       CJ <cj@tbits.net>
 //
 // Copyright 2017-2019 by TBits.net
+// Coypright 2019 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -33,8 +34,7 @@ class Navigation {
 		$(window).scrollTop(0);
 	}
 
-	// TODO: something about parameters
-	OpenForm(name, title, pushState=true)
+	OpenForm(name, title, pushState=true, parameter="")
 	{
 		if (this.debug) {
 			console.log("OpenForm: " + name + " title: " + title);
@@ -69,8 +69,9 @@ class Navigation {
 			this.loadNavigationPage(name);
 		}
 
-		var stateObj = { name: name, title: title };
+		var stateObj = { name: name, title: title, parameter: parameter };
 		var newUrl = name.replace(/_/g, '/');
+		if (parameter != '') newUrl += "?" + parameter;
 		if (newUrl == "Home") { newUrl = ''; }
 		newUrl = window.location.protocol + '//' + window.location.hostname + '/' + newUrl;
 		if (window.location.protocol + '//' + window.location.hostname + '/' + window.location.pathname != newUrl && pushState) {
@@ -159,9 +160,9 @@ class Navigation {
 	AddMenuGroup(name, title, icon, enabled)
 	{
 		if (!enabled) {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item disabled' data-parent='#sidebar'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span></a>");
 		} else {
-			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fa fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
+			$("#LeftNavigation").append("<a href='#mnuLst" + name + "' class='list-group-item d-inline-block collapsed' data-toggle='collapse' data-parent='#sidebar' aria-expanded='false'> <i class='fas fa-" + icon + "'></i>  <span class='d-none d-md-inline'> " + title + "</span> </a><div class='collapse' id='mnuLst" + name + "'></div></a>");
 		}
 	}
 
@@ -182,14 +183,14 @@ class Navigation {
 
 	AddMenuItem(parent, name, title, tabtitle, icon)
 	{
-		$("#mnuLst" + parent).append("<a href='/#" + name + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fa fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		$("#mnuLst" + parent).append("<a href='/#" + name + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
 
 	// eg. SystemManager/Users/MaintainUsers is a link directly to a form, not a navigation page
 	AddMenuItemForm(parent, name, form, title, tabtitle, icon)
 	{
-		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fa fa-" + icon + " icon-invisible'></i> " + title +"</a>");
+		$("#mnuLst" + parent).append("<a href='" + form + "' class='list-group-item' data-parent='#mnuLst" + parent + "' id='" + name + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, parent + "/" + form, tabtitle);
 	}
 
@@ -222,6 +223,8 @@ class Navigation {
 		this.AddMenuItemHandler('mnuChangePassword', "Settings/ChangePassword", i18next.t("navigation.change_password"));
 		this.AddMenuItemHandler('mnuChangeLanguage', "Settings/ChangeLanguage", i18next.t("navigation.change_language"));
 		this.AddMenuItemHandler('mnuHome', "Home", i18next.t("navigation.home"));
+		this.AddMenuItemHandler('mnuHelpAbout', "About", i18next.t("navigation.about"));
+		this.AddMenuItemHandler('mnuHelpReleaseNotes', "ReleaseNotes", i18next.t("navigation.releasenotes"));
 
 		this.UpdateLocation();
 	}
@@ -277,6 +280,10 @@ $('document').ready(function () {
 	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
 		return; // User is not logged in
 	}
+	LoadAvailableLedgerDropDown();
+});
+
+function LoadAvailableLedgerDropDown() {
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
 		data = JSON.parse(data.data.d);
 		let dump = $('#ledger_select_dropdown').html('');
@@ -298,8 +305,8 @@ $('document').ready(function () {
 		} else {
 			$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
 		}
-	})
-});
+	});
+}
 
 function change_standard_ledger(ledger_id) {
 	window.localStorage.setItem('current_ledger', ledger_id);

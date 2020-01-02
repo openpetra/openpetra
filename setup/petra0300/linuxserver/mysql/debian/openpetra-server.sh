@@ -1,1 +1,0 @@
-../centos/openpetra-server.sh

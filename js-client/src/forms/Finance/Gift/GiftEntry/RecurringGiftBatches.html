@@ -7,10 +7,8 @@
 	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
-			<div class="col format_date">{val_a_gl_effective_date_d}</div>
 			<div class="col">{val_a_batch_description_c}</div>
-			<div class="col format_currency">{val_GiftBatchTotal}</div>
-			<div class="col" batch-status>{val_a_batch_status_c}</div>
+			<div class="col format_currency">{val_a_batch_total_n}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
 					<i class="fas fa-wrench"></i>
@@ -43,7 +41,6 @@
 					<div class="col"><b>
 						<div class ="row">
 							<div class="col">{trans_number}</div>
-							<div class="col">{trans_date}</div>
 							<div class="col">{trans_donor}</div>
 							<div class="col">{trans_amount_in_base}</div>
 							<div class="col-1">
@@ -64,7 +61,6 @@
 	<div class="tpl_gift">
 		<div class="row">
 			<div class="col">{val_a_gift_transaction_number_i}</div>
-			<div class="col format_date">{val_a_date_entered_d}</div>
 			<div class="col">{val_DonorName}</div>
 			<div class="col format_currency">{val_GiftTotal}</div>
 			<div class="col-1">
@@ -78,7 +74,7 @@
 	<div class="tpl_trans_detail">
 		<div class="row">
 			<div class="col">{val_a_motivation_group_code_c} {val_a_motivation_detail_code_c}</div>
-			<div class="col format_curr">{val_a_gift_transaction_amount_n}</div>
+			<div class="col format_curr">{val_a_gift_amount_n}</div>
 			<div class="col-1">
 				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
 					<i class="fas fa-wrench"></i>
@@ -112,28 +108,10 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{batchstatus}</span>
-							</div>
-							<div class="col">
-								<input class="" type="text" name="a_batch_status_c" value="" readonly>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
 								<span>{batchname}</span>
 							</div>
 							<div class="col">
 								<input class="posted_readonly" type="text" name="a_batch_description_c" value="" size="30">
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{batchdate}</span>
-							</div>
-							<div class="col">
-								<input class="posted_readonly" type="date" name="a_gl_effective_date_d" value="">
 							</div>
 						</div>
 
@@ -176,7 +154,7 @@
 				<div class="modal-footer">
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
 					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
-			</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -210,15 +188,6 @@
 							</div>
 							<div class="col">
 								<input class="posted_readonly" type="text" name="a_gift_transaction_number_i" value="" readonly>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<span>{trans_date}</span>
-							</div>
-							<div class="col">
-								<input class="posted_readonly" type="date" name="a_date_entered_d" value="">
 							</div>
 						</div>
 
@@ -260,7 +229,6 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-warning only_show_when_posted" onclick="adjust_trans(this)">{adjustgift}</button>
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
 					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
@@ -269,6 +237,7 @@
 		</div>
 	</div>
 
+	<!-- modal for editing transaction details -->
 	<div class="modal modal-wide fade tpl_edit_trans_detail" tabindex="-1" role="dialog">
 		<input type="hidden" action value="create">
 		<div class="modal-dialog" role="document">
@@ -314,7 +283,7 @@
 								<span>{trans_amount_in_base}</span>
 							</div>
 							<div class="col">
-								<input class="posted_readonly" type="number" step="0.01" name="a_gift_transaction_amount_n" value="">
+								<input class="posted_readonly" type="number" step="0.01" name="a_gift_amount_n" value="">
 							</div>
 						</div>
 
@@ -324,6 +293,24 @@
 							</div>
 							<div class="col">
 								<input class="posted_readonly" type="text" name="a_gift_comment_one_c" value="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{detail_date_start}</span>
+							</div>
+							<div class="col">
+								<input type="date" name="AStartDonations" required />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{detail_date_end}</span>
+							</div>
+							<div class="col">
+								<input type="date" name="AEndDonations" value="" />
 							</div>
 						</div>
 
@@ -367,58 +354,17 @@
 	<tr>
 		<td>
 			<button id="new" class="btn btn-primary" onclick="new_batch()">{forms.new}</button>
-			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>
 </table>
 
 <div id="modal_space"></div>
 
-<div class="container collapse" id="tabfilter">
-	<div class="container group-container">
-	<div class="row">
-		<div class="col">
-			<span>{year}:</span>
-		</div>
-		<div class="col">
-			<select name="AYear" onchange="get_available_periods($(this).val(), display_list)"></select>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col">
-			<span>{period}:</span>
-		</div>
-		<div class="col">
-			<select name="APeriod"></select>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col">
-			<span>{batch_status}:</span>
-		</div>
-		<div class="col">
-			<select name="ABatchStatus">
-				<option value="" selected>{forms.any}</option>
-				<option value="Unposted">{UNPOSTED}</option>
-				<option value="Posted">{POSTED}</option>
-				<option value="Cancelled">{CANCELLED}</option>
-			</select>
-		</div>
-	</div>
-	</div>
-	<button type="button" class="btn btn-light" onclick="save_preset('GiftBatches')">{forms.save_preset}</button>
-	<button type="button" class="btn btn-light" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
-	<button type="button" class="btn btn-primary" onclick="display_list('filter');$('#tabfilter').collapse('toggle')">{forms.search}</button>
-	<input type="hidden" name="AMaxRecords" value="25"/>
-</div>
-
 <div class="container" id="browse">
 	<div class="row">
 		<div class="col"><b>{batchnumber}</b></div>
-		<div class="col"><b>{batchdate}</b></div>
 		<div class="col"><b>{batchname}</b></div>
 		<div class="col"><b>{batchtotal}</b></div>
-		<div class="col"><b>{batchstatus}</b></div>
 	<div class="col-1"></div>
 	</div>
 

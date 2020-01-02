@@ -328,10 +328,9 @@ function save_edit_trans(obj_modal) {
 			display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .modal').modal('hide');
 			updateBatch(payload['ABatchNumber']);
-		}
-		if (parsed.result == "false") {
+		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				display_message(i18next.t(msg.code ? msg.code : msg.message), "fail");
 			}
 		}
 
@@ -445,18 +444,19 @@ function batch_cancel(batch_id) {
 }
 
 function batch_reverse(batch_id, date) {
-	var date_extractor = new RegExp(/Date\((.+)\)/g);
-	var date = new Date( parseInt( date_extractor.exec(date)[1] ) );
-	var date_str = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ABatchNumberToReverse: batch_id,
-		// TODO use reasonable date for reversal???
-		ADateForReversal: "2018-07-01",//date_str,
+		ADateForReversal: date,
 		AAutoPostReverseBatch: false
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_ReverseBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		console.log(data);
+		if (data.result == true) {
+			display_message( i18next.t('GLBatches.success_revert'), 'success' );
+			load_preset();
+		} else {
+			display_error( data.AVerificationResult );
+		}
 	})
 }

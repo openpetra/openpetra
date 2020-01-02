@@ -23,41 +23,20 @@
 //
 
 $('document').ready(function () {
-	get_available_years(
-		function() {
-			load_preset();
-		});
+		display_list();
 });
-
-function load_preset() {
-	var x = window.localStorage.getItem('GiftBatches');
-	if (x != null) {
-		x = JSON.parse(x);
-		// first set the period so that it can be used when the year has been selected
-		let y = {"APeriod":x["APeriod"]};
-		format_tpl($('#tabfilter'), y);
-		format_tpl($('#tabfilter'), x);
-		display_list();
-	} else {
-		// set periods: only open periods
-		$('select[name="APeriod"]').val(0);
-		// set batch status: only unposted batches
-		$('select[name="ABatchStatus"]').val('Unposted');
-		display_list();
-	}
-}
 
 function display_list(source) {
 	var x = extract_data($('#tabfilter'));
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
-		for (item of data.result.AGiftBatch) {
+		for (item of data.result.ARecurringGiftBatch) {
 			format_item(item);
 		}
-		format_currency(data.ACurrencyCode);
+		format_currency(item.a_currency_code_c);
 		format_date();
 	})
 }
@@ -73,9 +52,9 @@ function updateBatch(BatchNumber) {
 		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
 		'ABatchNumber': BatchNumber};
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatchSingle', x).then(function (data) {
 		data = JSON.parse(data.data.d);
-		item = data.result.AGiftBatch[0];
+		var item = data.result.ARecurringGiftBatch[0];
 		let batchDiv = $('#Batch' + BatchNumber + " div");
 		if (batchDiv.length) {
 			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
@@ -88,25 +67,11 @@ function updateBatch(BatchNumber) {
 								scrollTop: (batchDiv.offset().top - 100)
 								}, 500);
 		}
-		format_currency(data.ACurrencyCode);
+		format_currency(item.a_currency_code_c);
 		format_date();
 		open_gift_transactions($('#Batch' + BatchNumber), BatchNumber, true);
 	});
 }
-
-function format_date() {
-	$('.format_date').each(
-		function(x, obj) {
-			obj = $(obj);
-			let t = /\((.+)\)/g.exec(obj.text());
-			if (t == null || t.length <=1) {return}
-
-			time = new Date(parseInt(t[1])).toLocaleDateString();
-			obj.text(time);
-
-		}
-	)
-};
 
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
@@ -126,16 +91,16 @@ function open_gift_transactions(obj, number, reload = false) {
 	}
 
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
-		for (item of data.result.AGift) {
+		for (var item of data.result.ARecurringGift) {
 			let transaction_row = $('[phantom] .tpl_gift').clone();
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
-		format_currency(data.ACurrencyCode);
+		format_currency(data.ACurrencyCode ? data.ACurrencyCode : "EUR");
 		format_date();
 		if (!reload) {
 			$('.tpl_row .collapse').collapse('hide');
@@ -151,10 +116,10 @@ var new_entry_data = {};
 function new_batch() {
 	if (!allow_modal()) {return}
 	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateAGiftBatch', x).then(
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateARecurringGiftBatch', x).then(
 		function (data) {
 			parsed = JSON.parse(data.data.d);
-			batch = parsed['result']['AGiftBatch'][0];
+			batch = parsed['result']['ARecurringGiftBatch'][0];
 			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 			$('#modal_space').html(p);
 			p.find('input[name=a_bank_account_code_c]').attr('readonly', false);
@@ -171,7 +136,8 @@ function new_trans(ledger_number, batch_number) {
 	let x = {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
-		a_gift_transaction_number_i: $("#Batch" + batch_number + " .tpl_gift").length + 1
+		a_gift_transaction_number_i: $("#Batch" + batch_number + " .tpl_gift").length + 1,
+
 	};
 	var today = new Date();
 	today.setUTCHours(0, 0, 0, 0);
@@ -198,6 +164,8 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 	$('#modal_space').append(p);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
+
+	p.find('[name=AStartDonations]').val(new Date().toDateInputValue());
 	p.modal('show');
 };
 
@@ -211,22 +179,14 @@ function edit_batch(batch_id) {
 			};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchSingle', r).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatchSingle', r).then(function (data) {
 		parsed = JSON.parse(data.data.d)
-		let batch = parsed.result.AGiftBatch[0];
+		let batch = parsed.result.ARecurringGiftBatch[0];
 
 		batch['a_account_name_c'] = batch['a_bank_account_code_c'];
 		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
 
 		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
-		if (parsed.ABatchIsUnposted) {
-			tpl_m.find('.only_show_when_posted').hide();
-		}
-		else {
-				tpl_m.find('.posted_readonly').attr('readonly', true);
-				tpl_m.find('.not_show_when_posted').hide();
-		}
-		
 
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('edit');
@@ -237,16 +197,15 @@ function edit_batch(batch_id) {
 
 function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	if (!allow_modal()) {return}
-
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 
-	// TODO: use serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
+
 		let searched = null;
-		for (trans of parsed.result.AGift) {
+		for (var trans of parsed.result.ARecurringGift) {
 			if (trans.a_gift_transaction_number_i == trans_id) {
 				searched = trans;
 				break;
@@ -259,14 +218,8 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
-		if (parsed.ABatchIsUnposted) {
-			tpl_edit_raw.find('.only_show_when_posted').hide();
-		} else {
-			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
-			tpl_edit_raw.find('.not_show_when_posted').hide();
-		}
 
-		for (detail of parsed.result.AGiftDetail) {
+		for (var detail of parsed.result.ARecurringGiftDetail) {
 			if (detail.a_gift_transaction_number_i == trans_id) {
 
 				let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
@@ -278,6 +231,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
+
 	})
 }
 
@@ -285,10 +239,10 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 	if (!allow_modal()) {return}
 
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		let searched = null;
-		for (trans of parsed.result.AGiftDetail) {
+		for (trans of parsed.result.ARecurringGiftDetail) {
 			if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
 				searched = trans;
 				break;
@@ -298,11 +252,9 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 			return alert('ERROR');
 		}
 
+		searched["AStartDonations"] = format_date(searched["a_start_donations_d"]);
+		searched["AEndDonations"] = format_date(searched["a_end_donations_d"]);
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
-		if (!parsed.ABatchIsUnposted) {
-			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
-			tpl_edit_raw.find('.not_show_when_posted').hide();
-		}
 
 		$('#modal_space').append(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
@@ -320,7 +272,7 @@ function save_edit_batch(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainBatches', payload).then(function (result) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
@@ -341,7 +293,7 @@ function save_edit_trans(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
@@ -368,9 +320,10 @@ function save_edit_trans_detail(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
+	payload['AEndDonations'] = payload['AEndDonations'] ? payload['AEndDonations'] : "null"; // if no date is given give "null" as a string
  	payload['action'] = mode;
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
@@ -562,12 +515,11 @@ function adjust_batch(batch_id) {
 	var r = {
 				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ABatchNumber: batch_id,
-				AGiftTransactionNumber: -1,
 				AGiftDetailNumber: -1,
 				ABatchSelected: false,
 				ANewBatchNumber: -1,
 				ANewGLDateEffective: "null",
-				AFunction: "AdjustGiftBatch",
+				AFunction: "AdjustGift",
 				ANoReceipt: false,
 				ANewPct: 0.0
 			};
@@ -580,37 +532,6 @@ function adjust_batch(batch_id) {
 		}
 		else if (parsed.result < 0) {
 			display_error(parsed.AVerificationMessages);
-		}
-	});
-}
-
-function adjust_trans(obj_modal) {
-	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
-	var r = {
-				ALedgerNumber: payload['ALedgerNumber'],
-				ABatchNumber: payload['ABatchNumber'],
-				AGiftTransactionNumber: payload['AGiftTransactionNumber'],
-				AGiftDetailNumber: -1,
-				ABatchSelected: false,
-				ANewBatchNumber: -1,
-				ANewGLDateEffective: "null",
-				AFunction: "AdjustGift",
-				ANoReceipt: false,
-				ANewPct: 0.0
-			};
-
-	api.post('serverMFinance.asmx/TAdjustmentWebConnector_GiftRevertAdjust', r).then(function (result) {
-		parsed = JSON.parse(result.data.d);
-		if (parsed.result == true) {
-			display_message(i18next.t('GiftBatches.giftadjusted'), "success");
-			$('#modal_space .tpl_edit_trans_detail').modal('hide');
-			$('#modal_space .tpl_edit_trans').modal('show');
-			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
-			updateBatch(payload['ABatchNumber']);
-		}
-		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
 		}
 	});
 }

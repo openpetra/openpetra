@@ -7,23 +7,31 @@
 <property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql" overwrite="false" />
 <property name="PetraRelease" value="0300" overwrite="false" />
 
-<target name="buildRPM">
+<target name="buildRelease">
   <property name="OpenBuildService" value="true"/>
+  <property name="OnlyTarball" value="false" overwrite="false"/>
 
-  <call target="nanttasks"/>
-  <call target="minimalGenerateSolution"/>
-  <property name="solution" value="Server"/>
-  <property name="onlyonce" value="true"/>
-  <call target="quickCompile"/>
-  <property name="solution" value="YmlGzImportExport"/>
-  <call target="quickCompile"/>
-  <call target="createSQLStatements"/>
-  <call target="translation"/>
+  <if test="${OnlyTarball == 'false'}">
+    <call target="nanttasks"/>
+    <call target="minimalGenerateSolution"/>
+    <property name="solution" value="Server"/>
+    <property name="onlyonce" value="true"/>
+    <call target="quickCompile"/>
+    <property name="solution" value="YmlGzImportExport"/>
+    <call target="quickCompile"/>
+    <call target="createSQLStatements"/>
+    <call target="translation"/>
+  </if>
 
-  <property name="dir.setup" value="${dir.bin}/tmp/openpetraorg-${ReleaseID}"/>
+  <property name="dir.setup" value="${dir.delivery}/openpetra-${ReleaseID}"/>
+  <property name="tarfile" value="${dir.delivery}/openpetra-${ReleaseID}-bin.tar.gz" overwrite="false"/>
   <call target="prepareSetupDirForTarFile"/>
+  <exec program="bash"
+      workingdir="${dir.delivery}"
+      commandline="-c &quot;tar czf ${tarfile} openpetra-${ReleaseID}&quot;"/>
 
   <!-- result is in dir.setup for building the rpm package -->
+  <echo message="check the resulting tarball at ${tarfile}"/>
 </target>
 
 <target name="install" depends="install.net, install.js"/>
@@ -79,18 +87,21 @@
   <mkdir dir="${dir.setup}"/>
   
   <mkdir dir="${dir.setup}/db"/>
-  <mkdir dir="${dir.setup}/etc"/>
   <mkdir dir="${dir.setup}/reports"/>
   <mkdir dir="${dir.setup}/manuals"/>
   <mkdir dir="${dir.setup}/sql"/>
   <mkdir dir="${dir.setup}/emails"/>
   <mkdir dir="${dir.setup}/formletters"/>
-  <mkdir dir="${dir.setup}/bin"/>
   <mkdir dir="${dir.setup}/server"/>
+  <mkdir dir="${dir.setup}/server/bin"/>
+  <mkdir dir="${dir.setup}/server/api"/>
   <mkdir dir="${dir.setup}/client"/>
+  <mkdir dir="${dir.setup}/client/etc"/>
+  <mkdir dir="${dir.setup}/templates"/>
+  <mkdir dir="${dir.setup}/bootstrap-4.0"/>
 
-  <echo file="${dir.setup}/bin/version.txt">${ReleaseVersion}</echo>
-  <copy todir="${dir.setup}/bin">
+  <echo file="${dir.setup}/server/bin/version.txt">${ReleaseVersion}</echo>
+  <copy todir="${dir.setup}/server/bin">
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
       <include name="*.exe" />
@@ -109,7 +120,7 @@
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>
-  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/bin" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/server/bin" overwrite="true"/>
 
   <copy todir="${dir.setup}/manuals">
     <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">
@@ -125,53 +136,35 @@
   </copy>
   <copy file="${dir.root}/LICENSE" tofile="${dir.setup}/LICENSE"/>
   
-  <copy todir="${dir.setup}/server">
+  <copy todir="${dir.setup}/server/api">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/app/WebService">
        <include name="*.asmx" />
+       <include name="*.aspx" />
     </fileset>
   </copy>
-  <copy todir="${dir.setup}/server" flatten="true">
+  <copy todir="${dir.setup}/server/api" flatten="true">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Plugins">
        <include name="**/*.asmx" />
     </fileset>
   </copy>
-  <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/Default.aspx"
-      tofile="${dir.setup}/server/Default.aspx"/>
 
-  <foreach item="String" property="LinuxTargetDistribution" delim="," in="${LinuxTargetDistribution-list}" >
-   <if test="${string::contains(LinuxTargetDistribution, DBMS.Type)}">
-    <property name="LinuxTargetDistribution" value="${string::replace(LinuxTargetDistribution, '-' + DBMS.Type, '')}"/>
-    <!-- ***************  copy the linux config script for the server side ***************  -->
-    <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/${LinuxTargetDistribution}/openpetra-server.sh"
-      tofile="${dir.setup}/openpetra-server.sh" overwrite="true"/>
-   </if>
-  </foreach>
+  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/openpetra-server.sh"
+    tofile="${dir.setup}/openpetra-server.sh" overwrite="true"/>
 
-  <!-- ***************  create the web.config file ***************  -->
-  <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/web.config.my"/>
-  <if test="${not file::exists(Config.file)}">
-      <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/web.config"/>
-  </if>
-  <if test="${not file::exists(Config.file)}">
-      <property name="Config.file" value="${dir.root}/setup/petra${PetraRelease}/linuxserver/web.config"/>
-  </if>
-  <if test="${file::exists(Config.file)}">
-      <copy file="${Config.file}"
-          tofile="${dir.setup}/etc/web-sample.config" overwrite="true">
-          <filterchain>
-              <expandproperties />
-          </filterchain>
-      </copy>
-  </if>
-
-  <copy todir="${dir.setup}/etc">
+  <copy todir="${dir.setup}/templates">
     <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
         <include name="*.config" />
+        <exclude name="web.config" />
     </fileset>
     <filterchain>
         <expandproperties />
     </filterchain>
   </copy>
+  <!-- don't modify the file, issues with line endings cause nginx to fail to start -->
+  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/nginx.conf"
+        tofile="${dir.setup}/templates/nginx.conf"/>
+  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/web.config"
+    tofile="${dir.setup}/server/web.config"/>
 
   <copy todir="${dir.setup}/formletters">
     <fileset basedir="${dir.root}/demodata/formletters/">
@@ -180,7 +173,22 @@
     </fileset>
   </copy>
 
+  <!-- need Bootstrap 4.0 for the wkhtmltopdf reports -->
+  <exec program="bash"
+        workingdir="${dir.setup}/bootstrap-4.0"
+        commandline="-c &quot;mkdir tmp; cd tmp; curl --silent --location https://github.com/twbs/bootstrap/releases/download/v4.0.0/bootstrap-4.0.0-dist.zip > bootstrap-4.0.0-dist.zip; unzip bootstrap-4.0.0-dist.zip; mv js/bootstrap.bundle.min.js ..; mv css/bootstrap.min.css .. ; cd .. ; rm -Rf tmp&quot;"/>
+
+  <exec program="bash"
+        workingdir="${dir.setup}/db"
+        commandline="-c &quot;curl --silent --location https://github.com/openpetra/demo-databases/raw/master/base.yml.gz > base.yml.gz&quot;" />
+
+  <exec program="bash"
+        workingdir="${dir.setup}/db"
+        commandline="-c &quot;curl --silent --location https://github.com/openpetra/demo-databases/raw/master/clean.yml.gz > clean.yml.gz&quot;" />
+
   <if test="${string::contains(DBMS.Type, 'postgresql') and file::exists(DeliveryDB.dir+'/createtables-PostgreSQL.sql')}">
+    <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/postgresql/openpetra.service"
+              tofile="${dir.setup}/templates/openpetra.service"/>
     <copy file="${DeliveryDB.dir}/createtables-PostgreSQL.sql"
               tofile="${dir.setup}/db/createtables-PostgreSQL.sql"/>
     <copy file="${DeliveryDB.dir}/createconstraints-PostgreSQL.sql"
@@ -191,6 +199,8 @@
     </if>
   </if>
   <if test="${string::contains(DBMS.Type, 'mysql') and file::exists(DeliveryDB.dir+'/createtables-MySQL.sql')}">
+    <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/mysql/openpetra.service"
+              tofile="${dir.setup}/templates/openpetra.service"/>
     <copy file="${DeliveryDB.dir}/createtables-MySQL.sql"
               tofile="${dir.setup}/db/createtables-MySQL.sql"/>
     <copy file="${DeliveryDB.dir}/createconstraints-MySQL.sql"
@@ -231,6 +241,36 @@
         <include name="*.html" />
     </fileset>
   </copy>
+
+  <copy file="${dir.root}/js-client/etc/UINavigation.yml"
+        tofile="${dir.setup}/client/etc/UINavigation.yml"/>
+
+  <copy todir="${dir.setup}/client">
+    <fileset basedir="${dir.root}/js-client/">
+        <include name="**/*.js" />
+        <include name="**/*.json" />
+        <include name="**/*.css" />
+        <include name="**/*.html" />
+        <exclude name="**/node_modules/**" />
+        <exclude name="**/cypress/**" />
+        <exclude name="cypress.json" />
+        <exclude name="package*json" />
+    </fileset>
+    <filterchain>
+        <expandproperties />
+        <replacestring from="CURRENTRELEASE" to="${ReleaseVersion}"/>
+        <replacestring from="develop = 1;" to="develop = 0;"/>
+        <replacestring from="debug = 1;" to="debug = 0;"/>
+    </filterchain>
+  </copy>
+  <copy todir="${dir.setup}/client">
+    <fileset basedir="${dir.root}/js-client/">
+        <include name="webfonts/**" />
+        <include name="img/**" />
+        <include name="etc/**" />
+    </fileset>
+  </copy>
+
 </target> 
 
 </project>
