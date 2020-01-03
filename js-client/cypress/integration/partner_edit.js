@@ -1,13 +1,15 @@
 describe('find and edit partner', function() {
   it('logs in with user demo and modifies partner', function() {
     cy.server()
-    cy.visit('/Partner/Partners/Maintain/MaintainPartners')
+    cy.visit('/Partner/Partners/MaintainPartners')
     cy.get('#txtEmail').should("be.visible")
     cy.get('#txtEmail').type('demo')
     cy.get('#txtPassword').type('demo')
     cy.route('POST','**/Login').as('Login')
     cy.get('#btnLogin').click()
     cy.wait('@Login')
+    cy.get('#navbarDropdownUser').click()
+    cy.wait(500) // wait for dropdown to drop down
     cy.get('#logout').should("be.visible")
 
     cy.get('#btnFilter').click()
@@ -31,7 +33,7 @@ describe('find and edit partner', function() {
     cy.wait('@SavePartner')
     cy.get('#message').should("be.visible").should("contain", 'Successfully saved')
 
-    cy.visit('/Partner/Partners/Maintain/MaintainPartners')
+    cy.visit('/Partner/Partners/MaintainPartners')
     cy.get('#btnFilter').click()
     cy.get('input[name="AFamilyNameOrOrganisation"]').type('jacob')
     cy.get('#btnSearch').click()
@@ -54,6 +56,8 @@ describe('find and edit partner', function() {
     cy.get('#message').should("be.visible")
     cy.get('#message').should("contain", 'Successfully saved')
 
+    cy.get('#navbarDropdownUser').click()
+    cy.wait(500) // wait for dropdown to drop down
     cy.get('#logout').click();
   })
 })
