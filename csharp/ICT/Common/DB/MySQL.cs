@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -434,6 +434,8 @@ namespace Ict.Common.DB
             }
 
             ObjReturn = new MySqlCommand(ACommandText, (MySqlConnection)AConnection);
+
+            ObjReturn.CommandTimeout = TAppSettingsManager.GetInt32("Server.DBCommandTimeout", 3600);
 
             if (MySQLParametersArray != null)
             {
