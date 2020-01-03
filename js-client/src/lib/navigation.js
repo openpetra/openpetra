@@ -145,6 +145,10 @@ class Navigation {
 	GetNavigationItem(path) {
 		path = this.transformPath(path);
 
+		if (this.module == "Settings") {
+			return null;
+		}
+
 		var navigation = JSON.parse(window.localStorage.getItem('navigation'));
 
 		var node = null;
