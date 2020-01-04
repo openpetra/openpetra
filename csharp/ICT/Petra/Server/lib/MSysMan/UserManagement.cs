@@ -526,6 +526,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     {
                         modules.Add("PTNRUSER");
                         modules.Add("FINANCE-1");
+                        modules.Add("FINANCE-2");
+                        modules.Add("FINANCE-3");
 
                         ALedgerTable theLedgers = ALedgerAccess.LoadAll(ReadWriteTransaction);
 
@@ -692,6 +694,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     newPermission = ReturnValue.SUserModuleAccessPermission.NewRowTyped();
                     newPermission.UserId = "NEWUSER";
                     newPermission.ModuleId = SharedConstants.PETRAMODULE_FINANCE1;
+                    newPermission.CanAccess = true;
+                    ReturnValue.SUserModuleAccessPermission.Rows.Add(newPermission);
+                    newPermission = ReturnValue.SUserModuleAccessPermission.NewRowTyped();
+                    newPermission.UserId = "NEWUSER";
+                    newPermission.ModuleId = SharedConstants.PETRAMODULE_FINANCE2;
+                    newPermission.CanAccess = true;
+                    ReturnValue.SUserModuleAccessPermission.Rows.Add(newPermission);
+                    newPermission = ReturnValue.SUserModuleAccessPermission.NewRowTyped();
+                    newPermission.UserId = "NEWUSER";
+                    newPermission.ModuleId = SharedConstants.PETRAMODULE_FINANCE3;
                     newPermission.CanAccess = true;
                     ReturnValue.SUserModuleAccessPermission.Rows.Add(newPermission);
                     newPermission = ReturnValue.SUserModuleAccessPermission.NewRowTyped();
