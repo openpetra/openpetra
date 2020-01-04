@@ -100,25 +100,36 @@ stop() {
     fi
 }
 
+runAsUser() {
+    cmd=$1
+
+    if [ "`whoami`" = "$userName" ]
+    then
+      bash -c "$cmd" || exit -1
+    else
+      su $userName -c "$cmd" || exit -1
+    fi
+}
+
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
     echo "loading database from $ymlgzfile with config /home/$userName/etc/PetraServerConsole.config"
-    su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile" || exit -1
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
 }
 
 # dump the database to a yml.gz file
 dumpYmlGz() {
-    su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile" || exit -1
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile" || exit -1
 }
 
 # display the status to check for logged in users etc
 status() {
-    su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
 }
 
 # display a menu to check for logged in users etc
 menu() {
-    su %userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
 # export variables for debugging to use mysql on the command line
@@ -147,7 +158,7 @@ user=$OPENPETRA_DBUSER
 password="$OPENPETRA_DBPWD"
 FINISH
     chown $userName:$userName /home/$userName/.my.cnf
-    su $userName -c "mysqldump --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
+    runAsUser "mysqldump --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
 
