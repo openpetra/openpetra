@@ -29,6 +29,15 @@ generatepwd() {
 
 if [ -z "$OP_CUSTOMER" ]
 then
+  # check if the current user starts with op_
+  if [[ "`whoami`" = op_* ]]
+  then
+    export OP_CUSTOMER=`whoami`
+  fi
+fi
+
+if [ -z "$OP_CUSTOMER" ]
+then
   # we are starting or stopping openpetra, independant of an instance
   export userName=openpetra
   if [ ! -d /usr/local/openpetra ]; then
