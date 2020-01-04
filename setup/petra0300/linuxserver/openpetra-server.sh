@@ -66,7 +66,7 @@ fi
 
 if [ -z "$backupfile" ]
 then
-  export backupfile=/home/$userName/backup/backup-`date +%Y%m%d`.sql.gz
+  export backupfile=/home/$userName/backup/backup-`date +%Y%m%d%H`.sql.gz
 fi
 
 if [ "$2" != "" ]
@@ -272,7 +272,7 @@ backupall() {
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
-            export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`.sql.gz
+            export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d%H`.sql.gz
             $THIS_SCRIPT backup
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='5 days ago' +%Y%m%d`*.sql.gz
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='6 days ago' +%Y%m%d`*.sql.gz
