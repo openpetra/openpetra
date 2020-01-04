@@ -5,7 +5,7 @@
 
 export OpenPetraPath=/usr/local/openpetra
 export OpenPetraPathBin=/usr/local/openpetra/bin
-if [ ! -d $OpenPetraPath ]; then
+if [ ! -d $OpenPetraPathBin ]; then
   # non-root installation
   dirname=`dirname $0`
   export OpenPetraPath=$dirname
