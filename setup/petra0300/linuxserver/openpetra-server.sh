@@ -500,7 +500,7 @@ initdb() {
 
 # this will update the current database
 upgradedb() {
-    su $OP_CUSTOMER -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$OP_CUSTOMER/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$OP_CUSTOMER/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
 }
 
 case "$1" in
