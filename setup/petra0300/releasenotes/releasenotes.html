@@ -12,6 +12,31 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2019.12: January 6th, 2020</h3>
+
+<p>We skipped a release in December, because quite a lot of refactoring and restructuring has been going on...</p>
+
+<p>We have now a script at <a href="https://getopenpetra.com">getopenpetra.com</a> that helps with setting up a development or testing environment on CentOS 7, Fedora 31, Debian Buster and Ubuntu (Eoan and Bionic). This script is also used for setting up the demo server, and to run all the nightly tests.</p>
+
+<p>Another visible change has been the refactoring of the navigation in the javascript client. It should now be easier to find your way around OpenPetra, and see which actions are available to the user.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+<ul>
+<li>New menu structure and layout: Functionality is not hidden away. New start form.</li>
+<li>Move scripts from OpenPetraScripts/openpetra to openpetra-server.sh</li>
+<li>Support for MariaDB 10 in e.g. Ubuntu Eoan and Fedora 31.</li>
+<li>Fixed Bug: When upgrading many databases on one server, we run out of MySQL connections</li>
+<li>Creating a new ledger has been improved, the user can now immediately start working with the new ledger.</li>
+<li>Improvements to the feature to display the balances before posting a GL batch: display balance for value 0, and display the calculated difference caused by the proposed GL Batch being posted.</li>
+<li>Fixed Bug: Don't allow GL transactions that are beyond the forward posting periods.</li>
+<li>Fixed Bug: GL Batch revert now works again.</li>
+<li>Donation Batch: Adjust only one donation: a new batch for the adjustment will be created.</li>
+<li>A bug was fixed with inactive motivation details causing trouble during donation adjustment.</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the <a href="https://github.com/openpetra/openpetra/milestone/7?closed=1" rel=" nofollow ugc">Milestone at Github for release 2019.12</a>!</p>
+
 <h3>Release 2019.10: November 22nd, 2019</h3>
 
 <p>This release was scheduled for the end of October, but better late than never...!</p>
