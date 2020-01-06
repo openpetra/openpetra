@@ -5,7 +5,7 @@
 
 export OpenPetraPath=/usr/local/openpetra
 export OpenPetraPathBin=/usr/local/openpetra/bin
-if [ ! -d $OpenPetraPath ]; then
+if [ ! -d $OpenPetraPathBin ]; then
   # non-root installation
   dirname=`dirname $0`
   export OpenPetraPath=$dirname
@@ -26,6 +26,15 @@ fi
 generatepwd() {
   dd bs=1024 count=1 if=/dev/urandom status=none | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1
 }
+
+if [ -z "$OP_CUSTOMER" ]
+then
+  # check if the current user starts with op_
+  if [[ "`whoami`" = op_* ]]
+  then
+    export OP_CUSTOMER=`whoami`
+  fi
+fi
 
 if [ -z "$OP_CUSTOMER" ]
 then
@@ -57,7 +66,7 @@ fi
 
 if [ -z "$backupfile" ]
 then
-  export backupfile=/home/$userName/backup/backup-`date +%Y%m%d`.sql.gz
+  export backupfile=/home/$userName/backup/backup-`date +%Y%m%d%H`.sql.gz
 fi
 
 if [ "$2" != "" ]
@@ -100,25 +109,36 @@ stop() {
     fi
 }
 
+runAsUser() {
+    cmd=$1
+
+    if [ "`whoami`" = "$userName" ]
+    then
+      bash -c "$cmd" || exit -1
+    else
+      su $userName -c "$cmd" || exit -1
+    fi
+}
+
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
     echo "loading database from $ymlgzfile with config /home/$userName/etc/PetraServerConsole.config"
-    su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile" || exit -1
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
 }
 
 # dump the database to a yml.gz file
 dumpYmlGz() {
-    su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile" || exit -1
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile" || exit -1
 }
 
 # display the status to check for logged in users etc
 status() {
-    su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
 }
 
 # display a menu to check for logged in users etc
 menu() {
-    su %userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
 # export variables for debugging to use mysql on the command line
@@ -147,7 +167,7 @@ user=$OPENPETRA_DBUSER
 password="$OPENPETRA_DBPWD"
 FINISH
     chown $userName:$userName /home/$userName/.my.cnf
-    su $userName -c "mysqldump --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
+    runAsUser "mysqldump --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
 
@@ -252,7 +272,7 @@ backupall() {
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
-            export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`.sql.gz
+            export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d%H`.sql.gz
             $THIS_SCRIPT backup
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='5 days ago' +%Y%m%d`*.sql.gz
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='6 days ago' +%Y%m%d`*.sql.gz
@@ -480,7 +500,7 @@ initdb() {
 
 # this will update the current database
 upgradedb() {
-    su $OP_CUSTOMER -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$OP_CUSTOMER/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$OP_CUSTOMER/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
 }
 
 case "$1" in

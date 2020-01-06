@@ -12,6 +12,31 @@
 
 <h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra</h2>
 
+<h3>Version 2019.12: vom 6. Januar 2020</h3>
+
+<p>Wir haben im Dezember keine neue Version veröffentlicht, weil die Infrastruktur und das Aussehen von OpenPetra weitgehend umgebaut und verbessert wurde...</p>
+
+<p>Es gibt nun ein Skript auf <a href="https://getopenpetra.com">getopenpetra.com</a>, mit dem sich ganz einfach eine Entwicklungs- oder Testumgebung auf CentOS 7, Fedora 31, Debian Buster und Ubuntu (Eoan und Bionic) einrichten lässt. Dieses Skript wird ebenfalls benutzt, um den Demo Server einzurichten, und um die nächtlichen Tests durchzuführen.</p>
+
+<p>Eine weitere sichtbare Veränderung besteht in der Vereinfachung der Benutzeroberfläche im Javascript Client. Es sollte nun einfacher sein, auf einen Blick zu erkennen, welche Aktionen dem Benutzer zur Verfügung stehen.</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+<ul>
+<li>Neues Menü und neue Navigation: Funktionen werden nicht mehr weit unten in der Menüstruktur versteckt. Es gibt einen neuen Startbildschirm.</li>
+<li>Skripte von OpenPetraScripts/openpetra wurden in openpetra-server.sh integriert, und stehen direkt zur Verfügung.</li>
+<li>Unterstützung für MariaDB 10 in z.B. Ubuntu Eoan und Fedora 31.</li>
+<li>Fehler behoben: Wenn viele Datenbanken auf einem Server aktualisiert werden, wurden die MySQL Verbindungen nicht geschlossen.</li>
+<li>Das Erstellen eines neuen Hauptbuches wurde vereinfacht, und der Benutzer kann nun direkt mit dem neuen Hauptbuch arbeiten.</li>
+<li>Verbesserungen an der Funktion, die neuen Kontostände vor dem Buchen eines Hauptbuchstapels zu sehen: Es wird nun ein Kontostand mit dem Wert 0 ordentlich angezeigt,  und es wird nun auch die Differenz zum momentanen Kontostand angezeigt.</li>
+<li>Fehler behoben: Es werden keine Buchungen im Hauptbuch erlaubt, die jenseits der offenen Monate liegen.</li>
+<li>Fehler behoben: Das Rückbuchen von Buchungen im Hauptbuch funktioniert nun wieder.</li>
+<li>Spendenstapel: Man kann nun eine einzelne Spende korrigieren: Es wird ein neuer Spendenstapel mit der Korrektur angelegt.</li>
+<li>Fehler behoben: Inaktive Verwendungszwecke verursachten Probleme bei der Spendenkorrektur.</li>
+</ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem <a href="https://github.com/openpetra/openpetra/milestone/7?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2019.12</a> zu finden!</p>
+
 <h3>Version 2019.10: vom 22. November 2019</h3>
 
 Diese Version hätte eigentlich schon Ende Oktober fertig sein sollen, aber besser spät als nie...<br>

@@ -8,6 +8,8 @@ describe('simple login', function() {
     cy.route('POST','**/Login').as('Login')
     cy.get('#btnLogin').click()
     cy.wait('@Login')
+    cy.get('#navbarDropdownUser').click()
+    cy.wait(500) // wait for dropdown to drop down
     cy.get('#logout').should("be.visible")
     cy.get('#logout').click();
   })
@@ -20,6 +22,8 @@ describe('simple login', function() {
     cy.route('POST','**/Login').as('Login')
     cy.get('#btnLogin').click()
     cy.wait('@Login')
+    cy.get('#navbarDropdownUser').click()
+    cy.wait(500) // wait for dropdown to drop down
     cy.get('#logout').should("be.visible")
     cy.get('#logout').click();
   })

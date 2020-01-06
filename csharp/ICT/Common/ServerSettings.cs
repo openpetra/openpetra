@@ -169,7 +169,7 @@ namespace Ict.Common
             }
 
             // Server.Port
-            FIPBasePort = TAppSettingsManager.GetInt16("Server.Port", 9000);
+            FIPBasePort = TAppSettingsManager.GetInt16("Server.Port", 80);
 
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out FHostName, out FHostIPAddresses);
