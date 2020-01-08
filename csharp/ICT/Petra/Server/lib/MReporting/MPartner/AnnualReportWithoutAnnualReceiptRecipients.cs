@@ -45,21 +45,17 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// calculate the report
         public static HtmlDocument Calculate(
             string AHTMLReportDefinition,
-            TParameterList parameterlist)
+            TParameterList parameterlist,
+            TDBTransaction ATransaction
+            )
         {
             HTMLTemplateProcessor templateProcessor = new HTMLTemplateProcessor(AHTMLReportDefinition, parameterlist);
 
-            TDBTransaction ReadTransaction = new TDBTransaction();
             DataTable recipients = null;
 
-            DBAccess.ReadTransaction(
-                ref ReadTransaction,
-                delegate
-                {
-                    // get all the recipients
-                    string sql = templateProcessor.GetSQLQuery("SelectRecipients");
-                    recipients = ReadTransaction.DataBaseObj.SelectDT(sql, "recipients", ReadTransaction);
-                });
+            // get all the recipients
+            string sql = templateProcessor.GetSQLQuery("SelectRecipients");
+            recipients = ATransaction.DataBaseObj.SelectDT(sql, "recipients", ATransaction);
 
             // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();
