@@ -3118,6 +3118,24 @@
                 format="X(256)"
                 label="Marital Status Comment"
                 help="Enter a comment for the marital status"/>
+    <tablefield name="p_date_of_birth_d"
+                type="date"
+                descr="This is the date the person was born"
+                format="99/99/9999"
+                label="Date of Birth"
+                help="Enter the date the person was born"/>
+    <tablefield name="p_gender_c"
+                type="varchar"
+                descr=""
+                format="X(8)"
+                label="Gender"
+                help="Select the gender of the Person"
+                initial="Unknown"/>
+    <tablefield name="p_photo_b"
+                type="longtext"
+                descr="A photo of the person, encoded with Base64, and prefixed with the file type"
+                label="Photo"
+                initial="?"/>
     <!-- Constraints on table p_family -->
     <primarykey name="p_family_pk"
                 descr=""
@@ -3247,7 +3265,7 @@
     <!-- Explicit Indexes on table p_occupation  -->
   </table>
   <table name="p_person"
-         descr="Details of a person.  A person must also have a related FAMILY class p_partner record."
+         descr="DEPRECATED. USE P_FAMILY INSTEAD. Details of a person. A person must also have a related FAMILY class p_partner record."
          area="Petra Data"
          label="Person"
          dumpname="p_person"
@@ -3311,7 +3329,7 @@
                 help="ie. Nobel Peace Prize, Olympic Gold Medal, ?, etc."/>
     <tablefield name="p_date_of_birth_d"
                 type="date"
-                descr="This is the date the rthe person was born"
+                descr="This is the date the person was born"
                 format="99/99/9999"
                 label="Date of Birth"
                 help="Enter the date the person was born"/>

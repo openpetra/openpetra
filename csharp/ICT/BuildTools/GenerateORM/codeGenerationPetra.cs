@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -71,6 +71,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 return "OdbcType.VarChar";
             }
             else if (tableField.strType == "text")
+            {
+                return "OdbcType.Text";
+            }
+            else if (tableField.strType == "longtext")
             {
                 return "OdbcType.Text";
             }

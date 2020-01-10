@@ -489,9 +489,16 @@ namespace GenerateSQL
                 field.strType = "timestamp";
             }
 
-            if ((field.strType == "varchar") && (field.iLength >= 10000))
+            if ((field.strType == "longtext") || ((field.strType == "varchar") && (field.iLength >= 10000)))
             {
-                field.strType = "text";
+                if (ATargetDatabase == eDatabaseType.MySQL)
+                {
+                    field.strType = "longtext";
+                }
+                else
+                {
+                    field.strType = "text";
+                }
             }
 
             if (field.strType == "bit")

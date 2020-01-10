@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1210,6 +1210,10 @@ namespace Ict.Tools.DBXML
             else if (strType.ToLower() == "timestamp")
             {
                 return "DateTime";
+            }
+            else if (strType.ToLower() == "longtext")
+            {
+                return "String";
             }
             else if (strType.ToLower() == "string")
             {
