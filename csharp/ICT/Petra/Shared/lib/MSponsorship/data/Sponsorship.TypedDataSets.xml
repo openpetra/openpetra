@@ -21,7 +21,7 @@
       <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
       <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
 
-      <Field sqltable="p_partner" sqlfield="s_user_id_c"/>
+      <Field sqltable="p_partner" sqlfield="p_user_id_c"/>
       <Field sqltable="p_partner" sqlfield="s_created_by_c"/>
       <Field sqltable="p_partner" sqlfield="s_date_created_d"/>
       <Field sqltable="p_partner" sqlfield="s_modification_id_t"/>

@@ -117,10 +117,10 @@ namespace Ict.Tools.GenerateORM
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MHospitality.Data",
                             "Hospitality.Tables");
-                        //CodeGenerationTable.WriteTypedTable(store, "sponsorship", cmdLine.GetOptValue(
-                        //        "outputshared") + "/lib/data/",
-                        //    "Ict.Petra.Shared.MSponsorship.Data",
-                        //    "Sponsorship.Tables");
+                        CodeGenerationTable.WriteTypedTable(store, "sponsorship", cmdLine.GetOptValue(
+                                "outputshared") + "/lib/data/",
+                            "Ict.Petra.Shared.MSponsorship.Data",
+                            "Sponsorship.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MFinance.Account.Data",
@@ -170,10 +170,10 @@ namespace Ict.Tools.GenerateORM
                                 "outputshared") + "/lib/MHospitality/validation/",
                             "Ict.Petra.Shared.MHospitality.Validation",
                             "Hospitality.Validation");
-                        //CodeGenerationTableValidation.WriteValidation(store, "sponsorship", cmdLine.GetOptValue(
-                        //        "outputshared") + "/lib/MSponsorship/validation/",
-                        //    "Ict.Petra.Shared.MSponsorship.Validation",
-                        //    "Sponsorship.Validation");
+                        CodeGenerationTableValidation.WriteValidation(store, "sponsorship", cmdLine.GetOptValue(
+                                "outputshared") + "/lib/MSponsorship/validation/",
+                            "Ict.Petra.Shared.MSponsorship.Validation",
+                            "Sponsorship.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "/lib/MFinance/validation/",
                             "Ict.Petra.Shared.MFinance.Account.Validation",
@@ -228,10 +228,10 @@ namespace Ict.Tools.GenerateORM
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MHospitality.Data.Access",
                             "Hospitality.Access");
-                        //CodeGenerationAccess.WriteTypedDataAccess(store, "sponsorship", cmdLine.GetOptValue(
-                        //        "outputshared") + "/lib/data/",
-                        //    "Ict.Petra.Server.MSponsorship.Data.Access",
-                        //    "Sponsorship.Access");
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "sponsorship", cmdLine.GetOptValue(
+                                "outputshared") + "/lib/data/",
+                            "Ict.Petra.Server.MSponsorship.Data.Access",
+                            "Sponsorship.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MFinance.Account.Data.Access",
