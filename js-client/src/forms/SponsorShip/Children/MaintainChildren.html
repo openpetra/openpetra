@@ -1,0 +1,57 @@
+<h2>{caption}</h2>
+
+<form id="filter" class="container" action="javascript:MaintainChildren.filterShow()">
+
+  <div class="row">
+    <div class="col">
+      <span>{FamilyName}</span>
+    </div>
+    <div class="col">
+      <input type="text" name="AFamilyName" value="">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <span>{FirstName}</span>
+    </div>
+    <div class="col">
+      <input type="text" name="AFirstName" value="">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <span>{SponsorshipStatus}</span>
+    </div>
+    <div class="col">
+      <select type="text" name="ASponsorshipStatus" value="">
+        <option value="A1">A1</option>
+        <option value="B2">B2</option>
+        <option value="C3">C3</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <span>{SponsorAdmin}</span>
+    </div>
+    <div class="col">
+      <select type="text" name="ASponsorAdmin" value="">
+        <option value="A">A</option>
+        <option value="B">B</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <button type="submit" class="btn btn-primary">{forms.filter}</button>
+    </div>
+  </div>
+
+</form>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

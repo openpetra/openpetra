@@ -141,8 +141,8 @@ html {
   text-align:right;
 }
 
-#browse > .container-list > * { background-color: #00000022; }
-#browse > .container-list > *:nth-child(even) { background-color: #00000033; }
+.container-list > * { background-color: #00000022; }
+.container-list > *:nth-child(even) { background-color: #00000033; }
 
 .home .row a, .dashboard .row a {
   margin: 1em;
@@ -154,4 +154,3 @@ html {
 .home .row a i, .dashboard .row a i {
   font-size: 300%;
 }
-
