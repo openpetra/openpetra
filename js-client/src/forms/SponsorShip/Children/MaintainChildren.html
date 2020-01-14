@@ -2,6 +2,7 @@
 
 <form id="filter" class="container" action="javascript:MaintainChildren.filterShow()">
 
+  <!-- last -->
   <div class="row">
     <div class="col">
       <span>{FamilyName}</span>
@@ -11,6 +12,7 @@
     </div>
   </div>
 
+  <!-- first -->
   <div class="row">
     <div class="col">
       <span>{FirstName}</span>
@@ -20,6 +22,7 @@
     </div>
   </div>
 
+  <!-- status -->
   <div class="row">
     <div class="col">
       <span>{SponsorshipStatus}</span>
@@ -33,6 +36,7 @@
     </div>
   </div>
 
+  <!-- admin -->
   <div class="row">
     <div class="col">
       <span>{SponsorAdmin}</span>
@@ -45,6 +49,7 @@
     </div>
   </div>
 
+  <!-- button -->
   <div class="row">
     <div class="col">
       <button type="submit" class="btn btn-primary">{forms.filter}</button>
@@ -52,6 +57,29 @@
   </div>
 
 </form>
+
+<div id="result" class="container container-list">
+  <!-- gets filled with copys of: [phantom] .children -->
+</div>
+
+<div phantom hidden>
+
+  <div class="row children">
+    <div class="col">
+      <span type="text" name="p_partner_short_name_c"></span>
+    </div>
+    <div class="col">
+      <data name="p_partner_key_n" value="-1"></data>
+    </div>
+    <div class="col">
+      <span type="text" name="p_status_code_c"></span>
+    </div>
+    <div class="col-1">
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.detail(this)"><i class="fas fa-wrench"></i></button>
+    </div>
+  </div>
+
+</div>
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
