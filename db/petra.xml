@@ -3123,7 +3123,8 @@
                 descr="This is the date the person was born"
                 format="99/99/9999"
                 label="Date of Birth"
-                help="Enter the date the person was born"/>
+                help="Enter the date the person was born"
+                initial="?"/>
     <tablefield name="p_gender_c"
                 type="varchar"
                 descr=""

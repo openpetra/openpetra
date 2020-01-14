@@ -528,6 +528,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         modules.Add("FINANCE-1");
                         modules.Add("FINANCE-2");
                         modules.Add("FINANCE-3");
+                        modules.Add("SPONSORADMIN");
 
                         ALedgerTable theLedgers = ALedgerAccess.LoadAll(ReadWriteTransaction);
 
