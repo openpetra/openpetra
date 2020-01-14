@@ -24,13 +24,18 @@
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Collections.Generic;
+using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
+using Ict.Petra.Server.MSponsorship.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -135,6 +140,63 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             MainDS.PPartnerType.Rows.Add(PartnerTypeRow);
 
             return MainDS;
+        }
+
+
+        /// <summary>
+        /// store the currently edited child
+        /// </summary>
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool SaveChild(SponsorshipTDS AMainDS,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            SponsorshipTDS SaveDS;
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AMainDS.PPartner[0].ModificationId == DateTime.MinValue)
+            {
+                // this is a new partner
+                SaveDS = AMainDS;
+
+                if (SaveDS.PPartner[0].PartnerKey == -1)
+                {
+                    SaveDS.PPartner[0].PartnerKey = NewPartnerKey();
+                }
+
+                if (SaveDS.PFamily.Count > 0)
+                {
+                    SaveDS.PFamily[0].PartnerKey = SaveDS.PPartner[0].PartnerKey;
+                }
+            }
+            else
+            {
+                SaveDS = AMainDS;
+/*
+                List<string> Dummy1, Dummy2;
+                string Dummy3, Dummy4, Dummy5;
+                // TODO
+                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+                DataUtilities.CopyDataSet(AMainDS, SaveDS);
+*/
+            }
+
+            SaveDS.PPartner[0].PartnerShortName =
+                    Calculations.DeterminePartnerShortName(
+                        SaveDS.PFamily[0].FamilyName,
+                        SaveDS.PFamily[0].Title,
+                        SaveDS.PFamily[0].FirstName);
+
+            try
+            {
+                SponsorshipTDSAccess.SubmitChanges(SaveDS);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
         }
     }
 }
