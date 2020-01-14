@@ -130,7 +130,7 @@ function replace_data(replace_obj, update_data, prev_table) {
   if (prev_table == null) {
     prev_table = "";
   }
-  
+
   for (var variable in replace_obj) {
     // update_date has a var with same name as replace_obj, so we replace it
     if (typeof update_data[variable] !== 'undefined') {
@@ -185,7 +185,7 @@ function allow_modal() {
   		modal_aquire = true;
 	}, modal_timeout*1000);
 
-	return true;	
+	return true;
 
 }
 
@@ -200,3 +200,19 @@ function RemoveBackDropOnBrowserBack() {
 $('document').ready(function () {
 	RemoveBackDropOnBrowserBack();
 });
+
+function isEmpty(o) {
+  // null
+  if (o == null) { return true; }
+  // string
+  if (typeof o == "string") { if (o != "") { return false; } }
+  // number
+  if (typeof o == "number") { if (o != 0) { return false; } }
+  // object
+  for (var v in o) {
+    if (o.hasOwnProperty(v)) {
+      return false
+    }
+  }
+  return true;
+}
