@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -142,12 +143,52 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             return MainDS;
         }
 
+        /// <summary>
+        /// return the existing data of a child
+        /// </summary>
+        [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
+        public static SponsorshipTDS GetChildDetails(Int64 APartnerKey,
+            out string ASponsorshipStatus)
+        {
+            SponsorshipTDS MainDS = new SponsorshipTDS();
+
+            TDBTransaction Transaction = new TDBTransaction();
+
+            DBAccess.ReadTransaction( ref Transaction,
+                delegate
+                {
+                    PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                    PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                    PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                });
+
+            bool isSponsoredChild = false;
+            ASponsorshipStatus = "TODO";
+
+            foreach (PPartnerTypeRow type in MainDS.PPartnerType.Rows)
+            {
+                if (type.TypeCode == TYPE_SPONSOREDCHILD)
+                {
+                    isSponsoredChild = true;
+                }
+            }
+
+            MainDS.PPartnerType.Clear();
+
+            if (!isSponsoredChild)
+            {
+                return new SponsorshipTDS();
+            }
+
+            return MainDS;
+        }
 
         /// <summary>
         /// store the currently edited child
         /// </summary>
         [RequireModulePermission("SPONSORADMIN")]
         public static bool SaveChild(SponsorshipTDS AMainDS,
+            string ASponsorshipStatus,
             out TVerificationResultCollection AVerificationResult)
         {
             SponsorshipTDS SaveDS;
