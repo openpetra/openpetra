@@ -26,10 +26,13 @@ using System.Data;
 using System.Data.Odbc;
 using Ict.Common.Data;
 using Ict.Common.DB;
-using Ict.Petra.Server.App.Core.Security;
+using Ict.Common.Remoting.Server;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
+using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MSponsorship.WebConnectors
 {
@@ -83,6 +86,55 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             db.CloseDBConnection();
 
             return result;
+        }
+
+        /// <summary>
+        /// get a partner key for a new partner
+        /// </summary>
+        /// <param name="AFieldPartnerKey">can be -1, then the default site key is used</param>
+        private static Int64 NewPartnerKey(Int64 AFieldPartnerKey = -1)
+        {
+            Int64 NewPartnerKey = TNewPartnerKey.GetNewPartnerKey(AFieldPartnerKey);
+
+            TNewPartnerKey.SubmitNewPartnerKey(NewPartnerKey - NewPartnerKey % 1000000, NewPartnerKey, ref NewPartnerKey);
+            return NewPartnerKey;
+        }
+
+        /// <summary>
+        /// return the dataset for a new child
+        /// </summary>
+        [RequireModulePermission("SPONSORADMIN")]
+        public static SponsorshipTDS CreateNewChild()
+        {
+            Int64 SiteKey = DomainManager.GSiteKey;
+            SponsorshipTDS MainDS = new SponsorshipTDS();
+            Int64 PartnerKey = NewPartnerKey();
+            DateTime CreationDate = DateTime.Today;
+            string CreationUserID = UserInfo.GetUserInfo().UserID;
+
+	    // Create DataRow for Partner using the default values for all DataColumns
+	    // and then modify some.
+	    PPartnerRow PartnerRow = MainDS.PPartner.NewRowTyped(true);
+	    PartnerRow.PartnerKey = PartnerKey;
+	    PartnerRow.DateCreated = CreationDate;
+	    PartnerRow.CreatedBy = CreationUserID;
+	    PartnerRow.PartnerClass = SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY);
+	    PartnerRow.StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
+	    PartnerRow.UserId = CreationUserID;
+            MainDS.PPartner.Rows.Add(PartnerRow);
+
+            PFamilyRow FamilyRow = MainDS.PFamily.NewRowTyped(true);
+            FamilyRow.PartnerKey = PartnerKey;
+            FamilyRow.DateCreated = CreationDate;
+            FamilyRow.CreatedBy = CreationUserID;
+            MainDS.PFamily.Rows.Add(FamilyRow);
+
+            PPartnerTypeRow PartnerTypeRow = MainDS.PPartnerType.NewRowTyped(true);
+            PartnerTypeRow.PartnerKey = PartnerKey;
+            PartnerTypeRow.TypeCode = TYPE_SPONSOREDCHILD;
+            MainDS.PPartnerType.Rows.Add(PartnerTypeRow);
+
+            return MainDS;
         }
     }
 }
