@@ -35,12 +35,35 @@ var MaintainChildren = new (class {
           List.append(Copy);
         }
       }
-    )
+    );
   }
 
   detail(HTMLButtom) {
-    var partner_key = $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val();
-    console.log(partner_key);
+    // get details for the child the user clicked on and open modal
+
+    var req = {
+      "APartnerKey": $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
+    };
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+
+        var ASponsorshipStatus = parsed.ASponsorshipStatus;
+        var partner = parsed.result.PPartner[0];
+        var family = parsed.result.PFamily[0];
+
+        insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
+        insertData("#detail_modal", partner);
+        insertData("#detail_modal", family);
+
+        $("#detail_modal").modal("show");
+        console.log(ASponsorshipStatus);
+        console.log(partner);
+        console.log(family);
+
+      }
+    );
 
   }
 
