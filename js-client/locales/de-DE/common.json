@@ -116,7 +116,10 @@
         "CostCenterTree_label":"Kostenstellen verwalten",
         "MonthEnd_label": "Monatsabschluss durchführen",
         "YearEnd_label": "Jahresabschluss durchführen",
-        "RecurringGiftBatches_label": "Regelmäßige Spenden"
+        "RecurringGiftBatches_label": "Regelmäßige Spenden",
+        "SponsorShip_label":"Patenschaften",
+        "Children_label":"Kinder",
+        "MaintainChildren_label":"Patenschaften verwalten"
     },
     "forms": {
         "search":"Suchen",

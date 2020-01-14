@@ -75,3 +75,6 @@ OpenPetra:
                         MaintainUsers: {fa-icon=user}
                 Database:
                         ImportAndExportDatabase: {fa-icon=file-import}
+        SponsorShip: {fa-icon=address-book, PermissionsRequired=SPONSORADMIN}
+                Children:
+                    MaintainChildren: {fa-icon=user}
