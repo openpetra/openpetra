@@ -635,10 +635,18 @@
       "account_end": "To Account"
     },
     "MaintainChildren": {
-      "details":"-TODO-",
-      "sponsorship":"-TODO-",
-      "dates_reminder":"-TODO-",
-      "family_situations":"-TODO-",
-      "school_situations":"-TODO-"
+      "edittitle": "Edit child",
+      "partner_key": "Partner key",
+      "partner_status": "Status",
+      "partner_firstname": "Firstname",
+      "partner_lastname": "Lastname",
+      "gender": "Gender",
+      "birthday": "Birthday",
+      "sponsor_admin": "Sponsor Admin",
+      "details":"Details",
+      "sponsorship":"Sponsorship",
+      "dates_reminder":"Dates / Reminders",
+      "family_situations":"Family situations",
+      "school_situations":"School situations"
     }
 }

@@ -65,10 +65,6 @@ var MaintainChildren = new (class {
       }
     );
 
-    uploadNewPhoto() {
-      alert("TODO");
-    }
-
   }
 
   showWindow(HTMLAnchor) {
@@ -84,6 +80,10 @@ var MaintainChildren = new (class {
     // window
     $("#multi_window [window]").hide();
     $(`#multi_window [window=${show}]`).show();
+  }
+
+  uploadNewPhoto() {
+    alert("TODO");
   }
 
 })

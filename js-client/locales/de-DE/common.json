@@ -630,5 +630,20 @@
       "cost_centre_end": "Bis Kostenstelle",
       "account_start": "Von Konto",
       "account_end": "Bis Konto"
+    },
+    "MaintainChildren": {
+      "edittitle": "Kind bearbeiten",
+      "partner_key": "Partnerschlüssel",
+      "partner_status": "Status",
+      "partner_firstname": "Voname",
+      "partner_lastname": "Nachname",
+      "gender": "Geschlecht",
+      "birthday": "Geburtstag",
+      "sponsor_admin": "Paten Admin",
+      "details":"Details",
+      "sponsorship":"Patenschaft",
+      "dates_reminder":"Daten / Erinnerungen",
+      "family_situations":"Familiäre Situation",
+      "school_situations":"Schulische Situation"
     }
 }
