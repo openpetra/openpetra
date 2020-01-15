@@ -214,7 +214,42 @@
               </div>
             </div>
 
-            <div window="sponsorship" style="display: none;">sponsorship</div>
+            <div window="sponsorship" style="display: none;">
+              <h2>{sponsorship}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{donor}</span>
+                </div>
+                <div class="col">
+                  <span>{type}</span>
+                </div>
+                <div class="col">
+                  <span>{amount}</span>
+                </div>
+                <div class="col">
+                  <span>{start_date}</span>
+                </div>
+                <div class="col">
+                  <span>{end_date}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="sponsorships">
+                <!-- gets filled with copys of: [phantom] .sponsorship -->
+              </div>
+
+            </div>
 
             <div window="dates_reminder" style="display: none;">dates_reminder</div>
 
