@@ -644,6 +644,10 @@
       "sponsorship":"Patenschaft",
       "dates_reminder":"Daten / Erinnerungen",
       "family_situations":"Familiäre Situation",
-      "school_situations":"Schulische Situation"
+      "school_situations":"Schulische Situation",
+      "bording_school":"Besucht die Schule",
+      "children_home":"Im Kinderheim",
+      "home_based":"Zu Hause",
+      "previous_child":"Ehemaliges Kind"
     }
 }

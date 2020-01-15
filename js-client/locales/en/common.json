@@ -647,6 +647,10 @@
       "sponsorship":"Sponsorship",
       "dates_reminder":"Dates / Reminders",
       "family_situations":"Family situations",
-      "school_situations":"School situations"
+      "school_situations":"School situations",
+      "bording_school":"Bording school",
+      "children_home":"Children home",
+      "home_based":"Home based",
+      "previous_child":"Prevous child"
     }
 }
