@@ -66,4 +66,11 @@ var MaintainChildren = new (class {
 
   }
 
+  showWindow(name) {
+    // hide all windows in #multi_window and only show the one related to name
+
+    $("#multi_window [window]").hide();
+    $(`#multi_window [window=${name}]`).show();
+  }
+
 })
