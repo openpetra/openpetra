@@ -184,7 +184,7 @@
                     </div>
                   </div>
 
-
+                  <!-- sponsor_admin -->
                   <div class="row">
                     <div class="col">
                       <span>{sponsor_admin}</span>
@@ -199,7 +199,17 @@
                 </div>
                 <!-- right / photo -->
                 <div class="col">
-
+                  <div class="row">
+                    <div class="col">
+                      <img name="p_photo_b" src="" alt="photo">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <input type="file" name="new_photo" />
+                      <button type="button" class="btn btn-primary" onclick="MaintainChildren.uploadNewPhoto()">{forms.upload}</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

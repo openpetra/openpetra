@@ -56,6 +56,7 @@ var MaintainChildren = new (class {
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
+        $("#detail_modal [name='p_photo_b']").attr("src", partner.p_photo_b);
 
         $("#detail_modal").modal("show");
         console.log(ASponsorshipStatus);
@@ -63,6 +64,10 @@ var MaintainChildren = new (class {
         console.log(family);
       }
     );
+
+    uploadNewPhoto() {
+      alert("TODO");
+    }
 
   }
 

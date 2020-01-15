@@ -150,7 +150,8 @@
         "no": "No",
         "confirm_title": "Are you sure?",
         "save_preset": "Save preset",
-        "preset": "Preset"
+        "preset": "Preset",
+        "upload": "Upload"
     },
     "errors": {
       "general": "An error has occurred",
