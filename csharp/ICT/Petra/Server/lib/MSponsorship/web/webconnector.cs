@@ -139,7 +139,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// return the dataset for a new child
         /// </summary>
         [RequireModulePermission("SPONSORADMIN")]
-        public static SponsorshipTDS CreateNewChild()
+        private static SponsorshipTDS CreateNewChild()
         {
             Int64 SiteKey = DomainManager.GSiteKey;
             SponsorshipTDS MainDS = new SponsorshipTDS();
@@ -217,31 +217,52 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// store the currently edited child
         /// </summary>
         [RequireModulePermission("SPONSORADMIN")]
-        public static bool SaveChild(SponsorshipTDS AMainDS,
+        public static bool MaintainChild(
             string ASponsorshipStatus,
+            string AFirstName,
+            string AFamilyName,
+            DateTime ADateOfBirth,
+            string APhoto,
+            bool AUploadPhoto,
+            string AGender,
+            string AUserId,
+            Int64 APartnerKey,
             out TVerificationResultCollection AVerificationResult)
         {
-            SponsorshipTDS SaveDS;
+            
+            SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
 
-            if (AMainDS.PPartner[0].ModificationId == DateTime.MinValue)
+            if (APartnerKey == -1) 
             {
-                // this is a new partner
-                SaveDS = AMainDS;
-
-                if (SaveDS.PPartner[0].PartnerKey == -1)
-                {
-                    SaveDS.PPartner[0].PartnerKey = NewPartnerKey();
-                }
-
-                if (SaveDS.PFamily.Count > 0)
-                {
-                    SaveDS.PFamily[0].PartnerKey = SaveDS.PPartner[0].PartnerKey;
-                }
+                // no partner key given, so we make a new entry
+                CurrentEdit = CreateNewChild();
+                if (CurrentEdit.PFamily.Count > 0) { CurrentEdit.PFamily[0].PartnerKey = CurrentEdit.PPartner[0].PartnerKey; }
             }
             else
             {
-                SaveDS = AMainDS;
+                // else we try to get a entry based on the partner key
+                string dummy = "0";
+                CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+            }
+
+
+            // we only save pictues if there is a valu in the request
+            if (AUploadPhoto) 
+            {
+                CurrentEdit.PFamily[0].Photo = APhoto;
+            }
+            else
+            {
+
+                CurrentEdit.PFamily[0].FirstName = AFirstName;
+                CurrentEdit.PFamily[0].FamilyName = AFamilyName;
+                CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
+                CurrentEdit.PFamily[0].Gender = AGender;
+                CurrentEdit.PPartner[0].UserId = AUserId;
+
+            }
+
 /*
                 List<string> Dummy1, Dummy2;
                 string Dummy3, Dummy4, Dummy5;
@@ -249,17 +270,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
                 DataUtilities.CopyDataSet(AMainDS, SaveDS);
 */
-            }
 
-            SaveDS.PPartner[0].PartnerShortName =
+            CurrentEdit.PPartner[0].PartnerShortName =
                     Calculations.DeterminePartnerShortName(
-                        SaveDS.PFamily[0].FamilyName,
-                        SaveDS.PFamily[0].Title,
-                        SaveDS.PFamily[0].FirstName);
+                        CurrentEdit.PFamily[0].FamilyName,
+                        CurrentEdit.PFamily[0].Title,
+                        CurrentEdit.PFamily[0].FirstName);
 
             try
             {
-                SponsorshipTDSAccess.SubmitChanges(SaveDS);
+                SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
                 return true;
             }
             catch (Exception e)

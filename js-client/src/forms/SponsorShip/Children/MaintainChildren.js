@@ -59,6 +59,7 @@ var MaintainChildren = new (class {
         $("#detail_modal [name='p_photo_b']").attr("src", partner.p_photo_b);
 
         $("#detail_modal").modal("show");
+
         console.log(ASponsorshipStatus);
         console.log(partner);
         console.log(family);
@@ -80,6 +81,25 @@ var MaintainChildren = new (class {
     // window
     $("#multi_window [window]").hide();
     $(`#multi_window [window=${show}]`).show();
+  }
+
+  saveEdit() {
+
+    var req = translate_to_server(extractData($("#detail_modal")));
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+
+        console.log(parsed);
+
+      }
+    );
+
+
+
+
+
   }
 
   uploadNewPhoto() {
