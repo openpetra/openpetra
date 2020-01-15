@@ -61,12 +61,9 @@ var MaintainChildren = new (class {
         console.log(ASponsorshipStatus);
         console.log(partner);
         console.log(family);
-
       }
     );
 
   }
-
-
 
 })

@@ -632,5 +632,12 @@
       "cost_centre_end": "To Cost Centre",
       "account_start": "From Account",
       "account_end": "To Account"
+    },
+    "MaintainChildren": {
+      "details":"-TODO-",
+      "sponsorship":"-TODO-",
+      "dates_reminder":"-TODO-",
+      "family_situations":"-TODO-",
+      "school_situations":"-TODO-"
     }
 }
