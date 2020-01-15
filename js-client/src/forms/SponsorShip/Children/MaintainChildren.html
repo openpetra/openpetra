@@ -131,26 +131,32 @@
 
           <div class="row">
             <div class="col">
-              <button type="button" class="btn btn-primary">{details}</button>
+              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('details')">{details}</button>
             </div>
             <div class="col">
-              <button type="button" class="btn btn-primary">{sponsorship}</button>
+              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('sponsorship')">{sponsorship}</button>
             </div>
             <div class="col">
-              <button type="button" class="btn btn-primary">{dates_reminder}</button>
+              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('dates_reminder')">{dates_reminder}</button>
             </div>
             <div class="col">
-              <button type="button" class="btn btn-primary">{family_situations}</button>
+              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('family_situations')">{family_situations}</button>
             </div>
             <div class="col">
-              <button type="button" class="btn btn-primary">{school_situations}</button>
+              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('school_situations')">{school_situations}</button>
             </div>
           </div>
 
-          <div class="">
+          <div class="window">
+
+            <!-- details is shown by default, can be changed by a call to MaintainChildren.showWindow(name) -->
+            <div window="details">details</div>
+            <div window="sponsorship" style="display: none;">sponsorship</div>
+            <div window="dates_reminder" style="display: none;">dates_reminder</div>
+            <div window="family_situations" style="display: none;">family_situations</div>
+            <div window="school_situations" style="display: none;">school_situations</div>
 
           </div>
-
         </div>
 
       </div>
