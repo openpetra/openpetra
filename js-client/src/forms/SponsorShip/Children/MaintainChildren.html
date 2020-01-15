@@ -150,10 +150,64 @@
           <div id="multi_window">
 
             <!-- details is shown by default, can be changed by a call to MaintainChildren.showWindow(name) -->
-            <div window="details">details</div>
+            <div window="details">
+              <h2>{details}</h2>
+
+              <div class="row">
+                <!-- left / infos -->
+                <div class="col">
+
+                  <!-- gender -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{gender}</span>
+                    </div>
+                    <div class="col">
+                      <select name="p_gender_c">
+                        <option value="Unknown">[[Unknown]]</option>
+                        <option value="UNKNOWN">Unknown</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- birthday -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{birthday}</span>
+                    </div>
+                    <div class="col">
+                      <input type="date" name="p_date_of_birth_d">
+                    </div>
+                  </div>
+
+
+                  <div class="row">
+                    <div class="col">
+                      <span>{sponsor_admin}</span>
+                    </div>
+                    <div class="col">
+                      <select name="p_user_id_c">
+                        <option value="">Unknown</option>
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+                <!-- right / photo -->
+                <div class="col">
+
+                </div>
+              </div>
+            </div>
+
             <div window="sponsorship" style="display: none;">sponsorship</div>
+
             <div window="dates_reminder" style="display: none;">dates_reminder</div>
+
             <div window="family_situations" style="display: none;">family_situations</div>
+
             <div window="school_situations" style="display: none;">school_situations</div>
 
           </div>
