@@ -220,7 +220,7 @@
               <!-- new btn -->
               <div class="row">
                 <div class="col">
-                  <button type="button" class="btn btn-primary">{forms.new}</button>
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
                 </div>
               </div>
 
@@ -251,11 +251,95 @@
 
             </div>
 
-            <div window="dates_reminder" style="display: none;">dates_reminder</div>
+            <div window="dates_reminder" style="display: none;">
+              <h2>{dates_reminder}</h2>
 
-            <div window="family_situations" style="display: none;">family_situations</div>
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                </div>
+              </div>
 
-            <div window="school_situations" style="display: none;">school_situations</div>
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{description}</span>
+                </div>
+                <div class="col">
+                  <span>{notification_date}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="dates">
+                <!-- gets filled with copys of: [phantom] .reminder -->
+              </div>
+
+            </div>
+
+            <div window="family_situations" style="display: none;">
+              <h2>{family_situations}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{notes}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="family">
+                <!-- gets filled with copys of: [phantom] .family -->
+              </div>
+
+            </div>
+
+            <div window="school_situations" style="display: none;">
+              <h2>{school_situations}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{description}</span>
+                </div>
+                <div class="col">
+                  <span>{notification_date}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="school">
+                <!-- gets filled with copys of: [phantom] .school -->
+              </div>
+
+            </div>
 
           </div>
         </div>
