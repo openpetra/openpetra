@@ -192,14 +192,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 });
 
             bool isSponsoredChild = false;
-            ASponsorshipStatus = "TODO";
+            ASponsorshipStatus = "[N/A]";
 
             foreach (PPartnerTypeRow type in MainDS.PPartnerType.Rows)
             {
-                if (type.TypeCode == TYPE_SPONSOREDCHILD)
+                if (type.TypeCode == "CHILDREN_HOME" || type.TypeCode == "HOME_BASED" || type.TypeCode == "BORDING_SCHOOL" || type.TypeCode == "PREVIOUS_CHILD")
                 {
                     isSponsoredChild = true;
                 }
+            	ASponsorshipStatus = type.TypeCode;
             }
 
             MainDS.PPartnerType.Clear();
