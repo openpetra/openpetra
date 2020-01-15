@@ -129,23 +129,25 @@
             </div>
           </div>
 
-          <div class="row">
-            <div class="col">
-              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('details')">{details}</button>
-            </div>
-            <div class="col">
-              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('sponsorship')">{sponsorship}</button>
-            </div>
-            <div class="col">
-              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('dates_reminder')">{dates_reminder}</button>
-            </div>
-            <div class="col">
-              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('family_situations')">{family_situations}</button>
-            </div>
-            <div class="col">
-              <button type="button" class="btn btn-primary" onclick="MaintainChildren.showWindow('school_situations')">{school_situations}</button>
-            </div>
-          </div>
+          <ul class="nav nav-tabs" role="tablist">
+
+            <li class="nav-item">
+              <a class="nav-link active" href="#details" onclick="MaintainChildren.showWindow(this)" show="details">{details}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#sponsorship" onclick="MaintainChildren.showWindow(this)" show="sponsorship">{sponsorship}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#dates_reminder" onclick="MaintainChildren.showWindow(this)" show="dates_reminder">{dates_reminder}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#family_situations" onclick="MaintainChildren.showWindow(this)" show="family_situations">{family_situations}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#school_situations" onclick="MaintainChildren.showWindow(this)" show="school_situations">{school_situations}</a>
+            </li>
+
+          </ul>
 
           <div id="multi_window">
 

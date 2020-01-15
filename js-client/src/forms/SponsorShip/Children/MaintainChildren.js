@@ -66,11 +66,19 @@ var MaintainChildren = new (class {
 
   }
 
-  showWindow(name) {
-    // hide all windows in #multi_window and only show the one related to name
+  showWindow(HTMLAnchor) {
+    // hide all windows in #multi_window and only show the one related to the link
+    // also updates buttons
 
+    var show = $(HTMLAnchor).attr("show");
+
+    // nav-bar
+    $("[role=tablist] [show]").removeClass("active");
+    $(`[role=tablist] [show=${show}]`).addClass("active");
+
+    // window
     $("#multi_window [window]").hide();
-    $(`#multi_window [window=${name}]`).show();
+    $(`#multi_window [window=${show}]`).show();
   }
 
 })
