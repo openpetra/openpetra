@@ -103,7 +103,40 @@ var MaintainChildren = new (class {
   }
 
   uploadNewPhoto() {
-    alert("TODO");
+    var PhotoField = $("#detail_modal [name=new_photo]");
+    let name = PhotoField.val();
+    if (!name || !PhotoField[0].files[0]) {return;}
+
+    // see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+      if (window.File && window.FileReader && window.FileList && window.Blob) {
+    //alert("Great success! All the File APIs are supported.");
+    } else {
+      alert('The File APIs are not fully supported in this browser.');
+    }
+
+    var Reader = new FileReader();
+
+    Reader.onload = function (event) {
+      let file_content = event.target.result;
+      file_content = btoa(file_content);
+
+      var req = {
+        "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
+        "AUploadPhoto":true,
+        "APhoto":file_content
+      };
+
+      api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req)
+      .then(function (data) {
+          var parsed = JSON.parse(data.data.d);
+
+          console.log(parsed);
+
+      });
+    }
+
+    Reader.readAsText(PhotoField[0].files[0]);
+
   }
 
 })
