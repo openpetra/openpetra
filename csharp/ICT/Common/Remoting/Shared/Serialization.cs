@@ -176,7 +176,7 @@ namespace Ict.Common.Remoting.Shared
 
             if (o.GetType() == typeof(DateTime))
             {
-                return JsonConvert.SerializeObject(o);
+                return ((DateTime)o).ToString("s");
             }
 
             if (o is Type)
