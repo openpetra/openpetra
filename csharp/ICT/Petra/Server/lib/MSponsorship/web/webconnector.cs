@@ -221,7 +221,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string ASponsorshipStatus,
             string AFirstName,
             string AFamilyName,
-            DateTime ADateOfBirth,
+            DateTime? ADateOfBirth,
             string APhoto,
             bool AUploadPhoto,
             string AGender,
@@ -229,11 +229,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             Int64 APartnerKey,
             out TVerificationResultCollection AVerificationResult)
         {
-            
+
             SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
 
-            if (APartnerKey == -1) 
+            if (APartnerKey == -1)
             {
                 // no partner key given, so we make a new entry
                 CurrentEdit = CreateNewChild();
@@ -247,8 +247,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
 
-            // we only save pictues if there is a valu in the request
-            if (AUploadPhoto) 
+            // we only save pictues if there is a value in the request
+            if (AUploadPhoto)
             {
                 CurrentEdit.PFamily[0].Photo = APhoto;
             }
@@ -291,4 +291,3 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
     }
 }
-
