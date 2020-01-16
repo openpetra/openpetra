@@ -216,3 +216,27 @@ function isEmpty(o) {
   }
   return true;
 }
+
+function uploadFile(url, args, success_function, fail_function) {
+  if (!(url && args)) {return false;}
+
+  var formData = new FormData();
+  for (var upl in args) {
+    formData.append(upl, args[upl]);
+  }
+  var request = new XMLHttpRequest();
+  request.onload = function () {
+    if (200 <= request.status && request.status < 300) {
+      success_function( request.responseText );
+    } else if (request.status >= 500) {
+      fail_function( Array() );
+    } else {
+      fail_function( request.responseText );
+    }
+  }
+  request.onerror = function () {
+    fail_function(JSONparse(request.responseText));
+  }
+  request.open("POST", url);
+  request.send(formData);
+}
