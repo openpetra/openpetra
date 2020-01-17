@@ -263,13 +263,13 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             }
 
-/*
+            /*
                 List<string> Dummy1, Dummy2;
                 string Dummy3, Dummy4, Dummy5;
                 // TODO
                 SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
                 DataUtilities.CopyDataSet(AMainDS, SaveDS);
-*/
+            */
 
             CurrentEdit.PPartner[0].PartnerShortName =
                     Calculations.DeterminePartnerShortName(
@@ -289,5 +289,40 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 return false;
             }
         }
+
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool MaintainChildComments(
+            string AComment,
+            string ACommentType,
+            Int64 APartnerKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+
+            SponsorshipTDS CurrentEdit;
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (APartnerKey == -1)
+            {
+              AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
+              return false;
+            }
+
+            string dummy = "0";
+            CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+
+            try
+            {
+                SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
+        }
+
+
     }
 }
