@@ -55,12 +55,14 @@ var MaintainChildren = new (class {
         var ASponsorshipStatus = parsed.ASponsorshipStatus;
         var partner = parsed.result.PPartner[0];
         var family = parsed.result.PFamily[0];
+        var comments = parsed.result.PPartnerComment;
+
+        MaintainChildComments.build(comments);
 
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
         $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+family.p_photo_b);
-
 
         $("#detail_modal").modal("show");
       }
@@ -82,6 +84,7 @@ var MaintainChildren = new (class {
     // window
     $("#multi_window [window]").hide();
     $(`#multi_window [window=${show}]`).show();
+    $("#multi_window").attr("active", show);
   }
 
   saveEdit() {
@@ -96,10 +99,6 @@ var MaintainChildren = new (class {
         }
       }
     );
-
-
-
-
 
   }
 
@@ -151,5 +150,23 @@ var MaintainChildren = new (class {
     Reader.readAsBinaryString(PhotoField[0].files[0]);
 
   }
+
+})
+
+var MaintainChildComments = new (class {
+  constructor() {
+
+  }
+
+  showCreate() {}
+
+  build(result) {
+    // builds the entrys as rows in there location
+    // requires a list of PPartnerComment API data
+
+    console.log(result);
+
+  }
+
 
 })
