@@ -1,0 +1,357 @@
+<h2>{caption}</h2>
+
+<form id="filter" class="container" action="javascript:MaintainChildren.filterShow()">
+
+  <!-- last -->
+  <div class="row">
+    <div class="col">
+      <span>{FamilyName}</span>
+    </div>
+    <div class="col">
+      <input type="text" name="AFamilyName" value="">
+    </div>
+  </div>
+
+  <!-- first -->
+  <div class="row">
+    <div class="col">
+      <span>{FirstName}</span>
+    </div>
+    <div class="col">
+      <input type="text" name="AFirstName" value="">
+    </div>
+  </div>
+
+  <!-- status -->
+  <div class="row">
+    <div class="col">
+      <span>{SponsorshipStatus}</span>
+    </div>
+    <div class="col">
+      <select type="text" name="ASponsorshipStatus" value="">
+        <option value="A1">A1</option>
+        <option value="B2">B2</option>
+        <option value="C3">C3</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- admin -->
+  <div class="row">
+    <div class="col">
+      <span>{SponsorAdmin}</span>
+    </div>
+    <div class="col">
+      <select type="text" name="ASponsorAdmin" value="">
+        <option value="A">A</option>
+        <option value="B">B</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- button -->
+  <div class="row">
+    <div class="col">
+      <button type="submit" class="btn btn-primary">{forms.filter}</button>
+    </div>
+  </div>
+
+</form>
+
+<div id="result" class="container container-list">
+  <!-- gets filled with copys of: [phantom] .children -->
+</div>
+
+<div phantom hidden>
+
+  <div class="row children">
+    <div class="col">
+      <span type="text" name="p_partner_short_name_c"></span>
+    </div>
+    <div class="col">
+      <data name="p_partner_key_n" value="-1"></data>
+    </div>
+    <div class="col">
+      <span type="text" name="p_status_code_c"></span>
+    </div>
+    <div class="col-1">
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.detail(this)"><i class="fas fa-wrench"></i></button>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal modal-wide fade" tabindex="-1" role="dialog" id="detail_modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{edittitle}</h3>
+      </div>
+      <div class="modal-body">
+
+        <div class="container">
+
+          <div class="row">
+            <div class="col">
+              <span>{partner_key}</span>
+            </div>
+            <div class="col">
+              <input type="text" name="p_partner_key_n" value="" readonly/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{partner_status}</span>
+            </div>
+            <div class="col">
+              <select name="ASponsorshipStatus">
+                <option value="BORDING_SCHOOL">{bording_school}</option>
+                <option value="CHILDREN_HOME">{children_home}</option>
+                <option value="HOME_BASED">{home_based}</option>
+                <option value="PREVIOUS_CHILD">{previous_child}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{partner_firstname}</span>
+            </div>
+            <div class="col">
+              <input type="text" name="p_first_name_c"/>
+            </div>
+            <div class="col">
+              <span>{partner_lastname}</span>
+            </div>
+            <div class="col">
+              <input type="text" name="p_family_name_c"/>
+            </div>
+          </div>
+
+          <ul class="nav nav-tabs" role="tablist">
+
+            <li class="nav-item">
+              <a class="nav-link active" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="details">{details}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="sponsorship">{sponsorship}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="dates_reminder">{dates_reminder}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="family_situations">{family_situations}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="school_situations">{school_situations}</a>
+            </li>
+
+          </ul>
+
+          <div id="multi_window">
+
+            <!-- details is shown by default, can be changed by a call to MaintainChildren.showWindow(name) -->
+            <div window="details">
+              <h2>{details}</h2>
+
+              <div class="row">
+                <!-- left / infos -->
+                <div class="col">
+
+                  <!-- gender -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{gender}</span>
+                    </div>
+                    <div class="col">
+                      <select name="p_gender_c">
+                        <option value="Unknown">[[Unknown]]</option>
+                        <option value="UNKNOWN">Unknown</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- birthday -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{birthday}</span>
+                    </div>
+                    <div class="col">
+                      <input type="date" name="p_date_of_birth_d">
+                    </div>
+                  </div>
+
+                  <!-- sponsor_admin -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{sponsor_admin}</span>
+                    </div>
+                    <div class="col">
+                      <select name="p_user_id_c">
+                        <option value="">Unknown</option>
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+                <!-- right / photo -->
+                <div class="col">
+                  <div class="row">
+                    <div class="col">
+                      <img name="p_photo_b" src="" alt="photo">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <input type="file" name="new_photo" />
+                      <button type="button" class="btn btn-primary" onclick="MaintainChildren.uploadNewPhoto()">{forms.upload}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div window="sponsorship" style="display: none;">
+              <h2>{sponsorship}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{donor}</span>
+                </div>
+                <div class="col">
+                  <span>{type}</span>
+                </div>
+                <div class="col">
+                  <span>{amount}</span>
+                </div>
+                <div class="col">
+                  <span>{start_date}</span>
+                </div>
+                <div class="col">
+                  <span>{end_date}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="sponsorships">
+                <!-- gets filled with copys of: [phantom] .sponsorship -->
+              </div>
+
+            </div>
+
+            <div window="dates_reminder" style="display: none;">
+              <h2>{dates_reminder}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{description}</span>
+                </div>
+                <div class="col">
+                  <span>{notification_date}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="dates">
+                <!-- gets filled with copys of: [phantom] .reminder -->
+              </div>
+
+            </div>
+
+            <div window="family_situations" style="display: none;">
+              <h2>{family_situations}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{notes}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="family">
+                <!-- gets filled with copys of: [phantom] .family -->
+              </div>
+
+            </div>
+
+            <div window="school_situations" style="display: none;">
+              <h2>{school_situations}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{description}</span>
+                </div>
+                <div class="col">
+                  <span>{notification_date}</span>
+                </div>
+                <div class="col">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="school">
+                <!-- gets filled with copys of: [phantom] .school -->
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="MaintainChildren.saveEdit()">{forms.save}</button>
+        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

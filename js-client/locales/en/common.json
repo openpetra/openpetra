@@ -116,7 +116,10 @@
         "CostCenterTree_label":"Maintain the Cost Centres",
         "MonthEnd_label": "Close the current period",
         "YearEnd_label": "Run the year end",
-        "RecurringGiftBatches_label":"Recurring donations"
+        "RecurringGiftBatches_label":"Recurring donations",
+        "SponsorShip_label":"Sponsor",
+        "Children_label":"Children",
+        "MaintainChildren_lable":"Main children"
     },
     "forms": {
         "search":"Search",
@@ -147,7 +150,8 @@
         "no": "No",
         "confirm_title": "Are you sure?",
         "save_preset": "Save preset",
-        "preset": "Preset"
+        "preset": "Preset",
+        "upload": "Upload"
     },
     "errors": {
       "general": "An error has occurred",
@@ -629,5 +633,24 @@
       "cost_centre_end": "To Cost Centre",
       "account_start": "From Account",
       "account_end": "To Account"
+    },
+    "MaintainChildren": {
+      "edittitle": "Edit child",
+      "partner_key": "Partner key",
+      "partner_status": "Status",
+      "partner_firstname": "Firstname",
+      "partner_lastname": "Lastname",
+      "gender": "Gender",
+      "birthday": "Birthday",
+      "sponsor_admin": "Sponsor Admin",
+      "details":"Details",
+      "sponsorship":"Sponsorship",
+      "dates_reminder":"Dates / Reminders",
+      "family_situations":"Family situations",
+      "school_situations":"School situations",
+      "bording_school":"Bording school",
+      "children_home":"Children home",
+      "home_based":"Home based",
+      "previous_child":"Prevous child"
     }
 }

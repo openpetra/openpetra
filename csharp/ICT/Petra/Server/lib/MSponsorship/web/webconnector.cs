@@ -64,23 +64,52 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("FindChildren");
             string sql = "SELECT p.p_partner_short_name_c, p.p_status_code_c, p.p_partner_key_n, p.p_user_id_c, " +
-                "f.p_first_name_c, f.p_family_name_c " +
+                "f.p_first_name_c, f.p_family_name_c, t.p_type_code_c " +
                 "FROM PUB_p_partner p, PUB_p_family f, PUB_p_partner_type t " +
                 "WHERE p.p_partner_key_n = f.p_partner_key_n " +
-                "AND p.p_partner_key_n = t.p_partner_key_n " +
-                "AND t.p_type_code_c = '" + TYPE_SPONSOREDCHILD + "'";
+                "AND p.p_partner_key_n = t.p_partner_key_n";
 
             int CountParameters = 0;
+            int Pos = 0;
             CountParameters += (AFirstName != String.Empty ? 1: 0);
+            CountParameters += (ASponsorshipStatus != String.Empty ? 1: 0);
+            CountParameters += (AFamilyName != String.Empty ? 1: 0);
+            CountParameters += (ASponsorAdmin != String.Empty ? 1: 0);
             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
+
+            if (ASponsorshipStatus != String.Empty)
+            {
+                sql += " AND t.p_type_code_c = ?";
+                parameters[Pos] = new OdbcParameter("ASponsorshipStatus", OdbcType.VarChar);
+                parameters[Pos].Value = ASponsorshipStatus;
+                Pos++;
+            } else {
+                sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BORDING_SCHOOL','PREVIOUS_CHILD')";
+            }
 
             if (AFirstName != String.Empty)
             {
                 sql += " AND f.p_first_name_c LIKE ?";
-                parameters[0] = new OdbcParameter("FirstName", OdbcType.VarChar);
-                parameters[0].Value = AFirstName;
+                parameters[Pos] = new OdbcParameter("FirstName", OdbcType.VarChar);
+                parameters[Pos].Value = AFirstName;
+                Pos++;
             }
 
+            if (AFamilyName != String.Empty)
+            {
+                sql += " AND f.p_last_name_c LIKE ?";
+                parameters[Pos] = new OdbcParameter("AFamilyName", OdbcType.VarChar);
+                parameters[Pos].Value = AFamilyName;
+                Pos++;
+            }
+
+            if (ASponsorAdmin != String.Empty)
+            {
+                sql += " AND '' LIKE ?";
+                parameters[Pos] = new OdbcParameter("ASponsorAdmin", OdbcType.VarChar);
+                parameters[Pos].Value = ASponsorAdmin;
+                Pos++;
+            }
             SponsorshipFindTDSSearchResultTable result = new SponsorshipFindTDSSearchResultTable();
 
             db.ReadTransaction(ref t,
@@ -110,7 +139,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// return the dataset for a new child
         /// </summary>
         [RequireModulePermission("SPONSORADMIN")]
-        public static SponsorshipTDS CreateNewChild()
+        private static SponsorshipTDS CreateNewChild()
         {
             Int64 SiteKey = DomainManager.GSiteKey;
             SponsorshipTDS MainDS = new SponsorshipTDS();
@@ -163,14 +192,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 });
 
             bool isSponsoredChild = false;
-            ASponsorshipStatus = "TODO";
+            ASponsorshipStatus = "[N/A]";
 
             foreach (PPartnerTypeRow type in MainDS.PPartnerType.Rows)
             {
-                if (type.TypeCode == TYPE_SPONSOREDCHILD)
+                if (type.TypeCode == "CHILDREN_HOME" || type.TypeCode == "HOME_BASED" || type.TypeCode == "BORDING_SCHOOL" || type.TypeCode == "PREVIOUS_CHILD")
                 {
                     isSponsoredChild = true;
                 }
+            	ASponsorshipStatus = type.TypeCode;
             }
 
             MainDS.PPartnerType.Clear();
@@ -187,31 +217,52 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// store the currently edited child
         /// </summary>
         [RequireModulePermission("SPONSORADMIN")]
-        public static bool SaveChild(SponsorshipTDS AMainDS,
+        public static bool MaintainChild(
             string ASponsorshipStatus,
+            string AFirstName,
+            string AFamilyName,
+            DateTime? ADateOfBirth,
+            string APhoto,
+            bool AUploadPhoto,
+            string AGender,
+            string AUserId,
+            Int64 APartnerKey,
             out TVerificationResultCollection AVerificationResult)
         {
-            SponsorshipTDS SaveDS;
+
+            SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
 
-            if (AMainDS.PPartner[0].ModificationId == DateTime.MinValue)
+            if (APartnerKey == -1)
             {
-                // this is a new partner
-                SaveDS = AMainDS;
-
-                if (SaveDS.PPartner[0].PartnerKey == -1)
-                {
-                    SaveDS.PPartner[0].PartnerKey = NewPartnerKey();
-                }
-
-                if (SaveDS.PFamily.Count > 0)
-                {
-                    SaveDS.PFamily[0].PartnerKey = SaveDS.PPartner[0].PartnerKey;
-                }
+                // no partner key given, so we make a new entry
+                CurrentEdit = CreateNewChild();
+                if (CurrentEdit.PFamily.Count > 0) { CurrentEdit.PFamily[0].PartnerKey = CurrentEdit.PPartner[0].PartnerKey; }
             }
             else
             {
-                SaveDS = AMainDS;
+                // else we try to get a entry based on the partner key
+                string dummy = "0";
+                CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+            }
+
+
+            // we only save pictues if there is a value in the request
+            if (AUploadPhoto)
+            {
+                CurrentEdit.PFamily[0].Photo = APhoto;
+            }
+            else
+            {
+
+                CurrentEdit.PFamily[0].FirstName = AFirstName;
+                CurrentEdit.PFamily[0].FamilyName = AFamilyName;
+                CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
+                CurrentEdit.PFamily[0].Gender = AGender;
+                CurrentEdit.PPartner[0].UserId = AUserId;
+
+            }
+
 /*
                 List<string> Dummy1, Dummy2;
                 string Dummy3, Dummy4, Dummy5;
@@ -219,17 +270,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
                 DataUtilities.CopyDataSet(AMainDS, SaveDS);
 */
-            }
 
-            SaveDS.PPartner[0].PartnerShortName =
+            CurrentEdit.PPartner[0].PartnerShortName =
                     Calculations.DeterminePartnerShortName(
-                        SaveDS.PFamily[0].FamilyName,
-                        SaveDS.PFamily[0].Title,
-                        SaveDS.PFamily[0].FirstName);
+                        CurrentEdit.PFamily[0].FamilyName,
+                        CurrentEdit.PFamily[0].Title,
+                        CurrentEdit.PFamily[0].FirstName);
 
             try
             {
-                SponsorshipTDSAccess.SubmitChanges(SaveDS);
+                SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
                 return true;
             }
             catch (Exception e)
@@ -241,4 +291,3 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
     }
 }
-
