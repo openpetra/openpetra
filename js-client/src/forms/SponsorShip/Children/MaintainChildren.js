@@ -90,9 +90,9 @@ var MaintainChildren = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
-
-        console.log(parsed);
-
+        if (parsed.result) {
+          display_message( i18next.t("forms.saved"), "success");
+        }
       }
     );
 
@@ -142,7 +142,7 @@ var MaintainChildren = new (class {
       .then(function (data) {
           var parsed = JSON.parse(data.data.d);
           if (parsed.result) {
-            display_message( i18next.t("upload_success"), "success");
+            display_message( i18next.t("forms.upload_success"), "success");
           }
       });
     }

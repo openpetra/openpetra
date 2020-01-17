@@ -151,7 +151,8 @@
         "confirm_title": "Are you sure?",
         "save_preset": "Save preset",
         "preset": "Preset",
-        "upload": "Upload"
+        "upload": "Upload",
+        "upload_success": "Upload successfull"
     },
     "errors": {
       "general": "An error has occurred",

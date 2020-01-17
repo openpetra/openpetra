@@ -151,7 +151,8 @@
         "confirm_title": "Ganz sicher?",
         "save_preset": "Als Voreinstellung speichern",
         "preset": "Voreinstellung",
-        "upload": "Hochladen"
+        "upload": "Hochladen",
+        "upload_success": "Hochladen erfolgreich"
     },
     "errors": {
       "general": "Der Vorgang ist fehlgeschlagen",
