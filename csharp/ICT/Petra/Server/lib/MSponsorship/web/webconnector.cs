@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -189,6 +189,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                    PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                 });
 
             bool isSponsoredChild = false;
@@ -294,6 +295,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         public static bool MaintainChildComments(
             string AComment,
             string ACommentType,
+            Int32 AIndex,
             Int64 APartnerKey,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -307,8 +309,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
               return false;
             }
 
-            string dummy = "0";
+            string dummy = "";
             CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+
+            PPartnerCommentRow CommentRow = CurrentEdit.PPartnerComment.NewRowTyped(true);
+            CommentRow.PartnerKey = APartnerKey;
+            CommentRow.Comment = AComment;
+            CommentRow.CommentType = ACommentType;
+            CommentRow.Index = AIndex;
+            CommentRow.Sequence = 0; // nobody cares about this value but it must be set
+            CurrentEdit.PPartnerComment.Rows.Add( CommentRow );
 
             try
             {
