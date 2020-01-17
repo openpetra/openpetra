@@ -102,6 +102,17 @@ var MaintainChildren = new (class {
 
   }
 
+  photoPreview() {
+    var PhotoField = $("#detail_modal [name=new_photo]");
+    var Reader = new FileReader();
+    Reader.onload = function (event) {
+      let file_content = event.target.result;
+      file_content = btoa(file_content);
+      $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+file_content);
+    }
+    Reader.readAsBinaryString(PhotoField[0].files[0]);
+  }
+
   uploadNewPhoto() {
     var PhotoField = $("#detail_modal [name=new_photo]");
     let name = PhotoField.val();
@@ -130,9 +141,9 @@ var MaintainChildren = new (class {
       api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req)
       .then(function (data) {
           var parsed = JSON.parse(data.data.d);
-
-          console.log(parsed);
-
+          if (parsed.result) {
+            display_message( i18next.t("upload_success"), "success");
+          }
       });
     }
 
