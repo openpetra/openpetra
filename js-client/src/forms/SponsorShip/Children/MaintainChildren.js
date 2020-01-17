@@ -45,9 +45,12 @@ var MaintainChildren = new (class {
       "APartnerKey": $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
     };
 
+    this.showWindow(null, "details");
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
+
+        console.log(parsed);
 
         var ASponsorshipStatus = parsed.ASponsorshipStatus;
         var partner = parsed.result.PPartner[0];
@@ -58,21 +61,19 @@ var MaintainChildren = new (class {
         insertData("#detail_modal", family);
         $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+family.p_photo_b);
 
-        $("#detail_modal").modal("show");
 
-        console.log(ASponsorshipStatus);
-        console.log(partner);
-        console.log(family);
+        $("#detail_modal").modal("show");
       }
     );
 
   }
 
-  showWindow(HTMLAnchor) {
+  showWindow(HTMLAnchor, overwrite) {
     // hide all windows in #multi_window and only show the one related to the link
     // also updates buttons
 
     var show = $(HTMLAnchor).attr("show");
+    if (overwrite) { show = overwrite; }
 
     // nav-bar
     $("[role=tablist] [show]").removeClass("active");
