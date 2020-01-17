@@ -38,11 +38,11 @@ var MaintainChildren = new (class {
     );
   }
 
-  detail(HTMLButtom) {
+  detail(HTMLButtom, overwrite) {
     // get details for the child the user clicked on and open modal
 
     var req = {
-      "APartnerKey": $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
+      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
     };
 
     this.showWindow(null, "details");
@@ -158,15 +158,67 @@ var MaintainChildComments = new (class {
 
   }
 
-  showCreate() {}
-
   build(result) {
     // builds the entrys as rows in there location
     // requires a list of PPartnerComment API data
 
-    console.log(result);
+    var CommentsFamily = $("#detail_modal [window=family_situations] .container-list").html("");
+    var CommentsSchool = $("#detail_modal [window=school_situations] .container-list").html("");
+
+    for (var comment of result) {
+      var Copy = $("[phantom] .comment").clone();
+      insertData(Copy, comment);
+      switch (comment.p_comment_type_c) {
+        case "FAMILY": CommentsFamily.append(Copy); break;
+        case "SCHOOL": CommentsFamily.append(Copy); break;
+        default: break;
+      }
+    }
+  }
+
+  showCreate(type) {
+
+    var ddd = {
+      "p_partner_key_n" : $("#detail_modal [name=p_partner_key_n]").val(),
+      "p_index_i" : ($(`#detail_modal .${type}.container-list > *`).length + 1),
+      "p_comment_c" : "",
+      "p_comment_type_c" : type
+    };
+
+    insertData("#comment_modal", ddd);
+    $("#comment_modal").modal("show");
+  }
+
+  saveEdit() {
+
+    var req = translate_to_server(extractData($("#comment_modal")));
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildComments', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        $("#comment_modal").modal("hide");
+        MaintainChildren.detail(null, req["APartnerKey"]);
+      }
+    );
 
   }
 
+  detail(HTMLButtom) {
+
+  }
 
 })
+
+// fix for muti modals, maybe move this to a global file?
+$(document).ready(function () {
+
+  $(document).on('show.bs.modal', '.modal', function (event) {
+    var zIndex = 1040 + (10 * $('.modal:visible').length);
+    $(this).css('z-index', zIndex);
+    setTimeout(function() {
+      $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+    }, 0);
+  });
+
+
+});
