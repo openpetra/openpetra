@@ -76,7 +76,15 @@ namespace Ict.Common.Remoting.Shared
 
                     foreach (DataColumn col in dt.Columns)
                     {
-                        row.Add(col.ColumnName.Trim(), dr[col]);
+                        // we want DateTime in ISO format
+                        if (dr[col] is DateTime || dr[col] is DateTime?)
+                        {
+                            row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]));
+                        }
+                        else
+                        {
+                            row.Add(col.ColumnName.Trim(), dr[col]);
+                        }
                     }
 
                     table.Add(row);
@@ -104,7 +112,7 @@ namespace Ict.Common.Remoting.Shared
                 foreach (DataColumn col in ATable.Columns)
                 {
                     // we want DateTime in ISO format
-                    if (dr[col] is DateTime)
+                    if (dr[col] is DateTime || dr[col] is DateTime?)
                     {
                         row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]));
                     }
@@ -185,6 +193,18 @@ namespace Ict.Common.Remoting.Shared
             if (o.GetType() == typeof(DateTime))
             {
                 return ((DateTime)o).ToString("s");
+            }
+
+            if (o.GetType() == typeof(DateTime?))
+            {
+                DateTime? dt = (DateTime?)o;
+
+                if (dt.HasValue)
+                {
+                    return dt.Value.ToString("s");
+                }
+
+                return String.Empty;
             }
 
             if (o is Type)
