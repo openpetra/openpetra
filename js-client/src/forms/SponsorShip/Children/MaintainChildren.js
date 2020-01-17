@@ -56,7 +56,7 @@ var MaintainChildren = new (class {
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
-        $("#detail_modal [name='p_photo_b']").attr("src", partner.p_photo_b);
+        $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+family.p_photo_b);
 
         $("#detail_modal").modal("show");
 
@@ -123,6 +123,7 @@ var MaintainChildren = new (class {
       var req = {
         "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
         "AUploadPhoto":true,
+        "ADateOfBirth": "null",
         "APhoto":file_content
       };
 
@@ -135,7 +136,7 @@ var MaintainChildren = new (class {
       });
     }
 
-    Reader.readAsText(PhotoField[0].files[0]);
+    Reader.readAsBinaryString(PhotoField[0].files[0]);
 
   }
 
