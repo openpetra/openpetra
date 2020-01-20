@@ -56,7 +56,9 @@ var MaintainChildren = new (class {
         var partner = parsed.result.PPartner[0];
         var family = parsed.result.PFamily[0];
         var comments = parsed.result.PPartnerComment;
+        var recurring = parsed.result.ARecurringGiftDetail;
 
+        MaintainChildSponsorship.build(recurring);
         MaintainChildComments.build(comments);
 
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
@@ -200,6 +202,38 @@ var MaintainChildComments = new (class {
         MaintainChildren.detail(null, req["APartnerKey"]);
       }
     );
+
+  }
+
+  detail(HTMLButtom) {
+
+  }
+
+})
+
+var MaintainChildSponsorship = new (class {
+  constructor() {
+
+  }
+
+  build(result) {
+    // builds the entrys as rows in there location
+    // requires a list of ARecurringGiftDetail API data
+
+    var SponsorList = $("#detail_modal [window=sponsorship] .container-list").html("");
+
+    for (var sponsorship of result) {
+      var Copy = $("[phantom] .sponsorship").clone();
+      insertData(Copy, sponsorship);
+      SponsorList.append(Copy);
+    }
+  }
+
+  showCreate() {
+
+  }
+
+  saveEdit() {
 
   }
 
