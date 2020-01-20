@@ -54,6 +54,9 @@
   <div class="row">
     <div class="col">
       <button type="submit" class="btn btn-primary">{forms.filter}</button>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.showCreate()">{forms.new}</button>
+    </div>
+    <div class="col">
     </div>
   </div>
 
@@ -118,7 +121,7 @@
 
 </div>
 
-<div class="modal modal-wide fade" tabindex="-2" role="dialog" id="detail_modal">
+<div class="modal modal-wide fade" tabindex="-2" role="dialog" id="detail_modal" mode="create/edit">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -128,7 +131,7 @@
 
         <div class="container">
 
-          <div class="row">
+          <div class="row" mode-hide="create">
             <div class="col">
               <span>{partner_key}</span>
             </div>
@@ -166,7 +169,7 @@
             </div>
           </div>
 
-          <ul class="nav nav-tabs" role="tablist">
+          <ul class="nav nav-tabs" role="tablist" mode-hide="create">
 
             <li class="nav-item">
               <a class="nav-link active" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="details">{details}</a>
@@ -235,7 +238,7 @@
 
                 </div>
                 <!-- right / photo -->
-                <div class="col">
+                <div class="col" mode-hide="create">
                   <div class="row">
                     <div class="col">
                       <img name="p_photo_b" src="" alt="photo" height="256">

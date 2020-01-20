@@ -66,6 +66,7 @@ var MaintainChildren = new (class {
 
         $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+family.p_photo_b);
 
+        $("#detail_modal").attr("mode", "edit");
         $("#detail_modal").modal("show");
       }
     );
@@ -91,13 +92,21 @@ var MaintainChildren = new (class {
 
   saveEdit() {
 
+    var MaintainChildrenO = this;
     var req = translate_to_server(extractData($("#detail_modal")));
+
+    var mode = $("#detail_modal").attr("mode");
+    if (mode == "create") { req["APartnerKey"] = -1; }
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
         if (parsed.result) {
           display_message( i18next.t("forms.saved"), "success");
+          if (mode == "create") {
+            $("#detail_modal").modal("hide");
+            MaintainChildrenO.filterShow();
+          }
         }
       }
     );
@@ -151,6 +160,13 @@ var MaintainChildren = new (class {
 
     Reader.readAsBinaryString(PhotoField[0].files[0]);
 
+  }
+
+  showCreate() {
+    resetInput("#detail_modal");
+    $("#detail_modal img").attr("src", "");
+    $("#detail_modal").attr("mode", "create");
+    $("#detail_modal").modal("show");
   }
 
 })

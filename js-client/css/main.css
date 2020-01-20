@@ -144,6 +144,9 @@ html {
 .container-list > * { background-color: #00000022; }
 .container-list > *:nth-child(even) { background-color: #00000033; }
 
+[mode=create] [mode-hide=create] {display: none;}
+[mode=edit] [mode-hide=edit] {display: none;}
+
 .home .row a, .dashboard .row a {
   margin: 1em;
   display: flex;

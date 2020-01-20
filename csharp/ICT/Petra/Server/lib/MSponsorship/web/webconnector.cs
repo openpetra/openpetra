@@ -204,8 +204,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             	ASponsorshipStatus = type.TypeCode;
             }
 
-            MainDS.PPartnerType.Clear();
-
             if (!isSponsoredChild)
             {
                 return new SponsorshipTDS();
@@ -255,12 +253,23 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
             else
             {
-
                 CurrentEdit.PFamily[0].FirstName = AFirstName;
                 CurrentEdit.PFamily[0].FamilyName = AFamilyName;
                 CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
                 CurrentEdit.PFamily[0].Gender = AGender;
                 CurrentEdit.PPartner[0].UserId = AUserId;
+
+                // only on a actuall change, else skip this
+                if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
+                {
+                    CurrentEdit.PPartnerType.Rows.Clear();
+                    PPartnerTypeRow TypeRow = CurrentEdit.PPartnerType.NewRowTyped(true);
+
+                    TypeRow.TypeCode = ASponsorshipStatus;
+                    TypeRow.PartnerKey = CurrentEdit.PPartner[0].PartnerKey;
+
+                    CurrentEdit.PPartnerType.Rows.Add(TypeRow);
+                }
 
             }
 
