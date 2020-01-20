@@ -236,15 +236,48 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
 
-                    int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, false, Transaction);
+                    int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
 
                     if (SponsorshipBatchNumber > -1)
                     {
+                        ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
                         ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
 
-                        // TODO: for each recurring gift detail row, set the donor key from the appropriate recurring gift
+                        foreach (SponsorshipTDSARecurringGiftDetailRow gd in MainDS.ARecurringGiftDetail.Rows)
+                        {
+                            // drop all recurring gift details, that are not related to this child (RecipientKey)
+                            if (gd.RecipientKey != APartnerKey)
+                            {
+                                MainDS.ARecurringGiftDetail.Rows.Remove(gd);
+                            }
+                            else
+                            {
+                                // set the donor key from the appropriate recurring gift
+                                MainDS.ARecurringGift.DefaultView.RowFilter = String.Format("{0} = {1}",
+                                    ARecurringGiftTable.GetGiftTransactionNumberDBName(),
+                                    gd.GiftTransactionNumber);
 
-                        // TODO: drop all recurring gift details, that are not related to this child (RecipientKey)
+                                // there should be only one row
+                                foreach (DataRowView drv in MainDS.ARecurringGift.DefaultView)
+                                {
+                                    ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
+                                    gd.DonorKey = recurrGiftRow.DonorKey;
+                                }
+                            }
+                        }
+
+                        // drop all unrelated gift rows, that don't have a detail for this child
+                        foreach (ARecurringGiftRow gr in MainDS.ARecurringGift.Rows)
+                        {
+                            MainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1}",
+                                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                                gr.GiftTransactionNumber);
+
+                            if (MainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+                            {
+                                MainDS.ARecurringGift.Rows.Remove(gr);
+                            }
+                        }
                     }
                 });
 
@@ -305,7 +338,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
 
-            // we only save pictues if there is a value in the request
+            // we only save pictures if there is a value in the request
             if (AUploadPhoto)
             {
                 CurrentEdit.PFamily[0].Photo = APhoto;
@@ -321,25 +354,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             }
 
-/*
-                List<string> Dummy1, Dummy2;
-                string Dummy3, Dummy4, Dummy5;
-                // TODO
-                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
-                DataUtilities.CopyDataSet(AMainDS, SaveDS);
-*/
-
             CurrentEdit.PPartner[0].PartnerShortName =
                     Calculations.DeterminePartnerShortName(
                         CurrentEdit.PFamily[0].FamilyName,
                         CurrentEdit.PFamily[0].Title,
                         CurrentEdit.PFamily[0].FirstName);
-
-            // update the recurring gift batch
-            int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true);
-           
-            // update or insert recurring gifts 
-
 
             try
             {
