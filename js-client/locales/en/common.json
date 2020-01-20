@@ -652,6 +652,11 @@
       "bording_school":"Bording school",
       "children_home":"Children home",
       "home_based":"Home based",
-      "previous_child":"Prevous child"
+      "previous_child":"Prevous child",
+      "donor":"Donor",
+      "type":"Type",
+      "amount":"Amount",
+      "start_date":"Valid from",
+      "end_date":"Valid until"
     }
 }

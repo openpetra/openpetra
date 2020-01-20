@@ -649,6 +649,11 @@
       "bording_school":"Besucht die Schule",
       "children_home":"Im Kinderheim",
       "home_based":"Zu Hause",
-      "previous_child":"Ehemaliges Kind"
+      "previous_child":"Ehemaliges Kind",
+      "donor":"Spender",
+      "type":"Verwendungszweck",
+      "amount":"Betrag",
+      "start_date":"Gültig ab",
+      "end_date":"Gültig bis"
     }
 }
