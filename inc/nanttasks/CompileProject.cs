@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -325,6 +325,12 @@ namespace Ict.Tools.NAntTasks
             {
                 parameters.GenerateExecutable = true;
                 OutputFile += ".exe";
+            }
+
+            if (File.Exists(OutputFile))
+            {
+                // if compilation fails, we want compileProject -D:onlyonce=true to pick up this project
+                File.Delete(OutputFile);
             }
 
             // needed because of sqlite3.dll, when compiling on Linux for Windows
