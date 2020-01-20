@@ -657,6 +657,10 @@
       "type":"Type",
       "amount":"Amount",
       "start_date":"Valid from",
-      "end_date":"Valid until"
+      "end_date":"Valid until",
+      "date":"Date",
+      "description":"Description",
+      "notification_date":"Notification date",
+      "notes":"Notes"
     }
 }

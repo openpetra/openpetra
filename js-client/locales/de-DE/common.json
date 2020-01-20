@@ -633,10 +633,11 @@
       "account_end": "Bis Konto"
     },
     "MaintainChildren": {
+      "caption":"Kinder Patenschaften bearbeiten",
       "edittitle": "Kind bearbeiten",
       "partner_key": "Partnerschlüssel",
       "partner_status": "Status",
-      "partner_firstname": "Voname",
+      "partner_firstname": "Vorname",
       "partner_lastname": "Nachname",
       "gender": "Geschlecht",
       "birthday": "Geburtstag",
@@ -654,6 +655,10 @@
       "type":"Verwendungszweck",
       "amount":"Betrag",
       "start_date":"Gültig ab",
-      "end_date":"Gültig bis"
+      "end_date":"Gültig bis",
+      "date":"Datum",
+      "description":"Beschreibung",
+      "notification_date":"Beschreibung-Datum",
+      "notes":"Notizen"
     }
 }
