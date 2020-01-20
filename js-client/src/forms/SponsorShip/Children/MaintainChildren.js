@@ -50,20 +50,20 @@ var MaintainChildren = new (class {
       function (data) {
         var parsed = JSON.parse(data.data.d);
 
-        console.log(parsed);
-
         var ASponsorshipStatus = parsed.ASponsorshipStatus;
         var partner = parsed.result.PPartner[0];
         var family = parsed.result.PFamily[0];
         var comments = parsed.result.PPartnerComment;
         var recurring = parsed.result.ARecurringGiftDetail;
 
-        MaintainChildSponsorship.build(recurring);
-        MaintainChildComments.build(comments);
 
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
+
+        MaintainChildSponsorship.build(recurring);
+        MaintainChildComments.build(comments);
+
         $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+family.p_photo_b);
 
         $("#detail_modal").modal("show");
@@ -157,7 +157,7 @@ var MaintainChildren = new (class {
 
 var MaintainChildComments = new (class {
   constructor() {
-
+    this.highest_index = 0;
   }
 
   build(result) {
@@ -167,12 +167,23 @@ var MaintainChildComments = new (class {
     var CommentsFamily = $("#detail_modal [window=family_situations] .container-list").html("");
     var CommentsSchool = $("#detail_modal [window=school_situations] .container-list").html("");
 
+    this.highest_index = 0;
+
     for (var comment of result) {
       var Copy = $("[phantom] .comment").clone();
+
+      // save current highest index
+      this.highest_index = comment["p_index_i"]
+
+      // short comment in preview
+      if (comment["p_comment_c"].length > 32) {
+        comment["p_comment_c"] = comment["p_comment_c"].substring(0, 30) + "..";
+      }
+
       insertData(Copy, comment);
       switch (comment.p_comment_type_c) {
         case "FAMILY": CommentsFamily.append(Copy); break;
-        case "SCHOOL": CommentsFamily.append(Copy); break;
+        case "SCHOOL": CommentsSchool.append(Copy); break;
         default: break;
       }
     }
@@ -182,7 +193,7 @@ var MaintainChildComments = new (class {
 
     var ddd = {
       "p_partner_key_n" : $("#detail_modal [name=p_partner_key_n]").val(),
-      "p_index_i" : ($(`#detail_modal .${type}.container-list > *`).length + 1),
+      "p_index_i" : (this.highest_index + 1),
       "p_comment_c" : "",
       "p_comment_type_c" : type
     };

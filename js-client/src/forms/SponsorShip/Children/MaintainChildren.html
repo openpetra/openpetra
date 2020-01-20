@@ -82,17 +82,15 @@
 
   <div class="row comment">
     <div class="col">
-      <span type="text" name=""></span>
+      <span name="s_date_created_d"></span>
     </div>
     <div class="col">
-      <data name="p_partner_key_n" value="-1"></data>
-      <data name="p_index_i" value="-1"></data>
-      <data name="p_comment_type_c" value="-1"></data>
-    </div>
-    <div class="col">
-      <span type="text" name="p_comment_c"></span>
+      <span name="p_comment_c"></span>
     </div>
     <div class="col-1">
+      <data name="p_comment_type_c" value="-1"></data>
+      <data name="p_index_i" value="-1"></data>
+      <data name="p_partner_key_n" value="-1"></data>
       <button type="button" class="btn btn-primary" onclick="MaintainChildComments.detail(this)"><i class="fas fa-wrench"></i></button>
     </div>
   </div>
@@ -338,7 +336,7 @@
                 <div class="col">
                   <span>{notes}</span>
                 </div>
-                <div class="col">
+                <div class="col-1">
                   <!-- placeholder for btn col -->
                 </div>
               </div>
