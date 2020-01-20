@@ -12,7 +12,9 @@
 
       <Table sqltable="a_recurring_gift_batch"/>
       <Table sqltable="a_recurring_gift"/>
-      <Table sqltable="a_recurring_gift_detail"/>
+      <Table sqltable="a_recurring_gift_detail">
+          <Field sqltable="a_recurring_gift" sqlfield="p_donor_key_n"/>
+      </Table>
   </DataSet>
 
   <DataSet name="SponsorshipFindTDS">

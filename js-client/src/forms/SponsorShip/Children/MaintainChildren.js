@@ -42,7 +42,8 @@ var MaintainChildren = new (class {
     // get details for the child the user clicked on and open modal
 
     var req = {
-      "APartnerKey": $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
+      "APartnerKey": $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val(),
+      "ALedgerNumber": window.localStorage.getItem('current_ledger')
     };
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
