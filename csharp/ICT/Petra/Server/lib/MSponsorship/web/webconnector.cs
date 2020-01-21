@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
@@ -172,11 +173,56 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             return MainDS;
         }
 
+        /// returns the number of the recurring gift batch
+        private static Int32 GetRecurringGiftBatchForSponsorship(Int32 ALedgerNumber, bool ACreateBatch, TDBTransaction ATransaction = null)
+        {
+            const string BATCHNAME_SPONSORSHIP = "SPONSORSHIP";
+            string sql = "SELECT MAX(a_batch_number_i) FROM a_recurring_gift_batch WHERE a_ledger_number_i = " + ALedgerNumber.ToString() +
+                " AND a_batch_description_c LIKE '" + BATCHNAME_SPONSORSHIP + "'";
+            object result = ATransaction.DataBaseObj.ExecuteScalar(sql, ATransaction);
+
+            // if no batch exists, the result will be System.DBNull
+            if (result is Int32)
+            {
+                return Convert.ToInt32(result);
+            }
+
+            if (ACreateBatch)
+            {
+                TDataBase db = null;
+
+                if (ATransaction == null)
+                {
+                    db = DBAccess.Connect("GetRecurringGiftBatchForSponsorship");
+                }
+                else
+                {
+                    db = ATransaction.DataBaseObj;
+                }
+
+                SponsorshipTDS MainDS = new SponsorshipTDS();
+                ARecurringGiftBatchRow b = MainDS.ARecurringGiftBatch.NewRowTyped(true);
+                b.BatchDescription = BATCHNAME_SPONSORSHIP;
+                MainDS.ARecurringGiftBatch.Rows.Add(b);
+                SponsorshipTDSAccess.SubmitChanges(MainDS, db);
+
+                if (ATransaction == null)
+                {
+                    db.CloseDBConnection();
+                }
+
+                return MainDS.ARecurringGiftBatch[0].BatchNumber;
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// return the existing data of a child
         /// </summary>
         [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
         public static SponsorshipTDS GetChildDetails(Int64 APartnerKey,
+            Int32 ALedgerNumber,
             out string ASponsorshipStatus)
         {
             SponsorshipTDS MainDS = new SponsorshipTDS();
@@ -190,6 +236,50 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+
+                    int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
+
+                    if (SponsorshipBatchNumber > -1)
+                    {
+                        ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
+                        ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
+
+                        foreach (SponsorshipTDSARecurringGiftDetailRow gd in MainDS.ARecurringGiftDetail.Rows)
+                        {
+                            // drop all recurring gift details, that are not related to this child (RecipientKey)
+                            if (gd.RecipientKey != APartnerKey)
+                            {
+                                MainDS.ARecurringGiftDetail.Rows.Remove(gd);
+                            }
+                            else
+                            {
+                                // set the donor key from the appropriate recurring gift
+                                MainDS.ARecurringGift.DefaultView.RowFilter = String.Format("{0} = {1}",
+                                    ARecurringGiftTable.GetGiftTransactionNumberDBName(),
+                                    gd.GiftTransactionNumber);
+
+                                // there should be only one row
+                                foreach (DataRowView drv in MainDS.ARecurringGift.DefaultView)
+                                {
+                                    ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
+                                    gd.DonorKey = recurrGiftRow.DonorKey;
+                                }
+                            }
+                        }
+
+                        // drop all unrelated gift rows, that don't have a detail for this child
+                        foreach (ARecurringGiftRow gr in MainDS.ARecurringGift.Rows)
+                        {
+                            MainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1}",
+                                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                                gr.GiftTransactionNumber);
+
+                            if (MainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+                            {
+                                MainDS.ARecurringGift.Rows.Remove(gr);
+                            }
+                        }
+                    }
                 });
 
             bool isSponsoredChild = false;
@@ -226,6 +316,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string AGender,
             string AUserId,
             Int64 APartnerKey,
+            Int32 ALedgerNumber,
             out TVerificationResultCollection AVerificationResult)
         {
 
@@ -242,11 +333,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 // else we try to get a entry based on the partner key
                 string dummy = "0";
-                CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+                CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, out dummy);
             }
 
 
-            // we only save pictues if there is a value in the request
+            // we only save pictures if there is a value in the request
             if (AUploadPhoto)
             {
                 CurrentEdit.PFamily[0].Photo = APhoto;
@@ -272,14 +363,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 }
 
             }
-
-            /*
-                List<string> Dummy1, Dummy2;
-                string Dummy3, Dummy4, Dummy5;
-                // TODO
-                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
-                DataUtilities.CopyDataSet(AMainDS, SaveDS);
-            */
 
             CurrentEdit.PPartner[0].PartnerShortName =
                     Calculations.DeterminePartnerShortName(
