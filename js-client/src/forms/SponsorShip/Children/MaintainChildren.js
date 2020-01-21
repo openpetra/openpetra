@@ -42,8 +42,7 @@ var MaintainChildren = new (class {
     // get details for the child the user clicked on and open modal
 
     var req = {
-      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val(),
-      "ALedgerNumber": window.localStorage.getItem('current_ledger')
+      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
     };
 
     this.showWindow(null, "details");

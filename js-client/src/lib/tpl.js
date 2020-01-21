@@ -376,6 +376,14 @@ function insertData(o, d, to_string=false) {
         f = $(f);
         if (f.attr("type") == "checkbox") {
           if ( v ) { f.prop("checked", true) } else { f.prop("checked", false) }
+        } else if (f.attr("type") == "date") {
+          v = new Date(v);
+          let YYYY = v.getFullYear();
+          let MM = v.getMonth() + 1;
+          let DD = v.getDate();
+          MM = (MM < 10 ? "0" : "") + MM;
+          DD = (DD < 10 ? "0" : "") + DD;
+          f.val( `${YYYY}-${MM}-${DD}` );
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
           f.text( v );
         } else {
