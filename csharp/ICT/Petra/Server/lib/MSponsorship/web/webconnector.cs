@@ -325,13 +325,34 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string dummy = "";
             CurrentEdit = GetChildDetails(APartnerKey, out dummy);
 
-            PPartnerCommentRow CommentRow = CurrentEdit.PPartnerComment.NewRowTyped(true);
-            CommentRow.PartnerKey = APartnerKey;
-            CommentRow.Comment = AComment;
-            CommentRow.CommentType = ACommentType;
-            CommentRow.Index = AIndex;
-            CommentRow.Sequence = 0; // nobody cares about this value but it must be set
-            CurrentEdit.PPartnerComment.Rows.Add( CommentRow );
+            PPartnerCommentRow EditCommentRow = null;
+
+            // since we get a index from the user (and i don't know how to request one of them)
+            // we loop over all comments, edit it if we found it, and if it's null we add a new one
+            foreach (PPartnerCommentRow CommentRow in CurrentEdit.PPartnerComment.Rows)
+            {
+                if (CommentRow.Index == AIndex)
+                {
+                    EditCommentRow = CommentRow;
+                    break;
+                }
+            }
+
+            // edit
+            if (EditCommentRow != null)
+            {
+                EditCommentRow.Comment = AComment;
+            }
+            else
+            {
+                PPartnerCommentRow NewCommentRow = CurrentEdit.PPartnerComment.NewRowTyped(true);
+                NewCommentRow.PartnerKey = APartnerKey;
+                NewCommentRow.Comment = AComment;
+                NewCommentRow.CommentType = ACommentType;
+                NewCommentRow.Index = AIndex;
+                NewCommentRow.Sequence = 0; // nobody cares about this value but it must be set
+                CurrentEdit.PPartnerComment.Rows.Add( NewCommentRow );
+            }
 
             try
             {

@@ -215,6 +215,7 @@ var MaintainChildComments = new (class {
     };
 
     insertData("#comment_modal", ddd);
+    $("#comment_modal").attr("mode", "create");
     $("#comment_modal").modal("show");
   }
 
@@ -233,7 +234,33 @@ var MaintainChildComments = new (class {
   }
 
   detail(HTMLButtom) {
+    HTMLButtom = $(HTMLButtom).closest(".comment");
 
+    var comment_index = HTMLButtom.find("[name=p_index_i]").val();
+    var partner_key = HTMLButtom.find("[name=p_partner_key_n]").val();
+
+    var req = { "APartnerKey": partner_key };
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        var edit_comment = null;
+
+        for (var comment of parsed.result.PPartnerComment) {
+          if (comment.p_index_i == comment_index) {
+            edit_comment = comment;
+            break;
+          }
+        }
+
+        if (!edit_comment) { return; }
+
+        insertData("#comment_modal", edit_comment);
+        $("#comment_modal").attr("mode", "edit");
+        $("#comment_modal").modal("show");
+
+      }
+    );
   }
 
 })
