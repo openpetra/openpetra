@@ -304,6 +304,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
         }
 
+        /// maintain comments about the child
         [RequireModulePermission("SPONSORADMIN")]
         public static bool MaintainChildComments(
             string AComment,
