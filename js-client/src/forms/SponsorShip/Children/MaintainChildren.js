@@ -145,7 +145,6 @@ var MaintainChildren = new (class {
       var req = {
         "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
         "AUploadPhoto":true,
-        "ADateOfBirth": "null",
         "APhoto":file_content
       };
 

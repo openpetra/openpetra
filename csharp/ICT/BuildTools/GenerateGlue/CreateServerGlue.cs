@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -287,7 +287,7 @@ namespace GenerateGlue
                 {
                     snippet.AddToCodelet(
                         "LOCALVARIABLES",
-                        parametertype + " Local" + p.ParameterName + " = " + p.ParameterName + " == \"null\"?(DateTime?)null:DateTime.Parse(" + p.ParameterName + ", null, System.Globalization.DateTimeStyles.RoundtripKind);" +
+                        parametertype + " Local" + p.ParameterName + " = (" + p.ParameterName + " == \"null\" || " + p.ParameterName + " == null)?(DateTime?)null:DateTime.Parse(" + p.ParameterName + ", null, System.Globalization.DateTimeStyles.RoundtripKind);" +
                         Environment.NewLine);
                 }
 
