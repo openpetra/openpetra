@@ -18,9 +18,11 @@ export OPENPETRA_PORT=6700
 export OPENPETRA_USER_PREFIX=op_
 export THIS_SCRIPT=$0
 
-if [[ ! -z "`cat /usr/lib/systemd/system/openpetra.service | grep postgresql`" ]]; then
+if [ -f /usr/lib/systemd/system/openpetra.service ]; then
+  if [[ ! -z "`cat /usr/lib/systemd/system/openpetra.service | grep postgresql`" ]]; then
     export OPENPETRA_DBPORT=5432
     export OPENPETRA_RDBMSType=postgresql
+  fi
 fi
 
 generatepwd() {
