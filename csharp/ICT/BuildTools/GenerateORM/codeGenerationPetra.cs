@@ -50,15 +50,19 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
 //          Console.WriteLine("ToOdbcTypeString[" + tableField.strTableName + "]." + tableField.strName + ": "+ tableField.strType + "/" + tableField.strTypeDotNet);
 
-            if ((tableField.strType == "number") && (tableField.iLength == 24))
+            if ((tableField.strType == "number") && (tableField.iLength == 24 || tableField.iDecimals > 0))
             {
-                // currency value. This length="24" attribute is not consistently applied - check XML files
-                // by un-commenting the Writelns here before assuming that all the field definitions are correct.
-
-//              Console.WriteLine("tableField.iLength == 24 in [" + tableField.strTableName + "]." + tableField.strName);
                 return "OdbcType.Decimal";
             }
-            else if ((tableField.strType == "number") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("int64")))
+            else if (tableField.strTypeDotNet.ToLower().Contains("int64"))
+            {
+                return "OdbcType.BigInt";
+            }
+            else if ((tableField.strType == "number") && (tableField.iLength <= 10))
+            {
+                return "OdbcType.BigInt";
+            }
+            else if (tableField.strType == "number")
             {
                 return "OdbcType.Decimal";
             }
