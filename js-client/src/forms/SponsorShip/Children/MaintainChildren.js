@@ -55,7 +55,7 @@ var MaintainChildren = new (class {
         var family = parsed.result.PFamily[0];
         var comments = parsed.result.PPartnerComment;
         var recurring = parsed.result.ARecurringGiftDetail;
-
+        var reminder = parsed.result.PPartnerReminder;
 
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
@@ -63,6 +63,7 @@ var MaintainChildren = new (class {
 
         MaintainChildSponsorship.build(recurring);
         MaintainChildComments.build(comments);
+        MaintainChildReminders.build(reminder);
 
         $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+family.p_photo_b);
 
@@ -293,6 +294,98 @@ var MaintainChildSponsorship = new (class {
 
   detail(HTMLButtom) {
 
+  }
+
+})
+
+var MaintainChildReminders = new (class {
+  constructor() {
+    this.highest_index = 0;
+  }
+
+  build(result) {
+    // builds the entrys as rows in there location
+    // requires a list of PPartnerReminder API data
+
+    var Reminders = $("#detail_modal [window=dates_reminder] .container-list").html("");
+
+    this.highest_index = 0;
+
+    for (var reminder of result) {
+      console.log(reminder);
+
+      var Copy = $("[phantom] .reminder").clone();
+
+      // save current highest index
+      this.highest_index = reminder["p_index_i"]
+
+      // short reminder in preview
+      if (reminder["p_comment_c"].length > 32) {
+        reminder["p_comment_c"] = reminder["p_comment_c"].substring(0, 30) + "..";
+      }
+
+      insertData(Copy, reminder);
+      Reminders.append(Copy);
+    }
+  }
+
+  showCreate(type) {
+
+    var ddd = {
+      "p_partner_key_n": $("#detail_modal [name=p_partner_key_n]").val(),
+      "p_reminder_id_i": (this.highest_index + 1),
+      "p_comment_c" : "",
+      "p_event_date_d": "",
+      "p_first_reminder_date_d": ""
+    };
+
+    insertData("#reminder_modal", ddd);
+    $("#reminder_modal").attr("mode", "create");
+    $("#reminder_modal").modal("show");
+  }
+
+  saveEdit() {
+
+    var req = translate_to_server(extractData($("#reminder_modal")));
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildReminders', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        $("#reminder_modal").modal("hide");
+        MaintainChildren.detail(null, req["APartnerKey"]);
+      }
+    );
+
+  }
+
+  detail(HTMLButtom) {
+    HTMLButtom = $(HTMLButtom).closest(".comment");
+
+    var comment_index = HTMLButtom.find("[name=p_index_i]").val();
+    var partner_key = HTMLButtom.find("[name=p_partner_key_n]").val();
+
+    var req = { "APartnerKey": partner_key };
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        var edit_comment = null;
+
+        for (var comment of parsed.result.PPartnerComment) {
+          if (comment.p_index_i == comment_index) {
+            edit_comment = comment;
+            break;
+          }
+        }
+
+        if (!edit_comment) { return; }
+
+        insertData("#comment_modal", edit_comment);
+        $("#comment_modal").attr("mode", "edit");
+        $("#comment_modal").modal("show");
+
+      }
+    );
   }
 
 })
