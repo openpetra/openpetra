@@ -190,6 +190,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                    PPartnerReminderAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                 });
 
             bool isSponsoredChild = false;
@@ -259,7 +260,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 CurrentEdit.PFamily[0].Gender = AGender;
                 CurrentEdit.PPartner[0].UserId = AUserId;
 
-                // only on a actuall change, else skip this
+                // only on a actual change, else skip this
                 if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
                 {
                     foreach (PPartnerTypeRow OldTypeRow in CurrentEdit.PPartnerType.Rows)
@@ -318,8 +319,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (APartnerKey == -1)
             {
-              AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
-              return false;
+                AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
+                return false;
             }
 
             string dummy = "";
@@ -351,7 +352,74 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 NewCommentRow.CommentType = ACommentType;
                 NewCommentRow.Index = AIndex;
                 NewCommentRow.Sequence = 0; // nobody cares about this value but it must be set
-                CurrentEdit.PPartnerComment.Rows.Add( NewCommentRow );
+                CurrentEdit.PPartnerComment.Rows.Add(NewCommentRow);
+            }
+
+            try
+            {
+                SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
+        }
+
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool MaintainChildReminders(
+            String AComment,
+            Int32 AReminderId,
+            Int64 APartnerKey,
+            DateTime AEventDate,
+            DateTime AFirstReminderDate,
+            out TVerificationResultCollection AVerificationResult)
+        {
+
+            SponsorshipTDS CurrentEdit;
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (APartnerKey == -1)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            string dummy = "";
+            CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+
+            PPartnerReminderRow EditReminderRow = null;
+
+            // since we get a reminder id from the user (and i don't know how to request one of them)
+            // we loop over all reminders, edit it if we found it, and if it's null we add a new one
+            foreach (PPartnerReminderRow ReminderRow in CurrentEdit.PPartnerReminder.Rows)
+            {
+                if (ReminderRow.ReminderId == AReminderId)
+                {
+                    EditReminderRow = ReminderRow;
+                    break;
+                }
+            }
+
+            // edit
+            if (EditReminderRow != null)
+            {
+                EditReminderRow.EventDate = AEventDate;
+                EditReminderRow.FirstReminderDate = AFirstReminderDate;
+                EditReminderRow.Comment = AComment;
+            }
+            else
+            {
+                PPartnerReminderRow NewReminderRow = CurrentEdit.PPartnerReminder.NewRowTyped(true);
+                NewReminderRow.PartnerKey = APartnerKey;
+                NewReminderRow.EventDate = AEventDate;
+                NewReminderRow.FirstReminderDate = AFirstReminderDate;
+                NewReminderRow.Comment = AComment;
+                NewReminderRow.ReminderId = AReminderId;
+                NewReminderRow.ContactId = 0; // Again, noone wants it, but its needed
+                CurrentEdit.PPartnerReminder.Rows.Add( NewReminderRow );
             }
 
             try
