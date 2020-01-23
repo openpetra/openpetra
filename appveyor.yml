@@ -26,6 +26,6 @@ platform: x86
 build_script:
 - nant generateSolution
 test_script:
-- OP_CUSTOMER=op_dev setup/petra0300/linuxserver/openpetra-server-sh initdb && nant recreateDatabase resetDatabase test-without-display
+- OP_CUSTOMER=op_dev setup/petra0300/linuxserver/openpetra-server.sh initdb && nant recreateDatabase resetDatabase test-without-display
 before_deploy:
 - nant buildRPM
