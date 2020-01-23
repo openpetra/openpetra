@@ -1,6 +1,7 @@
 # see http://www.appveyor.com/docs/appveyor-yml
 image: Ubuntu1804
 version: 1.0.{build}
+stack: mysql
 clone_depth: 1
 init: []
 install:
@@ -15,14 +16,16 @@ install:
 # prepare the config file
 - echo '<?xml version="1.0"?>' > OpenPetra.build.config
 - echo '<project name="OpenPetra-userconfig">' >> OpenPetra.build.config
-- echo '  <property name="DBMS.Type" value="sqlite"/>' >> OpenPetra.build.config
-- echo '  <property name="DBMS.Password" value=""/>' >> OpenPetra.build.config
+- echo '  <property name="DBMS.Type" value="mysql"/>' >> OpenPetra.build.config
+- echo '  <property name="DBMS.DBName" value="op_dev"/>' >> OpenPetra.build.config
+- echo '  <property name="DBMS.UserName" value="op_dev"/>' >> OpenPetra.build.config
+- echo '  <property name="DBMS.Password" value="topsecret"/>' >> OpenPetra.build.config
 - echo '  <property name="Server.Port" value="9000"/>' >> OpenPetra.build.config
 - echo '</project>' >> OpenPetra.build.config
 platform: x86
 build_script:
 - nant generateSolution
 test_script:
-- nant recreateDatabase resetDatabase test-without-display
+- OP_CUSTOMER=op_dev setup/petra0300/linuxserver/openpetra-server-sh initdb && nant recreateDatabase resetDatabase test-without-display
 before_deploy:
 - nant buildRPM
