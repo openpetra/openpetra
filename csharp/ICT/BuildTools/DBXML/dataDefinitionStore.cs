@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1170,7 +1170,7 @@ namespace Ict.Tools.DBXML
             {
                 return "Boolean";
             }
-            else if ((strType.ToLower() == "number") && (iLength == 24))
+            else if ((strType.ToLower() == "number") && (iLength == 24 || iDecimals > 0))
             {
                 return "Decimal";  // 'currency'
             }
