@@ -18,8 +18,16 @@ export OPENPETRA_PORT=6700
 export OPENPETRA_USER_PREFIX=op_
 export THIS_SCRIPT=$0
 
-if [ -f /usr/lib/systemd/system/openpetra.service ]; then
-  if [[ ! -z "`cat /usr/lib/systemd/system/openpetra.service | grep postgresql`" ]]; then
+servicefile=/usr/lib/systemd/system/openpetra.service
+echo "looking for " $servicefile
+if [ ! -f $servicefile ]; then
+  servicefile=/lib/systemd/system/openpetra.service
+echo "looking for " $servicefile
+fi
+
+if [ -f $servicefile ]; then
+echo "we found " $servicefile
+  if [[ ! -z "`cat $servicefile | grep postgresql`" ]]; then
     export OPENPETRA_DBPORT=5432
     export OPENPETRA_RDBMSType=postgresql
   fi
@@ -387,7 +395,12 @@ mysqlinitdb() {
       echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
-      mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createdb-MySQL.sql
+echo "MYSQL ROOT PWD: " $MYSQL_ROOT_PWD
+      if [ ! -z "$MYSQL_ROOT_PWD" ]; then 
+        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql
+      else
+        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createdb-MySQL.sql
+      fi
       rm -f $OpenPetraPath/tmp/createdb-MySQL.sql
     fi
     echo "creating tables..."
