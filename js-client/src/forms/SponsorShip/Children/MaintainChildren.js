@@ -388,6 +388,24 @@ var MaintainChildReminders = new (class {
 
 })
 
+function loadPartnerAdmins() {
+  api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetSponsorAdmins', {}).then(
+    function (data) {
+      var parsed = JSON.parse(data.data.d);
+
+      var TargetFields = $("[name=ASponsorAdmin], [name=p_user_id_c]").html('<option value="">('+i18next.t("forms.any")+')</option>');
+      for (var user of parsed.result) {
+        let NewOption = $("<option></option>");
+        NewOption.attr("value", user.s_user_id_c);
+        NewOption.text(user.s_last_name_c + ", " + user.s_first_name_c);
+        TargetFields.append(NewOption);
+      }
+
+    }
+  );
+
+}
+
 // fix for muti modals, maybe move this to a global file?
 $(document).ready(function () {
 
@@ -399,5 +417,6 @@ $(document).ready(function () {
     }, 0);
   });
 
+  loadPartnerAdmins()
 
 });

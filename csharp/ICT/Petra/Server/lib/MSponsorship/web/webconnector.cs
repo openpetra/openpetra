@@ -33,6 +33,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
@@ -71,10 +72,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             int CountParameters = 0;
             int Pos = 0;
-            CountParameters += (AFirstName != String.Empty ? 1: 0);
-            CountParameters += (ASponsorshipStatus != String.Empty ? 1: 0);
-            CountParameters += (AFamilyName != String.Empty ? 1: 0);
-            CountParameters += (ASponsorAdmin != String.Empty ? 1: 0);
+            CountParameters += (AFirstName != String.Empty ? 1 : 0);
+            CountParameters += (ASponsorshipStatus != String.Empty ? 1 : 0);
+            CountParameters += (AFamilyName != String.Empty ? 1 : 0);
+            CountParameters += (ASponsorAdmin != String.Empty ? 1 : 0);
             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
 
             if (ASponsorshipStatus != String.Empty)
@@ -83,7 +84,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 parameters[Pos] = new OdbcParameter("ASponsorshipStatus", OdbcType.VarChar);
                 parameters[Pos].Value = ASponsorshipStatus;
                 Pos++;
-            } else {
+            }
+            else
+            {
                 sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BORDING_SCHOOL','PREVIOUS_CHILD')";
             }
 
@@ -105,7 +108,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (ASponsorAdmin != String.Empty)
             {
-                sql += " AND '' LIKE ?";
+                sql += " AND p.p_user_id_c LIKE ?";
                 parameters[Pos] = new OdbcParameter("ASponsorAdmin", OdbcType.VarChar);
                 parameters[Pos].Value = ASponsorAdmin;
                 Pos++;
@@ -116,6 +119,32 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 delegate
                 {
                     db.SelectDT(result, sql, t, parameters);
+                });
+
+            db.CloseDBConnection();
+
+            return result;
+        }
+
+        /// <summary>
+        /// find children using filters
+        /// </summary>
+        [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
+        public static SUserTable GetSponsorAdmins()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("FindSponsorAdmins");
+            string sql = "SELECT u.* "+
+                "FROM PUB_s_user_module_access_permission p "+
+                "JOIN PUB_s_user u "+
+                "ON u.s_user_id_c = p.s_user_id_c AND p.s_module_id_c = 'SPONSORADMIN'";
+
+            SUserTable result = new SUserTable();
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    db.SelectDT(result, sql, t);
                 });
 
             db.CloseDBConnection();
