@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
@@ -172,11 +173,56 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             return MainDS;
         }
 
+        /// returns the number of the recurring gift batch
+        private static Int32 GetRecurringGiftBatchForSponsorship(Int32 ALedgerNumber, bool ACreateBatch, TDBTransaction ATransaction = null)
+        {
+            const string BATCHNAME_SPONSORSHIP = "SPONSORSHIP";
+            string sql = "SELECT MAX(a_batch_number_i) FROM a_recurring_gift_batch WHERE a_ledger_number_i = " + ALedgerNumber.ToString() +
+                " AND a_batch_description_c LIKE '" + BATCHNAME_SPONSORSHIP + "'";
+            object result = ATransaction.DataBaseObj.ExecuteScalar(sql, ATransaction);
+
+            // if no batch exists, the result will be System.DBNull
+            if (result is Int32)
+            {
+                return Convert.ToInt32(result);
+            }
+
+            if (ACreateBatch)
+            {
+                TDataBase db = null;
+
+                if (ATransaction == null)
+                {
+                    db = DBAccess.Connect("GetRecurringGiftBatchForSponsorship");
+                }
+                else
+                {
+                    db = ATransaction.DataBaseObj;
+                }
+
+                SponsorshipTDS MainDS = new SponsorshipTDS();
+                ARecurringGiftBatchRow b = MainDS.ARecurringGiftBatch.NewRowTyped(true);
+                b.BatchDescription = BATCHNAME_SPONSORSHIP;
+                MainDS.ARecurringGiftBatch.Rows.Add(b);
+                SponsorshipTDSAccess.SubmitChanges(MainDS, db);
+
+                if (ATransaction == null)
+                {
+                    db.CloseDBConnection();
+                }
+
+                return MainDS.ARecurringGiftBatch[0].BatchNumber;
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// return the existing data of a child
         /// </summary>
         [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
         public static SponsorshipTDS GetChildDetails(Int64 APartnerKey,
+            Int32 ALedgerNumber,
             out string ASponsorshipStatus)
         {
             SponsorshipTDS MainDS = new SponsorshipTDS();
@@ -190,6 +236,18 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+
+                    int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, false, Transaction);
+
+                    if (SponsorshipBatchNumber > -1)
+                    {
+                        ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
+
+                        // TODO: for each recurring gift detail row, set the donor key from the appropriate recurring gift
+
+                        // TODO: drop all recurring gift details, that are not related to this child (RecipientKey)
+                    }
+
                 });
 
             bool isSponsoredChild = false;
@@ -226,6 +284,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string AGender,
             string AUserId,
             Int64 APartnerKey,
+            Int32 ALedgerNumber,
             out TVerificationResultCollection AVerificationResult)
         {
 
@@ -242,7 +301,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 // else we try to get a entry based on the partner key
                 string dummy = "0";
-                CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+                CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, out dummy);
             }
 
 
@@ -290,6 +349,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                         CurrentEdit.PFamily[0].FamilyName,
                         CurrentEdit.PFamily[0].Title,
                         CurrentEdit.PFamily[0].FirstName);
+
+            // update the recurring gift batch
+            int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true);
+           
+            // update or insert recurring gifts 
+
 
             try
             {
