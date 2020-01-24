@@ -42,7 +42,8 @@ var MaintainChildren = new (class {
     // get details for the child the user clicked on and open modal
 
     var req = {
-      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
+      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val(),
+      "ALedgerNumber": window.localStorage.getItem("current_ledger")
     };
 
     this.showWindow(null, "details");
@@ -54,14 +55,15 @@ var MaintainChildren = new (class {
         var partner = parsed.result.PPartner[0];
         var family = parsed.result.PFamily[0];
         var comments = parsed.result.PPartnerComment;
-        var recurring = parsed.result.ARecurringGiftDetail;
+        var recurring = parsed.result.ARecurringGift;
+        var recurring_detail = parsed.result.ARecurringGiftDetail;
         var reminder = parsed.result.PPartnerReminder;
 
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
 
-        MaintainChildSponsorship.build(recurring);
+        MaintainChildSponsorship.build(recurring, recurring_detail);
         MaintainChildComments.build(comments);
         MaintainChildReminders.build(reminder);
 
@@ -146,6 +148,7 @@ var MaintainChildren = new (class {
       var req = {
         "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
         "AUploadPhoto":true,
+        "ADateOfBirth": "null",
         "APhoto":file_content
       };
 
@@ -270,13 +273,17 @@ var MaintainChildSponsorship = new (class {
 
   }
 
-  build(result) {
+  build(gifts, gift_details) {
     // builds the entrys as rows in there location
     // requires a list of ARecurringGiftDetail API data
 
+    // TODO:
+    console.log(gifts);
+    console.log(gift_details);
+
     var SponsorList = $("#detail_modal [window=sponsorship] .container-list").html("");
 
-    for (var sponsorship of result) {
+    for (var sponsorship of gift_details) {
       var Copy = $("[phantom] .sponsorship").clone();
       insertData(Copy, sponsorship);
       SponsorList.append(Copy);
@@ -292,6 +299,11 @@ var MaintainChildSponsorship = new (class {
   }
 
   detail(HTMLButtom) {
+
+    HTMLButtom = $(HTMLButtom).closest(".sponsorship");
+
+    var req = translate_to_server(extractData(HTMLButtom));
+    console.log(req);
 
   }
 

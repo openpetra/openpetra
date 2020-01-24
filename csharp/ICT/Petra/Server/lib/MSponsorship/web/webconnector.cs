@@ -274,43 +274,52 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                         ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
                         ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
 
-                        foreach (SponsorshipTDSARecurringGiftDetailRow gd in MainDS.ARecurringGiftDetail.Rows)
+                        for (int i = 0; i < MainDS.ARecurringGiftDetail.Count;)
                         {
+                            SponsorshipTDSARecurringGiftDetailRow gdr = MainDS.ARecurringGiftDetail[i];
                             // drop all recurring gift details, that are not related to this child (RecipientKey)
-                            if (gd.RecipientKey != APartnerKey)
+                            if (gdr.RecipientKey != APartnerKey)
                             {
-                                MainDS.ARecurringGiftDetail.Rows.Remove(gd);
+                                MainDS.ARecurringGiftDetail.Rows.RemoveAt(i);
                             }
                             else
                             {
+                                i++;
                                 // set the donor key from the appropriate recurring gift
                                 MainDS.ARecurringGift.DefaultView.RowFilter = String.Format("{0} = {1}",
                                     ARecurringGiftTable.GetGiftTransactionNumberDBName(),
-                                    gd.GiftTransactionNumber);
+                                    gdr.GiftTransactionNumber);
 
                                 // there should be only one row
                                 foreach (DataRowView drv in MainDS.ARecurringGift.DefaultView)
                                 {
                                     ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
-                                    gd.DonorKey = recurrGiftRow.DonorKey;
+                                    gdr.DonorKey = recurrGiftRow.DonorKey;
                                 }
+
                             }
+
                         }
 
                         // drop all unrelated gift rows, that don't have a detail for this child
-                        foreach (ARecurringGiftRow gr in MainDS.ARecurringGift.Rows)
+                        for (int i = 0; i < MainDS.ARecurringGift.Count;)
                         {
+                            ARecurringGiftRow gr = MainDS.ARecurringGift[0];
                             MainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1}",
                                 ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                                 gr.GiftTransactionNumber);
 
                             if (MainDS.ARecurringGiftDetail.DefaultView.Count == 0)
                             {
-                                MainDS.ARecurringGift.Rows.Remove(gr);
+                                MainDS.ARecurringGift.Rows.RemoveAt(i);
                             }
+                            else
+                            {
+                                i++;
+                            }
+
                         }
                     }
-
                 });
 
             bool isSponsoredChild = false;
@@ -440,7 +449,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
             string dummy = "";
-            CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+            CurrentEdit = GetChildDetails(APartnerKey, -1, out dummy);
 
             PPartnerCommentRow EditCommentRow = null;
 
@@ -484,6 +493,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
         }
 
+        /// maintain reminders about the child
         [RequireModulePermission("SPONSORADMIN")]
         public static bool MaintainChildReminders(
             String AComment,
@@ -504,7 +514,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
             string dummy = "";
-            CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+            CurrentEdit = GetChildDetails(APartnerKey, -1, out dummy);
 
             PPartnerReminderRow EditReminderRow = null;
 

@@ -100,7 +100,7 @@
 
   <div class="row sponsorship">
     <div class="col">
-      <span name="DonorName"></span>
+      <span name="p_donor_key_n"></span>
     </div>
     <div class="col">
       <span name="a_motivation_detail_code_c"></span>
@@ -115,7 +115,11 @@
       <span name="a_end_donations_d"></span>
     </div>
     <div class="col-1">
-      <button type="button" class="btn btn-primary" onclick="MaintainChildComments.detail(this)"><i class="fas fa-wrench"></i></button>
+      <data name="a_ledger_number_i"></data>
+      <data name="a_batch_number_i"></data>
+      <data name="a_gift_transaction_number_i"></data>
+      <data name="a_detail_number_i"></data>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildSponsorship.detail(this)"><i class="fas fa-wrench"></i></button>
     </div>
   </div>
 
@@ -278,7 +282,7 @@
               <!-- new btn -->
               <div class="row">
                 <div class="col">
-                  <button type="button" class="btn btn-primary" onclick="alert('TODO')">{forms.new}</button>
+                  <button type="button" class="btn btn-primary" onclick="MaintainChildSponsorship.showCreate()">{forms.new}</button>
                 </div>
               </div>
 
@@ -298,7 +302,7 @@
                 <div class="col">
                   <span>{end_date}</span>
                 </div>
-                <div class="col">
+                <div class="col-1">
                   <!-- placeholder for btn col -->
                 </div>
               </div>
@@ -470,6 +474,29 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="MaintainChildReminders.saveEdit()">{forms.save}</button>
+        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal-wide fade" tabindex="-1" role="dialog" id="recurring_modal" mode="create/edit">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{edittitle_comment}</h3>
+      </div>
+      <div class="modal-body">
+
+        <div class="container">
+
+          <!-- TODO:  -->
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="MaintainChildSponsorship.saveEdit()">{forms.save}</button>
         <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
       </div>
     </div>
