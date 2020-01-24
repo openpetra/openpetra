@@ -150,28 +150,27 @@ function set_values_of_input_variables(tpl, data, limit_to_table) {
 
 function parseJSONDate(variable, value) {
   // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
-  if (value.substring(0, 6) == "/Date(") {
-    d = new Date(parseInt(value.substring(6, value.indexOf(')'))));
+  var d = new Date(value);
+  if (d != "Invalid Date") {
+
     if (variable == "s_modification_id_t") {
       value = d.getTime();
     } else {
-      value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-      if (d.getHours() != 0 || d.getMinutes() != 0 && d.getSeconds() != 0) {
-        value += " " + ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2) + ":" + ("0"+d.getSeconds()).slice(-2);
-      }
+      value = d.toLocaleDateString();
     }
+
   }
   return value;
 }
 
 function printJSONDate(value) {
   // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
-  if (value.substring(0, 6) == "/Date(") {
-    let t = /\((.+)\)/g.exec(value);
-    if (t == null || t.length <=1) {return}
 
-    time = new Date(parseInt(t[1])).toLocaleDateString();
-    return time;
+  var d = new Date(value);
+  if (d != "Invalid Date") {
+
+    value = d.toLocaleDateString();
+
   }
   return value;
 }

@@ -312,12 +312,10 @@ var MaintainChildReminders = new (class {
     this.highest_index = 0;
 
     for (var reminder of result) {
-      console.log(reminder);
-
       var Copy = $("[phantom] .reminder").clone();
 
       // save current highest index
-      this.highest_index = reminder["p_index_i"]
+      this.highest_index = reminder["p_reminder_id_i"]
 
       // short reminder in preview
       if (reminder["p_comment_c"].length > 32) {
@@ -359,9 +357,9 @@ var MaintainChildReminders = new (class {
   }
 
   detail(HTMLButtom) {
-    HTMLButtom = $(HTMLButtom).closest(".comment");
+    HTMLButtom = $(HTMLButtom).closest(".reminder");
 
-    var comment_index = HTMLButtom.find("[name=p_index_i]").val();
+    var reminder_id = HTMLButtom.find("[name=p_reminder_id_i]").val();
     var partner_key = HTMLButtom.find("[name=p_partner_key_n]").val();
 
     var req = { "APartnerKey": partner_key };
@@ -369,20 +367,20 @@ var MaintainChildReminders = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
-        var edit_comment = null;
+        var edit_reminder = null;
 
-        for (var comment of parsed.result.PPartnerComment) {
-          if (comment.p_index_i == comment_index) {
-            edit_comment = comment;
+        for (var reminder of parsed.result.PPartnerReminder) {
+          if (reminder.p_reminder_id_i == reminder_id) {
+            edit_reminder = reminder;
             break;
           }
         }
 
-        if (!edit_comment) { return; }
+        if (!edit_reminder) { return; }
 
-        insertData("#comment_modal", edit_comment);
-        $("#comment_modal").attr("mode", "edit");
-        $("#comment_modal").modal("show");
+        insertData("#reminder_modal", edit_reminder);
+        $("#reminder_modal").attr("mode", "edit");
+        $("#reminder_modal").modal("show");
 
       }
     );
