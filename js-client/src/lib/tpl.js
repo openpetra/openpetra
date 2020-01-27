@@ -340,6 +340,9 @@ function extractData(o) {
     if (f.attr("type") == "checkbox") {
       if (f.is(":checked")) { data[name] = 1; }
       else { data[name] = 0; }
+    } else if (f.attr("key-value") != null) {
+      let value = f.attr("key-value");
+      data[name] = value; 
     }
     else {
       let value = f.val();

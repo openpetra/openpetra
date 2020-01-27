@@ -277,10 +277,6 @@ var MaintainChildSponsorship = new (class {
     // builds the entrys as rows in there location
     // requires a list of ARecurringGiftDetail API data
 
-    // TODO:
-    console.log(gifts);
-    console.log(gift_details);
-
     var SponsorList = $("#detail_modal [window=sponsorship] .container-list").html("");
 
     for (var sponsorship of gift_details) {
@@ -292,18 +288,56 @@ var MaintainChildSponsorship = new (class {
 
   showCreate() {
 
+    resetInput("#recurring_modal");
+    $("#recurring_modal").modal("show");
+
   }
 
   saveEdit() {
+    var req = translate_to_server(extractData($("#recurring_modal")));
 
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainSponsorshipRecurringGifts', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        $("#recurring_modal").modal("hide");
+        MaintainChildren.detail(null, req["APartnerKey"]);
+      }
+    );
   }
 
-  detail(HTMLButtom) {
+  detail(HTMLButtom, overwrite) {
 
     HTMLButtom = $(HTMLButtom).closest(".sponsorship");
+    var req_detail = extractData(HTMLButtom);
 
-    var req = translate_to_server(extractData(HTMLButtom));
-    console.log(req);
+    var req = {
+      "APartnerKey": overwrite ? overwrite : $("#detail_modal [name=p_partner_key_n]").val(),
+      "ALedgerNumber": window.localStorage.getItem("current_ledger")
+    };
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+
+        var recurring = parsed.result.ARecurringGift;
+        var recurring_detail = parsed.result.ARecurringGiftDetail;
+
+        var searched = null;
+        for (var detail of recurring_detail) {
+          if (detail.a_gift_transaction_number_i == req_detail.a_gift_transaction_number_i) {
+            if (detail.a_detail_number_i == req_detail.a_detail_number_i) {
+              searched = detail;
+              break;
+            }
+          }
+        }
+
+        if (!searched) { return; }
+
+        insertData("#recurring_modal", searched);
+        $("#recurring_modal").modal("show");
+
+      }
+    );
 
   }
 

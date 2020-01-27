@@ -1,4 +1,5 @@
 <h2>{caption}</h2>
+<link rel="stylesheet" href="/css/autocomplete.css">
 
 <form id="filter" class="container" action="javascript:MaintainChildren.filterShow()">
 
@@ -115,6 +116,7 @@
       <span name="a_end_donations_d"></span>
     </div>
     <div class="col-1">
+      <data name="p_partner_key_n"></data>
       <data name="a_ledger_number_i"></data>
       <data name="a_batch_number_i"></data>
       <data name="a_gift_transaction_number_i"></data>
@@ -490,7 +492,71 @@
 
         <div class="container">
 
-          <!-- TODO:  -->
+          <data name="a_ledger_number_i" value=""></data>
+          <data name="a_batch_number_i" value=""></data>
+          <data name="a_gift_transaction_number_i" value=""></data>
+          <data name="a_detail_number_i" value=""></data>
+          <data name="p_recipient_key_n" value=""></data>
+
+          <div class="row">
+            <div class="col">
+              <span>{donor}</span>
+            </div>
+            <div class="col">
+              <div class="autocomplete">
+                <input type="text" name="p_donor_key_n" value="" oninput="autocomplete_donor(this)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{motivation_group}</span>
+            </div>
+            <div class="col">
+              <div class="autocomplete">
+                <input type="text" name="a_motivation_group_code_c" value="" oninput="autocomplete_motivation_group(this)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{motivation_detail}</span>
+            </div>
+            <div class="col">
+              <div class="autocomplete">
+                <input type="text" name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{amount}</span>
+            </div>
+            <div class="col">
+              <input type="number" name="a_gift_amount_n" value=""/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{start_date}</span>
+            </div>
+            <div class="col">
+              <input type="date" name="a_start_donations_d" value=""/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{end_date}</span>
+            </div>
+            <div class="col">
+              <input type="date" name="a_end_donations_d" value=""/>
+            </div>
+          </div>
 
         </div>
 
@@ -503,5 +569,9 @@
   </div>
 </div>
 
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>

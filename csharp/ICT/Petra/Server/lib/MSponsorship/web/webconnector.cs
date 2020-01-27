@@ -561,6 +561,96 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
         }
 
+        // Add or edit details of recurring gifts
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool MaintainSponsorshipRecurringGifts(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber,
+            Int32 ADetailNumber,
+            Int64 ARecipientKey,
+            Int64 ADonorKey,
+            String AMotivationGroupCode,
+            String AMotivationDetailCode,
+            decimal AGiftAmount,
+            DateTime AStartDonations,
+            DateTime? AEndDonations,
+
+            out TVerificationResultCollection AVerificationResult) 
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            SponsorshipTDS MainDS = new SponsorshipTDS();
+
+            //ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            //ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            // try to get a row with requested id, aka edit else make a new
+            ARecurringGiftRow EditGiftRow = null;
+            foreach (ARecurringGiftRow CheckGiftRow in MainDS.ARecurringGift.Rows)
+            {
+                if (CheckGiftRow.GiftTransactionNumber == AGiftTransactionNumber)
+                {
+                    EditGiftRow = CheckGiftRow;
+                    break;
+                }
+            }
+
+            // we did not find a Transaction in this Batch, so we create one
+            if (EditGiftRow == null)
+            {
+                EditGiftRow = MainDS.ARecurringGift.NewRowTyped(true);
+                EditGiftRow.DonorKey = ADonorKey;
+                EditGiftRow.GiftTransactionNumber = MainDS.ARecurringGiftBatch[0].LastGiftNumber + 1;
+                MainDS.ARecurringGiftBatch[0].LastGiftNumber++;
+                MainDS.ARecurringGift.Rows.Add(EditGiftRow);
+            }
+
+            // load stuff based on the current edit row
+            ARecurringGiftDetailAccess.LoadViaARecurringGift(MainDS, ALedgerNumber, ABatchNumber, EditGiftRow.GiftTransactionNumber, Transaction);
+
+            // try to get a row with requested id, aka edit else make a new
+            ARecurringGiftDetailRow EditGiftDetailRow = null;
+            foreach (ARecurringGiftDetailRow CheckGiftDetailRow in MainDS.ARecurringGiftDetail.Rows)
+            {
+                if (CheckGiftDetailRow.DetailNumber == ADetailNumber)
+                {
+                    EditGiftDetailRow = CheckGiftDetailRow;
+                    break;
+                }
+            }
+
+            // none found, make one
+            if (EditGiftDetailRow == null)
+            {
+                EditGiftDetailRow = MainDS.ARecurringGiftDetail.NewRowTyped(true);
+                EditGiftDetailRow.DetailNumber = EditGiftRow.LastDetailNumber;
+                EditGiftRow.LastDetailNumber++;
+                MainDS.ARecurringGiftDetail.Rows.Add(EditGiftDetailRow);
+            }
+
+            EditGiftDetailRow.GiftAmount = AGiftAmount;
+            EditGiftDetailRow.MotivationGroupCode = AMotivationGroupCode;
+            EditGiftDetailRow.MotivationDetailCode = AMotivationDetailCode;
+            EditGiftDetailRow.EndDonations = AEndDonations;
+            EditGiftDetailRow.StartDonations = AStartDonations;
+
+            try
+            {
+                SponsorshipTDSAccess.SubmitChanges(MainDS);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+        }
 
     }
 }
