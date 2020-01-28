@@ -397,9 +397,9 @@ mysqlinitdb() {
       echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
 echo "MYSQL ROOT PWD: " $MYSQL_ROOT_PWD
       if [ ! -z "$MYSQL_ROOT_PWD" ]; then 
-        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql
+        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
       else
-        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createdb-MySQL.sql
+        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
       fi
       rm -f $OpenPetraPath/tmp/createdb-MySQL.sql
     fi
