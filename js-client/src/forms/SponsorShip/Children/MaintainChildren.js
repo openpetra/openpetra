@@ -313,6 +313,11 @@ var MaintainChildSponsorship = new (class {
   saveEdit() {
     var req = translate_to_server(extractData($("#recurring_modal")));
 
+    // check for endless date
+    if (!req["AEndDonations"]) {
+      req["AEndDonations"] = "null";
+    }
+
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainSponsorshipRecurringGifts', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
