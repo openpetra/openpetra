@@ -2,17 +2,22 @@
 image: Ubuntu1804
 version: 1.0.{build}
 platform: x86
-stack: mysql, node 8
+stack: mysql, node 10
 clone_depth: 1
 init: []
 environment:
  APPVEYOR_NODE: installed
  APPVEYOR_MONO: installed
- APPVEYOR_MARIADB: installed
+ APPVEYOR_MYSQL: installed
  MYSQL_ROOT_PWD: Password12!
 install:
+#- sudo -E ln -s `which npm` /usr/bin/npm
+#- sudo -E chown -R 1001:1001 "/home/appveyor/.npm"
+#- sudo sed -i "s/\[mysqld\]/[mysqld]\nskip-name-resolve/g" /etc/mysql/my.cnf && sudo systemctl restart mysql
 - curl https://getopenpetra.com > getopenpetra.sh && chmod a+x getopenpetra.sh && sudo -E ./getopenpetra.sh devenv
+build_script:
+- echo "building was already done in install section"
 test_script:
-- sudo cd /home/op_dev/openpetra && nant recreateDatabase resetDatabase test-without-display
+- sudo -E sh -c "cd /home/op_dev/openpetra && nant resetDatabase test-without-display"
 before_deploy:
-- sudo cd /home/op_dev/openpetra && nant buildRPM
+- sudo -E sh -c "cd /home/op_dev/openpetra && nant buildRPM"
