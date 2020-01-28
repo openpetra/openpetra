@@ -19,14 +19,11 @@ export OPENPETRA_USER_PREFIX=op_
 export THIS_SCRIPT=$0
 
 servicefile=/usr/lib/systemd/system/openpetra.service
-echo "looking for " $servicefile
 if [ ! -f $servicefile ]; then
   servicefile=/lib/systemd/system/openpetra.service
-echo "looking for " $servicefile
 fi
 
 if [ -f $servicefile ]; then
-echo "we found " $servicefile
   if [[ ! -z "`cat $servicefile | grep postgresql`" ]]; then
     export OPENPETRA_DBPORT=5432
     export OPENPETRA_RDBMSType=postgresql
