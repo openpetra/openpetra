@@ -610,6 +610,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 EditGiftRow = MainDS.ARecurringGift.NewRowTyped(true);
                 EditGiftRow.DonorKey = ADonorKey;
+                EditGiftRow.BatchNumber = ABatchNumber;
+                EditGiftRow.LedgerNumber = ALedgerNumber;
                 EditGiftRow.GiftTransactionNumber = MainDS.ARecurringGiftBatch[0].LastGiftNumber + 1;
                 MainDS.ARecurringGiftBatch[0].LastGiftNumber++;
                 MainDS.ARecurringGift.Rows.Add(EditGiftRow);
@@ -636,8 +638,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             if (EditGiftDetailRow == null)
             {
                 EditGiftDetailRow = MainDS.ARecurringGiftDetail.NewRowTyped(true);
-                EditGiftRow.LedgerNumber = ALedgerNumber;
-                EditGiftRow.BatchNumber = ABatchNumber;
+                EditGiftDetailRow.LedgerNumber = ALedgerNumber;
+                EditGiftDetailRow.BatchNumber = ABatchNumber;
+                EditGiftDetailRow.RecipientKey = ARecipientKey;
+                EditGiftDetailRow.GiftTransactionNumber = MainDS.ARecurringGiftBatch[0].LastGiftNumber;
                 EditGiftDetailRow.DetailNumber = EditGiftRow.LastDetailNumber + 1;
                 EditGiftRow.LastDetailNumber++;
                 MainDS.ARecurringGiftDetail.Rows.Add(EditGiftDetailRow);
