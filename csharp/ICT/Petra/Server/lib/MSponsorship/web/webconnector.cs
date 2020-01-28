@@ -575,18 +575,24 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             decimal AGiftAmount,
             DateTime AStartDonations,
             DateTime? AEndDonations,
-
             out TVerificationResultCollection AVerificationResult) 
         {
             AVerificationResult = new TVerificationResultCollection();
 
             TDBTransaction Transaction = new TDBTransaction();
             SponsorshipTDS MainDS = new SponsorshipTDS();
+            TDataBase DB = DBAccess.Connect("MaintainRecurringGifts");
 
-            //ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            //ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
-            ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            // we overwrite the user input, since the user can't really send the right batch number on create
+            //ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
+
+            // load in batches and there transactions bases on there id / batch number
+            DB.ReadTransaction(ref Transaction, delegate {
+                // we overwrite the user input, since the user can't really send the right batch number on create
+                ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
+                ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            });
 
             // try to get a row with requested id, aka edit else make a new
             ARecurringGiftRow EditGiftRow = null;
@@ -610,7 +616,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
             // load stuff based on the current edit row
-            ARecurringGiftDetailAccess.LoadViaARecurringGift(MainDS, ALedgerNumber, ABatchNumber, EditGiftRow.GiftTransactionNumber, Transaction);
+            DB.ReadTransaction(ref Transaction, delegate {
+                    ARecurringGiftDetailAccess.LoadViaARecurringGift(MainDS, ALedgerNumber, ABatchNumber, EditGiftRow.GiftTransactionNumber, Transaction);
+            });
+            DB.CloseDBConnection();
 
             // try to get a row with requested id, aka edit else make a new
             ARecurringGiftDetailRow EditGiftDetailRow = null;
@@ -627,7 +636,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             if (EditGiftDetailRow == null)
             {
                 EditGiftDetailRow = MainDS.ARecurringGiftDetail.NewRowTyped(true);
-                EditGiftDetailRow.DetailNumber = EditGiftRow.LastDetailNumber;
+                EditGiftRow.LedgerNumber = ALedgerNumber;
+                EditGiftRow.BatchNumber = ABatchNumber;
+                EditGiftDetailRow.DetailNumber = EditGiftRow.LastDetailNumber + 1;
                 EditGiftRow.LastDetailNumber++;
                 MainDS.ARecurringGiftDetail.Rows.Add(EditGiftDetailRow);
             }
