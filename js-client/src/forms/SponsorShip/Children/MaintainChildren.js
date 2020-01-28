@@ -105,6 +105,10 @@ var MaintainChildren = new (class {
       function (data) {
         var parsed = JSON.parse(data.data.d);
         if (parsed.result) {
+          if (!parsed.result) {
+            return display_error(parsed.AVerificationResult);
+          }
+
           display_message( i18next.t("forms.saved"), "success");
           if (mode == "create") {
             $("#detail_modal").modal("hide");
@@ -229,6 +233,10 @@ var MaintainChildComments = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildComments', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        }
+
         $("#comment_modal").modal("hide");
         MaintainChildren.detail(null, req["APartnerKey"]);
       }
@@ -288,7 +296,16 @@ var MaintainChildSponsorship = new (class {
 
   showCreate() {
 
+    var reset = {
+      "a_gift_transaction_number_i":"-1",
+      "a_batch_number_i":"-1",
+      "a_detail_number_i":"-1",
+      "p_recipient_key_n":$("#detail_modal [name=p_partner_key_n]").val(),
+      "a_ledger_number_i": window.localStorage.getItem("current_ledger")
+    };
+
     resetInput("#recurring_modal");
+    insertData("#recurring_modal", reset);
     $("#recurring_modal").modal("show");
 
   }
@@ -299,8 +316,13 @@ var MaintainChildSponsorship = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainSponsorshipRecurringGifts', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
+
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        }
+
         $("#recurring_modal").modal("hide");
-        MaintainChildren.detail(null, req["APartnerKey"]);
+        MaintainChildren.detail(null, req["ARecipientKey"]);
       }
     );
   }
