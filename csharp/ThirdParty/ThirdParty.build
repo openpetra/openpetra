@@ -28,10 +28,7 @@
   <include name="System.Threading.Tasks.Extensions.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="System.Runtime.CompilerServices.Unsafe.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="System.Memory.dll" /> <!-- Needed for Npgsql.dll -->
-  <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
   <include name="MySql.Data.dll"/>
-  <include name="Mono.Data.Sqlite.dll"/>
-  <include name="sqlite3.dll"/>
   <include name="ICSharpCode.SharpZipLib.dll"/>
   <include name="ExcelLibrary.dll"/>
   <include name="Jayrock.Json.dll"/>
@@ -39,11 +36,15 @@
   <include name="ICSharpCode.NRefactory.dll"/> <!-- Winforms Generator -->
   <include name="PasswordUtilities.dll"/>
   <include name="Sodium.dll"/>
-  <include name="libsodium.dll"/>
-  <include name="libsodium-64.dll"/>
   <include name="MailKit.dll"/>
   <include name="MimeKit.dll"/>
   <include name="HtmlAgilityPack.dll"/>
+</patternset>
+
+<patternset id="3rdPartyWinPattern">
+  <include name="Mono.Security.dll" /> <!-- Needed for Npgsql.dll -->
+  <include name="libsodium.dll"/>
+  <include name="libsodium-64.dll"/>
 </patternset>
 
 <patternset id="NunitPattern">
@@ -60,6 +61,15 @@
       </fileset>
     </copy>
   </foreach>
+  <if test="${'win32'==platform::get-name()}">
+    <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
+      <copy todir="${dir.bin}">
+        <fileset basedir="${foldername}">
+          <patternset refid="3rdPartyWinPattern" />
+        </fileset>
+      </copy>
+    </foreach>
+  </if>
   <echo message="Target ThirdParty compile finished at: ${datetime::now()}" />         
 </target>
 
