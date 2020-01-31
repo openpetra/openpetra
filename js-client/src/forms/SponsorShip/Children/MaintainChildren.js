@@ -27,7 +27,7 @@ var MaintainChildren = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
-
+        console.log(parsed);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
           var Copy = $("[phantom] .children").clone();

@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (AFamilyName != String.Empty)
             {
-                sql += " AND f.p_last_name_c LIKE ?";
+                sql += " AND f.p_family_name_c LIKE ?";
                 parameters[Pos] = new OdbcParameter("AFamilyName", OdbcType.VarChar);
                 parameters[Pos].Value = AFamilyName;
                 Pos++;
@@ -393,8 +393,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 // only on a actual change, else skip this
                 if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
                 {
-                    foreach (PPartnerTypeRow OldTypeRow in CurrentEdit.PPartnerType.Rows)
+                    while (CurrentEdit.PPartnerType.Rows.Count > 0)
                     {
+                        PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
                         OldTypeRow.Delete();
                     }
 
