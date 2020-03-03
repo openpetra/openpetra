@@ -5,3 +5,10 @@
         PERSONAL:{description=Gift for personal use, accountcode=0100}
         SUPPORT:{description=Support Gift, accountcode=0100}
         UNDESIG:{description=Undesignated Gift, accountcode=0300}
+    
+    DONATIONS:{desclocal=Standard Donations}
+        FIELD:{description=Field Gift, accountcode=0200}
+        KEYMIN:{description=Key Ministry Gift, accountcode=0400}
+        PERSONAL:{description=Gift for personal use, accountcode=0100}
+        SUPPORT:{description=Support Gift, accountcode=0100}
+        UNDESIG:{description=Undesignated Gift, accountcode=0300}
