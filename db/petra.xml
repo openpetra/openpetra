@@ -21294,11 +21294,11 @@
                 thisFields="p_partner_key_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
-    <!--foreignkey name="p_partner_reminder_fk2"
+    <foreignkey name="p_partner_reminder_fk2"
                 descr=""
                 thisFields="p_contact_id_i"
                 otherTable="p_contact_log"
-                otherFields="p_contact_log_id_i"/-->
+                otherFields="p_contact_log_id_i"/>
     <foreignkey name="p_partner_reminder_fk3"
                 descr=""
                 thisFields="s_user_id_c"
