@@ -114,6 +114,15 @@ function currentLng() {
 
 i18next.on('languageChanged', () => {
   updateContent();
-  var flag = currentLng() == "de" ? "🇩🇪" : "🇬🇧";
+  // see https://emojipedia.org/flags/
+  var flag = "🇬🇧";
+  switch (currentLng()) {
+    case "de": 
+      flag = "🇩🇪";
+      break;
+    case "nb-NO":
+      flag = "🇳🇴";
+      break;
+  }
   $("#chlang span").text(flag);
 });
