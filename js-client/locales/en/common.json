@@ -444,6 +444,7 @@
       "entry_intl_currency":"international currency",
       "entry_account_periods_first":"start with current period",
       "entry_account_periods":"number of accounting periods",
+      "entry_first_current_period":"first current period",
       "entry_posting_periods":"number of forward posting periods",
       "error_create":"Creation of the ledger failed",
       "ask_delete":"Sure you wanna delete this ledger?",

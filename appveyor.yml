@@ -1,28 +1,24 @@
 # see http://www.appveyor.com/docs/appveyor-yml
 image: Ubuntu1804
 version: 1.0.{build}
+platform: x86
+stack: mysql, node 10
 clone_depth: 1
 init: []
+environment:
+ APPVEYOR_NODE: installed
+ APPVEYOR_MONO: installed
+ APPVEYOR_MYSQL: installed
+ MYSQL_ROOT_PWD: Password12!
 install:
-#- sudo echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-#- sudo apt-get update -o Dir::Etc::sourcelist="sources.list.d/mono-official-stable.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
-#- sudo apt-get -y install mono-devel mono-runtime
-- sudo apt-get -y install nant nunit-console libsodium23 mono-xsp4 wget xfonts-75dpi
-- wget https://downloads.wkhtmltopdf.org/0.12/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && sudo dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb
-- wget https://github.com/openpetra/demo-databases/raw/UsedForNUnitTests/demoWith1ledger.yml.gz
-# to avoid errors like: error CS0433: The imported type `System.CodeDom.Compiler.CompilerError' is defined multiple times
-- sudo rm -f /usr/lib/mono/4.5-api/System.dll
-# prepare the config file
-- echo '<?xml version="1.0"?>' > OpenPetra.build.config
-- echo '<project name="OpenPetra-userconfig">' >> OpenPetra.build.config
-- echo '  <property name="DBMS.Type" value="sqlite"/>' >> OpenPetra.build.config
-- echo '  <property name="DBMS.Password" value=""/>' >> OpenPetra.build.config
-- echo '  <property name="Server.Port" value="9000"/>' >> OpenPetra.build.config
-- echo '</project>' >> OpenPetra.build.config
-platform: x86
+#- sudo -E ln -s `which npm` /usr/bin/npm
+#- sudo -E chown -R 1001:1001 "/home/appveyor/.npm"
+#- sudo sed -i "s/\[mysqld\]/[mysqld]\nskip-name-resolve/g" /etc/mysql/my.cnf && sudo systemctl restart mysql
+- curl https://getopenpetra.com > getopenpetra.sh && chmod a+x getopenpetra.sh && sudo -E ./getopenpetra.sh devenv
 build_script:
-- nant generateSolution
+- echo "building was already done in install section"
 test_script:
-- nant recreateDatabase resetDatabase test-without-display
+- sudo -E sh -c "curl --silent --location https://github.com/openpetra/demo-databases/raw/UsedForNUnitTests/demoWith1ledger.yml.gz > /home/op_dev/openpetra/demoWith1ledger.yml.gz && chown op_dev:op_dev /home/op_dev/openpetra/demoWith1ledger.yml.gz"
+- sudo -E sh -c "cd /home/op_dev/openpetra && nant resetDatabase test-without-display"
 before_deploy:
-- nant buildRPM
+- sudo -E sh -c "cd /home/op_dev/openpetra && nant buildRPM"
