@@ -1170,7 +1170,7 @@ namespace Ict.Tools.DBXML
             {
                 return "Boolean";
             }
-            else if ((strType.ToLower() == "number") && (iLength == 24))
+            else if ((strType.ToLower() == "number") && (iLength == 24 || iDecimals > 0))
             {
                 return "Decimal";  // 'currency'
             }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -956,7 +956,7 @@ namespace Ict.Common.Data
 
             if (AType == typeof(System.Int64))
             {
-                newType = OdbcType.Decimal;
+                newType = OdbcType.BigInt;
                 Length = 10;
             }
             else if (AType == typeof(double))

@@ -53,7 +53,7 @@ namespace GenerateSQL
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine(e.StackTrace);
-                return false;
+                throw e;
             }
 
             DBAccessObj.WriteTransaction(ref WriteTransaction,

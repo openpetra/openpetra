@@ -427,6 +427,10 @@
         <!-- Ubuntu 18.04 has version 23 -->
         <property name="libsodium.so" value="/usr/lib/x86_64-linux-gnu/libsodium.so.23" overwrite="true"/>
     </if>
+    <if test="${not file::exists(libsodium.so)}">
+        <!-- Debian Stretch has version 18 -->
+        <property name="libsodium.so" value="/usr/lib/x86_64-linux-gnu/libsodium.so.18" overwrite="true"/>
+    </if>
 
     <!-- this is where wkhtmltopdf lives when installed from upstream rpm package on CentOS -->
     <property name="external.wkhtmltopdf" value="/usr/local/bin/wkhtmltopdf" overwrite="false"/>
