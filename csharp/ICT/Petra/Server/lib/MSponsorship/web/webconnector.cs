@@ -33,6 +33,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
@@ -72,10 +73,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             int CountParameters = 0;
             int Pos = 0;
-            CountParameters += (AFirstName != String.Empty ? 1: 0);
-            CountParameters += (ASponsorshipStatus != String.Empty ? 1: 0);
-            CountParameters += (AFamilyName != String.Empty ? 1: 0);
-            CountParameters += (ASponsorAdmin != String.Empty ? 1: 0);
+            CountParameters += (AFirstName != String.Empty ? 1 : 0);
+            CountParameters += (ASponsorshipStatus != String.Empty ? 1 : 0);
+            CountParameters += (AFamilyName != String.Empty ? 1 : 0);
+            CountParameters += (ASponsorAdmin != String.Empty ? 1 : 0);
             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
 
             if (ASponsorshipStatus != String.Empty)
@@ -84,7 +85,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 parameters[Pos] = new OdbcParameter("ASponsorshipStatus", OdbcType.VarChar);
                 parameters[Pos].Value = ASponsorshipStatus;
                 Pos++;
-            } else {
+            }
+            else
+            {
                 sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BORDING_SCHOOL','PREVIOUS_CHILD')";
             }
 
@@ -98,7 +101,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (AFamilyName != String.Empty)
             {
-                sql += " AND f.p_last_name_c LIKE ?";
+                sql += " AND f.p_family_name_c LIKE ?";
                 parameters[Pos] = new OdbcParameter("AFamilyName", OdbcType.VarChar);
                 parameters[Pos].Value = AFamilyName;
                 Pos++;
@@ -106,7 +109,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (ASponsorAdmin != String.Empty)
             {
-                sql += " AND '' LIKE ?";
+                sql += " AND p.p_user_id_c LIKE ?";
                 parameters[Pos] = new OdbcParameter("ASponsorAdmin", OdbcType.VarChar);
                 parameters[Pos].Value = ASponsorAdmin;
                 Pos++;
@@ -117,6 +120,32 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 delegate
                 {
                     db.SelectDT(result, sql, t, parameters);
+                });
+
+            db.CloseDBConnection();
+
+            return result;
+        }
+
+        /// <summary>
+        /// find children using filters
+        /// </summary>
+        [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
+        public static SUserTable GetSponsorAdmins()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("FindSponsorAdmins");
+            string sql = "SELECT u.* "+
+                "FROM PUB_s_user_module_access_permission p "+
+                "JOIN PUB_s_user u "+
+                "ON u.s_user_id_c = p.s_user_id_c AND p.s_module_id_c = 'SPONSORADMIN'";
+
+            SUserTable result = new SUserTable();
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    db.SelectDT(result, sql, t);
                 });
 
             db.CloseDBConnection();
@@ -236,6 +265,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                    PPartnerReminderAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
 
                     int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
 
@@ -244,43 +274,52 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                         ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
                         ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
 
-                        foreach (SponsorshipTDSARecurringGiftDetailRow gd in MainDS.ARecurringGiftDetail.Rows)
+                        for (int i = 0; i < MainDS.ARecurringGiftDetail.Count;)
                         {
+                            SponsorshipTDSARecurringGiftDetailRow gdr = MainDS.ARecurringGiftDetail[i];
                             // drop all recurring gift details, that are not related to this child (RecipientKey)
-                            if (gd.RecipientKey != APartnerKey)
+                            if (gdr.RecipientKey != APartnerKey)
                             {
-                                MainDS.ARecurringGiftDetail.Rows.Remove(gd);
+                                MainDS.ARecurringGiftDetail.Rows.RemoveAt(i);
                             }
                             else
                             {
+                                i++;
                                 // set the donor key from the appropriate recurring gift
                                 MainDS.ARecurringGift.DefaultView.RowFilter = String.Format("{0} = {1}",
                                     ARecurringGiftTable.GetGiftTransactionNumberDBName(),
-                                    gd.GiftTransactionNumber);
+                                    gdr.GiftTransactionNumber);
 
                                 // there should be only one row
                                 foreach (DataRowView drv in MainDS.ARecurringGift.DefaultView)
                                 {
                                     ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
-                                    gd.DonorKey = recurrGiftRow.DonorKey;
+                                    gdr.DonorKey = recurrGiftRow.DonorKey;
                                 }
+
                             }
+
                         }
 
                         // drop all unrelated gift rows, that don't have a detail for this child
-                        foreach (ARecurringGiftRow gr in MainDS.ARecurringGift.Rows)
+                        for (int i = 0; i < MainDS.ARecurringGift.Count;)
                         {
+                            ARecurringGiftRow gr = MainDS.ARecurringGift[0];
                             MainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1}",
                                 ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                                 gr.GiftTransactionNumber);
 
                             if (MainDS.ARecurringGiftDetail.DefaultView.Count == 0)
                             {
-                                MainDS.ARecurringGift.Rows.Remove(gr);
+                                MainDS.ARecurringGift.Rows.RemoveAt(i);
                             }
+                            else
+                            {
+                                i++;
+                            }
+
                         }
                     }
-
                 });
 
             bool isSponsoredChild = false;
@@ -351,11 +390,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 CurrentEdit.PFamily[0].Gender = AGender;
                 CurrentEdit.PPartner[0].UserId = AUserId;
 
-                // only on a actuall change, else skip this
+                // only on a actual change, else skip this
                 if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
                 {
-                    foreach (PPartnerTypeRow OldTypeRow in CurrentEdit.PPartnerType.Rows)
+                    while (CurrentEdit.PPartnerType.Rows.Count > 0)
                     {
+                        PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
                         OldTypeRow.Delete();
                     }
 
@@ -405,12 +445,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (APartnerKey == -1)
             {
-              AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
-              return false;
+                AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
+                return false;
             }
 
             string dummy = "";
-            CurrentEdit = GetChildDetails(APartnerKey, out dummy);
+            CurrentEdit = GetChildDetails(APartnerKey, -1, out dummy);
 
             PPartnerCommentRow EditCommentRow = null;
 
@@ -438,7 +478,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 NewCommentRow.CommentType = ACommentType;
                 NewCommentRow.Index = AIndex;
                 NewCommentRow.Sequence = 0; // nobody cares about this value but it must be set
-                CurrentEdit.PPartnerComment.Rows.Add( NewCommentRow );
+                CurrentEdit.PPartnerComment.Rows.Add(NewCommentRow);
             }
 
             try
@@ -454,6 +494,179 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
         }
 
+        /// maintain reminders about the child
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool MaintainChildReminders(
+            String AComment,
+            Int32 AReminderId,
+            Int64 APartnerKey,
+            DateTime AEventDate,
+            DateTime AFirstReminderDate,
+            out TVerificationResultCollection AVerificationResult)
+        {
+
+            SponsorshipTDS CurrentEdit;
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (APartnerKey == -1)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            string dummy = "";
+            CurrentEdit = GetChildDetails(APartnerKey, -1, out dummy);
+
+            PPartnerReminderRow EditReminderRow = null;
+
+            // since we get a reminder id from the user (and i don't know how to request one of them)
+            // we loop over all reminders, edit it if we found it, and if it's null we add a new one
+            foreach (PPartnerReminderRow ReminderRow in CurrentEdit.PPartnerReminder.Rows)
+            {
+                if (ReminderRow.ReminderId == AReminderId)
+                {
+                    EditReminderRow = ReminderRow;
+                    break;
+                }
+            }
+
+            // edit
+            if (EditReminderRow != null)
+            {
+                EditReminderRow.EventDate = AEventDate;
+                EditReminderRow.FirstReminderDate = AFirstReminderDate;
+                EditReminderRow.Comment = AComment;
+            }
+            else
+            {
+                PPartnerReminderRow NewReminderRow = CurrentEdit.PPartnerReminder.NewRowTyped(true);
+                NewReminderRow.PartnerKey = APartnerKey;
+                NewReminderRow.EventDate = AEventDate;
+                NewReminderRow.FirstReminderDate = AFirstReminderDate;
+                NewReminderRow.Comment = AComment;
+                NewReminderRow.ReminderId = AReminderId;
+                NewReminderRow.ContactId = 0; // Again, noone wants it, but its needed
+                CurrentEdit.PPartnerReminder.Rows.Add( NewReminderRow );
+            }
+
+            try
+            {
+                SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
+        }
+
+        // Add or edit details of recurring gifts
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool MaintainSponsorshipRecurringGifts(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber,
+            Int32 ADetailNumber,
+            Int64 ARecipientKey,
+            Int64 ADonorKey,
+            String AMotivationGroupCode,
+            String AMotivationDetailCode,
+            decimal AGiftAmount,
+            DateTime AStartDonations,
+            DateTime? AEndDonations,
+            out TVerificationResultCollection AVerificationResult) 
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            SponsorshipTDS MainDS = new SponsorshipTDS();
+            TDataBase DB = DBAccess.Connect("MaintainRecurringGifts");
+
+            // we overwrite the user input, since the user can't really send the right batch number on create
+            //ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
+
+            // load in batches and there transactions bases on there id / batch number
+            DB.ReadTransaction(ref Transaction, delegate {
+                // we overwrite the user input, since the user can't really send the right batch number on create
+                ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
+                ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            });
+
+            // try to get a row with requested id, aka edit else make a new
+            ARecurringGiftRow EditGiftRow = null;
+            foreach (ARecurringGiftRow CheckGiftRow in MainDS.ARecurringGift.Rows)
+            {
+                if (CheckGiftRow.GiftTransactionNumber == AGiftTransactionNumber)
+                {
+                    EditGiftRow = CheckGiftRow;
+                    break;
+                }
+            }
+
+            // we did not find a Transaction in this Batch, so we create one
+            if (EditGiftRow == null)
+            {
+                EditGiftRow = MainDS.ARecurringGift.NewRowTyped(true);
+                EditGiftRow.DonorKey = ADonorKey;
+                EditGiftRow.BatchNumber = ABatchNumber;
+                EditGiftRow.LedgerNumber = ALedgerNumber;
+                EditGiftRow.GiftTransactionNumber = MainDS.ARecurringGiftBatch[0].LastGiftNumber + 1;
+                MainDS.ARecurringGiftBatch[0].LastGiftNumber++;
+                MainDS.ARecurringGift.Rows.Add(EditGiftRow);
+            }
+
+            // load stuff based on the current edit row
+            DB.ReadTransaction(ref Transaction, delegate {
+                    ARecurringGiftDetailAccess.LoadViaARecurringGift(MainDS, ALedgerNumber, ABatchNumber, EditGiftRow.GiftTransactionNumber, Transaction);
+            });
+            DB.CloseDBConnection();
+
+            // try to get a row with requested id, aka edit else make a new
+            ARecurringGiftDetailRow EditGiftDetailRow = null;
+            foreach (ARecurringGiftDetailRow CheckGiftDetailRow in MainDS.ARecurringGiftDetail.Rows)
+            {
+                if (CheckGiftDetailRow.DetailNumber == ADetailNumber)
+                {
+                    EditGiftDetailRow = CheckGiftDetailRow;
+                    break;
+                }
+            }
+
+            // none found, make one
+            if (EditGiftDetailRow == null)
+            {
+                EditGiftDetailRow = MainDS.ARecurringGiftDetail.NewRowTyped(true);
+                EditGiftDetailRow.LedgerNumber = ALedgerNumber;
+                EditGiftDetailRow.BatchNumber = ABatchNumber;
+                EditGiftDetailRow.RecipientKey = ARecipientKey;
+                EditGiftDetailRow.GiftTransactionNumber = MainDS.ARecurringGiftBatch[0].LastGiftNumber;
+                EditGiftDetailRow.DetailNumber = EditGiftRow.LastDetailNumber + 1;
+                EditGiftRow.LastDetailNumber++;
+                MainDS.ARecurringGiftDetail.Rows.Add(EditGiftDetailRow);
+            }
+
+            EditGiftDetailRow.GiftAmount = AGiftAmount;
+            EditGiftDetailRow.MotivationGroupCode = AMotivationGroupCode;
+            EditGiftDetailRow.MotivationDetailCode = AMotivationDetailCode;
+            EditGiftDetailRow.EndDonations = AEndDonations;
+            EditGiftDetailRow.StartDonations = AStartDonations;
+
+            try
+            {
+                SponsorshipTDSAccess.SubmitChanges(MainDS);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+        }
 
     }
 }

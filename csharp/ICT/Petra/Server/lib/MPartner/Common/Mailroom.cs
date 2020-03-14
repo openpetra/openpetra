@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -72,10 +72,9 @@ namespace Ict.Petra.Server.MPartner.Common
                 ref ReadTransaction,
                 delegate
                 {
-                    PContactLogAccess.LoadViaPPartnerPPartnerContact(LastContactDS, APartnerKey,
+                    /*PContactLogAccess.LoadViaPPartnerPPartnerContact(LastContactDS, APartnerKey,
                         StringHelper.InitStrArr(new String[] { PContactLogTable.GetContactDateDBName() }), ReadTransaction,
-                        StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);
-
+                        StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);*/
                     if (LastContactDS.Tables[PContactLogTable.GetTableName()].Rows.Count > 0)
                     {
                         ContactDR = ((PContactLogTable)LastContactDS.Tables[PContactLogTable.GetTableName()])[0];

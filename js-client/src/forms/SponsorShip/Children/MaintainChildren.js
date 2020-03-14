@@ -27,7 +27,7 @@ var MaintainChildren = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
-
+        console.log(parsed);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
           var Copy = $("[phantom] .children").clone();
@@ -42,7 +42,8 @@ var MaintainChildren = new (class {
     // get details for the child the user clicked on and open modal
 
     var req = {
-      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val()
+      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val(),
+      "ALedgerNumber": window.localStorage.getItem("current_ledger")
     };
 
     this.showWindow(null, "details");
@@ -54,15 +55,17 @@ var MaintainChildren = new (class {
         var partner = parsed.result.PPartner[0];
         var family = parsed.result.PFamily[0];
         var comments = parsed.result.PPartnerComment;
-        var recurring = parsed.result.ARecurringGiftDetail;
-
+        var recurring = parsed.result.ARecurringGift;
+        var recurring_detail = parsed.result.ARecurringGiftDetail;
+        var reminder = parsed.result.PPartnerReminder;
 
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
 
-        MaintainChildSponsorship.build(recurring);
+        MaintainChildSponsorship.build(recurring, recurring_detail);
         MaintainChildComments.build(comments);
+        MaintainChildReminders.build(reminder);
 
         $("#detail_modal [name='p_photo_b']").attr("src", "data:image/jpg;base64,"+family.p_photo_b);
 
@@ -102,6 +105,10 @@ var MaintainChildren = new (class {
       function (data) {
         var parsed = JSON.parse(data.data.d);
         if (parsed.result) {
+          if (!parsed.result) {
+            return display_error(parsed.AVerificationResult);
+          }
+
           display_message( i18next.t("forms.saved"), "success");
           if (mode == "create") {
             $("#detail_modal").modal("hide");
@@ -145,6 +152,7 @@ var MaintainChildren = new (class {
       var req = {
         "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
         "AUploadPhoto":true,
+        "ADateOfBirth": "null",
         "APhoto":file_content
       };
 
@@ -225,6 +233,10 @@ var MaintainChildComments = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildComments', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        }
+
         $("#comment_modal").modal("hide");
         MaintainChildren.detail(null, req["APartnerKey"]);
       }
@@ -269,13 +281,13 @@ var MaintainChildSponsorship = new (class {
 
   }
 
-  build(result) {
+  build(gifts, gift_details) {
     // builds the entrys as rows in there location
     // requires a list of ARecurringGiftDetail API data
 
     var SponsorList = $("#detail_modal [window=sponsorship] .container-list").html("");
 
-    for (var sponsorship of result) {
+    for (var sponsorship of gift_details) {
       var Copy = $("[phantom] .sponsorship").clone();
       insertData(Copy, sponsorship);
       SponsorList.append(Copy);
@@ -284,17 +296,187 @@ var MaintainChildSponsorship = new (class {
 
   showCreate() {
 
+    var reset = {
+      "a_gift_transaction_number_i":"-1",
+      "a_batch_number_i":"-1",
+      "a_detail_number_i":"-1",
+      "p_recipient_key_n":$("#detail_modal [name=p_partner_key_n]").val(),
+      "a_ledger_number_i": window.localStorage.getItem("current_ledger")
+    };
+
+    resetInput("#recurring_modal");
+    insertData("#recurring_modal", reset);
+    $("#recurring_modal").modal("show");
+
   }
 
   saveEdit() {
+    var req = translate_to_server(extractData($("#recurring_modal")));
 
+    // check for endless date
+    if (!req["AEndDonations"]) {
+      req["AEndDonations"] = "null";
+    }
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainSponsorshipRecurringGifts', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        }
+
+        $("#recurring_modal").modal("hide");
+        MaintainChildren.detail(null, req["ARecipientKey"]);
+      }
+    );
   }
 
-  detail(HTMLButtom) {
+  detail(HTMLButtom, overwrite) {
+
+    HTMLButtom = $(HTMLButtom).closest(".sponsorship");
+    var req_detail = extractData(HTMLButtom);
+
+    var req = {
+      "APartnerKey": overwrite ? overwrite : $("#detail_modal [name=p_partner_key_n]").val(),
+      "ALedgerNumber": window.localStorage.getItem("current_ledger")
+    };
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+
+        var recurring = parsed.result.ARecurringGift;
+        var recurring_detail = parsed.result.ARecurringGiftDetail;
+
+        var searched = null;
+        for (var detail of recurring_detail) {
+          if (detail.a_gift_transaction_number_i == req_detail.a_gift_transaction_number_i) {
+            if (detail.a_detail_number_i == req_detail.a_detail_number_i) {
+              searched = detail;
+              break;
+            }
+          }
+        }
+
+        if (!searched) { return; }
+
+        insertData("#recurring_modal", searched);
+        $("#recurring_modal").modal("show");
+
+      }
+    );
 
   }
 
 })
+
+var MaintainChildReminders = new (class {
+  constructor() {
+    this.highest_index = 0;
+  }
+
+  build(result) {
+    // builds the entrys as rows in there location
+    // requires a list of PPartnerReminder API data
+
+    var Reminders = $("#detail_modal [window=dates_reminder] .container-list").html("");
+
+    this.highest_index = 0;
+
+    for (var reminder of result) {
+      var Copy = $("[phantom] .reminder").clone();
+
+      // save current highest index
+      this.highest_index = reminder["p_reminder_id_i"]
+
+      // short reminder in preview
+      if (reminder["p_comment_c"].length > 32) {
+        reminder["p_comment_c"] = reminder["p_comment_c"].substring(0, 30) + "..";
+      }
+
+      insertData(Copy, reminder);
+      Reminders.append(Copy);
+    }
+  }
+
+  showCreate(type) {
+
+    var ddd = {
+      "p_partner_key_n": $("#detail_modal [name=p_partner_key_n]").val(),
+      "p_reminder_id_i": (this.highest_index + 1),
+      "p_comment_c" : "",
+      "p_event_date_d": "",
+      "p_first_reminder_date_d": ""
+    };
+
+    insertData("#reminder_modal", ddd);
+    $("#reminder_modal").attr("mode", "create");
+    $("#reminder_modal").modal("show");
+  }
+
+  saveEdit() {
+
+    var req = translate_to_server(extractData($("#reminder_modal")));
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildReminders', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        $("#reminder_modal").modal("hide");
+        MaintainChildren.detail(null, req["APartnerKey"]);
+      }
+    );
+
+  }
+
+  detail(HTMLButtom) {
+    HTMLButtom = $(HTMLButtom).closest(".reminder");
+
+    var reminder_id = HTMLButtom.find("[name=p_reminder_id_i]").val();
+    var partner_key = HTMLButtom.find("[name=p_partner_key_n]").val();
+
+    var req = { "APartnerKey": partner_key };
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        var edit_reminder = null;
+
+        for (var reminder of parsed.result.PPartnerReminder) {
+          if (reminder.p_reminder_id_i == reminder_id) {
+            edit_reminder = reminder;
+            break;
+          }
+        }
+
+        if (!edit_reminder) { return; }
+
+        insertData("#reminder_modal", edit_reminder);
+        $("#reminder_modal").attr("mode", "edit");
+        $("#reminder_modal").modal("show");
+
+      }
+    );
+  }
+
+})
+
+function loadPartnerAdmins() {
+  api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetSponsorAdmins', {}).then(
+    function (data) {
+      var parsed = JSON.parse(data.data.d);
+
+      var TargetFields = $("[name=ASponsorAdmin], [name=p_user_id_c]").html('<option value="">('+i18next.t("forms.any")+')</option>');
+      for (var user of parsed.result) {
+        let NewOption = $("<option></option>");
+        NewOption.attr("value", user.s_user_id_c);
+        NewOption.text(user.s_last_name_c + ", " + user.s_first_name_c);
+        TargetFields.append(NewOption);
+      }
+
+    }
+  );
+
+}
 
 // fix for muti modals, maybe move this to a global file?
 $(document).ready(function () {
@@ -307,5 +489,6 @@ $(document).ready(function () {
     }, 0);
   });
 
+  loadPartnerAdmins()
 
 });

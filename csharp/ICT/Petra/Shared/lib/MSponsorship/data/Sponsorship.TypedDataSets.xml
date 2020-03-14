@@ -1,4 +1,4 @@
-<PetraDataSets>
+﻿<PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
 
