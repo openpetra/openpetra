@@ -51,6 +51,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
     public class TSponsorshipWebConnector
     {
         private const string TYPE_SPONSOREDCHILD = "SPONSOREDCHILD";
+        private const string BATCHNAME_SPONSORSHIP = "SPONSORSHIP";
 
         /// <summary>
         /// find children using filters
@@ -202,10 +203,35 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             return MainDS;
         }
 
-        /// returns the number of the recurring gift batch
-        private static Int32 GetRecurringGiftBatchForSponsorship(Int32 ALedgerNumber, bool ACreateBatch, TDBTransaction ATransaction = null)
+        /// make sure we have a recurring gift batch for sponsorships
+        public static void InitRecurringGiftBatchForSponsorship(Int32 ALedgerNumber)
         {
-            const string BATCHNAME_SPONSORSHIP = "SPONSORSHIP";
+            TDataBase db = DBAccess.Connect("InitRecurringGiftBatchForSponsorship");
+            TDBTransaction Transaction = new TDBTransaction();
+            Int32 BatchNumber = -1;
+
+            DBAccess.ReadTransaction( ref Transaction,
+                delegate
+                {
+                    BatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
+                });
+
+            if (BatchNumber != -1)
+            {
+                return;
+            }
+
+            SponsorshipTDS MainDS = new SponsorshipTDS();
+            ARecurringGiftBatchRow b = MainDS.ARecurringGiftBatch.NewRowTyped(true);
+            b.BatchDescription = BATCHNAME_SPONSORSHIP;
+            MainDS.ARecurringGiftBatch.Rows.Add(b);
+            SponsorshipTDSAccess.SubmitChanges(MainDS, db);
+            db.CloseDBConnection();
+        }
+
+        /// returns the number of the recurring gift batch
+        private static Int32 GetRecurringGiftBatchForSponsorship(Int32 ALedgerNumber, TDBTransaction ATransaction = null)
+        {
             string sql = "SELECT MAX(a_batch_number_i) FROM a_recurring_gift_batch WHERE a_ledger_number_i = " + ALedgerNumber.ToString() +
                 " AND a_batch_description_c LIKE '" + BATCHNAME_SPONSORSHIP + "'";
             object result = ATransaction.DataBaseObj.ExecuteScalar(sql, ATransaction);
@@ -214,33 +240,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             if (result is Int32)
             {
                 return Convert.ToInt32(result);
-            }
-
-            if (ACreateBatch)
-            {
-                TDataBase db = null;
-
-                if (ATransaction == null)
-                {
-                    db = DBAccess.Connect("GetRecurringGiftBatchForSponsorship");
-                }
-                else
-                {
-                    db = ATransaction.DataBaseObj;
-                }
-
-                SponsorshipTDS MainDS = new SponsorshipTDS();
-                ARecurringGiftBatchRow b = MainDS.ARecurringGiftBatch.NewRowTyped(true);
-                b.BatchDescription = BATCHNAME_SPONSORSHIP;
-                MainDS.ARecurringGiftBatch.Rows.Add(b);
-                SponsorshipTDSAccess.SubmitChanges(MainDS, db);
-
-                if (ATransaction == null)
-                {
-                    db.CloseDBConnection();
-                }
-
-                return MainDS.ARecurringGiftBatch[0].BatchNumber;
             }
 
             return -1;
@@ -267,7 +266,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerReminderAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
 
-                    int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
+                    int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
 
                     if (SponsorshipBatchNumber > -1)
                     {
@@ -562,7 +561,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
         }
 
-        // Add or edit details of recurring gifts
+        /// Add or edit details of recurring gifts
         [RequireModulePermission("SPONSORADMIN")]
         public static bool MaintainSponsorshipRecurringGifts(
             Int32 ALedgerNumber,
@@ -584,13 +583,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             SponsorshipTDS MainDS = new SponsorshipTDS();
             TDataBase DB = DBAccess.Connect("MaintainRecurringGifts");
 
-            // we overwrite the user input, since the user can't really send the right batch number on create
-            //ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
-
-            // load in batches and there transactions bases on there id / batch number
+            // load batches and their transactions based on their id / batch number
             DB.ReadTransaction(ref Transaction, delegate {
                 // we overwrite the user input, since the user can't really send the right batch number on create
-                ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, true, Transaction);
+                ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
                 ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                 ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             });

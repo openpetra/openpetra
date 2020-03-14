@@ -1,4 +1,5 @@
 $("document").ready(function () {
+  MaintainChildren.InitRecurringGiftBatch();
   MaintainChildren.show();
 });
 
@@ -11,6 +12,10 @@ var MaintainChildren = new (class {
       // get infos from the filter ans search with them
       var filter = extract_data($("#filter"));
       this.show(filter);
+  }
+
+  initRecurringGiftBatch() {
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_InitRecurringGiftBatchForSponsorship', {});
   }
 
   show(filter={}) {
