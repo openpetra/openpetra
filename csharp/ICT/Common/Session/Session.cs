@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -82,6 +82,7 @@ namespace Ict.Common.Session
 
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = false;
+            bool newSession = false;
 
             db.WriteTransaction(ref t,
                 ref SubmissionOK,
@@ -91,10 +92,21 @@ namespace Ict.Common.Session
                     // load the session values from the database
                     // update the session last access in the database
                     // clean old sessions
-                    InitSession(sessionID, t);
+                    newSession = InitSession(sessionID, t);
 
                     SubmissionOK = true;
                 });
+
+            if (newSession)
+            {
+                // use a separate transaction to clean old sessions
+                db.WriteTransaction(ref t,
+                    ref SubmissionOK,
+                    delegate
+                    {
+                        CleanOldSessions(t);
+                    });
+            }
 
             db.CloseDBConnection();
 
@@ -122,9 +134,11 @@ namespace Ict.Common.Session
         /// loads the session values or initializes them.
         /// clean old sessions from the database.
         /// </summary>
-        private static void InitSession(string ASessionID, TDBTransaction AWriteTransaction)
+        /// <returns>true if new session was started</returns>
+        private static bool InitSession(string ASessionID, TDBTransaction AWriteTransaction)
         {
             string sessionID = ASessionID;
+            bool newSession = false;
 
             // is that session still valid?
             if ((sessionID != string.Empty) && !HasValidSession(sessionID, AWriteTransaction))
@@ -151,12 +165,12 @@ namespace Ict.Common.Session
                     HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
                 }
 
-                CleanOldSessions(AWriteTransaction);
-
                 // store new session
                 FSessionID = sessionID;
                 FSessionValues = new SortedList <string, string>();
                 SaveSession(AWriteTransaction);
+
+                newSession = true;
             }
             else
             {
@@ -165,6 +179,8 @@ namespace Ict.Common.Session
                 LoadSession(AWriteTransaction);
                 UpdateLastAccessTime(AWriteTransaction);
             }
+
+            return newSession;
         }
 
         private static bool HasValidSession(string ASessionID, TDBTransaction AReadTransaction)
