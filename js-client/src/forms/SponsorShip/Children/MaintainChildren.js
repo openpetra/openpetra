@@ -1,5 +1,5 @@
 $("document").ready(function () {
-  MaintainChildren.InitRecurringGiftBatch();
+  MaintainChildren.initRecurringGiftBatch();
   MaintainChildren.show();
 });
 
