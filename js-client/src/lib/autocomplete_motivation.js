@@ -2,8 +2,10 @@
 //
 // @Authors:
 //       Christopher Jäkel <cj@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -53,20 +55,20 @@ function autocomplete_motivation_detail(input_field) {
 		};
 	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadMotivationDetail', x).then(function (result) {
 		parsed = JSON.parse(result.data.d);
-		console.log(parsed);
 		if (parsed.result == true) {
 			list = [];
 			for (key in parsed.AResult) {
 				value = parsed.AResult[key];
 				list.push(
 					{
+						groupkey: value.a_motivation_group_code_c,
 						key: value.a_motivation_detail_code_c,
 						label: value.a_motivation_detail_desc_c,
 						display: "<b>" + value.a_motivation_detail_code_c + "</b><br>" + value.a_motivation_detail_desc_c
 					}
 				);
 			}
-			autocomplete( $(input_field), list);
+			autocompleteWithGroup( $(input_field), $("[name=a_motivation_group_code_c]"), list);
 		}
 	})
 
