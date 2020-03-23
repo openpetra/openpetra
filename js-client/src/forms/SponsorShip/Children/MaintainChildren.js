@@ -15,7 +15,12 @@ var MaintainChildren = new (class {
   }
 
   initRecurringGiftBatch() {
-    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_InitRecurringGiftBatchForSponsorship', {});
+    var param = {
+      "ALedgerNumber": window.localStorage.getItem("current_ledger"),
+      "ABankAccountCode": ""
+    };
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_InitRecurringGiftBatchForSponsorship', param);
   }
 
   show(filter={}) {

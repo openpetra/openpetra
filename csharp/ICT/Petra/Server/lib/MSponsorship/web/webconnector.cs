@@ -34,6 +34,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
@@ -204,16 +205,49 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
 
         /// make sure we have a recurring gift batch for sponsorships
-        public static void InitRecurringGiftBatchForSponsorship(Int32 ALedgerNumber)
+        public static void InitRecurringGiftBatchForSponsorship(Int32 ALedgerNumber, string ABankAccountCode)
         {
             TDataBase db = DBAccess.Connect("InitRecurringGiftBatchForSponsorship");
             TDBTransaction Transaction = new TDBTransaction();
             Int32 BatchNumber = -1;
+            string CurrencyCode = String.Empty;
 
             DBAccess.ReadTransaction( ref Transaction,
                 delegate
                 {
                     BatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
+
+                    if ((BatchNumber == -1) && (ABankAccountCode == String.Empty))
+                    {
+                        // bank account is not defined: use the first active bank account by default.
+                        // we don't support foreign currency accounts at the moment
+                        string sql = "SELECT MAX(a.a_account_code_c) FROM a_account AS a, a_account_property AS p "+
+                            "WHERE a.a_ledger_number_i = p.a_ledger_number_i " +
+                            "AND a.a_account_code_c = p.a_account_code_c " +
+                            "AND a.a_ledger_number_i = " + ALedgerNumber.ToString() + " " +
+                            "AND p.a_property_code_c = '" + MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' " +
+                            "AND p.a_property_value_c = 'true' " +
+                            "AND a.a_foreign_currency_flag_l = false";
+                        object result = Transaction.DataBaseObj.ExecuteScalar(sql, Transaction);
+
+                        // if no bank account exists, the result will be System.DBNull
+                        if (!(result is System.DBNull))
+                        {
+                            ABankAccountCode = result.ToString();
+                        }
+                    }
+
+                    if (CurrencyCode == String.Empty)
+                    {
+                        string sql = "SELECT a_base_currency_c FROM a_ledger WHERE a_ledger_number_i = " + ALedgerNumber.ToString();
+                        object result = Transaction.DataBaseObj.ExecuteScalar(sql, Transaction);
+
+                        // if no ledger exists, the result will be System.DBNull
+                        if (!(result is System.DBNull))
+                        {
+                            CurrencyCode = result.ToString();
+                        }
+                    }
                 });
 
             if (BatchNumber != -1)
@@ -223,7 +257,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             SponsorshipTDS MainDS = new SponsorshipTDS();
             ARecurringGiftBatchRow b = MainDS.ARecurringGiftBatch.NewRowTyped(true);
+            b.LedgerNumber = ALedgerNumber;
+            b.BankAccountCode = ABankAccountCode;
             b.BatchDescription = BATCHNAME_SPONSORSHIP;
+            b.CurrencyCode = CurrencyCode;
             MainDS.ARecurringGiftBatch.Rows.Add(b);
             SponsorshipTDSAccess.SubmitChanges(MainDS, db);
             db.CloseDBConnection();
