@@ -50,6 +50,8 @@ namespace Ict.Common.Session
     {
         private const int SessionValidHours = 24;
 
+        private static Mutex FDeleteSessionMutex = new Mutex(); // STATIC_OK: Mutex
+
         // these variables are only used per thread, they are initialized for each request.
         private static string FSessionID; // STATIC_OK: will be set for each request
         private static SortedList <string, string> FSessionValues;  // STATIC_OK: will be set for each request
@@ -105,6 +107,7 @@ namespace Ict.Common.Session
                     delegate
                     {
                         CleanOldSessions(t);
+                        SubmissionOK = true;
                     });
             }
 
@@ -327,10 +330,12 @@ namespace Ict.Common.Session
         /// clean all old sessions
         static private void CleanOldSessions(TDBTransaction AWriteTransaction)
         {
+            // avoid dead lock on parallel logins
+            FDeleteSessionMutex.WaitOne();
             string sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
             AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction);
+            FDeleteSessionMutex.ReleaseMutex();
         }
-
 
         /// <summary>
         /// set a session variable.
