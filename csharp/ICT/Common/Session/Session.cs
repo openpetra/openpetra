@@ -53,8 +53,10 @@ namespace Ict.Common.Session
         private static Mutex FDeleteSessionMutex = new Mutex(); // STATIC_OK: Mutex
 
         // these variables are only used per thread, they are initialized for each request.
-        private static string FSessionID; // STATIC_OK: will be set for each request
-        private static SortedList <string, string> FSessionValues;  // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static string FSessionID;
+        [ThreadStatic]
+        private static SortedList <string, string> FSessionValues;
 
         /// <summary>
         /// Set the session id for this current thread.
@@ -64,7 +66,7 @@ namespace Ict.Common.Session
         /// <param name="ASessionID"></param>
         public static void InitThread(string ASessionID = null)
         {
-            TLogging.LogAtLevel(1, "Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
+            TLogging.LogAtLevel(1, "Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString() + " for path " + HttpContext.Current.Request.PathInfo);
 
             FSessionID = ASessionID;
             FSessionValues = null;
@@ -160,7 +162,7 @@ namespace Ict.Common.Session
             if (sessionID == string.Empty)
             {
                 sessionID = Guid.NewGuid().ToString();
-                TLogging.LogAtLevel(1, "TSession: Creating new session: " + sessionID);
+                TLogging.LogAtLevel(1, "TSession: Creating new session: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
 
                 if (HttpContext.Current != null)
                 {
@@ -177,7 +179,7 @@ namespace Ict.Common.Session
             }
             else
             {
-                TLogging.LogAtLevel(1, "TSession: Loading valid session from database: " + sessionID);
+                TLogging.LogAtLevel(1, "TSession: Loading valid session from database: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
                 FSessionID = sessionID;
                 LoadSession(AWriteTransaction);
                 UpdateLastAccessTime(AWriteTransaction);

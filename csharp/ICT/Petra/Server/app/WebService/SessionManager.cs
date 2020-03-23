@@ -133,13 +133,14 @@ namespace Ict.Petra.Server.App.WebService
             new TAppSettingsManager(ConfigFileName);
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-            TSession.InitThread();
 
             if (TLogging.DebugLevel >= 4)
             {
                 TLogging.Log("TOpenPetraOrgSessionManager.Init");
                 TLogging.Log(HttpContext.Current.Request.PathInfo);
             }
+
+            TSession.InitThread();
 
             if (HttpContext.Current != null)
             {
