@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -211,7 +211,8 @@ namespace Ict.Common.IO
         public static readonly string RECENTADDRS = "EmailRecentAddresses";
 
 
-        static TGetSmtpSettings FGetSmtpSettings; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        static TGetSmtpSettings FGetSmtpSettings;
 
         private SmtpClient FSmtpClient;
         private MailboxAddress FSender;

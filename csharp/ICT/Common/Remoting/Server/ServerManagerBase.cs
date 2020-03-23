@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -54,13 +54,16 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// static: only initialised once for the whole server
         /// </summary>
-        public static IServerAdminInterface TheServerManager = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        public static IServerAdminInterface TheServerManager = null;
 
         /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
-        protected static Int64 FDBReconnectionAttemptsCounter = -1; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        protected static Int64 FDBReconnectionAttemptsCounter = -1;
 
         /// <summary>Whether the Timed Processing has been set up already.</summary>
-        protected static bool FServerTimedProcessingSetup = false; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        protected static bool FServerTimedProcessingSetup = false;
 
         /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
         public Int64 DBReconnectionAttemptsCounter

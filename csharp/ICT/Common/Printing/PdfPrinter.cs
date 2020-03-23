@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -827,10 +827,13 @@ namespace Ict.Common.Printing
 
     class MonoFontResolver: PdfSharp.Fonts.IFontResolver
     {
-        static string _FontDirectory = ""; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        static string _FontDirectory = "";
         
-        static List<string> _FontDirectories = new List<string>(); // STATIC_OK: will be set for each request
-        static List<string> _FontFiles = new List<string>(); // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        static List<string> _FontDirectories = new List<string>();
+        [ThreadStatic]
+        static List<string> _FontFiles = new List<string>();
 
         /// reset the static variables for each Web Request call.
         public static void ResetStaticVariables()

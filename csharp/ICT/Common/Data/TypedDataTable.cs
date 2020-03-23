@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -194,7 +194,8 @@ namespace Ict.Common.Data
         /// <summary>
         /// stores information about typed tables
         /// </summary>
-        protected static SortedList <short, TTypedTableInfo>TableInfo = new SortedList <short, TTypedTableInfo>(); // STATIC_OK: will be the same for each request
+        [ThreadStatic]
+        protected static SortedList <short, TTypedTableInfo>TableInfo = new SortedList <short, TTypedTableInfo>();
 
         /// reset the static variables for each Web Request call.
         public static void ResetStaticVariables()

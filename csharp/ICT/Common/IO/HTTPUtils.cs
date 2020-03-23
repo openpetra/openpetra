@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -132,7 +132,8 @@ namespace Ict.Common.IO
         /// and set to null only in <see cref="ResetSession" />. Other than that this
         /// static Field is only read!
         /// </remarks>
-        public static Cookie OverallCookie = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        public static Cookie OverallCookie = null;
 
         /// reset the static variables for each Web Request call.
         public static void ResetStaticVariables()
