@@ -194,8 +194,7 @@ namespace Ict.Common.Data
         /// <summary>
         /// stores information about typed tables
         /// </summary>
-        [ThreadStatic]
-        protected static SortedList <short, TTypedTableInfo>TableInfo = new SortedList <short, TTypedTableInfo>();
+        protected static SortedList <short, TTypedTableInfo>TableInfo = new SortedList <short, TTypedTableInfo>(); // STATIC_OK: Global
 
         /// reset the static variables for each Web Request call.
         public static void ResetStaticVariables()

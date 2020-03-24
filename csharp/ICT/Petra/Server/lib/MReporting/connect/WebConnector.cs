@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, ChristianK
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,6 +95,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         public static string Start(string AReportID, System.Data.DataTable AParameters)
         {
             string session = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
 
             TParameterList ParameterList = new TParameterList();
             ParameterList.LoadFromDataTable(AParameters);
@@ -105,7 +106,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             TRptDataCalculator Datacalculator = new TRptDataCalculator(PathStandardReports, PathCustomReports);
 
             ThreadStart myThreadStart = delegate {
-                Run(session, AReportID, Datacalculator, ParameterList);
+                Run(configfilename, session, AReportID, Datacalculator, ParameterList);
             };
             Thread TheThread = new Thread(myThreadStart);
             TheThread.CurrentCulture = Thread.CurrentThread.CurrentCulture;
@@ -119,10 +120,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// <summary>
         /// run the report
         /// </summary>
-        private static void Run(string ASessionID, string AReportID, TRptDataCalculator ADatacalculator, TParameterList AParameterList)
+        private static void Run(string AConfigFileName, string ASessionID, string AReportID, TRptDataCalculator ADatacalculator, TParameterList AParameterList)
         {
             // need to initialize the database session
-            TSession.InitThread(ASessionID);
+            TSession.InitThread("Reporting Webconnector", AConfigFileName, ASessionID);
 
             TDataBase db = DBAccess.Connect("TReportGeneratorWebConnector");
             

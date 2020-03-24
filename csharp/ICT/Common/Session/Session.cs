@@ -63,10 +63,22 @@ namespace Ict.Common.Session
         /// Each request has its own thread.
         /// Threads can be reused for different users.
         /// </summary>
-        /// <param name="ASessionID"></param>
-        public static void InitThread(string ASessionID = null)
+        public static void InitThread(string AThreadDescription, string AConfigFileName, string ASessionID = null)
         {
-            TLogging.LogAtLevel(1, "Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString() + " for path " + HttpContext.Current.Request.PathInfo);
+            TLogWriter.ResetStaticVariables();
+            TLogging.ResetStaticVariables();
+
+            new TAppSettingsManager(AConfigFileName);
+            new TLogging(TSrvSetting.ServerLogFile);
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
+
+            string httprequest = "";
+            if ((HttpContext.Current != null) && (HttpContext.Current.Request != null))
+            {
+                httprequest = " for path " + HttpContext.Current.Request.PathInfo;
+            }
+            
+            TLogging.LogAtLevel(4, AThreadDescription + ": Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString() + httprequest);
 
             FSessionID = ASessionID;
             FSessionValues = null;
@@ -334,8 +346,14 @@ namespace Ict.Common.Session
         {
             // avoid dead lock on parallel logins
             FDeleteSessionMutex.WaitOne();
-            string sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
-            AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction);
+
+            string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_valid_until_d < NOW()";
+            if (Convert.ToInt32(AWriteTransaction.DataBaseObj.ExecuteScalar(sql, AWriteTransaction)) > 0)
+            {
+                sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
+                AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction);
+            }
+
             FDeleteSessionMutex.ReleaseMutex();
         }
 
