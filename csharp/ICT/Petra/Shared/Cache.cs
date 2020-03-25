@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,7 +51,8 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Common table
             /// </summary>
-            private static TGetCacheableCommonTable FDelegateGetCacheableCommonTable; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static TGetCacheableCommonTable FDelegateGetCacheableCommonTable;
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable Common table
@@ -103,7 +104,8 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Conference table
             /// </summary>
-            private static TGetCacheableConferenceTable FDelegateGetCacheableConferenceTable; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static TGetCacheableConferenceTable FDelegateGetCacheableConferenceTable;
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable Conference table
@@ -155,7 +157,8 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Finance table
             /// </summary>
-            private static TGetCacheableFinanceTable FDelegateGetCacheableFinanceTable; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static TGetCacheableFinanceTable FDelegateGetCacheableFinanceTable;
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable Finance table
@@ -221,16 +224,20 @@ namespace Ict.Petra.Shared
                 TGetCacheableDataTableFromCache ACacheRetriever = null);
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FSystemCategorySettingsConcatStr = null; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static string FSystemCategorySettingsConcatStr = null;
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FPartnerContactDetailAttributeTypesConcatStr = null; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static string FPartnerContactDetailAttributeTypesConcatStr = null;
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FEmailPartnerAttributesConcatStr = null; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static string FEmailPartnerAttributesConcatStr = null;
 
             /// <summary>Used for the caching of a calculated result whose calculation depends on a Cacheable DataTable.</summary>
-            private static string FPhonePartnerAttributesConcatStr = null; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static string FPhonePartnerAttributesConcatStr = null;
 
             /// reset the static variables for each Web Request call.
             public static void ResetStaticVariables()
@@ -584,12 +591,14 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable personnel table
             /// </summary>
-            private static TGetCacheablePersonnelTable FDelegateGetCacheablePersonnelTable; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static TGetCacheablePersonnelTable FDelegateGetCacheablePersonnelTable;
 
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable Units table
             /// </summary>
-            private static TGetCacheableUnitsTable FDelegateGetCacheableUnitsTable; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static TGetCacheableUnitsTable FDelegateGetCacheableUnitsTable;
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable personnel table
@@ -675,7 +684,8 @@ namespace Ict.Petra.Shared
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable SysMan table
             /// </summary>
-            private static TGetCacheableSysManTable FDelegateGetCacheableSysManTable; // STATIC_OK: will be set for each request
+            [ThreadStatic]
+            private static TGetCacheableSysManTable FDelegateGetCacheableSysManTable;
 
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable SysMan table

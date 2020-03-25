@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,17 +45,21 @@ namespace Ict.Common
         public const String UNDEFINEDVALUE = "#UNDEFINED#";
 
         /// <summary>The path where the application is started from.</summary>
-        private static String FApplicationDirectory = ""; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static String FApplicationDirectory = "";
 
         /// <summary>The name of the Configuration File that should be read from; it is static so it can be manipulated
         /// manually once for all (remoting nunit etc.)</summary>
         /// <remarks>As this Field is static, a once-set FConfigFileName will be available in any repeated reading of the
         /// Field (in the same AppDomain)!</remarks>
-        private static String FConfigFileName = ""; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static String FConfigFileName = "";
 
         /// <summary>XML Element under which the AppSettings are found</summary>
-        private static XmlElement FAppSettingsElement = null; // STATIC_OK: will be set for each request
-        private static TCmdOpts FCmdOpts; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static XmlElement FAppSettingsElement = null;
+        [ThreadStatic]
+        private static TCmdOpts FCmdOpts;
 
         /// <summary>
         /// read only property for the filename of the current config file

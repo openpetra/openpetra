@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -271,6 +271,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             }
 
             string session = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
 
             //
             // Start the Find Thread
@@ -278,7 +279,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session, "AP TFindUIConnector");
+                    FPagedDataSetObject.ExecuteQuery(configfilename, session, "AP TFindUIConnector");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "APFind" + Guid.NewGuid().ToString();

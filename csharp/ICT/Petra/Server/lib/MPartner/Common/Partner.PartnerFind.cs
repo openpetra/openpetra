@@ -257,6 +257,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 ParametersArray);
 
             string session = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
 
             //
             // Start the Find Thread
@@ -264,7 +265,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session, "Partner Find (by Partner Details)");
+                    FPagedDataSetObject.ExecuteQuery(configfilename, session, "Partner Find (by Partner Details)");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
@@ -376,6 +377,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 ParametersArray);
 
             string session = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
 
             //
             // Start the Find Thread
@@ -383,7 +385,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session, "Partner Find (by Bank Details)");
+                    FPagedDataSetObject.ExecuteQuery(configfilename, session, "Partner Find (by Bank Details)");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Start();

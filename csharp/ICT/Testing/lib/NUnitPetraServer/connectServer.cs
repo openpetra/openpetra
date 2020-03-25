@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,23 +78,13 @@ namespace Ict.Testing.NUnitPetraServer
             Int32 ClientID;
             Int64 SiteKey;
 
-            if (File.Exists(AConfigName))
-            {
-                new TAppSettingsManager(AConfigName);
-            }
-            else if (AConfigName.Length > 0)
+            if (!File.Exists(AConfigName) && (AConfigName.Length > 0))
             {
                 TLogging.Log("cannot find config file " + Path.GetFullPath(AConfigName));
                 Environment.Exit(-1);
             }
-            else
-            {
-                new TAppSettingsManager();
-            }
 
-            new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
-
-            TSession.InitThread();
+            TSession.InitThread("NUnitPetraServer.TPetraServerConnector.Connect", AConfigName);
 
             CommonNUnitFunctions.InitRootPath();
 

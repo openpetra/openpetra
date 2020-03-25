@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,17 +64,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Finance.
         /// </summary>
-        private static TGetValidPostingDateRange FDelegateGetValidPostingDateRange; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TGetValidPostingDateRange FDelegateGetValidPostingDateRange;
 
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Finance.
         /// </summary>
-        private static TGetValidPeriodDates FDelegateGetValidPeriodDates; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TGetValidPeriodDates FDelegateGetValidPeriodDates;
 
         /// <summary>
         /// Reference to the Delegate for discovering the first day of the accounting period for a date.
         /// </summary>
-        private static TGetFirstDayOfAccountingPeriod FDelegateGetFirstDayOfAccountingPeriod; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TGetFirstDayOfAccountingPeriod FDelegateGetFirstDayOfAccountingPeriod;
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Finance.

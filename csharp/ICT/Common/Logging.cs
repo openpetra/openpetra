@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -102,13 +102,15 @@ namespace Ict.Common
         /// <summary>
         /// some log messages will be only displayed at a certain DebugLevel
         /// </summary>
-        public static int DebugLevel = 0; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        public static int DebugLevel = 0;
 
         /// <summary>
         /// No logging of messages to Console.Error? Set this to true if the PetraServer runs as a Windows Service
         /// to prevent Bug #5846!
         /// </summary>
-        private static bool FNoLoggingToConsoleError = false; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static bool FNoLoggingToConsoleError = false;
 
         /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
         public static int DL
@@ -151,29 +153,38 @@ namespace Ict.Common
         /// </summary>
         public delegate void TLogNewMessageCallback();
 
-        private static TLogWriter ULogWriter = null; // STATIC_OK: will be set for each request
-        private static String ULogFileName; // STATIC_OK: will be set for each request
-        private static String UUserNamePrefix = DEFAULTUSERNAMEPREFIX; // STATIC_OK: will be set for each request
-        private static String ULogTextAsString = null; // STATIC_OK: will be set for each request
-        private static Int32 ULogPageNumber = 1; // STATIC_OK: will be set for each request
-        private static TLogNewMessageCallback UNewMessageCallback = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TLogWriter ULogWriter = null;
+        [ThreadStatic]
+        private static String ULogFileName;
+        [ThreadStatic]
+        private static String UUserNamePrefix = DEFAULTUSERNAMEPREFIX;
+        [ThreadStatic]
+        private static String ULogTextAsString = null;
+        [ThreadStatic]
+        private static Int32 ULogPageNumber = 1;
+        [ThreadStatic]
+        private static TLogNewMessageCallback UNewMessageCallback = null;
 
         /// <summary>
         /// This can provide information about the context of the program situation when a log message is displayed.
         /// Use SetContext for setting and resetting the context information.
         ///
         /// </summary>
-        private static String Context; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static String Context;
 
         /// <summary>
         /// This is a procedure that is called with the text as a parameter. It can be used to update a status bar.
         /// </summary>
-        private static TStatusCallbackProcedure StatusBarProcedure; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TStatusCallbackProcedure StatusBarProcedure;
 
         /// <summary>
         /// This is variable indicates if StatusBarProcedure was set to a valid value. Although it could be out of date...
         /// </summary>
-        private static bool StatusBarProcedureValid; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static bool StatusBarProcedureValid;
 
         /// <summary>
         /// property for the prefix that describes the

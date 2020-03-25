@@ -28,7 +28,8 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
     public class T{#SUBMODULE}CacheableWebConnector
     {
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
-        private static Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS} FCachePopulator = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS} FCachePopulator = null;
         
         /// <summary>
         /// init static object, must be called by TSetupDelegates

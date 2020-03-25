@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -481,19 +481,22 @@ namespace Ict.Petra.Server.MReporting
 
             string CSSContent = String.Empty;
 
-            using (StreamReader sr = new StreamReader("/usr/local/openpetra/client/css/report.css"))
+            // ApplicationDirectory points to eg. /home/openpetra/server/bin, we want /home/openpetra/
+            string InstallPath = Path.GetFullPath(TAppSettingsManager.GetValue("ApplicationDirectory") + "/../../");
+
+            using (StreamReader sr = new StreamReader(InstallPath + "client/css/report.css"))
             {
                 CSSContent = sr.ReadToEnd();
             }
 
             string BootstrapCSSContent = String.Empty;
-            using (StreamReader sr = new StreamReader("/usr/local/openpetra/bootstrap-4.0/bootstrap.min.css"))
+            using (StreamReader sr = new StreamReader(InstallPath + "bootstrap-4.0/bootstrap.min.css"))
             {
                 BootstrapCSSContent = sr.ReadToEnd();
             }
 
             string BundledJSContent = string.Empty;
-            using (StreamReader sr = new StreamReader("/usr/local/openpetra/bootstrap-4.0/bootstrap.bundle.min.js"))
+            using (StreamReader sr = new StreamReader(InstallPath + "bootstrap-4.0/bootstrap.bundle.min.js"))
             {
                 BundledJSContent = sr.ReadToEnd();
             }

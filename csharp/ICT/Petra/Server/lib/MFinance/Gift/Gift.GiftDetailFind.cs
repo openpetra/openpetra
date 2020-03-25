@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -151,6 +151,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ParametersArray);
 
             string session = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
 
             //
             // Start the Find Thread
@@ -158,7 +159,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session, "Gift Detail Find");
+                    FPagedDataSetObject.ExecuteQuery(configfilename, session, "Gift Detail Find");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "GiftDetailFind" + Guid.NewGuid().ToString();

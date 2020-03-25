@@ -291,6 +291,7 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>
         /// Executes the query. Always call this method in a separate Thread to execute the query asynchronously!
         /// </summary>
+        /// <param name="AConfigFileName">path to the config file</param>
         /// <param name="ASessionID">the id of the current session</param>
         /// <param name="AContext">Context in which this quite generic Method gets called (e.g. 'Partner Find'). This is
         /// optional but should be specified to aid in debugging as it gets logged in case Exceptions happen when the
@@ -300,20 +301,22 @@ namespace Ict.Petra.Server.MCommon
         /// <remarks>An instance of TAsyncFindParameters with set up Properties must exist before this procedure can get
         /// called!
         /// </remarks>
-        public void ExecuteQuery(string ASessionID, string AContext = null, TDataBase ADataBase = null)
+        public void ExecuteQuery(string AConfigFileName, string ASessionID, string AContext = null, TDataBase ADataBase = null)
         {
-            // need to initialize the database session
-            TSession.InitThread(ASessionID);
-
-            TDataBase db = DBAccess.Connect("ExecuteQuery", ADataBase);
-
             try
             {
+                TSession.InitThread("Paged DataSet ExecuteQuery", AConfigFileName, ASessionID);
+
+                // need to initialize the database session
+                TDataBase db = DBAccess.Connect("ExecuteQuery", ADataBase);
+
                 FProgressID = Guid.NewGuid().ToString();
                 TProgressTracker.InitProgressTracker(FProgressID, "Executing Query...", 100.0m);
 
                 // Create SQL statement and execute it to return all records
                 ExecuteFullQuery(AContext, db);
+
+                db.CloseDBConnection();
             }
             catch (Exception exp)
             {

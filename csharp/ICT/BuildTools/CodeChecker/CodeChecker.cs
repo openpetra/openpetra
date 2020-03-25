@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,18 +135,37 @@ namespace Ict.Tools.CodeChecker
                         && !file.Contains("csharp/ICT/Petra/Tools") && !file.Contains("csharp/ICT/Petra/ServerAdmin"))
                     {
                         bool firstFileMatch = true;
-                        RegExpToFind = new Regex(@"(?m)^.*static (?!readonly)(?!partial)(?!extern).*[;=]\n");
+                        RegExpToFind = new Regex(@"(?m)^.*\n.*static (?!readonly)(?!partial)(?!extern)[^(\n]*[;=][^\n]*\n");
 
                         foreach (Match matchInfo in RegExpToFind.Matches(contents))
                         {
-                            if (matchInfo.Value.Trim().StartsWith("//"))
+                            string[] lines = matchInfo.Value.Split(new char[] {'\n'});
+                            string staticLine = matchInfo.Value.Trim();
+
+                            if (lines.Length >= 2)
+                            {
+                                staticLine = lines[1].Trim();
+
+                                if (lines[0].Trim() == "[ThreadStatic]")
+                                {
+                                    continue;
+                                }
+                            }
+                            
+                            if (staticLine.StartsWith("//"))
                             {
                                 continue;
                             }
 
-                            if (file.Contains("csharp/ICT/Common/Session/Session.cs") && matchInfo.Value.Contains("// STATIC_OK"))
+                            if (staticLine.EndsWith("// STATIC_OK: Mutex"))
                             {
-                                // this is an allowed exception, in Ict.Common.Session.TSession
+                                // here we actually want a static variable shared between the threads
+                                continue;
+                            }
+
+                            if (staticLine.EndsWith("// STATIC_OK: Global"))
+                            {
+                                // here we actually want a static variable shared between the threads
                                 continue;
                             }
 
