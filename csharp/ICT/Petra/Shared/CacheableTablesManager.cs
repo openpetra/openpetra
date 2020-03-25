@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,19 +87,24 @@ namespace Ict.Petra.Shared
     public class TCacheableTablesManager : ICacheableTablesManager
     {
         /// a static instance for this class
-        public static TCacheableTablesManager GCacheableTablesManager; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        public static TCacheableTablesManager GCacheableTablesManager;
 
         /// <summary>Holds all cached tables (typed/untyped DataTable), plus one Typed DataTable for the 'Table of Contents' of the Cache</summary>
-        private static CacheableTablesTDS UDataCacheDataSet; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static CacheableTablesTDS UDataCacheDataSet;
 
         /// <summary>'Table of Contents' of the Cache, used for managing the state of cached  DataTables</summary>
-        private static CacheableTablesTDSContentsTable UDataCacheContentsDT; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static CacheableTablesTDSContentsTable UDataCacheContentsDT;
 
         /// <summary>Maximum size that the Cache shouldn't exceed</summary>
-        private static Int32 UMaxCacheSize; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static Int32 UMaxCacheSize;
 
         /// <summary>Maximum time that a DataTable in the Cache should be cached</summary>
-        private static TimeSpan UMaxTimeInCache; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TimeSpan UMaxTimeInCache;
 
         /// <summary>
         /// </summary>

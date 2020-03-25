@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, simonj, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,10 +34,14 @@ namespace Ict.Common
     /// </summary>
     public class TLogWriter
     {
-        private static string ULogFileName = ""; // STATIC_OK: will be set for each request
-        private static string ULogtextPrefix = ""; // STATIC_OK: will be set for each request
-        private static bool USuppressDateAndTime = false; // STATIC_OK: will be set for each request
-        private static DateTime ULastCheckRotation = DateTime.MinValue; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static string ULogFileName = "";
+        [ThreadStatic]
+        private static string ULogtextPrefix = "";
+        [ThreadStatic]
+        private static bool USuppressDateAndTime = false;
+        [ThreadStatic]
+        private static DateTime ULastCheckRotation = DateTime.MinValue;
         private String FLogFileErrorMsg;
         private bool FCanWriteLogFile;
 

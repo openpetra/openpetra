@@ -203,8 +203,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         public static bool TrainBankStatementsLastMonth(Int32 ALedgerNumber, DateTime AToday)
         {
             string sessionID = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
             Int32 clientID = DomainManager.GClientID;
             Thread t = new Thread(() => TrainBankStatementsLastMonthThread(
+                    configfilename,
                     sessionID,
                     clientID,
                     ALedgerNumber, AToday));
@@ -215,9 +217,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             return true;
         }
 
-        private static bool TrainBankStatementsLastMonthThread(String ASessionID, Int32 AClientID, Int32 ALedgerNumber, DateTime AToday)
+        private static bool TrainBankStatementsLastMonthThread(String AConfigFileName, String ASessionID, Int32 AClientID, Int32 ALedgerNumber, DateTime AToday)
         {
-            TSession.InitThread(ASessionID);
+            TSession.InitThread("TrainBankStatementsLastMonthThread", AConfigFileName, ASessionID);
 
             DomainManager.GClientID = AClientID;
             string MyClientID = DomainManager.GClientID.ToString();

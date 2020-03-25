@@ -121,8 +121,6 @@ namespace Ict.Petra.Server.App.WebService
                 ConfigFileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config";
             }
 
-            TLogWriter.ResetStaticVariables();
-            TLogging.ResetStaticVariables();
             TTypedDataTable.ResetStaticVariables();
             TPdfPrinter.ResetStaticVariables();
             THTTPUtils.ResetStaticVariables();
@@ -130,16 +128,7 @@ namespace Ict.Petra.Server.App.WebService
             TServerManagerBase.ResetStaticVariables();
             TClientManager.ResetStaticVariables();
 
-            new TAppSettingsManager(ConfigFileName);
-            new TLogging(TSrvSetting.ServerLogFile);
-            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-            TSession.InitThread();
-
-            if (TLogging.DebugLevel >= 4)
-            {
-                TLogging.Log("TOpenPetraOrgSessionManager.Init");
-                TLogging.Log(HttpContext.Current.Request.PathInfo);
-            }
+            TSession.InitThread("TOpenPetraOrgSessionManager.Init", ConfigFileName);
 
             if (HttpContext.Current != null)
             {
@@ -152,7 +141,7 @@ namespace Ict.Petra.Server.App.WebService
             if ((HttpContext.Current != null) && (HttpContext.Current.Request.PathInfo == "/Login"))
             {
                 TSession.CloseSession();
-                TSession.InitThread();
+                TSession.InitThread("TOpenPetraOrgSessionManager.Init Reset", ConfigFileName);
             }
 
             Catalog.Init();
@@ -365,7 +354,7 @@ namespace Ict.Petra.Server.App.WebService
             // make sure we are logged out. especially SYSADMIN could be logged in when a new user is created.
             Logout();
 
-            TSession.InitThread();
+            TSession.InitThread("SetNewPassword", TAppSettingsManager.ConfigFileName);
 
             TVerificationResultCollection VerificationResult;
             bool Result = TMaintenanceWebConnector.SetNewPassword(AUserID, AToken, ANewPassword, out VerificationResult);

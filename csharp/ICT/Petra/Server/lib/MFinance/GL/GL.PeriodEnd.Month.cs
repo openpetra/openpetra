@@ -5,7 +5,7 @@
 //       wolfgangu, timop
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -152,7 +152,8 @@ namespace Ict.Petra.Server.MFinance.GL
             out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVerificationResult,
             TDataBase ADataBase = null);
-        private static StewardshipCalculation FStewardshipCalculationDelegate; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static StewardshipCalculation FStewardshipCalculationDelegate;
 
         /// <summary>
         ///

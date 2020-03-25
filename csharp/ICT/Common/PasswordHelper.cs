@@ -2,10 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
-//       Timotheus Pokorra <tp@tbits.net>
+//       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,20 +61,6 @@ namespace Ict.Common
     /// Classes that implement the <see cref="IPasswordHashingScheme"/> Interface!</remarks>
     public static class TPasswordHelper
     {
-        /// <summary>
-        /// This is the password for the IUSROPEMAIL user.  If authentication is required by the EMail server so that clients can send emails from
-        /// connections on the public internet, we can tell the client to authenticate using these credentials.
-        /// That way they do not need to supply their own login credentials which we would have to store somewhere.
-        /// The sysadmin for the servers needs to create this user with low privileges accessible by the mail server (locally or using Active Directory).
-        /// The password must be set to 'never expires' and 'cannot be changed'.
-        /// Note that the password is not stored in this file as text and it is never exposed to a client.
-        /// Password is ...
-        /// </summary>
-        public readonly static byte[] EmailUserPassword = new byte[] {
-            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
-        };
-
-
         /// <summary>
         /// Number of the Password Hashing Scheme that represents OpenPetra's current Password Hashing Scheme.
         /// </summary>

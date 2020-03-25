@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,15 +76,24 @@ namespace Ict.Petra.Server.App.Delegates
     /// </summary>
     public class TSetupDelegates
     {
-        private static Ict.Petra.Server.MCommon.Cacheable.TCacheable CachePopulatorCommon; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MConference.Cacheable.TCacheable CachePopulatorConference; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MFinance.Cacheable.TCacheable CachePopulatorFinance; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable CachePopulatorMailing; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable CachePopulatorPartner; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable CachePopulatorSubscriptions; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable CachePopulatorPersonnel; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable CachePopulatorUnits; // STATIC_OK: will be set for each request
-        private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static Ict.Petra.Server.MCommon.Cacheable.TCacheable CachePopulatorCommon;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MConference.Cacheable.TCacheable CachePopulatorConference;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MFinance.Cacheable.TCacheable CachePopulatorFinance;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable CachePopulatorMailing;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable CachePopulatorPartner;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable CachePopulatorSubscriptions;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable CachePopulatorPersonnel;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable CachePopulatorUnits;
+        [ThreadStatic]
+        private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan;
 
         /// <summary>
         /// Initialize the static variables.

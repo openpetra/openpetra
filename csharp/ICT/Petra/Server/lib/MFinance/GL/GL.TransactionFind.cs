@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,6 +135,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 ParametersArray);
 
             string session = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
 
             //
             // Start the Find Thread
@@ -142,7 +143,7 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session, "GL Transaction Find");
+                    FPagedDataSetObject.ExecuteQuery(session, configfilename, "GL Transaction Find");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "GLTransactionFind" + Guid.NewGuid().ToString();

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,19 +40,22 @@ namespace Ict.Common
         /// <see cref="Ict.Common.CommonErrorCodes" /> Class and the
         /// 'Ict.Petra.Shared.PetraErrorCodes' Class when Method
         /// <see cref="BuildErrorCodeInventory" /> of this Class called!</description>
-        public static Dictionary <string, ErrCodeInfo>ErrorCodeCatalogue = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        public static Dictionary <string, ErrCodeInfo>ErrorCodeCatalogue = null;
 
         /// <summary>
         /// Contains all Types which are registered to contain Error Code constants.
         /// </summary>
         /// <remarks>IMPORTANT: Only Error Code Constants of Types which are registered can be used with
         /// Method <see cref="M:ErrorCodes.GetErrorInfo(string)" />!</remarks>
-        public static List <Type>RegisteredTypes = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        public static List <Type>RegisteredTypes = null;
 
         /// <summary>
         /// Internal lookup for Types that have been parsed for Error Codes.
         /// </summary>
-        private static Dictionary <string, Type>CataloguedTypes = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static Dictionary <string, Type>CataloguedTypes = null;
 
         /// make sure we have empty static variables at the start of each web request
         public static void Init()

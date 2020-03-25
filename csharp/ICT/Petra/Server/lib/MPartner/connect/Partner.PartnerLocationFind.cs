@@ -4,7 +4,7 @@
 // @Authors:
 //       timh, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,12 +108,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // both empty for now
 
             string session = TSession.GetSessionID();
+            string configfilename = TAppSettingsManager.ConfigFileName;
 
             //
             // Start the Find Thread
             //
             ThreadStart myThreadStart = delegate {
-                FPagedDataSetObject.ExecuteQuery(session);
+                FPagedDataSetObject.ExecuteQuery(configfilename, session);
             };
             FFindThread = new Thread(myThreadStart);
             FFindThread.Name = "PartnerLocationFind" + Guid.NewGuid().ToString();

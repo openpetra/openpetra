@@ -3,7 +3,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,7 +63,7 @@ namespace Ict.Common.DB
     public class TDataBase
     {
         /// this is for detecting open database connections that should have been closed.
-        private static int SNumberConnections = 0; // STATIC_OK: only needed for debugging
+        private static int SNumberConnections = 0; // STATIC_OK: Global
 
         private const string StrNestedTransactionProblem = "Nested DB Transaction problem details:  *Previously* started " +
                                                            "DB Transaction Properties: Valid: {0}, IsolationLevel: {1}; it got started on Thread {2} in AppDomain '{3}'.  "
@@ -3151,7 +3151,7 @@ namespace Ict.Common.DB
 
             if (AContext != String.Empty)
             {
-                PrintContext = "(Context: '" + AContext + "')" + Environment.NewLine;
+                PrintContext = "(Context: '" + AContext + " Thread: " + Thread.CurrentThread.ManagedThreadId.ToString() + "')" + Environment.NewLine;
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)

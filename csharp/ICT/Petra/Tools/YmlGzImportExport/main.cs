@@ -112,7 +112,7 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
             string YmlFile = TAppSettingsManager.GetValue("YmlGzFile");
             string Action = TAppSettingsManager.GetValue("Action");
             TLogging.DebugLevel = TAppSettingsManager.GetInt32("Server.DebugLevel", 0);
-            TSession.InitThread();
+            TSession.InitThread("MainThread", TAppSettingsManager.ConfigFileName);
 
             ErrorCodeInventory.Init();
 

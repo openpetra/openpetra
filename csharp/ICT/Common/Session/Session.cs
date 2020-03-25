@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,19 +50,35 @@ namespace Ict.Common.Session
     {
         private const int SessionValidHours = 24;
 
+        private static Mutex FDeleteSessionMutex = new Mutex(); // STATIC_OK: Mutex
+
         // these variables are only used per thread, they are initialized for each request.
-        private static string FSessionID; // STATIC_OK: will be set for each request
-        private static SortedList <string, string> FSessionValues;  // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static string FSessionID;
+        [ThreadStatic]
+        private static SortedList <string, string> FSessionValues;
 
         /// <summary>
         /// Set the session id for this current thread.
         /// Each request has its own thread.
         /// Threads can be reused for different users.
         /// </summary>
-        /// <param name="ASessionID"></param>
-        public static void InitThread(string ASessionID = null)
+        public static void InitThread(string AThreadDescription, string AConfigFileName, string ASessionID = null)
         {
-            TLogging.LogAtLevel(1, "Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString());
+            TLogWriter.ResetStaticVariables();
+            TLogging.ResetStaticVariables();
+
+            new TAppSettingsManager(AConfigFileName);
+            new TLogging(TSrvSetting.ServerLogFile);
+            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
+
+            string httprequest = "";
+            if ((HttpContext.Current != null) && (HttpContext.Current.Request != null))
+            {
+                httprequest = " for path " + HttpContext.Current.Request.PathInfo;
+            }
+            
+            TLogging.LogAtLevel(4, AThreadDescription + ": Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString() + httprequest);
 
             FSessionID = ASessionID;
             FSessionValues = null;
@@ -82,6 +98,7 @@ namespace Ict.Common.Session
 
             TDBTransaction t = new TDBTransaction();
             bool SubmissionOK = false;
+            bool newSession = false;
 
             db.WriteTransaction(ref t,
                 ref SubmissionOK,
@@ -91,10 +108,22 @@ namespace Ict.Common.Session
                     // load the session values from the database
                     // update the session last access in the database
                     // clean old sessions
-                    InitSession(sessionID, t);
+                    newSession = InitSession(sessionID, t);
 
                     SubmissionOK = true;
                 });
+
+            if (newSession)
+            {
+                // use a separate transaction to clean old sessions
+                db.WriteTransaction(ref t,
+                    ref SubmissionOK,
+                    delegate
+                    {
+                        CleanOldSessions(t);
+                        SubmissionOK = true;
+                    });
+            }
 
             db.CloseDBConnection();
 
@@ -122,9 +151,11 @@ namespace Ict.Common.Session
         /// loads the session values or initializes them.
         /// clean old sessions from the database.
         /// </summary>
-        private static void InitSession(string ASessionID, TDBTransaction AWriteTransaction)
+        /// <returns>true if new session was started</returns>
+        private static bool InitSession(string ASessionID, TDBTransaction AWriteTransaction)
         {
             string sessionID = ASessionID;
+            bool newSession = false;
 
             // is that session still valid?
             if ((sessionID != string.Empty) && !HasValidSession(sessionID, AWriteTransaction))
@@ -143,7 +174,7 @@ namespace Ict.Common.Session
             if (sessionID == string.Empty)
             {
                 sessionID = Guid.NewGuid().ToString();
-                TLogging.LogAtLevel(1, "TSession: Creating new session: " + sessionID);
+                TLogging.LogAtLevel(1, "TSession: Creating new session: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
 
                 if (HttpContext.Current != null)
                 {
@@ -151,20 +182,22 @@ namespace Ict.Common.Session
                     HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
                 }
 
-                CleanOldSessions(AWriteTransaction);
-
                 // store new session
                 FSessionID = sessionID;
                 FSessionValues = new SortedList <string, string>();
                 SaveSession(AWriteTransaction);
+
+                newSession = true;
             }
             else
             {
-                TLogging.LogAtLevel(1, "TSession: Loading valid session from database: " + sessionID);
+                TLogging.LogAtLevel(1, "TSession: Loading valid session from database: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
                 FSessionID = sessionID;
                 LoadSession(AWriteTransaction);
                 UpdateLastAccessTime(AWriteTransaction);
             }
+
+            return newSession;
         }
 
         private static bool HasValidSession(string ASessionID, TDBTransaction AReadTransaction)
@@ -311,10 +344,18 @@ namespace Ict.Common.Session
         /// clean all old sessions
         static private void CleanOldSessions(TDBTransaction AWriteTransaction)
         {
-            string sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
-            AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction);
-        }
+            // avoid dead lock on parallel logins
+            FDeleteSessionMutex.WaitOne();
 
+            string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_valid_until_d < NOW()";
+            if (Convert.ToInt32(AWriteTransaction.DataBaseObj.ExecuteScalar(sql, AWriteTransaction)) > 0)
+            {
+                sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
+                AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction);
+            }
+
+            FDeleteSessionMutex.ReleaseMutex();
+        }
 
         /// <summary>
         /// set a session variable.

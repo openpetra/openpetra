@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,15 +64,20 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
-        private static TVerifyPartner FDelegateVerifyPartner; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TVerifyPartner FDelegateVerifyPartner;
 
-        private static TPartnerHasActiveStatus FDelegatePartnerHasActiveStatus; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TPartnerHasActiveStatus FDelegatePartnerHasActiveStatus;
 
-        private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC;
 
-        private static TPartnerOfTypeCCIsLinked FDelegatePartnerOfTypeCCIsLinked; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TPartnerOfTypeCCIsLinked FDelegatePartnerOfTypeCCIsLinked;
 
-        private static TPartnerHasCurrentGiftDestination FDelegatePartnerHasCurrentGiftDestination; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TPartnerHasCurrentGiftDestination FDelegatePartnerHasCurrentGiftDestination;
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Partner.

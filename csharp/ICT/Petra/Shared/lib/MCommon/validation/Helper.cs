@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,7 +44,8 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <summary>
         /// Reference to the Delegate for invoking the simple data reader.
         /// </summary>
-        private static TSharedGetData FDelegateSharedGetData; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static TSharedGetData FDelegateSharedGetData;
 
         /// <summary>
         /// This property is used to provide a function which invokes the simple data reader.

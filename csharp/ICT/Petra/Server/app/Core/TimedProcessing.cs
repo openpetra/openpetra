@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,10 +51,13 @@ namespace Ict.Petra.Server.App.Core
         public delegate void TProcessDelegate(TDataBase Database, bool ARunManually);
 
         // TODO_TIMEDPROCESSING: TimedProcessing needs general fixing
-        private static readonly SortedList <string, TProcessDelegate>FProcessDelegates = new SortedList <string, TTimedProcessing.TProcessDelegate>();
-        private static readonly List <System.Threading.Timer>FTimers = new List <Timer>();
+        [ThreadStatic]
+        private static SortedList <string, TProcessDelegate>FProcessDelegates = new SortedList <string, TTimedProcessing.TProcessDelegate>();
+        [ThreadStatic]
+        private static List <System.Threading.Timer>FTimers = new List <Timer>();
 
-        private static readonly DateTime FDailyStartTime24Hrs;
+        [ThreadStatic]
+        private static DateTime FDailyStartTime24Hrs;
 
         /// <summary>Daily start time of Processing in 24 Hrs Format (with leading zeroes for hours and minutes between 0-9) (this is taken by reading a value from the Server Config file).</summary>
         public static string DailyStartTime24Hrs
@@ -68,9 +71,7 @@ namespace Ict.Petra.Server.App.Core
             {
                 try
                 {
-#if TODO_TIMEDPROCESSING
                     FDailyStartTime24Hrs = DateTime.ParseExact(value, "HH:mm", null, DateTimeStyles.NoCurrentDateDefault);
-#endif
                 }
                 catch (System.FormatException Exc)
                 {
@@ -169,6 +170,11 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public static void AddProcessingJob(string ADelegateName, TProcessDelegate ADelegate)
         {
+            if (FProcessDelegates == null)
+            {
+                FProcessDelegates = new SortedList <string, TTimedProcessing.TProcessDelegate>();
+            }
+
             if (!FProcessDelegates.ContainsKey(ADelegateName))
             {
                 FProcessDelegates.Add(ADelegateName, ADelegate);

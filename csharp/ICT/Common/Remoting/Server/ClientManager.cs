@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,10 +60,14 @@ namespace Ict.Common.Remoting.Server
 
         #endregion
 
-        private static IUserManager UUserManager = null; // STATIC_OK: will be set for each request
-        private static IErrorLog UErrorLog = null; // STATIC_OK: will be set for each request
-        private static ILoginLog ULoginLog = null; // STATIC_OK: will be set for each request
-        private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null; // STATIC_OK: will be set for each request
+        [ThreadStatic]
+        private static IUserManager UUserManager = null;
+        [ThreadStatic]
+        private static IErrorLog UErrorLog = null;
+        [ThreadStatic]
+        private static ILoginLog ULoginLog = null;
+        [ThreadStatic]
+        private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null;
 
         /// <summary>
         /// Called by TClientManager to request the number of Clients that are currently
