@@ -83,13 +83,19 @@
   <call target="startServer"/>
 </target>
 
-<target name="startServer-internal" depends="initConfigFiles-server, copySQLFiles" description="Starts a local Petra Server">
+<target name="prepareDeliveryContent" description="copy some files to delivery directory for the server to start">
   <mkdir dir="${dir.delivery}/api" failonerror="false"/>
-  <copy todir="${dir.delivery}/api" overwrite="true">
-    <fileset basedir="${dir.csharp}/ICT/Petra/Server/app/WebService/">
+
+  <delete>
+    <fileset basedir="${dir.delivery}/api">
       <include name="*.asmx" />
     </fileset>
-  </copy>
+  </delete>
+
+  <!-- create symbolic links for asmx files -->
+  <exec program="bash"
+        workingdir="${dir.delivery}/api"
+        commandline="-c &quot;for f in ${dir.csharp}/ICT/Petra/Server/app/WebService/*.asmx; do ln -s $f; done&quot;"/>
 
   <copy todir="${dir.delivery}/api" overwrite="true" flatten="true">
     <fileset basedir="${dir.csharp}/ICT/Petra/Plugins/">
@@ -120,6 +126,11 @@
       <delete file="${dir.bin}/sqlite3.dll"/>
       <delete file="${dir.bin}/libsodium.dll"/>
       <delete file="${dir.bin}/libsodium-64.dll"/>
+  </if>
+</target>
+
+<target name="startServer-internal" depends="initConfigFiles-server, copySQLFiles, prepareDeliveryContent" description="Starts a local Petra Server">
+  <if test="${'unix'==platform::get-name()}" >
       <echo message="in your browser, go to http://localhost:${Server.Port}/"/>
       <echo message="   for the api,  go to http://localhost:${Server.Port}/api/"/>
       <property name="spawnxsp" value="false" overwrite="false"/>
