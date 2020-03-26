@@ -94,6 +94,9 @@ namespace Ict.Common.Session
                 sessionID = ASessionID;
             }
 
+            // avoid dead lock on parallel logins
+            FDeleteSessionMutex.WaitOne();
+
             TDataBase db = ConnectDB("SessionInitThread");
 
             TDBTransaction t = new TDBTransaction();
@@ -127,6 +130,7 @@ namespace Ict.Common.Session
 
             db.CloseDBConnection();
 
+            FDeleteSessionMutex.ReleaseMutex();
         }
 
         /// get the current session id from the http context
@@ -344,17 +348,12 @@ namespace Ict.Common.Session
         /// clean all old sessions
         static private void CleanOldSessions(TDBTransaction AWriteTransaction)
         {
-            // avoid dead lock on parallel logins
-            FDeleteSessionMutex.WaitOne();
-
             string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_valid_until_d < NOW()";
             if (Convert.ToInt32(AWriteTransaction.DataBaseObj.ExecuteScalar(sql, AWriteTransaction)) > 0)
             {
                 sql = "DELETE FROM PUB_s_session WHERE s_valid_until_d < NOW()";
                 AWriteTransaction.DataBaseObj.ExecuteNonQuery(sql, AWriteTransaction);
             }
-
-            FDeleteSessionMutex.ReleaseMutex();
         }
 
         /// <summary>
