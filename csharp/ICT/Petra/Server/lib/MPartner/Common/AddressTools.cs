@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,11 +43,23 @@ namespace Ict.Petra.Server.MPartner.Common
     ///</summary>
     public class TAddressTools
     {
+        /// find the current best address for the partner, only return address with sendmail set.
+        public static bool GetBestAddressOnlySendMail(Int64 APartnerKey,
+            out PLocationTable AAddress,
+            out string ACountryNameLocal,
+            TDBTransaction ATransaction)
+        {
+            return GetBestAddress(APartnerKey,
+                out AAddress, out ACountryNameLocal,
+                ATransaction, true);
+        }
+
         /// find the current best address for the partner
         public static bool GetBestAddress(Int64 APartnerKey,
             out PLocationTable AAddress,
             out string ACountryNameLocal,
-            TDBTransaction ATransaction)
+            TDBTransaction ATransaction,
+            bool AOnlySendMail = false)
         {
             AAddress = null;
             ACountryNameLocal = "";
@@ -72,6 +84,12 @@ namespace Ict.Petra.Server.MPartner.Common
 
             foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
             {
+                if (AOnlySendMail && !Convert.ToBoolean(row[PPartnerLocationTable.GetSendMailDBName()]))
+                {
+                    // ignore addresses that are not set for receiving mail.
+                    continue;
+                }
+
                 // find the row with BestAddress = 1
                 if (Convert.ToInt32(row["BestAddress"]) == 1)
                 {
