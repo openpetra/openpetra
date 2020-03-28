@@ -48,7 +48,7 @@ getConfigOfCurrentCustomer() {
     export OPENPETRA_HTTP_URL=`cat $config | grep Server.Url | awk -F'"' '{print $4}'`
 
     # previous installations were missing http or https
-    if [[ ! $OPENPETRA_HTTP_URL == https://.* && ! $OPENPETRA_HTTP_URL == http://.* ]]
+    if [[ ! $OPENPETRA_HTTP_URL == https://* && ! $OPENPETRA_HTTP_URL == http://* ]]
     then
         export OPENPETRA_HTTP_URL="https://$OPENPETRA_HTTP_URL"
     fi
