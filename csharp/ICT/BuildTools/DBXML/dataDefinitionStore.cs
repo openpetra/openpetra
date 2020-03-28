@@ -1162,7 +1162,7 @@ namespace Ict.Tools.DBXML
             {
                 return "String";
             }
-            else if (strType.ToLower() == "text")
+            else if ((strType.ToLower() == "text") || (strType.ToLower() == "longtext"))
             {
                 return "String";
             }
