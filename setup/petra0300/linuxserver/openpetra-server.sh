@@ -47,7 +47,7 @@ getConfigOfCurrentCustomer() {
     export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
     export OPENPETRA_HTTP_URL=`cat $config | grep Server.Url | awk -F'"' '{print $4}'`
 
-    # previous installations where missing http or https
+    # previous installations were missing http or https
     if [[ ! $OPENPETRA_HTTP_URL == https://.* && ! $OPENPETRA_HTTP_URL == http://.* ]]
     then
         export OPENPETRA_HTTP_URL="https://$OPENPETRA_URL"
@@ -398,7 +398,7 @@ init() {
        | sed -e "s/OPENPETRA_DBUSER/$OPENPETRA_DBUSER/" \
        | sed -e "s/OPENPETRA_DBNAME/$OPENPETRA_DBNAME/" \
        | sed -e "s/OPENPETRA_DBPORT/$OPENPETRA_DBPORT/" \
-       | sed -e "s~PG_OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
+       | sed -e "s~OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
        | sed -e "s~OPENPETRA_URL~$OPENPETRA_HTTP_URL~" \
        | sed -e "s~OPENPETRA_EMAILDOMAIN~$OPENPETRA_EMAILDOMAIN~" \
        | sed -e "s/USERNAME/$userName/" \
@@ -533,9 +533,9 @@ FINISH
 }
 
 initdb() {
-    if [ -z "$OPENPETRA_DBPWD" -a "$OPENPETRA_RDBMSType" != "sqlite" ]
+    if [ -z "$OPENPETRA_DBPWD" ]
     then
-      echo "please define a password for your OpenPetra database, eg. OPENPETRA_PWD=topsecret openpetra-server init"
+      echo "please define a password for your OpenPetra database, eg. OPENPETRA_DBPWD=topsecret openpetra-server init"
       exit -1
     fi
 
