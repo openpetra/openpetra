@@ -34,6 +34,37 @@ generatepwd() {
   dd bs=1024 count=1 if=/dev/urandom status=none | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1
 }
 
+getConfigOfCurrentCustomer() {
+  config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
+  if [ -f $config ]
+  then
+    export userName=$OP_CUSTOMER
+    export OPENPETRA_RDBMSType=`cat $config | grep RDBMSType | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBHOST=`cat $config | grep DBHostOrFile | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBUSER=`cat $config | grep DBUserName | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBNAME=`cat $config | grep DBName | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
+    export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
+    export OPENPETRA_HTTP_URL=`cat $config | grep Server.Url | awk -F'"' '{print $4}'`
+
+    # previous installations where missing http or https
+    if [[ ! $OPENPETRA_HTTP_URL == https://.* && ! $OPENPETRA_HTTP_URL == http://.* ]]
+    then
+        export OPENPETRA_HTTP_URL="https://$OPENPETRA_URL"
+    fi
+
+  elif [ -z $OPENPETRA_DBUSER ]
+  then
+    echo "cannot find $config"
+    exit -1
+  fi
+
+  if [ -f /etc/nginx/conf.d/$OP_CUSTOMER.conf ]
+  then
+    export OPENPETRA_PORT=`cat /etc/nginx/conf.d/$OP_CUSTOMER.conf | grep -m1 listen | sed -e 's#;##' |  awk -F' ' '{print $2}'`
+  fi
+}
+
 if [ -z "$OP_CUSTOMER" ]
 then
   # check if the current user starts with op_
@@ -54,21 +85,7 @@ then
     export userName=`basename $dirname`
   fi
 elif [ "$1" != "init" ]; then
-  config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
-  if [ -f $config ]
-  then
-    export userName=$OP_CUSTOMER
-    export OPENPETRA_RDBMSType=`cat $config | grep RDBMSType | awk -F'"' '{print $4}'`
-    export OPENPETRA_DBHOST=`cat $config | grep DBHostOrFile | awk -F'"' '{print $4}'`
-    export OPENPETRA_DBUSER=`cat $config | grep DBUserName | awk -F'"' '{print $4}'`
-    export OPENPETRA_DBNAME=`cat $config | grep DBName | awk -F'"' '{print $4}'`
-    export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
-    export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
-  elif [ -z $OPENPETRA_DBUSER ]
-  then
-    echo "cannot find $config"
-    exit -1
-  fi
+    getConfigOfCurrentCustomer
 fi
 
 if [ -z "$backupfile" ]
@@ -307,7 +324,7 @@ updateall() {
         cd $OpenPetraPath
         curl --silent --location https://getopenpetra.com/openpetra-latest-bin.tar.gz > openpetra-latest-bin.tar.gz || exit -1
         rm -Rf openpetra-2*
-	tar xzf openpetra-latest-bin.tar.gz || exit -1
+        tar xzf openpetra-latest-bin.tar.gz || exit -1
         for d in openpetra-201*; do
             alias cp=cp
             cp -Rf $d/* $OpenPetraPath
@@ -323,6 +340,30 @@ updateall() {
             $THIS_SCRIPT upgradedb
         fi
     done
+}
+
+rewrite_conf() {
+    if [ -z $OPENPETRA_EMAILDOMAIN ]; then
+        echo "please define the email domain, eg. OPENPETRA_EMAILDOMAIN=example.org"
+        exit -1
+    fi
+    if [ -z $SMTPHOST ]; then
+        echo "please define the variables SMTPHOST, SMTPUSER, SMTPPORT and SMTPPWD"
+        exit -1
+    fi
+
+    if [ -z $OP_CUSTOMER ]; then
+        for d in /home/$OPENPETRA_USER_PREFIX*; do
+            if [ -d $d ]; then
+                export OP_CUSTOMER=`basename $d`
+                rewrite_conf
+            fi
+        done
+    else
+        getConfigOfCurrentCustomer
+        rm /home/$OP_CUSTOMER/etc/PetraServerConsole.config
+        init
+    fi
 }
 
 init() {
@@ -342,13 +383,14 @@ init() {
 
     echo "preparing OpenPetra instance..."
 
-    useradd --home /home/$userName -G openpetra $userName
+    id $userName > /dev/null 2>&1 || useradd --home /home/$userName -G openpetra $userName
     mkdir -p /home/$userName/log
     mkdir -p /home/$userName/tmp
     mkdir -p /home/$userName/etc
     mkdir -p /home/$userName/backup
 
     # copy config files (server, serveradmin.config) to etc, with adjustments
+    cfgfile=/home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/templates/PetraServerConsole.config \
        | sed -e "s/OPENPETRA_PORT/$OPENPETRA_PORT/" \
        | sed -e "s/OPENPETRA_RDBMSType/$OPENPETRA_RDBMSType/" \
@@ -357,15 +399,39 @@ init() {
        | sed -e "s/OPENPETRA_DBNAME/$OPENPETRA_DBNAME/" \
        | sed -e "s/OPENPETRA_DBPORT/$OPENPETRA_DBPORT/" \
        | sed -e "s~PG_OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
-       | sed -e "s~OPENPETRA_URL~$OPENPETRA_URL~" \
+       | sed -e "s~OPENPETRA_URL~$OPENPETRA_HTTP_URL~" \
        | sed -e "s~OPENPETRA_EMAILDOMAIN~$OPENPETRA_EMAILDOMAIN~" \
        | sed -e "s/USERNAME/$userName/" \
-       | sed -e "s#/usr/local/openpetra/bin#$OPENPETRA_HOME/server/bin#" \
-       | sed -e "s#/usr/local/openpetra#$OPENPETRA_HOME#" \
-       > /home/$userName/etc/PetraServerConsole.config
+       | sed -e "s#OPENPETRAPATH#$OpenPetraPath#" \
+       > $cfgfile
+
+    if [ ! -z $LICENSECHECK_URL ]
+    then
+        sed -i "s#LICENSECHECK_URL#$LICENSECHECKURL/api/validate?instance_number=#" $cfgfile
+    else
+        sed -i "s#LICENSECHECK_URL##" $cfgfile
+    fi
+
+    if [ ! -z $AUTHTOKENINITIALISATION ]
+    then
+        sed -i "s#AUTHTOKENINITIALISATION#$AUTHTOKENINITIALISATION#" $cfgfile
+    else
+        sed -i "s#AUTHTOKENINITIALISATION##" $cfgfile
+    fi
+
+    if [ ! -z $SMTPHOST ]
+    then
+        sed -i "s/SMTP_HOST/$SMTPHOST/" $cfgfile
+        sed -i "s/SMTP_PORT/$SMTPPORT/" $cfgfile
+        sed -i "s/SMTP_USERNAME/$SMTPUSER/" $cfgfile
+        sed -i "s/SMTP_PASSWORD/$SMTPPWD/" $cfgfile
+        sed -i "s/SMTP_ENABLESSL/true/" $cfgfile
+        sed -i "s/SMTP_AUTHTYPE/config/" $cfgfile
+    fi
+
     cat $OpenPetraPath/templates/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
-       | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_HTTP_PORT/#" \
+       | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_PORT/#" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
     touch /home/$userName/log/Server.log
@@ -488,7 +554,7 @@ initdb() {
       loadYmlGz
 
       # if url does not start with demo.
-      if [[ ! $OPENPETRA_URL == demo.* ]]
+      if [[ ! $OPENPETRA_HTTP_URL == https://demo.* && ! $OPENPETRA_HTTP_URL == http://demo.* ]]
       then
         mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
            -e "UPDATE s_user SET s_password_needs_change_l = 1 WHERE s_user_id_c = 'SYSADMIN'" $OPENPETRA_DBNAME
@@ -558,6 +624,9 @@ case "$1" in
     update)
         updateall
         ;;
+    rewrite_conf)
+        rewrite_conf
+        ;;
     loadYmlGz)
         loadYmlGz
         ;;
@@ -571,7 +640,7 @@ case "$1" in
         status
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|update|upgradedb|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|update|upgradedb|rewrite_conf|loadYmlGz|dumpYmlGz}"
         exit 1
         ;;
 esac
