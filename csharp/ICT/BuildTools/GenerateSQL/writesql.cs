@@ -491,6 +491,12 @@ namespace GenerateSQL
 
             if ((field.strType == "varchar") && (field.iLength >= 10000))
             {
+                field.strType = "longtext";
+            }
+
+            if ((field.strType == "longtext") && (ATargetDatabase == eDatabaseType.PostgreSQL))
+            {
+                // PostgreSQL does not have longtext. text is already unlimited length.
                 field.strType = "text";
             }
 
