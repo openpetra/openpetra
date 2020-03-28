@@ -50,7 +50,7 @@ getConfigOfCurrentCustomer() {
     # previous installations were missing http or https
     if [[ ! $OPENPETRA_HTTP_URL == https://.* && ! $OPENPETRA_HTTP_URL == http://.* ]]
     then
-        export OPENPETRA_HTTP_URL="https://$OPENPETRA_URL"
+        export OPENPETRA_HTTP_URL="https://$OPENPETRA_HTTP_URL"
     fi
 
   elif [ -z $OPENPETRA_DBUSER ]
@@ -401,20 +401,19 @@ init() {
        | sed -e "s~OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
        | sed -e "s~OPENPETRA_URL~$OPENPETRA_HTTP_URL~" \
        | sed -e "s~OPENPETRA_EMAILDOMAIN~$OPENPETRA_EMAILDOMAIN~" \
-       | sed -e "s/USERNAME/$userName/" \
        | sed -e "s#OPENPETRAPATH#$OpenPetraPath#" \
        > $cfgfile
 
-    if [ ! -z $LICENSECHECK_URL ]
+    if [ ! -z $LICENSECHECKURL ]
     then
         sed -i "s#LICENSECHECK_URL#$LICENSECHECKURL/api/validate?instance_number=#" $cfgfile
     else
         sed -i "s#LICENSECHECK_URL##" $cfgfile
     fi
 
-    if [ ! -z $AUTHTOKENINITIALISATION ]
+    if [ ! -z $AUTHTOKENINIT ]
     then
-        sed -i "s#AUTHTOKENINITIALISATION#$AUTHTOKENINITIALISATION#" $cfgfile
+        sed -i "s#AUTHTOKENINITIALISATION#$AUTHTOKENINIT#" $cfgfile
     else
         sed -i "s#AUTHTOKENINITIALISATION##" $cfgfile
     fi
@@ -428,6 +427,8 @@ init() {
         sed -i "s/SMTP_ENABLESSL/true/" $cfgfile
         sed -i "s/SMTP_AUTHTYPE/config/" $cfgfile
     fi
+
+    sed -i "s/USERNAME/$userName/" $cfgfile
 
     cat $OpenPetraPath/templates/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
