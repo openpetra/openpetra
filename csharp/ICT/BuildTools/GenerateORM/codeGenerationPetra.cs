@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -74,7 +74,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 return "OdbcType.VarChar";
             }
-            else if (tableField.strType == "text")
+            else if (tableField.strType == "text" || tableField.strType == "longtext")
             {
                 return "OdbcType.Text";
             }
@@ -96,9 +96,6 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
             else
             {
-                //
-                // This is new (March 2014) - previously every bad type was given as int.
-
                 throw (new Exception("ERROR: Bad Field Type in [" + tableField.strTableName + "]." + tableField.strName + ": " + tableField.strType +
                            "/" + tableField.strTypeDotNet));
             }
