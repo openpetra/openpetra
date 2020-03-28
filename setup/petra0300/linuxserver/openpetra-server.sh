@@ -434,6 +434,22 @@ init() {
        | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_PORT/#" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
+    nginx_conf_path=/etc/nginx/conf.d/$OP_CUSTOMER.conf
+    if [[ "$install_type" == "devenv" ]]; then
+        cp $OpenPetraPath/templates/nginx.conf $nginx_conf_path
+    else
+        # drop location phpMyAdmin
+        # drop the redirect for phpMyAdmin
+        awk '/location \/phpMyAdmin/ {exit} {print}' $OpenPetraPath/templates/nginx.conf \
+            | grep -v phpMyAdmin \
+            > $nginx_conf_path
+        echo "}" >> $nginx_conf_path
+    fi
+
+    sed -i "s/OPENPETRA_SERVERNAME/$OP_CUSTOMER.localhost/g" $nginx_conf_path
+    sed -i "s#OPENPETRA_HOME#$OpenPetraPath#g" $nginx_conf_path
+    sed -i "s#OPENPETRA_URL#$OPENPETRA_HTTP_URL#g" $nginx_conf_path
+
     touch /home/$userName/log/Server.log
     chown -R $userName:openpetra /home/$userName
     chmod g+r -R /home/$userName
