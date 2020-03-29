@@ -447,7 +447,9 @@ init() {
         echo "}" >> $nginx_conf_path
     fi
 
-    sed -i "s/OPENPETRA_SERVERNAME/$OP_CUSTOMER.localhost/g" $nginx_conf_path
+    SERVERNAME=${OPENPETRA_HTTP_URL/https:\/\//}
+    SERVERNAME=${OPENPETRA_HTTP_URL/http:\/\//}
+    sed -i "s/OPENPETRA_SERVERNAME/$SERVERNAME/g" $nginx_conf_path
     sed -i "s#OPENPETRA_HOME#$OpenPetraPath#g" $nginx_conf_path
     sed -i "s#OPENPETRA_URL#$OPENPETRA_HTTP_URL#g" $nginx_conf_path
 
