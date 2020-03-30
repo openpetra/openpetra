@@ -47,6 +47,7 @@ getConfigOfCurrentCustomer() {
     export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
     export OPENPETRA_HTTP_URL=`cat $config | grep Server.Url | awk -F'"' '{print $4}'`
+    export OPENPETRA_PORT=`cat $config | grep Port | awk -F'"' '{print $4}'`
 
     # previous installations were missing http or https
     if [[ ! $OPENPETRA_HTTP_URL == https://* && ! $OPENPETRA_HTTP_URL == http://* ]]
@@ -60,9 +61,13 @@ getConfigOfCurrentCustomer() {
     exit -1
   fi
 
-  if [ -f /etc/nginx/conf.d/$OP_CUSTOMER.conf ]
+  # in older versions, we did not have the port in the PetraServerConsole.config file
+  if [ -z $OPENPETRA_PORT ]
   then
-    export OPENPETRA_PORT=`cat /etc/nginx/conf.d/$OP_CUSTOMER.conf | grep -m1 listen | sed -e 's#;##' |  awk -F' ' '{print $2}'`
+    if [ -f /etc/nginx/conf.d/$OP_CUSTOMER.conf ]
+    then
+      export OPENPETRA_PORT=`cat /etc/nginx/conf.d/$OP_CUSTOMER.conf | grep -m1 listen | sed -e 's#;##' |  awk -F' ' '{print $2}'`
+    fi
   fi
 }
 
