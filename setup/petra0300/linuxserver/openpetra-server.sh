@@ -337,8 +337,15 @@ updateall() {
 
     systemctl restart openpetra
 
+    count=1
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
+            count=$((count+1))
+            if [ $count -gt 30 ]; then
+                count=0
+                # we have an issue with too many connections to the database server
+                systemctl restart openpetra
+            fi 
             export OP_CUSTOMER=`basename $d`
             $THIS_SCRIPT upgradedb
         fi
@@ -409,7 +416,7 @@ init() {
 
     if [ ! -z $LICENSECHECKURL ]
     then
-        sed -i "s#LICENSECHECK_URL#$LICENSECHECKURL/api/validate?instance_number=#" $cfgfile
+        sed -i "s#LICENSECHECK_URL#$LICENSECHECKURL/api/validate.php?instance_number=#" $cfgfile
     else
         sed -i "s#LICENSECHECK_URL##" $cfgfile
     fi
@@ -453,6 +460,7 @@ init() {
     SERVERNAME=${OPENPETRA_HTTP_URL/https:\/\//}
     SERVERNAME=${SERVERNAME/http:\/\//}
     sed -i "s#OPENPETRA_SERVERNAME#$SERVERNAME#g" $nginx_conf_path
+    sed -i "s#OPENPETRA_PORT#$OPENPETRA_PORT#g" $nginx_conf_path
     sed -i "s#OPENPETRA_HOME#$OpenPetraPath#g" $nginx_conf_path
     sed -i "s#OPENPETRA_URL#$OPENPETRA_HTTP_URL#g" $nginx_conf_path
 
