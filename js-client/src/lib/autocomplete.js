@@ -2,8 +2,10 @@
 //
 // @Authors:
 //       Christopher Jäkel <cj@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -22,6 +24,10 @@
 //
 
 function autocomplete(input_field_object, auto_list) {
+  return autocompleteWithGroup(input_field_object, null, auto_list);
+}
+
+function autocompleteWithGroup(input_field_object, input_group_object, auto_list) {
 
   if (input_field_object.attr('init-autocomplete') == null) {
     input_field_object.attr('select-field', '0');
@@ -77,13 +83,14 @@ function autocomplete(input_field_object, auto_list) {
     guess = auto_list[pair];
     guess_field = $("<div>");
     let content = "<span>" + guess.display + "</span>";
-    content = content + "<input type='hidden' value='" + guess.key + "'>"
+    content = content + "<input type='hidden' value='" + guess.key + "' groupkey='" + guess.groupkey + "'>"
     guess_field.html(content);
     guess_field.attr('label', guess.label);
     guess_field.attr('key', guess.key);
     guess_field.click(function () {
       input_field_object.val( $(this).attr('key') + ' ' + $(this).attr('label'));
       input_field_object.attr('key-value', $(this).find('input[type=hidden]').val());
+      input_group_object.val($(this).find('input[type=hidden]').attr("groupkey"));
       delete_all_guesses();
     });
     list_field.append(guess_field);

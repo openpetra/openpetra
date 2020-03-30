@@ -243,6 +243,7 @@ useful parameters
     <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
     <call target="generateNamespaceMap"/>
     <call target="generateProjectFiles"/>
+    <call target="prepareDeliveryContent"/>
     
     <echo message="Target minimalGenerateSolution finished at: ${datetime::now()}" /> 
 </target>

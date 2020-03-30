@@ -369,7 +369,7 @@
                 type="text"
                 descr="Parameters list in json"/>
     <tablefield name="s_result_html_c"
-                type="text"
+                type="longtext"
                 descr="result represented in HTML"/>
     <tablefield name="s_success_l"
                 type="bit"
@@ -6936,7 +6936,7 @@
                 notnull="yes"
                 initial="no"/>
     <tablefield name="p_template_document_c"
-                type="text"
+                type="longtext"
                 descr="The binary template file encoded as Base64 text"/>
     <tablefield name="p_template_file_extension_c"
                 type="varchar"

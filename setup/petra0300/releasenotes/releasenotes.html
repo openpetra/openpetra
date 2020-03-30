@@ -12,6 +12,36 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2020.03: March 30th, 2020</h3>
+
+<p>We skipped a couple of releases in the past months. New functionality for sponsorship was developed, but it is not part of this release yet.</p>
+
+<p>An important change in this release is how static variables are shared between sessions. That was buggy but has been fixed in this release.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+<ul>
+<li>add norwegian as supported language</li>
+<li>long reports are cut off at some point</li>
+<li>Regression: Printing to PDF does not work anymore</li>
+<li>Print donation receipts only for valid addresses</li>
+<li>Bug in Report "Partner addresses for annual report without donors"</li>
+<li>Motivation Details Selection in Gift Detail and BankImport: single selection for group and detail</li>
+<li>When creating a new ledger, create motivation group DONATIONS</li>
+<li>deadlock on Session clean up</li>
+<li>Issues with static variables shared between threads</li>
+<li>Use MySQL on AppVeyor so that we don't need to support SQLite anymore</li>
+<li>drop support for sqlite</li>
+<li>OdbcParameter Decimal for Int64 slows queries down</li>
+<li>nant generateSolution should remove the Mono dlls and windows dlls</li>
+<li>rewrite configuration files for all instances</li>
+<li>permissions issue with tmp directory for openpetra server script</li>
+<li>About only shows version of tarball, not version of rpm build</li>
+<li>When switching between branches there are issues with asmx files</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the <a href="https://github.com/openpetra/openpetra/milestone/9?closed=1" rel=" nofollow ugc">Milestone at Github for release 2020.03</a>!</p>
+
 <h3>Release 2019.12: January 6th, 2020</h3>
 
 <p>We skipped a release in December, because quite a lot of refactoring and restructuring has been going on...</p>
