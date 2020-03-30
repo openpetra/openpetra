@@ -17,6 +17,7 @@ export OPENPETRA_RDBMSType=mysql
 export OPENPETRA_PORT=6700
 export OPENPETRA_USER_PREFIX=op_
 export THIS_SCRIPT=$0
+export OPENPETRA_HTTP_URL="http://$OP_CUSTOMER.localhost"
 
 servicefile=/usr/lib/systemd/system/openpetra.service
 if [ ! -f $servicefile ]; then
