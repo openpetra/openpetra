@@ -316,6 +316,8 @@ updateall() {
         package=`rpm -qa --qf "%{NAME}\n" | grep openpetranow-mysql`
         if [ ! -z $package ]; then
             updated_binary=1
+            # for frequent tests, expire the cache to get the latest package immediately
+            # yum clean expire-cache --disablerepo="*" --enablerepo="lbs-solidcharity-openpetra"
             yum -y update --enablerepo="lbs-solidcharity-openpetra" $package || exit -1
         fi
     fi
