@@ -47,7 +47,7 @@ getConfigOfCurrentCustomer() {
     export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
     export OPENPETRA_HTTP_URL=`cat $config | grep Server.Url | awk -F'"' '{print $4}'`
-    export OPENPETRA_PORT=`cat $config | grep Port | awk -F'"' '{print $4}'`
+    export OPENPETRA_HTTP_PORT=`cat $config | grep Port | awk -F'"' '{print $4}'`
 
     # previous installations were missing http or https
     if [[ ! $OPENPETRA_HTTP_URL == https://* && ! $OPENPETRA_HTTP_URL == http://* ]]
@@ -62,11 +62,11 @@ getConfigOfCurrentCustomer() {
   fi
 
   # in older versions, we did not have the port in the PetraServerConsole.config file
-  if [ -z $OPENPETRA_PORT ]
+  if [ -z $OPENPETRA_HTTP_PORT ]
   then
     if [ -f /etc/nginx/conf.d/$OP_CUSTOMER.conf ]
     then
-      export OPENPETRA_PORT=`cat /etc/nginx/conf.d/$OP_CUSTOMER.conf | grep -m1 listen | sed -e 's#;##' |  awk -F' ' '{print $2}'`
+      export OPENPETRA_HTTP_PORT=`cat /etc/nginx/conf.d/$OP_CUSTOMER.conf | grep -m1 listen | sed -e 's#;##' |  awk -F' ' '{print $2}'`
     fi
   fi
 }
@@ -407,7 +407,7 @@ init() {
     # copy config files (server, serveradmin.config) to etc, with adjustments
     cfgfile=/home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/templates/PetraServerConsole.config \
-       | sed -e "s/OPENPETRA_PORT/$OPENPETRA_PORT/" \
+       | sed -e "s/OPENPETRA_PORT/$OPENPETRA_HTTP_PORT/" \
        | sed -e "s/OPENPETRA_RDBMSType/$OPENPETRA_RDBMSType/" \
        | sed -e "s/OPENPETRA_DBHOST/$OPENPETRA_DBHOST/" \
        | sed -e "s/OPENPETRA_DBUSER/$OPENPETRA_DBUSER/" \
@@ -447,7 +447,7 @@ init() {
 
     cat $OpenPetraPath/templates/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
-       | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_PORT/#" \
+       | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_HTTP_PORT/#" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
     nginx_conf_path=/etc/nginx/conf.d/$OP_CUSTOMER.conf
@@ -465,7 +465,7 @@ init() {
     SERVERNAME=${OPENPETRA_HTTP_URL/https:\/\//}
     SERVERNAME=${SERVERNAME/http:\/\//}
     sed -i "s#OPENPETRA_SERVERNAME#$SERVERNAME#g" $nginx_conf_path
-    sed -i "s#OPENPETRA_PORT#$OPENPETRA_PORT#g" $nginx_conf_path
+    sed -i "s#OPENPETRA_PORT#$OPENPETRA_HTTP_PORT#g" $nginx_conf_path
     sed -i "s#OPENPETRA_HOME#$OpenPetraPath#g" $nginx_conf_path
     sed -i "s#OPENPETRA_URL#$OPENPETRA_HTTP_URL#g" $nginx_conf_path
 
