@@ -214,7 +214,6 @@ function save_entry(obj_modal) {
 	})
 }
 
-
 function show_tab(tab_id) {
 	// used to control tabs in modal, because there are issues with bootstrap
 	let tab = $(tab_id);
@@ -223,8 +222,8 @@ function show_tab(tab_id) {
 	tab.addClass('active');
 
 	tgr = tab.closest('.container').find('.tab-content');
-	tgr.find('.tab-pane').removeClass('active');
-	tgr.find('#'+target).addClass('active');
+	tgr.find('.tab-pane').hide();
+	tgr.find('#'+target).show();
 
 }
 
@@ -285,4 +284,17 @@ function load_countries(all_countries, selected_country, obj) {
 		obj.find('#CountryCode').append(y);
 	}
 	return obj;
+}
+
+// following funtions are for data history view/edit
+function open_history(HTMLButton) {
+	var partner_number = $(HTMLButton).closest(".modal").find("[name=p_partner_key_n]").val();
+
+	// TODO: load history
+	let Temp = $('[phantom] .tpl_history').clone();
+
+	$('#modal_space .modal').modal('hide');
+	$('#modal_space').append(Temp);
+	$('#modal_space .modal').modal('show');
+
 }
