@@ -9,7 +9,7 @@ var MaintainChildren = new (class {
   }
 
   filterShow() {
-      // get infos from the filter ans search with them
+      // get infos from the filter and search with them
       var filter = extract_data($("#filter"));
       this.show(filter);
   }
@@ -107,6 +107,7 @@ var MaintainChildren = new (class {
 
     var MaintainChildrenO = this;
     var req = translate_to_server(extractData($("#detail_modal")));
+    req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
 
     var mode = $("#detail_modal").attr("mode");
     if (mode == "create") { req["APartnerKey"] = -1; }

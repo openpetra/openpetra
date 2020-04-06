@@ -30,9 +30,9 @@
     </div>
     <div class="col">
       <select type="text" name="ASponsorshipStatus" value="">
-        <option value="">{forms.any}</option>
-        <option value="BORDING_SCHOOL">{bording_school}</option>
-        <option value="CHILDREN_HOME">{children_home}</option>
+        <option value="" selected>{forms.any}</option>
+        <option value="BOARDING_SCHOOL">{boarding_school}</option>
+        <option value="CHILDREN_HOME" selected>{children_home}</option>
         <option value="HOME_BASED">{home_based}</option>
         <option value="PREVIOUS_CHILD">{previous_child}</option>
       </select>
@@ -170,7 +170,7 @@
             </div>
             <div class="col">
               <select name="ASponsorshipStatus">
-                <option value="BORDING_SCHOOL">{bording_school}</option>
+                <option value="BOARDING_SCHOOL">{boarding_school}</option>
                 <option value="CHILDREN_HOME">{children_home}</option>
                 <option value="HOME_BASED">{home_based}</option>
                 <option value="PREVIOUS_CHILD">{previous_child}</option>
@@ -230,10 +230,9 @@
                     </div>
                     <div class="col">
                       <select name="p_gender_c">
-                        <option value="Unknown">[[Unknown]]</option>
-                        <option value="UNKNOWN">Unknown</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
+                        <option value="UNKNOWN" selected>{unknown}</option>
+                        <option value="MALE">{male}</option>
+                        <option value="FEMALE">{female}</option>
                       </select>
                     </div>
                   </div>

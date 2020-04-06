@@ -90,7 +90,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
             else
             {
-                sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BORDING_SCHOOL','PREVIOUS_CHILD')";
+                sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BOARDING_SCHOOL','PREVIOUS_CHILD')";
             }
 
             if (AFirstName != String.Empty)
@@ -363,7 +363,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             foreach (PPartnerTypeRow type in MainDS.PPartnerType.Rows)
             {
-                if (type.TypeCode == "CHILDREN_HOME" || type.TypeCode == "HOME_BASED" || type.TypeCode == "BORDING_SCHOOL" || type.TypeCode == "PREVIOUS_CHILD")
+                if (type.TypeCode == "CHILDREN_HOME" || type.TypeCode == "HOME_BASED" || type.TypeCode == "BOARDING_SCHOOL" || type.TypeCode == "PREVIOUS_CHILD")
                 {
                     isSponsoredChild = true;
                 }

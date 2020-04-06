@@ -118,7 +118,7 @@
         "YearEnd_label": "Jahresabschluss durchführen",
         "RecurringGiftBatches_label": "Regelmäßige Spenden",
         "SponsorShip_label":"Patenschaften",
-        "Children_label":"Kinder",
+        "Children_label":"Patenschaften",
         "MaintainChildren_label":"Patenschaften verwalten"
     },
     "forms": {
@@ -633,7 +633,7 @@
       "account_end": "Bis Konto"
     },
     "MaintainChildren": {
-      "caption":"Kinder Patenschaften bearbeiten",
+      "caption":"Patenschaften bearbeiten",
       "edittitle": "Kind bearbeiten",
       "edittitle_donation": "Regelmäßige Spende bearbeiten",
       "edittitle_comment": "Kommentar bearbeiten",
@@ -643,6 +643,9 @@
       "partner_firstname": "Vorname",
       "partner_lastname": "Nachname",
       "gender": "Geschlecht",
+      "unknown": "unbekannt",
+      "male": "Männlich",
+      "female": "Weiblich",
       "birthday": "Geburtstag",
       "sponsor_admin": "Paten Admin",
       "details":"Details",
@@ -650,7 +653,7 @@
       "dates_reminder":"Daten / Erinnerungen",
       "family_situations":"Familiäre Situation",
       "school_situations":"Schulische Situation",
-      "bording_school":"Besucht das Internat",
+      "boarding_school":"Besucht das Internat",
       "children_home":"Lebt im Kinderheim",
       "home_based":"Wird zu Hause betreut",
       "previous_child":"Ehemaliges Kind",
