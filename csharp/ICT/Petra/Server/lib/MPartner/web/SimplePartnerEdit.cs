@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -381,6 +381,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return SavePartner(AMainDS,
                 ASubscriptions,
                 APartnerTypes,
+                new List<string>(),
                 ASendMail,
                 ADefaultEmailAddress,
                 ADefaultPhoneMobile,
@@ -396,6 +397,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool SavePartner(PartnerEditTDS AMainDS,
             List<string> ASubscriptions,
             List<string> APartnerTypes,
+            List<string> AChanges,
             bool ASendMail,
             string ADefaultEmailAddress,
             string ADefaultPhoneMobile,
@@ -627,6 +629,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
+
+            TDataHistoryWebConnector.RegisterChanges(AChanges);
 
             try
             {
