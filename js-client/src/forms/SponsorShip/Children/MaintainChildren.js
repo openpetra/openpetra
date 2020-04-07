@@ -108,6 +108,9 @@ var MaintainChildren = new (class {
     var MaintainChildrenO = this;
     var req = translate_to_server(extractData($("#detail_modal")));
     req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
+    if (req["ADateOfBirth"] == "") {
+      req["ADateOfBirth"] = "null";
+    }
 
     var mode = $("#detail_modal").attr("mode");
     if (mode == "create") { req["APartnerKey"] = -1; }
@@ -115,11 +118,9 @@ var MaintainChildren = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
-        if (parsed.result) {
-          if (!parsed.result) {
-            return display_error(parsed.AVerificationResult);
-          }
-
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        } else {
           display_message( i18next.t("forms.saved"), "success");
           if (mode == "create") {
             $("#detail_modal").modal("hide");

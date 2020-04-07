@@ -367,7 +367,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 {
                     isSponsoredChild = true;
                 }
-            	ASponsorshipStatus = type.TypeCode;
+                ASponsorshipStatus = type.TypeCode;
             }
 
             if (!isSponsoredChild)
@@ -395,9 +395,22 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             Int32 ALedgerNumber,
             out TVerificationResultCollection AVerificationResult)
         {
-
             SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
+
+            if ((ASponsorshipStatus == "") || (ASponsorshipStatus == null))
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
+                    "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            if ((AFirstName == "") || (AFirstName == null))
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
+                    "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
+                return false;
+            }
 
             if (APartnerKey == -1)
             {
@@ -481,7 +494,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (APartnerKey == -1)
             {
-                AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
+                AVerificationResult.Add(new TVerificationResult("error", "no partner key", TResultSeverity.Resv_Critical));
                 return false;
             }
 
@@ -546,7 +559,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (APartnerKey == -1)
             {
-                AVerificationResult.Add(new TVerificationResult("error", "no parnter key", TResultSeverity.Resv_Critical));
+                AVerificationResult.Add(new TVerificationResult("error", "no partner key", TResultSeverity.Resv_Critical));
                 return false;
             }
 

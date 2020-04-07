@@ -1,11 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -379,13 +379,19 @@ function insertData(o, d, to_string=false) {
         if (f.attr("type") == "checkbox") {
           if ( v ) { f.prop("checked", true) } else { f.prop("checked", false) }
         } else if (f.attr("type") == "date") {
-          v = new Date(v);
-          let YYYY = v.getFullYear();
-          let MM = v.getMonth() + 1;
-          let DD = v.getDate();
-          MM = (MM < 10 ? "0" : "") + MM;
-          DD = (DD < 10 ? "0" : "") + DD;
-          f.val( `${YYYY}-${MM}-${DD}` );
+          if (v == "" || v == null) {
+            f.val("");
+          }
+          else
+          {
+            v = new Date(v);
+            let YYYY = v.getFullYear();
+            let MM = v.getMonth() + 1;
+            let DD = v.getDate();
+            MM = (MM < 10 ? "0" : "") + MM;
+            DD = (DD < 10 ? "0" : "") + DD;
+            f.val( `${YYYY}-${MM}-${DD}` );
+          }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
           f.text( v );
         } else {

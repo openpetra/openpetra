@@ -657,6 +657,8 @@
       "children_home":"Lebt im Kinderheim",
       "home_based":"Wird zu Hause betreut",
       "previous_child":"Ehemaliges Kind",
+      "ErrMissingSponsorshipStatus":"Bitte den Status auswählen",
+      "ErrMissingFirstName":"Bitte den Vornamen des Kindes eingeben",
       "donor":"Spender",
       "type":"Verwendungszweck",
       "motivation_detail": "Verwendungszweck",
