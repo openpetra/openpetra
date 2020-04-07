@@ -577,7 +577,9 @@
   </DataSet>  
   
   <DataSet name="DataConsetTDS">
-      <Table sqltable="p_data_history"/>
-      <CustomField name="AllowedPurposes" type="string"/>
+      <Table sqltable="p_data_history">
+        <CustomField name="AllowedPurposes" type="string"/>
+      </Table>
+      <Table sqltable="p_data_history_permission"/>
   </DataSet>
 </PetraDataSets>

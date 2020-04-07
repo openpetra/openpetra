@@ -23,6 +23,7 @@
 //
 
 using System;
+using Ict.Common.DB;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -52,8 +53,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         ) {
             if (JsonChanges.Count == 0) { return; }
 
+            // connection objects
+            // bool SubmissionOK = false;
+            // TDBTransaction T = new TDBTransaction();
+            // TDataBase DB = DBAccess.Connect("Inserting DataHistory Changes");
+
+            // base strings
+
+
+            // data is comming like this: ["{}", "{}"] 
             foreach (string JsonObjectString in JsonChanges) {
                 DataHistoryChange ChangeObject = JsonConvert.DeserializeObject<DataHistoryChange>(JsonObjectString);
+                DataConsetTDS Set = new DataConsetTDS();
+
+                // generate and add new row for p_data_history
+                PDataHistoryRow NewRow = Set.PDataHistory.NewRowTyped();
+
+                NewRow.EntryId = -1;
+                NewRow.PartnerKey = ChangeObject.PartnerKey;
+                NewRow.Type = ChangeObject.Type;
+                NewRow.Value = ChangeObject.Value;
+                NewRow.ChannelCode = ChangeObject.ChannelCode;
+
+                Set.PDataHistory.Rows.Add(NewRow);
+
+                // generate and add each row fora allowed porpose in p_data_history_permission
+                foreach (string AllowedPurose in ChangeObject.Permissions.Split(',')) {
+                    // PDataHistoryPermissionRow NewPermRow = Set.PDataHistoryPermission.NewRowTyped();
+
+                }
+
+
+
+
+                DataConsetTDSAccess.SubmitChanges(Set);
+
+
+
 
             }
 
@@ -64,7 +100,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
     /// dummy object to parse data into
     /// </summary>
     public class DataHistoryChange {
-        public string PartnerKey { get; set; }
+        public long PartnerKey { get; set; }
         public string Type { get; set; }
         public string Value { get; set; }
         public string ChannelCode { get; set; }
