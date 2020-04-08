@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -254,7 +254,14 @@ namespace Ict.Common
             // this is easier to manage than to check the assembly version in case you only need to quickly update the client
             string BinPath = TAppSettingsManager.ApplicationDirectory;
 
-            if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
+            if (File.Exists(BinPath + Path.DirectorySeparatorChar + "pkg_version.txt"))
+            {
+                // this will include the build number from the rpm package
+                StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "pkg_version.txt");
+                Result = new TFileVersionInfo(srVersion.ReadLine());
+                srVersion.Close();
+            }
+            else if (File.Exists(BinPath + Path.DirectorySeparatorChar + "version.txt"))
             {
                 StreamReader srVersion = new StreamReader(BinPath + Path.DirectorySeparatorChar + "version.txt");
                 Result = new TFileVersionInfo(srVersion.ReadLine());

@@ -12,6 +12,34 @@
 
 <h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra</h2>
 
+<h3>Version 2020.03: vom 30. März 2020</h3>
+
+<p>Es gab eine Pause von mehreren Monaten, in denen keine neue Version veröffentlicht wurde. Wir arbeiten gerade an einem neuen Modul für das Verwalten von Patenschaften, das ist aber in diesem Release noch nicht enthalten.</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+<ul>
+<li>Es gibt den Client jetzt auf Norwegisch</li>
+<li>Lange Berichte wurden nach einer bestimmten Länge abgeschnitten</li>
+<li>Man konnte Berichte nicht mehr als PDF herunterladen</li>
+<li>Spendenbescheinigungen sollen nur an Anschriften gesendet werden, die als gültig markiert sind</li>
+<li>Fehler im Bericht "Adressen für Jahresrückblick ohne Spender" behoben</li>
+<li>Man kann Verwendungszweck jetzt mit einer einzigen Auswahl setzen, Gruppe und Detail wurden zusammengefasst</li>
+<li>Beim Anlegen eines neuen Hauptbuches werden die Verwendungszwecke DONATION angelegt, um Probleme mit den Verwendungszwecken GIFT zu vermeiden</li>
+<li>Es gab die Möglichkeit, dass sich zwei Seitenaufrufe gegenseitig blockiert haben</li>
+<li>Es gab Probleme mit statischen Variablen, die über Sessions und Threads hinweg geteilt wurden</li>
+<li>Wir setzen nun MySQL auf AppVeyor ein, um SQLite nicht mehr zu benötigen</li>
+<li>Die Unterstützung für SQLite wurde entfernt</li>
+<li>Benutze BigInt für OdbcParameter statt Decimal, da sonst die Abfragen zu langsam sein können</li>
+<li>nant generateSolution entfernt nun die Mono dlls und Windows dlls</li>
+<li>Die Konfigurationsdateien können für alle Instanzen leicht neu erzeugt werden</li>
+<li>Probleme mit Berechtigungen für das tmp Verzeichnis für das OpenPetra-Server Skript</li>
+<li>Die Seite mit Informationen über die Instanz zeigte nur die Version des Tarballs, nicht die Version des installierten RPM Paketes</li>
+<li>Beim Wechseln zwischen Entwicklungszweigen gab es Probleme mit den ASMX Dateien</li>
+</ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem <a href="https://github.com/openpetra/openpetra/milestone/9?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2020.03</a> zu finden!</p>
+
 <h3>Version 2019.12: vom 6. Januar 2020</h3>
 
 <p>Wir haben im Dezember keine neue Version veröffentlicht, weil die Infrastruktur und das Aussehen von OpenPetra weitgehend umgebaut und verbessert wurde...</p>

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -363,7 +363,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string MinorUnitSingular = string.Empty;
             string MinorUnitPlural = string.Empty;
 
-            if (!TAddressTools.GetBestAddress(ADonorKey, out Location, out CountryName, ATransaction))
+            if (!TAddressTools.GetBestAddressOnlySendMail(ADonorKey, out Location, out CountryName, ATransaction))
             {
                 return "";
             }

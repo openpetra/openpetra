@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using Ict.Testing.NUnitPetraServer;
 using Ict.Testing.NUnitTools;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
@@ -108,6 +109,19 @@ namespace Tests.MFinance.Server.Gift
 
                 return false;
             }
+
+            TDataBase db = DBAccess.Connect("FixSendMailPartnerLocation");
+            TDBTransaction t = new TDBTransaction();
+            bool SubmissionOK = false;
+
+            db.WriteTransaction(ref t, ref SubmissionOK,
+                delegate
+                {
+                    // need to set sendmail = true for the donor with partner key 43005001
+                    string sql = "UPDATE p_partner_location SET p_send_mail_l = true WHERE p_partner_key_n = 43005001";
+                    db.ExecuteNonQuery(sql, t);
+                    SubmissionOK = true;
+                });
 
             return true;
         }

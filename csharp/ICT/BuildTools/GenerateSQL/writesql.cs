@@ -491,14 +491,13 @@ namespace GenerateSQL
 
             if ((field.strType == "longtext") || ((field.strType == "varchar") && (field.iLength >= 10000)))
             {
-                if (ATargetDatabase == eDatabaseType.MySQL)
-                {
-                    field.strType = "longtext";
-                }
-                else
-                {
-                    field.strType = "text";
-                }
+                field.strType = "longtext";
+            }
+
+            if ((field.strType == "longtext") && (ATargetDatabase == eDatabaseType.PostgreSQL))
+            {
+                // PostgreSQL does not have longtext. text is already unlimited length.
+                field.strType = "text";
             }
 
             if (field.strType == "bit")
