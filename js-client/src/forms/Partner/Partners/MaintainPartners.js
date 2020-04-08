@@ -312,20 +312,51 @@ function insert_consent(HTMLField, data_name) {
 
 	var Obj = $(HTMLField);
 	var value = Obj.val();
+	var partner_key = Obj.closest(".modal").find("[name=p_partner_key_n]").val();
 
 	// special cases
 	if (data_name == "address") { value = getUpdatesAddress(); }
 
 	data_changes_log[data_name] = {
-		PartnerKey: "",
+		PartnerKey: partner_key,
 		Type: data_name,
 		Value: value,
 		ChannelCode: "",
 		Permissions: ""
 	};
 
-	console.log(data_changes_log);
+	open_consent_modal(data_name);
 
+}
+
+function open_consent_modal(field) {
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetConsentChannelAndPurpose', {}).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		var Temp = $('[phantom] .tpl_consent').clone();
+
+		var purposes = parsed.result.PPurpose;
+		var channels = parsed.result.PConsentChannel;
+
+		Temp.find("data[name=field]").val(field);
+		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
+
+		// place dynamics
+		var TargetChannel = Temp.find("[name=consent_channel]").html("");
+		for (var channel of channels) {
+			TargetChannel.append(`<option value='${channel.p_channel_code_c}'>${i18next.t('MaintainPartners.'+channel.p_name_c)}</option>`);
+		}
+
+		var TargetPurpose = Temp.find(".permissions").html("");
+		for (var purpose of purposes) {
+			TargetPurpose.append(`<label>${i18next.t('MaintainPartners.'+purpose.p_name_c)}</span><input type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
+		}
+
+		$('#modal_space .modal.tpl_consent').remove();
+		$('#modal_space').append(Temp);
+		$('#modal_space .modal.tpl_consent').modal("show");
+
+	})
 }
 
 function getUpdatesAddress() {
