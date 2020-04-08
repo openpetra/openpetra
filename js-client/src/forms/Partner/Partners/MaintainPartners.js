@@ -24,6 +24,7 @@
 //
 
 var last_opened_entry_data = {};
+var data_changes_log = {};
 
 $('document').ready(function () {
 	load_preset();
@@ -112,6 +113,8 @@ function display_partner(parsed) {
 	if (!allow_modal()) {return}
 	// make a deep copy of the server data and set it as a global var.
 	last_opened_entry_data = $.extend(true, {}, parsed);
+	// reset the changes object
+	data_changes_log = {};
 	let m = $('[phantom] .tpl_edit').clone();
 	// normal info input
 	m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
@@ -191,6 +194,11 @@ function save_entry(obj_modal) {
 	updated_data.result.PPartnerStatus = [];
 	updated_data.result.PPublication = [];
 	updated_data.result.PCountry = [];
+
+	// to be save we have the right address in logs
+	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = getUpdatesAddress(); }
+
+	return console.log(data_changes_log);
 
 	// send request
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
@@ -298,4 +306,32 @@ function open_history(HTMLButton) {
 	$('#modal_space').append(Temp);
 	$('#modal_space .modal').modal('show');
 
+}
+
+function insert_consent(HTMLField, data_name) {
+
+	var Obj = $(HTMLField);
+	var value = Obj.val();
+
+	// special cases
+	if (data_name == "address") { value = getUpdatesAddress(); }
+
+	data_changes_log[data_name] = {
+		PartnerKey: "",
+		Type: data_name,
+		Value: value,
+		ChannelCode: "",
+		Permissions: ""
+	};
+
+	console.log(data_changes_log);
+
+}
+
+function getUpdatesAddress() {
+	let street = $("#modal_space #addresses").find("[name=p_street_name_c]").val();
+	let city = $("#modal_space #addresses").find("[name=p_city_c]").val();
+	let postal = $("#modal_space #addresses").find("[name=p_postal_code_c]").val();
+	let land = $("#modal_space #addresses").find("[name=p_country_code_c]").val();
+	return `${street}, ${postal} ${city}, ${land}`;
 }

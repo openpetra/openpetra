@@ -128,7 +128,7 @@
 					<span>{firstname}</span>
 				</div>
 				<div class="col-3">
-					<input type="text" name="PFamily_p_first_name_c" onchange="alert(this.value)"/>
+					<input type="text" name="PFamily_p_first_name_c"/>
 				</div>
 				<div class="col-3">
 					<span>{familyname}</span>
@@ -243,7 +243,7 @@
 								<span>{streetname}</span>
 							</div>
 							<div class="col-3">
-								<input type="text" name="p_street_name_c" />
+								<input type="text" name="p_street_name_c" onchange="insert_consent(this, 'address')"/>
 							</div>
 
 							<div class="col-3">
@@ -292,7 +292,7 @@
 								<span>{email address}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_email_address_c" size="25"/>
+								<input type="text" name="p_default_email_address_c" size="25" onchange="insert_consent(this,'email address')"/>
 							</div>
 						</div>
 
@@ -301,7 +301,7 @@
 								<span>{phone landline}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_phone_landline_c" size="25" />
+								<input type="text" name="p_default_phone_landline_c" size="25" onchange="insert_consent(this, 'phone landline')"/>
 							</div>
 						</div>
 
@@ -310,7 +310,7 @@
 								<span>{phone mobile}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_phone_mobile_c" size="25"/>
+								<input type="text" name="p_default_phone_mobile_c" size="25" onchange="insert_consent(this, 'phone mobile')"/>
 							</div>
 						</div>
 
