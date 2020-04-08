@@ -321,8 +321,8 @@ function insert_consent(HTMLField, data_name) {
 		PartnerKey: partner_key,
 		Type: data_name,
 		Value: value,
-		ChannelCode: "",
-		Permissions: ""
+		ChannelCode: "", // is set later
+		Permissions: "" // is set later
 	};
 
 	open_consent_modal(data_name);
@@ -341,12 +341,13 @@ function open_consent_modal(field) {
 		Temp.find("data[name=field]").val(field);
 		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
 
-		// place dynamics
+		// place dynamic channel
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
 		for (var channel of channels) {
 			TargetChannel.append(`<option value='${channel.p_channel_code_c}'>${i18next.t('MaintainPartners.'+channel.p_name_c)}</option>`);
 		}
 
+		// place dynamic purposes
 		var TargetPurpose = Temp.find(".permissions").html("");
 		for (var purpose of purposes) {
 			TargetPurpose.append(`<label>${i18next.t('MaintainPartners.'+purpose.p_name_c)}</span><input type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
@@ -357,6 +358,25 @@ function open_consent_modal(field) {
 		$('#modal_space .modal.tpl_consent').modal("show");
 
 	})
+}
+
+function submit_changes_consent() {
+
+	var current_field = $("#modal_space .modal.tpl_consent data[name=field]").val();
+	var channel_code = $("#modal_space .modal.tpl_consent [name=consent_channel]").val();
+
+	// get all permissions
+	var perm_list = [];
+	var perms = $("#modal_space .modal.tpl_consent .permissions input[purposecode]:checked");
+	for (var Perm of perms) {
+		perm_list.push( $(Perm).attr("purposecode") );
+	}
+
+	data_changes_log[current_field]["ChannelCode"] = channel_code;
+	data_changes_log[current_field]["Permissions"] = perm_list.join(',');
+
+	$("#modal_space .modal.tpl_consent").modal("hide");
+
 }
 
 function getUpdatesAddress() {
