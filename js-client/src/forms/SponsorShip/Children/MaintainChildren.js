@@ -37,7 +37,6 @@ var MaintainChildren = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
-        console.log(parsed);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
           var Copy = $("[phantom] .children").clone();
@@ -124,6 +123,10 @@ var MaintainChildren = new (class {
           display_message( i18next.t("forms.saved"), "success");
           if (mode == "create") {
             $("#detail_modal").modal("hide");
+            $("input[name='AFirstName']").val(req["AFirstName"]);
+            MaintainChildrenO.filterShow();
+          } else {
+            $("#detail_modal").modal("hide");
             MaintainChildrenO.filterShow();
           }
         }
@@ -149,9 +152,7 @@ var MaintainChildren = new (class {
     if (!name || !PhotoField[0].files[0]) {return;}
 
     // see http://www.html5rocks.com/en/tutorials/file/dndfiles/
-      if (window.File && window.FileReader && window.FileList && window.Blob) {
-    //alert("Great success! All the File APIs are supported.");
-    } else {
+    if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
       alert('The File APIs are not fully supported in this browser.');
     }
 
@@ -165,6 +166,7 @@ var MaintainChildren = new (class {
         "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
         "AUploadPhoto":true,
         "ADateOfBirth": "null",
+        "ALedgerNumber": window.localStorage.getItem("current_ledger"),
         "APhoto":file_content
       };
 
@@ -173,6 +175,8 @@ var MaintainChildren = new (class {
           var parsed = JSON.parse(data.data.d);
           if (parsed.result) {
             display_message( i18next.t("forms.upload_success"), "success");
+          } else {
+            display_error(parsed.AVerificationResult);
           }
       });
     }
@@ -185,6 +189,7 @@ var MaintainChildren = new (class {
     resetInput("#detail_modal");
     $("#detail_modal img").attr("src", "");
     $("#detail_modal").attr("mode", "create");
+    $("#detail_modal select[name='ASponsorshipStatus'] option[value='CHILDREN_HOME']").attr('selected',true);
     $("#detail_modal").modal("show");
   }
 

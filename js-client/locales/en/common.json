@@ -658,6 +658,7 @@
       "children_home":"Children home",
       "home_based":"Home based",
       "previous_child":"Former child",
+      "passed_away": "Passed Away",
       "ErrMissingSponsorshipStatus":"Please select the status",
       "ErrMissingFirstName":"Please enter the first name of the child",
       "donor":"Donor",

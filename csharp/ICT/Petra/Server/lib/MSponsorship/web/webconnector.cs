@@ -90,7 +90,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
             else
             {
-                sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BOARDING_SCHOOL','PREVIOUS_CHILD')";
+                sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BOARDING_SCHOOL','PREVIOUS_CHILD','CHILD_DIED')";
             }
 
             if (AFirstName != String.Empty)
@@ -363,7 +363,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             foreach (PPartnerTypeRow type in MainDS.PPartnerType.Rows)
             {
-                if (type.TypeCode == "CHILDREN_HOME" || type.TypeCode == "HOME_BASED" || type.TypeCode == "BOARDING_SCHOOL" || type.TypeCode == "PREVIOUS_CHILD")
+                if (type.TypeCode == "CHILDREN_HOME" || type.TypeCode == "HOME_BASED" || type.TypeCode == "BOARDING_SCHOOL" || type.TypeCode == "PREVIOUS_CHILD" || type.TypeCode == "CHILD_DIED")
                 {
                     isSponsoredChild = true;
                 }
@@ -398,20 +398,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
 
-            if ((ASponsorshipStatus == "") || (ASponsorshipStatus == null))
-            {
-                AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
-                    "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
-                return false;
-            }
-
-            if ((AFirstName == "") || (AFirstName == null))
-            {
-                AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
-                    "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
-                return false;
-            }
-
             if (APartnerKey == -1)
             {
                 // no partner key given, so we make a new entry
@@ -433,6 +419,20 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
             else
             {
+                if ((ASponsorshipStatus == "") || (ASponsorshipStatus == null))
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
+                        "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                if ((AFirstName == "") || (AFirstName == null))
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
+                        "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
                 CurrentEdit.PFamily[0].FirstName = AFirstName;
                 CurrentEdit.PFamily[0].FamilyName = AFamilyName;
                 CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
@@ -463,8 +463,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                         CurrentEdit.PFamily[0].FamilyName,
                         CurrentEdit.PFamily[0].Title,
                         CurrentEdit.PFamily[0].FirstName);
-
-            // TODO update or insert recurring gifts 
 
             try
             {
