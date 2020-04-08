@@ -29,17 +29,40 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Ict.Petra.Server.App.Core.Security;
+using Ict.Common;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
     public class TDataHistoryWebConnector {
 
-        public static DataConsetTDS Get(
+        /// <summary>
+        /// Returns all consents entrys for a given partner 
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static DataConsetTDS GetHistory(
             Int64 APartnerKey
         )
         {
             return new DataConsetTDS();
         }
+
+        [RequireModulePermission("PTNRUSER")]
+        public static DataConsetTDS GetConsentChannelAndPurpose() {
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("Get Consent Channel + Purpose");
+            DataConsetTDS Set = new DataConsetTDS();
+
+            DB.ReadTransaction(ref T, delegate {
+
+                PConsentChannelAccess.LoadAll(Set, T);
+                PPurposeAccess.LoadAll(Set, T);
+
+            });
+
+            return Set;
+        }
+
 
         /// <summary>
         /// suppost to be called by SavePartner
@@ -48,6 +71,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         /// channel, permissions and date 
         /// </summary>
         /// <returns></returns>
+        [NoRemoting]
         public static void RegisterChanges(
             List<string> JsonChanges
         ) {

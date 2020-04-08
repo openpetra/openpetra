@@ -581,5 +581,7 @@
         <CustomField name="AllowedPurposes" type="string"/>
       </Table>
       <Table sqltable="p_data_history_permission"/>
+      <Table sqltable="p_purpose"/>
+      <Table sqltable="p_consent_channel"/>
   </DataSet>
 </PetraDataSets>
