@@ -411,7 +411,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, out dummy);
             }
 
-
             // we only save pictures if there is a value in the request
             if (AUploadPhoto)
             {
@@ -442,11 +441,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 // only on a actual change, else skip this
                 if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
                 {
-                    while (CurrentEdit.PPartnerType.Rows.Count > 0)
-                    {
-                        PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
-                        OldTypeRow.Delete();
-                    }
+                    PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
+                    OldTypeRow.Delete();
 
                     PPartnerTypeRow NewTypeRow = CurrentEdit.PPartnerType.NewRowTyped(true);
 

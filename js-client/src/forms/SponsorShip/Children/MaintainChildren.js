@@ -115,6 +115,8 @@ var MaintainChildren = new (class {
 
     var mode = $("#detail_modal").attr("mode");
     if (mode == "create") { req["APartnerKey"] = -1; }
+    req["APhoto"] = "";
+    req["AUploadPhoto"] = false;
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req).then(
       function (data) {
