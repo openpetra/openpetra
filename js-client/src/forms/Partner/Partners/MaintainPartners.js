@@ -196,6 +196,7 @@ function save_entry(obj_modal) {
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs,
+			 'AChanges': [],
 			 'ADefaultEmailAddress': updated_data.p_default_email_address_c,
 			 'ADefaultPhoneLandline': updated_data.p_default_phone_landline_c,
 			 'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c

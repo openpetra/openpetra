@@ -77,20 +77,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
                 Set.PDataHistory.Rows.Add(NewRow);
 
-                // generate and add each row fora allowed porpose in p_data_history_permission
-                foreach (string AllowedPurose in ChangeObject.Permissions.Split(',')) {
-                    // PDataHistoryPermissionRow NewPermRow = Set.PDataHistoryPermission.NewRowTyped();
+                // generate and add each row for a allowed porpose in p_data_history_permission
+                foreach (string AllowedPuroseCode in ChangeObject.Permissions.Split(',')) {
+                    PDataHistoryPermissionRow NewPermRow = Set.PDataHistoryPermission.NewRowTyped();
 
+                    NewPermRow.PurposeCode = AllowedPuroseCode;
+                    NewPermRow.DataHistoryEntry = -1;
+
+                    Set.PDataHistoryPermission.Rows.Add(NewPermRow);
                 }
 
-
-
-
                 DataConsetTDSAccess.SubmitChanges(Set);
-
-
-
-
             }
 
             return;
