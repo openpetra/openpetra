@@ -130,14 +130,14 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
 
         /// <summary>
-        /// find children using filters
+        /// find the users that are allowed to administrate sponsorships
         /// </summary>
         [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
         public static SUserTable GetSponsorAdmins()
         {
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("FindSponsorAdmins");
-            string sql = "SELECT u.* "+
+            string sql = "SELECT u.s_user_id_c, u.s_first_name_c, u.s_last_name_c "+
                 "FROM PUB_s_user_module_access_permission p "+
                 "JOIN PUB_s_user u "+
                 "ON u.s_user_id_c = p.s_user_id_c AND p.s_module_id_c = 'SPONSORADMIN'";

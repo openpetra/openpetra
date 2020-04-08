@@ -1,5 +1,7 @@
 $("document").ready(function () {
   MaintainChildren.initRecurringGiftBatch();
+  loadPartnerAdmins();
+
   MaintainChildren.show();
 });
 
@@ -189,7 +191,7 @@ var MaintainChildren = new (class {
     resetInput("#detail_modal");
     $("#detail_modal img").attr("src", "");
     $("#detail_modal").attr("mode", "create");
-    $("#detail_modal select[name='ASponsorshipStatus'] option[value='CHILDREN_HOME']").attr('selected',true);
+    $("#detail_modal").find("select[name='ASponsorshipStatus'] option[value='CHILDREN_HOME']").prop('selected',true);
     $("#detail_modal").modal("show");
   }
 
@@ -486,7 +488,11 @@ function loadPartnerAdmins() {
       for (var user of parsed.result) {
         let NewOption = $("<option></option>");
         NewOption.attr("value", user.s_user_id_c);
-        NewOption.text(user.s_last_name_c + ", " + user.s_first_name_c);
+        let name = user.s_user_id_c;
+        if (user.s_last_name_c != null && user.s_first_name_c != null) {
+          name = user.s_last_name_c + ", " + user.s_first_name_c;
+        }
+        NewOption.text(name);
         TargetFields.append(NewOption);
       }
 
@@ -505,7 +511,5 @@ $(document).ready(function () {
       $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
     }, 0);
   });
-
-  loadPartnerAdmins()
 
 });
