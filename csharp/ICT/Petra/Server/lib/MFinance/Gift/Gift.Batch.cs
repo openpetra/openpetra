@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -146,12 +146,10 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="ATransaction"></param>
-        /// <param name="ALedgerTbl"></param>
         /// <param name="ALedgerNumber"></param>
         /// <returns>the new gift batch row</returns>
         public static ARecurringGiftBatchRow CreateANewRecurringGiftBatchRow(ref GiftBatchTDS AMainDS,
             ref TDBTransaction ATransaction,
-            ref ALedgerTable ALedgerTbl,
             Int32 ALedgerNumber)
         {
             #region Validate Arguments
@@ -168,12 +166,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             "Function:{0} - Database Transaction must not be NULL!"),
                         Utilities.GetMethodName(true)));
             }
-            else if ((ALedgerTbl == null) || (ALedgerTbl.Count == 0))
-            {
-                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger table is NULL or is empty!"),
-                        Utilities.GetMethodName(true)));
-            }
             else if (ALedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
@@ -183,34 +175,24 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             #endregion Validate Arguments
 
-            GiftBatchTDS Temp = new GiftBatchTDS();
             TLedgerInfo info = new TLedgerInfo(ALedgerNumber, ATransaction.DataBaseObj);
+            ALedgerAccess.LoadByPrimaryKey(AMainDS, ALedgerNumber, ATransaction);
 
-            ARecurringGiftBatchAccess.LoadViaALedger(Temp, ALedgerNumber, ATransaction);
-
-            DataView RecurringGiftBatchDV = new DataView(Temp.ARecurringGiftBatch);
-            RecurringGiftBatchDV.RowFilter = string.Empty;
-            RecurringGiftBatchDV.Sort = string.Format("{0} DESC",
-                ARecurringGiftBatchTable.GetBatchNumberDBName());
-
-            //Recurring batch numbers can be reused so check each time for current highest number
-            if (RecurringGiftBatchDV.Count > 0)
+            if ((AMainDS.ALedger == null) || (AMainDS.ALedger.Count == 0))
             {
-                ALedgerTbl[0].LastRecGiftBatchNumber = (int)(RecurringGiftBatchDV[0][ARecurringGiftBatchTable.GetBatchNumberDBName()]);
-            }
-            else
-            {
-                ALedgerTbl[0].LastRecGiftBatchNumber = 0;
+                throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger table is NULL or is empty!"),
+                        Utilities.GetMethodName(true)));
             }
 
             ARecurringGiftBatchRow NewRow = AMainDS.ARecurringGiftBatch.NewRowTyped(true);
 
             NewRow.LedgerNumber = ALedgerNumber;
-            NewRow.BatchNumber = ++ALedgerTbl[0].LastRecGiftBatchNumber;
+            NewRow.BatchNumber = ++AMainDS.ALedger[0].LastRecGiftBatchNumber;
             NewRow.BatchDescription = Catalog.GetString("Please enter recurring batch description");
             NewRow.BankAccountCode = info.GetDefaultBankAccount();
             NewRow.BankCostCentre = info.GetStandardCostCentre();
-            NewRow.CurrencyCode = ALedgerTbl[0].BaseCurrency;
+            NewRow.CurrencyCode = AMainDS.ALedger[0].BaseCurrency;
             AMainDS.ARecurringGiftBatch.Rows.Add(NewRow);
             return NewRow;
         }

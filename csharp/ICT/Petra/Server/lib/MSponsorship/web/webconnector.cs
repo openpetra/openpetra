@@ -42,6 +42,8 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.Gift;
 
 namespace Ict.Petra.Server.MSponsorship.WebConnectors
 {
@@ -211,6 +213,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             Int32 BatchNumber = -1;
             string CurrencyCode = String.Empty;
+            GiftBatchTDS GiftDS = new GiftBatchTDS();
 
             DBAccess.ReadTransaction( ref Transaction,
                 delegate
@@ -248,6 +251,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                             CurrencyCode = result.ToString();
                         }
                     }
+
+                    TGiftBatchFunctions.CreateANewRecurringGiftBatchRow(ref GiftDS, ref Transaction, ALedgerNumber);
                 });
 
             if (BatchNumber != -1)
@@ -255,14 +260,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 return;
             }
 
-            SponsorshipTDS MainDS = new SponsorshipTDS();
-            ARecurringGiftBatchRow b = MainDS.ARecurringGiftBatch.NewRowTyped(true);
-            b.LedgerNumber = ALedgerNumber;
+            ARecurringGiftBatchRow b = GiftDS.ARecurringGiftBatch[0];
             b.BankAccountCode = ABankAccountCode;
             b.BatchDescription = BATCHNAME_SPONSORSHIP;
             b.CurrencyCode = CurrencyCode;
-            MainDS.ARecurringGiftBatch.Rows.Add(b);
-            SponsorshipTDSAccess.SubmitChanges(MainDS, db);
+            GiftBatchTDSAccess.SubmitChanges(GiftDS, db);
+
             db.CloseDBConnection();
         }
 
@@ -310,6 +313,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                         ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
                         ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
 
+                        GiftBatchTDS GiftDS = new GiftBatchTDS();
+                        TGiftTransactionWebConnector.LoadGiftDonorRelatedData(GiftDS, true, ALedgerNumber, SponsorshipBatchNumber, Transaction);
+
                         for (int i = 0; i < MainDS.ARecurringGiftDetail.Count;)
                         {
                             SponsorshipTDSARecurringGiftDetailRow gdr = MainDS.ARecurringGiftDetail[i];
@@ -331,6 +337,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                 {
                                     ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
+                                    PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
+                                    gdr.DonorName = donorRow.PartnerShortName;
                                 }
 
                             }
