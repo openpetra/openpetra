@@ -576,7 +576,7 @@
       <Table sqltable="p_partner_attribute_type"/>
   </DataSet>  
   
-  <DataSet name="DataConsetTDS">
+  <DataSet name="DataConsentTDS">
       <Table sqltable="p_data_history">
         <CustomField name="AllowedPurposes" type="string"/>
       </Table>
