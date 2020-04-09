@@ -199,6 +199,7 @@ function save_entry(obj_modal) {
 	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = getUpdatesAddress(); }
 	var applied_perms = [];
 	for (var perm of Object.values(data_changes_log) ) {
+		if (perm["Valid"] == false) { return display_message( i18next.t("MaintainPartners.consent_error"), 'fail'); }
 		applied_perms.push( JSON.stringify(perm) );
 	}
 
@@ -324,7 +325,8 @@ function insert_consent(HTMLField, data_name) {
 		Type: data_name,
 		Value: value,
 		ChannelCode: "", // is set later
-		Permissions: "" // is set later
+		Permissions: "", // is set later
+		Valid: false // is set later
 	};
 
 	open_consent_modal(data_name);
@@ -333,7 +335,10 @@ function insert_consent(HTMLField, data_name) {
 
 function open_consent_modal(field) {
 
-	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetConsentChannelAndPurpose', {}).then(function (data) {
+	var partner_key = $("#modal_space .tpl_edit [name=p_partner_key_n]").val();
+	var req = {APartnerKey: partner_key, ADataType:field};
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_LastKnownEntry', req).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		var Temp = $('[phantom] .tpl_consent').clone();
 
@@ -374,6 +379,7 @@ function submit_changes_consent() {
 		perm_list.push( $(Perm).attr("purposecode") );
 	}
 
+	data_changes_log[current_field]["Valid"] = true;
 	data_changes_log[current_field]["ChannelCode"] = channel_code;
 	data_changes_log[current_field]["Permissions"] = perm_list.join(',');
 

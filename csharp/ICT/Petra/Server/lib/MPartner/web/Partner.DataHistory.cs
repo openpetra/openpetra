@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                     "ON `p_data_history`.`p_entry_id_i` = `p_data_history_permission`.`p_data_history_entry_i` " +
                     "WHERE `p_data_history_permission`.`p_data_chancled_d` IS NULL " +
                     "AND `p_data_history`.`p_partner_key_n` = ? " +
-                    "AND `p_data_history`.`p_type_c` = ?" +
+                    "AND `p_data_history`.`p_type_c` = ? " +
                     "GROUP BY `p_data_history`.`p_entry_id_i` " +
                     "ORDER BY `p_data_history`.`p_entry_id_i` DESC " +
                     "LIMIT 1";
@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
             });
 
-            return new DataConsentTDS();
+            return Set;
         }
 
         /// <summary>
