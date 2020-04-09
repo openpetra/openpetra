@@ -20,6 +20,8 @@ list of available commands:
       nant quickCompile -D:onlyonce=true   will compile the OpenPetra.sln but only the dlls that have not been compiled yet
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
+  generateProjectFiles: after creating a new cs file, this will add the file to the project,
+      and a new directory will be picked up and a project will be created.
   compileProject: compile a single project file
       nant compileProject -D:file=csharp/ICT/Common/Ict.Common.csproj
       nant compileProject -D:name=Ict.Common
