@@ -344,6 +344,7 @@ function open_consent_modal(field) {
 
 		var purposes = parsed.result.PPurpose;
 		var channels = parsed.result.PConsentChannel;
+		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
 
 		Temp.find("data[name=field]").val(field);
 		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
@@ -351,18 +352,23 @@ function open_consent_modal(field) {
 		// place dynamic channel
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
 		for (var channel of channels) {
-			TargetChannel.append(`<option value='${channel.p_channel_code_c}'>${i18next.t('MaintainPartners.'+channel.p_name_c)}</option>`);
+			let selected = (channel.p_channel_code_c == last_known_configuration.p_channel_code_c) ? "selected" : "";
+			TargetChannel.append(`<option ${selected} value='${channel.p_channel_code_c}'>${i18next.t('MaintainPartners.'+channel.p_name_c)}</option>`);
 		}
 
 		// place dynamic purposes
 		var TargetPurpose = Temp.find(".permissions").html("");
 		for (var purpose of purposes) {
-			TargetPurpose.append(`<label>${i18next.t('MaintainPartners.'+purpose.p_name_c)}</span><input type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
+			console.log(last_known_configuration.AllowedPurposes);
+			console.log(last_known_configuration.AllowedPurposes.split(','));
+			console.log(purpose.p_purpose_code_c);
+			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : "";
+			TargetPurpose.append(`<label>${i18next.t('MaintainPartners.'+purpose.p_name_c)}</span><input ${checked} type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
 		}
 
 		$('#modal_space .modal.tpl_consent').remove();
 		$('#modal_space').append(Temp);
-		$('#modal_space .modal.tpl_consent').modal("show");
+		$('#modal_space .modal.tpl_consent').modal({backdrop:"static", keyboard: false});
 
 	})
 }
