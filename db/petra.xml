@@ -24078,6 +24078,7 @@
                 type="number"
                 typedotnet="Int64"
                 descr="Incremental key for entrys"
+                sequence="seq_data_entry_id"
                 length="10"
                 format="9999999999"
                 label="Entry key"
@@ -24477,6 +24478,14 @@
             area=""/>
   <sequence name="seq_partner_attribute_index"
             descr="A normal sequence so that each partner can have more than one value for any particular attribute type"
+            initial="1"
+            increment="1"
+            cycleonlimit="no"
+            minval="1"
+            maxval="999999999"
+            area=""/>
+  <sequence name="seq_data_entry_id"
+            descr="Data History incremental key"
             initial="1"
             increment="1"
             cycleonlimit="no"

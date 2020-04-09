@@ -103,6 +103,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
                 // generate and add each row for a allowed porpose in p_data_history_permission
                 foreach (string AllowedPuroseCode in ChangeObject.Permissions.Split(',')) {
+                    if (AllowedPuroseCode.Trim().Equals("")) { continue; } // catch non permission values
                     PDataHistoryPermissionRow NewPermRow = Set.PDataHistoryPermission.NewRowTyped();
 
                     NewPermRow.PurposeCode = AllowedPuroseCode;

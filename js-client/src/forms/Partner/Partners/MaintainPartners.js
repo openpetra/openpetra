@@ -197,14 +197,16 @@ function save_entry(obj_modal) {
 
 	// to be save we have the right address in logs
 	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = getUpdatesAddress(); }
-
-	return console.log(data_changes_log);
+	var applied_perms = [];
+	for (var perm of Object.values(data_changes_log) ) {
+		applied_perms.push( JSON.stringify(perm) );
+	}
 
 	// send request
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs,
-			 'AChanges': [],
+			 'AChanges': applied_perms,
 			 'ADefaultEmailAddress': updated_data.p_default_email_address_c,
 			 'ADefaultPhoneLandline': updated_data.p_default_phone_landline_c,
 			 'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c
