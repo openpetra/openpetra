@@ -15,6 +15,7 @@
       <Table sqltable="a_recurring_gift_detail">
           <Field sqltable="a_recurring_gift" sqlfield="p_donor_key_n"/>
           <CustomField name="DonorName" type="String"/>
+          <CustomField name="CurrencyCode" type="String"/>
       </Table>
   </DataSet>
 

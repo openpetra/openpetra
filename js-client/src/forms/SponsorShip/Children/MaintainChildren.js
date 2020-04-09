@@ -311,7 +311,7 @@ var MaintainChildSponsorship = new (class {
 
     for (var sponsorship of gift_details) {
       var Copy = $("[phantom] .sponsorship").clone();
-      insertData(Copy, sponsorship);
+      insertData(Copy, sponsorship, sponsorship.CurrencyCode);
       SponsorList.append(Copy);
     }
   }

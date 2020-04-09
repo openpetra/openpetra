@@ -310,6 +310,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
                     if (SponsorshipBatchNumber > -1)
                     {
+                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
                         ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
                         ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, SponsorshipBatchNumber, Transaction);
 
@@ -339,6 +340,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
                                     gdr.DonorName = donorRow.PartnerShortName;
+                                    gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
 
                             }

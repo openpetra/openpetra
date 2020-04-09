@@ -352,7 +352,7 @@ function extractData(o) {
   return data;
 }
 
-function insertData(o, d, to_string=false) {
+function insertData(o, d, to_string=false, currencyCode="EUR") {
   // o = JQuery object | str
   // d = object
   // to_string = bool :: false
@@ -380,17 +380,19 @@ function insertData(o, d, to_string=false) {
           if ( v ) { f.prop("checked", true) } else { f.prop("checked", false) }
         } else if (f.attr("type") == "date") {
           if (v == "" || v == null) {
-            f.val("");
+            f.text("");
           }
           else
           {
-            v = new Date(v);
-            let YYYY = v.getFullYear();
-            let MM = v.getMonth() + 1;
-            let DD = v.getDate();
-            MM = (MM < 10 ? "0" : "") + MM;
-            DD = (DD < 10 ? "0" : "") + DD;
-            f.val( `${YYYY}-${MM}-${DD}` );
+            f.text( new Date(v).toLocaleDateString() );
+          }
+        } else if (f.attr("type") == "currency") {
+          if (v == "" || v == null) {
+            f.text("");
+          }
+          else
+          {
+            f.text( printCurrency(v, currencyCode) );
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
           f.text( v );
