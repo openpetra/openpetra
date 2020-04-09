@@ -109,6 +109,7 @@ var MaintainChildren = new (class {
     var MaintainChildrenO = this;
     var req = translate_to_server(extractData($("#detail_modal")));
     req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
+    req["APartnerKey"] = $("input[name=p_partner_key_n]").val();
     if (req["ADateOfBirth"] == "") {
       req["ADateOfBirth"] = "null";
     }
