@@ -49,11 +49,11 @@ var MaintainChildren = new (class {
     );
   }
 
-  detail(HTMLButtom, overwrite) {
+  detail(HTMLBottom, overwrite, OpenTab=null) {
     // get details for the child the user clicked on and open modal
 
     var req = {
-      "APartnerKey": overwrite ? overwrite : $(HTMLButtom).closest(".row").find("[name=p_partner_key_n]").val(),
+      "APartnerKey": overwrite ? overwrite : $(HTMLBottom).closest(".row").find("[name=p_partner_key_n]").val(),
       "ALedgerNumber": window.localStorage.getItem("current_ledger")
     };
 
@@ -82,6 +82,10 @@ var MaintainChildren = new (class {
 
         $("#detail_modal").attr("mode", "edit");
         $("#detail_modal").modal("show");
+        
+        if (OpenTab !== null) {
+          MaintainChildren.showWindow(null, OpenTab);
+        }
       }
     );
 
@@ -91,7 +95,8 @@ var MaintainChildren = new (class {
     // hide all windows in #multi_window and only show the one related to the link
     // also updates buttons
 
-    var show = $(HTMLAnchor).attr("show");
+    var show = null;
+    if (HTMLAnchor !== null) { show = $(HTMLAnchor).attr("show"); }
     if (overwrite) { show = overwrite; }
 
     // nav-bar
@@ -266,11 +271,11 @@ var MaintainChildComments = new (class {
 
   }
 
-  detail(HTMLButtom) {
-    HTMLButtom = $(HTMLButtom).closest(".comment");
+  detail(HTMLBottom) {
+    HTMLBottom = $(HTMLBottom).closest(".comment");
 
-    var comment_index = HTMLButtom.find("[name=p_index_i]").val();
-    var partner_key = HTMLButtom.find("[name=p_partner_key_n]").val();
+    var comment_index = HTMLBottom.find("[name=p_index_i]").val();
+    var partner_key = HTMLBottom.find("[name=p_partner_key_n]").val();
 
     var req = { "APartnerKey": partner_key };
 
@@ -304,7 +309,7 @@ var MaintainChildSponsorship = new (class {
   }
 
   build(gifts, gift_details) {
-    // builds the entrys as rows in there location
+    // builds the entrys as rows in their location
     // requires a list of ARecurringGiftDetail API data
 
     var SponsorList = $("#detail_modal [window=sponsorship] .container-list").html("");
@@ -322,6 +327,8 @@ var MaintainChildSponsorship = new (class {
       "a_gift_transaction_number_i":"-1",
       "a_batch_number_i":"-1",
       "a_detail_number_i":"-1",
+      "a_motivation_group_code_c": "",
+      "a_motivation_detail_code_c": "",
       "p_recipient_key_n":$("#detail_modal [name=p_partner_key_n]").val(),
       "a_ledger_number_i": window.localStorage.getItem("current_ledger")
     };
@@ -334,6 +341,18 @@ var MaintainChildSponsorship = new (class {
 
   saveEdit() {
     var req = translate_to_server(extractData($("#recurring_modal")));
+
+    if (!req["ADonorKey"] || isNaN(parseInt(req["ADonorKey"]))) {
+      return display_error("MaintainChildren.ErrMissingDonor");
+    }
+
+    if (!req["AGiftAmount"] || isNaN(parseFloat(req["AGiftAmount"]))) {
+      return display_error("MaintainChildren.ErrMissingAmount");
+    }
+
+    if (!req["AStartDonations"]) {
+      return display_error("MaintainChildren.ErrStartDonationsDate");
+    }
 
     // check for endless date
     if (!req["AEndDonations"]) {
@@ -349,15 +368,15 @@ var MaintainChildSponsorship = new (class {
         }
 
         $("#recurring_modal").modal("hide");
-        MaintainChildren.detail(null, req["ARecipientKey"]);
+        MaintainChildren.detail(null, req["ARecipientKey"], "sponsorship");
       }
     );
   }
 
-  detail(HTMLButtom, overwrite) {
+  detail(HTMLBottom, overwrite) {
 
-    HTMLButtom = $(HTMLButtom).closest(".sponsorship");
-    var req_detail = extractData(HTMLButtom);
+    HTMLBottom = $(HTMLBottom).closest(".sponsorship");
+    var req_detail = extractData(HTMLBottom);
 
     var req = {
       "APartnerKey": overwrite ? overwrite : $("#detail_modal [name=p_partner_key_n]").val(),
@@ -450,11 +469,11 @@ var MaintainChildReminders = new (class {
 
   }
 
-  detail(HTMLButtom) {
-    HTMLButtom = $(HTMLButtom).closest(".reminder");
+  detail(HTMLBottom) {
+    HTMLBottom = $(HTMLBottom).closest(".reminder");
 
-    var reminder_id = HTMLButtom.find("[name=p_reminder_id_i]").val();
-    var partner_key = HTMLButtom.find("[name=p_partner_key_n]").val();
+    var reminder_id = HTMLBottom.find("[name=p_reminder_id_i]").val();
+    var partner_key = HTMLBottom.find("[name=p_partner_key_n]").val();
 
     var req = { "APartnerKey": partner_key };
 

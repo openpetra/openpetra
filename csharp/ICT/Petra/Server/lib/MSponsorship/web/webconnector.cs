@@ -432,13 +432,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 {
                     AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
                         "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
-                    return false;
                 }
 
                 if ((AFirstName == "") || (AFirstName == null))
                 {
                     AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
                         "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
+                }
+
+                if (AVerificationResult.HasCriticalErrors)
+                {
                     return false;
                 }
 
@@ -633,9 +636,33 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         {
             AVerificationResult = new TVerificationResultCollection();
 
+            if (ADonorKey <= 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the donor", "",
+                    "MaintainChildren.ErrMissingDonor", TResultSeverity.Resv_Critical));
+            }
+
+            if (AGiftAmount <= 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify a valid amount", "",
+                    "MaintainChildren.ErrMissingAmount", TResultSeverity.Resv_Critical));
+            }
+
+            if ((AMotivationDetailCode == "") || (AMotivationDetailCode == null))
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the motivation", "",
+                    "MaintainChildren.ErrMissingMotivation", TResultSeverity.Resv_Critical));
+            }
+
+            if (AVerificationResult.HasCriticalErrors)
+            {
+                return false;
+            }
+
             TDBTransaction Transaction = new TDBTransaction();
             SponsorshipTDS MainDS = new SponsorshipTDS();
             TDataBase DB = DBAccess.Connect("MaintainRecurringGifts");
+            bool MotivationExists = false;
 
             // load batches and their transactions based on their id / batch number
             DB.ReadTransaction(ref Transaction, delegate {
@@ -643,7 +670,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 ABatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
                 ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                 ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                MotivationExists = AMotivationDetailAccess.Exists(ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, Transaction);
             });
+
+            if (!MotivationExists)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify a valid motivation", "",
+                    "MaintainChildren.ErrMissingMotivation", TResultSeverity.Resv_Critical));
+                return false;
+            }
 
             // try to get a row with requested id, aka edit else make a new
             ARecurringGiftRow EditGiftRow = null;
