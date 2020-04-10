@@ -753,5 +753,94 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
         }
 
+        /// delete a detail of recurring gift
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool DeleteSponsorshipRecurringGift(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber,
+            Int32 ADetailNumber,
+            out TVerificationResultCollection AVerificationResult) 
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            SponsorshipTDS MainDS = new SponsorshipTDS();
+            TDataBase DB = DBAccess.Connect("DeleteRecurringGift");
+
+            // load batches and their transactions based on their id / batch number
+            DB.ReadTransaction(ref Transaction, delegate {
+                ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+            });
+
+            try
+            {
+                bool LastDetail = true;
+                ARecurringGiftDetailRow DetailToDelete = null;
+                ARecurringGiftRow GiftToDelete = null;
+                foreach (ARecurringGiftDetailRow CheckGiftDetailRow in MainDS.ARecurringGiftDetail.Rows)
+                {
+                    if (CheckGiftDetailRow.GiftTransactionNumber == AGiftTransactionNumber)
+                    {
+                        if (CheckGiftDetailRow.DetailNumber == ADetailNumber)
+                        {
+                            DetailToDelete = CheckGiftDetailRow;
+                            DetailToDelete.DetailNumber = 20000;
+                        }
+                        else
+                        {
+                            LastDetail = false;
+                            if (CheckGiftDetailRow.DetailNumber > ADetailNumber)
+                            {
+                                CheckGiftDetailRow.DetailNumber--;
+                            }
+                        }
+                    }
+                }
+
+                foreach (ARecurringGiftRow CheckGiftRow in MainDS.ARecurringGift.Rows)
+                {
+                    if (CheckGiftRow.GiftTransactionNumber == AGiftTransactionNumber)
+                    {
+                        if (LastDetail)
+                        {
+                            GiftToDelete = CheckGiftRow;
+                        }
+                        else
+                        {
+                            CheckGiftRow.LastDetailNumber--;
+                        }
+                    }
+                }
+
+                // delete the detail
+                if (DetailToDelete != null)
+                {
+                    DetailToDelete.Delete();
+                }
+
+                // delete the gift
+                if (GiftToDelete != null)
+                {
+                    // we keep the gift transaction numbers, and live with gaps.
+                    GiftToDelete.Delete();
+                }
+
+                SponsorshipTDSAccess.SubmitChanges(MainDS, DB);
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                return false;
+            }
+            finally
+            {
+                DB.CloseDBConnection();
+            }
+        }
     }
 }

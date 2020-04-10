@@ -373,6 +373,22 @@ var MaintainChildSponsorship = new (class {
     );
   }
 
+  delete(obj_modal) {
+    let obj = $(obj_modal).closest('.modal');
+    let payload = translate_to_server( extract_data(obj) );
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_DeleteSponsorshipRecurringGift', payload).then(
+      function (result) {
+        var parsed = JSON.parse(result.data.d);
+
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        }
+
+        $("#recurring_modal").modal("hide");
+        MaintainChildren.detail(null, payload["ARecipientKey"], "sponsorship");
+      });
+  }
+
   detail(HTMLBottom, overwrite) {
 
     HTMLBottom = $(HTMLBottom).closest(".sponsorship");
