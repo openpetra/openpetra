@@ -181,15 +181,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             DateTime CreationDate = DateTime.Today;
             string CreationUserID = UserInfo.GetUserInfo().UserID;
 
-	    // Create DataRow for Partner using the default values for all DataColumns
-	    // and then modify some.
-	    PPartnerRow PartnerRow = MainDS.PPartner.NewRowTyped(true);
-	    PartnerRow.PartnerKey = PartnerKey;
-	    PartnerRow.DateCreated = CreationDate;
-	    PartnerRow.CreatedBy = CreationUserID;
-	    PartnerRow.PartnerClass = SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY);
-	    PartnerRow.StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
-	    PartnerRow.UserId = CreationUserID;
+            // Create DataRow for Partner using the default values for all DataColumns
+            // and then modify some.
+            PPartnerRow PartnerRow = MainDS.PPartner.NewRowTyped(true);
+            PartnerRow.PartnerKey = PartnerKey;
+            PartnerRow.DateCreated = CreationDate;
+            PartnerRow.CreatedBy = CreationUserID;
+            PartnerRow.PartnerClass = SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY);
+            PartnerRow.StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
+            PartnerRow.UserId = CreationUserID;
             MainDS.PPartner.Rows.Add(PartnerRow);
 
             PFamilyRow FamilyRow = MainDS.PFamily.NewRowTyped(true);
