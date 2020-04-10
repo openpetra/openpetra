@@ -71,6 +71,10 @@ function display_error(VerificationResult, generalerror = 'errors.general') {
     display_message( i18next.t(generalerror), 'fail');
     return;
   }
+  if (typeof VerificationResult === 'string') {
+    display_message( i18next.t(VerificationResult), "fail");
+    return;
+  }
   let s = false;
   for (error of VerificationResult) {
     if (error.code == "" && error.message == "") {
