@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,8 @@ using System.Reflection;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
+using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -96,7 +98,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
         /// throws an exception if the current user does not have enough permission to access the method;
         /// this uses a custom attribute associated with the method of the connector
-        static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes, Int32 ALedgerNumber = -1)
+        static public string CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes, Int32 ALedgerNumber = -1, bool ADontThrowException = false)
         {
             MethodInfo[] methods = AConnectorType.GetMethods();
 
@@ -156,7 +158,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     if (moduleExpression == "NONE")
                     {
-                        return true;
+                        return "OK";
                     }
 
                     // authenticated user
@@ -164,7 +166,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         if (UserInfo.GetUserInfo() != null && UserInfo.GetUserInfo().UserID != null)
                         {
-                            return true;
+                            return "OK";
                         }
                     }
 
@@ -187,6 +189,14 @@ namespace Ict.Petra.Server.App.Core.Security
 
                         Exc.Context = AMethodName + " [raised by ModuleAccessManager]";
 
+                        if (ADontThrowException)
+                        {
+                            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+                            VerificationResult.Add(new TVerificationResult("error", msg, "",
+                                "forms.NotEnoughPermissions", TResultSeverity.Resv_Critical));
+                            return "{" + "\"AVerificationResult\": " + THttpBinarySerializer.SerializeObject(VerificationResult)+ "," + "\"result\": false}";
+                        }
+
                         throw;
                     }
                     catch (ArgumentException argException)
@@ -198,7 +208,7 @@ namespace Ict.Petra.Server.App.Core.Security
                             AMethodName + "()", argException);
                     }
 
-                    return true;
+                    return "OK";
                 }
             }
 

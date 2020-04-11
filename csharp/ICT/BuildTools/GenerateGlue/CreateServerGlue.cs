@@ -59,10 +59,19 @@ namespace GenerateGlue
                     {
                         if (attr.Name == "RequireModulePermission")
                         {
-                            ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
+                            ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONSWITHEXCEPTION");;
+
+                            foreach (ParameterDeclarationExpression p in m.Parameters)
+                            {
+                                if (p.ParameterName == "AVerificationResult")
+                                {
+                                    snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONSWITHRESULT");
+                                }
+                            }
+
                             snippet.SetCodelet("METHODNAME", m.Name);
                             snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
-                            snippet.SetCodelet("LEDGERNUMBER", "");
+                            snippet.SetCodelet("LEDGERNUMBER", "-1");
 
                             string ParameterTypes = ";";
 
@@ -70,7 +79,7 @@ namespace GenerateGlue
                             {
                                 if (p.ParameterName == "ALedgerNumber")
                                 {
-                                    snippet.SetCodelet("LEDGERNUMBER", ", ALedgerNumber");
+                                    snippet.SetCodelet("LEDGERNUMBER", "ALedgerNumber");
                                 }
 
                                 string ParameterType = p.TypeReference.Type.Replace("&", "").Replace("System.", String.Empty);

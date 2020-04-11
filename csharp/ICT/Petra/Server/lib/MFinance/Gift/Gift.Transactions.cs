@@ -3479,6 +3479,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// load the donor names and tax settings for a given batch
+        [NoRemoting]
         public static void LoadGiftDonorRelatedData(GiftBatchTDS AGiftDS,
             bool ARecurring,
             Int32 ALedgerNumber,

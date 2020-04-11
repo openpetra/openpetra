@@ -207,6 +207,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
 
         /// make sure we have a recurring gift batch for sponsorships
+        [RequireModulePermission("SPONSORADMIN")]
         public static void InitRecurringGiftBatchForSponsorship(Int32 ALedgerNumber, string ABankAccountCode)
         {
             TDataBase db = DBAccess.Connect("InitRecurringGiftBatchForSponsorship");
@@ -733,6 +734,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 MainDS.ARecurringGiftDetail.Rows.Add(EditGiftDetailRow);
             }
 
+            EditGiftRow.DonorKey = ADonorKey;
             EditGiftDetailRow.GiftAmount = AGiftAmount;
             EditGiftDetailRow.MotivationGroupCode = AMotivationGroupCode;
             EditGiftDetailRow.MotivationDetailCode = AMotivationDetailCode;

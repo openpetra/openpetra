@@ -132,6 +132,7 @@
         "save": "Übernehmen",
         "saved": "Änderungen wurden übernommen",
         "post": "Buchen",
+        "NotEnoughPermissions": "Fehlende Berechtigung",
         "notsaved": "Fehler beim Speichern",
         "deleted": "Erfolgreich gelöscht",
         "notdeleted": "Fehler beim Löschen",

@@ -132,6 +132,7 @@
         "save": "Save",
         "saved": "Successfully saved",
         "post": "Post",
+        "NotEnoughPermissions": "Not enough permissions",
         "notsaved": "Saving failed",
         "deleted": "Successfully deleted",
         "notdeleted": "Deletion failed",
