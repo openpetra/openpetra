@@ -5931,36 +5931,6 @@
                 otherFields="p_addressee_type_code_c"/>
     <!-- Explicit Indexes on table p_formality  -->
   </table>
-  <table name="p_letter_template"
-         descr="Contains the ODT Template for letters"
-         area="Petra Data"
-         label="Letter Template"
-         dumpname="p_letter_template"
-         group="mailroom">
-    <tablefield name="p_template_code_c"
-                type="varchar"
-                descr="This is the code used to identify a letter template."
-                format="X(20)"
-                label="Template Code"
-                help="Enter the template code"
-                notnull="yes"/>
-    <tablefield name="p_description_c"
-                type="varchar"
-                descr="Description of the letter template."
-                format="X(500)"
-                label="Template Description"
-                help="Enter the template description"/>
-    <tablefield name="p_template_file_c"
-                type="longtext"
-                descr="The letter template file, an ODT file, encoded with Base64, and prefixed with the file extension."
-                format="X(500)"
-                label="Template File"
-                initial="?"/>
-    <!-- Constraints on table p_letter_template -->
-    <primarykey name="p_letter_template_pk"
-                descr=""
-                thisFields="p_template_code_c"/>
-  </table>
   <table name="p_label"
          descr="Defines the attributes of different label types.  Eg: for address labels."
          area="Petra Data"
