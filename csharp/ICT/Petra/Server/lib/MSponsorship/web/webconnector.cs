@@ -695,6 +695,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             // we did not find a Transaction in this Batch, so we create one
             if (EditGiftRow == null)
             {
+                // TODO: we could look for a gift transaction of the same donor???
                 EditGiftRow = MainDS.ARecurringGift.NewRowTyped(true);
                 EditGiftRow.DonorKey = ADonorKey;
                 EditGiftRow.BatchNumber = ABatchNumber;
@@ -728,7 +729,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 EditGiftDetailRow.LedgerNumber = ALedgerNumber;
                 EditGiftDetailRow.BatchNumber = ABatchNumber;
                 EditGiftDetailRow.RecipientKey = ARecipientKey;
-                EditGiftDetailRow.GiftTransactionNumber = MainDS.ARecurringGiftBatch[0].LastGiftNumber;
+                EditGiftDetailRow.GiftTransactionNumber = EditGiftRow.GiftTransactionNumber;
                 EditGiftDetailRow.DetailNumber = EditGiftRow.LastDetailNumber + 1;
                 EditGiftRow.LastDetailNumber++;
                 MainDS.ARecurringGiftDetail.Rows.Add(EditGiftDetailRow);
