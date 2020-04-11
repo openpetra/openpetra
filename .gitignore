@@ -53,6 +53,7 @@ csharp/ICT/Testing/**/*.Parameters.json
 csharp/ICT/Testing/**/*.Results.html
 csharp/ICT/Testing/lib/Common/IO/TestData/testUnzip
 csharp/ICT/Testing/lib/Common/IO/TestData/test.xlsx
+csharp/ICT/Petra/Server/sql/Upgrade*.sql
 .gitmodules
 csharp/ICT/Petra/Plugins/*
 !csharp/ICT/Petra/Plugins/Plugins.build
