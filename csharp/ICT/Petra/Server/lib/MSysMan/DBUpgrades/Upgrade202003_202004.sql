@@ -10,6 +10,7 @@ INSERT INTO s_module(s_module_id_c,s_module_name_c) VALUES('SPONSORVIEW','View S
 ALTER TABLE p_partner_reminder ADD COLUMN p_partner_reminder_id_i integer NOT NULL BEFORE p_partner_key_n;
 ALTER TABLE p_partner_reminder MODIFY COLUMN p_contact_id_i bigint;
 ALTER TABLE p_partner_reminder MODIFY CONSTRAINT p_partner_reminder_pk PRIMARY KEY (p_partner_reminder_id_i);
+ALTER TABLE p_partner_reminder MODIFY COLUMN `p_event_date_d` date NOT NULL;
 ALTER TABLE p_partner_reminder ADD CONSTRAINT p_partner_reminder_uk UNIQUE (p_partner_key_n,p_contact_id_i,p_reminder_id_i);
 CREATE TABLE seq_partner_reminder (sequence INTEGER AUTO_INCREMENT, dummy INTEGER, PRIMARY KEY(sequence));
 
@@ -19,3 +20,7 @@ ALTER TABLE s_group_partner_reminder MODIFY CONSTRAINT s_group_partner_reminder_
 ALTER TABLE s_group_partner_reminder DROP COLUMN p_partner_key_n;
 ALTER TABLE s_group_partner_reminder DROP COLUMN p_contact_id_i;
 ALTER TABLE s_group_partner_reminder DROP COLUMN p_reminder_id_i;
+
+ALTER TABLE p_family ADD COLUMN `p_date_of_birth_d` date DEFAULT NULL  BEFORE s_date_created_d;
+ALTER TABLE p_family ADD COLUMN `p_gender_c` varchar(16) DEFAULT 'Unknown' BEFORE s_date_created_d;
+ALTER TABLE p_family ADD COLUMN `p_photo_b` longtext BEFORE s_date_created_d;
