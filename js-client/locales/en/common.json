@@ -673,7 +673,11 @@
       "end_date":"Valid until",
       "date":"Date",
       "description":"Description",
-      "notification_date":"Notification date",
+      "event_date":"Date to be remembered",
+      "first_reminder_date":"Date of reminder",
+      "ErrReminderEventDate": "Date to be remembered must not be empty",
+      "ErrFirstReminderDate": "Reminder date must not be empty",
+      "ErrEmptyReminderComment": "Comment must not be empty",
       "notes":"Notes"
     }
 }

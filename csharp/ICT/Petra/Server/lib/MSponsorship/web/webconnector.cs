@@ -597,12 +597,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             else
             {
                 PPartnerReminderRow NewReminderRow = CurrentEdit.PPartnerReminder.NewRowTyped(true);
+                NewReminderRow.PartnerReminderId = -1;
                 NewReminderRow.PartnerKey = APartnerKey;
                 NewReminderRow.EventDate = AEventDate;
                 NewReminderRow.FirstReminderDate = AFirstReminderDate;
                 NewReminderRow.Comment = AComment;
                 NewReminderRow.ReminderId = AReminderId;
-                NewReminderRow.ContactId = 0; // Again, noone wants it, but its needed
                 CurrentEdit.PPartnerReminder.Rows.Add( NewReminderRow );
             }
 

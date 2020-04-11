@@ -234,7 +234,6 @@ var MaintainChildComments = new (class {
       switch (comment.p_comment_type_c) {
         case "FAMILY": CommentsFamily.append(Copy); break;
         case "SCHOOL": CommentsSchool.append(Copy); break;
-        default: break;
       }
     }
   }
@@ -260,12 +259,20 @@ var MaintainChildComments = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildComments', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
+
         if (!parsed.result) {
           return display_error(parsed.AVerificationResult);
         }
 
         $("#comment_modal").modal("hide");
-        MaintainChildren.detail(null, req["APartnerKey"]);
+        
+        var tabname = null;
+        switch (req["ACommentType"]) {
+          case "FAMILY": tabname = "family_situations"; break;
+          case "SCHOOL": tabname = "school_situations"; break;
+        }
+        
+        MaintainChildren.detail(null, req["APartnerKey"], tabname);
       }
     );
 
@@ -278,6 +285,7 @@ var MaintainChildComments = new (class {
     var partner_key = HTMLBottom.find("[name=p_partner_key_n]").val();
 
     var req = { "APartnerKey": partner_key };
+    req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
       function (data) {
@@ -475,11 +483,28 @@ var MaintainChildReminders = new (class {
 
     var req = translate_to_server(extractData($("#reminder_modal")));
 
+    if (!req["AEventDate"]) {
+      return display_error("MaintainChildren.ErrReminderEventDate");
+    }
+
+    if (!req["AFirstReminderDate"]) {
+      return display_error("MaintainChildren.ErrFirstReminderDate");
+    }
+
+    if (!req["AComment"]) {
+      return display_error("MaintainChildren.ErrEmptyReminderComment");
+    }
+
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildReminders', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
+
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        }
+
         $("#reminder_modal").modal("hide");
-        MaintainChildren.detail(null, req["APartnerKey"]);
+        MaintainChildren.detail(null, req["APartnerKey"], "dates_reminder");
       }
     );
 
@@ -492,6 +517,7 @@ var MaintainChildReminders = new (class {
     var partner_key = HTMLBottom.find("[name=p_partner_key_n]").val();
 
     var req = { "APartnerKey": partner_key };
+    req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
       function (data) {

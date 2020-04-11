@@ -21173,6 +21173,12 @@
          label="Partner Reminder"
          dumpname="p_remind"
          group="partner">
+    <tablefield name="p_partner_reminder_id_i"
+                type="integer"
+                descr="Primary Key of this reminder"
+                label="Partner Reminder ID"
+                sequence="seq_partner_reminder"
+                notnull="yes"/>
     <tablefield name="p_partner_key_n"
                 type="number"
                 length="10"
@@ -21185,9 +21191,7 @@
                 type="number"
                 length="10"
                 format="9999999999"
-                label="Contact ID"
-                initial="0"
-                notnull="yes"/>
+                label="Contact ID"/>
     <tablefield name="p_reminder_id_i"
                 type="integer"
                 descr="ID of this reminder (only unique per Partner/Contact)"
@@ -21287,6 +21291,9 @@
                 label=""/>
     <!-- Constraints on table p_partner_reminder -->
     <primarykey name="p_partner_reminder_pk"
+                descr=""
+                thisFields="p_partner_reminder_id_i"/>
+    <uniquekey name="p_partner_reminder_uk"
                 descr=""
                 thisFields="p_partner_key_n, p_contact_id_i, p_reminder_id_i"/>
     <foreignkey name="p_partner_reminder_fk1"
@@ -22284,27 +22291,11 @@
                 label="Field of Group"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="p_partner_key_n"
-                type="number"
-                length="10"
-                descr="Partner key of Partner to which the reminder is related"
-                format="9999999999"
-                label="Partner Key"
-                notnull="yes"/>
-    <tablefield name="p_contact_id_i"
-                type="number"
-                length="10"
-                descr="ID of Contact to which reminder relates. Null means that reminder relates just to a Partner"
-                format="&gt;&gt;&gt;&gt;&gt;9"
-                label="Contact ID"
-                notnull="yes"/>
-    <tablefield name="p_reminder_id_i"
+    <tablefield name="p_partner_reminder_id_i"
                 type="integer"
-                descr="identifying key for p_partner_reminder"
-                format="&gt;&gt;&gt;&gt;&gt;9"
-                label="Reminder ID"
-                notnull="yes"
-                initial="0"/>
+                descr="Primary Key of this reminder"
+                label="Partner Reminder ID"
+                notnull="yes"/>
     <tablefield name="s_read_access_l"
                 type="bit"
                 descr="Control read access to the reminder"
@@ -22323,7 +22314,7 @@
     <!-- Constraints on table s_group_partner_reminder -->
     <primarykey name="s_group_partner_reminder_pk"
                 descr=""
-                thisFields="s_group_id_c, s_group_unit_key_n, p_partner_key_n, p_contact_id_i, p_reminder_id_i"/>
+                thisFields="s_group_id_c, s_group_unit_key_n, p_partner_reminder_id_i"/>
     <foreignkey name="s_group_partner_reminder_fk1"
                 descr=""
                 thisFields="s_group_id_c, s_group_unit_key_n"
@@ -22331,9 +22322,9 @@
                 otherFields="s_group_id_c, s_unit_key_n"/>
     <foreignkey name="s_group_partner_reminder_fk2"
                 descr=""
-                thisFields="p_partner_key_n, p_contact_id_i, p_reminder_id_i"
+                thisFields="p_partner_reminder_id_i"
                 otherTable="p_partner_reminder"
-                otherFields="p_partner_key_n, p_contact_id_i, p_reminder_id_i"/>
+                otherFields="p_partner_reminder_id_i"/>
   </table>
   <table name="s_group_location"
          descr="Controls the access that a group has to a specific location, if the Location is restricted"
@@ -24357,6 +24348,14 @@
             area=""/>
   <sequence name="seq_partner_attribute_index"
             descr="A normal sequence so that each partner can have more than one value for any particular attribute type"
+            initial="1"
+            increment="1"
+            cycleonlimit="no"
+            minval="1"
+            maxval="999999999"
+            area=""/>
+  <sequence name="seq_partner_reminder"
+            descr="for the primary key of p_partner_reminder"
             initial="1"
             increment="1"
             cycleonlimit="no"

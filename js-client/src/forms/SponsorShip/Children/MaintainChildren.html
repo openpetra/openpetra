@@ -87,7 +87,7 @@
 
   <div class="row comment">
     <div class="col">
-      <span name="s_date_created_d"></span>
+      <span type="date" name="s_date_created_d"></span>
     </div>
     <div class="col">
       <span name="p_comment_c"></span>
@@ -128,13 +128,13 @@
 
   <div class="row reminder">
     <div class="col">
-      <span name="p_event_date_d"></span>
+      <span type="date" name="p_event_date_d"></span>
     </div>
     <div class="col">
       <span name="p_comment_c"></span>
     </div>
     <div class="col">
-      <span name="p_first_reminder_date_d"></span>
+      <span type="date" name="p_first_reminder_date_d"></span>
     </div>
     <div class="col-1">
       <data name="p_reminder_id_i" value="-1"></data>
@@ -334,7 +334,7 @@
                   <span>{description}</span>
                 </div>
                 <div class="col">
-                  <span>{notification_date}</span>
+                  <span>{first_reminder_date}</span>
                 </div>
                 <div class="col-1">
                   <!-- placeholder for btn col -->
@@ -390,12 +390,9 @@
                   <span>{date}</span>
                 </div>
                 <div class="col">
-                  <span>{description}</span>
+                  <span>{notes}</span>
                 </div>
-                <div class="col">
-                  <span>{notification_date}</span>
-                </div>
-                <div class="col">
+                <div class="col-1">
                   <!-- placeholder for btn col -->
                 </div>
               </div>

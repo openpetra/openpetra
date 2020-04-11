@@ -673,7 +673,11 @@
       "end_date":"Gültig bis",
       "date":"Datum",
       "description":"Beschreibung",
-      "notification_date":"Erinnerungs-Datum",
+      "event_date":"Datum zum Merken",
+      "first_reminder_date":"Datum der Erinnerung",
+      "ErrReminderEventDate": "Datum zum Merken darf nicht leer sein",
+      "ErrFirstReminderDate": "Datum der Erinnerung darf nicht leer sein",
+      "ErrEmptyReminderComment": "Beschreibung darf nicht leer sein",
       "notes":"Notizen"
     }
 }
