@@ -35,7 +35,6 @@ list of available commands:
       nant test-without-display             runs all basic tests
   test: will test a specific DLL
       nant test -D:file=Ict.Testing.lib.Common.IO.dll -D:testcase=Ict.Common.IO.Testing.TTestSmtpSender.TestSendMail
-  devzip: build a zip file for developers for easy start
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
