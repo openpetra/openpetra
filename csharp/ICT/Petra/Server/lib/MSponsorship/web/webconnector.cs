@@ -292,6 +292,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
         public static SponsorshipTDS GetChildDetails(Int64 APartnerKey,
             Int32 ALedgerNumber,
+            bool AWithPhoto,
             out string ASponsorshipStatus)
         {
             SponsorshipTDS MainDS = new SponsorshipTDS();
@@ -306,6 +307,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerReminderAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+
+                    if (!AWithPhoto && (MainDS.PFamily.Rows.Count == 1))
+                    {
+                        MainDS.PFamily[0].Photo = "";
+                    }
 
                     int SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
 
@@ -419,7 +425,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 // else we try to get a entry based on the partner key
                 string dummy = "0";
-                CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, out dummy);
+                CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, true, out dummy);
             }
 
             // we only save pictures if there is a value in the request
@@ -507,7 +513,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
             string dummy = "";
-            CurrentEdit = GetChildDetails(APartnerKey, -1, out dummy);
+            CurrentEdit = GetChildDetails(APartnerKey, -1, true, out dummy);
 
             PPartnerCommentRow EditCommentRow = null;
 
@@ -572,7 +578,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
             string dummy = "";
-            CurrentEdit = GetChildDetails(APartnerKey, -1, out dummy);
+            CurrentEdit = GetChildDetails(APartnerKey, -1, true, out dummy);
 
             PPartnerReminderRow EditReminderRow = null;
 

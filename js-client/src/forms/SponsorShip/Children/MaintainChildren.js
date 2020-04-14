@@ -54,6 +54,7 @@ var MaintainChildren = new (class {
 
     var req = {
       "APartnerKey": overwrite ? overwrite : $(HTMLBottom).closest(".row").find("[name=p_partner_key_n]").val(),
+      "AWithPhoto": true,
       "ALedgerNumber": window.localStorage.getItem("current_ledger")
     };
 
@@ -286,6 +287,7 @@ var MaintainChildComments = new (class {
 
     var req = { "APartnerKey": partner_key };
     req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
+    req["AWithPhoto"] = false;
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
       function (data) {
@@ -406,6 +408,8 @@ var MaintainChildSponsorship = new (class {
       "APartnerKey": overwrite ? overwrite : $("#detail_modal [name=p_partner_key_n]").val(),
       "ALedgerNumber": window.localStorage.getItem("current_ledger")
     };
+    req["AWithPhoto"] = false;
+
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
       function (data) {
         var parsed = JSON.parse(data.data.d);
@@ -519,6 +523,7 @@ var MaintainChildReminders = new (class {
 
     var req = { "APartnerKey": partner_key };
     req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
+    req["AWithPhoto"] = false;
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildDetails', req).then(
       function (data) {
