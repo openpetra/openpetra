@@ -1,11 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -150,28 +150,27 @@ function set_values_of_input_variables(tpl, data, limit_to_table) {
 
 function parseJSONDate(variable, value) {
   // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
-  if (value.substring(0, 6) == "/Date(") {
-    d = new Date(parseInt(value.substring(6, value.indexOf(')'))));
+  var d = new Date(value);
+  if (d != "Invalid Date") {
+
     if (variable == "s_modification_id_t") {
       value = d.getTime();
     } else {
-      value = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
-      if (d.getHours() != 0 || d.getMinutes() != 0 && d.getSeconds() != 0) {
-        value += " " + ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2) + ":" + ("0"+d.getSeconds()).slice(-2);
-      }
+      value = d.toLocaleDateString();
     }
+
   }
   return value;
 }
 
 function printJSONDate(value) {
   // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
-  if (value.substring(0, 6) == "/Date(") {
-    let t = /\((.+)\)/g.exec(value);
-    if (t == null || t.length <=1) {return}
 
-    time = new Date(parseInt(t[1])).toLocaleDateString();
-    return time;
+  var d = new Date(value);
+  if (d != "Invalid Date") {
+
+    value = d.toLocaleDateString();
+
   }
   return value;
 }
@@ -294,3 +293,141 @@ Date.prototype.toDateInputValue = (function() {
     local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
     return local.toJSON().slice(0,10);
 });
+
+function resetInput(o) {
+  // o = JQuery object | str
+
+  // 'o' is the target, in which all [name] elements get looped
+  // and filled with a "neutral" state,
+  // means empty strings in input fields and unchecked checkboxes
+
+  // checkbox can be overwritten by [checked]
+  // input fields can be overwritten by there [value] attribute
+  // does not edit <data> elements!
+  if (typeof o != "object") { o = $(o); }
+  for (var f of o.find('[name]')) {
+    f = $(f);
+
+    // ignore data elements
+    if ( f.is("data") ) { continue; }
+
+    // is checkbox
+    if (f.attr("type") == "checkbox") {
+      f.prop( "checked", (f.is("[checked]") ? true : false) );
+    }
+    // any other type of element
+    else {
+      var pre_val = f.attr("value");
+      f.val( pre_val ? pre_val : "" );
+    }
+  }
+}
+
+function extractData(o) {
+  // o = JQuery object | str
+
+  // 'o' is the target, in which all [name] elements get looped
+  // and there .val() is stored with there attr('name') as this key
+  // multiple same names overwrite each other, last one counts
+
+  // if element is [type=checkbox] then data[name],
+  // is 0 or 1 based on checked prop
+  if (typeof o != "object") { o = $(o); }
+  let data = {};
+  for (var f of o.find('[name]')) {
+    f = $(f);
+    let name = f.attr('name');
+    if (f.attr("type") == "checkbox") {
+      if (f.is(":checked")) { data[name] = 1; }
+      else { data[name] = 0; }
+    } else if (f.attr("key-value") != null) {
+      let value = f.attr("key-value");
+      data[name] = value; 
+    }
+    else {
+      let value = f.val();
+      data[name] = value;
+    }
+  }
+  o.find('[key-name]').each(function (i, obj) {
+    obj = $(obj);
+    data[obj.attr('key-name')] = obj.attr('key-value');
+  });
+ 
+  return data;
+}
+
+function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table='') {
+  // o = JQuery object | str
+  // d = object
+  // to_string = bool :: false
+
+  // 'o' is the target, in this target all keys of 'd' get searched
+  // every matching [name=d_key] element, it inserts d[key]
+
+  // if matching element is a [type=checkbox]:
+  // element gets prop 'checked' set based on boolish interpretion of d[key]
+
+  // to_string ensures content input by all types, except 'null'
+  // which will be converted to a empty string
+
+  if (typeof o != "object") { o = $(o); }
+  for (var k in d) {
+    try {
+      var v = d[k];
+      
+      if (to_string) {
+        if (typeof v == "boolean") { v = v ? "true" : "false"; }
+        else if (v == null) { v = ""; }
+      }
+      let key = false;
+      let f = o.find("[name="+k+"]");
+      if (f.length == 0) {
+        f = o.find("[name="+limit_to_table+k+"]");
+      }
+      if (f.length == 0) {
+        f = o.find("[key-name="+k+"]");
+        key = true;
+      }
+
+      if (key == true) {
+        //hidden key case
+        f.attr('key-value', v);
+      } else {
+        f = $(f);
+        if (f.attr("type") == "checkbox") {
+          if ( v ) { f.prop("checked", true) } else { f.prop("checked", false) }
+        } else if (f.attr("type") == "date") {
+          if (v == "" || v == null) {
+            f.text("");
+            f.val("");
+          }
+          else
+          {
+            f.text( new Date(v).toLocaleDateString() );
+            v = new Date(v);
+            let YYYY = v.getFullYear();
+            let MM = v.getMonth() + 1;
+            let DD = v.getDate();
+            MM = (MM < 10 ? "0" : "") + MM;
+            DD = (DD < 10 ? "0" : "") + DD;
+            f.val( `${YYYY}-${MM}-${DD}` );            
+          }
+        } else if (f.attr("type") == "currency") {
+          if (v == "" || v == null) {
+            f.text("");
+          }
+          else
+          {
+            f.text( printCurrency(v, currencyCode) );
+          }
+        } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
+          f.text( v );
+        } else {
+          f.val( v );
+        }
+      }
+    }
+    catch (e) { continue }
+  }
+}

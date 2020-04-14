@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,10 +59,19 @@ namespace GenerateGlue
                     {
                         if (attr.Name == "RequireModulePermission")
                         {
-                            ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
+                            ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONSWITHEXCEPTION");;
+
+                            foreach (ParameterDeclarationExpression p in m.Parameters)
+                            {
+                                if (p.ParameterName == "AVerificationResult")
+                                {
+                                    snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONSWITHRESULT");
+                                }
+                            }
+
                             snippet.SetCodelet("METHODNAME", m.Name);
                             snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
-                            snippet.SetCodelet("LEDGERNUMBER", "");
+                            snippet.SetCodelet("LEDGERNUMBER", "-1");
 
                             string ParameterTypes = ";";
 
@@ -70,7 +79,7 @@ namespace GenerateGlue
                             {
                                 if (p.ParameterName == "ALedgerNumber")
                                 {
-                                    snippet.SetCodelet("LEDGERNUMBER", ", ALedgerNumber");
+                                    snippet.SetCodelet("LEDGERNUMBER", "ALedgerNumber");
                                 }
 
                                 string ParameterType = p.TypeReference.Type.Replace("&", "").Replace("System.", String.Empty);
@@ -287,7 +296,7 @@ namespace GenerateGlue
                 {
                     snippet.AddToCodelet(
                         "LOCALVARIABLES",
-                        parametertype + " Local" + p.ParameterName + " = " + p.ParameterName + " == \"null\"?(DateTime?)null:DateTime.Parse(" + p.ParameterName + ", null, System.Globalization.DateTimeStyles.RoundtripKind);" +
+                        parametertype + " Local" + p.ParameterName + " = (" + p.ParameterName + " == \"null\" || " + p.ParameterName + " == null)?(DateTime?)null:DateTime.Parse(" + p.ParameterName + ", null, System.Globalization.DateTimeStyles.RoundtripKind);" +
                         Environment.NewLine);
                 }
 

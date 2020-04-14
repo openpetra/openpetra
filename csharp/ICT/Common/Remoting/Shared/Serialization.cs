@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,7 +76,15 @@ namespace Ict.Common.Remoting.Shared
 
                     foreach (DataColumn col in dt.Columns)
                     {
-                        row.Add(col.ColumnName.Trim(), dr[col]);
+                        // we want DateTime in ISO format
+                        if (dr[col] is DateTime || dr[col] is DateTime?)
+                        {
+                            row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]));
+                        }
+                        else
+                        {
+                            row.Add(col.ColumnName.Trim(), dr[col]);
+                        }
                     }
 
                     table.Add(row);
@@ -103,7 +111,15 @@ namespace Ict.Common.Remoting.Shared
 
                 foreach (DataColumn col in ATable.Columns)
                 {
-                    row.Add(col.ColumnName.Trim(), dr[col]);
+                    // we want DateTime in ISO format
+                    if (dr[col] is DateTime || dr[col] is DateTime?)
+                    {
+                        row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]));
+                    }
+                    else
+                    {
+                        row.Add(col.ColumnName.Trim(), dr[col]);
+                    }
                 }
 
                 table.Add(row);
@@ -176,7 +192,19 @@ namespace Ict.Common.Remoting.Shared
 
             if (o.GetType() == typeof(DateTime))
             {
-                return JsonConvert.SerializeObject(o);
+                return ((DateTime)o).ToString("s");
+            }
+
+            if (o.GetType() == typeof(DateTime?))
+            {
+                DateTime? dt = (DateTime?)o;
+
+                if (dt.HasValue)
+                {
+                    return dt.Value.ToString("s");
+                }
+
+                return String.Empty;
             }
 
             if (o is Type)

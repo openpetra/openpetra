@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, andreww, peters
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -316,7 +316,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             db.ReadTransaction(ref Transaction,
                 delegate
                 {
-                    ReturnDS.Merge(PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, Transaction));
+                    ReturnDS.Merge(PContactLogAccess.LoadViaPPartner(APartnerKey, Transaction));
                     ReturnDS.Merge(PPartnerContactAccess.LoadViaPPartner(APartnerKey, Transaction));
 
                     if ((ReturnDS.PContactLog != null) && (ReturnDS.PContactLog.Count > 0))

@@ -51,6 +51,16 @@
   <include name="nunit.framework.dll"/>
 </patternset>
 
+<target name="removeWindowsDlls">
+  <if test="${'unix'==platform::get-name()}" >
+      <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
+      <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
+      <delete file="${dir.bin}/sqlite3.dll" failonerror="false"/>
+      <delete file="${dir.bin}/libsodium.dll" failonerror="false"/>
+      <delete file="${dir.bin}/libsodium-64.dll" failonerror="false"/>
+  </if>
+</target>
+
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">
   <echo message="Target ThirdParty compile started at: ${datetime::now()}" />         
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
@@ -61,6 +71,7 @@
       </fileset>
     </copy>
   </foreach>
+  <call target="removeWindowsDlls"/>
   <if test="${'win32'==platform::get-name()}">
     <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
       <copy todir="${dir.bin}">

@@ -15,6 +15,7 @@
    <!-- if this repository gets mirrored to git, the empty directories will be gone -->
    <mkdir dir="${dir.root}/csharp/ICT/Petra/Shared/lib/data" failonerror="false"/>
    <mkdir dir="${dir.root}/csharp/ICT/Petra/Shared/lib/MHospitality/validation" failonerror="false"/>
+   <mkdir dir="${dir.root}/csharp/ICT/Petra/Shared/lib/MSponsorship/validation" failonerror="false"/>
    <mkdir dir="${dir.root}/csharp/ICT/Petra/Shared/lib/MSysMan/validation" failonerror="false"/>
 
    <ExecDotNet program="${tool-generateORM}" 
@@ -32,6 +33,7 @@
   <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MConference/data/ConferenceTypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MConference.Data -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data -outputFilename:Conference.DataSets -StartTableId:5800 -TemplateDir:${dir.incdir.template.src}"/>        
   <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.CrossLedger.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.CrossLedger.Data -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data -outputFilename:Finance.CrossLedger.DataSets -StartTableId:5900 -TemplateDir:${dir.incdir.template.src}"/>
   <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MFinance/data/Finance.BankImport.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MFinance.BankImport.Data -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data -outputFilename:Finance.BankImport.DataSets -StartTableId:6000 -TemplateDir:${dir.incdir.template.src}"/>
+  <ExecDotNet program="${tool-generateORM}" commandline="-do:dataset -petraxml:${PetraXML.file} -input:${dir.root}/csharp/ICT/Petra/Shared/lib/MSponsorship/data/Sponsorship.TypedDataSets.xml -outputNamespace:Ict.Petra.Shared.MSponsorship.Data -outputdir:${dir.root}/csharp/ICT/Petra/Shared/lib/data -outputFilename:Sponsorship.DataSets -StartTableId:6100 -TemplateDir:${dir.incdir.template.src}"/>
 </target>
 
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
