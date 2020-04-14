@@ -25,6 +25,7 @@ list of available commands:
   compileProject: compile a single project file
       nant compileProject -D:file=csharp/ICT/Common/Ict.Common.csproj
       nant compileProject -D:name=Ict.Common
+  prepareDeliveryContent: make sure all the sql files are in the right place on devenv
   install: install the current development binaries to this machine (requires the rpm already to be installed)
   startAdmin: not possible via nant, run this: /usr/bin/openpetra-server menu
   deleteBakFiles: delete all backup files
