@@ -357,7 +357,7 @@ function extractData(o) {
   return data;
 }
 
-function insertData(o, d, to_string=false, currencyCode="EUR") {
+function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table='') {
   // o = JQuery object | str
   // d = object
   // to_string = bool :: false
@@ -369,17 +369,31 @@ function insertData(o, d, to_string=false, currencyCode="EUR") {
   // element gets prop 'checked' set based on boolish interpretion of d[key]
 
   // to_string ensures content input by all types, except 'null'
-  // which will be convertet to a empty string
+  // which will be converted to a empty string
 
   if (typeof o != "object") { o = $(o); }
   for (var k in d) {
     try {
       var v = d[k];
+      
       if (to_string) {
         if (typeof v == "boolean") { v = v ? "true" : "false"; }
         else if (v == null) { v = ""; }
       }
-      for (var f of o.find("[name="+k+"]")) {
+      let key = false;
+      let f = o.find("[name="+k+"]");
+      if (f.length == 0) {
+        f = o.find("[name="+limit_to_table+k+"]");
+      }
+      if (f.length == 0) {
+        f = o.find("[key-name="+k+"]");
+        key = true;
+      }
+
+      if (key == true) {
+        //hidden key case
+        f.attr('key-value', v);
+      } else {
         f = $(f);
         if (f.attr("type") == "checkbox") {
           if ( v ) { f.prop("checked", true) } else { f.prop("checked", false) }
