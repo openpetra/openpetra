@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, petrih, andreww, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,9 +72,10 @@ namespace Ict.Petra.Server.MPartner.Common
                 ref ReadTransaction,
                 delegate
                 {
-                    PContactLogAccess.LoadViaPPartnerPPartnerContact(LastContactDS, APartnerKey,
+                    PContactLogAccess.LoadViaPPartner(LastContactDS, APartnerKey,
                         StringHelper.InitStrArr(new String[] { PContactLogTable.GetContactDateDBName() }), ReadTransaction,
                         StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);
+
                     if (LastContactDS.Tables[PContactLogTable.GetTableName()].Rows.Count > 0)
                     {
                         ContactDR = ((PContactLogTable)LastContactDS.Tables[PContactLogTable.GetTableName()])[0];
