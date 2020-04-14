@@ -349,6 +349,11 @@ function extractData(o) {
       data[name] = value;
     }
   }
+  o.find('[key-name]').each(function (i, obj) {
+    obj = $(obj);
+    data[obj.attr('key-name')] = obj.attr('key-value');
+  });
+ 
   return data;
 }
 

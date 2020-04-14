@@ -424,6 +424,7 @@ var MaintainChildSponsorship = new (class {
         }
 
         if (!searched) { return; }
+        searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
         insertData("#recurring_modal", searched);
         $("#recurring_modal").modal("show");
