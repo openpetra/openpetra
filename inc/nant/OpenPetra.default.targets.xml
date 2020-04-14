@@ -111,6 +111,11 @@
   </if>
 
   <!-- create symbolic links for sql upgrade files -->
+  <delete>
+    <fileset basedir="${dir.csharp}/ICT/Petra/Server/sql">
+      <include name="Upgrade*.sql" />
+    </fileset>
+  </delete>
   <exec program="bash"
         workingdir="${dir.csharp}/ICT/Petra/Server/sql"
         commandline="-c &quot;for f in ${dir.csharp}/ICT/Petra/Server/lib/MSysMan/DBUpgrades/*.sql; do ln -s $f; done&quot;"/>
