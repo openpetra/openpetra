@@ -279,7 +279,8 @@
         "donationbook":"Spendenbuch",
         "newsletter":"Newsletter",
         "publicrelation":"Öffentlichkeitsarbeit",
-        "change_history":"Änderungsverlauf"
+        "change_history":"Änderungsverlauf",
+        "consent_error":"Einwilligungs Fehler"
     },
 
     "GLBatches": {
