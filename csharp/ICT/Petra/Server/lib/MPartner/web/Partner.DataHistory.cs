@@ -23,6 +23,7 @@
 //
 
 using System;
+using System.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -38,6 +39,37 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
     public class TDataHistoryWebConnector {
 
         /// <summary>
+        /// Returns all unique data types
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static List<string> GetUniqueTypes(
+            Int64 APartnerKey
+        )
+        {
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("Get get unique data types");
+            List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
+            List<string> Types = new List<string>();
+
+            DB.ReadTransaction(ref T, delegate {
+
+                string sql = "SELECT DISTINCT `p_type_c` FROM `p_data_history` " +
+                    "WHERE `p_partner_key_n` = ?";
+
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.VarChar) { Value = APartnerKey.ToString() });
+
+                DataTable AllTypes = DB.SelectDT(sql, "UniqueTypes", T, SQLParameter.ToArray());
+                foreach (DataRow TypeRow in AllTypes.Rows)
+                {
+                    Types.Add( TypeRow.Field<string>("p_type_c") );
+                }
+            });
+
+            return Types;
+        }
+
+
+        /// <summary>
         /// Returns the last known entry for a partner and type, could be empty
         /// also returns all consent channel and purposes
         /// </summary>
@@ -48,7 +80,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         )
         {
             TDBTransaction T = new TDBTransaction();
-            TDataBase DB = DBAccess.Connect("Get Consent Channel + Purpose");
+            TDataBase DB = DBAccess.Connect("Get Last known entry");
             DataConsentTDS Set = new DataConsentTDS();
             List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
 
@@ -82,7 +114,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         }
 
         /// <summary>
-        /// Returns all unique known data types for a user
+        /// Returns history for given data type
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static DataConsentTDS GetHistory(
@@ -129,6 +161,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                     "" +
                     "ORDER BY `EventDate` DESC, `p_entry_id_i`";
 
+                // yeah... twice, because why not
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType });
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });

@@ -268,6 +268,9 @@
         "firstname": "Vorname",
         "familyname": "Nachname",
         "title":"Titel",
+        "edittitle_history":"Datenänderungsverlauf",
+        "history":"Verlauf",
+        "selected_data_type":"Ausgewählter Datentype",
         "edittitle_consent":"Einwilligungsänderung",
         "changed value":"Veränderter Wert",
         "consent channel":"Mitteilungsweg",
@@ -280,7 +283,8 @@
         "newsletter":"Newsletter",
         "publicrelation":"Öffentlichkeitsarbeit",
         "change_history":"Änderungsverlauf",
-        "consent_error":"Einwilligungs Fehler"
+        "consent_error":"Einwilligungs Fehler",
+        "data_type":"Datentype"
     },
 
     "GLBatches": {
