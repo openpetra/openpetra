@@ -579,6 +579,8 @@
   <DataSet name="DataConsentTDS">
       <Table sqltable="p_data_history">
         <CustomField name="AllowedPurposes" type="string"/>
+        <CustomField name="EventDate" type="DateTime"/>
+        <CustomField name="State" type="string"/>
       </Table>
       <Table sqltable="p_data_history_permission"/>
       <Table sqltable="p_purpose"/>

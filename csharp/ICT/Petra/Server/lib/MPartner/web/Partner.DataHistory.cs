@@ -38,7 +38,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
     public class TDataHistoryWebConnector {
 
         /// <summary>
-        /// Returns all consents entrys for a given partner 
+        /// Returns the last known entry for a partner and type, could be empty
+        /// also returns all consent channel and purposes
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static DataConsentTDS LastKnownEntry(
@@ -59,8 +60,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 	"FROM `p_data_history` " +
                     "LEFT JOIN `p_data_history_permission` " +
                     "ON `p_data_history`.`p_entry_id_i` = `p_data_history_permission`.`p_data_history_entry_i` " +
-                    "WHERE `p_data_history_permission`.`p_data_chancled_d` IS NULL " +
-                    "AND `p_data_history`.`p_partner_key_n` = ? " +
+                    "AND `p_data_history_permission`.`p_data_chancled_d` IS NULL " +
+                    "WHERE `p_data_history`.`p_partner_key_n` = ? " +
                     "AND `p_data_history`.`p_type_c` = ? " +
                     "GROUP BY `p_data_history`.`p_entry_id_i` " +
                     "ORDER BY `p_data_history`.`p_entry_id_i` DESC " +
@@ -81,16 +82,73 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         }
 
         /// <summary>
-        /// Returns all consents entrys for a given partner 
+        /// Returns all unique known data types for a user
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static DataConsentTDS GetHistory(
-            Int64 APartnerKey
+            Int64 APartnerKey,
+            string ADataType
         )
         {
-            return new DataConsentTDS();
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("Get data history for partner");
+            DataConsentTDS Set = new DataConsentTDS();
+            List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
+
+            DB.ReadTransaction(ref T, delegate {
+
+                // prepare for one huge cunk sql
+                string sql = "" +
+                	"SELECT " +
+                	"  `pdh`.*, " +
+                	"  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes`, " +
+                	"  `pdh`.`s_date_created_d` AS `EventDate`, " +
+                	"  'ACTIVE' AS `State` " +
+                	"FROM `p_data_history` AS `pdh` " +
+                	"LEFT JOIN `p_data_history_permission` AS `pdhp` " +
+                	"  ON `pdh`.`p_entry_id_i` = `pdhp`.`p_data_history_entry_i` " +
+                	"  AND `pdhp`.`p_data_chancled_d` IS NULL " +
+                	"WHERE `pdh`.`p_partner_key_n` = ? " +
+                	"  AND `pdh`.`p_type_c` = ? " +
+                	"GROUP BY `pdh`.`p_entry_id_i` " +
+                	"" +
+                	"UNION " +
+                	"" +
+                    "SELECT " +
+                    "  `pdh`.*, " +
+                    "  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes`, " +
+                    "  `pdhp`.`p_data_chancled_d` AS `EventDate`, " +
+                    "  'CANCLED' AS `State` " +
+                    "FROM `p_data_history` AS `pdh` " +
+                    "JOIN `p_data_history_permission` AS `pdhp` " +
+                    "  ON `pdh`.`p_entry_id_i` = `pdhp`.`p_data_history_entry_i` " +
+                    "  AND `pdhp`.`p_data_chancled_d` IS NOT NULL " +
+                    "WHERE `pdh`.`p_partner_key_n` = ? " +
+                    "  AND `pdh`.`p_type_c` = ? " +
+                    "GROUP BY `pdh`.`p_entry_id_i`, `pdhp`.`p_data_chancled_d` " +
+                    "" +
+                    "ORDER BY `EventDate` DESC, `p_entry_id_i`";
+
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
+                SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType });
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
+                SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType });
+
+                Set.PDataHistory.Constraints.Clear(); //mmmm...
+                DB.SelectDT(Set.PDataHistory, sql, T, SQLParameter.ToArray());
+                PConsentChannelAccess.LoadAll(Set, T);
+                PPurposeAccess.LoadAll(Set, T);
+
+            });
+
+            return Set;
+
         }
 
+
+        /// <summary>
+        /// Lists all consents channels and purposes
+        /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static DataConsentTDS GetConsentChannelAndPurpose() {
             TDBTransaction T = new TDBTransaction();

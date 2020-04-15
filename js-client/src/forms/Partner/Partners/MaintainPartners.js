@@ -346,6 +346,9 @@ function open_consent_modal(field) {
 		var channels = parsed.result.PConsentChannel;
 		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
 
+		// because it could be empty
+		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
+		
 		Temp.find("data[name=field]").val(field);
 		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
 
