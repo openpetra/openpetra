@@ -353,22 +353,27 @@ function open_consent_modal(field) {
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
 		for (var channel of channels) {
 			let selected = (channel.p_channel_code_c == last_known_configuration.p_channel_code_c) ? "selected" : "";
-			TargetChannel.append(`<option ${selected} value='${channel.p_channel_code_c}'>${i18next.t('MaintainPartners.'+channel.p_name_c)}</option>`);
+			let name = i18next.t('MaintainPartners.'+channel.p_name_c);
+			TargetChannel.append(`<option ${selected} value='${channel.p_channel_code_c}'>${name}</option>`);
 		}
 
 		// place dynamic purposes
 		var TargetPurpose = Temp.find(".permissions").html("");
 		for (var purpose of purposes) {
-			console.log(last_known_configuration.AllowedPurposes);
-			console.log(last_known_configuration.AllowedPurposes.split(','));
-			console.log(purpose.p_purpose_code_c);
-			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : "";
-			TargetPurpose.append(`<label>${i18next.t('MaintainPartners.'+purpose.p_name_c)}</span><input ${checked} type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
+			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
+			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+
+			var PermTemp = $("[phantom] .permission-option").clone();
+			PermTemp.find("[name]").text(name);
+			PermTemp.find("[purposecode]").attr("purposecode", purpose.p_purpose_code_c);
+			PermTemp.find("[purposecode]").attr("checked", checked);
+			TargetPurpose.append(PermTemp);
+			// TargetPurpose.append(`<label><span>${name}</span><input ${checked} type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
 		}
 
 		$('#modal_space .modal.tpl_consent').remove();
 		$('#modal_space').append(Temp);
-		$('#modal_space .modal.tpl_consent').modal({backdrop:"static", keyboard: false});
+		$('#modal_space .modal.tpl_consent').modal({backdrop:"static", keyboard: false}); // <- so u can't close it normally
 
 	})
 }

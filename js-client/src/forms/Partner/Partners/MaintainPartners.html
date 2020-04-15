@@ -74,7 +74,7 @@
 		<div class="modal-content">
 		<div class="modal-header">
 			<h3>{edittitle}</h3>
-			<button type="button" class="btn btn-primary" onclick="open_history(this)">{history}</button>
+			<button type="button" class="btn btn-primary" onclick="open_history(this)">{change_history}</button>
 		</div>
 		<div class="modal-body">
 		<div class="container">
@@ -398,49 +398,59 @@
 	<div class="modal fade tpl_consent" tabindex="-1" role="dialog" style="margin-top: 2em;">
 		<data name="field" value=""></data>
 		<div class="modal-dialog" role="document">
-		<div class="modal-content" style="border: 2px solid black;">
-			<div class="modal-header">
-				<h3>{edittitle_consent}</h3>
-			</div>
-			<div class="modal-body">
-				<div class="container">
+			<div class="modal-content" style="border: 2px solid black;">
+				<div class="modal-header">
+					<h3>{edittitle_consent}</h3>
+				</div>
+				<div class="modal-body">
+					<div class="container">
 
-					<div class="row">
-						<div class="col">
-							{changed value}
+						<div class="row">
+							<div class="col">
+								{changed value}
+							</div>
+							<div class="col">
+								<span name="changed_value"></span>
+							</div>
 						</div>
-						<div class="col">
-							<span name="changed_value"></span>
+
+						<div class="row">
+							<div class="col">
+								{consent channel}
+							</div>
+							<div class="col">
+								<select name="consent_channel"></select>
+							</div>
 						</div>
+
+						<hr>
+
+						<div class="row">
+							<div class="col">
+								{consent permissions}
+							</div>
+						</div>
+
+						<!-- gets filled with copys of: [phantom] .permission-option -->
+						<div class="permissions"></div>
+
 					</div>
-
-					<div class="row">
-						<div class="col">
-							{consent channel}
-						</div>
-						<div class="col">
-							<select name="consent_channel"></select>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col">
-							{consent permissions}
-						</div>
-					</div>
-
-					<div class="permissions">
-
-					</div>
-
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" onclick="submit_changes_consent()">{forms.save}</button>
 				</div>
 			</div>
-			<div class="modal-footer">
-				<button class="btn btn-primary" onclick="submit_changes_consent()">{forms.save}</button>
-			</div>
-		</div>
 		</div>
 	</div>
+
+	<label class="row permission-option">
+		<div class="col">
+			<span name></span>
+		</div>
+		<div class="col">
+			<input type="checkbox" purposecode>
+		</div>
+	</label>
 
 </div>
 

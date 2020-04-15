@@ -267,7 +267,19 @@
         "dateofbirth": "Geburtsdatum",
         "firstname": "Vorname",
         "familyname": "Nachname",
-        "title":"Titel"
+        "title":"Titel",
+        "edittitle_consent":"Einwilligungsänderung",
+        "changed value":"Veränderter Wert",
+        "consent channel":"Mitteilungsweg",
+        "email":"E-Mail",
+        "conversation":"Unterhaltung",
+        "letter":"Brief",
+        "phone":"Telefon",
+        "consent permissions":"Verwendungszwecke",
+        "donationbook":"Spendenbuch",
+        "newsletter":"Newsletter",
+        "publicrelation":"Öffentlichkeitsarbeit",
+        "change_history":"Änderungsverlauf"
     },
 
     "GLBatches": {
