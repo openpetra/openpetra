@@ -52,6 +52,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
 using Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Ict.Petra.Server.MSysMan.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
 
@@ -403,6 +404,18 @@ namespace Ict.Petra.Server.App.WebService
 
             result.Add("resultcode", "success");
             result.Add("navigation", new TUINavigation().LoadNavigationUI());
+
+            string assistant = String.Empty;
+
+            if (assistant == String.Empty)
+            {
+                assistant = TSettingsWebConnector.GetSetupAssistant();
+            }
+
+            // TODO: could use this for self sign up as well, to go straight to the partner edit screen.
+
+            result.Add("assistant", assistant);
+
             return JsonConvert.SerializeObject(result);
         }
 

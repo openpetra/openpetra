@@ -38,8 +38,12 @@ class Navigation {
 		this.getCurrentModule(window.location.pathname);
 	}
 
-	OpenForm(name, title, pushState=true, parameter="")
+	OpenForm(name, title = "", pushState=true, parameter="")
 	{
+		if (title == "") {
+			title = i18next.t('navigation.' + name.Replace("/", "_") + "_title");
+		}
+
 		if (this.debug) {
 			console.log("OpenForm: " + name + " title: " + title);
 		}
@@ -482,6 +486,12 @@ class Navigation {
 							nav.OpenForm(e.state.name, e.state.title, false);
 						}
 					};
+					if (result.assistant != "") {
+						let newUrl = window.location.protocol + '//' + window.location.hostname + '/' + result.assistant;
+						if (window.location != newUrl) {
+							self.OpenForm(result.assistant);
+						}
+					}
 				} else {
 					console.log(response.d);
 				}

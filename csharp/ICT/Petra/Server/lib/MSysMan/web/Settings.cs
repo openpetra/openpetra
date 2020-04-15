@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -214,6 +214,32 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
             TPartnerCacheableWebConnector.RefreshCacheableTable(TCacheablePartnerTablesEnum.InstalledSitesList);
 
             return SubmissionOK;
+        }
+
+        /// if this system does not have a user that does have finance permissions,
+        /// then redirect to the SysMan Setup Assistant
+        [RequireModulePermission("SYSMAN")]
+        public static string GetSetupAssistant()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetSetupAssistant");
+
+            string result = String.Empty;
+            string sql = "SELECT COUNT(*) FROM PUB_s_user_module_access_permission p1 " +
+                "WHERE p1.s_module_id_c = 'FINANCE-3' AND p1.s_can_access_l = true";
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    if (Convert.ToInt32(db.ExecuteScalar(sql, t)) == 0)
+                    {
+                        result = "SystemManager/SysManAssistantInit";
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            return result;
         }
     }
 }
