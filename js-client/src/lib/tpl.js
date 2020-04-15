@@ -149,6 +149,10 @@ function set_values_of_input_variables(tpl, data, limit_to_table) {
 }
 
 function parseJSONDate(variable, value) {
+  var dateletters = /^[0-9\.]+$/;
+  if (!value.match(dateletters)) return value;
+  if (!value.includes('.')) return value;
+
   // https://www.newtonsoft.com/json/help/html/DatesInJSON.htm
   var d = new Date(value);
   if (d != "Invalid Date") {
