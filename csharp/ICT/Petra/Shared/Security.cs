@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, alanp
+//       christiank, alanp, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,6 +135,21 @@ namespace Ict.Petra.Shared.Security
                 throw new Exception(Message);
             }
 
+            if (AModuleExpression == "NONE")
+            {
+                return true;
+            }
+
+            if (AModuleExpression == "USER")
+            {
+                return true;
+            }
+
+            if (AModuleExpression == String.Empty)
+            {
+                throw new ArgumentException("Empty ModuleExpression in context " + AModuleAccessExceptionContext);
+            }
+
             if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
             {
                 // find the closing bracket
@@ -173,7 +188,11 @@ namespace Ict.Petra.Shared.Security
                     Message = String.Format(
                             Catalog.GetString("No access for user {0} to either of the modules {1}."),
                             UserInfo.GetUserInfo().UserID, modulesList);
-                    TLogging.Log("CheckUserModulePermissions: " + Message);
+
+                    if (AModuleAccessExceptionContext != "UINavigation")
+                    {
+                        TLogging.Log("CheckUserModulePermissions: " + Message);
+                    }
 
                     throw new ESecurityModuleAccessDeniedException(Message,
                         UserInfo.GetUserInfo().UserID, modulesList, AModuleAccessExceptionContext);
@@ -204,7 +223,11 @@ namespace Ict.Petra.Shared.Security
                     Message = String.Format(
                             Catalog.GetString("No access for user {0} to {1}."),
                             UserInfo.GetUserInfo().UserID, GetModuleOrLedger(ModuleName));
-                    TLogging.Log("CheckUserModulePermissions: " + Message);
+
+                    if (AModuleAccessExceptionContext != "UINavigation")
+                    {
+                        TLogging.Log("CheckUserModulePermissions: " + Message);
+                    }
 
                     throw new ESecurityModuleAccessDeniedException(Message,
                         UserInfo.GetUserInfo().UserID, ModuleName, AModuleAccessExceptionContext);

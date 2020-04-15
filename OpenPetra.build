@@ -20,9 +20,12 @@ list of available commands:
       nant quickCompile -D:onlyonce=true   will compile the OpenPetra.sln but only the dlls that have not been compiled yet
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
+  generateProjectFiles: after creating a new cs file, this will add the file to the project,
+      and a new directory will be picked up and a project will be created.
   compileProject: compile a single project file
       nant compileProject -D:file=csharp/ICT/Common/Ict.Common.csproj
       nant compileProject -D:name=Ict.Common
+  prepareDeliveryContent: make sure all the sql files are in the right place on devenv
   install: install the current development binaries to this machine (requires the rpm already to be installed)
   startAdmin: not possible via nant, run this: /usr/bin/openpetra-server menu
   deleteBakFiles: delete all backup files
@@ -32,7 +35,6 @@ list of available commands:
       nant test-without-display             runs all basic tests
   test: will test a specific DLL
       nant test -D:file=Ict.Testing.lib.Common.IO.dll -D:testcase=Ict.Common.IO.Testing.TTestSmtpSender.TestSendMail
-  devzip: build a zip file for developers for easy start
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml

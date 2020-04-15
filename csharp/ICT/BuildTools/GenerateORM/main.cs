@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, alanp
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -117,6 +117,10 @@ namespace Ict.Tools.GenerateORM
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MHospitality.Data",
                             "Hospitality.Tables");
+                        CodeGenerationTable.WriteTypedTable(store, "sponsorship", cmdLine.GetOptValue(
+                                "outputshared") + "/lib/data/",
+                            "Ict.Petra.Shared.MSponsorship.Data",
+                            "Sponsorship.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MFinance.Account.Data",
@@ -166,6 +170,10 @@ namespace Ict.Tools.GenerateORM
                                 "outputshared") + "/lib/MHospitality/validation/",
                             "Ict.Petra.Shared.MHospitality.Validation",
                             "Hospitality.Validation");
+                        CodeGenerationTableValidation.WriteValidation(store, "sponsorship", cmdLine.GetOptValue(
+                                "outputshared") + "/lib/MSponsorship/validation/",
+                            "Ict.Petra.Shared.MSponsorship.Validation",
+                            "Sponsorship.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "/lib/MFinance/validation/",
                             "Ict.Petra.Shared.MFinance.Account.Validation",
@@ -220,6 +228,10 @@ namespace Ict.Tools.GenerateORM
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MHospitality.Data.Access",
                             "Hospitality.Access");
+                        CodeGenerationAccess.WriteTypedDataAccess(store, "sponsorship", cmdLine.GetOptValue(
+                                "outputshared") + "/lib/data/",
+                            "Ict.Petra.Server.MSponsorship.Data.Access",
+                            "Sponsorship.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "account", cmdLine.GetOptValue(
                                 "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MFinance.Account.Data.Access",
@@ -253,7 +265,8 @@ namespace Ict.Tools.GenerateORM
                     {
                         string[] groups = new string[] {
                             "common", "mailroom", "sysman", "partner",
-                            "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality"
+                            "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality",
+                            "sponsorship"
                         };
 
                         CodeGenerationDataset.CreateTypedDataSets(cmdLine.GetOptValue("input"),
@@ -266,7 +279,8 @@ namespace Ict.Tools.GenerateORM
                     {
                         string[] groups = new string[] {
                             "common", "mailroom", "sysman", "partner",
-                            "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality"
+                            "account", "gift", "ap", "ar", "personnel", "units", "conference", "hospitality",
+                            "sponsorship"
                         };
 
                         CodeGenerationDatasetAccess.CreateTypedDataSets(cmdLine.GetOptValue("input"),

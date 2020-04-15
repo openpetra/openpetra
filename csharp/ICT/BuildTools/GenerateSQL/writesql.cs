@@ -489,7 +489,7 @@ namespace GenerateSQL
                 field.strType = "timestamp";
             }
 
-            if ((field.strType == "varchar") && (field.iLength >= 10000))
+            if ((field.strType == "longtext") || ((field.strType == "varchar") && (field.iLength >= 10000)))
             {
                 field.strType = "longtext";
             }

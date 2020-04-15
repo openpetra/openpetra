@@ -62,7 +62,7 @@ getConfigOfCurrentCustomer() {
   fi
 
   # in older versions, we did not have the port in the PetraServerConsole.config file
-  if [ -z $OPENPETRA_HTTP_PORT ]
+  if [ -z "$OPENPETRA_HTTP_PORT" ]
   then
     if [ -f /etc/nginx/conf.d/$OP_CUSTOMER.conf ]
     then

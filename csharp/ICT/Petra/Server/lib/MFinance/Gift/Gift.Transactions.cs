@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -192,24 +192,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                        TGiftBatchFunctions.CreateANewRecurringGiftBatchRow(ref MainDS, ref Transaction, ALedgerNumber);
 
-                        #region Validate Data
-
-                        if ((ledgerTable == null) || (ledgerTable.Count == 0))
-                        {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true),
-                                    ALedgerNumber));
-                        }
-
-                        #endregion Validate Data
-
-                        TGiftBatchFunctions.CreateANewRecurringGiftBatchRow(ref MainDS, ref Transaction, ref ledgerTable, ALedgerNumber);
-
-                        ALedgerAccess.SubmitChanges(ledgerTable, Transaction);
-                        ARecurringGiftBatchAccess.SubmitChanges(MainDS.ARecurringGiftBatch, Transaction);
+                        GiftBatchTDSAccess.SubmitChanges(MainDS, Transaction.DataBaseObj);
                         MainDS.ARecurringGiftBatch.AcceptChanges();
 
                         SubmissionOK = true;
@@ -3493,7 +3478,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        private static void LoadGiftDonorRelatedData(GiftBatchTDS AGiftDS,
+        /// load the donor names and tax settings for a given batch
+        [NoRemoting]
+        public static void LoadGiftDonorRelatedData(GiftBatchTDS AGiftDS,
             bool ARecurring,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -568,6 +568,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
             {
+                // check if we have a valid family name
+                if (SaveDS.PFamily[0].FamilyName.Trim().Length == 0)
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the family name", "",
+                        "MaintainPartners.ErrMissingFamilyName", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                // check if we have a valid title
+                if (SaveDS.PFamily[0].Title.Trim().Length == 0)
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the title", "",
+                        "MaintainPartners.ErrMissingTitle", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
                 SaveDS.PPartner[0].PartnerShortName = 
                     Calculations.DeterminePartnerShortName(
                         SaveDS.PFamily[0].FamilyName,
@@ -580,6 +596,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
             {
+                // check if we have a valid organisation name
+                if (SaveDS.POrganisation[0].OrganisationName.Trim().Length == 0)
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the organisation name", "",
+                        "MaintainPartners.ErrMissingOrganisationName", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
                 SaveDS.PPartner[0].PartnerShortName = SaveDS.POrganisation[0].OrganisationName;
             }
             else if (SaveDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_BANK)

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -218,12 +218,20 @@ namespace Ict.Tools.CodeGeneration.DataStore
             // load default header with license and copyright
             Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));
 
+            bool hasTables = false;
+
             foreach (TTable currentTable in AStore.GetTables())
             {
                 if (currentTable.strGroup == strGroup)
                 {
                     InsertTableValidation(Template, currentTable, null, "TABLELOOP");
+                    hasTables = true;
                 }
+            }
+
+            if (!hasTables)
+            {
+                return true;
             }
 
             if (!Directory.Exists(AFilePath))

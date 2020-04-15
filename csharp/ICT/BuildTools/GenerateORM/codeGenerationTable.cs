@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -440,6 +440,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
             // load default header with license and copyright
             Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));
 
+            bool hasTables = false;
+
             foreach (TTable currentTable in AStore.GetTables())
             {
                 if (currentTable.strGroup == strGroup)
@@ -449,12 +451,17 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         TLogging.Log("Warning: there is no primary key for table " + currentTable.strName);
                     }
 
+                    hasTables = true;
+
                     InsertTableDefinition(Template, currentTable, null, "TABLELOOP", false);
                     InsertRowDefinition(Template, currentTable, null, "TABLELOOP");
                 }
             }
 
-            Template.FinishWriting(AFilePath + AFileName + "-generated.cs", ".cs", true);
+            if (hasTables)
+            {
+                Template.FinishWriting(AFilePath + AFileName + "-generated.cs", ".cs", true);
+            }
 
             return true;
         }
