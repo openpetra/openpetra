@@ -322,6 +322,49 @@ function open_history(HTMLButton) {
 	})
 }
 
+function load_history_data(HTMLButton) {
+	var req = {
+		APartnerKey: $(HTMLButton).attr("data-partner"),
+		ADataType: $(HTMLButton).attr("data-type")
+	};
+	var Target = $("#modal_space .tpl_history");
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetHistory', req).then(function (data) {
+		var parsed = JSON.parse(data.data.d);
+
+		let type = $(HTMLButton).attr("data-type");
+		type = i18next.t('MaintainPartners.'+type);
+		Target.find(".selected-type").text(type);
+		var HistoryList = Target.find("[history]").html("");
+		for (var entry of parsed.result.PDataHistory) {
+			console.log(entry);
+		}
+
+	})
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_LastKnownEntry', req).then(function (data) {
+		var parsed = JSON.parse(data.data.d);
+		var TargetPurpose = Target.find("[permissions]").html("");
+
+		var purposes = parsed.result.PPurpose;
+		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
+		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
+
+		for (var purpose of purposes) {
+			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
+			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+
+			var PermTemp = $("[phantom] .permission-option").clone();
+			PermTemp.find("[name]").text(name);
+			PermTemp.find("[purposecode]").attr("purposecode", purpose.p_purpose_code_c);
+			PermTemp.find("[purposecode]").attr("checked", checked);
+			TargetPurpose.append(PermTemp);
+		}
+	});
+
+
+}
+
 function insert_consent(HTMLField, data_name) {
 
 	var Obj = $(HTMLField);
