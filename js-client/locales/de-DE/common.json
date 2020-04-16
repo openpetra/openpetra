@@ -105,6 +105,7 @@
         "CreateUser_label": "Benutzer anlegen",
         "Database_label": "Datenbank",
         "ImportAndExportDatabase_label": "Datenbank importieren und exportieren",
+        "SysManAssistantInit_label": "Einrichtungsassistent",
         "FindPartners_label": "Kontakt suchen",
         "AccountDetail_label": "Bericht über die Kontenbewegungen",
         "Motivations_label": "Verwendungszwecke verwalten",
@@ -679,5 +680,8 @@
       "ErrFirstReminderDate": "Datum der Erinnerung darf nicht leer sein",
       "ErrEmptyReminderComment": "Beschreibung darf nicht leer sein",
       "notes":"Notizen"
+    },
+    "SysManAssistantInit": {
+      "caption": "Einrichtungsassistent"
     }
 }

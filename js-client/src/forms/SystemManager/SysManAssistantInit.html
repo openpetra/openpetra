@@ -1,1 +1,126 @@
-Hello Assistant!
+<h2>{caption}</h2>
+
+
+<!-- Phantom Storage -->
+<div phantom hidden>
+
+	<div class="tpl_check">
+		<div class="row">
+			<div class="col-1">
+				<input type="checkbox">
+			</div>
+			<div class="col">
+				<span></span>
+			</div>
+			<data value=""></data>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+		<h3>{edittitle}</h3>
+		</div>
+		<div class="modal-body">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-12">
+					{Explanation}
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{UserID}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="AUserID"/>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-3">
+					<span>{Firstname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="AFirstName"/>
+				</div>
+				<div class="col-3">
+					<span>{Lastname}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="ALastName"/>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{EmailAddress}</span>
+				</div>
+				<div class="col-3">
+					<input type="email" name="AEmailAddress"/>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{InitialPassword}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="AInitialPassword"/>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{Language}</span>
+				</div>
+				<div class="col-3">
+					<input type="text" name="ALanguageCode" readonly/>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{InitialModulePermissions}</span>
+				</div>
+				<div class="col-9">
+					<input type="text" name="AInitialModulePermissions" readonly style="width: 100%"/>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{SiteKey}</span>
+				</div>
+				<div class="col-3">
+					<input type="integer" name="ASiteKey" readonly/>
+				</div>
+			</div>
+
+
+			<div class="row">
+				<div class="col-3">
+					<span>{EnableSelfSignUp}</span>
+				</div>
+				<div class="col-3">
+					<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkNoSolicitations" name="AEnableSelfSignup"> {SelfSignUpEnabled}</label>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div class="modal-footer">
+			<button id="btnSave" class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
+			<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+		</div>
+		</div>
+		</div>
+	</div>
+
+</div>
+
+<div id="modal_space"></div>
+
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

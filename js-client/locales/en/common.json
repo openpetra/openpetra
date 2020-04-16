@@ -105,6 +105,7 @@
         "CreateUser_label": "Create user",
         "Database_label": "Database",
         "ImportAndExportDatabase_label": "Export and Import the data",
+        "SysManAssistantInit_label": "Setup Assistant",
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
         "Motivations_label": "Maintain Motivation groups and details",
@@ -679,5 +680,8 @@
       "ErrFirstReminderDate": "Reminder date must not be empty",
       "ErrEmptyReminderComment": "Comment must not be empty",
       "notes":"Notes"
+    },
+    "SysManAssistantInit": {
+      "caption": "Setup Assistant"
     }
 }

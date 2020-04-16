@@ -41,7 +41,7 @@ class Navigation {
 	OpenForm(name, title = "", pushState=true, parameter="")
 	{
 		if (title == "") {
-			title = i18next.t('navigation.' + name.Replace("/", "_") + "_title");
+			title = i18next.t('navigation.' + name.substring(name.lastIndexOf('/')+1) + "_title");
 		}
 
 		if (this.debug) {
@@ -486,9 +486,8 @@ class Navigation {
 							nav.OpenForm(e.state.name, e.state.title, false);
 						}
 					};
-					if (result.assistant != "") {
-						let newUrl = window.location.protocol + '//' + window.location.hostname + '/' + result.assistant;
-						if (window.location != newUrl) {
+					if (result.assistant != "" && window.location.pathname == "/") {
+						if (window.location.pathname != "/" + result.assistant) {
 							self.OpenForm(result.assistant);
 						}
 					}
