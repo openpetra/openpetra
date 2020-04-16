@@ -300,15 +300,26 @@ function load_countries(all_countries, selected_country, obj) {
 
 // following funtions are for data history view/edit
 function open_history(HTMLButton) {
-	var partner_number = $(HTMLButton).closest(".modal").find("[name=p_partner_key_n]").val();
+	var req = {
+		APartnerKey: $(HTMLButton).closest(".modal").find("[name=p_partner_key_n]").val()
+	};
 
-	// TODO: load history
-	let Temp = $('[phantom] .tpl_history').clone();
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetUniqueTypes', req).then(function (data) {
+		var parsed = JSON.parse(data.data.d);
+		let Temp = $('[phantom] .tpl_history').clone();
 
-	$('#modal_space .modal').modal('hide');
-	$('#modal_space').append(Temp);
-	$('#modal_space .modal').modal('show');
+		var DataTypeList = Temp.find("[data-types]");
+		for (var type of parsed.result) {
+			let name = i18next.t('MaintainPartners.'+type);
+			let partner = req["APartnerKey"];
+			DataTypeList.append(`<button class='btn btn-secondary' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+		}
 
+		$('#modal_space .modal').modal('hide');
+		$('#modal_space').append(Temp);
+		$('#modal_space .modal').modal('show');
+
+	})
 }
 
 function insert_consent(HTMLField, data_name) {
@@ -348,7 +359,7 @@ function open_consent_modal(field) {
 
 		// because it could be empty
 		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
-		
+
 		Temp.find("data[name=field]").val(field);
 		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
 
