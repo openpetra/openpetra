@@ -332,11 +332,49 @@ function load_history_data(HTMLButton) {
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetHistory', req).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
 
+		var channels = parsed.result.PConsentChannel;
+		var purposes = parsed.result.PPurpose;
+
 		let type = $(HTMLButton).attr("data-type");
 		type = i18next.t('MaintainPartners.'+type);
 		Target.find(".selected-type").text(type);
 		var HistoryList = Target.find("[history]").html("");
 		for (var entry of parsed.result.PDataHistory) {
+			var HistPerm = $("[phantom] .history-entry").clone();
+
+			var EDate = new Date(entry.EventDate);
+			var event_date = `${EDate.getFullYear()}-${(EDate.getMonth()+1)}-${EDate.getDate()}`;
+
+			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
+			switch (entry.State) {
+				case "CANCLED":
+					HistPerm.attr("style", "background-color: #ffbbbb;");
+					HistPerm.find(".preview [name=Value]").text( i18next.t('MaintainPartners.permission change') );
+					break;
+
+				case "ACTIVE":
+					HistPerm.attr("style", "background-color: #bbffbb;");
+					HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
+					break;
+			}
+			HistPerm.find(".preview [name=EventDate]").text(event_date);
+			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
+
+			HistPerm.find(".detail [name=Editor]").text( entry.s_created_by_c );
+			HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+entry.p_channel_code_c) );
+			for (var channel of channels) {
+				if (entry.p_channel_code_c == channel.p_channel_code_c) {
+					console.log(channel);
+					HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+channel.p_name_c) );
+				}
+			}
+			for (var purpose of purposes) {
+				if (entry.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
+					HistPerm.find(".detail [name=Consent]").append( "<br><span>" + i18next.t('MaintainPartners.'+purpose.p_name_c) + "</span>" );
+				}
+			}
+
+			HistoryList.append(HistPerm);
 			console.log(entry);
 		}
 

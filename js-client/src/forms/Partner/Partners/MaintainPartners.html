@@ -370,13 +370,13 @@
 			<div class="container">
 				<div class="row">
 
-					<div class="col">
+					<div class="col-4">
 						<h4>{data_type}</h4>
 						<hr>
 						<div data-types></div>
 					</div>
 
-					<div class="col">
+					<div class="col-8">
 						<div>
 							<h4>{consent permissions}: <span class="selected-type">-</span></h4>
 							<hr>
@@ -386,7 +386,12 @@
 						<div>
 							<h4>{history}: <span class="selected-type">-</span></h4>
 							<hr>
-							<div history></div>
+							<div class="row">
+								<div class="col">{date}</div>
+								<div class="col">{history}</div>
+								<div class="col">{consent permissions}</div>
+							</div>
+							<div history style="overflow-y:auto;overflow-x:hidden;max-height:50vh;"></div>
 						</div>
 					</div>
 
@@ -457,6 +462,32 @@
 			<input type="checkbox" purposecode>
 		</div>
 	</label>
+
+	<div class="row history-entry" onclick="$(this).find('.detail.collapse').collapse('toggle')">
+		<div class="col">
+			<div class="row preview" style="cursor: pointer;">
+				<div class="col"><span name="EventDate"></span></div>
+				<div class="col"><span name="Value"></span></div>
+				<div class="col"><span name="Permissions"></span></div>
+			</div>
+			<div class="row detail collapse">
+				<div class="col">
+
+					<hr>
+					<div class="">
+						<span>{editor}: </span><span name="Editor"></span>
+					</div><br>
+					<div class="">
+						<span>{consent channel}: </span><span name="Channel"></span>
+					</div><br>
+					<div class="">
+						<span>{consent permissions}: </span><span name="Consent"></span>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
 
 </div>
 

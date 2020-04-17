@@ -159,7 +159,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                     "  AND `pdh`.`p_type_c` = ? " +
                     "GROUP BY `pdh`.`p_entry_id_i`, `pdhp`.`p_data_chancled_d` " +
                     "" +
-                    "ORDER BY `EventDate` DESC, `p_entry_id_i`";
+                    "ORDER BY `EventDate` DESC, `p_entry_id_i` DESC";
 
                 // yeah... twice, because why not
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
