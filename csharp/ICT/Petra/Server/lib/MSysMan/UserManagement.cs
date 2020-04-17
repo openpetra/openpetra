@@ -757,23 +757,27 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// save the details and permissions of one user
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static string SaveUserAndModulePermissions(string AUserId,
+        public static bool SaveUserAndModulePermissions(string AUserId,
             string AFirstName, string ALastName, string AEmailAddress, string ALanguageCode,
             bool AAccountLocked, bool ARetired,
             bool ASendMail,
-            List<string> AModulePermissions, Int64 AModificationId)
+            List<string> AModulePermissions, Int64 AModificationId,
+            out TVerificationResultCollection AVerificationResult)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
+            AVerificationResult = new TVerificationResultCollection();
 
             AUserId = AUserId.ToUpper().Trim();
             AEmailAddress = AEmailAddress.Trim();
 
             if (AUserId == String.Empty)
             {
-                result.Add("resultcode", "error");
-                result.Add("errormsg", "EMPTYUSERID");
-
-                return JsonConvert.SerializeObject(result);
+                AVerificationResult.Add(new TVerificationResult(
+                    "SaveUserAndModulePermissions",
+                    "Empty UserID",
+                    "EMPTYUSERID",
+                    TResultSeverity.Resv_Critical));
+                return false;
             }
 
             MaintainUsersTDS SubmitDS = LoadUserAndModulePermissions(AUserId);
@@ -787,18 +791,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 if (AEmailAddress == String.Empty)
                 {
-                    result.Add("resultcode", "error");
-                    result.Add("errormsg", "EMPTYEMAILADDRESS");
-
-                    return JsonConvert.SerializeObject(result);
+                    AVerificationResult.Add(new TVerificationResult(
+                        "SaveUserAndModulePermissions",
+                        "Empty E-Mail",
+                        "EMPTYEMAILADDRESS",
+                        TResultSeverity.Resv_Critical));
+                    return false;
                 }
 
                 if (null != TStringChecks.ValidateEmail(AEmailAddress))
                 {
-                    result.Add("resultcode", "error");
-                    result.Add("errormsg", "INVALIDEMAILADDRESS");
-
-                    return JsonConvert.SerializeObject(result);
+                    AVerificationResult.Add(new TVerificationResult(
+                        "SaveUserAndModulePermissions",
+                        "Invalid E-Mail",
+                        "INVALIDEMAILADDRESS",
+                        TResultSeverity.Resv_Critical));
+                    return false;
                 }
 
                 if (ALanguageCode == String.Empty)
@@ -820,17 +828,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 DateTimeOffset offset = new DateTimeOffset(SubmitDS.SUser[0].ModificationId);
                 if (offset.ToUnixTimeMilliseconds() != AModificationId) {
-                    result.Add("resultcode", "error");
                     if (AModificationId == 0)
                     {
-                        result.Add("errormsg", "USERIDALREADYEXISTS");
+                        AVerificationResult.Add(new TVerificationResult(
+                            "SaveUserAndModulePermissions",
+                            "USERIDALREADYEXISTS",
+                            "USERIDALREADYEXISTS",
+                            TResultSeverity.Resv_Critical));
                     }
                     else
                     {
-                        result.Add("errormsg", "MIDAIRCOLLISION");
+                        AVerificationResult.Add(new TVerificationResult(
+                            "SaveUserAndModulePermissions",
+                            "MIDAIRCOLLISION",
+                            "MIDAIRCOLLISION",
+                            TResultSeverity.Resv_Critical));
                     }
 
-                    return JsonConvert.SerializeObject(result);
+                    return false;
                 }
             }
 
@@ -915,10 +930,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                result.Add("resultcode", "error");
+                AVerificationResult.Add(new TVerificationResult(
+                    "SaveUserAndModulePermissions",
+                    "CANNOTSAVEUSER",
+                    "CANNOTSAVEUSER",
+                    TResultSeverity.Resv_Critical));
+                return false;
             }
 
-            return JsonConvert.SerializeObject(result); 
+            return true;
         }
 
         /// <summary>

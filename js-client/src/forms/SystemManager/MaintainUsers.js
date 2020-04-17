@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -152,17 +152,16 @@ function save_entry(obj_modal) {
 	}
 
 	api.post('serverMSysMan.asmx/TMaintenanceWebConnector_SaveUserAndModulePermissions', arguments).then(function (data) {
-		parsed_data = JSON.parse(data.data.d);
-		if (parsed_data.resultcode == "success") {
+		parsed = JSON.parse(data.data.d);
+		if (!parsed.result) {
+			// TODO we need an error code from the server, to display a meaningful error message here
+			return display_error(parsed.AVerificationResult);
+		} else {
 			$('.modal').modal('hide');
 			display_message(i18next.t('forms.saved'), "success");
 			if (NewUser) {
 				display_list();
 			}
-		} else {
-			// TODO we need an error code from the server, to display a meaningful error message here
-			message = "We cannot save the user. " + parsed_data.errormsg;
-			display_message(message, "fail");
 		}
 	})
 }

@@ -49,20 +49,25 @@ function display_screen(parsed) {
 	$('#modal_space .modal').modal('show');
 }
 
+function reloadUsersPage() {
+	window.location.replace('/SystemManager/MaintainUsers');
+}
+
 function save_entry(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 
 	// extract information from a jquery object
 	let param = extract_data(obj);
+	param['AInitialModulePermissions'] = param['AInitialModulePermissions'].split(",");
 
 	api.post('serverMSysMan.asmx/TSettingsWebConnector_RunFirstSetup', param).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		if (parsed.result == true) {
+		if (!parsed.result) {
+			return display_error(parsed.AVerificationResult);
+		} else {
 			$('#modal_space .modal').modal('hide');
 			display_message(i18next.t('forms.saved'), "success");
-		}
-		else {
-			display_error( parsed.AVerificationResult );
+			setTimeout(reloadUsersPage, 5000);
 		}
 	})
 }

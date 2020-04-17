@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
@@ -285,10 +286,18 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                 AFirstName = usertable[0].FirstName;
                 ALastName = usertable[0].LastName;
                 ALanguageCode = usertable[0].LanguageCode;
-                AEmailAddress = usertable[0].EmailAddress.Replace("@", "+openpetra@");
+                AEmailAddress = usertable[0].EmailAddress;
+                if (AEmailAddress.Contains("+sysadmin@"))
+                {
+                    AEmailAddress = AEmailAddress.Replace("+sysadmin@", "@");
+                }
+                else
+                {
+                    AEmailAddress = AEmailAddress.Replace("@", "+openpetra@");
+                }
                 AInitialModulePermissions = "PTNRUSER,PTNRADMIN,CONFERENCE,DEVUSER,PERSONNEL,PERSADMIN,SPONSORADMIN,FINANCE-1,FINANCE-2,FINANCE-3,FINANCE-RPT,FIN-EX-RATE";
                 AInitialPassword = TPasswordHelper.GetRandomSecurePassword();
-                ASiteKey = 30 * 1000000;
+                ASiteKey = 10 * 1000000;
 
                 if (AEmailAddress == String.Empty)
                 {
@@ -327,7 +336,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
 
         /// run initial setup, creating unprivileged user and setting the site key
         [RequireModulePermission("SYSMAN")]
-        public static string RunFirstSetup(
+        public static bool RunFirstSetup(
             string AUserID,
             string AFirstName,
             string ALastName,
@@ -336,13 +345,27 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
             List<string> AInitialModulePermissions,
             string AInitialPassword,
             Int64 ASiteKey,
-            bool AEnableSelfSignup
-            )
+            bool AEnableSelfSignup,
+            out TVerificationResultCollection AVerificationResult)
         {
+            bool result = true;
+            AVerificationResult = new TVerificationResultCollection();
+            TVerificationResult VerificationResult = null;
+            TVerificationResultCollection VerificationResultCollection = new TVerificationResultCollection();
+
+            if (AInitialPassword != String.Empty)
+            {
+                // check if password is valid, it meets the criteria
+                if (!TSharedSysManValidation.CheckPasswordQuality(AInitialPassword, out VerificationResult))
+                {
+                    AVerificationResult.Add(VerificationResult);
+                    return false;
+                }
+            }
+
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("RunFirstSetup");
             bool SubmitOK = false;
-            string result = String.Empty;
 
             db.WriteTransaction(ref t,
                 ref SubmitOK,
@@ -350,20 +373,45 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                 {
                     result = TMaintenanceWebConnector.SaveUserAndModulePermissions(
                         AUserID, AFirstName, ALastName, AEmailAddress, ALanguageCode,
-                        false, false, false, AInitialModulePermissions, 0);
+                        false, false, false, AInitialModulePermissions, 0,
+                        out VerificationResultCollection);
 
-                    TVerificationResultCollection Verification;
-                    TMaintenanceWebConnector.SetUserPassword(AUserID, AInitialPassword, false, false,
-                        String.Empty, String.Empty, out Verification);
+                    if (result != false)
+                    {
+                        if (AInitialPassword != String.Empty)
+                        {
+                            result = TMaintenanceWebConnector.SetUserPassword(AUserID, AInitialPassword, false, false,
+                                String.Empty, String.Empty, out VerificationResultCollection);
+                        }
+                        else
+                        {
+                            // TODO send welcoming Email, with link for setting the password
+                        }
 
-                    TSystemDefaults defaults = new TSystemDefaults(db);
-                    defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ASiteKey.ToString(), db);
-                    defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, AEnableSelfSignup.ToString(), db);
+                        if (result)
+                        {
+                            TSystemDefaults defaults = new TSystemDefaults(db);
+                            defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ASiteKey.ToString(), db);
+                            defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, AEnableSelfSignup.ToString(), db);
 
-                    SubmitOK = true;
+                            SubmitOK = true;
+                        }
+                    }
                 });
 
             db.CloseDBConnection();
+
+            if (!result)
+            {
+                if (VerificationResultCollection.HasCriticalErrors)
+                {
+                    AVerificationResult = VerificationResultCollection;
+                }
+                else
+                {
+                    AVerificationResult.Add(VerificationResult);
+                }
+            }
 
             return result;
         }

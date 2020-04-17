@@ -20,7 +20,7 @@
 		<div class="modal-dialog" role="document">
 		<div class="modal-content">
 		<div class="modal-header">
-		<h3>{edittitle}</h3>
+		<h3>{caption}</h3>
 		</div>
 		<div class="modal-body">
 		<div class="container">
@@ -31,14 +31,6 @@
 				</div>
 			</div>
 
-			<div class="row">
-				<div class="col-3">
-					<span>{UserID}</span>
-				</div>
-				<div class="col-3">
-					<input type="text" name="AUserID"/>
-				</div>
-			</div>
 			<div class="row">
 				<div class="col-3">
 					<span>{Firstname}</span>
@@ -56,10 +48,22 @@
 
 			<div class="row">
 				<div class="col-3">
-					<span>{EmailAddress}</span>
+					<span>{UserID}</span>
 				</div>
 				<div class="col-3">
-					<input type="email" name="AEmailAddress"/>
+					<input type="text" name="AUserID"/>
+				</div>
+				<div class="col-6">
+					{LoginInfo}
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">
+					<span>{EmailAddress}</span>
+				</div>
+				<div class="col-9">
+					<input type="email" name="AEmailAddress" style="width: 100%"/>
 				</div>
 			</div>
 
@@ -70,41 +74,32 @@
 				<div class="col-3">
 					<input type="text" name="AInitialPassword"/>
 				</div>
+				<div class="col-6">
+					{PasswordInfo}
+				</div>
 			</div>
 
-			<div class="row">
-				<div class="col-3">
-					<span>{Language}</span>
-				</div>
-				<div class="col-3">
-					<input type="text" name="ALanguageCode" readonly/>
-				</div>
-			</div>
+			<input type="hidden" name="ALanguageCode"/>
+
+			<input type="hidden" name="AInitialModulePermissions"/>
 
 			<div class="row">
 				<div class="col-3">
 					<span>{InitialModulePermissions}</span>
 				</div>
 				<div class="col-9">
-					<input type="text" name="AInitialModulePermissions" readonly style="width: 100%"/>
+					{InfoInitialModulePermissions}
 				</div>
 			</div>
 
-			<div class="row">
-				<div class="col-3">
-					<span>{SiteKey}</span>
-				</div>
-				<div class="col-3">
-					<input type="integer" name="ASiteKey" readonly/>
-				</div>
-			</div>
+			<input type="hidden" name="ASiteKey"/>
 
 
 			<div class="row">
 				<div class="col-3">
 					<span>{EnableSelfSignUp}</span>
 				</div>
-				<div class="col-3">
+				<div class="col-9">
 					<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkNoSolicitations" name="AEnableSelfSignup"> {SelfSignUpEnabled}</label>
 				</div>
 			</div>
