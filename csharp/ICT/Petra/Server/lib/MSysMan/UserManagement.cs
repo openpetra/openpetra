@@ -1011,6 +1011,63 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// welcome the user and tell about the users and how to set the password
+        /// </summary>
+        [NoRemoting]
+        public static bool SendWelcomeEmail(string ASysAdminEmailAddress, string AUserEmailAddress, string AUserID, string AFirstName, string ALastName, string ALanguageCode)
+        {
+            TDataBase db = DBAccess.Connect("SendWelcomeEmail");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SendWelcomeEmail");
+
+            try
+            {
+                string sysadmintoken = SaveNewToken("SYSADMIN", db, Transaction);
+                string usertoken = SaveNewToken(AUserID, db, Transaction);
+
+                // send the welcome email with the link for setting the password
+                string Domain = TAppSettingsManager.GetValue("Server.Url");
+                string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
+                Dictionary<string, string> emailparameters = new Dictionary<string, string>();
+                emailparameters.Add("UserId", AUserID);
+                emailparameters.Add("SysAdminEmailAddress", ASysAdminEmailAddress);
+                emailparameters.Add("UserEmailAddress", AUserEmailAddress);
+                emailparameters.Add("FirstName", AFirstName);
+                emailparameters.Add("LastName", ALastName);
+                emailparameters.Add("Domain", Domain);
+                emailparameters.Add("SysadminToken", sysadmintoken);
+                emailparameters.Add("UserToken", usertoken);
+
+                if (TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
+                {
+                    TLogging.Log("There is no configuration for SmtpHost. The url for requesting the new password for user " + AUserID + " is " +
+                        Domain+"?UserId="+AUserID+"&ResetPasswordToken="+usertoken);
+                    TLogging.Log("There is no configuration for SmtpHost. The url for requesting the new password for user " + "SYSADMIN" + " is " +
+                        Domain+"?UserId="+"SYSADMIN"+"&ResetPasswordToken="+sysadmintoken);
+                    throw new Exception("No SMTP configured, please check log file for details");
+                }
+
+                new TSmtpSender().SendEmailFromTemplate(
+                    "no-reply@" + EMailDomain,
+                    "OpenPetra Admin",
+                    AUserEmailAddress,
+                    "welcomeemail",
+                    ALanguageCode,
+                    emailparameters);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SendWelcomeEmail " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
+        }
+
+        /// <summary>
         /// request new password
         /// </summary>
         [NoRemoting]
