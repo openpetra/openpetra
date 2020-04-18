@@ -1023,6 +1023,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 string sysadmintoken = SaveNewToken("SYSADMIN", db, Transaction);
                 string usertoken = SaveNewToken(AUserID, db, Transaction);
+
+                // also initialise the site key, so that we avoid log messages, and self sign up could work
+                TSystemDefaults defaults = new TSystemDefaults(db);
+                defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, "10000000", db);
+                defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, "false", db);
+
                 Transaction.Commit();
 
                 // send the welcome email with the link for setting the password
