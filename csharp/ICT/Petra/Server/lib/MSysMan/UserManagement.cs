@@ -1005,7 +1005,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             parameters[1].Value = validUntil;
             parameters[2] = new OdbcParameter("UserID", OdbcType.VarChar);
             parameters[2].Value = AUserID;
-            db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+            db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, false);
 
             return token;
         }
@@ -1023,6 +1023,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 string sysadmintoken = SaveNewToken("SYSADMIN", db, Transaction);
                 string usertoken = SaveNewToken(AUserID, db, Transaction);
+                Transaction.Commit();
 
                 // send the welcome email with the link for setting the password
                 string Domain = TAppSettingsManager.GetValue("Server.Url");
@@ -1106,6 +1107,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     string LanguageCode = result.Rows[0][3].ToString();
 
                     string token = SaveNewToken(UserID, db, Transaction);
+                    Transaction.Commit();
 
                     // send the email with the link for resetting the password
                     string Domain = TAppSettingsManager.GetValue("Server.Url");
@@ -1296,6 +1298,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     // set token on s_user.
                     string token = SaveNewToken(UserID, db, Transaction);
+                    Transaction.Commit();
 
                     // send the email with the link for setting the password
                     string Domain = TAppSettingsManager.GetValue("Server.Url");
