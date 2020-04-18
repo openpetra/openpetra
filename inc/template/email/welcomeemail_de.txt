@@ -1,0 +1,35 @@
+Einrichtung Ihres OpenPetra Zugangs
+Sehr geehrte(r) {FirstName} {LastName},
+
+Willkommen zu Ihrer OpenPetra Instanz!
+
+Bitte benutzen Sie unser Handbuch, das Ihnen bei den ersten Schritten
+mit OpenPetra helfen soll: https://handbuch.openpetra.de/howtos/initial-instance-setup.html
+
+Sie haben zwei Benutzerzugänge auf {Domain}:
+
+SYSADMIN, mit der E-Mail Adresse {SysAdminEmailAddress}:
+mit diesem Benutzer können Sie administrative Aufgaben wahrnehmen,
+z.B. weitere Benutzer anlegen, und Rechte anpassen.
+Sie sollten diesen Benutzer nicht für Ihre tägliche Arbeit
+mit OpenPetra verwenden.
+
+{UserId}, mit der E-Mail Adresse {UserEmailAddress}:
+Sie sollten diesen Zugang für die tägliche Arbeit mit OpenPetra verwenden!
+
+Klicken Sie bitte auf diese Adresse, um das Passwort für den Benutzer {UserId} zu setzen:
+{Domain}?UserId={UserId}&ResetPasswordToken={UserToken}
+
+Klicken Sie bitte auf diese Adresse, um das Passwort für den Benutzer SYSADMIN zu setzen:
+{Domain}?UserId=SYSADMIN&ResetPasswordToken={SysadminToken}
+
+Falls Sie in Zukunft Ihr Passwort für den Benutzer SYSADMIN vergessen sollten,
+klicken Sie bitte auf {Domain} auf den Link "Passwort vergessen? hier klicken",
+und geben Sie die E-Mail Adresse {SysAdminEmailAddress} an.
+Entsprechend für den Benutzer {UserId}, geben Sie zum Zurücksetzen des Passworts
+die E-Mail Adresse {UserEmailAddress} an.
+
+Bei Fragen melden Sie sich bitte im öffentlichen Forum auf https://forum.openpetra.de,
+dort werden Ihre Fragen schnell beantwortet.
+
+Dies ist eine automatisch verschickte E-Mail.

@@ -757,23 +757,27 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// save the details and permissions of one user
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static string SaveUserAndModulePermissions(string AUserId,
+        public static bool SaveUserAndModulePermissions(string AUserId,
             string AFirstName, string ALastName, string AEmailAddress, string ALanguageCode,
             bool AAccountLocked, bool ARetired,
             bool ASendMail,
-            List<string> AModulePermissions, Int64 AModificationId)
+            List<string> AModulePermissions, Int64 AModificationId,
+            out TVerificationResultCollection AVerificationResult)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
+            AVerificationResult = new TVerificationResultCollection();
 
             AUserId = AUserId.ToUpper().Trim();
             AEmailAddress = AEmailAddress.Trim();
 
             if (AUserId == String.Empty)
             {
-                result.Add("resultcode", "error");
-                result.Add("errormsg", "EMPTYUSERID");
-
-                return JsonConvert.SerializeObject(result);
+                AVerificationResult.Add(new TVerificationResult(
+                    "SaveUserAndModulePermissions",
+                    "Empty UserID",
+                    "EMPTYUSERID",
+                    TResultSeverity.Resv_Critical));
+                return false;
             }
 
             MaintainUsersTDS SubmitDS = LoadUserAndModulePermissions(AUserId);
@@ -787,18 +791,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 if (AEmailAddress == String.Empty)
                 {
-                    result.Add("resultcode", "error");
-                    result.Add("errormsg", "EMPTYEMAILADDRESS");
-
-                    return JsonConvert.SerializeObject(result);
+                    AVerificationResult.Add(new TVerificationResult(
+                        "SaveUserAndModulePermissions",
+                        "Empty E-Mail",
+                        "EMPTYEMAILADDRESS",
+                        TResultSeverity.Resv_Critical));
+                    return false;
                 }
 
                 if (null != TStringChecks.ValidateEmail(AEmailAddress))
                 {
-                    result.Add("resultcode", "error");
-                    result.Add("errormsg", "INVALIDEMAILADDRESS");
-
-                    return JsonConvert.SerializeObject(result);
+                    AVerificationResult.Add(new TVerificationResult(
+                        "SaveUserAndModulePermissions",
+                        "Invalid E-Mail",
+                        "INVALIDEMAILADDRESS",
+                        TResultSeverity.Resv_Critical));
+                    return false;
                 }
 
                 if (ALanguageCode == String.Empty)
@@ -820,17 +828,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 DateTimeOffset offset = new DateTimeOffset(SubmitDS.SUser[0].ModificationId);
                 if (offset.ToUnixTimeMilliseconds() != AModificationId) {
-                    result.Add("resultcode", "error");
                     if (AModificationId == 0)
                     {
-                        result.Add("errormsg", "USERIDALREADYEXISTS");
+                        AVerificationResult.Add(new TVerificationResult(
+                            "SaveUserAndModulePermissions",
+                            "USERIDALREADYEXISTS",
+                            "USERIDALREADYEXISTS",
+                            TResultSeverity.Resv_Critical));
                     }
                     else
                     {
-                        result.Add("errormsg", "MIDAIRCOLLISION");
+                        AVerificationResult.Add(new TVerificationResult(
+                            "SaveUserAndModulePermissions",
+                            "MIDAIRCOLLISION",
+                            "MIDAIRCOLLISION",
+                            TResultSeverity.Resv_Critical));
                     }
 
-                    return JsonConvert.SerializeObject(result);
+                    return false;
                 }
             }
 
@@ -915,10 +930,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                result.Add("resultcode", "error");
+                AVerificationResult.Add(new TVerificationResult(
+                    "SaveUserAndModulePermissions",
+                    "CANNOTSAVEUSER",
+                    "CANNOTSAVEUSER",
+                    TResultSeverity.Resv_Critical));
+                return false;
             }
 
-            return JsonConvert.SerializeObject(result); 
+            return true;
         }
 
         /// <summary>
@@ -985,9 +1005,73 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             parameters[1].Value = validUntil;
             parameters[2] = new OdbcParameter("UserID", OdbcType.VarChar);
             parameters[2].Value = AUserID;
-            db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, true);
+            db.ExecuteNonQuery(sqlUpdate, Transaction, parameters, false);
 
             return token;
+        }
+
+        /// <summary>
+        /// welcome the user and tell about the users and how to set the password
+        /// </summary>
+        [NoRemoting]
+        public static bool SendWelcomeEmail(string ASysAdminEmailAddress, string AUserEmailAddress, string AUserID, string AFirstName, string ALastName, string ALanguageCode)
+        {
+            TDataBase db = DBAccess.Connect("SendWelcomeEmail");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.Serializable, 0, "SendWelcomeEmail");
+
+            try
+            {
+                string sysadmintoken = SaveNewToken("SYSADMIN", db, Transaction);
+                string usertoken = SaveNewToken(AUserID, db, Transaction);
+
+                // also initialise the site key, so that we avoid log messages, and self sign up could work
+                TSystemDefaults defaults = new TSystemDefaults(db);
+                defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, "10000000", db);
+                defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, "false", db);
+
+                Transaction.Commit();
+
+                // send the welcome email with the link for setting the password
+                string Domain = TAppSettingsManager.GetValue("Server.Url");
+                string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
+                Dictionary<string, string> emailparameters = new Dictionary<string, string>();
+                emailparameters.Add("UserId", AUserID);
+                emailparameters.Add("SysAdminEmailAddress", ASysAdminEmailAddress);
+                emailparameters.Add("UserEmailAddress", AUserEmailAddress);
+                emailparameters.Add("FirstName", AFirstName);
+                emailparameters.Add("LastName", ALastName);
+                emailparameters.Add("Domain", Domain);
+                emailparameters.Add("SysadminToken", sysadmintoken);
+                emailparameters.Add("UserToken", usertoken);
+
+                if (TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
+                {
+                    TLogging.Log("There is no configuration for SmtpHost. The url for requesting the new password for user " + AUserID + " is " +
+                        Domain+"?UserId="+AUserID+"&ResetPasswordToken="+usertoken);
+                    TLogging.Log("There is no configuration for SmtpHost. The url for requesting the new password for user " + "SYSADMIN" + " is " +
+                        Domain+"?UserId="+"SYSADMIN"+"&ResetPasswordToken="+sysadmintoken);
+                    throw new Exception("No SMTP configured, please check log file for details");
+                }
+
+                new TSmtpSender().SendEmailFromTemplate(
+                    "no-reply@" + EMailDomain,
+                    "OpenPetra Admin",
+                    AUserEmailAddress,
+                    "welcomeemail",
+                    ALanguageCode,
+                    emailparameters);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("SendWelcomeEmail " + e.ToString());
+                return false;
+            }
+            finally
+            {
+                db.CloseDBConnection();
+            }
         }
 
         /// <summary>
@@ -1029,6 +1113,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     string LanguageCode = result.Rows[0][3].ToString();
 
                     string token = SaveNewToken(UserID, db, Transaction);
+                    Transaction.Commit();
 
                     // send the email with the link for resetting the password
                     string Domain = TAppSettingsManager.GetValue("Server.Url");
@@ -1219,6 +1304,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     // set token on s_user.
                     string token = SaveNewToken(UserID, db, Transaction);
+                    Transaction.Commit();
 
                     // send the email with the link for setting the password
                     string Domain = TAppSettingsManager.GetValue("Server.Url");

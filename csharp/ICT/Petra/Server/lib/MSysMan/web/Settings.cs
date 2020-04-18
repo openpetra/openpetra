@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,9 +34,13 @@ using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Validation;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.Cacheable.WebConnectors;
 
 
@@ -215,5 +219,202 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
 
             return SubmissionOK;
         }
+
+        /// if this system does not have a user that does have finance permissions,
+        /// then redirect to the SysMan Setup Assistant
+        [RequireModulePermission("SYSMAN")]
+        public static string GetSetupAssistant()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetSetupAssistant");
+
+            string result = String.Empty;
+            string sql = "SELECT COUNT(*) FROM PUB_s_user_module_access_permission p1 " +
+                "WHERE p1.s_module_id_c = 'FINANCE-3' AND p1.s_can_access_l = true";
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    if (Convert.ToInt32(db.ExecuteScalar(sql, t)) == 0)
+                    {
+                        result = "SystemManager/SysManAssistantInit";
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            return result;
+        }
+
+        /// get suggested values for the first setup
+        [RequireModulePermission("SYSMAN")]
+        public static bool GetDefaultsForFirstSetup(
+            string AClientLanguage,
+            out string AUserID,
+            out string AFirstName,
+            out string ALastName,
+            out string ALanguageCode,
+            out string AEmailAddress,
+            out string AInitialModulePermissions,
+            out string AInitialPassword,
+            out Int64 ASiteKey
+            )
+        {
+            AUserID = AFirstName = ALastName = ALanguageCode = AEmailAddress = AInitialModulePermissions = AInitialPassword = String.Empty;
+            ASiteKey = -1;
+
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetDefaultsForFirstSetup");
+
+            string sql = "SELECT * FROM PUB_s_user " +
+                "WHERE s_user_id_c = 'SYSADMIN'";
+
+            SUserTable usertable = new SUserTable();
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    db.SelectDT(usertable, sql, t);
+
+                });
+
+            db.CloseDBConnection();
+
+            if (usertable.Rows.Count == 1)
+            {
+                AUserID = usertable[0].FirstName.Replace(" ","").Replace("-","").ToUpper();
+                AFirstName = usertable[0].FirstName;
+                ALastName = usertable[0].LastName;
+                ALanguageCode = usertable[0].LanguageCode;
+                AEmailAddress = usertable[0].EmailAddress;
+                if (AEmailAddress.Contains("+sysadmin@"))
+                {
+                    AEmailAddress = AEmailAddress.Replace("+sysadmin@", "@");
+                }
+                else
+                {
+                    AEmailAddress = AEmailAddress.Replace("@", "+openpetra@");
+                }
+                AInitialModulePermissions = "PTNRUSER,PTNRADMIN,CONFERENCE,DEVUSER,PERSONNEL,PERSADMIN,SPONSORADMIN,FINANCE-1,FINANCE-2,FINANCE-3,FINANCE-RPT,FIN-EX-RATE";
+                AInitialPassword = TPasswordHelper.GetRandomSecurePassword();
+                ASiteKey = 10 * 1000000;
+
+                if (AEmailAddress == String.Empty)
+                {
+                    AEmailAddress = "user@example.org";
+                }
+
+                if (AFirstName == String.Empty)
+                {
+                    AFirstName = "Demo";
+                }
+
+                if (ALastName == String.Empty)
+                {
+                    ALastName = "User";
+                }
+
+                if (AUserID == String.Empty)
+                {
+                    AUserID = "DEMO";
+                }
+
+                if (ALanguageCode == "99")
+                {
+                    ALanguageCode = AClientLanguage.ToUpper();
+                    if (ALanguageCode.Contains("-"))
+                    {
+                        ALanguageCode = ALanguageCode.Substring(ALanguageCode.IndexOf("-")+1);
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// run initial setup, creating unprivileged user and setting the site key
+        [RequireModulePermission("SYSMAN")]
+        public static bool RunFirstSetup(
+            string AUserID,
+            string AFirstName,
+            string ALastName,
+            string ALanguageCode,
+            string AEmailAddress,
+            List<string> AInitialModulePermissions,
+            string AInitialPassword,
+            Int64 ASiteKey,
+            bool AEnableSelfSignup,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            bool result = true;
+            AVerificationResult = new TVerificationResultCollection();
+            TVerificationResult VerificationResult = null;
+            TVerificationResultCollection VerificationResultCollection = new TVerificationResultCollection();
+
+            if (AInitialPassword != String.Empty)
+            {
+                // check if password is valid, it meets the criteria
+                if (!TSharedSysManValidation.CheckPasswordQuality(AInitialPassword, out VerificationResult))
+                {
+                    AVerificationResult.Add(VerificationResult);
+                    return false;
+                }
+            }
+
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("RunFirstSetup");
+            bool SubmitOK = false;
+
+            db.WriteTransaction(ref t,
+                ref SubmitOK,
+                delegate
+                {
+                    result = TMaintenanceWebConnector.SaveUserAndModulePermissions(
+                        AUserID, AFirstName, ALastName, AEmailAddress, ALanguageCode,
+                        false, false, false, AInitialModulePermissions, 0,
+                        out VerificationResultCollection);
+
+                    if (result != false)
+                    {
+                        if (AInitialPassword != String.Empty)
+                        {
+                            result = TMaintenanceWebConnector.SetUserPassword(AUserID, AInitialPassword, false, false,
+                                String.Empty, String.Empty, out VerificationResultCollection);
+                        }
+                        else
+                        {
+                            // TODO send welcoming Email, with link for setting the password
+                        }
+
+                        if (result)
+                        {
+                            TSystemDefaults defaults = new TSystemDefaults(db);
+                            defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ASiteKey.ToString(), db);
+                            defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, AEnableSelfSignup.ToString(), db);
+
+                            SubmitOK = true;
+                        }
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            if (!result)
+            {
+                if (VerificationResultCollection.HasCriticalErrors)
+                {
+                    AVerificationResult = VerificationResultCollection;
+                }
+                else
+                {
+                    AVerificationResult.Add(VerificationResult);
+                }
+            }
+
+            return result;
+        }
+
     }
 }

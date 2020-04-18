@@ -1,0 +1,34 @@
+Configuration of your OpenPetra accounts
+Dear {FirstName} {LastName},
+
+Welcome to your very own instance of OpenPetra!
+
+Please make use of our manuals, which should help with your first steps
+with OpenPetra: https://docs.openpetra.org/howtos/initial-instance-setup.html
+
+You have two user accounts at {Domain}:
+
+SYSADMIN, with the email address {SysAdminEmailAddress}:
+with this user you can do administrative work,
+eg. create new users, and manage the permissions.
+You should not use this account for your everyday work with OpenPetra.
+
+{UserId}, with the email address {UserEmailAddress}:
+You should use this account for your everyday work with OpenPetra!
+
+Please click on this link to set the password for the user {UserId}:
+{Domain}?UserId={UserId}&ResetPasswordToken={UserToken}
+
+Please click on this link to set the password for the user SYSADMIN:
+{Domain}?UserId=SYSADMIN&ResetPasswordToken={SysadminToken}
+
+If in the future you might forget your password for the user SYSADMIN,
+then go to {Domain} and click the link "Forgot your password? click here",
+and enter your email address {SysAdminEmailAddress}.
+The same way for user {UserId}, in order to reset the password
+enter the email address {UserEmailAddress}.
+
+If you have any questions, please post on the public forum at https://forum.openpetra.org,
+where your questions will be dealt with.
+
+This is an automated e-mail.

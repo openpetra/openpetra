@@ -105,6 +105,7 @@
         "CreateUser_label": "Create user",
         "Database_label": "Database",
         "ImportAndExportDatabase_label": "Export and Import the data",
+        "SysManAssistantInit_label": "Setup Assistant",
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
         "Motivations_label": "Maintain Motivation groups and details",
@@ -679,5 +680,20 @@
       "ErrFirstReminderDate": "Reminder date must not be empty",
       "ErrEmptyReminderComment": "Comment must not be empty",
       "notes":"Notes"
+    },
+    "SysManAssistantInit": {
+      "caption": "Setup Assistant",
+      "Explanation": "There is the user SYSADMIN to manage OpenPetra, eg. to add new users. But for everyday usage, you should not work with this user because it is too powerful. Instead you should be working with a normal user, that has enough permissions for the everyday usage.",
+      "LoginInfo": "With the user name or the e-mail address you will be able to sign in. In order to reset your password if you forget it, you will need to provide your e-mail address.",
+      "UserID": "User name",
+      "Firstname": "First name",
+      "Lastname": "Last Name",
+      "EmailAddress": "E-Mail address",
+      "InitialPassword": "Password",
+      "PasswordInfo": "You can use the proposed random password (please store it in a safe place), or you enter your own password, which must meet these criteria: At least 8 characters, at least on digit and at least one letter.",
+      "InitialModulePermissions": "Permissions",
+      "InfoInitialModulePermissions": "The default permissions will be set for working with contacts, doing the book keeping, and managing sponsorships. You can adjust the permissions as user SYSADMIN in the user management",
+      "EnableSelfSignUp": "Activate Self Registering",
+      "SelfSignUpEnabled": "Every visitor can create his own user and maintain his own personal data"
     }
 }
