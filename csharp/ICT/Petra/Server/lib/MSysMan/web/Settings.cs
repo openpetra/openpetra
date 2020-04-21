@@ -32,17 +32,19 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.Cacheable.WebConnectors;
-
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.WebConnectors
 {
@@ -394,7 +396,13 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                             defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ASiteKey.ToString(), db);
                             defaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SELFSIGNUPENABLED, AEnableSelfSignup.ToString(), db);
 
-                            SubmitOK = true;
+                            GLSetupTDS GLMainDS = new GLSetupTDS();
+                            SubmitOK = TGLSetupWebConnector.CreateSite(ref GLMainDS, "Default Site", ASiteKey, t);
+
+                            if (SubmitOK)
+                            {
+                                GLSetupTDSAccess.SubmitChanges(GLMainDS, db, t);
+                            }
                         }
                     }
                 });
