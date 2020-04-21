@@ -459,7 +459,10 @@ namespace Ict.Petra.Server.App.WebService
                 assistant = TSettingsWebConnector.GetSetupAssistant();
             }
 
-            // TODO: could use this for self sign up as well, to go straight to the partner edit screen.
+            if (assistant == String.Empty)
+            {
+                assistant = TMaintenanceWebConnector.GetSelfServiceAssistant();
+            }
 
             result.Add("assistant", assistant);
 
