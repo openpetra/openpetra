@@ -272,7 +272,6 @@
     "GLBatches": {
         "caption": "Maintain GL Batches and Transactions",
         "edittitle":"Maintain GL Batches",
-        "ledgernumber":"Ledger Number",
         "batchnumber":"Batch Number",
         "batchname":"Batch Description",
         "batch_status":"Status",
@@ -348,8 +347,7 @@
       "giftadjusted": "There is now an adjustment gift batch, that you can modify and post.",
       "success_adjust":  "An adjustment batch has been created",
       "success_cancelled": "The Batch has been cancelled",
-      "success_posted": "The Batch has been posted",
-      "ledgernumber":"Ledgernumber"
+      "success_posted": "The Batch has been posted"
     },
 
     "RecurringGiftBatches": {
@@ -389,8 +387,7 @@
       "edittitle_trans_detail":"Edit transaction details",
       "success_adjust":  "An adjustment batch has been created",
       "success_cancelled": "The Batch has been cancelled",
-      "success_posted": "The Batch has been posted",
-      "ledgernumber":"Ledgernumber"
+      "success_posted": "The Batch has been posted"
     },
 
     "SelectPeriods": {
@@ -411,7 +408,6 @@
     },
 
     "MaintainPublications": {
-      "edittitle":"Edit subscription",
       "caption":"Maintain subscriptions",
       "addtitle":"Add subscription",
       "edittitle":"Edit subscription",
@@ -421,6 +417,7 @@
       "entry_dis":"Subscription description",
       "entry_freq":"Frequenz",
       "ask_delete":"Sure you wanna delete this subscription?",
+      "confirm_create":"The subscription has been successfully created.",
       "confirm_edit":"The subscription has been successfully edited.",
       "confirm_delete":"The subscription has been deleted."
     },
@@ -449,9 +446,8 @@
       "entry_date":"first day of financial year",
       "entry_base_currency":"base currency",
       "entry_intl_currency":"international currency",
-      "entry_account_periods_first":"start with current period",
+      "entry_first_current_period":"start with current period",
       "entry_account_periods":"number of accounting periods",
-      "entry_first_current_period":"first current period",
       "entry_posting_periods":"number of forward posting periods",
       "error_create":"Creation of the ledger failed",
       "ask_delete":"Sure you wanna delete this ledger?",
@@ -494,7 +490,6 @@
       "edittitle_moti":"Edit motivation detail",
       "ask_delete_group": "Do you really want to delete this group with all its details?",
       "ask_delete_detail": "Do you really want to delete this detail?",
-      "ledgernumber":"Ledgernumber",
       "motivation_group_code":"Group Code",
       "motivation_detail_code":"Detail Code",
       "motivation_desc":"Description",
@@ -506,6 +501,8 @@
     "BankImport":{
       "display":"Display",
       "all":"all",
+      "caption":"Bank Import",
+      "upload_success": "Bank statement has been imported successfully",
       "bankaccount": "Bank Account",
       "startAfterLine": "Only start evaluation lines below this line",
       "columnMeaning": "Content of the columns",
@@ -524,8 +521,6 @@
       "UTF-8": "international encoding (utf8)",
       "examplefile": "example for a file of a CSV bank statement",
       "detail":"Detail",
-      "caption":"Bank Import",
-      "upload_success": "Bank statement has been imported successfully",
       "bankimport_name":"Name",
       "bankimport_status":"status",
       "matched":"Matched",
@@ -641,6 +636,9 @@
     "MaintainChildren": {
       "caption":"Maintain Sponsorships",
       "edittitle": "Edit child",
+      "edittitle_donation": "Edit recurring donations",
+      "edittitle_comment": "Edit comment",
+      "edittitle_reminder": "Edit reminder",
       "partner_key": "Partner key",
       "partner_status": "Status",
       "partner_firstname": "Firstname",
@@ -664,7 +662,7 @@
       "ErrMissingSponsorshipStatus":"Please select the status",
       "ErrMissingFirstName":"Please enter the first name of the child",
       "donor":"Donor",
-      "type":"Purpose",
+      "motivation_detail":"Purpose",
       "ErrMissingMotivation": "Please select a valid purpose",
       "ErrMissingAmount": "Please enter a valid amount",
       "ErrMissingDonor": "Please select a donor",

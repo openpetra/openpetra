@@ -247,9 +247,7 @@
         "addresses": "Adressen",
         "address": "Adresse",
         "subscriptions": "Abonnements",
-        "empty_subscriptions": "Es sind noch keine Abonnements eingerichtet worden, das kann unter Kontakte / Konfiguration erledigt werden.",
         "types": "Kategorien",
-        "empty_types": "Es sind noch keine Kategorien eingerichtet worden, das kann unter Kontakte / Konfiguration erledigt werden.",
         "comment": "Anmerkungen",
         "financedetails": "Finanzen",
         "receiptletterfrequency": "Wie oft sollen Spendenbescheinigungen geschickt werden?",
@@ -604,6 +602,7 @@
       "fwd_posting":"Zeitspanne für offene Monate",
       "period":"Zeitspanne der aktuellen Periode"
     },
+
     "YearEnd": {
       "confirm_body": "Wollen Sie wirklich das Jahr abschließen?",
       "end_year": "Jahresabschluss durchführen"
@@ -663,7 +662,6 @@
       "ErrMissingSponsorshipStatus":"Bitte den Status auswählen",
       "ErrMissingFirstName":"Bitte den Vornamen des Kindes eingeben",
       "donor":"Spender",
-      "type":"Verwendungszweck",
       "motivation_detail": "Verwendungszweck",
       "ErrMissingMotivation": "Bitte einen gültigen Verwendungszweck auswählen",
       "ErrMissingAmount": "Bitte einen gültigen Betrag eingeben",
@@ -695,7 +693,5 @@
       "InfoInitialModulePermissions": "Es werden die allgemeinen Berechtigungen zum Bearbeiten von Kontakten, für Buchhaltung und Patenschaftsverwaltung eingerichtet. Sie können die Berechtigungen als Benutzer SYSADMIN in der Benutzerverwaltung anpassen.",
       "EnableSelfSignUp": "Selbstregistrierung aktivieren",
       "SelfSignUpEnabled": "Jeder beliebige Besucher kann einen eigenen Benutzer anlegen und seine eigenen Daten verwalten"
-      
-      
     }
 }
