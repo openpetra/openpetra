@@ -13,9 +13,9 @@
         "demo_instance_info": "Anmeldung mit Benutzer <b>demo</b> und Passwort <b>demo</b>, oder mit Benutzer <b>sysadmin</b> und Passwort <b>CHANGEME</b>",
         "enterValidEmail": "Bitte gültige E-Mail Adresse eingeben!",
         "successPwdResetEmailSent": "Ein neues Passwort wurde verschickt!",
-        "errorPwdResetEmailSent": "Es gab einen Fehler, es wurde kein neues Passwort verschickt",
-        "successSignUp": "Eine E-Mail wurde verschickt, mit Ihren Zugangsdaten",
-        "errorSignUp": "Es gab einen Fehler, der Zugang ist momentan nicht möglich",
+        "errorPwdResetEmailSent": "Es gab einen Fehler, es wurde kein neues Passwort verschickt!",
+        "successSignUp": "Eine E-Mail wurde verschickt, mit Ihren Zugangsdaten!",
+        "errorSignUp": "Es gab einen Fehler, der Zugang ist momentan nicht möglich.",
         "successSignUpConfirmed": "Der Zugang wurde aktiviert, melden Sie sich nun mit Ihrer E-Mail Adresse und Ihrem Passwort an!",
         "errorSignUpConfirmed": "Der Zugang konnte nicht aktiviert werden.",
         "newpasswd1": "Neues Passwort",
@@ -336,7 +336,7 @@
         "trans_description": "Beschreibung",
         "edittitle_trans_detail": "Spendendetails bearbeiten",
         "adjustgift": "Spende korrigieren",
-        "giftadjusted": "Es gibt nun einen neuen Spendenstapel mit der Korrektur, den Sie bearbeiten und buchen können!",
+        "giftadjusted": "Es gibt nun einen neuen Spendenstapel mit der Korrektur, den Sie bearbeiten und buchen können.",
         "success_adjust": "Der Stapel wurde zur Korrektur kopiert",
         "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
         "success_posted": "Der Stapel wurde erfolgreich gebucht"
@@ -406,9 +406,9 @@
         "entry_dis": "Beschreibung",
         "entry_freq": "Frequenz",
         "ask_delete": "Sind Sie sicher, dass Sie dieses Abo löschen möchten?",
-        "confirm_create": "Das Abo wurde erstellt",
-        "confirm_edit": "Das Abo wurde erfolgreich bearbeitet",
-        "confirm_delete": "Das Abo wurde erfolgreich gelöscht"
+        "confirm_create": "Das Abo wurde erstellt.",
+        "confirm_edit": "Das Abo wurde erfolgreich bearbeitet.",
+        "confirm_delete": "Das Abo wurde erfolgreich gelöscht."
     },
     "MaintainTypes": {
         "caption": "Kategorien verwalten",
@@ -539,9 +539,9 @@
         "html_template": "HTML Vorlage",
         "html_template_help": "Benutzen Sie diese <a href='https://github.com/openpetra/openpetra/blob/master/demodata/formletters/AnnualReceipt.html' target='_blank'>HTML-Vorlage</a> als Beispiel!",
         "logo": "Bild für das Logo",
-        "logo_help": "Es kann auch leer gelassen werden",
+        "logo_help": "Es kann auch leer gelassen werden.",
         "signature": "Bild für die eingescannte Unterschrift",
-        "signature_help": "Es kann auch leer gelassen werden",
+        "signature_help": "Es kann auch leer gelassen werden.",
         "emptytemplate": "Es muss eine HTML Vorlage hochgeladen werden",
         "errorempty": "In dem Zeitraum gab es keine zu bescheinigende Spendenstapel",
         "uploaderror": "Fehler beim Erstellen der Spendenbescheinigungen"
@@ -549,8 +549,8 @@
     "ImportPartners": {
         "importUser": "Kontakte aus CSV Datei importieren",
         "examplefile": "Hier ist ein Beispiel, um das erwartete Format zu beschreiben:",
-        "upload_partner_success": "Kontakte wurden erfolgreich importiert!",
-        "upload_partner_fail": "Kontakte konnten nicht importiert werden."
+        "upload_partner_success": "Kontakte wurden erfolgreich importiert",
+        "upload_partner_fail": "Kontakte konnten nicht importiert werden"
     },
     "LedgerInfo": {
         "caption": "Hauptbuch Info",
@@ -589,13 +589,13 @@
     },
     "AccountTree": {
         "caption": "Kontenrahmen verwalten",
-        "uploadsuccess": "Neuer Kontenrahmen wurde erfolgreich importiert.",
+        "uploadsuccess": "Neuer Kontenrahmen wurde erfolgreich importiert",
         "uploaderror": "Neuer Kontenrahmen konnte nicht importiert werden.",
         "accounts_file": "Konten"
     },
     "CostCenterTree": {
         "caption": "Kostenstellen verwalten",
-        "uploadsuccess": "Die neuen Kostenstellen wurden erfolgreich importiert.",
+        "uploadsuccess": "Die neuen Kostenstellen wurden erfolgreich importiert",
         "uploaderror": "Neue Kostenstellen konnten nicht importiert werden.",
         "costcentres_file": "Kostenstellen"
     },
