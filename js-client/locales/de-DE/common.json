@@ -443,20 +443,21 @@
       "edittitle":"Hauptbuch bearbeiten",
       "caption":"Hauptbücher",
       "name":"Name",
+      "example_name": "Mein Verein",
       "number":"Nummer",
       "entry_name":"Name des Hauptbuches",
       "entry_date":"Finanzjahranfang",
       "entry_base_currency":"Währung",
       "entry_intl_currency":"Internationale Währung",
       "entry_first_current_period":"Beginne mit offenem Monat",
-      "entry_account_periods":"Berechenbare Monate",
+      "entry_account_periods":"Anzahl Monate im Jahr",
       "entry_posting_periods":"Maximale Anzahl offener Monate",
       "error_create":"Fehler beim Erstellen des Hauptbuches",
       "ask_delete":"Sind Sie sicher, dass Sie dieses Hauptbuch löschen möchten?",
       "confirm_edit":"Das Hauptbuch wurde gespeichert",
       "confirm_create":"Das Hauptbuch wurde erstellt",
       "confirm_delete":"Das Hauptbuch wurde gelöscht",
-      "entry_country":"Länderzeichnung"
+      "entry_country":"Landeskennung"
     },
 
     "PartnerBySpecialType":{

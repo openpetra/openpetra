@@ -55,6 +55,7 @@ using Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MSysMan.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
 
 namespace Ict.Petra.Server.App.WebService
@@ -462,6 +463,11 @@ namespace Ict.Petra.Server.App.WebService
             if (assistant == String.Empty)
             {
                 assistant = TMaintenanceWebConnector.GetSelfServiceAssistant();
+            }
+
+            if (assistant == String.Empty)
+            {
+                assistant = TGLSetupWebConnector.GetLedgerSetupAssistant();
             }
 
             result.Add("assistant", assistant);

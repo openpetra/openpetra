@@ -39,9 +39,17 @@ api.interceptors.response.use(function (response) {
     return response;
   }, function (error) {
     // something went wrong
-    var parsed = JSON.parse(error.response.data.d);
-    if (!parsed.result) {
-      display_error(parsed.AVerificationResult);
+    if (error.response.data.hasOwnProperty('d')) {
+        var parsed = JSON.parse(error.response.data.d);
+        if (!parsed.result) {
+          display_error(parsed.AVerificationResult);
+        }
+    } 
+    else if (error.response.data.hasOwnProperty('Message')) {
+        display_error(error.response.data.Message);
+    }
+    else {
+        display_error("undefined error");
     }
     return Promise.reject(error);
   });

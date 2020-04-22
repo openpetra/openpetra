@@ -197,6 +197,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             {
                 AResultTable = PcDiscountAccess.LoadUsingTemplate(ASearchCriteria, AReadTransaction);
             }
+            else if (ATablename == PCountryTable.GetTableDBName())
+            {
+                AResultTable = PCountryAccess.LoadAll(AReadTransaction);
+            }
             else if (ATablename == PFormTable.GetTableDBName())
             {
                 string[] columns = TTypedDataTable.GetColumnStringList(PFormTable.TableId);
