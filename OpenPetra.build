@@ -483,63 +483,6 @@ useful parameters
         commandline="-Action:static"/>
 </target>
 
-<target name="devzip">
-    <echo message="Target devzip started at: ${datetime::now()}" />
-    
-    <!-- calling script must get a fresh git tree, write OpenPetra.build.config with sqlite -->
-
-    <!-- if ../openpetra-client-js does not exist, download from Github -->
-    <if test="${not directory::exists(dir.root + '/openpetra-client-js')}">
-        <exec program="git" commandline="clone --depth 1 https://github.com/openpetra/openpetra-client-js.git ${dir.root}/../openpetra-client-js"/> 
-    </if>
-
-    <call target="quickClean"/>
-    <call target="generateSolution"/>
-    <call target="translation"/>
-    <call target="recreateDatabase"/>
-    <call target="resetDatabase"/>
-
-    <!-- download another demo database, and load it -->
-    <delete file="demoWith1ledger.yml.gz" />
-    <exec program="wget" commandline="https://github.com/openpetra/demo-databases/blob/master/demoWith1ledger.yml.gz?raw=true -OdemoWith1ledger.yml.gz"/>
-    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
-    <call target="initConfigFiles"/>
-    <call target="startServerBackground"/>
-    <sleep seconds="10"/>
-    <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe"
-        commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
-    <call target="stopPetraServer"/>
-
-    <copy file="${dir.3rdParty}/libsodium-net/libsodium-64.dll" todir="${dir.bin}"/>
-    <copy file="${dir.3rdParty}/libsodium-net/libsodium.dll" todir="${dir.bin}"/>
-    <!-- delete symbolic link -->
-    <delete file="${dir.bin}/libsodium.so"/>
-
-    <script prefix="utils" language="C#">
-         <code>
-             <![CDATA[
-                 [Function("GetFormattedDate")]
-                 public static string GetFormattedDate() {
-                    return System.DateTime.Now.ToString("yyyy-MM-dd");
-                 }
-             ]]>
-         </code>
-   </script>
-   <property name="zipfile" value="${dir.root}/../openpetra_development_${utils::GetFormattedDate()}.zip"/>
-    <zip zipfile="${zipfile}">
-       <fileset basedir="${dir.root}" prefix="openpetra">
-         <include name="**/*" />
-         <exclude name="tmp/**"/>
-         <exclude name="**/.bzr/**"/>
-         <exclude name="**/.git/**"/>
-       </fileset>
-    </zip>
-
-    <!-- calling script must upload the zip file to https://github.com/openpetra/openpetra-nightlydevzip/releases -->
-    
-    <echo message="Target devzip finished at: ${datetime::now()}" />
-</target>
-
 <target name="pullVCSVersionInfo">
 <!-- TODO should we have this for git? but how to define where git.exe lives?
     eg C:\Users\tpokorra\AppData\Local\Programs\Git\bin\git.exe

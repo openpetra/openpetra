@@ -428,6 +428,7 @@
         "edittitle": "Maintain Ledger",
         "caption": "Ledger",
         "name": "Ledger name",
+        "example_name": "My Charity",
         "number": "Ledger number",
         "entry_name": "ledger name",
         "entry_date": "first day of financial year",

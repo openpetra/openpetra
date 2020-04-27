@@ -1482,6 +1482,34 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             return Result;
         }
 
+        /// Is this user a self service user, and should be redirected to the MaintainPartnerSelfService window
+        [NoRemoting]
+        public static string GetSelfServiceAssistant()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetSelfServiceAssistant");
+
+            string result = String.Empty;
+            string sql = "SELECT s_module_id_c FROM PUB_s_user_module_access_permission p1 " +
+                "WHERE p1.s_module_id_c IN ('PTNRUSER','PARTNERSELFSERVICE') AND p1.s_can_access_l = true " +
+                "AND p1.s_user_id_c = '" + UserInfo.GetUserInfo().UserID + "'";
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    DataTable tab = new DataTable();
+                    db.SelectDT(tab, sql, t);
+                    if ((tab.Rows.Count == 1) && (tab.Rows[0][0].ToString() == "PARTNERSELFSERVICE"))
+                    {
+                        result = "SelfService/MaintainPartnerSelfService";
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            return result;
+        }
+
         /// <summary>
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
