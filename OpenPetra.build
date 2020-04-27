@@ -27,7 +27,7 @@ list of available commands:
       nant compileProject -D:name=Ict.Common
   prepareDeliveryContent: make sure all the sql files are in the right place on devenv
   install: install the current development binaries to this machine (requires the rpm already to be installed)
-  startAdmin: not possible via nant, run this: /usr/bin/openpetra-server menu
+  startAdmin: not possible via nant, run this: /home/op_dev/openpetra-server.sh menu
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for server and testing, and the version.txt
   initPlugins: install some default plugins
@@ -43,7 +43,8 @@ compat:
   errorCodeDoc: generates doc for used error codes
   schemaSpy: generates database documentation using schemaSpy
   recreateDatabase: needed after changes in table structure in petra.xml
-  resetDatabase: just resets the data, resets the permissions
+  resetDatabase: just resets the data, resets the permissions; with DEMO user and a german ledger
+  resetDatabaseClean: resets the data, resets the permissions; only SYSADMIN user, no ledger
   patchDatabase: update the database to the latest development version
   dumpDatabase: dump the database to a db specific format.
         nant dumpDatabase -D:file=test.sql

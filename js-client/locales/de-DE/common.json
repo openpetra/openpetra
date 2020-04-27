@@ -105,6 +105,7 @@
         "CreateUser_label": "Benutzer anlegen",
         "Database_label": "Datenbank",
         "ImportAndExportDatabase_label": "Datenbank importieren und exportieren",
+        "SysManAssistantInit_label": "Einrichtungsassistent",
         "FindPartners_label": "Kontakt suchen",
         "AccountDetail_label": "Bericht über die Kontenbewegungen",
         "Motivations_label": "Verwendungszwecke verwalten",
@@ -442,20 +443,21 @@
       "edittitle":"Hauptbuch bearbeiten",
       "caption":"Hauptbücher",
       "name":"Name",
+      "example_name": "Mein Verein",
       "number":"Nummer",
       "entry_name":"Name des Hauptbuches",
       "entry_date":"Finanzjahranfang",
       "entry_base_currency":"Währung",
       "entry_intl_currency":"Internationale Währung",
       "entry_first_current_period":"Beginne mit offenem Monat",
-      "entry_account_periods":"Berechenbare Monate",
+      "entry_account_periods":"Anzahl Monate im Jahr",
       "entry_posting_periods":"Maximale Anzahl offener Monate",
       "error_create":"Fehler beim Erstellen des Hauptbuches",
       "ask_delete":"Sind Sie sicher, dass Sie dieses Hauptbuch löschen möchten?",
       "confirm_edit":"Das Hauptbuch wurde gespeichert",
       "confirm_create":"Das Hauptbuch wurde erstellt",
       "confirm_delete":"Das Hauptbuch wurde gelöscht",
-      "entry_country":"Länderzeichnung"
+      "entry_country":"Landeskennung"
     },
 
     "PartnerBySpecialType":{
@@ -679,5 +681,22 @@
       "ErrFirstReminderDate": "Datum der Erinnerung darf nicht leer sein",
       "ErrEmptyReminderComment": "Beschreibung darf nicht leer sein",
       "notes":"Notizen"
+    },
+    "SysManAssistantInit": {
+      "caption": "Einrichtungsassistent",
+      "Explanation": "Um OpenPetra benutzen zu können, gibt es zum einen den Benutzer SYSADMIN, mit dem Sie weitere Benutzer einrichten können. Im Normalfall sollten Sie aber nicht mit dem Benutzer SYSADMIN arbeiten, weil er zu viele Rechte hat. Stattdessen können Sie hier einen normalen Benutzer einrichten, der über genügend Rechte für den alltäglichen Gebrauch verfügt.",
+      "LoginInfo": "Sie können sich nachher mit dem Benutzernamen oder der E-Mail Adresse anmelden. Um ein vergessenes Passwort zurückzusetzen, wird ebenfalls die E-Mail Adresse benötigt.",
+      "UserID": "Benutzername",
+      "Firstname": "Vorname",
+      "Lastname": "Nachname",
+      "EmailAddress": "E-Mail Adresse",
+      "InitialPassword": "Passwort",
+      "PasswordInfo": "Sie können das vorgeschlagene Passwort übernehmen (bitte notieren!), oder Sie geben ein eigenes Passwort ein, dass diese Kriterien erfüllt: Mindestens 8 Zeichen lang, mindestens ein Buchstabe, mindestens eine Ziffer.",
+      "InitialModulePermissions": "Berechtigungen",
+      "InfoInitialModulePermissions": "Es werden die allgemeinen Berechtigungen zum Bearbeiten von Kontakten, für Buchhaltung und Patenschaftsverwaltung eingerichtet. Sie können die Berechtigungen als Benutzer SYSADMIN in der Benutzerverwaltung anpassen.",
+      "EnableSelfSignUp": "Selbstregistrierung aktivieren",
+      "SelfSignUpEnabled": "Jeder beliebige Besucher kann einen eigenen Benutzer anlegen und seine eigenen Daten verwalten"
+      
+      
     }
 }

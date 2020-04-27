@@ -29,6 +29,7 @@ using System.Web.Script.Services;
 using System.ServiceModel.Web;
 using System.ServiceModel;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
@@ -52,7 +53,9 @@ using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
 using Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Ict.Petra.Server.MSysMan.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.app.JSClient;
 
 namespace Ict.Petra.Server.App.WebService
@@ -284,15 +287,61 @@ namespace Ict.Petra.Server.App.WebService
         [WebMethod(EnableSession = true)]
         public bool SetInitialSysadminEmail(string AEmailAddress, string AFirstName, string ALastName, string ALanguageCode, string AAuthToken)
         {
+            bool result = true;
+
             string requiredToken = TAppSettingsManager.GetValue("AuthTokenForInitialisation");
             if ((AAuthToken != requiredToken) || (requiredToken == String.Empty) )
             {
                 return false;
             }
 
+            string UserEmailAddress = String.Empty;
+            string UserID = String.Empty;
+
             if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress, AFirstName, ALastName, ALanguageCode))
             {
-                return RequestNewPassword(AEmailAddress);
+                // create unprivileged user as well
+                if (AEmailAddress.Contains("+sysadmin@"))
+                {
+                    string InitialModulePermissions;
+                    Int64 SiteKey;
+                    string InitialPassword;
+                    string FirstName;
+                    string LastName;
+                    string LanguageCode;
+
+                    result = TSettingsWebConnector.GetDefaultsForFirstSetup(
+                        ALanguageCode,
+                        out UserID,
+                        out FirstName,
+                        out LastName,
+                        out LanguageCode,
+                        out UserEmailAddress,
+                        out InitialModulePermissions,
+                        out InitialPassword,
+                        out SiteKey);
+
+                    if (result)
+                    {
+                        TVerificationResultCollection VerificationResult;
+                        result = TSettingsWebConnector.RunFirstSetup(
+                            UserID,
+                            FirstName,
+                            LastName,
+                            LanguageCode,
+                            UserEmailAddress,
+                            InitialModulePermissions.Split(',').ToList(),
+                            "",
+                            SiteKey,
+                            false,
+                            out VerificationResult);
+                    }
+                }
+
+                if (result)
+                {
+                    return TMaintenanceWebConnector.SendWelcomeEmail(AEmailAddress, UserEmailAddress, UserID, AFirstName, ALastName, ALanguageCode);
+                }
             }
 
             return false;
@@ -403,6 +452,26 @@ namespace Ict.Petra.Server.App.WebService
 
             result.Add("resultcode", "success");
             result.Add("navigation", new TUINavigation().LoadNavigationUI());
+
+            string assistant = String.Empty;
+
+            if (assistant == String.Empty)
+            {
+                assistant = TSettingsWebConnector.GetSetupAssistant();
+            }
+
+            if (assistant == String.Empty)
+            {
+                assistant = TMaintenanceWebConnector.GetSelfServiceAssistant();
+            }
+
+            if (assistant == String.Empty)
+            {
+                assistant = TGLSetupWebConnector.GetLedgerSetupAssistant();
+            }
+
+            result.Add("assistant", assistant);
+
             return JsonConvert.SerializeObject(result);
         }
 
