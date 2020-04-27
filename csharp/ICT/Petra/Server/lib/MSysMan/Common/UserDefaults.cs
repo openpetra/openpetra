@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// Defaults.
         /// </param>
         /// <returns>void</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static void GetUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
         {
             LoadUserDefaultsTable(AUserName, out AUserDefaultsDataTable);

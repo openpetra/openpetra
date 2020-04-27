@@ -618,7 +618,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// check the implementation of the authentication mechanism and which functionality is implemented for OpenPetra
         /// </summary>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static bool GetAuthenticationFunctionality(out bool ACanCreateUser, out bool ACanChangePassword, out bool ACanChangePermissions)
         {
             ACanCreateUser = true;

@@ -123,7 +123,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
 {#ENDIF WITHLEDGER}
         
         /// GetCacheableTable
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static System.Data.DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
@@ -132,7 +132,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         }
 
         /// RefreshCacheableTable
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static void RefreshCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable)
         {
             System.Type TmpType;
@@ -140,7 +140,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         }
 
         /// RefreshCacheableTable
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static System.Data.DataTable RefreshCacheableTableAndGet(TCacheable{#SUBMODULE}TablesEnum ACacheableTable)
         {
             System.Type TmpType;
@@ -148,7 +148,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         }
 
         /// SaveChangedStandardCacheableTable
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,
                                                                       out TVerificationResultCollection AVerificationResult)
@@ -158,7 +158,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         
 {#IFDEF WITHLEDGER}
         /// GetCacheableTable
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static System.Data.DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        System.Int32 ALedgerNumber,
@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         }
 
         /// RefreshCacheableTable
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static void RefreshCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
                                           System.Int32 ALedgerNumber,
                                           out System.Data.DataTable ADataTable)
@@ -178,7 +178,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         }
 
         /// SaveChangedStandardCacheableTable
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,
                                                                       System.Int32 ALedgerNumber,
