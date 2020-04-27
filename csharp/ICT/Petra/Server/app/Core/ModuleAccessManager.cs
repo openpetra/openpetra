@@ -158,7 +158,11 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     if (moduleExpression == "NONE")
                     {
-                        return "OK";
+                        throw new EOPAppException("Problem with ModulePermissions, " +
+                            "We don't support moduleExpression NONE anymore: '" +
+                            moduleExpression + "' for " +
+                            AConnectorType.ToString() + "." +
+                            AMethodName + "()", argException);
                     }
 
                     // authenticated user
