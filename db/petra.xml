@@ -989,6 +989,66 @@
       <indexfield name="s_table_name_c" order="ascending"/>
     </index>
   </table>
+  <table name="s_module_table_access_permission"
+         descr="Security mappings from modules to Petra database"
+         area="Petra Data"
+         label="Module Table Access Permission"
+         dumpname="s_modtab"
+         group="sysman">
+    <tablefield name="s_module_id_c"
+                type="varchar"
+                descr=""
+                format="X(10)"
+                label="Module ID"
+                help="Enter the module id"
+                notnull="yes"/>
+    <tablefield name="s_table_name_c"
+                type="varchar"
+                descr=""
+                format="X(32)"
+                label="Table Name"
+                help="The name of the Table"
+                notnull="yes"/>
+    <tablefield name="s_can_create_l"
+                type="bit"
+                descr="Permission to allow creation."
+                format="Yes/No"
+                label="Can create"
+                initial="yes"/>
+    <tablefield name="s_can_modify_l"
+                type="bit"
+                descr="Permission to allow modification."
+                format="Yes/No"
+                label="Can modify"
+                initial="yes"/>
+    <tablefield name="s_can_delete_l"
+                type="bit"
+                descr="Permission to allow deletion."
+                format="Yes/No"
+                label="Can delete"
+                initial="yes"/>
+    <tablefield name="s_can_inquire_l"
+                type="bit"
+                descr="Permission to allow inquiry."
+                format="Yes/No"
+                label="Can inquire"
+                initial="yes"/>
+    <!-- Constraints on table s_module_table_access_permission -->
+    <primarykey name="s_module_table_acc_perm_pk"
+                descr=""
+                thisFields="s_module_id_c, s_table_name_c"/>
+    <foreignkey name="s_module_table_acc_perm_fk1"
+                descr=""
+                thisFields="s_module_id_c"
+                otherTable="s_module"
+                otherFields="s_module_id_c"/>
+    <!-- Explicit Indexes on table s_module_table_access_permission  -->
+    <index name="gtap_OnTableName"
+           descr=""
+           area="Petra Index">
+      <indexfield name="s_table_name_c" order="ascending"/>
+    </index>
+  </table>
   <table name="s_user_module_access_permission"
          descr="Security mappings of users to Petra modules"
          area="Petra Data"
