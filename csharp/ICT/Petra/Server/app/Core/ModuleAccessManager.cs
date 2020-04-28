@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.App.Core.Security
                             "We don't support moduleExpression NONE anymore: '" +
                             moduleExpression + "' for " +
                             AConnectorType.ToString() + "." +
-                            AMethodName + "()", argException);
+                            AMethodName + "()");
                     }
 
                     // authenticated user
