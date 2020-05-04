@@ -74,7 +74,7 @@
 		<div class="modal-content">
 		<div class="modal-header">
 			<h3>{edittitle}</h3>
-			<button type="button" class="btn btn-primary" onclick="open_history(this)">{change_history}</button>
+			<button type="button" class="btn btn-primary" onclick="open_history(this)" id="history_button">{change_history}</button>
 		</div>
 		<div class="modal-body">
 		<div class="container">
@@ -380,7 +380,8 @@
 						<div>
 							<h4>{consent permissions}: <span class="selected-type">-</span></h4>
 							<hr>
-							<div permissions></div>
+							<div permissions style="overflow-y:auto;overflow-x:hidden;max-height:20vh;"></div>
+							<button type="button" style="position:absolute;top:0;right:0;" onclick="submit_consent_edit(false)" id="consent_edit_btn">{forms.save}</button>
 						</div>
 
 						<div>
@@ -436,19 +437,21 @@
 
 						<hr>
 
-						<div class="row">
+						<div class="row" mode="partner_edit">
 							<div class="col">
 								{consent permissions}
 							</div>
 						</div>
 
 						<!-- gets filled with copys of: [phantom] .permission-option -->
-						<div class="permissions"></div>
+						<div class="permissions" mode="partner_edit"></div>
 
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-primary" onclick="submit_changes_consent()">{forms.save}</button>
+					<button class="btn btn-light" onclick="$('#modal_space .tpl_consent').modal('hide')" mode="consent_edit">{forms.close}</button>
+					<button class="btn btn-primary" onclick="submit_consent_edit(true)" mode="consent_edit">{forms.save}</button>
+					<button class="btn btn-primary" onclick="submit_changes_consent()" mode="partner_edit">{forms.save}</button>
 				</div>
 			</div>
 		</div>

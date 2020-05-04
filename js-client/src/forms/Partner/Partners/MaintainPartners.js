@@ -303,7 +303,7 @@ function open_history(HTMLButton) {
 	var req = {
 		APartnerKey: $(HTMLButton).closest(".modal").find("[name=p_partner_key_n]").val()
 	};
-
+	data_changes_log = {};
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetUniqueTypes', req).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
 		let Temp = $('[phantom] .tpl_history').clone();
@@ -328,6 +328,10 @@ function load_history_data(HTMLButton) {
 		ADataType: $(HTMLButton).attr("data-type")
 	};
 	var Target = $("#modal_space .tpl_history");
+
+	// we also store infos about the current edit user in the button thats needs to be pressed when saving changes
+	$("button#consent_edit_btn").attr("data-partner", req.APartnerKey);
+	$("button#consent_edit_btn").attr("data-type", req.ADataType);
 
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetHistory', req).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
@@ -364,7 +368,6 @@ function load_history_data(HTMLButton) {
 			HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+entry.p_channel_code_c) );
 			for (var channel of channels) {
 				if (entry.p_channel_code_c == channel.p_channel_code_c) {
-					console.log(channel);
 					HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+channel.p_name_c) );
 				}
 			}
@@ -375,7 +378,6 @@ function load_history_data(HTMLButton) {
 			}
 
 			HistoryList.append(HistPerm);
-			console.log(entry);
 		}
 
 	})
@@ -399,8 +401,6 @@ function load_history_data(HTMLButton) {
 			TargetPurpose.append(PermTemp);
 		}
 	});
-
-
 }
 
 function insert_consent(HTMLField, data_name) {
@@ -425,10 +425,11 @@ function insert_consent(HTMLField, data_name) {
 
 }
 
-function open_consent_modal(field) {
+function open_consent_modal(field, mode="partner_edit") {
 
 	var partner_key = $("#modal_space .tpl_edit [name=p_partner_key_n]").val();
 	var req = {APartnerKey: partner_key, ADataType:field};
+	$("#modal_space .tpl_edit #history_button").attr("disabled", true);
 
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_LastKnownEntry', req).then(function (data) {
 		parsed = JSON.parse(data.data.d);
@@ -468,6 +469,17 @@ function open_consent_modal(field) {
 
 		$('#modal_space .modal.tpl_consent').remove();
 		$('#modal_space').append(Temp);
+
+		if (mode == "partner_edit") {
+			$("#modal_space .modal.tpl_consent [mode]").hide();
+			$("#modal_space .modal.tpl_consent [mode=partner_edit]").show();
+		}
+
+		if (mode == "consent_edit") {
+			$("#modal_space .modal.tpl_consent [mode]").hide();
+			$("#modal_space .modal.tpl_consent [mode=consent_edit]").show();
+		}
+
 		$('#modal_space .modal.tpl_consent').modal({backdrop:"static", keyboard: false}); // <- so u can't close it normally
 
 	})
@@ -499,4 +511,31 @@ function getUpdatesAddress() {
 	let postal = $("#modal_space #addresses").find("[name=p_postal_code_c]").val();
 	let land = $("#modal_space #addresses").find("[name=p_country_code_c]").val();
 	return `${street}, ${postal} ${city}, ${land}`;
+}
+
+var current_edit_partner_number = "-1"
+function submit_consent_edit(from_model=false) {
+	if (!from_model) {
+		var ty = $("#modal_space #consent_edit_btn").attr("data-type");
+		current_edit_partner_number = $("#modal_space #consent_edit_btn").attr("data-partner");
+		open_consent_modal(ty, "consent_edit");
+		return;
+	}
+
+	var perm_list = [];
+	var perms = $("#modal_space .modal.tpl_history input[purposecode]:checked");
+	for (var Perm of perms) {
+		perm_list.push( $(Perm).attr("purposecode") );
+	}
+
+	var req = {
+		APartnerKey: current_edit_partner_number,
+		ADataType: $("#modal_space .modal.tpl_consent data[name=field]").val(),
+		AChannelCode: $("#modal_space .modal.tpl_consent [name=consent_channel]").val(),
+		AConsentCodes: perm_list.join(',')
+	};
+
+	console.log(req);
+
+
 }
