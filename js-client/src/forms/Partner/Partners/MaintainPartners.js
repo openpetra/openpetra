@@ -352,15 +352,14 @@ function load_history_data(HTMLButton) {
 			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
 			switch (entry.State) {
 				case "CANCLED":
-					HistPerm.attr("style", "background-color: #ffbbbb;");
 					HistPerm.find(".preview [name=Value]").text( i18next.t('MaintainPartners.permission change') );
 					break;
 
 				case "ACTIVE":
-					HistPerm.attr("style", "background-color: #bbffbb;");
 					HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
 					break;
 			}
+			HistPerm.attr("style", "background-color: #EEEEEE");
 			HistPerm.find(".preview [name=EventDate]").text(event_date);
 			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
 
@@ -513,7 +512,7 @@ function getUpdatesAddress() {
 	return `${street}, ${postal} ${city}, ${land}`;
 }
 
-var current_edit_partner_number = "-1"
+var current_edit_partner_number = "-1";
 function submit_consent_edit(from_model=false) {
 	if (!from_model) {
 		var ty = $("#modal_space #consent_edit_btn").attr("data-type");
@@ -535,7 +534,16 @@ function submit_consent_edit(from_model=false) {
 		AConsentCodes: perm_list.join(',')
 	};
 
-	console.log(req);
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_EditHistory', req).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		if (parsed.result) {
+			$("#modal_space .tpl_consent").modal("hide");
+			var HTMLDataButton = $(`#modal_space .modal.tpl_history button[data-type='${req.ADataType}']`);
+			$("#modal_space .tpl_consent").modal("hide");
+			load_history_data(HTMLDataButton);
+		}
+
+	})
 
 
 }

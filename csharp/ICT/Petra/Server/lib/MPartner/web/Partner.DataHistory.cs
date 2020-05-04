@@ -33,6 +33,7 @@ using Newtonsoft.Json;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Common;
 using System.Data.Odbc;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
@@ -178,6 +179,47 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
         }
 
+        /// <summary>
+        /// Edits the selected consent type to be added or removed consent entrys,
+        /// only the last entry for a datatype can be edited
+        /// and even duh it says edit, it actully creates a new entry in history
+        /// 
+        /// `AConsentCodes` is a comma sepperated list of the new allowed consent codes
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool EditHistory(
+            Int64 APartnerKey,
+            string ADataType,
+            string AChannelCode,
+            string AConsentCodes,
+            out TVerificationResultCollection AVerificationResult
+        )
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            DataConsentTDS LastEntry = LastKnownEntry(APartnerKey, ADataType);
+            DataConsentTDSPDataHistoryRow LastEntryRow = LastEntry.PDataHistory[0];
+
+            // tryed to save with same permissions, we skip these actions and trow a error
+            if (LastEntryRow.AllowedPurposes == AConsentCodes) {
+                // AVerificationResult.Add(new TVerificationResult("error", "no_changes", TResultSeverity.Resv_Critical));
+                return false; 
+            }
+
+            DataHistoryChange ToChange = new DataHistoryChange
+            {
+                ChannelCode = AChannelCode,
+                PartnerKey = APartnerKey,
+                Type = ADataType,
+                Value = LastEntryRow.Value,
+                Permissions = AConsentCodes
+            };
+
+            String ToRegister = JsonConvert.SerializeObject(ToChange);
+            List<string> JsonList = new List<string> { ToRegister };
+            RegisterChanges(JsonList);
+            return true;
+        }
+
 
         /// <summary>
         /// Lists all consents channels and purposes
@@ -211,14 +253,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
             List<string> JsonChanges
         ) {
             if (JsonChanges.Count == 0) { return; }
-
-            // connection objects
-            // bool SubmissionOK = false;
-            // TDBTransaction T = new TDBTransaction();
-            // TDataBase DB = DBAccess.Connect("Inserting DataHistory Changes");
-
-            // base strings
-
 
             // data is comming like this: ["{}", "{}"] 
             foreach (string JsonObjectString in JsonChanges) {
