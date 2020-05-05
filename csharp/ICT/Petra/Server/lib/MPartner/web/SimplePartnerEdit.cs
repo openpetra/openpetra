@@ -654,7 +654,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
 
-            TDataHistoryWebConnector.RegisterChanges(AChanges);
+            bool run_after_create = false;
+            // only run if it's not a new user create call
+            if (AMainDS.PPartner[0].ModificationId != DateTime.MinValue)
+            {
+                TDataHistoryWebConnector.RegisterChanges(AChanges);
+            }
+            else {
+                run_after_create = true;
+            }
 
             try
             {
@@ -662,6 +670,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ref SaveDS,
                     ref ResponseDS,
                     out AVerificationResult);
+
+                if (run_after_create) {
+                    // after user entry exists, then enter inital changes
+                    TDataHistoryWebConnector.RegisterChanges(AChanges);
+                }
+
                 return result == TSubmitChangesResult.scrOK;
             }
             catch (Exception e)

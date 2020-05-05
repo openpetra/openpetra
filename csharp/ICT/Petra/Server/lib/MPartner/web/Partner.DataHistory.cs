@@ -93,7 +93,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 	"FROM `p_data_history` " +
                     "LEFT JOIN `p_data_history_permission` " +
                     "ON `p_data_history`.`p_entry_id_i` = `p_data_history_permission`.`p_data_history_entry_i` " +
-                    "AND `p_data_history_permission`.`p_data_chancled_d` IS NULL " +
                     "WHERE `p_data_history`.`p_partner_key_n` = ? " +
                     "AND `p_data_history`.`p_type_c` = ? " +
                     "GROUP BY `p_data_history`.`p_entry_id_i` " +
@@ -134,37 +133,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 string sql = "" +
                 	"SELECT " +
                 	"  `pdh`.*, " +
-                	"  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes`, " +
-                	"  `pdh`.`s_date_created_d` AS `EventDate`, " +
-                	"  'ACTIVE' AS `State` " +
+                	"  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
                 	"FROM `p_data_history` AS `pdh` " +
                 	"LEFT JOIN `p_data_history_permission` AS `pdhp` " +
                 	"  ON `pdh`.`p_entry_id_i` = `pdhp`.`p_data_history_entry_i` " +
-                	"  AND `pdhp`.`p_data_chancled_d` IS NULL " +
                 	"WHERE `pdh`.`p_partner_key_n` = ? " +
                 	"  AND `pdh`.`p_type_c` = ? " +
                 	"GROUP BY `pdh`.`p_entry_id_i` " +
-                	"" +
-                	"UNION " +
-                	"" +
-                    "SELECT " +
-                    "  `pdh`.*, " +
-                    "  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes`, " +
-                    "  `pdhp`.`p_data_chancled_d` AS `EventDate`, " +
-                    "  'CANCLED' AS `State` " +
-                    "FROM `p_data_history` AS `pdh` " +
-                    "JOIN `p_data_history_permission` AS `pdhp` " +
-                    "  ON `pdh`.`p_entry_id_i` = `pdhp`.`p_data_history_entry_i` " +
-                    "  AND `pdhp`.`p_data_chancled_d` IS NOT NULL " +
-                    "WHERE `pdh`.`p_partner_key_n` = ? " +
-                    "  AND `pdh`.`p_type_c` = ? " +
-                    "GROUP BY `pdh`.`p_entry_id_i`, `pdhp`.`p_data_chancled_d` " +
-                    "" +
-                    "ORDER BY `EventDate` DESC, `p_entry_id_i` DESC";
+                    "ORDER BY `pdh`.`p_entry_id_i` DESC";
 
-                // yeah... twice, because why not
-                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
-                SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType });
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType });
 
@@ -201,7 +178,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
             // tryed to save with same permissions, we skip these actions and trow a error
             if (LastEntryRow.AllowedPurposes == AConsentCodes) {
-                // AVerificationResult.Add(new TVerificationResult("error", "no_changes", TResultSeverity.Resv_Critical));
+                AVerificationResult.Add(new TVerificationResult("error", "no_changes", TResultSeverity.Resv_Critical));
                 return false; 
             }
 

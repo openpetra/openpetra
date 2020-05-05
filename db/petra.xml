@@ -24222,11 +24222,6 @@
                 format="X(20)"
                 label="Purpose code"
                 notnull="yes"/>
-    <tablefield name="p_data_chancled_d"
-                type="date"
-                descr="Date when a permission got revoked."
-                format="99/99/9999"
-                label="Chancledate"/>
     <!-- Constraints on table p_consent_channel -->
     <primarykey name="p_data_history_permission_pk"
                 thisFields="p_data_history_entry_i, p_purpose_code_c"/>

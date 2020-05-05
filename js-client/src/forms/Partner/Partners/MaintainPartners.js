@@ -346,21 +346,13 @@ function load_history_data(HTMLButton) {
 		for (var entry of parsed.result.PDataHistory) {
 			var HistPerm = $("[phantom] .history-entry").clone();
 
-			var EDate = new Date(entry.EventDate);
-			var event_date = `${EDate.getFullYear()}-${(EDate.getMonth()+1)}-${EDate.getDate()}`;
+			var EventDate = new Date(entry.s_date_created_d);
+			var event_date_str = `${EventDate.getFullYear()}-${(EventDate.getMonth()+1)}-${EventDate.getDate()}`;
 
 			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
-			switch (entry.State) {
-				case "CANCLED":
-					HistPerm.find(".preview [name=Value]").text( i18next.t('MaintainPartners.permission change') );
-					break;
-
-				case "ACTIVE":
-					HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
-					break;
-			}
+			HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
 			HistPerm.attr("style", "background-color: #EEEEEE");
-			HistPerm.find(".preview [name=EventDate]").text(event_date);
+			HistPerm.find(".preview [name=EventDate]").text( event_date_str );
 			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
 
 			HistPerm.find(".detail [name=Editor]").text( entry.s_created_by_c );
@@ -436,7 +428,7 @@ function open_consent_modal(field, mode="partner_edit") {
 
 		var purposes = parsed.result.PPurpose;
 		var channels = parsed.result.PConsentChannel;
-		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
+		var last_known_configuration = parsed.result.PDataHistory.pop() || {}; // could be empty
 
 		// because it could be empty
 		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
@@ -541,6 +533,12 @@ function submit_consent_edit(from_model=false) {
 			var HTMLDataButton = $(`#modal_space .modal.tpl_history button[data-type='${req.ADataType}']`);
 			$("#modal_space .tpl_consent").modal("hide");
 			load_history_data(HTMLDataButton);
+		} else {
+			if (parsed.AVerificationResult.message == "np_changes") {
+				$("#modal_space .tpl_consent").modal("hide");
+			} else {
+				display_error( parsed.AVerificationResult );
+			}
 		}
 
 	})
