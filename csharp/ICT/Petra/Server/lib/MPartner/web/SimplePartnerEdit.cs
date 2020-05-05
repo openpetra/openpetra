@@ -654,15 +654,31 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
 
-            bool run_after_create = false;
-            // only run if it's not a new user create call
-            if (AMainDS.PPartner[0].ModificationId != DateTime.MinValue)
+            // we search in every possible changed list, and added the data_type to NeededChanges
+            // everything in this list will be valided by TDataHistoryWebConnector.RegisterChanges
+            // it throws a error if a needed change cant be validated 
+            List<string> NeededChanges = new List<string>();
+
+            foreach (PLocationRow Loc in SaveDS.PLocation.Rows)
+            { 
+                if (Loc.RowState == DataRowState.Modified) { NeededChanges.Add("address"); } 
+            }
+
+            foreach (PPartnerAttributeRow Attr in SaveDS.PPartnerAttribute.Rows)
             {
-                TDataHistoryWebConnector.RegisterChanges(AChanges);
+                if (Attr.RowState == DataRowState.Modified) {
+
+                    if (Attr.AttributeType == "E-Mail") { NeededChanges.Add("email address"); }
+                    if (Attr.AttributeType == "Phone") { NeededChanges.Add("phone landline"); }
+                    if (Attr.AttributeType == "Mobile Phone") { NeededChanges.Add("phone mobile"); }
+
+                }
             }
-            else {
-                run_after_create = true;
-            }
+
+            // only run if it's not a new user create call
+            bool run_after_create = false;
+            if (AMainDS.PPartner[0].ModificationId != DateTime.MinValue) { TDataHistoryWebConnector.RegisterChanges(AChanges, NeededChanges); }
+            else { run_after_create = true; }
 
             try
             {
@@ -673,7 +689,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (run_after_create) {
                     // after user entry exists, then enter inital changes
-                    TDataHistoryWebConnector.RegisterChanges(AChanges);
+                    TDataHistoryWebConnector.RegisterChanges(AChanges, new List<string>());
                 }
 
                 return result == TSubmitChangesResult.scrOK;

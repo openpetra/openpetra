@@ -193,7 +193,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
             String ToRegister = JsonConvert.SerializeObject(ToChange);
             List<string> JsonList = new List<string> { ToRegister };
-            RegisterChanges(JsonList);
+            RegisterChanges(JsonList, new List<string>() { ADataType });
             return true;
         }
 
@@ -226,10 +226,23 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         /// </summary>
         /// <returns></returns>
         [NoRemoting]
-        public static void RegisterChanges(
-            List<string> JsonChanges
+        public static bool RegisterChanges(
+            List<string> JsonChanges,
+            List<string> NeededChanges
         ) {
-            if (JsonChanges.Count == 0) { return; }
+            foreach (string PreCheck in JsonChanges)
+            {
+                DataHistoryChange PreCheckObj = JsonConvert.DeserializeObject<DataHistoryChange>(PreCheck);
+                if (NeededChanges.Contains(PreCheckObj.Type))
+                {
+                    NeededChanges.Remove(PreCheckObj.Type);
+                }
+            }
+
+            if (NeededChanges.Count != 0)
+            {
+                return false;
+            }
 
             // data is comming like this: ["{}", "{}"] 
             foreach (string JsonObjectString in JsonChanges) {
@@ -261,7 +274,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 DataConsentTDSAccess.SubmitChanges(Set);
             }
 
-            return;
+            return true;
         }
     }
     /// <summary>
