@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
         /// Defaults.
         /// </param>
         /// <returns>void</returns>
-        [RequireModulePermission("USER")]
+        [NoRemoting]
         public static void GetUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
         {
             LoadUserDefaultsTable(AUserName, out AUserDefaultsDataTable);

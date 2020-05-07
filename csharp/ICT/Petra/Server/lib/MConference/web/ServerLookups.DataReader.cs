@@ -267,7 +267,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         /// 'TVerificationResult' that contains information about DB Table references created by a cascading count
         /// Method if the count yielded more than 0 referencing DataRows.</param>
         /// <returns>The number records that reference a 'DataRow' of a non-cachable DataTable.</returns>
-        [RequireModulePermission("USER")]
+        [NoRemoting]
         public static int GetNonCacheableRecordReferenceCountManual(TTypedDataTable ADataTable,
             object[] APrimaryKeyValues,
             out TVerificationResultCollection AVerificationResult)

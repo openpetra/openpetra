@@ -41,7 +41,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// </summary>
         /// <param name="ALanguageCode"></param>
         /// <param name="ACultureCode"></param>
-        [RequireModulePermission("USER")]
+        [NoRemoting]
         public static bool SetLanguageAndCulture(string ALanguageCode, string ACultureCode)
         {
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode, true);
@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// </summary>
         /// <param name="ALanguageCode"></param>
         /// <param name="ACultureCode"></param>
-        [RequireModulePermission("USER")]
+        [NoRemoting]
         public static bool GetLanguageAndCulture(ref string ALanguageCode, ref string ACultureCode)
         {
             ALanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode);
