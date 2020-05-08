@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// to show the progress of the report calculation;
         /// prints the current id of the row that is being calculated;
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static TProgressState GetProgress(string AReportID)
         {
             return TProgressTracker.GetCurrentState(AReportID);
@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// prepare a UID for the report
         /// </summary>
         /// <returns>ReportClientUID</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static string Create()
         {
             string session = TSession.GetSessionID();
@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// Calculates the report, which is specified in the parameters table
         /// </summary>
         /// <returns>ReportClientUID</returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static string Start(string AReportID, System.Data.DataTable AParameters)
         {
             string session = TSession.GetSessionID();
@@ -277,7 +277,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// <summary>
         /// see if the report calculation finished successfully
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static Boolean GetSuccess(string AReportID, TDataBase ADataBase = null)
         {
             SReportResultRow Row = GetReportResult(AReportID, ADataBase);
@@ -293,7 +293,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// <summary>
         /// error message that happened during report calculation
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static String GetErrorMessage(string AReportID, TDataBase ADataBase = null)
         {
             SReportResultRow Row = GetReportResult(AReportID, ADataBase);
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
         /// Download the result of the report as HTML
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static string DownloadHTML(string AReportID, TDataBase ADataBase = null)
         {
             SReportResultRow Row = GetReportResult(AReportID, ADataBase);
@@ -348,7 +348,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
         /// Download the result of the report as PDF File in base64 encoding
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static string DownloadPDF(string AReportID, TDataBase ADataBase = null)
         {
             SReportResultRow Row = GetReportResult(AReportID, ADataBase);
@@ -375,7 +375,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
         /// Download the result of the report as Excel File in base64 encoding
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static string DownloadExcel(string AReportID, TDataBase ADataBase = null)
         {
             SReportResultRow Row = GetReportResult(AReportID, ADataBase);
@@ -404,7 +404,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// <summary>
         /// send report as email
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static Boolean SendEmail(string AReportID, string AEmailAddresses,
             bool AAttachExcelFile,
             bool AAttachPDF,

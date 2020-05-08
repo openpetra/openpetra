@@ -158,7 +158,11 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     if (moduleExpression == "NONE")
                     {
-                        return "OK";
+                        throw new EOPAppException("Problem with ModulePermissions, " +
+                            "We don't support moduleExpression NONE anymore: '" +
+                            moduleExpression + "' for " +
+                            AConnectorType.ToString() + "." +
+                            AMethodName + "()");
                     }
 
                     // authenticated user
@@ -217,6 +221,85 @@ namespace Ict.Petra.Server.App.Core.Security
             throw new EOPAppException(
                 "Missing definition of access permission for method " + AMethodName + " in Connector class " + AConnectorType);
         }
+
+        /// throws an exception if the current user does not have enough permission to access the table (to read or write)
+        static public bool CheckUserPermissionsForTable(string ATableName, TTablePermissionEnum APermissionRequested, bool ADontThrowException = false)
+        {
+            string UserID = string.Empty;
+            bool Result = false;
+
+            if (UserInfo.GetUserInfo() != null && UserInfo.GetUserInfo().UserID != null)
+            {
+                UserID = UserInfo.GetUserInfo().UserID;
+            }
+
+            if (UserID != string.Empty)
+            {
+                string sql = "SELECT COUNT(*) FROM PUB_s_module_table_access_permission mt, PUB_s_user_module_access_permission um " +
+                    "WHERE um.s_user_id_c = '" + UserID + "' " +
+                    "AND um.s_module_id_c = mt.s_module_id_c " +
+                    "AND mt.s_table_name_c = '" + ATableName + "' ";
+
+                if ((APermissionRequested & TTablePermissionEnum.eCanRead) > 0)
+                {
+                    sql += "AND mt.s_can_inquire_l = True ";
+                }
+
+                if ((APermissionRequested & TTablePermissionEnum.eCanCreate) > 0)
+                {
+                    sql += "AND mt.s_can_create_l = True ";
+                }
+
+                if ((APermissionRequested & TTablePermissionEnum.eCanModify) > 0)
+                {
+                    sql += "AND mt.s_can_modify_l = True ";
+                }
+
+                if ((APermissionRequested & TTablePermissionEnum.eCanDelete) > 0)
+                {
+                    sql += "AND mt.s_can_delete_l = True ";
+                }
+
+                TDBTransaction t = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("CheckUserPermissionsForTable");
+
+                db.ReadTransaction(ref t,
+                    delegate
+                    {
+                        Result = Convert.ToInt32(db.ExecuteScalar(sql, t)) > 0;
+                    });
+        
+                db.CloseDBConnection();
+            }
+
+            if (Result)
+            {
+                return true;
+            }
+
+            if (!ADontThrowException)
+            {
+                throw new EOPAppException(
+                    "No " + APermissionRequested.ToString() + " permission for table " + ATableName + " for user " + UserID);
+            }
+
+            return false;
+        }
+    }
+
+    /// is the user allowed to read from or write to the table
+    public enum TTablePermissionEnum
+    {
+        /// no permissions
+        eNone,
+        /// can read records
+        eCanRead = 1,
+        /// can create records
+        eCanCreate = 2,
+        /// can modify records
+        eCanModify = 4,
+        /// can delete records
+        eCanDelete = 8
     }
 
     /// <summary>
