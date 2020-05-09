@@ -365,20 +365,20 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                 }
             }
 
-            TDBTransaction t = new TDBTransaction();
-            TDataBase db = DBAccess.Connect("RunFirstSetup");
-            bool SubmitOK = false;
+            result = TMaintenanceWebConnector.SaveUserAndModulePermissions(
+                AUserID, AFirstName, ALastName, AEmailAddress, ALanguageCode,
+                false, false, false, AInitialModulePermissions, 0,
+                out VerificationResultCollection);
 
-            db.WriteTransaction(ref t,
-                ref SubmitOK,
-                delegate
-                {
-                    result = TMaintenanceWebConnector.SaveUserAndModulePermissions(
-                        AUserID, AFirstName, ALastName, AEmailAddress, ALanguageCode,
-                        false, false, false, AInitialModulePermissions, 0,
-                        out VerificationResultCollection);
+            if (result != false)
+            {
+                TDBTransaction t = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("RunFirstSetup");
+                bool SubmitOK = false;
 
-                    if (result != false)
+                db.WriteTransaction(ref t,
+                    ref SubmitOK,
+                    delegate
                     {
                         if (AInitialPassword != String.Empty)
                         {
@@ -404,10 +404,10 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                                 GLSetupTDSAccess.SubmitChanges(GLMainDS, db, t);
                             }
                         }
-                    }
-                });
+                    });
 
-            db.CloseDBConnection();
+                db.CloseDBConnection();
+            }
 
             if (!result)
             {

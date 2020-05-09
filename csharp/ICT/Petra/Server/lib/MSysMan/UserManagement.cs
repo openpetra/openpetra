@@ -1663,7 +1663,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                     try
                     {
-                        MaintainUsersTDSAccess.SubmitChanges(SubmitDS, SubmitChangesTransaction.DataBaseObj);
+                        MaintainUsersTDSAccess.SubmitChanges(SubmitDS, SubmitChangesTransaction.DataBaseObj, SubmitChangesTransaction);
 
                         ReturnValue = TSubmitChangesResult.scrOK;
                         SubmitOK = true;

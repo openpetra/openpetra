@@ -252,16 +252,6 @@ namespace Ict.Petra.Server.App.WebService
             return "0.0.0.0";
         }
 
-        static private TPetraPrincipal GetUserInfoFromSession()
-        {
-            return (TPetraPrincipal)TSession.GetVariable("UserInfo");
-        }
-
-        static private void SetUserInfoForSession(TPetraPrincipal userinfo)
-        {
-            TSession.SetVariable("UserInfo", userinfo);
-        }
-
         /// <summary>check if the user has logged in successfully</summary>
         [WebMethod(EnableSession = true)]
         public string IsUserLoggedIn()
@@ -297,6 +287,8 @@ namespace Ict.Petra.Server.App.WebService
 
             string UserEmailAddress = String.Empty;
             string UserID = String.Empty;
+
+            UserInfo.SetUserInfo(new TPetraPrincipal("SYSADMIN"));
 
             if (TMaintenanceWebConnector.SetInitialSysadminEmail(AEmailAddress, AFirstName, ALastName, ALanguageCode))
             {
