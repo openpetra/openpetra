@@ -71,6 +71,10 @@ function display_error(VerificationResult, generalerror = 'errors.general') {
     display_message( i18next.t(generalerror), 'fail');
     return;
   }
+  if (typeof VerificationResult === 'string') {
+    display_message( i18next.t(VerificationResult), "fail");
+    return;
+  }
   let s = false;
   for (error of VerificationResult) {
     if (error.code == "" && error.message == "") {
@@ -130,7 +134,7 @@ function replace_data(replace_obj, update_data, prev_table) {
   if (prev_table == null) {
     prev_table = "";
   }
-  
+
   for (var variable in replace_obj) {
     // update_date has a var with same name as replace_obj, so we replace it
     if (typeof update_data[variable] !== 'undefined') {
@@ -185,7 +189,7 @@ function allow_modal() {
   		modal_aquire = true;
 	}, modal_timeout*1000);
 
-	return true;	
+	return true;
 
 }
 
@@ -200,3 +204,43 @@ function RemoveBackDropOnBrowserBack() {
 $('document').ready(function () {
 	RemoveBackDropOnBrowserBack();
 });
+
+function isEmpty(o) {
+  // null
+  if (o == null) { return true; }
+  // string
+  if (typeof o == "string") { if (o != "") { return false; } }
+  // number
+  if (typeof o == "number") { if (o != 0) { return false; } }
+  // object
+  for (var v in o) {
+    if (o.hasOwnProperty(v)) {
+      return false
+    }
+  }
+  return true;
+}
+
+function uploadFile(url, args, success_function, fail_function) {
+  if (!(url && args)) {return false;}
+
+  var formData = new FormData();
+  for (var upl in args) {
+    formData.append(upl, args[upl]);
+  }
+  var request = new XMLHttpRequest();
+  request.onload = function () {
+    if (200 <= request.status && request.status < 300) {
+      success_function( request.responseText );
+    } else if (request.status >= 500) {
+      fail_function( Array() );
+    } else {
+      fail_function( request.responseText );
+    }
+  }
+  request.onerror = function () {
+    fail_function(JSONparse(request.responseText));
+  }
+  request.open("POST", url);
+  request.send(formData);
+}

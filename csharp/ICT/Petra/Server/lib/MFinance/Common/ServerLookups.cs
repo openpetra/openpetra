@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -356,7 +356,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         /// </summary>
         /// <param name="ACurrencyCode">Currency Code</param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static ACurrencyLanguageRow GetCurrencyLanguage(string ACurrencyCode)
         {
             ACurrencyLanguageRow ReturnValue = null;
@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         /// <summary>
         /// Returns a list of possible candidates for the motivation group
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("OR(FINANCE-1,SPONSORADMIN)")]
         public static bool TypeAheadMotivationGroup(Int32 ALedgerNumber, string ASearch,
                 Int32 ALimit,
                 out DataTable AResult)
@@ -516,7 +516,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         /// <summary>
         /// Returns a list of possible candidates for the motivation detail
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("OR(FINANCE-1,SPONSORADMIN)")]
         public static bool TypeAheadMotivationDetail(Int32 ALedgerNumber, string ASearch,
                 Int32 ALimit,
                 out DataTable AResult)

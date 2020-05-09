@@ -78,6 +78,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 return "OdbcType.Text";
             }
+            else if (tableField.strType == "longtext")
+            {
+                return "OdbcType.Text";
+            }
             else if ((tableField.strType == "bit") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("bool")))
             {
                 return "OdbcType.Bit";

@@ -14,6 +14,10 @@ OpenPetra:
                     GLBatches: {Path=Finance/GeneralLedger/GLBatchMaintenance, fa-icon=money-bill-alt}
                     GiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=money-check-alt}
                     MonthEnd: {Path=Finance/GeneralLedger/PeriodEnd, fa-icon=clipboard-check}
+
+                SponsorShip: {PermissionsRequired="OR(SPONSORVIEW,SPONSORADMIN)"}
+                    MaintainChildren: {Path=SponsorShip/Children, fa-icon=user}
+                    
                 Settings: {PermissionsRequired=SYSMAN, Path=SystemManager}
                         MaintainSettings: {fa-icon=sliders-h}
                         CreateUser: {Form=MaintainUsers, Action=NewUser, fa-icon=user-plus}
@@ -75,3 +79,6 @@ OpenPetra:
                         MaintainUsers: {fa-icon=user}
                 Database:
                         ImportAndExportDatabase: {fa-icon=file-import}
+        SponsorShip: {fa-icon=address-book, PermissionsRequired="OR(SPONSORVIEW,SPONSORADMIN)"}
+                Children:
+                    MaintainChildren: {fa-icon=user}

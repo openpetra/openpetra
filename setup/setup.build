@@ -257,7 +257,6 @@
         <exclude name="package*json" />
     </fileset>
     <filterchain>
-        <expandproperties />
         <replacestring from="CURRENTRELEASE" to="${ReleaseVersion}"/>
         <replacestring from="develop = 1;" to="develop = 0;"/>
         <replacestring from="debug = 1;" to="debug = 0;"/>

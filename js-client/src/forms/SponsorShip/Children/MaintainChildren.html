@@ -1,0 +1,566 @@
+<h2>{caption}</h2>
+<link rel="stylesheet" href="/css/autocomplete.css">
+
+<form id="filter" class="container" action="javascript:MaintainChildren.filterShow()">
+
+  <!-- last -->
+  <div class="row">
+    <div class="col">
+      <span>{partner_firstname}</span>
+    </div>
+    <div class="col">
+      <input type="text" name="AFirstName" value="">
+    </div>
+  </div>
+
+  <!-- first -->
+  <div class="row">
+    <div class="col">
+      <span>{partner_lastname}</span>
+    </div>
+    <div class="col">
+      <input type="text" name="AFamilyName" value="">
+    </div>
+  </div>
+
+  <!-- status -->
+  <div class="row">
+    <div class="col">
+      <span>{partner_status}</span>
+    </div>
+    <div class="col">
+      <select type="text" name="ASponsorshipStatus" value="">
+        <option value="" selected>{forms.any}</option>
+        <option value="BOARDING_SCHOOL">{boarding_school}</option>
+        <option value="CHILDREN_HOME">{children_home}</option>
+        <option value="HOME_BASED">{home_based}</option>
+        <option value="PREVIOUS_CHILD">{previous_child}</option>
+        <option value="CHILD_DIED">{passed_away}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- admin -->
+  <div class="row">
+    <div class="col">
+      <span>{sponsor_admin}</span>
+    </div>
+    <div class="col">
+      <select type="text" name="ASponsorAdmin" value="">
+        <option value="">{forms.any}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- button -->
+  <div class="row">
+    <div class="col">
+      <button type="submit" class="btn btn-primary">{forms.filter}</button>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.showCreate()">{forms.new}</button>
+    </div>
+    <div class="col">
+    </div>
+  </div>
+
+</form>
+
+<div id="result" class="container container-list">
+  <!-- gets filled with copys of: [phantom] .children -->
+</div>
+
+<div phantom hidden>
+
+  <div class="row children">
+    <div class="col">
+      <span type="text" name="p_first_name_c"></span> <span type="text" name="p_family_name_c"></span>
+    </div>
+    <div class="col">
+      <data name="p_partner_key_n" value="-1"></data>
+    </div>
+    <div class="col">
+      <span type="text" name="p_status_code_c"></span>
+    </div>
+    <div class="col-1">
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.detail(this)"><i class="fas fa-wrench"></i></button>
+    </div>
+  </div>
+
+  <div class="row comment">
+    <div class="col">
+      <span type="date" name="s_date_created_d"></span>
+    </div>
+    <div class="col">
+      <span name="p_comment_c"></span>
+    </div>
+    <div class="col-1">
+      <data name="p_comment_type_c" value="-1"></data>
+      <data name="p_index_i" value="-1"></data>
+      <data name="p_partner_key_n" value="-1"></data>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildComments.detail(this)"><i class="fas fa-wrench"></i></button>
+    </div>
+  </div>
+
+  <div class="row sponsorship">
+    <div class="col">
+      <span name="DonorName"></span>
+    </div>
+    <div class="col">
+      <span name="a_motivation_detail_code_c"></span>
+    </div>
+    <div class="col">
+      <span type="currency" name="a_gift_amount_n"></span>
+    </div>
+    <div class="col">
+      <span type="date" name="a_start_donations_d"></span>
+    </div>
+    <div class="col">
+      <span type="date" name="a_end_donations_d"></span>
+    </div>
+    <div class="col-1">
+      <data name="p_partner_key_n"></data>
+      <data name="a_ledger_number_i"></data>
+      <data name="a_batch_number_i"></data>
+      <data name="a_gift_transaction_number_i"></data>
+      <data name="a_detail_number_i"></data>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildSponsorship.detail(this)"><i class="fas fa-wrench"></i></button>
+    </div>
+  </div>
+
+  <div class="row reminder">
+    <div class="col">
+      <span type="date" name="p_event_date_d"></span>
+    </div>
+    <div class="col">
+      <span name="p_comment_c"></span>
+    </div>
+    <div class="col">
+      <span type="date" name="p_first_reminder_date_d"></span>
+    </div>
+    <div class="col-1">
+      <data name="p_reminder_id_i" value="-1"></data>
+      <data name="p_partner_key_n" value="-1"></data>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildReminders.detail(this)"><i class="fas fa-wrench"></i></button>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="modal modal-wide fade" tabindex="-2" role="dialog" id="detail_modal" mode="create/edit">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{edittitle}</h3>
+      </div>
+      <div class="modal-body">
+
+        <div class="container">
+
+          <div class="row" mode-hide="create">
+            <div class="col-3">
+              <span>{partner_key}</span>
+            </div>
+            <div class="col-3">
+              <input type="text" name="p_partner_key_n" value="" readonly/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-3">
+              <span>{partner_status}</span>
+            </div>
+            <div class="col-3">
+              <select name="ASponsorshipStatus">
+                <option value="BOARDING_SCHOOL">{boarding_school}</option>
+                <option value="CHILDREN_HOME">{children_home}</option>
+                <option value="HOME_BASED">{home_based}</option>
+                <option value="PREVIOUS_CHILD">{previous_child}</option>
+                <option value="CHILD_DIED">{passed_away}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-3">
+              <span>{partner_firstname}</span>
+            </div>
+            <div class="col-3">
+              <input type="text" name="p_first_name_c"/>
+            </div>
+            <div class="col-3">
+              <span>{partner_lastname}</span>
+            </div>
+            <div class="col-3">
+              <input type="text" name="p_family_name_c"/>
+            </div>
+          </div>
+
+          <ul class="nav nav-tabs" role="tablist" mode-hide="create">
+
+            <li class="nav-item">
+              <a class="nav-link active" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="details">{details}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="sponsorship">{sponsorship}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="dates_reminder">{dates_reminder}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="family_situations">{family_situations}</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="school_situations">{school_situations}</a>
+            </li>
+
+          </ul>
+
+          <div id="multi_window" active="details">
+
+            <!-- details is shown by default, can be changed by a call to MaintainChildren.showWindow(name) -->
+            <div window="details">
+              <h2>{details}</h2>
+
+              <div class="row">
+                <!-- left / infos -->
+                <div class="col">
+
+                  <!-- gender -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{gender}</span>
+                    </div>
+                    <div class="col">
+                      <select name="p_gender_c">
+                        <option value="UNKNOWN" selected>{unknown}</option>
+                        <option value="MALE">{male}</option>
+                        <option value="FEMALE">{female}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- birthday -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{birthday}</span>
+                    </div>
+                    <div class="col">
+                      <input type="date" name="p_date_of_birth_d">
+                    </div>
+                  </div>
+
+                  <!-- sponsor_admin -->
+                  <div class="row">
+                    <div class="col">
+                      <span>{sponsor_admin}</span>
+                    </div>
+                    <div class="col">
+                      <select name="p_user_id_c">
+                        <option value="">Unknown</option>
+                      </select>
+                    </div>
+                  </div>
+
+                </div>
+                <!-- right / photo -->
+                <div class="col" mode-hide="create">
+                  <div class="row">
+                    <div class="col">
+                      <img name="p_photo_b" src="" alt="photo" height="256">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <input type="file" name="new_photo"  onchange="MaintainChildren.photoPreview()"/>
+                      <button type="button" class="btn btn-primary" onclick="MaintainChildren.uploadNewPhoto()">{forms.upload}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div window="sponsorship" style="display: none;">
+              <h2>{sponsorship}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="MaintainChildSponsorship.showCreate()">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{donor}</span>
+                </div>
+                <div class="col">
+                  <span>{motivation_detail}</span>
+                </div>
+                <div class="col">
+                  <span>{amount}</span>
+                </div>
+                <div class="col">
+                  <span>{start_date}</span>
+                </div>
+                <div class="col">
+                  <span>{end_date}</span>
+                </div>
+                <div class="col-1">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="sponsorships">
+                <!-- gets filled with copys of: [phantom] .sponsorship -->
+              </div>
+
+            </div>
+
+            <div window="dates_reminder" style="display: none;">
+              <h2>{dates_reminder}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="MaintainChildReminders.showCreate()">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{description}</span>
+                </div>
+                <div class="col">
+                  <span>{first_reminder_date}</span>
+                </div>
+                <div class="col-1">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list" id="dates">
+                <!-- gets filled with copys of: [phantom] .reminder -->
+              </div>
+
+            </div>
+
+            <div window="family_situations" style="display: none;">
+              <h2>{family_situations}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="MaintainChildComments.showCreate('FAMILY')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{notes}</span>
+                </div>
+                <div class="col-1">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list FAMILY">
+                <!-- gets filled with copys of: [phantom] .comment -->
+              </div>
+
+            </div>
+
+            <div window="school_situations" style="display: none;">
+              <h2>{school_situations}</h2>
+
+              <!-- new btn -->
+              <div class="row">
+                <div class="col">
+                  <button type="button" class="btn btn-primary" onclick="MaintainChildComments.showCreate('SCHOOL')">{forms.new}</button>
+                </div>
+              </div>
+
+              <div class="row header">
+                <div class="col">
+                  <span>{date}</span>
+                </div>
+                <div class="col">
+                  <span>{notes}</span>
+                </div>
+                <div class="col-1">
+                  <!-- placeholder for btn col -->
+                </div>
+              </div>
+
+              <div class="container-list SCHOOL">
+                <!-- gets filled with copys of: [phantom] .comment -->
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="MaintainChildren.saveEdit()">{forms.save}</button>
+        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="comment_modal" mode="create/edit">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{edittitle_comment}</h3>
+      </div>
+      <div class="modal-body">
+
+        <div class="container">
+
+          <div class="row">
+            <data name="p_partner_key_n" value="-1"></data>
+            <data name="p_index_i" value="-1"></data>
+            <data name="p_comment_type_c" value="-1"></data>
+            <textarea name="p_comment_c" rows="8" cols="80"></textarea>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="MaintainChildComments.saveEdit()">{forms.save}</button>
+        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="reminder_modal" mode="create/edit">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{edittitle_reminder}</h3>
+      </div>
+      <div class="modal-body">
+
+        <div class="container">
+
+          <div class="row">
+            <div class="col"><span>{event_date}</span></div>
+            <div class="col ml-auto"><input type="date" name="p_event_date_d"></div>
+          </div>
+
+          <div class="row">
+            <div class="col"><span>{first_reminder_date}</span></div>
+            <div class="col ml-auto"><input type="date" name="p_first_reminder_date_d"></div>
+          </div>
+
+          <div class="row">
+            <data name="p_partner_key_n" value="-1"></data>
+            <data name="p_reminder_id_i" value="-1"></data>
+            <textarea name="p_comment_c" rows="8" cols="80"></textarea>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="MaintainChildReminders.saveEdit()">{forms.save}</button>
+        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal modal-wide fade" tabindex="-1" role="dialog" id="recurring_modal" mode="create/edit">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>{edittitle_donation}</h3>
+      </div>
+      <div class="modal-body">
+
+        <div class="container">
+
+          <data name="a_ledger_number_i" value=""></data>
+          <data name="a_batch_number_i" value=""></data>
+          <data name="a_gift_transaction_number_i" value=""></data>
+          <data name="a_detail_number_i" value=""></data>
+          <data name="p_recipient_key_n" value=""></data>
+
+          <div class="row">
+            <div class="col">
+              <span>{donor}</span>
+            </div>
+            <div class="col">
+              <div class="autocomplete">
+                <input type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{motivation_detail}</span>
+            </div>
+            <div class="col">
+              <input type="hidden" name="a_motivation_group_code_c" value=""/>
+              <div class="autocomplete">
+                <input type="text" name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{amount}</span>
+            </div>
+            <div class="col">
+              <input type="number" name="a_gift_amount_n" value=""/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{start_date}</span>
+            </div>
+            <div class="col">
+              <input type="date" name="a_start_donations_d" value=""/>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span>{end_date}</span>
+            </div>
+            <div class="col">
+              <input type="date" name="a_end_donations_d" value=""/>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="MaintainChildSponsorship.delete(this)">{forms.delete}</button>
+        <button class="btn btn-primary" onclick="MaintainChildSponsorship.saveEdit()">{forms.save}</button>
+        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
+<script src="/src/lib/utils.js" charset="utf-8"></script>
+<script src="/src/lib/tpl.js" charset="utf-8"></script>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -721,6 +721,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             Template.AddToCodelet("USINGNAMESPACES", GetNamespace(strGroup), false);
 
+            bool hasTables = false;
+
             foreach (TTable currentTable in AStore.GetTables())
             {
                 if (currentTable.strGroup == strGroup)
@@ -734,10 +736,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     InsertViaLinkTable(AStore, currentTable, Template, snippet);
 
                     Template.InsertSnippet("TABLEACCESSLOOP", snippet);
+
+                    hasTables = true;
                 }
             }
 
-            Template.FinishWriting(AFilePath + AFilename + "-generated.cs", ".cs", true);
+            if (hasTables)
+            {
+                Template.FinishWriting(AFilePath + AFilename + "-generated.cs", ".cs", true);
+            }
 
             return true;
         }

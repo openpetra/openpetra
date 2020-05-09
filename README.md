@@ -30,7 +30,7 @@ DEVELOPMENT SETUP
 These are the steps required to setup a development environment on CentOS7:
 
 ```
-curl https://getopenpetra.com | bash -s devenv
+curl https://get.openpetra.org | bash -s devenv
 ```
 
 For development, do this to get a list of available commands:
