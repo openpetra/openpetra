@@ -1043,7 +1043,7 @@
                 otherTable="s_module"
                 otherFields="s_module_id_c"/>
     <!-- Explicit Indexes on table s_module_table_access_permission  -->
-    <index name="gtap_OnTableName"
+    <index name="mtap_OnTableName"
            descr=""
            area="Petra Index">
       <indexfield name="s_table_name_c" order="ascending"/>
