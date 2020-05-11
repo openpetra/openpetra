@@ -677,7 +677,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             // only run if it's not a new user create call
             bool run_after_create = false;
-            if (AMainDS.PPartner[0].ModificationId != DateTime.MinValue) { TDataHistoryWebConnector.RegisterChanges(AChanges, NeededChanges); }
+            if (AMainDS.PPartner[0].ModificationId != DateTime.MinValue)
+            {
+                bool consent_success = TDataHistoryWebConnector.RegisterChanges(AChanges, NeededChanges);
+                if (consent_success == false) {
+                    AVerificationResult.Add(new TVerificationResult("error", "consent_error", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
             else { run_after_create = true; }
 
             try
