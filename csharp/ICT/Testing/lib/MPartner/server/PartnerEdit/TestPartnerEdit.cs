@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -55,6 +55,9 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Testing.NUnitTools;
+
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
+using System.Collections.Generic;
 
 namespace Tests.MPartner.Server.PartnerEdit
 {
@@ -909,6 +912,105 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // check that Venue record is really deleted
             Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(PartnerKey));
+        }
+
+        /// Following will be the test for the SimplePartnerEdit
+
+        /// <summary>
+        /// test the entiry create and edit parts of simplepartneredit
+        /// </summary>
+        [Test]
+        public void TestCreateSimplePartnerUserAndEdit() {
+            TVerificationResultCollection VerificationResult;
+            List<string> NewSubs = new List<string>();
+            List<string> NewTypes = new List<string>();
+ 
+            string TestValueStreetName = "Nowhere Lane";
+            string TestValuePostalCode = "LO2 2CX";
+            string TestValueCity = "London";
+            string TestValueCountryCode = "99";
+            string TestValueAddress = TestValueStreetName + ", " + TestValuePostalCode + " " + TestValueCity + ", " + TestValueCountryCode;
+
+            string TestValueEmail = "someone@nowhere.com";
+            string TestValuePhone = "64892318651423165";
+            string TestValueMobile = "01755145623154";
+
+            // create the new partner
+            string dummy1, dummy2, dummy3;
+            PartnerEditTDS NewUser = TSimplePartnerEditWebConnector.CreateNewPartner("FAMILY",
+                out NewSubs,
+                out NewTypes,
+                out dummy1,
+                out dummy2,
+                out dummy3
+            );
+            string NewPartnerKey = NewUser.PPartner[0].PartnerKey.ToString();
+            string AddressChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"address\",\"Value\":\"" + TestValueAddress + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR,NEWSL\",\"Valid\":true}";
+            string EmailChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"email address\",\"Value\":\"" + TestValueEmail + "\",\"ChannelCode\":\"PHONE\",\"Permissions\":\"PR\",\"Valid\":true}";
+            string LandlinChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"phone landline\",\"Value\":\"" + TestValuePhone + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR\",\"Valid\":true}";
+            string MobileChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"phone mobile\",\"Value\":\"" + TestValueMobile + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR\",\"Valid\":true}";
+
+            TLogging.Log("Created new partner: " + NewPartnerKey);
+
+            // adding more stuff
+            NewUser.PFamily[0].FamilyName = NewPartnerKey;
+            NewUser.PFamily[0].FirstName = "Someone";
+            NewUser.PFamily[0].Title = "Mr";
+
+            // 1st test: make the first edit to the new user
+            // no errors are awaitet since no grpd changes are made
+            bool success = TSimplePartnerEditWebConnector.SavePartner( NewUser, 
+                NewSubs, 
+                NewTypes,
+                new List<string>(),
+                false, 
+                "", 
+                "", 
+                "",
+                out VerificationResult
+            );
+
+            Assert.IsFalse(VerificationResult.HasCriticalOrNonCriticalErrors);
+            Assert.IsTrue(success);
+            TLogging.Log("First Edit passed");
+
+            VerificationResult.Clear();
+            NewUser = TSimplePartnerEditWebConnector.GetPartnerDetails(long.Parse( NewPartnerKey ), true, true, out dummy1, out dummy2);
+
+            // 2nd test: try changing the email without giving consent
+            success = TSimplePartnerEditWebConnector.SavePartner(NewUser,
+                NewSubs,
+                NewTypes,
+                new List<string>(),
+                false,
+                TestValueEmail,
+                "",
+                "",
+                out VerificationResult
+            );
+
+            Assert.IsFalse(success);
+            TLogging.Log("Second Edit successfully failed");
+            VerificationResult.Clear();
+            NewUser = TSimplePartnerEditWebConnector.GetPartnerDetails(long.Parse(NewPartnerKey), true, true, out dummy1, out dummy2);
+
+            // 3rd test: this time again but with consent edit
+
+            success = TSimplePartnerEditWebConnector.SavePartner(NewUser,
+                NewSubs,
+                NewTypes,
+                new List<string>() { EmailChangeObject },
+                false,
+                TestValueEmail,
+                "",
+                "",
+                out VerificationResult
+            );
+
+            Assert.IsTrue(success);
+            TLogging.Log("Thired Edit passed");
+            VerificationResult.Clear();
+
         }
     }
 }
