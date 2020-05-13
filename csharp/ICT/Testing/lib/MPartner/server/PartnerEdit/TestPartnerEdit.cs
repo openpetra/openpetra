@@ -58,6 +58,7 @@ using Ict.Testing.NUnitTools;
 
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tests.MPartner.Server.PartnerEdit
 {
@@ -995,7 +996,6 @@ namespace Tests.MPartner.Server.PartnerEdit
             NewUser = TSimplePartnerEditWebConnector.GetPartnerDetails(long.Parse(NewPartnerKey), true, true, out dummy1, out dummy2);
 
             // 3rd test: this time again but with consent edit
-
             success = TSimplePartnerEditWebConnector.SavePartner(NewUser,
                 NewSubs,
                 NewTypes,
@@ -1010,7 +1010,57 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(success);
             TLogging.Log("Thired Edit passed");
             VerificationResult.Clear();
+            NewUser = TSimplePartnerEditWebConnector.GetPartnerDetails(long.Parse(NewPartnerKey), true, true, out dummy1, out dummy2);
 
+            // 4th test: edit everything, give everything
+            success = TSimplePartnerEditWebConnector.SavePartner(NewUser,
+                NewSubs,
+                NewTypes,
+                new List<string>() { EmailChangeObject, MobileChangeObject, LandlinChangeObject, AddressChangeObject },
+                false,
+                TestValueEmail,
+                TestValueMobile,
+                TestValuePhone,
+                out VerificationResult
+            );
+
+            Assert.IsTrue(success);
+            TLogging.Log("Fourth Edit passed");
+            VerificationResult.Clear();
+
+            // 5th test: get current known entry for address, based on our consents it should have rights for GR and NEWSL
+            DataConsentTDS LastEntry = TDataHistoryWebConnector.LastKnownEntry(long.Parse(NewPartnerKey), "address");
+            Assert.IsTrue( LastEntry.PDataHistory.Count == 1 );
+
+            List<string> allowed = LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList();
+            string LastKnownAddressValue = LastEntry.PDataHistory[0].Value; // for later
+
+            Assert.IsTrue("EMAIL" == LastEntry.PDataHistory[0].ChannelCode);
+            Assert.Contains("GR", allowed);
+            allowed.Remove("GR");
+            Assert.Contains("NEWSL", allowed);
+            allowed.Remove("NEWSL");
+            Assert.IsEmpty(allowed);
+            TLogging.Log("Fifth test passed");
+
+            // 6th test: edit this entry
+            success = TDataHistoryWebConnector.EditHistory(long.Parse(NewPartnerKey), "address", "PHONE", "GR,PR", out VerificationResult);
+            Assert.IsTrue(success);
+            TLogging.Log("Sixth Edit passed");
+
+            // last test, check if new entry is right
+            LastEntry = TDataHistoryWebConnector.LastKnownEntry(long.Parse(NewPartnerKey), "address");
+            Assert.IsTrue(LastEntry.PDataHistory.Count == 1);
+            allowed = LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList();
+
+            Assert.IsTrue(LastKnownAddressValue == LastEntry.PDataHistory[0].Value);
+            Assert.IsTrue("PHONE" == LastEntry.PDataHistory[0].ChannelCode);
+            Assert.Contains("GR", allowed);
+            allowed.Remove("GR");
+            Assert.Contains("PR", allowed);
+            allowed.Remove("PR");
+            Assert.IsEmpty(allowed);
+            TLogging.Log("Last Edit passed");
         }
     }
 }
