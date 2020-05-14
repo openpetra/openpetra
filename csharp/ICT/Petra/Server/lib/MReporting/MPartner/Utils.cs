@@ -53,15 +53,40 @@ namespace Ict.Petra.Server.MReporting.MPartner
             foreach (DataRow Row in PartnerTable.Rows)
             {
                 Int64 PartnerKey = Int64.Parse(Row["PartnerKey"].ToString());
+                DataConsentTDS LastEntry;
+
+                // Note: this could be much simplyfied, and i mean a lot, llike cobining it to one sql
+                // but for now, we keep it by using already present functions.
 
                 // address
-                DataConsentTDS LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "address");
+                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "address");
                 if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
                 {
                     Row["p_street_name_c"] = "";
                     Row["p_city_c"] = "";
                     Row["p_postal_code_c"] = "";
                     Row["p_country_code_c"] = "";
+                }
+
+                // phone mobile
+                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone mobile");
+                if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                {
+                    Row["Mobile"] = "";
+                }
+
+                // phone landline
+                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone landline");
+                if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                {
+                    Row["Phone"] = "";
+                }
+
+                // email address
+                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "email address");
+                if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                {
+                    Row["EMail"] = "";
                 }
             }
 
