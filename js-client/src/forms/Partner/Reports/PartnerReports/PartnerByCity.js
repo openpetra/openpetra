@@ -41,3 +41,21 @@ function calculate_report() {
 
 	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerByCity.json", params);
 }
+
+function loadInConsents() {
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetConsentChannelAndPurpose', {}).then(function (data) {
+		var parsed = JSON.parse(data.data.d);
+		var Consents = $(`#reportfilter [consents]`);
+		for (var purpose of parsed.result.PPurpose) {
+			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+			var ConsentTemp = $(`[phantom] .consent-option`).clone();
+			ConsentTemp.find(".name").text(name);
+			ConsentTemp.find("[name=param_consent]").attr("value", purpose.p_purpose_code_c);
+			Consents.append(ConsentTemp);
+		}
+	})
+}
+
+$("document").ready(function () {
+	loadInConsents();
+})
