@@ -46,8 +46,8 @@ getConfigOfCurrentCustomer() {
     export OPENPETRA_DBNAME=`cat $config | grep DBName | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPORT=`cat $config | grep DBPort | awk -F'"' '{print $4}'`
     export OPENPETRA_DBPWD=`cat $config | grep DBPassword | awk -F'"' '{print $4}'`
-    export OPENPETRA_HTTP_URL=`cat $config | grep Server.Url | awk -F'"' '{print $4}'`
-    export OPENPETRA_HTTP_PORT=`cat $config | grep Port | awk -F'"' '{print $4}'`
+    export OPENPETRA_HTTP_URL=`cat $config | grep -m1 Server.Url | awk -F'"' '{print $4}'`
+    export OPENPETRA_HTTP_PORT=`cat $config | grep -m1 Server.Port | awk -F'"' '{print $4}'`
 
     # previous installations were missing http or https
     if [[ ! $OPENPETRA_HTTP_URL == https://* && ! $OPENPETRA_HTTP_URL == http://* ]]
@@ -376,7 +376,12 @@ rewrite_conf() {
         done
     else
         getConfigOfCurrentCustomer
-        rm /home/$OP_CUSTOMER/etc/PetraServerConsole.config
+        if [ ! -f $OpenPetraPath/templates/PetraServerConsole.config ]; then
+            echo "We are missing the template file $OpenPetraPath/templatesPetraServerConsole.config"
+            exit -1
+        fi
+
+        mv -f /home/$OP_CUSTOMER/etc/PetraServerConsole.config /home/$OP_CUSTOMER/etc/PetraServerConsole.config.bak
         init
     fi
 }
@@ -393,6 +398,12 @@ init() {
     if [ -f /home/$userName/etc/PetraServerConsole.config ]
     then
       echo "it seems there is already an instance configured"
+      exit -1
+    fi
+
+    if [[ "`whoami`" != "root" ]]
+    then
+      echo "this command must be run as user root"
       exit -1
     fi
 
@@ -494,10 +505,10 @@ mysqlinitdb() {
       echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       if [ ! -z "$MYSQL_ROOT_PWD" ]; then 
         echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@'%' IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
-        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
+        mysql -u root --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
       else
-        echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
-        mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
+        echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@127.0.0.1 IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
+        mysql -u root --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
       fi
       rm -f $OpenPetraPath/tmp/createdb-MySQL.sql
     fi

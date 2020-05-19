@@ -11,11 +11,11 @@
     <mkdir dir="${DeliveryDB.dir}" failonerror="false"/>
     <property name="CleanDatabaseScript" value="${DeliveryDB.dir}/petra_clean.sql"/>
 
-    <target name="patchDatabase" depends="init, startServer" description="Update the development database to the latest database version">
+    <target name="patchDatabase" depends="init" description="Update the development database to the latest database version">
         <property name="Command" value="UpgradeDatabase"/>
         <call target="startAdmin"/>
     </target>
-    
+
     <target name="createSQLStatements" depends="init" description="Create the SQL files.">
         <!-- we don't need SQL statements for sqlite, but only for the other DBMS -->
         <if test="${DBMS.Type!='sqlite'}">
@@ -228,6 +228,11 @@
         </if>
     </target>
 
+    <target name="resetDatabaseClean" depends="init" description="this is a fresh database without the demo user and without a ledger">
+        <property name="WithDemoDataGermany" value="false" overwrite="true"/>
+        <call target="resetDatabase"/>
+    </target>
+
     <target name="resetDatabase" depends="init" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
          <property name="WithDemoDataGermany" value="true" overwrite="false"/>
          <if test="${not platform::is-windows()}" >
@@ -267,7 +272,9 @@
          <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#ABSOLUTEBASEDATAPATH}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, BaseData.Dir)}'/>
-         
+         <property name="toReplace" value="{#RELEASEVERSION}"/>
+         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
+
          <copy file="${DemoData.Dir}/init.sql"
             tofile="${DemoData.Dir}/init.sql.local" overwrite="true"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
@@ -284,9 +291,6 @@
              <echo message='${script::ReplaceInFile(Current.File, toReplace, Replacement)}'/>
          </if>
 
-         <property name="toReplace" value="{#RELEASEVERSION}"/>
-         <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
-         
          <property name="passwordChangeme" value="CHANGEME"/>
          <property name="passwordsalt" value="${OP::GetPasswordSalt()}"/>
          <property name="passwordhash" value="${OP::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
@@ -557,24 +561,6 @@
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
         </if>
-    </target>
-
-    <target name="createSQLiteDB" depends="init">
-        <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
-        <property name="DBMS.Type" value="sqlite"/>
-        <property name="DBMS.Password.Orig" value="${DBMS.Password}"/>
-        <property name="DBMS.Password" value="CHANGEME"/>
-        <if test="${not platform::is-windows()}" >
-                <!-- Linux version of sqlite does not work with encryption; 
-                     use it only for testing purposes; 
-                     see also http://sqlite.phxsoftware.com/forums/p/1508/6579.aspx#6579 -->        
-                <property name="DBMS.Password" value=""/>
-        </if>
-        <call target="recreateDatabase"/>
-        <call target="resetDatabase"/>
-        <copy file="${SQLitedbBase.file}" tofile="${OpenPetraRoot.dir}/delivery/demo.db" overwrite="true"/>
-        <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
-        <property name="DBMS.Password" value="${DBMS.Password.Orig}"/>
     </target>
 
     <target name="createPostgreSQLDB" depends="init">

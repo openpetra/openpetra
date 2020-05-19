@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -35,9 +35,12 @@ function display_list() {
 		// on reload, clear content
 		$('#browse_container').html('');
 		last_requested_data = data.result;
-		for (item of data.result) {
-			// format a abo for every entry
-			format_item(item);
+		if (data.result.length == 0) {
+			open_new();
+		} else {
+			for (item of data.result) {
+				format_item(item);
+			}
 		}
 	})
 }
@@ -56,7 +59,7 @@ function open_detail(obj) {
 		return;
 	}
 	$('.tpl_row .collapse').collapse('hide');
-	obj.find('.collapse').collapse('show')
+	obj.find('.collapse').collapse('show');
 }
 
 function open_edit(sub_id) {
@@ -68,20 +71,51 @@ function open_edit(sub_id) {
 			break;
 		}
 	}
-	var f = format_tpl( $('[phantom] .tpl_edit').clone(), z);
-	$('#modal_space').html(f);
-	$('#modal_space .modal').modal('show');
+
+	let p = {"ATablename":"p_country", "ASearchCriteria":""};
+	api.post('serverMCommon.asmx/TCommonDataReader_GetData', p).then(function (data) {
+		data = JSON.parse(data.data.d);
+
+		let m = $('[phantom] .tpl_edit').clone();
+		m = load_countries(data.AResultTable, z.a_country_code_c, m);
+
+		var f = format_tpl( m, z);
+		$('#modal_space').html(f);
+		$('#modal_space .modal').modal('show');
+
+	})
 }
 
 function open_new() {
 	if (!allow_modal()) {return}
-	let n_ = $('[phantom] .tpl_new').clone();
-	$('#modal_space').html(n_);
-	var today = new Date();
-	var yyyy = today.getFullYear();
-	var today = yyyy+"-01-01";
-	$('#modal_space .modal').modal('show');
-	$('#modal_space .modal #ACalendarStartDate').val(today);
+
+	let p = {"ATablename":"p_country", "ASearchCriteria":""};
+	api.post('serverMCommon.asmx/TCommonDataReader_GetData', p).then(function (data) {
+		data = JSON.parse(data.data.d);
+
+		let m = $('[phantom] .tpl_new').clone();
+
+		let country_code = currentLng();
+		if (country_code.includes('-')) {
+			country_code = country_code.substring(country_code.indexOf('-') + 1);
+		}
+		m = load_countries(data.AResultTable, country_code.toUpperCase(), m);
+
+		let p = {"ATablename":"a_currency", "ASearchCriteria":""};
+		api.post('serverMCommon.asmx/TCommonDataReader_GetData', p).then(function (data) {
+			data = JSON.parse(data.data.d);
+			m = load_currencies(data.AResultTable, "EUR", m);
+
+			$('#modal_space').html(m);
+			var today = new Date();
+			var yyyy = today.getFullYear();
+			var today = yyyy+"-01-01";
+			$('#modal_space .modal').modal('show');
+			$('#modal_space .modal #ACalendarStartDate').val(today);
+			$('#modal_space .modal #ANewLedgerNumber').val(10);
+			$('#modal_space .modal #ALedgerName').val(i18next.t('LedgerSetup.example_name'));
+		});
+	});
 }
 
 function save_new() {
@@ -148,4 +182,26 @@ function delete_entry(d) {
 		}
 	);
 
+}
+
+function load_countries(all_countries, selected_country, obj) {
+
+	if (selected_country == null) selected_country="99";
+	for (country of all_countries) {
+		selected = (selected_country == country.p_country_code_c)?" selected":"";
+		let y = $('<option value="'+country.p_country_code_c+'"' + selected + '>'+country.p_country_code_c + " " + country.p_country_name_c + '</option>');
+		obj.find('#CountryCode').append(y);
+	}
+	return obj;
+}
+
+function load_currencies(all, selected_currency, obj) {
+
+	if (selected_currency == null) selected_currency="EUR";
+	for (currency of all) {
+		let selected = (selected_currency == currency.a_currency_code_c)?" selected":"";
+		let y = $('<option value="'+currency.a_currency_code_c+'"' + selected + '>'+currency.a_currency_code_c + " " + currency.a_currency_name_c + '</option>');
+		obj.find('#BaseCurrency').append(y);
+	}
+	return obj;
 }

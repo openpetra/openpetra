@@ -12,6 +12,41 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2020.04: May 8th, 2020</h3>
+
+<p>The big changes in this version are: the initial version of the sponsorship module, 
+and improvements to data security.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+<ul>
+<li>Initial version of the sponsorship module: You can maintain 
+children, and assign sponsoring donors to them. You can configure 
+reminders (which don't result in email notifications yet), and you can 
+create notes regarding the school or family situation.</li>
+<li>Guided setup: in the hosted setup, the initial setup does not only 
+configure the SYSADMIN user, but also a non-privileged user. In the 
+manual setup, a dialog is displayed when the SYSADMIN user logs in for 
+the first time, helping to do the initial configuration of the 
+OpenPetra instance.</li>
+<li>Guided setup for ledger: if a user with finance permissions logs 
+in, and there is no ledger yet, then a dialog appears that helps to do 
+the initial configuration of a ledger.</li>
+<li>The publicly available API end points have been reduced, and 
+require more permissions. This will avoid that data can be read by 
+unprivileged users.</li>
+<li>Support for Fedora 32: configuration of MariaDB now works again. 
+Also: CentOS 8 and Ubuntu 20.04 are supported by
+<a href="https://get.openpetra.org">https://get.openpetra.org</a>.</li>
+<li>The testing framework Cypress has been updated to the latest 
+version.</li>
+<li>We now use again Weblate for the translation of the client: <a href="https://hosted.weblate.org/projects/openpetra/js-client">https://hosted.weblate.org/projects/openpetra/js-client</a></li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the 
+<a href="https://github.com/openpetra/openpetra/milestone/10?closed=1" 
+rel=" nofollow ugc">Milestone at Github for release 2020.04</a>!</p>
+
 <h3>Release 2020.03: March 30th, 2020</h3>
 
 <p>We skipped a couple of releases in the past months. New functionality for sponsorship was developed, but it is not part of this release yet.</p>

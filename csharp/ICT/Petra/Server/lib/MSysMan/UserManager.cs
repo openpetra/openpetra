@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -558,7 +558,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// <summary>
         /// Causes an immediately reload of the UserInfo that is stored in the session
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static bool ReloadUserInfo()
         {
             TDBTransaction Transaction = new TDBTransaction();
@@ -622,7 +622,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// </summary>
         /// <param name="AUserID">UserID for which the ClientTask should be queued
         /// </param>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static void SignalReloadCachedUserInfo(String AUserID)
         {
             TClientManager.QueueClientTask(AUserID,

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -5296,7 +5296,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ACurrencyTo"></param>
         /// <param name="ADateEffective"></param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("FINANCE-1")]
         public static decimal GetDailyExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime ADateEffective)
         {
             return TExchangeRateTools.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
@@ -5315,7 +5315,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AEnforceUniqueRate">If true the method will only return a value if there is one unique rate in the date range.
         /// Otherwise it returns the latest rate.</param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("FINANCE-1")]
         public static decimal GetDailyExchangeRate(string ACurrencyFrom,
             string ACurrencyTo,
             DateTime ADateEffective,
@@ -5333,7 +5333,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AStartDate"></param>
         /// <param name="AEndDate"></param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("FINANCE-1")]
         public static decimal GetCorporateExchangeRate(string ACurrencyFrom, string ACurrencyTo, DateTime AStartDate, DateTime AEndDate)
         {
             return TExchangeRateTools.GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate);

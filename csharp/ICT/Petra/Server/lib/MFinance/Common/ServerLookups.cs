@@ -356,7 +356,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         /// </summary>
         /// <param name="ACurrencyCode">Currency Code</param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static ACurrencyLanguageRow GetCurrencyLanguage(string ACurrencyCode)
         {
             ACurrencyLanguageRow ReturnValue = null;

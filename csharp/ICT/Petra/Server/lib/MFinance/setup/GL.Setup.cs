@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -4012,6 +4012,201 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             db.CloseDBConnection();
         }
 
+        /// Is this user a finance user, but there is no ledger yet?
+        [NoRemoting]
+        public static string GetLedgerSetupAssistant()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetLedgerSetupAssistant");
+
+            string result = String.Empty;
+            string sql = "SELECT COUNT(*) FROM PUB_s_user_module_access_permission p1 " +
+                "WHERE p1.s_module_id_c = 'FINANCE-3' AND p1.s_can_access_l = true " +
+                "AND p1.s_user_id_c = '" + UserInfo.GetUserInfo().UserID + "' " +
+                "AND NOT EXISTS (SELECT * FROM PUB_a_ledger)";
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    if (Convert.ToInt32(db.ExecuteScalar(sql, t)) > 0)
+                    {
+                        result = "CrossLedgerSetup/LedgerSetup";
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            return result;
+        }
+
+
+        /// create a site so that self sign up works even without a ledger
+        [NoRemoting]
+        public static bool CreateSite(ref GLSetupTDS AMainDS, string ALedgerName, Int64 ASiteKey, TDBTransaction ATransaction)
+        {
+            PPartnerRow partnerRow;
+
+            if (!PPartnerAccess.Exists(ASiteKey, ATransaction))
+            {
+                partnerRow = AMainDS.PPartner.NewRowTyped();
+                partnerRow.PartnerKey = ASiteKey;
+                partnerRow.PartnerShortName = ALedgerName;
+                partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
+                AMainDS.PPartner.Rows.Add(partnerRow);
+
+                // create or use addresses (only if partner record is created here as
+                // otherwise we assume that Partner has address already)
+                PLocationRow locationRow;
+                PLocationTable LocTemplateTable;
+                PLocationTable LocResultTable;
+                PLocationRow LocTemplateRow;
+                StringCollection LocTemplateOperators;
+
+                // find address with country set
+                LocTemplateTable = new PLocationTable();
+                LocTemplateRow = LocTemplateTable.NewRowTyped(false);
+                LocTemplateRow.SiteKey = 0;
+                LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
+                LocTemplateRow.CountryCode = "99";
+                LocTemplateOperators = new StringCollection();
+
+                LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, ATransaction);
+
+                if (LocResultTable.Count > 0)
+                {
+                    locationRow = (PLocationRow)LocResultTable.Rows[0];
+                }
+                else
+                {
+                    // no location record exists yet: create new one
+                    locationRow = AMainDS.PLocation.NewRowTyped();
+                    locationRow.SiteKey = 0;
+                    locationRow.LocationKey = (int)ATransaction.DataBaseObj.GetNextSequenceValue(
+                        TSequenceNames.seq_location_number.ToString(), ATransaction);
+                    locationRow.StreetName = Catalog.GetString("No valid address on file");
+                    locationRow.CountryCode = "99";
+                    AMainDS.PLocation.Rows.Add(locationRow);
+                }
+
+                // now create partner location record
+                PPartnerLocationRow partnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
+                partnerLocationRow.SiteKey = locationRow.SiteKey;
+                partnerLocationRow.PartnerKey = ASiteKey;
+                partnerLocationRow.LocationKey = locationRow.LocationKey;
+                partnerLocationRow.DateEffective = DateTime.Today;
+                AMainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
+            }
+            else
+            {
+                // partner record already exists in database -> update ledger name
+                PPartnerAccess.LoadByPrimaryKey(AMainDS, ASiteKey, ATransaction);
+                partnerRow = (PPartnerRow)AMainDS.PPartner.Rows[0];
+                partnerRow.PartnerShortName = ALedgerName;
+            }
+
+            PPartnerLedgerRow partnerledger;
+
+            if (!PPartnerLedgerAccess.Exists(ASiteKey, ATransaction))
+            {
+                partnerledger = AMainDS.PPartnerLedger.NewRowTyped();
+                partnerledger.PartnerKey = ASiteKey;
+                partnerledger.LastPartnerId = 5000;
+                AMainDS.PPartnerLedger.Rows.Add(partnerledger);
+            }
+
+            if (!PUnitAccess.Exists(ASiteKey, ATransaction))
+            {
+                PUnitRow unitRow = AMainDS.PUnit.NewRowTyped();
+                unitRow.PartnerKey = ASiteKey;
+                unitRow.UnitName = ALedgerName;
+                AMainDS.PUnit.Rows.Add(unitRow);
+            }
+
+            // if this is the first ledger, make it the default site
+            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", ATransaction);
+
+            if (systemDefaults.Rows.Count == 0)
+            {
+                SSystemDefaultsRow systemDefaultsRow = AMainDS.SSystemDefaults.NewRowTyped();
+                systemDefaultsRow.DefaultCode = SharedConstants.SYSDEFAULT_SITEKEY;
+                systemDefaultsRow.DefaultDescription = "there has to be one site key for the database";
+                systemDefaultsRow.DefaultValue = ASiteKey.ToString("0000000000");
+                AMainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
+            }
+
+            return true;
+        }
+
+        /// create a unit and partner for the inter ledger transfer ledger, for a_valid_ledger_number
+        [NoRemoting]
+        private static bool CreateILTPartner(ref GLSetupTDS AMainDS, Int64 APartnerKey, TDBTransaction ATransaction)
+        {
+            PPartnerRow partnerRow;
+
+            if (!PPartnerAccess.Exists(APartnerKey, ATransaction))
+            {
+                partnerRow = AMainDS.PPartner.NewRowTyped();
+                partnerRow.PartnerKey = APartnerKey;
+                partnerRow.PartnerShortName = "ILT";
+                partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
+                AMainDS.PPartner.Rows.Add(partnerRow);
+
+                // create or use addresses (only if partner record is created here as
+                // otherwise we assume that Partner has address already)
+                PLocationRow locationRow;
+                PLocationTable LocTemplateTable;
+                PLocationTable LocResultTable;
+                PLocationRow LocTemplateRow;
+                StringCollection LocTemplateOperators;
+
+                // find address with country set
+                LocTemplateTable = new PLocationTable();
+                LocTemplateRow = LocTemplateTable.NewRowTyped(false);
+                LocTemplateRow.SiteKey = 0;
+                LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
+                LocTemplateRow.CountryCode = "99";
+                LocTemplateOperators = new StringCollection();
+
+                LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, ATransaction);
+
+                if (LocResultTable.Count > 0)
+                {
+                    locationRow = (PLocationRow)LocResultTable.Rows[0];
+                }
+                else
+                {
+                    // no location record exists yet: create new one
+                    locationRow = AMainDS.PLocation.NewRowTyped();
+                    locationRow.SiteKey = 0;
+                    locationRow.LocationKey = (int)ATransaction.DataBaseObj.GetNextSequenceValue(
+                        TSequenceNames.seq_location_number.ToString(), ATransaction);
+                    locationRow.StreetName = Catalog.GetString("No valid address on file");
+                    locationRow.CountryCode = "99";
+                    AMainDS.PLocation.Rows.Add(locationRow);
+                }
+
+                // now create partner location record
+                PPartnerLocationRow partnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
+                partnerLocationRow.SiteKey = locationRow.SiteKey;
+                partnerLocationRow.PartnerKey = APartnerKey;
+                partnerLocationRow.LocationKey = locationRow.LocationKey;
+                partnerLocationRow.DateEffective = DateTime.Today;
+                AMainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
+            }
+
+            if (!PUnitAccess.Exists(APartnerKey, ATransaction))
+            {
+                PUnitRow unitRow = AMainDS.PUnit.NewRowTyped();
+                unitRow.PartnerKey = APartnerKey;
+                unitRow.UnitName = "ILT";
+                AMainDS.PUnit.Rows.Add(unitRow);
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
@@ -4094,77 +4289,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 MainDS.ALedger.Rows.Add(ledgerRow);
 
-                PPartnerRow partnerRow;
-
-                if (!PPartnerAccess.Exists(PartnerKey, Transaction))
-                {
-                    partnerRow = MainDS.PPartner.NewRowTyped();
-                    ledgerRow.PartnerKey = PartnerKey;
-                    partnerRow.PartnerKey = PartnerKey;
-                    partnerRow.PartnerShortName = ALedgerName;
-                    partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
-                    partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
-                    MainDS.PPartner.Rows.Add(partnerRow);
-
-                    // create or use addresses (only if partner record is created here as
-                    // otherwise we assume that Partner has address already)
-                    PLocationRow locationRow;
-                    PLocationTable LocTemplateTable;
-                    PLocationTable LocResultTable;
-                    PLocationRow LocTemplateRow;
-                    StringCollection LocTemplateOperators;
-
-                    // find address with country set
-                    LocTemplateTable = new PLocationTable();
-                    LocTemplateRow = LocTemplateTable.NewRowTyped(false);
-                    LocTemplateRow.SiteKey = 0;
-                    LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
-                    LocTemplateRow.CountryCode = ACountryCode;
-                    LocTemplateOperators = new StringCollection();
-
-                    LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, Transaction);
-
-                    if (LocResultTable.Count > 0)
-                    {
-                        locationRow = (PLocationRow)LocResultTable.Rows[0];
-                    }
-                    else
-                    {
-                        // no location record exists yet: create new one
-                        locationRow = MainDS.PLocation.NewRowTyped();
-                        locationRow.SiteKey = 0;
-                        locationRow.LocationKey = (int)db.GetNextSequenceValue(
-                            TSequenceNames.seq_location_number.ToString(), Transaction);
-                        locationRow.StreetName = Catalog.GetString("No valid address on file");
-                        locationRow.CountryCode = ACountryCode;
-                        MainDS.PLocation.Rows.Add(locationRow);
-                    }
-
-                    // now create partner location record
-                    PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
-                    partnerLocationRow.SiteKey = locationRow.SiteKey;
-                    partnerLocationRow.PartnerKey = PartnerKey;
-                    partnerLocationRow.LocationKey = locationRow.LocationKey;
-                    partnerLocationRow.DateEffective = DateTime.Today;
-                    MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
-                }
-                else
-                {
-                    // partner record already exists in database -> update ledger name
-                    PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, Transaction);
-                    partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
-                    partnerRow.PartnerShortName = ALedgerName;
-                }
-
-                PPartnerLedgerRow partnerledger;
-
-                if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
-                {
-                    partnerledger = MainDS.PPartnerLedger.NewRowTyped();
-                    partnerledger.PartnerKey = PartnerKey;
-                    partnerledger.LastPartnerId = 5000;
-                    MainDS.PPartnerLedger.Rows.Add(partnerledger);
-                }
+                CreateSite(ref MainDS, ALedgerName, PartnerKey, Transaction);
+                CreateILTPartner(ref MainDS, 4000000, Transaction);
 
                 PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, Transaction);
                 PPartnerTypeRow partnerTypeRow;
@@ -4178,14 +4304,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     MainDS.PPartnerType.Rows.Add(partnerTypeRow);
                 }
 
-                if (!PUnitAccess.Exists(PartnerKey, Transaction))
-                {
-                    PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
-                    unitRow.PartnerKey = PartnerKey;
-                    unitRow.UnitName = ALedgerName;
-                    MainDS.PUnit.Rows.Add(unitRow);
-                }
-
                 String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
 
                 if (!SModuleAccess.Exists(ModuleId, Transaction))
@@ -4194,18 +4312,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     moduleRow.ModuleId = ModuleId;
                     moduleRow.ModuleName = moduleRow.ModuleId;
                     MainDS.SModule.Rows.Add(moduleRow);
-                }
-
-                // if this is the first ledger, make it the default site
-                SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", Transaction);
-
-                if (systemDefaults.Rows.Count == 0)
-                {
-                    SSystemDefaultsRow systemDefaultsRow = MainDS.SSystemDefaults.NewRowTyped();
-                    systemDefaultsRow.DefaultCode = SharedConstants.SYSDEFAULT_SITEKEY;
-                    systemDefaultsRow.DefaultDescription = "there has to be one site key for the database";
-                    systemDefaultsRow.DefaultValue = PartnerKey.ToString("0000000000");
-                    MainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
                 }
 
                 //TODO: Calendar vs Financial Date Handling - Need to review this
@@ -4317,11 +4423,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AValidLedgerNumberRow validLedgerNumberRow = MainDS.AValidLedgerNumber.NewRowTyped();
                     validLedgerNumberRow.PartnerKey = PartnerKey;
                     validLedgerNumberRow.LedgerNumber = ANewLedgerNumber;
-
-                    // TODO can we assume that ledger 4 is used for international clearing?
-                    // but in the empty database, that ledger and therefore p_partner with key 4000000 does not exist
-                    // validLedgerNumberRow.IltProcessingCentre = 4000000;
-
+                    validLedgerNumberRow.IltProcessingCentre = 4000000;
                     validLedgerNumberRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
                     MainDS.AValidLedgerNumber.Rows.Add(validLedgerNumberRow);
                 }
@@ -4723,6 +4825,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Fields.Add(ALedgerTable.GetCurrentPeriodDBName());
             Fields.Add(ALedgerTable.GetNumberOfAccountingPeriodsDBName());
             Fields.Add(ALedgerTable.GetNumberFwdPostingPeriodsDBName());
+            Fields.Add(ALedgerTable.GetCountryCodeDBName());
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("GetAvailableLedgers");

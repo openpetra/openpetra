@@ -27,7 +27,7 @@ list of available commands:
       nant compileProject -D:name=Ict.Common
   prepareDeliveryContent: make sure all the sql files are in the right place on devenv
   install: install the current development binaries to this machine (requires the rpm already to be installed)
-  startAdmin: not possible via nant, run this: /usr/bin/openpetra-server menu
+  startAdmin: not possible via nant, run this: /home/op_dev/openpetra-server.sh menu
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for server and testing, and the version.txt
   initPlugins: install some default plugins
@@ -43,7 +43,8 @@ compat:
   errorCodeDoc: generates doc for used error codes
   schemaSpy: generates database documentation using schemaSpy
   recreateDatabase: needed after changes in table structure in petra.xml
-  resetDatabase: just resets the data, resets the permissions
+  resetDatabase: just resets the data, resets the permissions; with DEMO user and a german ledger
+  resetDatabaseClean: resets the data, resets the permissions; only SYSADMIN user, no ledger
   patchDatabase: update the database to the latest development version
   dumpDatabase: dump the database to a db specific format.
         nant dumpDatabase -D:file=test.sql
@@ -480,63 +481,6 @@ useful parameters
     <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
     <ExecDotNet program="${dir.bin}/Ict.Tools.CodeChecker.exe" 
         commandline="-Action:static"/>
-</target>
-
-<target name="devzip">
-    <echo message="Target devzip started at: ${datetime::now()}" />
-    
-    <!-- calling script must get a fresh git tree, write OpenPetra.build.config with sqlite -->
-
-    <!-- if ../openpetra-client-js does not exist, download from Github -->
-    <if test="${not directory::exists(dir.root + '/openpetra-client-js')}">
-        <exec program="git" commandline="clone --depth 1 https://github.com/openpetra/openpetra-client-js.git ${dir.root}/../openpetra-client-js"/> 
-    </if>
-
-    <call target="quickClean"/>
-    <call target="generateSolution"/>
-    <call target="translation"/>
-    <call target="recreateDatabase"/>
-    <call target="resetDatabase"/>
-
-    <!-- download another demo database, and load it -->
-    <delete file="demoWith1ledger.yml.gz" />
-    <exec program="wget" commandline="https://github.com/openpetra/demo-databases/blob/master/demoWith1ledger.yml.gz?raw=true -OdemoWith1ledger.yml.gz"/>
-    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
-    <call target="initConfigFiles"/>
-    <call target="startServerBackground"/>
-    <sleep seconds="10"/>
-    <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe"
-        commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
-    <call target="stopPetraServer"/>
-
-    <copy file="${dir.3rdParty}/libsodium-net/libsodium-64.dll" todir="${dir.bin}"/>
-    <copy file="${dir.3rdParty}/libsodium-net/libsodium.dll" todir="${dir.bin}"/>
-    <!-- delete symbolic link -->
-    <delete file="${dir.bin}/libsodium.so"/>
-
-    <script prefix="utils" language="C#">
-         <code>
-             <![CDATA[
-                 [Function("GetFormattedDate")]
-                 public static string GetFormattedDate() {
-                    return System.DateTime.Now.ToString("yyyy-MM-dd");
-                 }
-             ]]>
-         </code>
-   </script>
-   <property name="zipfile" value="${dir.root}/../openpetra_development_${utils::GetFormattedDate()}.zip"/>
-    <zip zipfile="${zipfile}">
-       <fileset basedir="${dir.root}" prefix="openpetra">
-         <include name="**/*" />
-         <exclude name="tmp/**"/>
-         <exclude name="**/.bzr/**"/>
-         <exclude name="**/.git/**"/>
-       </fileset>
-    </zip>
-
-    <!-- calling script must upload the zip file to https://github.com/openpetra/openpetra-nightlydevzip/releases -->
-    
-    <echo message="Target devzip finished at: ${datetime::now()}" />
 </target>
 
 <target name="pullVCSVersionInfo">
