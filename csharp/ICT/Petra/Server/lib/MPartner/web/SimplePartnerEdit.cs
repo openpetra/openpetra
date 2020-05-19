@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -381,6 +381,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return SavePartner(AMainDS,
                 ASubscriptions,
                 APartnerTypes,
+                new List<string>(),
                 ASendMail,
                 ADefaultEmailAddress,
                 ADefaultPhoneMobile,
@@ -396,6 +397,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool SavePartner(PartnerEditTDS AMainDS,
             List<string> ASubscriptions,
             List<string> APartnerTypes,
+            List<string> AChanges,
             bool ASendMail,
             string ADefaultEmailAddress,
             string ADefaultPhoneMobile,
@@ -652,12 +654,51 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DataSet ResponseDS = new PartnerEditTDS();
             TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
 
+            // we search in every possible changed list, and added the data_type to NeededChanges
+            // everything in this list will be valided by TDataHistoryWebConnector.RegisterChanges
+            // it throws a error if a needed change cant be validated 
+            List<string> NeededChanges = new List<string>();
+
+            foreach (PLocationRow Loc in SaveDS.PLocation.Rows)
+            { 
+                if (Loc.RowState == DataRowState.Modified) { NeededChanges.Add("address"); } 
+            }
+
+            foreach (PPartnerAttributeRow Attr in SaveDS.PPartnerAttribute.Rows)
+            {
+                if (Attr.RowState == DataRowState.Modified) {
+
+                    if (Attr.AttributeType == "E-Mail") { NeededChanges.Add("email address"); }
+                    if (Attr.AttributeType == "Phone") { NeededChanges.Add("phone landline"); }
+                    if (Attr.AttributeType == "Mobile Phone") { NeededChanges.Add("phone mobile"); }
+
+                }
+            }
+
+            // only run if it's not a new user create call
+            bool run_after_create = false;
+            if (AMainDS.PPartner[0].ModificationId != DateTime.MinValue)
+            {
+                bool consent_success = TDataHistoryWebConnector.RegisterChanges(AChanges, NeededChanges);
+                if (consent_success == false) {
+                    AVerificationResult.Add(new TVerificationResult("error", "consent_error", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+            else { run_after_create = true; }
+
             try
             {
                 TSubmitChangesResult result = uiconnector.SubmitChanges(
                     ref SaveDS,
                     ref ResponseDS,
                     out AVerificationResult);
+
+                if (run_after_create) {
+                    // after user entry exists, then enter inital changes
+                    TDataHistoryWebConnector.RegisterChanges(AChanges, new List<string>());
+                }
+
                 return result == TSubmitChangesResult.scrOK;
             }
             catch (Exception e)

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+﻿<?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE database SYSTEM "datastructure.dtd">
 <database name="petra">
   <table name="p_language"
@@ -381,7 +381,7 @@
     <tablefield name="s_error_message_c"
                 type="text"
                 descr="in case of failure, this contains the error message"/>
-               
+
     <!-- Constraints on table s_report_result -->
     <primarykey name="s_report_result_pk"
                 descr=""
@@ -593,7 +593,7 @@
            descr=""
            area="Petra Index">
       <indexfield name="s_user_id_c" order="ascending"/>
-    </index>    
+    </index>
     <index name="s_user_account_activity_type"
            descr=""
            area="Petra Index">
@@ -1717,7 +1717,7 @@
                 thisFields="s_default_code_c"
                 otherTable="s_system_defaults"
                 otherFields="s_default_code_c"/>
-  </table>  
+  </table>
   <table name="s_error_log"
          descr="Log of captured runtime errors"
          area="Petra Data"
@@ -2195,16 +2195,16 @@
     <tablefield name="p_first_contact_freeform_c"
                 type="varchar"
                 descr="How did this Partner first hear about us (freetext)?"
-                format="X(200)"/>                
+                format="X(200)"/>
     <tablefield name="p_intranet_id_c"
                 type="varchar"
                 descr="Intranet ID. Needed for making the link to the International Website, e.g. for using the Online Address Book."
-                format="X(100)"/>                
+                format="X(100)"/>
     <tablefield name="p_timezone_c"
                 type="varchar"
                 descr="Timezone that applies to the partner (address does not necessarily determine that).
 &lt;br/&gt;This refers to data in the International Address Book."
-                format="X(50)"/>                
+                format="X(50)"/>
     <!-- Constraints on table p_partner -->
     <primarykey name="p_partner_pk"
                 descr=""
@@ -2446,7 +2446,7 @@
     <tablefield name="p_geo_accuracy_i"
                 type="integer"
                 initial="-1"
-                descr="The accuracy of the stored geo data; 
+                descr="The accuracy of the stored geo data;
                 -2: server did not respond;
                 -1: not processed yet;
                 0: Unknown Location;
@@ -2457,7 +2457,7 @@
                 5: Post code;
                 6: Street;
                 7: Intersection;
-                8: Address level accuracy" 
+                8: Address level accuracy"
                 format="-&gt;9"
                 help=""/>
     <tablefield name="p_restricted_l"
@@ -2697,8 +2697,8 @@
   </table>
   <table name="p_partner_attribute_type"
          descr="Holds various Partner Attribute Types."
-         area="Petra Data"        
-         label="Partner Attribute Type"         
+         area="Petra Data"
+         label="Partner Attribute Type"
          dumpname="p_patrtp"
          group="partner">
     <tablefield descr="Category of the Partner Attribute Type."
@@ -2726,7 +2726,7 @@
                 format="9999"
                 label="Index"
                 initial="0"
-                notnull="yes"/>                
+                notnull="yes"/>
     <tablefield descr="Describes the kind (type) of Value that the Partner Attributes that are linked to this Partner Attribute Type are. Valid values for Contact Detail Attributes: 'CONTACTDETAIL_GENERAL', 'CONTACTDETAIL_HYPERLINK', 'CONTACTDETAIL_HYPERLINK_WITHVALUE', 'CONTACTDETAIL_EMAILADDRESS', 'CONTACTDETAIL_SKYPEID'."
                 format="X(40)"
                 name="p_attribute_type_value_kind_c"
@@ -2738,7 +2738,7 @@
                 name="p_hyperlink_format_c"
                 type="varchar"
                 label="Partner Attribute Type Hyperlink Format"
-                notnull="no"/>                
+                notnull="no"/>
     <tablefield descr="Label that should be displayed/printed instead of p_code_c if a Partner Attribute's 'specialised' Flag is set."
                 format="X(50)"
                 name="p_special_label_c"
@@ -2756,7 +2756,7 @@
                 type="date"
                 descr="This is the date where the record was set to unassignable."
                 format="99/99/9999"
-                label="Date"/>                
+                label="Date"/>
     <tablefield descr="Flag to indicate whether this Partner Attribute Type is deletable by a user or not. "
                 format="Yes/No"
                 name="p_deletable_l"
@@ -2765,7 +2765,7 @@
                 columnlabel="Deletable?"
                 initial="No"
                 notnull="yes"/>
-    <!-- Constraints on table p_partner_attribute_type -->                
+    <!-- Constraints on table p_partner_attribute_type -->
     <primarykey name="p_partner_attribute_type_pk"
                 descr=""
                 thisFields="p_attribute_type_c"/>
@@ -2773,7 +2773,7 @@
                 descr=""
                 thisFields="p_category_code_c"
                 otherTable="p_partner_attribute_category"
-                otherFields="p_category_code_c"/>                
+                otherFields="p_category_code_c"/>
   </table>
   <table name="p_partner_attribute"
          descr="Mainly introduced for Partner Contact Details like email addresses and (mobile) phone numbers, but can be used for any attribute we might want to save for a Partner."
@@ -2865,7 +2865,7 @@
                 label="Is Current"
                 columnlabel="Current?"
                 initial="Yes"
-                notnull="yes"/>                
+                notnull="yes"/>
     <tablefield name="p_no_longer_current_from_d"
                 type="date"
                 descr="When this Partner Attribute value is no longer current from."
@@ -3083,7 +3083,7 @@
     <tablefield name="um_parent_unit_key_n"
                 type="number"
                 length="10"
-                descr="This is an alias of the partner key. This is used to identify parent-child relationships. It consists of the fund id followed 
+                descr="This is an alias of the partner key. This is used to identify parent-child relationships. It consists of the fund id followed
 &lt;br/&gt;by a computer generated six digit number."
                 format="9999999999"
                 label="Parent Unit Key"
@@ -3093,7 +3093,7 @@
     <tablefield name="um_child_unit_key_n"
                 type="number"
                 length="10"
-                descr="This is an alias of the partner key. This is used to identify parent-child relationships. It consists of the fund id followed 
+                descr="This is an alias of the partner key. This is used to identify parent-child relationships. It consists of the fund id followed
 &lt;br/&gt;by a computer generated six digit number."
                 format="9999999999"
                 label="Child Unit Key"
@@ -3993,7 +3993,7 @@
     <tablefield name="p_valid_from_date_d"
                 type="date"
                 descr="When the credit card is valid from"
-                format="99/99/9999"/>                
+                format="99/99/9999"/>
     <tablefield name="p_expiry_date_d"
                 type="date"
                 descr="When this expires"
@@ -4849,7 +4849,7 @@
                 descr="This Mot Detail will be selected by default when entering gifts for Partners with this Special Type"
                 format="X(8)"
                 label="Motivation Detail Code"
-                help="Enter a default Motivation Detail for gifts to Partners with this Special Type"/>                
+                help="Enter a default Motivation Detail for gifts to Partners with this Special Type"/>
     <!-- Constraints on table p_type -->
     <primarykey name="p_type_pk"
                 descr=""
@@ -6735,7 +6735,7 @@
            label="Contact Log"
            dumpname="p_con"
            group="mailroom">
-        
+
         <tablefield name="p_contact_log_id_i"
                     type="number"
                     length="10"
@@ -6865,7 +6865,7 @@
         <tablefield name="p_contact_log_id_i"
                     type="number"
                     length="10"
-                    descr="This is the contact log id.  " 
+                    descr="This is the contact log id.  "
                     format="9999999999"
                     label="Contact Key"
                     notnull="yes" />
@@ -6873,7 +6873,7 @@
         <primarykey name="p_partner_contact_pk"
                     descr=""
                     thisFields="p_partner_key_n, p_contact_log_id_i"/>
-        
+
         <foreignkey name="p_partner_contact_fk1"
                     descr=""
                     thisFields="p_partner_key_n"
@@ -7000,7 +7000,7 @@
                 help="The address layout code associated with the address block (if it exists) in the template."/>
     <tablefield name="p_formality_level_i"
                 type="integer"
-                descr="The formality level to use if the template contains greetings or salutations. 1=Informal, 6=Very formal" 
+                descr="The formality level to use if the template contains greetings or salutations. 1=Informal, 6=Very formal"
                 format="9"
                 label="Formality level"
                 initial="1"
@@ -8717,7 +8717,7 @@
     <tablefield name="a_deceased_address_text_c"
                 type="varchar"
                 descr="Text to put on receipt when addressing a deceased donor"
-                format="X(200)"/>                
+                format="X(200)"/>
     <!-- Constraints on table a_accounting_system_parameter -->
     <primarykey name="a_accounting_system_param_pk"
                 descr=""
@@ -10067,7 +10067,7 @@
                 format="yes/no"
                 label="Motivation Group Restricted"
                 help="Should access to gifts with this motivation be restricted to certain people?"
-                initial="no"/>                
+                initial="no"/>
     <!-- Constraints on table a_motivation_group -->
     <primarykey name="a_motivation_group_pk"
                 descr=""
@@ -10270,14 +10270,14 @@
                 format="yes/no"
                 label="Motivation Detail Restricted"
                 help="Should access to gifts with this motivation be restricted to certain people?"
-                initial="no"/>                
+                initial="no"/>
     <tablefield name="a_export_to_intranet_l"
                 type="bit"
                 descr="Whether or not gifts with this motivation should be exported to the worldwide Intranet (to help distinguish non-gifts like sales)"
                 format="Yes/No"
                 label="Export to Intranet?"
                 help="Should gifts with this motivation be exported to worldwide Intranet?"
-                initial="yes"/>                
+                initial="yes"/>
     <tablefield name="a_report_column_c"
                 type="varchar"
                 descr="Which column should these gifts be reported in?"
@@ -12282,7 +12282,7 @@
                 descr="Non tax-deductible portion of gift (Intl Currency)"
                 format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
                 label="Non tax-eductible amount (Intl)"
-                initial="0" />         
+                initial="0" />
     <!-- Constraints on table a_gift_detail -->
     <primarykey name="a_gift_detail_pk"
                 descr=""
@@ -14053,10 +14053,10 @@
                 thisFields="a_tax_type_code_c"
                 otherTable="a_tax_type"
                 otherFields="a_tax_type_code_c"/>
-                
+
   </table>
-  
-  
+
+
   <table name="a_ar_article_price"
          descr="assign a price to an article, which can be updated by time"
          area="Petra Data"
@@ -14179,7 +14179,7 @@
                 type="varchar"
                 descr="this discounts applies to partners of this type"
                 format="X(10)"/>
-    
+
     <!-- Constraints on table ar_discount -->
     <primarykey name="ar_discount_pk"
                 descr=""
@@ -14200,7 +14200,7 @@
                 otherTable="a_ar_article"
                 otherFields="a_ar_article_code_c"/>
   </table>
-  
+
   <table name="a_ar_discount_per_category"
          descr="defines which discount applies to which category to limit the options in the UI"
          area="Petra Data"
@@ -14303,7 +14303,7 @@
                 descr="an invoice can have these states: OFFER, CHARGED, PARTIALLYPAID, PAID"
                 format="X(16)"
                 notnull="yes"/>
-    
+
     <tablefield name="p_partner_key_n"
                 type="number"
                 length="10"
@@ -14316,7 +14316,7 @@
                 type="integer"
                 descr="refers to the offer that was created for this invoice; it is basically an archived copy of the invoice, and the invoice might actually be different from the offer (e.g. hospitality: different number of people, etc.); table ph_booking always refers to the invoice, and the invoice refers to the offer; there is no requirement for an offer to exist, it can be null"
                 format="-&gt;,&gt;&gt;&gt;,&gt;&gt;9"/>
-    
+
     <tablefield name="a_taxing_c"
                 type="varchar"
                 format="X(10)"
@@ -14353,7 +14353,7 @@
                 descr="the currency of the total amount"
                 format="X(8)"
                 notnull="yes"/>
-    
+
     <!-- Constraints on table a_ar_invoice -->
     <primarykey name="a_ar_invoice_pk"
                 descr=""
@@ -14427,7 +14427,7 @@
                 descr="the currency of the total amount"
                 format="X(8)"
                 notnull="yes"/>
-                
+
     <tablefield name="a_tax_type_code_c"
                 type="varchar"
                 descr="The tax type is always the same, e.g. VAT"
@@ -14446,7 +14446,7 @@
                 type="date"
                 descr="we need to be able to pick a rate that was valid in the past or will be valid in the future"
                 notnull="yes"/>
-    
+
     <!-- Constraints on table a_ar_invoice_detail -->
     <primarykey name="a_ar_invoice_detail_pk"
                 descr=""
@@ -17449,7 +17449,7 @@
                 otherFields="p_country_code_c"/>
     <!-- Explicit Indexes on table pm_formal_education  -->
   </table>
-  
+
   <table name="pm_personal_data"
          descr="This table contains personal data about our staff, eg. tax id."
          area="Petra Data"
@@ -20593,7 +20593,7 @@
                 initial="0"/>
     <tablefield name="ph_gender_c"
                 type="varchar"
-                descr="possible values: couple, family, male, female"             
+                descr="possible values: couple, family, male, female"
                 format="X(20)"/>
     <tablefield name="pc_in_d"
                 type="date"
@@ -20794,7 +20794,7 @@
                 otherTable="pc_room_alloc"
                 otherFields="pc_key_i"/>
   </table>
-      
+
   <table name="ph_booking"
          descr="make sure charging works for a group or an individual; this summarises all the hospitality services that have to be paid for; also useful for planning meals in the kitchen and room preparation"
          area="Petra Data"
@@ -20872,7 +20872,7 @@
                 label="Time of Departure"
                 format="99999"
                 help="Time when the guest is departing"/>
-                
+
     <tablefield name="ph_notes_c"
                 type="varchar"
                 descr="Add notes about the stay or special requests by the guest"
@@ -21504,7 +21504,7 @@
                 thisFields="p_partner_key_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
-  </table>  
+  </table>
   <table name="p_process"
          descr="Refers to a process through which a Partner may go (eg. application, different status of donor - small->medium->big, etc)"
          area="Petra Data"
@@ -21530,7 +21530,7 @@
     <primarykey name="p_process_pk"
                 descr=""
                 thisFields="p_process_code_c"/>
-  </table>  
+  </table>
   <table name="p_state"
          descr="A particular state within a process which can apply to a Partner. Each state will probably need to have an Idle state to indicate when no state applies."
          area="Petra Data"
@@ -21570,8 +21570,8 @@
                 descr=""
                 thisFields="p_process_code_c"
                 otherTable="p_process"
-                otherFields="p_process_code_c"/>                
-  </table>  
+                otherFields="p_process_code_c"/>
+  </table>
   <table name="p_action"
          descr="A particular action within a process which can be performed on a Partner"
          area="Petra Data"
@@ -21611,8 +21611,8 @@
                 descr=""
                 thisFields="p_process_code_c"
                 otherTable="p_process"
-                otherFields="p_process_code_c"/>                
-  </table>  
+                otherFields="p_process_code_c"/>
+  </table>
   <table name="p_partner_state"
          descr="A particular state in which the Partner is or has been. The Partner may be in more than one state at one time if there are two different processes relating to them."
          area="Petra Data"
@@ -21669,8 +21669,8 @@
                 descr=""
                 thisFields="p_process_code_c, p_state_code_c"
                 otherTable="p_state"
-                otherFields="p_process_code_c, p_state_code_c"/>                
-  </table>    
+                otherFields="p_process_code_c, p_state_code_c"/>
+  </table>
   <table name="p_partner_action"
          descr="A particular action which has been or needs to be applied to a Partner"
          area="Petra Data"
@@ -21742,7 +21742,7 @@
     <tablefield name="p_reminder_id_i"
                 type="integer"
                 descr="Part of FK link to p_partner_reminder so can link this action to a reminder"
-                format="+&gt;&gt;&gt;&gt;&gt;9"/>                
+                format="+&gt;&gt;&gt;&gt;&gt;9"/>
     <!-- Constraints on table p_partner_action -->
     <primarykey name="p_partner_action_pk"
                 descr=""
@@ -21756,28 +21756,28 @@
                 descr=""
                 thisFields="p_process_code_c, p_action_code_c"
                 otherTable="p_action"
-                otherFields="p_process_code_c, p_action_code_c"/>                
+                otherFields="p_process_code_c, p_action_code_c"/>
     <foreignkey name="p_partner_action_fk3"
                 descr=""
                 thisFields="p_user_to_perform_action_c"
                 otherTable="s_user"
-                otherFields="s_user_id_c"/>                
+                otherFields="s_user_id_c"/>
     <foreignkey name="p_partner_action_fk4"
                 descr=""
                 thisFields="p_group_to_perform_action_c, s_group_unit_key_n"
                 otherTable="s_group"
-                otherFields="s_group_id_c, s_unit_key_n"/>                
+                otherFields="s_group_id_c, s_unit_key_n"/>
     <foreignkey name="p_partner_action_fk5"
                 descr=""
                 thisFields="p_user_that_performed_action_c"
                 otherTable="s_user"
-                otherFields="s_user_id_c"/>    
+                otherFields="s_user_id_c"/>
     <foreignkey name="p_partner_action_fk6"
                 descr=""
                 thisFields="p_partner_key_n, p_contact_id_i, p_reminder_id_i"
                 otherTable="p_partner_reminder"
-                otherFields="p_partner_key_n, p_contact_id_i, p_reminder_id_i"/>                                
-  </table>    
+                otherFields="p_partner_key_n, p_contact_id_i, p_reminder_id_i"/>
+  </table>
   <table name="p_first_contact"
          descr="Lookup table for First Contact Codes (ie. how did person first hear about us)"
          area="Petra Data"
@@ -21803,7 +21803,7 @@
     <primarykey name="p_first_contact_pk"
                 descr=""
                 thisFields="p_first_contact_code_c"/>
-  </table>  
+  </table>
   <table name="s_group_function"
          descr="Gives the group access to a particular function"
          area="Petra Data"
@@ -22210,7 +22210,7 @@
                 format="X(8)"
                 label="Motivation Detail Code"
                 help="Enter a motivation detail code"
-                notnull="yes"/>                
+                notnull="yes"/>
     <tablefield name="s_read_access_l"
                 type="bit"
                 descr="Control read access to gifts with this motivation"
@@ -22240,7 +22240,7 @@
                 thisFields="a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c"
                 otherTable="a_motivation_detail"
                 otherFields="a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c"/>
-  </table>  
+  </table>
   <table name="s_group_partner_contact"
          descr="Controls the access that a group has to a specific Partner contact, if the contact is restricted"
          area="Petra Data"
@@ -24139,6 +24139,172 @@
                 otherFields="p_key_n"/>
     <!-- Explicit Indexes on table s_group_file_info  -->
   </table>
+  <table name="p_data_history"
+         descr="Keeps track of all data changes for GDPR"
+         area="Petra Data"
+         label="contact data history"
+         dumpname="p_data_history"
+         group="partner">
+    <tablefield name="p_entry_id_i"
+                type="number"
+                typedotnet="Int64"
+                descr="Incremental key for entrys"
+                sequence="seq_data_entry_id"
+                length="10"
+                format="9999999999"
+                label="Entry key"
+                notnull="yes"
+                initial="0"
+                increment="1"/>
+    <tablefield name="p_partner_key_n"
+                type="number"
+                typedotnet="Int64"
+                length="10"
+                descr="Key for partner"
+                format="9999999999"
+                label="Partner Key"
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="p_type_c"
+                type="varchar"
+                format="X(64)"
+                descr="Type for Data saved"
+                label="Data Type"
+                notnull="yes"/>
+    <tablefield name="p_value_c"
+                type="varchar"
+                descr="Value for type key"
+                format="X(512)"
+                label="Value for Key"/>
+    <tablefield name="p_channel_code_c"
+                type="varchar"
+                descr="Code of channel"
+                notnull="yes"
+                format="X(20)"
+                label="Channel Code"/>
+    <!-- Constraints on table p_data_history -->
+    <primarykey name="p_data_history_pk"
+                thisFields="p_entry_id_i"/>
+    <foreignkey name="p_data_history_fk1"
+                descr=""
+                thisFields="p_partner_key_n"
+                otherTable="p_partner"
+                otherFields="p_partner_key_n"/>
+    <foreignkey name="p_data_history_fk2"
+                descr=""
+                thisFields="p_channel_code_c"
+                otherTable="p_consent_channel"
+                otherFields="p_channel_code_c"/>
+    <!-- Explicit Indexes on table pm_document_file  -->
+    <index name="dp_data_history_k"
+           descr=""
+           area="Petra Index"
+           primary="no"
+           unique="no">
+      <indexfield name="p_partner_key_n" order="ascending"/>
+    </index>
+  </table>
+  <table name="p_consent_channel"
+         descr="All possible channels to get data changes"
+         area="Petra Data"
+         dumpname="p_consent_channel"
+         label="data consent channel"
+         group="partner">
+    <tablefield name="p_channel_code_c"
+                type="varchar"
+                descr="Unique key for channel"
+                format="X(20)"
+                label="Channel code"
+                notnull="yes"/>
+    <tablefield name="p_name_c"
+                type="varchar"
+                format="X(64)"
+                descr="internatinal name for i18n translation"
+                label="Name"
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="p_comment_c"
+                type="varchar"
+                format="X(256)"
+                descr="comment for a channel"
+                label="Comment"/>
+    <!-- Constraints on table p_consent_channel -->
+    <primarykey name="p_consent_channel_pk"
+                thisFields="p_channel_code_c"/>
+    <!-- Explicit Indexes on table pm_document_file  -->
+  </table>
+  <table name="p_purpose"
+         descr="All possible use cases for data"
+         area="Petra Data"
+         dumpname="p_purpose"
+         label="data purposes"
+         group="partner">
+    <tablefield name="p_purpose_code_c"
+                type="varchar"
+                descr="Unique key for purpose"
+                format="X(20)"
+                label="Purpose code"
+                notnull="yes"/>
+    <tablefield name="p_name_c"
+                type="varchar"
+                format="X(64)"
+                descr="internatinal name for i18n translation"
+                label="Name"
+                notnull="yes"
+                initial="0"/>
+    <tablefield name="p_comment_c"
+                type="varchar"
+                format="X(256)"
+                descr="comment for a purpose"
+                label="Comment"/>
+    <!-- Constraints on table p_consent_channel -->
+    <primarykey name="p_purpose_pk"
+                thisFields="p_purpose_code_c"/>
+    <!-- Explicit Indexes on table pm_document_file  -->
+  </table>
+  <table name="p_data_history_permission"
+         descr="Contains for what data can be uses"
+         area="Petra Data"
+         dumpname="p_data_history_permission"
+         label="data purposes permission"
+         group="partner">
+    <tablefield name="p_data_history_entry_i"
+                descr="ID for entrys"
+                length="10"
+                type="number"
+                typedotnet="Int64"
+                initial="0"
+                label="Entry ID"
+                notnull="yes"/>
+    <tablefield name="p_purpose_code_c"
+                type="varchar"
+                descr="Code for purpose"
+                format="X(20)"
+                label="Purpose code"
+                notnull="yes"/>
+    <!-- Constraints on table p_consent_channel -->
+    <primarykey name="p_data_history_permission_pk"
+                thisFields="p_data_history_entry_i, p_purpose_code_c"/>
+    <foreignkey name="p_data_history_permission_fk1"
+                descr=""
+                thisFields="p_data_history_entry_i"
+                otherTable="p_data_history"
+                otherFields="p_entry_id_i"/>
+    <foreignkey name="p_data_history_permission_fk2"
+                descr=""
+                thisFields="p_purpose_code_c"
+                otherTable="p_purpose"
+                otherFields="p_purpose_code_c"/>
+    <!-- Explicit Indexes on table pm_document_file  -->
+    <index name="p_data_history_permission_k"
+           descr=""
+           area="Petra Index"
+           primary="yes"
+           unique="yes">
+      <indexfield name="p_data_history_entry_i" order="ascending"/>
+      <indexfield name="p_purpose_code_c" order="ascending"/>
+    </index>
+  </table>
   <sequence name="seq_application"
             descr=""
             initial="0"
@@ -24378,6 +24544,14 @@
             area=""/>
   <sequence name="seq_partner_attribute_index"
             descr="A normal sequence so that each partner can have more than one value for any particular attribute type"
+            initial="1"
+            increment="1"
+            cycleonlimit="no"
+            minval="1"
+            maxval="999999999"
+            area=""/>
+  <sequence name="seq_data_entry_id"
+            descr="Data History incremental key"
             initial="1"
             increment="1"
             cycleonlimit="no"

@@ -1,4 +1,4 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -55,6 +55,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
             DataTable partners = ATransaction.DataBaseObj.SelectDT(sql, "transactions", ATransaction);
 
             // TODO: get best address
+
+            // ensure consents
+            string needed_consent = parameterlist.Get("param_consent").ToString().Replace("*", "").Replace("%", "").Trim();
+            partners = Utils.PartnerRemoveUnconsentReportData(partners, needed_consent);
 
             // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();

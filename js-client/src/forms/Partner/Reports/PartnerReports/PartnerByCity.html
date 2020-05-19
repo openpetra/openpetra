@@ -56,6 +56,13 @@
 			</div>
 			<data value="param_excludeNoSolicitations"></data>
 		</div>
+		<div class="row">
+			<div class="col">
+				<span>{MaintainPartners.consent permissions}</span><hr>
+				<div consents></div>
+			</div>
+		</div>
+
 	</div>
 
 	<button type="button" class="btn btn-primary" onclick="calculate_report()">{forms.report}</button>
@@ -67,6 +74,17 @@
 	<div class="container group-container">
 		<div id="reporttxt"></div>
 	</div>
+</div>
+
+<div hidden phantom>
+	<label class="row consent-option">
+		<div class="col">
+			<span class="name"></span>
+		</div>
+		<div class="col">
+			<input type="radio" name="param_consent">
+		</div>
+	</label>
 </div>
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>

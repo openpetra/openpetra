@@ -260,7 +260,20 @@
         "dateofbirth": "Date of birth",
         "firstname": "First name",
         "familyname": "Family name",
-        "title": "Title"
+        "title":"Title",
+        "edittitle_consent":"Edit consent",
+        "changed value":"Changes value",
+        "consent channel":"Channel",
+        "email":"E-Mail",
+        "conversation":"Conversation",
+        "letter":"Letter",
+        "phone":"Phone",
+        "consent permissions":"Consent permissions",
+        "donationbook":"Donationbook",
+        "newsletter":"Newsletter",
+        "publicrelation":"Public relation",
+        "change_history":"Change history",
+        "consent_error":"Consent change error"
     },
     "GLBatches": {
         "caption": "Maintain GL Batches and Transactions",

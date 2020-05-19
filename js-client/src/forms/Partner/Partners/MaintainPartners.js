@@ -24,6 +24,7 @@
 //
 
 var last_opened_entry_data = {};
+var data_changes_log = {};
 
 $('document').ready(function () {
 	load_preset();
@@ -112,6 +113,8 @@ function display_partner(parsed) {
 	if (!allow_modal()) {return}
 	// make a deep copy of the server data and set it as a global var.
 	last_opened_entry_data = $.extend(true, {}, parsed);
+	// reset the changes object
+	data_changes_log = {};
 	let m = $('[phantom] .tpl_edit').clone();
 	// normal info input
 	m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
@@ -192,10 +195,19 @@ function save_entry(obj_modal) {
 	updated_data.result.PPublication = [];
 	updated_data.result.PCountry = [];
 
+	// to be save we have the right address in logs
+	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = getUpdatesAddress(); }
+	var applied_perms = [];
+	for (var perm of Object.values(data_changes_log) ) {
+		if (perm["Valid"] == false) { return display_message( i18next.t("MaintainPartners.consent_error"), 'fail'); }
+		applied_perms.push( JSON.stringify(perm) );
+	}
+
 	// send request
 	let r = {'AMainDS': JSON.stringify(updated_data.result),
 			 'APartnerTypes': applied_tags,
 			 'ASubscriptions': applied_subs,
+			 'AChanges': applied_perms,
 			 'ADefaultEmailAddress': updated_data.p_default_email_address_c,
 			 'ADefaultPhoneLandline': updated_data.p_default_phone_landline_c,
 			 'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c
@@ -214,7 +226,6 @@ function save_entry(obj_modal) {
 	})
 }
 
-
 function show_tab(tab_id) {
 	// used to control tabs in modal, because there are issues with bootstrap
 	let tab = $(tab_id);
@@ -223,8 +234,8 @@ function show_tab(tab_id) {
 	tab.addClass('active');
 
 	tgr = tab.closest('.container').find('.tab-content');
-	tgr.find('.tab-pane').removeClass('active');
-	tgr.find('#'+target).addClass('active');
+	tgr.find('.tab-pane').hide();
+	tgr.find('#'+target).show();
 
 }
 
@@ -285,4 +296,252 @@ function load_countries(all_countries, selected_country, obj) {
 		obj.find('#CountryCode').append(y);
 	}
 	return obj;
+}
+
+// following funtions are for data history view/edit
+function open_history(HTMLButton) {
+	var req = {
+		APartnerKey: $(HTMLButton).closest(".modal").find("[name=p_partner_key_n]").val()
+	};
+	data_changes_log = {};
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetUniqueTypes', req).then(function (data) {
+		var parsed = JSON.parse(data.data.d);
+		let Temp = $('[phantom] .tpl_history').clone();
+
+		var DataTypeList = Temp.find("[data-types]");
+		for (var type of parsed.result) {
+			let name = i18next.t('MaintainPartners.'+type);
+			let partner = req["APartnerKey"];
+			DataTypeList.append(`<button class='btn btn-secondary' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+		}
+
+		$('#modal_space .modal').modal('hide');
+		$('#modal_space').append(Temp);
+		$('#modal_space .modal').modal('show');
+
+	})
+}
+
+function load_history_data(HTMLButton) {
+	var req = {
+		APartnerKey: $(HTMLButton).attr("data-partner"),
+		ADataType: $(HTMLButton).attr("data-type")
+	};
+	var Target = $("#modal_space .tpl_history");
+
+	// we also store infos about the current edit user in the button thats needs to be pressed when saving changes
+	$("button#consent_edit_btn").attr("data-partner", req.APartnerKey);
+	$("button#consent_edit_btn").attr("data-type", req.ADataType);
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetHistory', req).then(function (data) {
+		var parsed = JSON.parse(data.data.d);
+
+		var channels = parsed.result.PConsentChannel;
+		var purposes = parsed.result.PPurpose;
+
+		let type = $(HTMLButton).attr("data-type");
+		type = i18next.t('MaintainPartners.'+type);
+		Target.find(".selected-type").text(type);
+		var HistoryList = Target.find("[history]").html("");
+		for (var entry of parsed.result.PDataHistory) {
+			var HistPerm = $("[phantom] .history-entry").clone();
+
+			var EventDate = new Date(entry.s_date_created_d);
+			var event_date_str = `${EventDate.getFullYear()}-${(EventDate.getMonth()+1)}-${EventDate.getDate()}`;
+
+			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
+			HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
+			HistPerm.attr("style", "background-color: #EEEEEE");
+			HistPerm.find(".preview [name=EventDate]").text( event_date_str );
+			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
+
+			HistPerm.find(".detail [name=Editor]").text( entry.s_created_by_c );
+			HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+entry.p_channel_code_c) );
+			for (var channel of channels) {
+				if (entry.p_channel_code_c == channel.p_channel_code_c) {
+					HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+channel.p_name_c) );
+				}
+			}
+			for (var purpose of purposes) {
+				if (entry.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
+					HistPerm.find(".detail [name=Consent]").append( "<br><span>" + i18next.t('MaintainPartners.'+purpose.p_name_c) + "</span>" );
+				}
+			}
+
+			HistoryList.append(HistPerm);
+		}
+
+	})
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_LastKnownEntry', req).then(function (data) {
+		var parsed = JSON.parse(data.data.d);
+		var TargetPurpose = Target.find("[permissions]").html("");
+
+		var purposes = parsed.result.PPurpose;
+		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
+		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
+
+		for (var purpose of purposes) {
+			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
+			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+
+			var PermTemp = $("[phantom] .permission-option").clone();
+			PermTemp.find("[name]").text(name);
+			PermTemp.find("[purposecode]").attr("purposecode", purpose.p_purpose_code_c);
+			PermTemp.find("[purposecode]").attr("checked", checked);
+			TargetPurpose.append(PermTemp);
+		}
+	});
+}
+
+function insert_consent(HTMLField, data_name) {
+
+	var Obj = $(HTMLField);
+	var value = Obj.val();
+	var partner_key = Obj.closest(".modal").find("[name=p_partner_key_n]").val();
+
+	// special cases
+	if (data_name == "address") { value = getUpdatesAddress(); }
+
+	data_changes_log[data_name] = {
+		PartnerKey: partner_key,
+		Type: data_name,
+		Value: value,
+		ChannelCode: "", // is set later
+		Permissions: "", // is set later
+		Valid: false // is set later
+	};
+
+	open_consent_modal(data_name);
+
+}
+
+function open_consent_modal(field, mode="partner_edit") {
+
+	var partner_key = $("#modal_space .tpl_edit [name=p_partner_key_n]").val();
+	var req = {APartnerKey: partner_key, ADataType:field};
+	$("#modal_space .tpl_edit #history_button").attr("disabled", true);
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_LastKnownEntry', req).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		var Temp = $('[phantom] .tpl_consent').clone();
+
+		var purposes = parsed.result.PPurpose;
+		var channels = parsed.result.PConsentChannel;
+		var last_known_configuration = parsed.result.PDataHistory.pop() || {}; // could be empty
+
+		// because it could be empty
+		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
+
+		Temp.find("data[name=field]").val(field);
+		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
+
+		// place dynamic channel
+		var TargetChannel = Temp.find("[name=consent_channel]").html("");
+		for (var channel of channels) {
+			let selected = (channel.p_channel_code_c == last_known_configuration.p_channel_code_c) ? "selected" : "";
+			let name = i18next.t('MaintainPartners.'+channel.p_name_c);
+			TargetChannel.append(`<option ${selected} value='${channel.p_channel_code_c}'>${name}</option>`);
+		}
+
+		// place dynamic purposes
+		var TargetPurpose = Temp.find(".permissions").html("");
+		for (var purpose of purposes) {
+			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
+			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+
+			var PermTemp = $("[phantom] .permission-option").clone();
+			PermTemp.find("[name]").text(name);
+			PermTemp.find("[purposecode]").attr("purposecode", purpose.p_purpose_code_c);
+			PermTemp.find("[purposecode]").attr("checked", checked);
+			TargetPurpose.append(PermTemp);
+			// TargetPurpose.append(`<label><span>${name}</span><input ${checked} type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
+		}
+
+		$('#modal_space .modal.tpl_consent').remove();
+		$('#modal_space').append(Temp);
+
+		if (mode == "partner_edit") {
+			$("#modal_space .modal.tpl_consent [mode]").hide();
+			$("#modal_space .modal.tpl_consent [mode=partner_edit]").show();
+		}
+
+		if (mode == "consent_edit") {
+			$("#modal_space .modal.tpl_consent [mode]").hide();
+			$("#modal_space .modal.tpl_consent [mode=consent_edit]").show();
+		}
+
+		$('#modal_space .modal.tpl_consent').modal({backdrop:"static", keyboard: false}); // <- so u can't close it normally
+
+	})
+}
+
+function submit_changes_consent() {
+
+	var current_field = $("#modal_space .modal.tpl_consent data[name=field]").val();
+	var channel_code = $("#modal_space .modal.tpl_consent [name=consent_channel]").val();
+
+	// get all permissions
+	var perm_list = [];
+	var perms = $("#modal_space .modal.tpl_consent .permissions input[purposecode]:checked");
+	for (var Perm of perms) {
+		perm_list.push( $(Perm).attr("purposecode") );
+	}
+
+	data_changes_log[current_field]["Valid"] = true;
+	data_changes_log[current_field]["ChannelCode"] = channel_code;
+	data_changes_log[current_field]["Permissions"] = perm_list.join(',');
+
+	$("#modal_space .modal.tpl_consent").modal("hide");
+
+}
+
+function getUpdatesAddress() {
+	let street = $("#modal_space #addresses").find("[name=p_street_name_c]").val();
+	let city = $("#modal_space #addresses").find("[name=p_city_c]").val();
+	let postal = $("#modal_space #addresses").find("[name=p_postal_code_c]").val();
+	let land = $("#modal_space #addresses").find("[name=p_country_code_c]").val();
+	return `${street}, ${postal} ${city}, ${land}`;
+}
+
+var current_edit_partner_number = "-1";
+function submit_consent_edit(from_model=false) {
+	if (!from_model) {
+		var ty = $("#modal_space #consent_edit_btn").attr("data-type");
+		current_edit_partner_number = $("#modal_space #consent_edit_btn").attr("data-partner");
+		open_consent_modal(ty, "consent_edit");
+		return;
+	}
+
+	var perm_list = [];
+	var perms = $("#modal_space .modal.tpl_history input[purposecode]:checked");
+	for (var Perm of perms) {
+		perm_list.push( $(Perm).attr("purposecode") );
+	}
+
+	var req = {
+		APartnerKey: current_edit_partner_number,
+		ADataType: $("#modal_space .modal.tpl_consent data[name=field]").val(),
+		AChannelCode: $("#modal_space .modal.tpl_consent [name=consent_channel]").val(),
+		AConsentCodes: perm_list.join(',')
+	};
+
+	api.post('serverMPartner.asmx/TDataHistoryWebConnector_EditHistory', req).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		if (parsed.result) {
+			$("#modal_space .tpl_consent").modal("hide");
+			var HTMLDataButton = $(`#modal_space .modal.tpl_history button[data-type='${req.ADataType}']`);
+			$("#modal_space .tpl_consent").modal("hide");
+			load_history_data(HTMLDataButton);
+		} else {
+			if (parsed.AVerificationResult.message == "np_changes") {
+				$("#modal_space .tpl_consent").modal("hide");
+			} else {
+				display_error( parsed.AVerificationResult );
+			}
+		}
+
+	})
+
+
 }

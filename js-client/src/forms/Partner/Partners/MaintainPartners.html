@@ -73,7 +73,8 @@
 		<div class="modal-dialog" role="document">
 		<div class="modal-content">
 		<div class="modal-header">
-		<h3>{edittitle}</h3>
+			<h3>{edittitle}</h3>
+			<button type="button" class="btn btn-primary" onclick="open_history(this)" id="history_button">{change_history}</button>
 		</div>
 		<div class="modal-body">
 		<div class="container">
@@ -199,22 +200,22 @@
 
 			<ul class="nav nav-tabs" id="detailTab" role="tablist">
 				<li class="nav-item">
-					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{address}</a>
+					<div class="nav-link active" style="cursor:pointer;" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{address}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#types" aria-controls="types" onclick="show_tab(this)">{types}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#types" aria-controls="types" onclick="show_tab(this)">{types}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#financial" aria-controls="financial" onclick="show_tab(this)">{financedetails}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#financial" aria-controls="financial" onclick="show_tab(this)">{financedetails}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</div>
 				</li>
 			</ul>
 
@@ -227,7 +228,7 @@
 								<span>{streetname}</span>
 							</div>
 							<div class="col-3">
-								<input type="text" name="p_street_name_c" />
+								<input type="text" name="p_street_name_c" onchange="insert_consent(this, 'address')"/>
 							</div>
 
 							<div class="col-3">
@@ -276,7 +277,7 @@
 								<span>{email address}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_email_address_c" size="25"/>
+								<input type="text" name="p_default_email_address_c" size="25" onchange="insert_consent(this,'email address')"/>
 							</div>
 						</div>
 
@@ -285,7 +286,7 @@
 								<span>{phone landline}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_phone_landline_c" size="25" />
+								<input type="text" name="p_default_phone_landline_c" size="25" onchange="insert_consent(this, 'phone landline')"/>
 							</div>
 						</div>
 
@@ -294,7 +295,7 @@
 								<span>{phone mobile}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_phone_mobile_c" size="25"/>
+								<input type="text" name="p_default_phone_mobile_c" size="25" onchange="insert_consent(this, 'phone mobile')"/>
 							</div>
 						</div>
 
@@ -356,6 +357,138 @@
 			<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 		</div>
 		</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_history" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+			<h3>{edittitle_history}</h3>
+		</div>
+		<div class="modal-body">
+			<div class="container">
+				<div class="row">
+
+					<div class="col-4">
+						<h4>{data_type}</h4>
+						<hr>
+						<div data-types></div>
+					</div>
+
+					<div class="col-8">
+						<div>
+							<h4>{consent permissions}: <span class="selected-type">-</span></h4>
+							<hr>
+							<div permissions style="overflow-y:auto;overflow-x:hidden;max-height:20vh;"></div>
+							<button type="button" style="position:absolute;top:0;right:0;" onclick="submit_consent_edit(false)" id="consent_edit_btn">{forms.save}</button>
+						</div>
+
+						<div>
+							<h4>{history}: <span class="selected-type">-</span></h4>
+							<hr>
+							<div class="row">
+								<div class="col">{date}</div>
+								<div class="col">{history}</div>
+								<div class="col">{consent permissions}</div>
+							</div>
+							<div history style="overflow-y:auto;overflow-x:hidden;max-height:50vh;"></div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+		</div>
+		</div>
+		</div>
+	</div>
+
+	<div class="modal fade tpl_consent" tabindex="-1" role="dialog" style="margin-top: 2em;">
+		<data name="field" value=""></data>
+		<div class="modal-dialog" role="document">
+			<div class="modal-content" style="border: 2px solid black;">
+				<div class="modal-header">
+					<h3>{edittitle_consent}</h3>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+
+						<div class="row">
+							<div class="col">
+								{changed value}
+							</div>
+							<div class="col">
+								<span name="changed_value"></span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{consent channel}
+							</div>
+							<div class="col">
+								<select name="consent_channel"></select>
+							</div>
+						</div>
+
+						<hr>
+
+						<div class="row" mode="partner_edit">
+							<div class="col">
+								{consent permissions}
+							</div>
+						</div>
+
+						<!-- gets filled with copys of: [phantom] .permission-option -->
+						<div class="permissions" mode="partner_edit"></div>
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-light" onclick="$('#modal_space .tpl_consent').modal('hide')" mode="consent_edit">{forms.close}</button>
+					<button class="btn btn-primary" onclick="submit_consent_edit(true)" mode="consent_edit">{forms.save}</button>
+					<button class="btn btn-primary" onclick="submit_changes_consent()" mode="partner_edit">{forms.save}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<label class="row permission-option">
+		<div class="col">
+			<span name></span>
+		</div>
+		<div class="col">
+			<input type="checkbox" purposecode>
+		</div>
+	</label>
+
+	<div class="row history-entry" onclick="$(this).find('.detail.collapse').collapse('toggle')">
+		<div class="col">
+			<div class="row preview" style="cursor: pointer;">
+				<div class="col"><span name="EventDate"></span></div>
+				<div class="col"><span name="Value"></span></div>
+				<div class="col"><span name="Permissions"></span></div>
+			</div>
+			<div class="row detail collapse">
+				<div class="col">
+
+					<hr>
+					<div class="">
+						<span>{editor}: </span><span name="Editor"></span>
+					</div><br>
+					<div class="">
+						<span>{consent channel}: </span><span name="Channel"></span>
+					</div><br>
+					<div class="">
+						<span>{consent permissions}: </span><span name="Consent"></span>
+					</div>
+
+				</div>
+			</div>
 		</div>
 	</div>
 

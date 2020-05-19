@@ -1,4 +1,4 @@
-<PetraDataSets>
+﻿<PetraDataSets>
   <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPartner.Mailroom.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MPersonnel.Personnel.Data"/>
@@ -33,7 +33,7 @@
     <Table sqltable="p_partner_attribute">
         <CustomField name="PartnerContactDetail" type="Boolean"/>
         <Field name="CategoryCode" sqltable="p_partner_attribute_category" sqlfield="p_category_code_c"/>
-    </Table>    
+    </Table>
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
     </Table>
@@ -78,7 +78,7 @@
     <Table sqltable="p_partner_contact_attribute"/>
     <Table sqltable="p_type"/>
     <Table sqltable="p_publication"/>
-    
+
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>
     <Table sqltable="p_data_label_value_partner"/>
@@ -132,6 +132,8 @@
       <CustomField name="RemoveTypeCode" type="bool"/>
       <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
     </CustomTable>
+    <Table sqltable="p_country"/>
+    <Table sqltable="p_partner_status"/>
     <CustomRelation name="Address"
         parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
         childTable="PLocation" childFields="SiteKey,LocationKey"
@@ -139,11 +141,11 @@
     <CustomRelation name="ContactDetails1"
         parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
         childTable="PPartnerAttributeType" childFields="CategoryCode"
-        createConstraints="false"/>        
+        createConstraints="false"/>
     <CustomRelation name="ContactDetails2"
         parentTable="PPartnerAttributeType" parentFields="AttributeType"
         childTable="PPartnerAttribute" childFields="AttributeType"
-        createConstraints="false"/>                
+        createConstraints="false"/>
     <CustomRelation name="PartnerInterestCategory"
             childTable="PPartnerInterest" childFields="Interest"
             parentTable="PInterest" parentFields="Interest"
@@ -171,7 +173,7 @@
     </Table>
 
     <CustomTable name="ChangePromotionParameters">
-      <!-- Table is used for p_location and p_partner_location Change Promotion screens: will hold 'n' records depending on how many 
+      <!-- Table is used for p_location and p_partner_location Change Promotion screens: will hold 'n' records depending on how many
           Partners could possibly be affected by the change; only sent by the PetraServer to the PetraClient -->
 
       <Field sqltable="p_partner_location" sqlfield="p_partner_key_n"/>
@@ -284,10 +286,10 @@
     <Table sqltable="p_partner_type"/>
     <Table sqltable="p_subscription"/>
     <Table sqltable="p_partner_attribute_category"/>  <!-- Only populated client-side from a Cacheable DataTable! -->
-    <Table sqltable="p_partner_attribute_type"/>      <!-- Only populated client-side from a Cacheable DataTable! -->  
+    <Table sqltable="p_partner_attribute_type"/>      <!-- Only populated client-side from a Cacheable DataTable! -->
     <Table sqltable="p_partner_attribute">
         <CustomField name="PartnerContactDetail" type="Boolean"/>
-    </Table>    
+    </Table>
     <CustomTable name="FamilyMembers">
       <!-- Table is used for displaying Family Members of a Partner's Family (on 'Person / Family' Tab) -->
 
@@ -299,11 +301,11 @@
     <CustomRelation name="ContactDetails1"
         parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
         childTable="PPartnerAttributeType" childFields="CategoryCode"
-        createConstraints="false"/>        
+        createConstraints="false"/>
     <CustomRelation name="ContactDetails2"
         parentTable="PPartnerAttributeType" parentFields="AttributeType"
         childTable="PPartnerAttribute" childFields="AttributeType"
-        createConstraints="false"/>                    
+        createConstraints="false"/>
   </DataSet>
 
   <DataSet name="PartnerFindTDS">
@@ -377,7 +379,7 @@
       <Field sqltable="p_location" sqlfield="p_county_c"/>
       <Field sqltable="p_location" sqlfield="p_country_code_c"/>
       <Field sqltable="p_location" sqlfield="p_location_key_i"/>
- 
+
       <Field sqltable="p_banking_details" sqlfield="p_banking_details_key_i"/>
       <Field sqltable="p_banking_details" sqlfield="p_account_name_c"/>
       <Field sqltable="p_banking_details" sqlfield="p_bank_account_number_c"/>
@@ -426,10 +428,10 @@
     <Table sqltable="p_partner"/>
     <Table sqltable="p_location_type"/>
     <Table sqltable="p_partner_attribute"/>
-      
+
     <Table sqltable="p_location"/>
     <Table sqltable="p_partner_location"/>
-   
+
     <Table sqltable="u_unit_type"/>
     <Table sqltable="p_unit"/>
     <Table sqltable="pt_marital_status"/>
@@ -471,7 +473,7 @@
 
     <Table sqltable="pt_position"/>
     <Table sqltable="um_job"/>
-      
+
     <Table sqltable="pm_personal_data"/>
     <Table sqltable="pt_passport_type"/>
     <Table sqltable="pm_passport_details"/>
@@ -537,9 +539,9 @@
       <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
     </Table>
-    <Table sqltable="m_extract_type"/>	
+    <Table sqltable="m_extract_type"/>
     <Table sqltable="m_extract_parameter"/>
-  </DataSet>   
+  </DataSet>
 
   <DataSet name="ContactTDS">
     <Table sqltable="p_contact_log"/>
@@ -548,7 +550,7 @@
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
     <Table sqltable="p_partner_contact"/>
-  </DataSet>   
+  </DataSet>
 
   <DataSet name="PostcodeRegionsTDS">
     <Table sqltable="p_postcode_region"/>
@@ -574,5 +576,14 @@
   <DataSet name="PartnerContactSetupTDS">
       <Table sqltable="p_partner_attribute_category"/>
       <Table sqltable="p_partner_attribute_type"/>
+  </DataSet>
+
+  <DataSet name="DataConsentTDS">
+      <Table sqltable="p_data_history">
+        <CustomField name="AllowedPurposes" type="string"/>
+      </Table>
+      <Table sqltable="p_data_history_permission"/>
+      <Table sqltable="p_purpose"/>
+      <Table sqltable="p_consent_channel"/>
   </DataSet>
 </PetraDataSets>
