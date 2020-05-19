@@ -59,34 +59,67 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 // but for now, we keep it by using already present functions.
 
                 // address
-                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "address");
-                if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                if (
+                    PartnerTable.Columns.Contains("p_street_name_c") ||
+                    PartnerTable.Columns.Contains("p_city_c") ||
+                    PartnerTable.Columns.Contains("p_postal_code_c") ||
+                    PartnerTable.Columns.Contains("p_country_code_c")
+                )
                 {
-                    Row["p_street_name_c"] = "";
-                    Row["p_city_c"] = "";
-                    Row["p_postal_code_c"] = "";
-                    Row["p_country_code_c"] = "";
+                    LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "address");
+                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    {
+                        if (PartnerTable.Columns.Contains("p_street_name_c"))
+                        {
+                            Row["p_street_name_c"] = "";
+                        }
+
+                        if (PartnerTable.Columns.Contains("p_city_c"))
+                        {
+                            Row["p_city_c"] = "";
+                        }
+
+                        if (PartnerTable.Columns.Contains("p_postal_code_c"))
+                        {
+                            Row["p_postal_code_c"] = "";
+                        }
+
+                        if (PartnerTable.Columns.Contains("p_country_code_c"))
+                        {
+                            Row["p_country_code_c"] = "";
+                        }
+                    }
+
                 }
 
                 // phone mobile
-                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone mobile");
-                if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                if (PartnerTable.Columns.Contains("Mobile"))
                 {
-                    Row["Mobile"] = "";
+                    LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone mobile");
+                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    {
+                        Row["Mobile"] = "";
+                    }
                 }
 
                 // phone landline
-                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone landline");
-                if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                if (PartnerTable.Columns.Contains("Phone"))
                 {
-                    Row["Phone"] = "";
+                    LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone landline");
+                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    {
+                        Row["Phone"] = "";
+                    }
                 }
 
                 // email address
-                LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "email address");
-                if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                if (PartnerTable.Columns.Contains("EMail"))
                 {
-                    Row["EMail"] = "";
+                    LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "email address");
+                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    {
+                        Row["EMail"] = "";
+                    }
                 }
             }
 
