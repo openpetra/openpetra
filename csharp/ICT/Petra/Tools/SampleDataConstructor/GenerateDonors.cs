@@ -36,6 +36,8 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
+using Newtonsoft.Json;
 
 namespace Ict.Petra.Tools.SampleDataConstructor
 {
@@ -139,9 +141,51 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 partnerRow.Delete();
             }
 
-            MainDS.ThrowAwayAfterSubmitChanges = true;
+            // MainDS.ThrowAwayAfterSubmitChanges = true;
 
             PartnerEditTDSAccess.SubmitChanges(MainDS);
+
+            RecordNode = doc.FirstChild.NextSibling.FirstChild;
+
+            DataView FamilyPartners = new DataView(MainDS.PFamily);
+            foreach (DataRowView rv in FamilyPartners)
+            {
+                PFamilyRow partnerRow = (PFamilyRow)rv.Row;
+
+                string familySituation = TXMLParser.GetAttribute(RecordNode, "familySituation");
+                string setmail;
+                if (familySituation == "singleWoman")
+                {
+                    setmail = TXMLParser.GetAttribute(RecordNode, "FemaleEmail");
+                }
+                else {
+                    setmail = TXMLParser.GetAttribute(RecordNode, "MaleEmail");
+                }
+
+                string allowed_contents = TXMLParser.GetAttribute(RecordNode, "AllowedConsents");
+                string channel_contents = TXMLParser.GetAttribute(RecordNode, "ConsentChannel");
+
+                DataHistoryChange change = new DataHistoryChange
+                {
+                    PartnerKey = partnerRow.PartnerKey,
+                    Type = "email address",
+                    Value = setmail,
+                    ChannelCode = channel_contents,
+                    Permissions = allowed_contents
+                };
+
+                // Build verification string
+                List<string> Changes = new List<string>();
+                List<string> Expected = new List<string>() { "email address" };
+
+                Changes.Add( JsonConvert.SerializeObject(change) );
+
+                // RegisterChanges () 
+                bool success = TDataHistoryWebConnector.RegisterChanges(Changes, Expected);
+                if (!success) { throw new Exception("saving conents failed"); }
+                RecordNode = RecordNode.NextSibling;
+            }
+
 
             TLogging.Log("after saving donors");
         }
