@@ -4,7 +4,7 @@
 // @Authors:
 //       peters, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -267,7 +267,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         /// 'TVerificationResult' that contains information about DB Table references created by a cascading count
         /// Method if the count yielded more than 0 referencing DataRows.</param>
         /// <returns>The number records that reference a 'DataRow' of a non-cachable DataTable.</returns>
-        [RequireModulePermission("NONE")]
+        [NoRemoting]
         public static int GetNonCacheableRecordReferenceCountManual(TTypedDataTable ADataTable,
             object[] APrimaryKeyValues,
             out TVerificationResultCollection AVerificationResult)

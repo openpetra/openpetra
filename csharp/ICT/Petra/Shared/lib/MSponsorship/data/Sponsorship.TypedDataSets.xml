@@ -1,0 +1,35 @@
+﻿<PetraDataSets>
+  <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
+
+  <DataSet name="SponsorshipTDS">
+      <Table sqltable="p_partner"/>
+      <Table sqltable="p_family"/>
+      <Table sqltable="p_partner_comment"/>
+      <Table sqltable="p_partner_reminder"/>
+      <Table sqltable="p_type"/>
+      <Table sqltable="p_partner_type"/>
+
+      <Table sqltable="a_recurring_gift_batch"/>
+      <Table sqltable="a_recurring_gift"/>
+      <Table sqltable="a_recurring_gift_detail">
+          <Field sqltable="a_recurring_gift" sqlfield="p_donor_key_n"/>
+          <CustomField name="DonorName" type="String"/>
+          <CustomField name="CurrencyCode" type="String"/>
+      </Table>
+  </DataSet>
+
+  <DataSet name="SponsorshipFindTDS">
+    <CustomTable name="SearchResult">
+      <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+      <Field sqltable="p_partner" sqlfield="p_status_code_c"/>
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+
+      <Field sqltable="p_partner" sqlfield="p_user_id_c"/>
+
+      <Field sqltable="p_person" sqlfield="p_first_name_c"/>
+      <Field sqltable="p_person" sqlfield="p_family_name_c"/>
+    </CustomTable>
+  </DataSet>
+</PetraDataSets>
+

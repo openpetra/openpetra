@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         /// <param name="ASearchCriteria">A set of search criteria.</param>
         /// <param name="AResultTable">Returns typed datatable.</param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
             TTypedDataTable ResultTable = null;
@@ -103,7 +103,8 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             AResultTable = null;
             string context = string.Format("GetData {0}", SharedConstants.MODULE_ACCESS_MANAGER);
 
-            // TODO: check access permissions for the current user
+            // check access permissions for the current user
+            TModuleAccessManager.CheckUserPermissionsForTable(ATablename, TTablePermissionEnum.eCanRead);
 
             // TODO: auto generate
             if (ATablename == AApSupplierTable.GetTableDBName())
@@ -197,6 +198,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             {
                 AResultTable = PcDiscountAccess.LoadUsingTemplate(ASearchCriteria, AReadTransaction);
             }
+            else if (ATablename == PCountryTable.GetTableDBName())
+            {
+                AResultTable = PCountryAccess.LoadAll(AReadTransaction);
+            }
             else if (ATablename == PFormTable.GetTableDBName())
             {
                 string[] columns = TTypedDataTable.GetColumnStringList(PFormTable.TableId);
@@ -267,10 +272,13 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         /// <param name="ASubmitTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static TSubmitChangesResult SaveData(string ATablename,
             ref TTypedDataTable ASubmitTable, out TVerificationResultCollection AVerificationResult)
         {
+            // check access permissions for the current user
+            TModuleAccessManager.CheckUserPermissionsForTable(ATablename, TTablePermissionEnum.eCanModify | TTablePermissionEnum.eCanModify | TTablePermissionEnum.eCanDelete);
+
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
             TTypedDataTable SubmitTable = null;
             TVerificationResultCollection VerificationResult = null;

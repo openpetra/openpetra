@@ -91,6 +91,16 @@
 
 						<div class="row">
 							<div class="col">
+								<span>{entry_country}</span>
+							</div>
+							<div class="col">
+								<select name="a_country_code_c" id="CountryCode">
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
 								{entry_first_current_period}
 							</div>
 							<div class="col">
@@ -144,7 +154,7 @@
 								<span>{number}</span>
 							</div>
 							<div class="col">
-								<input type="number" min="1" name="a_new_ledger_number_i">
+								<input type="number" min="1" name="a_new_ledger_number_i" id="ANewLedgerNumber">
 							</div>
 						</div>
 
@@ -153,7 +163,7 @@
 								<span>{entry_name}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_ledger_name_c">
+								<input type="text" name="a_ledger_name_c" id="ALedgerName">
 							</div>
 						</div>
 
@@ -162,7 +172,8 @@
 								<span>{entry_base_currency}</span>
 							</div>
 							<div class="col">
-                <input type="text" name="a_base_currency_c" value="EUR">
+								<select name="a_base_currency_c" id="BaseCurrency">
+								</select>
 							</div>
 						</div>
 
@@ -171,7 +182,8 @@
 								<span>{entry_country}</span>
 							</div>
 							<div class="col">
-                <input type="text" name="a_country_code_c" value="DE">
+								<select name="a_country_code_c" id="CountryCode">
+								</select>
 							</div>
 						</div>
 
@@ -189,7 +201,10 @@
 								<span>{entry_account_periods}</span>
 							</div>
 							<div class="col">
-                <input type="number" name="ANumberOfAccountingPeriods" value="12">
+								<select name="ANumberOfAccountingPeriods">
+									<option value="12" selected>12</option>
+									<option value="13">13</option>
+								</select>
 							</div>
 						</div>
 

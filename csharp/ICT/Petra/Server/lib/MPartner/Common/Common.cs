@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,6 +85,13 @@ namespace Ict.Petra.Server.MPartner.Common
                 delegate
                 {
                     PartnerLedgerTable = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction);
+
+                    if (PartnerLedgerTable.Count == 0)
+                    {
+                        // this ledger has not been initialised yet
+                        throw new Exception("PPartnerLedger has not been initialised yet for " + AFieldPartnerKey.ToString());
+                    }
+
                     ReturnValue = PartnerLedgerTable[0].PartnerKey + PartnerLedgerTable[0].LastPartnerId + 1;
 
                     // Now check that this does not exist, and increment until we

@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTATTR)
                         || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL))
                     {
-                        MainDS.Merge(PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, ReadTransaction));
+                        MainDS.Merge(PContactLogAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
                     }
 
                     // read passports (for PERSON)

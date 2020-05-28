@@ -18,7 +18,7 @@ install:
 build_script:
 - echo "building was already done in install section"
 test_script:
-- sudo -E sh -c "curl --silent --location https://github.com/openpetra/demo-databases/raw/UsedForNUnitTests/demoWith1ledger.yml.gz > /home/op_dev/openpetra/demoWith1ledger.yml.gz && chown op_dev:op_dev /home/op_dev/openpetra/demoWith1ledger.yml.gz"
+- sudo -E sh -c "curl --silent --location https://github.com/openpetra/demo-databases/raw/UsedForNUnitTests/demoWith1ledger.yml.gz > /home/op_dev/openpetra/demoWith1ledger.yml.gz && chown op_dev:openpetra /home/op_dev/openpetra/demoWith1ledger.yml.gz"
 - sudo -E sh -c "cd /home/op_dev/openpetra && nant resetDatabase test-without-display"
 before_deploy:
 - sudo -E sh -c "cd /home/op_dev/openpetra && nant buildRPM"

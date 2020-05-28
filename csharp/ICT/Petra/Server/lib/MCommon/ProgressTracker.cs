@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// <summary>
         /// reset the tracker
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static bool Reset()
         {
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), string.Empty, 100.0m);
@@ -53,7 +53,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// <summary>
         /// get the current state
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static bool GetCurrentState(out string ACaption, out string AStatusMessage, out int APercentageDone, out bool AJobFinished)
         {
             TProgressState state = TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString());
@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// <summary>
         /// cancel the currently running job
         /// </summary>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static bool CancelJob()
         {
             return TProgressTracker.CancelJob(DomainManager.GClientID.ToString());

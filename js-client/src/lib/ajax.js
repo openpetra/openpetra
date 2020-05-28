@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -32,6 +33,26 @@ var api = axios.create({
     responseType: 'json'
 });
 api.defaults.headers.post['Content-Type'] = 'application/json';
+
+api.interceptors.response.use(function (response) {
+    // status code 2xx
+    return response;
+  }, function (error) {
+    // something went wrong
+    if (error.response.data.hasOwnProperty('d')) {
+        var parsed = JSON.parse(error.response.data.d);
+        if (!parsed.result) {
+          display_error(parsed.AVerificationResult);
+        }
+    } 
+    else if (error.response.data.hasOwnProperty('Message')) {
+        display_error(error.response.data.Message);
+    }
+    else {
+        display_error("undefined error");
+    }
+    return Promise.reject(error);
+  });
 
 // for the report parameters json file
 var src = axios.create({

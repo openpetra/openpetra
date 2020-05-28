@@ -1211,6 +1211,10 @@ namespace Ict.Tools.DBXML
             {
                 return "DateTime";
             }
+            else if (strType.ToLower() == "longtext")
+            {
+                return "String";
+            }
             else if (strType.ToLower() == "string")
             {
                 return "String";

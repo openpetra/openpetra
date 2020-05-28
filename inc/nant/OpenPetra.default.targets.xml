@@ -41,11 +41,6 @@
 <target name="initConfigFiles-server">
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
 
-  <property name="DBMS.DBSqliteSession" value="${SQLitedbSession.file}"/>
-  <if test="${DBMS.Type == 'sqlite'}">
-    <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
-  </if>
-
   <property name="configFile" value="${dir.delivery}/web.config"/> 
   <call target="initConfigFiles-internal"/>
 
@@ -102,6 +97,23 @@
       <include name="**/*.asmx" />
     </fileset>
   </copy>
+
+  <!-- create symbolic link for version.txt -->
+  <if test="${not file::exists(dir.bin + '/version.txt')}">
+    <exec program="bash"
+        workingdir="${dir.bin}"
+        commandline="-c &quot;ln -s ../../db/version.txt&quot;"/>
+  </if>
+
+  <!-- create symbolic links for sql upgrade files -->
+  <delete>
+    <fileset basedir="${dir.csharp}/ICT/Petra/Server/sql">
+      <include name="Upgrade*.sql" />
+    </fileset>
+  </delete>
+  <exec program="bash"
+        workingdir="${dir.csharp}/ICT/Petra/Server/sql"
+        commandline="-c &quot;for f in ${dir.csharp}/ICT/Petra/Server/lib/MSysMan/DBUpgrades/*.sql; do ln -s $f; done&quot;"/>
 
   <if test="${'unix'==platform::get-name()}" >
       <!-- create symbolic link for api page -->
@@ -192,9 +204,23 @@
 </target>
 <target name="startAdmin" depends="initConfigFiles-admin" description="start the OpenPetra Server Admin Console"> 
   <if test="${'unix'==platform::get-name()}">
+    <property name="Command" value="menu" overwrite="false"/>
+    <if test="${Command=='menu'}">
       <echo message="run this directly from the command line:"/>
-      <echo message="/usr/bin/openpetra-server menu"/>
+      <echo message="/home/op_dev/openpetra-server.sh menu"/>
       <!-- exec does not really work within nant, Console.Write does not print -->
+    </if>
+    <if test="${Command!='menu'}">
+      <echo message="running: mono PetraServerAdminConsole.exe -Command:${Command} -C:${ServerAdminConfigFile}"/>
+      <exec program="${MonoExecutable.file}" 
+              workingdir="${dir.bin}"
+              commandline="PetraServerAdminConsole.exe -Command:${Command} -C:${ServerAdminConfigFile}"
+              spawn="false">
+         <environment>
+            <variable name="LANGUAGE" value="${SelectedLanguage}"/>
+         </environment>
+      </exec>
+    </if>
   </if>
 </target> 
 

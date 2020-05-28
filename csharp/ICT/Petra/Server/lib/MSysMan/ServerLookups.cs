@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, berndr, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,7 +47,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
         /// </summary>
         /// <param name="APetraDBVersion">Current database version</param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static System.Boolean GetDBVersion(out System.String APetraDBVersion)
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
         /// </summary>
         /// <param name="APatchLogDT">The installed patches</param>
         /// <returns></returns>
-        [RequireModulePermission("NONE")]
+        [RequireModulePermission("USER")]
         public static System.Boolean GetInstalledPatches(out Ict.Petra.Shared.MSysMan.Data.SPatchLogTable APatchLogDT)
         {
             SPatchLogTable TmpTable = new SPatchLogTable();

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// Return all partners that match the given criteria. This is used for the partner find type ahead feature.
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("OR(PTNRUSER,PARTNERVIEW)")]
         public static bool TypeAheadPartnerFind(
             string ASearch, string APartnerClass, bool AActiveOnly,
             short ALimit,

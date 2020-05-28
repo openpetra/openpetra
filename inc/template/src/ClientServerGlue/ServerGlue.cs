@@ -69,8 +69,16 @@ public {#RETURNTYPE} {#WEBCONNECTORCLASS}_{#UNIQUEMETHODNAME}({#PARAMETERDEFINIT
     }
 }
 
-{##CHECKUSERMODULEPERMISSIONS}
-TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPACE}), "{#METHODNAME}", "{#PARAMETERTYPES}"{#LEDGERNUMBER});
+{##CHECKUSERMODULEPERMISSIONSWITHEXCEPTION}
+TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPACE}), "{#METHODNAME}", "{#PARAMETERTYPES}", {#LEDGERNUMBER});
+
+{##CHECKUSERMODULEPERMISSIONSWITHRESULT}
+string CheckResult = TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPACE}), "{#METHODNAME}", "{#PARAMETERTYPES}", {#LEDGERNUMBER}, true);
+if (CheckResult != "OK")
+{
+    Context.Response.StatusCode = (int)System.Net.HttpStatusCode.Forbidden;
+    return CheckResult;
+}
 
 {##CHECKSERVERADMINPERMISSION}
 if (!TServerManagerBase.CheckServerAdminToken(AServerAdminSecurityToken))

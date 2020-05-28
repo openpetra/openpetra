@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -56,17 +57,36 @@ namespace Ict.Petra.Server.app.JSClient
 
             string PermissionsRequired = TXMLParser.GetAttributeRecursive(ANode, "PermissionsRequired", true);
 
-            while (PermissionsRequired.Length > 0)
+            try
             {
-                string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired);
-
-                if (!AUserInfo.IsInModule(PermissionRequired))
+                if (PermissionsRequired.StartsWith("\"") && PermissionsRequired.EndsWith("\""))
                 {
-                    return false;
+                    PermissionsRequired = PermissionsRequired.Substring(1, PermissionsRequired.Length-2);
                 }
-            }
 
-            return true;
+                if (PermissionsRequired.Contains(",") && !PermissionsRequired.EndsWith(")"))
+                {
+                    PermissionsRequired = "AND(" + PermissionsRequired + ")";
+                }
+
+                if (PermissionsRequired == "")
+                {
+                    PermissionsRequired = "USER";
+                }
+
+                TSecurityChecks.CheckUserModulePermissions(PermissionsRequired, "UINavigation");
+                return true;
+            }
+            catch (ESecurityModuleAccessDeniedException)
+            {
+                return false;
+            }
+            catch (ArgumentException e)
+            {
+                TLogging.Log("Issue for node " + ANode.Name + Environment.NewLine +
+                    e.ToString());
+                return false;
+            }
         }
 
         /// <summary>

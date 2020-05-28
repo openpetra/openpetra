@@ -32,7 +32,7 @@ public class {#DATASETNAME}Access
 {##SUBMITCHANGESFUNCTION}
 
 /// auto generated
-static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase = null)
+static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase = null, TDBTransaction AWriteTransaction = null)
 {
     if (AInspectDS == null)
     {
@@ -41,7 +41,18 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
 
     bool NewTransaction;
     TDataBase db = DBAccess.Connect("{#DATASETNAME}SubmitChanges", ADataBase);
-    TDBTransaction SubmitChangesTransaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+    TDBTransaction SubmitChangesTransaction = null;
+
+    if ((AWriteTransaction != null) && (AWriteTransaction.IsolationLevel == IsolationLevel.Serializable))
+    {
+        NewTransaction = false;
+        SubmitChangesTransaction = AWriteTransaction;
+    }
+    else
+    {
+        SubmitChangesTransaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+    }
+
     string SavingOperation = "No action taken yet!";
 
     try
