@@ -261,6 +261,8 @@
         "firstname": "First name",
         "familyname": "Family name",
         "title":"Title",
+	"edittitle_history":"Data history",
+	"history":"History",
         "edittitle_consent":"Edit consent",
         "changed value":"Changes value",
         "consent channel":"Channel",
@@ -273,7 +275,11 @@
         "newsletter":"Newsletter",
         "publicrelation":"Public relation",
         "change_history":"Change history",
-        "consent_error":"Consent change error"
+        "consent_error":"Consent change error",
+        "data_type":"Datatype",
+        "editor":"Editor",
+        "permission change":"Changes",
+        "date":"Date"
     },
     "GLBatches": {
         "caption": "Maintain GL Batches and Transactions",
