@@ -35,25 +35,11 @@ $('document').ready(function () {
   api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPostingRangeDates', x).then(function (data) {
     data = JSON.parse(data.data.d);
     $('#ledger_info').find('.fwd_posting').html( format_tpl( $('[phantom] .fwd_posting'), data ) );
-    adjust_date();
   })
 
   api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPeriodDates', x).then(function (data) {
     data = JSON.parse(data.data.d);
     $('#ledger_info').find('.period').html( format_tpl( $('[phantom] .period'), data ) );
-    adjust_date();
   })
 
 });
-
-function adjust_date() {
-  $('.frame .date').each(function (g, obj) {
-    let object = $(obj);
-    let time = object.text();
-
-    let new_time = new Date(time).toLocaleDateString();
-
-    object.text(new_time);
-    object.removeClass('date');
-  });
-}

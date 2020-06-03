@@ -192,7 +192,7 @@ namespace Ict.Common.Remoting.Shared
 
             if (o.GetType() == typeof(DateTime))
             {
-                return ((DateTime)o).ToString("s");
+                return '"' + ((DateTime)o).ToString("s") + '"';
             }
 
             if (o.GetType() == typeof(DateTime?))
@@ -201,7 +201,7 @@ namespace Ict.Common.Remoting.Shared
 
                 if (dt.HasValue)
                 {
-                    return dt.Value.ToString("s");
+                    return '"' + dt.Value.ToString("s") + '"';
                 }
 
                 return String.Empty;

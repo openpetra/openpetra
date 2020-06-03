@@ -304,6 +304,16 @@ backupall() {
             export OP_CUSTOMER=`basename $d`
             export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d%H`.sql.gz
             $THIS_SCRIPT backup
+            # only keep the hourly backups of today and yesterday. before that, keep only one backup per day
+            if [ -f /home/$OP_CUSTOMER/backup/backup-`date --date='2 days ago' +%Y%m%d`00.sql.gz ]; then
+                for i in {1..23}; do
+                    hour=$(printf "%02d" $i)
+                    rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='2 days ago' +%Y%m%d`$hour.sql.gz
+                    rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='3 days ago' +%Y%m%d`$hour.sql.gz
+                    rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='4 days ago' +%Y%m%d`$hour.sql.gz
+                done
+            fi
+            # delete backups older than 5 days
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='5 days ago' +%Y%m%d`*.sql.gz
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='6 days ago' +%Y%m%d`*.sql.gz
             rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='7 days ago' +%Y%m%d`*.sql.gz

@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -28,7 +28,15 @@ $('document').ready(function () {
   });
 
   let x = {};
-  releasenotes.get(i18next.t('ReleaseNotes.releasenotes_url'),x).then(function(data) {
-    $('#contentReleaseNotes').html(data.data);
-  });
+  releasenotes.get(i18next.t('ReleaseNotes.releasenotes_url'),x)
+    .then(function(data) {
+      $('#contentReleaseNotes').html(data.data);
+    })
+    .catch(function (error) {
+      // default to english release notes
+      releasenotes.get('releasenotes.html',x)
+        .then(function(data) {
+          $('#contentReleaseNotes').html(data.data);
+        });
+    })
 });
