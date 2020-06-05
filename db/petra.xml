@@ -24195,7 +24195,7 @@
                 thisFields="p_channel_code_c"
                 otherTable="p_consent_channel"
                 otherFields="p_channel_code_c"/>
-    <!-- Explicit Indexes on table pm_document_file  -->
+    <!-- Explicit Indexes on table p_data_history  -->
     <index name="dp_data_history_k"
            descr=""
            area="Petra Index"
@@ -24205,7 +24205,7 @@
     </index>
   </table>
   <table name="p_consent_channel"
-         descr="All possible channels to get data changes"
+         descr="All possible channels to get data changes and consent"
          area="Petra Data"
          dumpname="p_consent_channel"
          label="data consent channel"
@@ -24219,7 +24219,7 @@
     <tablefield name="p_name_c"
                 type="varchar"
                 format="X(64)"
-                descr="internatinal name for i18n translation"
+                descr="international name for i18n translation"
                 label="Name"
                 notnull="yes"
                 initial="0"/>
@@ -24231,10 +24231,9 @@
     <!-- Constraints on table p_consent_channel -->
     <primarykey name="p_consent_channel_pk"
                 thisFields="p_channel_code_c"/>
-    <!-- Explicit Indexes on table pm_document_file  -->
   </table>
   <table name="p_purpose"
-         descr="All possible use cases for data"
+         descr="Purposes for consent, for which the data may be used"
          area="Petra Data"
          dumpname="p_purpose"
          label="data purposes"
@@ -24248,7 +24247,7 @@
     <tablefield name="p_name_c"
                 type="varchar"
                 format="X(64)"
-                descr="internatinal name for i18n translation"
+                descr="international name for i18n translation"
                 label="Name"
                 notnull="yes"
                 initial="0"/>
@@ -24263,7 +24262,7 @@
     <!-- Explicit Indexes on table pm_document_file  -->
   </table>
   <table name="p_data_history_permission"
-         descr="Contains for what data can be uses"
+         descr="The history of consent for personal data"
          area="Petra Data"
          dumpname="p_data_history_permission"
          label="data purposes permission"
@@ -24282,7 +24281,7 @@
                 format="X(20)"
                 label="Purpose code"
                 notnull="yes"/>
-    <!-- Constraints on table p_consent_channel -->
+    <!-- Constraints on table p_data_history_permission -->
     <primarykey name="p_data_history_permission_pk"
                 thisFields="p_data_history_entry_i, p_purpose_code_c"/>
     <foreignkey name="p_data_history_permission_fk1"
@@ -24295,7 +24294,7 @@
                 thisFields="p_purpose_code_c"
                 otherTable="p_purpose"
                 otherFields="p_purpose_code_c"/>
-    <!-- Explicit Indexes on table pm_document_file  -->
+    <!-- Explicit Indexes on table p_data_history_permission  -->
     <index name="p_data_history_permission_k"
            descr=""
            area="Petra Index"
