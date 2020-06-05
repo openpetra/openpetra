@@ -946,7 +946,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 out dummy3
             );
             string NewPartnerKey = NewUser.PPartner[0].PartnerKey.ToString();
-            string AddressChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"address\",\"Value\":\"" + TestValueAddress + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR,NEWSL\",\"Valid\":true}";
+            string AddressChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"address\",\"Value\":\"" + TestValueAddress + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR,NEWSLETTER\",\"Valid\":true}";
             string EmailChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"email address\",\"Value\":\"" + TestValueEmail + "\",\"ChannelCode\":\"PHONE\",\"Permissions\":\"PR\",\"Valid\":true}";
             string LandlinChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"phone landline\",\"Value\":\"" + TestValuePhone + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR\",\"Valid\":true}";
             string MobileChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"phone mobile\",\"Value\":\"" + TestValueMobile + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR\",\"Valid\":true}";
@@ -1038,8 +1038,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue("EMAIL" == LastEntry.PDataHistory[0].ChannelCode);
             Assert.Contains("GR", allowed);
             allowed.Remove("GR");
-            Assert.Contains("NEWSL", allowed);
-            allowed.Remove("NEWSL");
+            Assert.Contains("NEWSLETTER", allowed);
+            allowed.Remove("NEWSLETTER");
             Assert.IsEmpty(allowed);
             TLogging.Log("Fifth test passed");
 
