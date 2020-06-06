@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
@@ -56,6 +57,30 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
         /// will start the calendar early enough so that the current period is open
         public static int FNumberOfClosedPeriods = 5;
+
+        /// we used to have 8 open periods after the current period, but 12 is easier for the test databases
+        public static int FNumberOfFwdPostingPeriods = 12;
+
+        /// update the current ledger with new number of forward posting periods, and different start date for the calendar
+        public static void UpdateLedger(DateTime ACalendarStartDate)
+        {
+            GLSetupTDS InspectDS = new GLSetupTDS();
+
+            TDataBase db = DBAccess.Connect("UpdateLedger");
+
+            TDBTransaction Transaction = new TDBTransaction();
+            db.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(InspectDS, FLedgerNumber, Transaction);
+                });
+
+            db.CloseDBConnection();
+
+            InspectDS.ALedger[0].NumberFwdPostingPeriods = FNumberOfFwdPostingPeriods;
+
+            TGLSetupWebConnector.SaveLedgerSettings(FLedgerNumber, ACalendarStartDate, ref InspectDS);
+        }
 
         /// create new ledger
         public static void CreateNewLedger()
@@ -78,51 +103,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR",
                     new DateTime(DateTime.Now.Year - 1, 4, 1),
-                    12, 1, 8, out VerificationResult);
-        }
-
-        /// <summary>
-        /// initialize the calender of the ledger for a specific year, so that we can have the specified number of open periods,
-        /// and the current year is open.
-        /// </summary>
-        public static void InitCalendar()
-        {
-            TDataBase db = DBAccess.Connect("InitCalendar");
-            TDBTransaction Transaction = new TDBTransaction();
-            bool SubmitOK = false;
-            db.WriteTransaction(ref Transaction,
-                ref SubmitOK,
-                delegate
-                {
-                    int YearDifference = (FNumberOfClosedPeriods / 12);
-
-                    if (FNumberOfClosedPeriods % 12 >= DateTime.Today.Month)
-                    {
-                        YearDifference++;
-                    }
-
-                    AAccountingPeriodTable periodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
-
-                    foreach (AAccountingPeriodRow row in periodTable.Rows)
-                    {
-                        row.PeriodStartDate = new DateTime(row.PeriodStartDate.Year - YearDifference, row.PeriodStartDate.Month, row.PeriodStartDate.Day);
-
-                        int LastDay = row.PeriodEndDate.Day;
-
-                        if (row.PeriodEndDate.Month == 2)
-                        {
-                            LastDay = DateTime.IsLeapYear(row.PeriodEndDate.Year - YearDifference) ? 29 : 28;
-                        }
-
-                        row.PeriodEndDate = new DateTime(row.PeriodEndDate.Year - YearDifference, row.PeriodEndDate.Month, LastDay);
-                    }
-
-                    AAccountingPeriodAccess.SubmitChanges(periodTable, Transaction);
-
-                    SubmitOK = true;
-                });
-
-            db.CloseDBConnection();
+                    12, 1, FNumberOfFwdPostingPeriods, out VerificationResult);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       thomass, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -67,18 +67,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         // for the demo databases, we want to have an open period for the current month
         private static int CalculatedNumberOfClosedPeriods(int ANumberOfClosedYears)
         {
-            if (DateTime.Today.Month <= 5)
-            {
-                // current Period: December of previous year
-                // posting allowed until August of this year
-                return 12 * ANumberOfClosedYears + 11;
-            }
-            else
-            {
-                // current Period: June this year
-                // posting allowed until February of next year
-                return 12 * ANumberOfClosedYears + 5;
-            }
+            // we always want the demo database to start in the same period
+            // we use 12 forwarding posting periods, to always have an open period
+            return 12 * ANumberOfClosedYears + 11;
         }
 
         /// <summary>
@@ -142,8 +133,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 if ((int)(operation & eOperations.ledgerOneYear) > 0)
                 {
                     SampleDataLedger.FLedgerNumber = 43;
+                    SampleDataLedger.FNumberOfFwdPostingPeriods = 12;
                     SampleDataLedger.FNumberOfClosedPeriods = CalculatedNumberOfClosedPeriods(0);
-                    SampleDataLedger.InitCalendar();
+                    SampleDataLedger.UpdateLedger(new DateTime(DateTime.Now.Year-1, 1, 1));
                     SampleDataLedger.InitExchangeRate();
                     SampleDataLedger.PopulateData(datadirectory, true);
                     TLogging.Log("Please explicitely run nant importDemodata -D:operation=secondLedger");
@@ -153,8 +145,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 if ((int)(operation & eOperations.ledgerMultipleYears) > 0)
                 {
                     SampleDataLedger.FLedgerNumber = 43;
+                    SampleDataLedger.FNumberOfFwdPostingPeriods = 12;
                     SampleDataLedger.FNumberOfClosedPeriods = TAppSettingsManager.GetInt32("NumberOfClosedPeriods", CalculatedNumberOfClosedPeriods(2));
-                    SampleDataLedger.InitCalendar();
+                    SampleDataLedger.UpdateLedger(new DateTime(DateTime.Now.Year-3, 1, 1));
                     SampleDataLedger.InitExchangeRate();
                     SampleDataLedger.PopulateData(datadirectory, true);
                 }
@@ -165,6 +158,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                     // this ledger starts in period 4
                     SampleDataLedger.FLedgerNumber = 44;
+                    SampleDataLedger.FNumberOfFwdPostingPeriods = 12;
                     SampleDataLedger.FNumberOfClosedPeriods = CalculatedNumberOfClosedPeriods(0) - 3;
                     SampleDataLedger.CreateNewLedger();
                     SampleDataLedger.InitExchangeRate();
