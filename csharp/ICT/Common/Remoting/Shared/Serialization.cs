@@ -79,7 +79,7 @@ namespace Ict.Common.Remoting.Shared
                         // we want DateTime in ISO format
                         if (dr[col] is DateTime || dr[col] is DateTime?)
                         {
-                            row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]));
+                            row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]).Trim('"'));
                         }
                         else
                         {
@@ -114,7 +114,7 @@ namespace Ict.Common.Remoting.Shared
                     // we want DateTime in ISO format
                     if (dr[col] is DateTime || dr[col] is DateTime?)
                     {
-                        row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]));
+                        row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]).Trim('"'));
                     }
                     else
                     {

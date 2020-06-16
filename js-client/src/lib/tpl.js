@@ -127,11 +127,26 @@ function set_values_of_input_variables(tpl, data, limit_to_table) {
         tpl.find('[name='+variable+'][value='+data[variable]+']').prop('checked', true);
         tpl.find('[name='+variable+'][value='+data[variable]+']').attr('checked', 'checked');
       }
+      else if (f.attr("type") == "date") {
+          v = data[variable];
+          if (v == "" || v == null) {
+            f.text("");
+            f.val("");
+          }
+          else
+          {
+            f.text( new Date(v).toLocaleDateString() );
+            v = new Date(v);
+            let YYYY = v.getFullYear();
+            let MM = v.getMonth() + 1;
+            let DD = v.getDate(); 
+            MM = (MM < 10 ? "0" : "") + MM;
+            DD = (DD < 10 ? "0" : "") + DD;
+            f.val( `${YYYY}-${MM}-${DD}` );
+          }
+      }
       else {
         value = data[variable];
-        if (typeof value === 'string' || value instanceof String) {
-          value = parseJSONDate(variable, value);
-        }
         f.attr('value', value);
         f.val(value);
       }
