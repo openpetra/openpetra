@@ -24,6 +24,12 @@ describe('find and edit partner', function() {
     cy.get('#modal_space input[name="p_default_email_address_c"]')
         .should('have.value', "holger.jacobi@roland-juenemann.us")
         .click().clear().click().type('albrecht.jacobi@roland-juenemann.us')
+    // switch focus, to get consent modal
+    cy.get('#modal_space input[name="p_default_phone_landline_c"]').click()
+    // confirm consent
+    cy.wait(500)
+    cy.get('#modal_space #btnPartnerEditConsent').click()
+
     cy.get('#modal_space input[name="p_no_solicitations_l"]')
         .should('not.be.checked')
         .check()
@@ -46,6 +52,11 @@ describe('find and edit partner', function() {
     cy.get('#modal_space input[name="p_default_email_address_c"]')
         .should('have.value', "albrecht.jacobi@roland-juenemann.us")
         .click().clear().click().type('holger.jacobi@roland-juenemann.us')
+    // switch focus, to get consent modal
+    cy.get('#modal_space input[name="p_default_phone_landline_c"]').click()
+    // confirm consent
+    cy.wait(500)
+    cy.get('#modal_space #btnPartnerEditConsent').click()
     cy.get('#modal_space input[name="p_no_solicitations_l"]')
         .should('be.checked')
         .uncheck()
