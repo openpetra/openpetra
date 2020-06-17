@@ -37,6 +37,7 @@ using Ict.Common.Verification;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
+    /// get the data history of a partner
     public class TDataHistoryWebConnector {
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 string sql = "SELECT DISTINCT `p_type_c` FROM `p_data_history` " +
                     "WHERE `p_partner_key_n` = ?";
 
-                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.VarChar) { Value = APartnerKey.ToString() });
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey });
 
                 DataTable AllTypes = DB.SelectDT(sql, "UniqueTypes", T, SQLParameter.ToArray());
                 foreach (DataRow TypeRow in AllTypes.Rows)
@@ -99,7 +100,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                     "ORDER BY `p_data_history`.`p_entry_id_i` DESC " +
                     "LIMIT 1";
 
-                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.VarChar) { Value = APartnerKey.ToString() } );
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType } );
 
                 // DB.SelectDT(Set, sql, T, SQLParameter.ToArray(), 0,0);
@@ -281,10 +282,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
     /// dummy object to parse data into
     /// </summary>
     public class DataHistoryChange {
+        /// PartnerKey
         public long PartnerKey { get; set; }
+        /// Type
         public string Type { get; set; }
+        /// Value
         public string Value { get; set; }
+        /// ChannelCode
         public string ChannelCode { get; set; }
+        /// Permissions
         public string Permissions { get; set; }
     }
 }
