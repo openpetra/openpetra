@@ -112,7 +112,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     PCountryAccess.LoadAll(MainDS, Transaction);
                     PPublicationAccess.LoadAll(MainDS, Transaction);
                     PPartnerStatusAccess.LoadAll(MainDS, Transaction);
-                    PTypeAccess.LoadAll(MainDS, Transaction);
+
+                    PTypeRow templateRow = MainDS.PType.NewRowTyped();
+                    templateRow.SystemType = false;
+                    templateRow.SetTypeDeletableNull();
+                    templateRow.SetDateCreatedNull();
+                    PTypeAccess.LoadUsingTemplate(MainDS, templateRow, Transaction);
                 });
 
             APartnerTypes = new List<string>();
@@ -257,7 +262,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         }
 
                         PPartnerStatusAccess.LoadAll(MainDS, Transaction);
-                        PTypeAccess.LoadAll(MainDS, Transaction);
+                        PTypeRow templateRow = MainDS.PType.NewRowTyped();
+                        templateRow.SystemType = false;
+                        templateRow.SetTypeDeletableNull();
+                        templateRow.SetDateCreatedNull();
+                        PTypeAccess.LoadUsingTemplate(MainDS, templateRow, Transaction);
                         PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
 
                         foreach(PPartnerTypeRow partnertype in MainDS.PPartnerType.Rows)

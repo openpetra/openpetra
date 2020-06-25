@@ -188,3 +188,6 @@ INSERT INTO p_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('NEWSLETT
 
 
 INSERT INTO s_module_table_access_permission VALUES ('FINANCE-1','p_country',1,1,1,1,NULL,NULL,NULL,NULL,NOW());
+
+ALTER TABLE p_type ADD COLUMN p_system_type_l boolean DEFAULT 0 AFTER p_valid_type_l;
+UPDATE p_type SET p_system_type_l = 1 WHERE p_type_code_c IN ('BOARDING_SCHOOL','CHILDREN_HOME','HOME_BASED','PREVIOUS_CHILD','CHILD_DIED');

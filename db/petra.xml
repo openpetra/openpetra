@@ -4830,6 +4830,13 @@
                 label="Assignable"
                 help="Select if this Type Code is selectable by users"
                 initial="Yes"/>
+    <tablefield name="p_system_type_l"
+                type="bit"
+                descr="This type can only be assigned by the system"
+                format="Yes/No"
+                label="System Type"
+                columnlabel="System Type"
+                initial="no"/>
     <tablefield name="p_type_deletable_l"
                 type="bit"
                 descr="This defines if the type code can be deleted.
