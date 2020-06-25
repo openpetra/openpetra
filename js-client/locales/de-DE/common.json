@@ -108,6 +108,7 @@
         "SysManAssistantInit_label": "Einrichtungsassistent",
         "FindPartners_label": "Kontakt suchen",
         "AccountDetail_label": "Bericht über die Kontenbewegungen",
+        "TrialBalance_label": "Bericht über die Kontenbilanzen",
         "Motivations_label": "Verwendungszwecke verwalten",
         "switchledger": "Aktives Hauptbuch wurde geändert auf:",
         "BankImport_label": "Kontoauszüge importieren",
@@ -622,6 +623,16 @@
     },
     "AccountDetail": {
         "caption": "Bericht über die Kontenbewegungen",
+        "start_period": "Von Monat",
+        "end_period": "Bis Monat",
+        "year": "Jahr",
+        "cost_centre_start": "Von Kostenstelle",
+        "cost_centre_end": "Bis Kostenstelle",
+        "account_start": "Von Konto",
+        "account_end": "Bis Konto"
+    },
+    "TrialBalance": {
+        "caption": "Bericht über die Kontenbilanzen",
         "start_period": "Von Monat",
         "end_period": "Bis Monat",
         "year": "Jahr",

@@ -108,6 +108,7 @@
         "SysManAssistantInit_label": "Setup Assistant",
         "FindPartners_label": "Find Partners",
         "AccountDetail_label": "Account Detail",
+        "TrialBalance_label": "Trial Balance",
         "Motivations_label": "Maintain Motivation groups and details",
         "switchledger": "Active Ledger is now:",
         "BankImport_label": "Import donations from bank",
@@ -621,6 +622,16 @@
     },
     "AccountDetail": {
         "caption": "Report for the transactions on account level",
+        "start_period": "From month",
+        "end_period": "To month",
+        "year": "Year",
+        "cost_centre_start": "From Cost Centre",
+        "cost_centre_end": "To Cost Centre",
+        "account_start": "From Account",
+        "account_end": "To Account"
+    },
+    "TrialBalance": {
+        "caption": "Report for the balances on account level",
         "start_period": "From month",
         "end_period": "To month",
         "year": "Year",

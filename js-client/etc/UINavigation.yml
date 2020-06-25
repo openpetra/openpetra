@@ -52,6 +52,7 @@ OpenPetra:
                         YearEnd: {fa-icon=calendar-check}
                     Reports: {Path=Finance/GeneralLedger/Reports, fa-icon=file-alt}
                         AccountDetail:
+                        TrialBalance:
                 Gift:
                     #GiftEntry: {Path=Finance/Gift/GiftEntry}
                     GiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=money-check-alt}
