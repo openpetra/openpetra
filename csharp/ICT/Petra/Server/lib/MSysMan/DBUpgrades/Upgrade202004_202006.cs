@@ -38,6 +38,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         public static bool UpgradeDatabase202004_202006(TDataBase ADataBase)
         {
             // add new tables for data consent, and some values
+            // add permission for p_country
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
             bool SubmitOK = false;
 

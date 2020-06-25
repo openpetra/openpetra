@@ -185,3 +185,6 @@ INSERT INTO p_consent_channel(p_channel_code_c, p_name_c, p_comment_c) VALUES ('
 INSERT INTO p_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('GR','gift receipting','Can be used for donation processing');
 INSERT INTO p_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('PR','public relations','Can be used for public relations');
 INSERT INTO p_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('NEWSLETTER','newsletter','Can be used to send newsletter');
+
+
+INSERT INTO s_module_table_access_permission VALUES ('FINANCE-1','p_country',1,1,1,1,NULL,NULL,NULL,NULL,NOW());
