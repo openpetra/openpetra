@@ -388,7 +388,7 @@
 							<h4>{history}: <span class="selected-type">-</span></h4>
 							<hr>
 							<div class="row">
-								<div class="col">{date}</div>
+								<div class="col" date>{consent_date}</div>
 								<div class="col">{history}</div>
 								<div class="col">{consent permissions}</div>
 							</div>
@@ -427,6 +427,10 @@
 						</div>
 
 						<div class="row">
+							<p>{consent_description}</p>
+						</div>
+
+						<div class="row">
 							<div class="col">
 								{consent channel}
 							</div>
@@ -435,7 +439,14 @@
 							</div>
 						</div>
 
-						<hr>
+						<div class="row">
+							<div class="col">
+								{consent_date}
+							</div>
+							<div class="col">
+								<input type="date" name="consent_date"></select>
+							</div>
+						</div>
 
 						<div class="row" mode="partner_edit">
 							<div class="col">
@@ -443,8 +454,13 @@
 							</div>
 						</div>
 
-						<!-- gets filled with copys of: [phantom] .permission-option -->
-						<div class="permissions" mode="partner_edit"></div>
+						<div class="row">
+							<div class="col">&nbsp;</div>
+							<div class="col">
+								<!-- gets filled with copys of: [phantom] .permission-option -->
+								<div class="permissions" mode="partner_edit"></div>
+							</div>
+						</div>
 
 					</div>
 				</div>
@@ -458,11 +474,11 @@
 	</div>
 
 	<label class="row permission-option">
-		<div class="col">
-			<span name></span>
-		</div>
-		<div class="col">
+		<div class="col-2">
 			<input type="checkbox" purposecode>
+		</div>
+		<div class="col-2">
+			<span name></span>
 		</div>
 	</label>
 

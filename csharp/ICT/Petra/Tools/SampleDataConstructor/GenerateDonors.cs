@@ -170,6 +170,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     PartnerKey = partnerRow.PartnerKey,
                     Type = "email address",
                     Value = setmail,
+                    ConsentDate = DateTime.Now(),
                     ChannelCode = channel_contents,
                     Permissions = allowed_contents
                 };

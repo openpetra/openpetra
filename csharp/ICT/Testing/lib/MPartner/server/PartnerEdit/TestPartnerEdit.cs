@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,8 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Tests.MPartner.shared.CreateTestPartnerData;
@@ -55,10 +57,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Testing.NUnitTools;
-
-using Ict.Petra.Server.MPartner.Partner.WebConnectors;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Tests.MPartner.Server.PartnerEdit
 {
@@ -1044,7 +1042,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             TLogging.Log("Fifth test passed");
 
             // 6th test: edit this entry
-            success = TDataHistoryWebConnector.EditHistory(long.Parse(NewPartnerKey), "address", "PHONE", "GR,PR", out VerificationResult);
+            success = TDataHistoryWebConnector.EditHistory(long.Parse(NewPartnerKey), "address", "PHONE", DateTime.Now, "GR,PR", out VerificationResult);
             Assert.IsTrue(success);
             TLogging.Log("Sixth Edit passed");
 

@@ -24183,6 +24183,11 @@
                 descr="Value for type key"
                 format="X(512)"
                 label="Value for Key"/>
+    <tablefield name="p_consent_date_d"
+                type="date"
+                descr="Date the consent was given"
+                notnull="yes"
+                label="Consent Date"/>
     <tablefield name="p_channel_code_c"
                 type="varchar"
                 descr="Code of channel"

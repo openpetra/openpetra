@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       cjaekel
+//       cjaekel, timop
 //
 // Copyright 2004-2020 by OM International
 //
@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 string sql = "SELECT " +
                     "`p_data_history`.*, " +
                     "GROUP_CONCAT(`p_data_history_permission`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
-                	"FROM `p_data_history` " +
+                    "FROM `p_data_history` " +
                     "LEFT JOIN `p_data_history_permission` " +
                     "ON `p_data_history`.`p_entry_id_i` = `p_data_history_permission`.`p_data_history_entry_i` " +
                     "WHERE `p_data_history`.`p_partner_key_n` = ? " +
@@ -103,7 +103,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType } );
 
-                // DB.SelectDT(Set, sql, T, SQLParameter.ToArray(), 0,0);
                 DB.SelectDT(Set.PDataHistory, sql, T, SQLParameter.ToArray()); 
 
                 PConsentChannelAccess.LoadAll(Set, T);
@@ -132,15 +131,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
                 // prepare for one huge cunk sql
                 string sql = "" +
-                	"SELECT " +
-                	"  `pdh`.*, " +
-                	"  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
-                	"FROM `p_data_history` AS `pdh` " +
-                	"LEFT JOIN `p_data_history_permission` AS `pdhp` " +
-                	"  ON `pdh`.`p_entry_id_i` = `pdhp`.`p_data_history_entry_i` " +
-                	"WHERE `pdh`.`p_partner_key_n` = ? " +
-                	"  AND `pdh`.`p_type_c` = ? " +
-                	"GROUP BY `pdh`.`p_entry_id_i` " +
+                    "SELECT " +
+                    "  `pdh`.*, " +
+                    "  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
+                    "FROM `p_data_history` AS `pdh` " +
+                    "LEFT JOIN `p_data_history_permission` AS `pdhp` " +
+                    "  ON `pdh`.`p_entry_id_i` = `pdhp`.`p_data_history_entry_i` " +
+                    "WHERE `pdh`.`p_partner_key_n` = ? " +
+                    "  AND `pdh`.`p_type_c` = ? " +
+                    "GROUP BY `pdh`.`p_entry_id_i` " +
                     "ORDER BY `pdh`.`p_entry_id_i` DESC";
 
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
@@ -160,15 +159,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         /// <summary>
         /// Edits the selected consent type to be added or removed consent entrys,
         /// only the last entry for a datatype can be edited
-        /// and even duh it says edit, it actully creates a new entry in history
+        /// and even duh it says edit, it actually creates a new entry in history
         /// 
-        /// `AConsentCodes` is a comma sepperated list of the new allowed consent codes
+        /// `AConsentCodes` is a comma separated list of the new allowed consent codes
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static bool EditHistory(
             Int64 APartnerKey,
             string ADataType,
             string AChannelCode,
+            DateTime AConsentDate,
             string AConsentCodes,
             out TVerificationResultCollection AVerificationResult
         )
@@ -185,6 +185,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
             DataHistoryChange ToChange = new DataHistoryChange
             {
+                ConsentDate = AConsentDate,
                 ChannelCode = AChannelCode,
                 PartnerKey = APartnerKey,
                 Type = ADataType,
@@ -257,6 +258,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 NewRow.PartnerKey = ChangeObject.PartnerKey;
                 NewRow.Type = ChangeObject.Type;
                 NewRow.Value = ChangeObject.Value;
+                NewRow.ConsentDate = ChangeObject.ConsentDate;
                 NewRow.ChannelCode = ChangeObject.ChannelCode;
 
                 Set.PDataHistory.Rows.Add(NewRow);
@@ -288,6 +290,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         public string Type { get; set; }
         /// Value
         public string Value { get; set; }
+        /// ConsentDate
+        public DateTime ConsentDate { get; set; }
         /// ChannelCode
         public string ChannelCode { get; set; }
         /// Permissions

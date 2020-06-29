@@ -50,6 +50,8 @@ CREATE TABLE p_data_history (
   p_type_c varchar(128) NOT NULL,
     -- Value for type key
   p_value_c varchar(1024),
+    -- consent date
+  p_consent_date_d date NOT NULL,
     -- Code of channel
   p_channel_code_c varchar(40) NOT NULL,
     -- The date the record was created.

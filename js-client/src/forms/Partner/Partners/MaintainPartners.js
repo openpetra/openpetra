@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -346,13 +346,12 @@ function load_history_data(HTMLButton) {
 		for (var entry of parsed.result.PDataHistory) {
 			var HistPerm = $("[phantom] .history-entry").clone();
 
-			var EventDate = new Date(entry.s_date_created_d);
-			var event_date_str = `${EventDate.getFullYear()}-${(EventDate.getMonth()+1)}-${EventDate.getDate()}`;
+			var EventDate = new Date(entry.p_consent_date_d);
 
 			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
 			HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
 			HistPerm.attr("style", "background-color: #EEEEEE");
-			HistPerm.find(".preview [name=EventDate]").text( event_date_str );
+			HistPerm.find(".preview [name=EventDate]").text( EventDate.toLocaleDateString() );
 			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
 
 			HistPerm.find(".detail [name=Editor]").text( entry.s_created_by_c );
@@ -408,6 +407,7 @@ function insert_consent(HTMLField, data_name) {
 		Type: data_name,
 		Value: value,
 		ChannelCode: "", // is set later
+		ConsentDate: new Date(), // default to Now
 		Permissions: "", // is set later
 		Valid: false // is set later
 	};
@@ -431,10 +431,14 @@ function open_consent_modal(field, mode="partner_edit") {
 		var last_known_configuration = parsed.result.PDataHistory.pop() || {}; // could be empty
 
 		// because it could be empty
-		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
+		if (last_known_configuration.AllowedPurposes == null) {
+			last_known_configuration["AllowedPurposes"]="";
+			last_known_configuration["DateConsent"] = (new Date()).toDateInputValue();
+		}
 
 		Temp.find("data[name=field]").val(field);
 		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
+		Temp.find("[name=consent_date]").val(last_known_configuration["DateConsent"]);
 
 		// place dynamic channel
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
@@ -480,6 +484,7 @@ function submit_changes_consent() {
 
 	var current_field = $("#modal_space .modal.tpl_consent data[name=field]").val();
 	var channel_code = $("#modal_space .modal.tpl_consent [name=consent_channel]").val();
+	var consent_date = $("#modal_space .modal.tpl_consent [name=consent_date]").val();
 
 	// get all permissions
 	var perm_list = [];
@@ -490,6 +495,7 @@ function submit_changes_consent() {
 
 	data_changes_log[current_field]["Valid"] = true;
 	data_changes_log[current_field]["ChannelCode"] = channel_code;
+	data_changes_log[current_field]["ConsentDate"] = consent_date;
 	data_changes_log[current_field]["Permissions"] = perm_list.join(',');
 
 	$("#modal_space .modal.tpl_consent").modal("hide");
@@ -523,6 +529,7 @@ function submit_consent_edit(from_model=false) {
 		APartnerKey: current_edit_partner_number,
 		ADataType: $("#modal_space .modal.tpl_consent data[name=field]").val(),
 		AChannelCode: $("#modal_space .modal.tpl_consent [name=consent_channel]").val(),
+		AConsentDate: $("#modal_space .modal.tpl_consent [name=consent_date]").val(),
 		AConsentCodes: perm_list.join(',')
 	};
 
