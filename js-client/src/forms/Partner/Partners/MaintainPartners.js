@@ -433,12 +433,12 @@ function open_consent_modal(field, mode="partner_edit") {
 		// because it could be empty
 		if (last_known_configuration.AllowedPurposes == null) {
 			last_known_configuration["AllowedPurposes"]="";
-			last_known_configuration["DateConsent"] = (new Date()).toDateInputValue();
+			last_known_configuration["p_consent_date_d"] = (new Date()).toDateInputValue();
 		}
 
 		Temp.find("data[name=field]").val(field);
 		Temp.find("[name=changed_value]").text(i18next.t(`MaintainPartners.${field}`));
-		Temp.find("[name=consent_date]").val(last_known_configuration["DateConsent"]);
+		Temp.find("[name=consent_date]").val(last_known_configuration["p_consent_date_d"].substring(0,10));
 
 		// place dynamic channel
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
