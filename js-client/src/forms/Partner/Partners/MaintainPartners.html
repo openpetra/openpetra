@@ -381,16 +381,17 @@
 							<h4>{consent permissions}: <span class="selected-type">-</span></h4>
 							<hr>
 							<div permissions style="overflow-y:auto;overflow-x:hidden;max-height:20vh;"></div>
-							<button type="button" style="position:absolute;top:0;right:0;" onclick="submit_consent_edit(false)" id="consent_edit_btn">{forms.save}</button>
+							<button type="button" class="btn btn-primary" onclick="submit_consent_edit(false)" id="consent_edit_btn">{forms.save}</button>
+							<hr>
 						</div>
 
 						<div>
 							<h4>{history}: <span class="selected-type">-</span></h4>
 							<hr>
 							<div class="row">
-								<div class="col" date>{consent_date}</div>
+								<div class="col">{consent_date}</div>
 								<div class="col">{history}</div>
-								<div class="col">{consent permissions}</div>
+								<div class="col">{consent_permissions_question}</div>
 							</div>
 							<div history style="overflow-y:auto;overflow-x:hidden;max-height:50vh;"></div>
 						</div>
@@ -401,7 +402,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			<button class="btn btn-primary" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 		</div>
 		</div>
 		</div>
@@ -450,7 +451,7 @@
 
 						<div class="row" mode="partner_edit">
 							<div class="col">
-								{consent permissions}
+								{consent_permissions_question}
 							</div>
 						</div>
 
@@ -500,7 +501,7 @@
 						<span>{consent channel}: </span><span name="Channel"></span>
 					</div><br>
 					<div class="">
-						<span>{consent permissions}: </span><span name="Consent"></span>
+						<span>{consent_permissions_question}: </span><span name="Consent"></span>
 					</div>
 
 				</div>

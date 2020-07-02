@@ -309,16 +309,28 @@ function open_history(HTMLButton) {
 		let Temp = $('[phantom] .tpl_history').clone();
 
 		var DataTypeList = Temp.find("[data-types]");
+		var hasHistory = false;
 		for (var type of parsed.result) {
 			let name = i18next.t('MaintainPartners.'+type);
 			let partner = req["APartnerKey"];
-			DataTypeList.append(`<button class='btn btn-secondary' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+			DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+			hasHistory = true;
+		}
+
+		if (!hasHistory) {
+			display_error( "MaintainPartners.error_no_history" );
+			return;
 		}
 
 		$('#modal_space .modal').modal('hide');
 		$('#modal_space').append(Temp);
 		$('#modal_space .modal').modal('show');
 
+		// select the first data type by default
+		firstPermission = $('#modal_space .modal button.selecttype:first');
+		if (firstPermission.length) {
+			firstPermission.click();
+		}
 	})
 }
 
