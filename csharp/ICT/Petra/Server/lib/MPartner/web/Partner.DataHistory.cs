@@ -177,8 +177,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
             DataConsentTDS LastEntry = LastKnownEntry(APartnerKey, ADataType);
             DataConsentTDSPDataHistoryRow LastEntryRow = LastEntry.PDataHistory[0];
 
-            // tryed to save with same permissions, we skip these actions and trow a error
-            if (LastEntryRow.AllowedPurposes == AConsentCodes) {
+            // tried to save with same permissions, we skip these actions and throw a error
+            if (LastEntryRow.AllowedPurposes == AConsentCodes && LastEntryRow.ConsentDate == AConsentDate &&
+                LastEntryRow.ChannelCode == AChannelCode) {
                 AVerificationResult.Add(new TVerificationResult("error", "no_changes", TResultSeverity.Resv_Critical));
                 return false; 
             }

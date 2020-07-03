@@ -381,7 +381,7 @@
 							<h4>{consent permissions}: <span class="selected-type">-</span></h4>
 							<hr>
 							<div permissions style="overflow-y:auto;overflow-x:hidden;max-height:20vh;"></div>
-							<button type="button" class="btn btn-primary" onclick="submit_consent_edit(false)" id="consent_edit_btn">{forms.save}</button>
+							<button type="button" class="btn btn-primary" onclick="submit_consent_edit(this,false)" id="consent_edit_btn">{forms.save}</button>
 							<hr>
 						</div>
 
@@ -467,8 +467,8 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-light" onclick="$('#modal_space .tpl_consent').modal('hide')" mode="consent_edit">{forms.close}</button>
-					<button class="btn btn-primary" onclick="submit_consent_edit(true)" mode="consent_edit">{forms.save}</button>
-					<button id="btnPartnerEditConsent" class="btn btn-primary" onclick="submit_changes_consent()" mode="partner_edit">{forms.save}</button>
+					<button class="btn btn-primary" onclick="submit_consent_edit(this,true)" mode="consent_edit">{forms.save}</button>
+					<button id="btnPartnerEditConsent" class="btn btn-primary" onclick="submit_changes_consent(this)" mode="partner_edit">{forms.save}</button>
 				</div>
 			</div>
 		</div>
@@ -594,3 +594,4 @@
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/modal.js" charset="utf-8"></script>
