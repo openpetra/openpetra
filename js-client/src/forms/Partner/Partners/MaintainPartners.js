@@ -305,7 +305,7 @@ function open_history(HTMLButton) {
 	var req = {
 		APartnerKey: partnerkey
 	};
-	data_changes_log = {};
+
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetUniqueTypes', req).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
 		let Temp = $('[phantom] .tpl_history').clone();
