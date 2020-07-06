@@ -355,6 +355,7 @@ function load_history_data(HTMLButton) {
 		type = i18next.t('MaintainPartners.'+type);
 		Target.find(".selected-type").text(type);
 		var HistoryList = Target.find("[history]").html("");
+		let first = true;
 		for (var entry of parsed.result.PDataHistory) {
 			var HistPerm = $("[phantom] .history-entry").clone();
 
@@ -362,7 +363,12 @@ function load_history_data(HTMLButton) {
 
 			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
 			HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
-			HistPerm.attr("style", "background-color: #EEEEEE");
+			if (first) {
+				HistPerm.attr("style", "background-color: #EEEEEE; border-color: green; border-style: solid;");
+			} else {
+				HistPerm.attr("style", "background-color: SlateGray");
+			}
+
 			HistPerm.find(".preview [name=EventDate]").text( EventDate.toLocaleDateString() );
 			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
 
@@ -380,6 +386,7 @@ function load_history_data(HTMLButton) {
 			}
 
 			HistoryList.append(HistPerm);
+			first = false;
 		}
 
 	})
