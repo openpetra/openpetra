@@ -245,7 +245,7 @@
   <copy file="${dir.root}/js-client/etc/UINavigation.yml"
         tofile="${dir.setup}/client/etc/UINavigation.yml"/>
 
-  <copy todir="${dir.setup}/client">
+  <copy todir="${dir.setup}/client" inputencoding="utf-8" outputencoding="utf-8">
     <fileset basedir="${dir.root}/js-client/">
         <include name="**/*.js" />
         <include name="**/*.json" />
