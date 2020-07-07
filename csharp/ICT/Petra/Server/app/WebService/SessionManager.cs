@@ -78,6 +78,11 @@ namespace Ict.Petra.Server.App.WebService
             }
             catch (Exception e)
             {
+                if (TLogWriter.GetLogFileName() == String.Empty)
+                {
+                    throw new Exception("Exception in TOpenPetraOrgSessionManager.Init(): " + e.ToString());
+                }
+
                 TLogging.Log("Exception in TOpenPetraOrgSessionManager.Init()");
                 TLogging.Log(e.ToString());
                 throw new Exception("Exception in TOpenPetraOrgSessionManager.Init()");
