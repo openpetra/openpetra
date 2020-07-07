@@ -182,8 +182,12 @@ namespace Ict.Common.Session
 
                 if (HttpContext.Current != null)
                 {
-                    HttpContext.Current.Request.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
-                    HttpContext.Current.Response.Cookies.Add(new HttpCookie("OpenPetraSessionID", sessionID));
+                    HttpCookie cookie = new HttpCookie("OpenPetraSessionID", sessionID);
+                    // SameSite is not support by Mono 6.6 yet
+                    // cookie.SameSite = SameSiteMode.Strict;
+                    cookie.Secure = TAppSettingsManager.GetValue("Server.Url").StartsWith("https://");
+                    HttpContext.Current.Request.Cookies.Add(cookie);
+                    HttpContext.Current.Response.Cookies.Add(cookie);
                 }
 
                 // store new session
