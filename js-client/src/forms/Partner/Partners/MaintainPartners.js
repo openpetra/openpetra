@@ -243,7 +243,7 @@ function show_tab(tab_id) {
 // used to load all available tags and set checkbox if needed
 function load_tags(all_tags, selected_tags, obj) {
 	let p = $('<div class="container"></div>');
-	emtpy = true;
+	empty = true;
 	for (tag of all_tags) {
 		empty = false;
 		let pe = $('[phantom] .tpl_check').clone();
