@@ -339,6 +339,38 @@ function open_history(HTMLButton) {
 	})
 }
 
+function add_history_entry(purposes, channels, first, EventDateStr, AllowedPurposes, Value, CreatedBy, ChannelCode) {
+	var HistPerm = $("[phantom] .history-entry").clone();
+
+	var EventDate = new Date(EventDateStr);
+
+	AllowedPurposes = AllowedPurposes ? AllowedPurposes : "-"; // be sure there is something
+	HistPerm.find(".preview [name=Value]").text(Value);
+	if (first) {
+		HistPerm.attr("style", "background-color: #EEEEEE; border-color: green; border-style: solid;");
+	} else {
+		HistPerm.attr("style", "background-color: SlateGray");
+	}
+
+	HistPerm.find(".preview [name=EventDate]").text( EventDate.toLocaleDateString() );
+	HistPerm.find(".preview [name=Permissions]").text( AllowedPurposes );
+
+	HistPerm.find(".detail [name=Editor]").text( CreatedBy );
+	HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+ChannelCode) );
+	for (var channel of channels) {
+		if (ChannelCode == channel.p_channel_code_c) {
+			HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+channel.p_name_c) );
+		}
+	}
+	for (var purpose of purposes) {
+		if (AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
+			HistPerm.find(".detail [name=Consent]").append( "<br><span>" + i18next.t('MaintainPartners.'+purpose.p_name_c) + "</span>" );
+		}
+	}
+
+	return HistPerm;
+}
+
 function load_history_data(HTMLButton) {
 	var partner_key = $(HTMLButton).attr("data-partner");
 	var datatype = $(HTMLButton).attr("data-type");
@@ -360,34 +392,27 @@ function load_history_data(HTMLButton) {
 		Target.find(".selected-type").text(type);
 		var HistoryList = Target.find("[history]").html("");
 		let first = true;
+
+		// show local entries that have not been saved yet
+		if (data_changes_log[datatype] != null) {
+			var entry = data_changes_log[datatype];
+
+			var HistPerm = add_history_entry(
+				purposes, channels,
+				first,
+				entry.ConsentDate, entry.Permissions,
+				entry.Value, i18next.t('MaintainPartners.consent_not_saved_yet'), entry.ChannelCode);
+
+			HistoryList.append(HistPerm);
+			first = false;
+		}
+
 		for (var entry of parsed.result.PDataHistory) {
-			var HistPerm = $("[phantom] .history-entry").clone();
-
-			var EventDate = new Date(entry.p_consent_date_d);
-
-			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
-			HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
-			if (first) {
-				HistPerm.attr("style", "background-color: #EEEEEE; border-color: green; border-style: solid;");
-			} else {
-				HistPerm.attr("style", "background-color: SlateGray");
-			}
-
-			HistPerm.find(".preview [name=EventDate]").text( EventDate.toLocaleDateString() );
-			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
-
-			HistPerm.find(".detail [name=Editor]").text( entry.s_created_by_c );
-			HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+entry.p_channel_code_c) );
-			for (var channel of channels) {
-				if (entry.p_channel_code_c == channel.p_channel_code_c) {
-					HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+channel.p_name_c) );
-				}
-			}
-			for (var purpose of purposes) {
-				if (entry.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
-					HistPerm.find(".detail [name=Consent]").append( "<br><span>" + i18next.t('MaintainPartners.'+purpose.p_name_c) + "</span>" );
-				}
-			}
+			var HistPerm = add_history_entry(
+				purposes, channels,
+				first,
+				entry.p_consent_date_d, entry.AllowedPurposes,
+				entry.p_value_c, entry.s_created_by_c, entry.p_channel_code_c);
 
 			HistoryList.append(HistPerm);
 			first = false;
@@ -536,6 +561,12 @@ function submit_consent_edit(Obj, from_modal=false) {
 	var ty = modal.attr("selected-data-type");
 
 	if (!from_modal) {
+		if (data_changes_log[ty] != null) {
+			// don't submit consent here, because we have unsaved consents. The order would be messed up.
+			display_error( "MaintainPartners.error_consent_unsaved_changes" );
+			return;
+		}
+
 		// we need to ask for date and consent channel
 		open_consent_modal(partnerkey, ty, "consent_edit");
 		return;

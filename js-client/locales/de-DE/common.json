@@ -265,6 +265,8 @@
         "edittitle_history":"Datenänderungsverlauf",
         "history":"Verlauf",
         "error_no_history":"Es gibt noch keine Einwilligung!",
+        "error_consent_unsaved_changes":"Es gibt ungespeicherte Änderungen, daher ist momentan keine Änderung möglich!",
+        "consent_not_saved_yet":"Einwilligung wurde noch nicht gespeichert",
         "selected_data_type":"Ausgewählte Datenart",
         "edittitle_consent":"Dokumentation der Einwilligung",
         "consent_description":"Uns wurden persönliche Daten anvertraut",
