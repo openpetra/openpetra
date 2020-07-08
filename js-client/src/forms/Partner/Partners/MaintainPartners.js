@@ -314,13 +314,25 @@ function open_history(HTMLButton) {
 		var parsed = JSON.parse(data.data.d);
 		let Temp = $('[phantom] .tpl_history').clone();
 
+		var types = [];
+
 		var DataTypeList = Temp.find("[data-types]");
 		var hasHistory = false;
 		for (var type of parsed.result) {
+			types.push(type);
 			let name = i18next.t('MaintainPartners.'+type);
 			let partner = partnerkey;
 			DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
 			hasHistory = true;
+		}
+
+		for (var type of Object.keys(data_changes_log)) {
+			if (! types.includes(type)) {
+				let name = i18next.t('MaintainPartners.'+type);
+				let partner = partnerkey;
+				DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+				hasHistory = true;
+			}
 		}
 
 		if (!hasHistory) {
@@ -426,7 +438,10 @@ function load_history_data(HTMLButton) {
 
 		var purposes = parsed.result.PPurpose;
 		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
-		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
+		if (last_known_configuration == null || last_known_configuration.AllowedPurposes == null) {
+			last_known_configuration = [];
+			last_known_configuration["AllowedPurposes"]="";
+		}
 
 		// show local entries that have not been saved yet
 		if (data_changes_log[datatype] != null) {
