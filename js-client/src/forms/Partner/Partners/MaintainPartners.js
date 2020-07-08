@@ -60,6 +60,14 @@ function display_list(source) {
 	})
 }
 
+function translate_label(label) {
+	if (i18next.t('MaintainPartners.'+label) == 'MaintainPartners.'+label) {
+		return label;
+	} else {
+		return i18next.t('MaintainPartners.'+label);
+	}
+}
+
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
@@ -371,12 +379,12 @@ function add_history_entry(purposes, channels, first, EventDateStr, AllowedPurpo
 	HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+ChannelCode) );
 	for (var channel of channels) {
 		if (ChannelCode == channel.p_channel_code_c) {
-			HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+channel.p_name_c) );
+			HistPerm.find(".detail [name=Channel]").text( translate_label(channel.p_name_c) );
 		}
 	}
 	for (var purpose of purposes) {
 		if (AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
-			HistPerm.find(".detail [name=Consent]").append( "<br><span>" + i18next.t('MaintainPartners.'+purpose.p_name_c) + "</span>" );
+			HistPerm.find(".detail [name=Consent]").append( "<br><span>" + translate_label(purpose.p_name_c) + "</span>" );
 		}
 	}
 
@@ -451,7 +459,7 @@ function load_history_data(HTMLButton) {
 
 		for (var purpose of purposes) {
 			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
-			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+			let name = translate_label(purpose.p_name_c);
 
 			var PermTemp = $("[phantom] .permission-option").clone();
 			PermTemp.find("[name]").text(name);
@@ -511,7 +519,7 @@ function open_consent_modal(partner_key, field, mode="partner_edit") {
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
 		for (var channel of channels) {
 			let selected = (channel.p_channel_code_c == last_known_configuration.p_channel_code_c) ? "selected" : "";
-			let name = i18next.t('MaintainPartners.'+channel.p_name_c);
+			let name = translate_label(channel.p_name_c);
 			TargetChannel.append(`<option ${selected} value='${channel.p_channel_code_c}'>${name}</option>`);
 		}
 
@@ -519,7 +527,7 @@ function open_consent_modal(partner_key, field, mode="partner_edit") {
 		var TargetPurpose = Temp.find(".permissions").html("");
 		for (var purpose of purposes) {
 			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
-			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+			let name = translate_label(purpose.p_name_c);
 
 			var PermTemp = $("[phantom] .permission-option").clone();
 			PermTemp.find("[name]").text(name);

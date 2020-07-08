@@ -39,7 +39,10 @@ OpenPetra:
                         PartnerBySpecialType:
                         #PartnerBySubscription:
                         AnnualReportWithoutAnnualReceiptRecipients:
-                    MaintainTypes: {Path=Partner/Setup/Types, fa-icon=wrench}
+                    Setup:
+                        MaintainTypes: {Path=Partner/Setup/Types, fa-icon=wrench}
+                        MaintainConsentChannels: {Path=Partner/Setup, fa-icon=wrench}
+                        MaintainConsentPurposes: {Path=Partner/Setup, fa-icon=wrench}
                 Subscriptions:
                     AddNewPublication: {Form=MaintainPublications, Action=NewPublication, Path=Partner/Setup/Subscription, fa-icon=plus-square}
                     MaintainPublications: {Path=Partner/Setup/Subscription, fa-icon=screwdriver}

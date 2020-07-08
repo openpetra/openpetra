@@ -65,7 +65,9 @@
         "Maintain_label": "Verwalten",
         "MaintainPartners_label": "Kontakte verwalten",
         "MaintainPublications_label": "Abonnements verwalten",
-        "MaintainTypes_label": "Kategorien verwalten",
+        "MaintainTypes_label": "Kategorien",
+        "MaintainConsentChannels_label": "DSGVO Einwilligungskanäle",
+        "MaintainConsentPurposes_label": "DSGVO Verwendungszwecke",
         "CreatePartner_label": "Kontakt anlegen",
         "AddNewFamily_label": "Neue Person/Familie",
         "AddNewOrganisation_label": "Neue Organisation",
@@ -136,6 +138,7 @@
         "post": "Buchen",
         "NotEnoughPermissions": "Fehlende Berechtigung",
         "notsaved": "Fehler beim Speichern",
+        "ask_delete": "Wollen Sie wirklich löschen?",
         "deleted": "Erfolgreich gelöscht",
         "notdeleted": "Fehler beim Löschen",
         "report": "Bericht erzeugen",
@@ -288,6 +291,26 @@
         "editor":"Editor",
         "permission change":"Änderung",
         "date":"Datum"
+    },
+    "MaintainConsentPurposes": {
+        "caption": "DSGVO Verwendungszwecke verwalten",
+        "code": "Code",
+        "name": "Name",
+        "addtitle": "Verwendungszweck hinzufügen",
+        "edittitle": "Verwendungszweck bearbeiten",
+        "entry_name": "Code",
+        "entry_dis": "Name",
+        "entry_comment": "Kommentar"
+    },
+    "MaintainConsentChannels": {
+        "caption": "Einwilligungskanäle verwalten",
+        "code": "Code",
+        "name": "Name",
+        "addtitle": "Einwilligungskanal hinzufügen",
+        "edittitle": "Einwilligungskanal bearbeiten",
+        "entry_name": "Code",
+        "entry_dis": "Name",
+        "entry_comment": "Kommentar"
     },
     "GLBatches": {
         "caption": "Buchungen verwalten",
