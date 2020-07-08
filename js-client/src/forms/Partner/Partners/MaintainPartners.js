@@ -221,6 +221,10 @@ function save_entry(obj) {
 			display_message(i18next.t('forms.saved'), "success");
 			display_list();
 		}
+		else if (parsed.AVerificationResult[0].errorcode = "consent_error") {
+			// probably only the city or postcode was changed, but not the address
+			insert_consent(obj, 'address');
+		}
 		else {
 			display_error( parsed.AVerificationResult );
 		}
