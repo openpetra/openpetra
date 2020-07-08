@@ -428,6 +428,12 @@ function load_history_data(HTMLButton) {
 		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
 		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
 
+		// show local entries that have not been saved yet
+		if (data_changes_log[datatype] != null) {
+			var entry = data_changes_log[datatype];
+			last_known_configuration = {AllowedPurposes: entry.Permissions};
+		}
+
 		for (var purpose of purposes) {
 			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
 			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
