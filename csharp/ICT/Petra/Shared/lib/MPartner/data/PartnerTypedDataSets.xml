@@ -417,6 +417,9 @@
     <Table sqltable="p_publication_cost"/>
     <Table sqltable="p_reason_subscription_given"/>
     <Table sqltable="p_reason_subscription_cancelled"/>
+
+    <Table sqltable="p_consent_channel"/>
+    <Table sqltable="p_purpose"/>
   </DataSet>
 
   <DataSet name="PartnerImportExportTDS">

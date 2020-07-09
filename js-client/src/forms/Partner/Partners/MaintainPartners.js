@@ -60,6 +60,14 @@ function display_list(source) {
 	})
 }
 
+function translate_label(label) {
+	if (i18next.t('MaintainPartners.'+label) == 'MaintainPartners.'+label) {
+		return label;
+	} else {
+		return i18next.t('MaintainPartners.'+label);
+	}
+}
+
 function format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
@@ -221,6 +229,10 @@ function save_entry(obj) {
 			display_message(i18next.t('forms.saved'), "success");
 			display_list();
 		}
+		else if (parsed.AVerificationResult[0].errorcode = "consent_error") {
+			// probably only the city or postcode was changed, but not the address
+			insert_consent(obj, 'address');
+		}
 		else {
 			display_error( parsed.AVerificationResult );
 		}
@@ -310,13 +322,25 @@ function open_history(HTMLButton) {
 		var parsed = JSON.parse(data.data.d);
 		let Temp = $('[phantom] .tpl_history').clone();
 
+		var types = [];
+
 		var DataTypeList = Temp.find("[data-types]");
 		var hasHistory = false;
 		for (var type of parsed.result) {
+			types.push(type);
 			let name = i18next.t('MaintainPartners.'+type);
 			let partner = partnerkey;
 			DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
 			hasHistory = true;
+		}
+
+		for (var type of Object.keys(data_changes_log)) {
+			if (! types.includes(type)) {
+				let name = i18next.t('MaintainPartners.'+type);
+				let partner = partnerkey;
+				DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+				hasHistory = true;
+			}
 		}
 
 		if (!hasHistory) {
@@ -333,6 +357,38 @@ function open_history(HTMLButton) {
 			firstPermission.click();
 		}
 	})
+}
+
+function add_history_entry(purposes, channels, first, EventDateStr, AllowedPurposes, Value, CreatedBy, ChannelCode) {
+	var HistPerm = $("[phantom] .history-entry").clone();
+
+	var EventDate = new Date(EventDateStr);
+
+	AllowedPurposes = AllowedPurposes ? AllowedPurposes : "-"; // be sure there is something
+	HistPerm.find(".preview [name=Value]").text(Value);
+	if (first) {
+		HistPerm.attr("style", "background-color: #EEEEEE; border-color: green; border-style: solid;");
+	} else {
+		HistPerm.attr("style", "background-color: SlateGray");
+	}
+
+	HistPerm.find(".preview [name=EventDate]").text( EventDate.toLocaleDateString() );
+	HistPerm.find(".preview [name=Permissions]").text( AllowedPurposes );
+
+	HistPerm.find(".detail [name=Editor]").text( CreatedBy );
+	HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+ChannelCode) );
+	for (var channel of channels) {
+		if (ChannelCode == channel.p_channel_code_c) {
+			HistPerm.find(".detail [name=Channel]").text( translate_label(channel.p_name_c) );
+		}
+	}
+	for (var purpose of purposes) {
+		if (AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
+			HistPerm.find(".detail [name=Consent]").append( "<br><span>" + translate_label(purpose.p_name_c) + "</span>" );
+		}
+	}
+
+	return HistPerm;
 }
 
 function load_history_data(HTMLButton) {
@@ -356,34 +412,27 @@ function load_history_data(HTMLButton) {
 		Target.find(".selected-type").text(type);
 		var HistoryList = Target.find("[history]").html("");
 		let first = true;
+
+		// show local entries that have not been saved yet
+		if (data_changes_log[datatype] != null) {
+			var entry = data_changes_log[datatype];
+
+			var HistPerm = add_history_entry(
+				purposes, channels,
+				first,
+				entry.ConsentDate, entry.Permissions,
+				entry.Value, i18next.t('MaintainPartners.consent_not_saved_yet'), entry.ChannelCode);
+
+			HistoryList.append(HistPerm);
+			first = false;
+		}
+
 		for (var entry of parsed.result.PDataHistory) {
-			var HistPerm = $("[phantom] .history-entry").clone();
-
-			var EventDate = new Date(entry.p_consent_date_d);
-
-			entry.AllowedPurposes = entry.AllowedPurposes ? entry.AllowedPurposes : "-"; // be sure there is something
-			HistPerm.find(".preview [name=Value]").text(entry.p_value_c);
-			if (first) {
-				HistPerm.attr("style", "background-color: #EEEEEE; border-color: green; border-style: solid;");
-			} else {
-				HistPerm.attr("style", "background-color: SlateGray");
-			}
-
-			HistPerm.find(".preview [name=EventDate]").text( EventDate.toLocaleDateString() );
-			HistPerm.find(".preview [name=Permissions]").text( entry.AllowedPurposes );
-
-			HistPerm.find(".detail [name=Editor]").text( entry.s_created_by_c );
-			HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+entry.p_channel_code_c) );
-			for (var channel of channels) {
-				if (entry.p_channel_code_c == channel.p_channel_code_c) {
-					HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+channel.p_name_c) );
-				}
-			}
-			for (var purpose of purposes) {
-				if (entry.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
-					HistPerm.find(".detail [name=Consent]").append( "<br><span>" + i18next.t('MaintainPartners.'+purpose.p_name_c) + "</span>" );
-				}
-			}
+			var HistPerm = add_history_entry(
+				purposes, channels,
+				first,
+				entry.p_consent_date_d, entry.AllowedPurposes,
+				entry.p_value_c, entry.s_created_by_c, entry.p_channel_code_c);
 
 			HistoryList.append(HistPerm);
 			first = false;
@@ -397,11 +446,20 @@ function load_history_data(HTMLButton) {
 
 		var purposes = parsed.result.PPurpose;
 		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
-		if (last_known_configuration.AllowedPurposes == null) { last_known_configuration["AllowedPurposes"]=""; }
+		if (last_known_configuration == null || last_known_configuration.AllowedPurposes == null) {
+			last_known_configuration = [];
+			last_known_configuration["AllowedPurposes"]="";
+		}
+
+		// show local entries that have not been saved yet
+		if (data_changes_log[datatype] != null) {
+			var entry = data_changes_log[datatype];
+			last_known_configuration = {AllowedPurposes: entry.Permissions};
+		}
 
 		for (var purpose of purposes) {
 			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
-			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+			let name = translate_label(purpose.p_name_c);
 
 			var PermTemp = $("[phantom] .permission-option").clone();
 			PermTemp.find("[name]").text(name);
@@ -461,7 +519,7 @@ function open_consent_modal(partner_key, field, mode="partner_edit") {
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
 		for (var channel of channels) {
 			let selected = (channel.p_channel_code_c == last_known_configuration.p_channel_code_c) ? "selected" : "";
-			let name = i18next.t('MaintainPartners.'+channel.p_name_c);
+			let name = translate_label(channel.p_name_c);
 			TargetChannel.append(`<option ${selected} value='${channel.p_channel_code_c}'>${name}</option>`);
 		}
 
@@ -469,7 +527,7 @@ function open_consent_modal(partner_key, field, mode="partner_edit") {
 		var TargetPurpose = Temp.find(".permissions").html("");
 		for (var purpose of purposes) {
 			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
-			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+			let name = translate_label(purpose.p_name_c);
 
 			var PermTemp = $("[phantom] .permission-option").clone();
 			PermTemp.find("[name]").text(name);
@@ -532,6 +590,12 @@ function submit_consent_edit(Obj, from_modal=false) {
 	var ty = modal.attr("selected-data-type");
 
 	if (!from_modal) {
+		if (data_changes_log[ty] != null) {
+			// don't submit consent here, because we have unsaved consents. The order would be messed up.
+			display_error( "MaintainPartners.error_consent_unsaved_changes" );
+			return;
+		}
+
 		// we need to ask for date and consent channel
 		open_consent_modal(partnerkey, ty, "consent_edit");
 		return;

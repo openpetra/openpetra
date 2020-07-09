@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -92,9 +92,10 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// save partner types
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
-        public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription)
+        public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
+            AVerificationResult = new TVerificationResultCollection();
 
             if (action == "create")
             {
@@ -162,6 +163,206 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         }
 
         /// <summary>
+        /// Loads all available Consent Channels.
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerSetupTDS LoadConsentChannels()
+        {
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+
+            DBAccess.ReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    PConsentChannelAccess.LoadAll(MainDS, ReadTransaction);
+                });
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// save consent channels
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool MaintainConsentChannels(string action, string AChannelCode, string AName, string AComment, out TVerificationResultCollection AVerificationResult)
+        {
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                PConsentChannelRow row = MainDS.PConsentChannel.NewRowTyped();
+                row.ChannelCode = AChannelCode.ToUpper();
+                row.Name = AName;
+                row.Comment = AComment;
+                MainDS.PConsentChannel.Rows.Add(row);
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "update")
+            {
+                MainDS = LoadConsentChannels();
+
+                foreach (PConsentChannelRow row in MainDS.PConsentChannel.Rows)
+                {
+                    if (row.ChannelCode == AChannelCode)
+                    {
+                        row.Name = AName;
+                        row.Comment = AComment;
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadConsentChannels();
+
+                foreach (PConsentChannelRow row in MainDS.PConsentChannel.Rows)
+                {
+                    if (row.ChannelCode == AChannelCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Loads all available Consent Purposes.
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerSetupTDS LoadConsentPurposes()
+        {
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+
+            DBAccess.ReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    PPurposeAccess.LoadAll(MainDS, ReadTransaction);
+                });
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// save consent purposes
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool MaintainConsentPurposes(string action, string APurposeCode, string AName, string AComment, out TVerificationResultCollection AVerificationResult)
+        {
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                PPurposeRow row = MainDS.PPurpose.NewRowTyped();
+                row.PurposeCode = APurposeCode.ToUpper();
+                row.Name = AName;
+                row.Comment = AComment;
+                MainDS.PPurpose.Rows.Add(row);
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "update")
+            {
+                MainDS = LoadConsentPurposes();
+
+                foreach (PPurposeRow row in MainDS.PPurpose.Rows)
+                {
+                    if (row.PurposeCode == APurposeCode)
+                    {
+                        row.Name = AName;
+                        row.Comment = AComment;
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadConsentPurposes();
+
+                foreach (PPurposeRow row in MainDS.PPurpose.Rows)
+                {
+                    if (row.PurposeCode == APurposeCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Loads all available Publications.
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
@@ -189,9 +390,10 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// maintain publications
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
-        public static bool MaintainPublications(string action, string APublicationCode, string APublicationDescription)
+        public static bool MaintainPublications(string action, string APublicationCode, string APublicationDescription, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
+            AVerificationResult = new TVerificationResultCollection();
 
             if (action == "create")
             {
