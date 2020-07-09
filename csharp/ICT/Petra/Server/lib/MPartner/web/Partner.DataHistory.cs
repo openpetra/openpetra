@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
             DB.ReadTransaction(ref T, delegate {
 
-                string sql = "SELECT DISTINCT `p_type_c` FROM `p_data_history` " +
+                string sql = "SELECT DISTINCT `p_type_c` FROM `p_consent_history` " +
                     "WHERE `p_partner_key_n` = ?";
 
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey });
@@ -89,24 +89,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
             DB.ReadTransaction(ref T, delegate {
 
                 string sql = "SELECT " +
-                    "`p_data_history`.*, " +
-                    "GROUP_CONCAT(`p_data_history_permission`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
-                    "FROM `p_data_history` " +
-                    "LEFT JOIN `p_data_history_permission` " +
-                    "ON `p_data_history`.`p_entry_id_i` = `p_data_history_permission`.`p_data_history_entry_i` " +
-                    "WHERE `p_data_history`.`p_partner_key_n` = ? " +
-                    "AND `p_data_history`.`p_type_c` = ? " +
-                    "GROUP BY `p_data_history`.`p_entry_id_i` " +
-                    "ORDER BY `p_data_history`.`p_entry_id_i` DESC " +
+                    "`p_consent_history`.*, " +
+                    "GROUP_CONCAT(`p_consent_history_permission`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
+                    "FROM `p_consent_history` " +
+                    "LEFT JOIN `p_consent_history_permission` " +
+                    "ON `p_consent_history`.`p_entry_id_i` = `p_consent_history_permission`.`p_consent_history_entry_i` " +
+                    "WHERE `p_consent_history`.`p_partner_key_n` = ? " +
+                    "AND `p_consent_history`.`p_type_c` = ? " +
+                    "GROUP BY `p_consent_history`.`p_entry_id_i` " +
+                    "ORDER BY `p_consent_history`.`p_entry_id_i` DESC " +
                     "LIMIT 1";
 
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType } );
 
-                DB.SelectDT(Set.PDataHistory, sql, T, SQLParameter.ToArray()); 
+                DB.SelectDT(Set.PConsentHistory, sql, T, SQLParameter.ToArray()); 
 
                 PConsentChannelAccess.LoadAll(Set, T);
-                PPurposeAccess.LoadAll(Set, T);
+                PConsentPurposeAccess.LoadAll(Set, T);
 
             });
 
@@ -132,23 +132,23 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 // prepare for one huge cunk sql
                 string sql = "" +
                     "SELECT " +
-                    "  `pdh`.*, " +
-                    "  GROUP_CONCAT(`pdhp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
-                    "FROM `p_data_history` AS `pdh` " +
-                    "LEFT JOIN `p_data_history_permission` AS `pdhp` " +
-                    "  ON `pdh`.`p_entry_id_i` = `pdhp`.`p_data_history_entry_i` " +
-                    "WHERE `pdh`.`p_partner_key_n` = ? " +
-                    "  AND `pdh`.`p_type_c` = ? " +
-                    "GROUP BY `pdh`.`p_entry_id_i` " +
-                    "ORDER BY `pdh`.`p_entry_id_i` DESC";
+                    "  `ch`.*, " +
+                    "  GROUP_CONCAT(`chp`.`p_purpose_code_c` SEPARATOR ',') AS `AllowedPurposes` " +
+                    "FROM `p_consent_history` AS `ch` " +
+                    "LEFT JOIN `p_consent_history_permission` AS `chp` " +
+                    "  ON `ch`.`p_entry_id_i` = `chp`.`p_consent_history_entry_i` " +
+                    "WHERE `ch`.`p_partner_key_n` = ? " +
+                    "  AND `ch`.`p_type_c` = ? " +
+                    "GROUP BY `ch`.`p_entry_id_i` " +
+                    "ORDER BY `ch`.`p_entry_id_i` DESC";
 
                 SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType });
 
-                Set.PDataHistory.Constraints.Clear(); //mmmm...
-                DB.SelectDT(Set.PDataHistory, sql, T, SQLParameter.ToArray());
+                Set.PConsentHistory.Constraints.Clear(); //mmmm...
+                DB.SelectDT(Set.PConsentHistory, sql, T, SQLParameter.ToArray());
                 PConsentChannelAccess.LoadAll(Set, T);
-                PPurposeAccess.LoadAll(Set, T);
+                PConsentPurposeAccess.LoadAll(Set, T);
 
             });
 
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         {
             AVerificationResult = new TVerificationResultCollection();
             DataConsentTDS LastEntry = LastKnownEntry(APartnerKey, ADataType);
-            DataConsentTDSPDataHistoryRow LastEntryRow = LastEntry.PDataHistory[0];
+            DataConsentTDSPConsentHistoryRow LastEntryRow = LastEntry.PConsentHistory[0];
 
             // tried to save with same permissions, we skip these actions and throw a error
             if (LastEntryRow.AllowedPurposes == AConsentCodes && LastEntryRow.ConsentDate == AConsentDate &&
@@ -213,7 +213,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
             DB.ReadTransaction(ref T, delegate {
 
                 PConsentChannelAccess.LoadAll(Set, T);
-                PPurposeAccess.LoadAll(Set, T);
+                PConsentPurposeAccess.LoadAll(Set, T);
 
             });
 
@@ -252,8 +252,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 DataHistoryChange ChangeObject = JsonConvert.DeserializeObject<DataHistoryChange>(JsonObjectString);
                 DataConsentTDS Set = new DataConsentTDS();
 
-                // generate and add new row for p_data_history
-                PDataHistoryRow NewRow = Set.PDataHistory.NewRowTyped();
+                // generate and add new row for p_consent_history
+                PConsentHistoryRow NewRow = Set.PConsentHistory.NewRowTyped();
 
                 NewRow.EntryId = -1;
                 NewRow.PartnerKey = ChangeObject.PartnerKey;
@@ -262,17 +262,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 NewRow.ConsentDate = ChangeObject.ConsentDate;
                 NewRow.ChannelCode = ChangeObject.ChannelCode;
 
-                Set.PDataHistory.Rows.Add(NewRow);
+                Set.PConsentHistory.Rows.Add(NewRow);
 
-                // generate and add each row for a allowed porpose in p_data_history_permission
+                // generate and add each row for a allowed purpose in p_consent_history_permission
                 foreach (string AllowedPuroseCode in ChangeObject.Permissions.Split(',')) {
                     if (AllowedPuroseCode.Trim().Equals("")) { continue; } // catch non permission values
-                    PDataHistoryPermissionRow NewPermRow = Set.PDataHistoryPermission.NewRowTyped();
+                    PConsentHistoryPermissionRow NewPermRow = Set.PConsentHistoryPermission.NewRowTyped();
 
                     NewPermRow.PurposeCode = AllowedPuroseCode;
-                    NewPermRow.DataHistoryEntry = -1;
+                    NewPermRow.ConsentHistoryEntry = -1;
 
-                    Set.PDataHistoryPermission.Rows.Add(NewPermRow);
+                    Set.PConsentHistoryPermission.Rows.Add(NewPermRow);
                 }
 
                 DataConsentTDSAccess.SubmitChanges(Set);

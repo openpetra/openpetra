@@ -405,7 +405,7 @@ function load_history_data(HTMLButton) {
 		var parsed = JSON.parse(data.data.d);
 
 		var channels = parsed.result.PConsentChannel;
-		var purposes = parsed.result.PPurpose;
+		var purposes = parsed.result.PConsentPurpose;
 
 		let type = datatype;
 		type = i18next.t('MaintainPartners.'+type);
@@ -444,7 +444,7 @@ function load_history_data(HTMLButton) {
 		var parsed = JSON.parse(data.data.d);
 		var TargetPurpose = Target.find("[permissions]").html("");
 
-		var purposes = parsed.result.PPurpose;
+		var purposes = parsed.result.PConsentPurpose;
 		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
 		if (last_known_configuration == null || last_known_configuration.AllowedPurposes == null) {
 			last_known_configuration = [];
@@ -501,7 +501,7 @@ function open_consent_modal(partner_key, field, mode="partner_edit") {
 		parsed = JSON.parse(data.data.d);
 		var Temp = $('[phantom] .tpl_consent').clone();
 
-		var purposes = parsed.result.PPurpose;
+		var purposes = parsed.result.PConsentPurpose;
 		var channels = parsed.result.PConsentChannel;
 		var last_known_configuration = parsed.result.PDataHistory.pop() || {}; // could be empty
 

@@ -419,7 +419,7 @@
     <Table sqltable="p_reason_subscription_cancelled"/>
 
     <Table sqltable="p_consent_channel"/>
-    <Table sqltable="p_purpose"/>
+    <Table sqltable="p_consent_purpose"/>
   </DataSet>
 
   <DataSet name="PartnerImportExportTDS">
@@ -582,11 +582,11 @@
   </DataSet>
 
   <DataSet name="DataConsentTDS">
-      <Table sqltable="p_data_history">
+      <Table sqltable="p_consent_history">
         <CustomField name="AllowedPurposes" type="string"/>
       </Table>
-      <Table sqltable="p_data_history_permission"/>
-      <Table sqltable="p_purpose"/>
+      <Table sqltable="p_consent_history_permission"/>
+      <Table sqltable="p_consent_purpose"/>
       <Table sqltable="p_consent_channel"/>
   </DataSet>
 </PetraDataSets>

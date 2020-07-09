@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       cjaekel, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,7 @@ using System.Linq;
 
 namespace Ict.Petra.Server.MReporting.MPartner
 {
+    /// Utilities for GDPR
     public class Utils {
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 )
                 {
                     LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "address");
-                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    if (LastEntry.PConsentHistory.Count == 0 || !LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
                     {
                         if (PartnerTable.Columns.Contains("p_street_name_c"))
                         {
@@ -96,7 +97,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 if (PartnerTable.Columns.Contains("Mobile"))
                 {
                     LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone mobile");
-                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    if (LastEntry.PConsentHistory.Count == 0 || !LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
                     {
                         Row["Mobile"] = "";
                     }
@@ -106,7 +107,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 if (PartnerTable.Columns.Contains("Phone"))
                 {
                     LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "phone landline");
-                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    if (LastEntry.PConsentHistory.Count == 0 || !LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
                     {
                         Row["Phone"] = "";
                     }
@@ -116,7 +117,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 if (PartnerTable.Columns.Contains("EMail"))
                 {
                     LastEntry = TDataHistoryWebConnector.LastKnownEntry(PartnerKey, "email address");
-                    if (LastEntry.PDataHistory.Count == 0 || !LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
+                    if (LastEntry.PConsentHistory.Count == 0 || !LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList().Contains(CheckConsentCode))
                     {
                         Row["EMail"] = "";
                     }
