@@ -185,7 +185,16 @@ namespace Ict.Common.Session
                     HttpCookie cookie = new HttpCookie("OpenPetraSessionID", sessionID);
                     // SameSite is not support by Mono 6.6 yet
                     // cookie.SameSite = SameSiteMode.Strict;
-                    cookie.Secure = TAppSettingsManager.GetValue("Server.Url").StartsWith("https://");
+
+                    if (HttpContext.Current.Request.Headers["X-Forwarded-Proto"] != null)
+                    {
+                        cookie.Secure = "https" == HttpContext.Current.Request.Headers["X-Forwarded-Proto"].Split(',').FirstOrDefault();
+                    }
+                    else
+                    {
+                        cookie.Secure = HttpContext.Current.Request.Url.Scheme == "https";
+                    }
+
                     HttpContext.Current.Request.Cookies.Add(cookie);
                     HttpContext.Current.Response.Cookies.Add(cookie);
                 }
