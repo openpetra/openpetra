@@ -32,8 +32,8 @@ function display_list() {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
-		last_requested_data = data.result.PPurpose;
-		for (item of data.result.PPurpose) {
+		last_requested_data = data.result.PConsentPurpose;
+		for (item of data.result.PConsentPurpose) {
 			item['p_purpose_code_c_clean'] = item['p_purpose_code_c'].replace(/[^a-zA-Z0-9]+/g, '');
 			if (i18next.t("MaintainPartners."+item['p_name_c']) == "MaintainPartners."+item['p_name_c']) {
 				item['TranslatedName'] = item['p_name_c'];

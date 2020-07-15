@@ -1028,12 +1028,12 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // 5th test: get current known entry for address, based on our consents it should have rights for GR and NEWSL
             DataConsentTDS LastEntry = TDataHistoryWebConnector.LastKnownEntry(long.Parse(NewPartnerKey), "address");
-            Assert.IsTrue( LastEntry.PDataHistory.Count == 1 );
+            Assert.IsTrue( LastEntry.PConsentHistory.Count == 1 );
 
-            List<string> allowed = LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList();
-            string LastKnownAddressValue = LastEntry.PDataHistory[0].Value; // for later
+            List<string> allowed = LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList();
+            string LastKnownAddressValue = LastEntry.PConsentHistory[0].Value; // for later
 
-            Assert.IsTrue("EMAIL" == LastEntry.PDataHistory[0].ChannelCode);
+            Assert.IsTrue("EMAIL" == LastEntry.PConsentHistory[0].ChannelCode);
             Assert.Contains("GR", allowed);
             allowed.Remove("GR");
             Assert.Contains("NEWSLETTER", allowed);
@@ -1048,11 +1048,11 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // last test, check if new entry is right
             LastEntry = TDataHistoryWebConnector.LastKnownEntry(long.Parse(NewPartnerKey), "address");
-            Assert.IsTrue(LastEntry.PDataHistory.Count == 1);
-            allowed = LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList();
+            Assert.IsTrue(LastEntry.PConsentHistory.Count == 1);
+            allowed = LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList();
 
-            Assert.IsTrue(LastKnownAddressValue == LastEntry.PDataHistory[0].Value);
-            Assert.IsTrue("PHONE" == LastEntry.PDataHistory[0].ChannelCode);
+            Assert.IsTrue(LastKnownAddressValue == LastEntry.PConsentHistory[0].Value);
+            Assert.IsTrue("PHONE" == LastEntry.PConsentHistory[0].ChannelCode);
             Assert.Contains("GR", allowed);
             allowed.Remove("GR");
             Assert.Contains("PR", allowed);

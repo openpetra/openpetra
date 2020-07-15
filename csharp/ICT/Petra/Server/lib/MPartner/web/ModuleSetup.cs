@@ -274,7 +274,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
             DBAccess.ReadTransaction(ref ReadTransaction,
                 delegate
                 {
-                    PPurposeAccess.LoadAll(MainDS, ReadTransaction);
+                    PConsentPurposeAccess.LoadAll(MainDS, ReadTransaction);
                 });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
@@ -297,11 +297,11 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
 
             if (action == "create")
             {
-                PPurposeRow row = MainDS.PPurpose.NewRowTyped();
+                PConsentPurposeRow row = MainDS.PConsentPurpose.NewRowTyped();
                 row.PurposeCode = APurposeCode.ToUpper();
                 row.Name = AName;
                 row.Comment = AComment;
-                MainDS.PPurpose.Rows.Add(row);
+                MainDS.PConsentPurpose.Rows.Add(row);
                 try
                 {
                     PartnerSetupTDSAccess.SubmitChanges(MainDS);
@@ -315,7 +315,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
             {
                 MainDS = LoadConsentPurposes();
 
-                foreach (PPurposeRow row in MainDS.PPurpose.Rows)
+                foreach (PConsentPurposeRow row in MainDS.PConsentPurpose.Rows)
                 {
                     if (row.PurposeCode == APurposeCode)
                     {
@@ -337,7 +337,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
             {
                 MainDS = LoadConsentPurposes();
 
-                foreach (PPurposeRow row in MainDS.PPurpose.Rows)
+                foreach (PConsentPurposeRow row in MainDS.PConsentPurpose.Rows)
                 {
                     if (row.PurposeCode == APurposeCode)
                     {

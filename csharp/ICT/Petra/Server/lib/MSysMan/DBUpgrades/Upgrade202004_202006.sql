@@ -40,7 +40,7 @@ KEY inx_p_consent_channel_fkmd_key3
 
 -- Keeps track of all data changes for GDPR
 -- GROUP: partner
-CREATE TABLE p_data_history (
+CREATE TABLE p_consent_history (
 
     -- Incremental key for entrys
   p_entry_id_i bigint DEFAULT 0 NOT NULL,
@@ -64,29 +64,29 @@ CREATE TABLE p_data_history (
   s_modified_by_c varchar(20),
     -- This identifies the current version of the record.
   s_modification_id_t timestamp,
-  CONSTRAINT p_data_history_pk
+  CONSTRAINT p_consent_history_pk
     PRIMARY KEY (p_entry_id_i),
-  CONSTRAINT p_data_history_fk1
+  CONSTRAINT p_consent_history_fk1
     FOREIGN KEY (p_partner_key_n)
     REFERENCES p_partner(p_partner_key_n),
-  CONSTRAINT p_data_history_fk2
+  CONSTRAINT p_consent_history_fk2
     FOREIGN KEY (p_channel_code_c)
     REFERENCES p_consent_channel(p_channel_code_c),
-  CONSTRAINT p_data_history_fkcr
+  CONSTRAINT p_consent_history_fkcr
     FOREIGN KEY (s_created_by_c)
     REFERENCES s_user(s_user_id_c),
-  CONSTRAINT p_data_history_fkmd
+  CONSTRAINT p_consent_history_fkmd
     FOREIGN KEY (s_modified_by_c)
     REFERENCES s_user(s_user_id_c),
-UNIQUE KEY inx_p_data_history_pk0 
+UNIQUE KEY inx_p_consent_history_pk0
    (p_entry_id_i),
-KEY inx_p_data_history_fk2_key1 
+KEY inx_p_consent_history_fk2_key1
    (p_channel_code_c),
-KEY inx_p_data_history_fkcr_key2 
+KEY inx_p_consent_history_fkcr_key2
    (s_created_by_c),
-KEY inx_p_data_history_fkmd_key3 
+KEY inx_p_consent_history_fkmd_key3
    (s_modified_by_c),
-KEY dp_data_history_k0 
+KEY p_consent_history_k0
    (p_partner_key_n)
 ) ENGINE=InnoDB
  CHARACTER SET UTF8
@@ -94,7 +94,7 @@ KEY dp_data_history_k0
 
 -- All possible use cases for data
 -- GROUP: partner
-CREATE TABLE p_purpose (
+CREATE TABLE p_consent_purpose (
 
     -- Unique key for purpose
   p_purpose_code_c varchar(40) NOT NULL,
@@ -112,19 +112,19 @@ CREATE TABLE p_purpose (
   s_modified_by_c varchar(20),
     -- This identifies the current version of the record.
   s_modification_id_t timestamp,
-  CONSTRAINT p_purpose_pk
+  CONSTRAINT p_consent_purpose_pk
     PRIMARY KEY (p_purpose_code_c),
-  CONSTRAINT p_purpose_fkcr
+  CONSTRAINT p_consent_purpose_fkcr
     FOREIGN KEY (s_created_by_c)
     REFERENCES s_user(s_user_id_c),
-  CONSTRAINT p_purpose_fkmd
+  CONSTRAINT p_consent_purpose_fkmd
     FOREIGN KEY (s_modified_by_c)
     REFERENCES s_user(s_user_id_c),
-UNIQUE KEY inx_p_purpose_pk0 
+UNIQUE KEY inx_p_consent_purpose_pk0
    (p_purpose_code_c),
-KEY inx_p_purpose_fkcr_key1 
+KEY inx_p_consent_purpose_fkcr_key1
    (s_created_by_c),
-KEY inx_p_purpose_fkmd_key2 
+KEY inx_p_consent_purpose_fkmd_key2
    (s_modified_by_c)
 ) ENGINE=InnoDB
  CHARACTER SET UTF8
@@ -132,10 +132,10 @@ KEY inx_p_purpose_fkmd_key2
 
 -- Contains for what data can be uses
 -- GROUP: partner
-CREATE TABLE p_data_history_permission (
+CREATE TABLE p_consent_history_permission (
 
     -- ID for entrys
-  p_data_history_entry_i bigint DEFAULT 0 NOT NULL,
+  p_consent_history_entry_i bigint DEFAULT 0 NOT NULL,
     -- Code for purpose
   p_purpose_code_c varchar(40) NOT NULL,
     -- The date the record was created.
@@ -148,30 +148,30 @@ CREATE TABLE p_data_history_permission (
   s_modified_by_c varchar(20),
     -- This identifies the current version of the record.
   s_modification_id_t timestamp,
-  CONSTRAINT p_data_history_permission_pk
-    PRIMARY KEY (p_data_history_entry_i,p_purpose_code_c),
-  CONSTRAINT p_data_history_permission_fk1
-    FOREIGN KEY (p_data_history_entry_i)
-    REFERENCES p_data_history(p_entry_id_i),
-  CONSTRAINT p_data_history_permission_fk2
+  CONSTRAINT p_consent_history_permission_pk
+    PRIMARY KEY (p_consent_history_entry_i,p_purpose_code_c),
+  CONSTRAINT p_consent_history_permission_fk1
+    FOREIGN KEY (p_consent_history_entry_i)
+    REFERENCES p_consent_history(p_entry_id_i),
+  CONSTRAINT p_consent_history_permission_fk2
     FOREIGN KEY (p_purpose_code_c)
-    REFERENCES p_purpose(p_purpose_code_c),
-  CONSTRAINT p_data_history_permission_fkcr
+    REFERENCES p_consent_purpose(p_purpose_code_c),
+  CONSTRAINT p_consent_history_permission_fkcr
     FOREIGN KEY (s_created_by_c)
     REFERENCES s_user(s_user_id_c),
-  CONSTRAINT p_data_history_permission_fkmd
+  CONSTRAINT p_consent_history_permission_fkmd
     FOREIGN KEY (s_modified_by_c)
     REFERENCES s_user(s_user_id_c),
-KEY inx_a_history_permission_fk1_key0 
-   (p_data_history_entry_i),
-KEY inx_a_history_permission_fk2_key1 
+KEY inx_t_history_permission_fk1_key0
+   (p_consent_history_entry_i),
+KEY inx_t_history_permission_fk2_key1
    (p_purpose_code_c),
-KEY inx__history_permission_fkcr_key2 
+KEY inx__history_permission_fkcr_key2
    (s_created_by_c),
-KEY inx__history_permission_fkmd_key3 
+KEY inx__history_permission_fkmd_key3
    (s_modified_by_c),
-UNIQUE KEY p_data_history_permission_k0 
-   (p_data_history_entry_i,p_purpose_code_c)
+UNIQUE KEY p_consent_history_permission_k0
+   (p_consent_history_entry_i,p_purpose_code_c)
 ) ENGINE=InnoDB
  CHARACTER SET UTF8
 ;
@@ -184,12 +184,13 @@ INSERT INTO p_consent_channel(p_channel_code_c, p_name_c, p_comment_c) VALUES ('
 INSERT INTO p_consent_channel(p_channel_code_c, p_name_c, p_comment_c) VALUES ('EMAIL','email','Via E-Mail');
 INSERT INTO p_consent_channel(p_channel_code_c, p_name_c, p_comment_c) VALUES ('CONVERSATION','conversation','Via direct conversation');
 
-INSERT INTO p_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('GR','gift receipting','Can be used for donation processing');
-INSERT INTO p_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('PR','public relations','Can be used for public relations');
-INSERT INTO p_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('NEWSLETTER','newsletter','Can be used to send newsletter');
+INSERT INTO p_consent_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('GR','gift receipting','Can be used for donation processing');
+INSERT INTO p_consent_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('PR','public relations','Can be used for public relations');
+INSERT INTO p_consent_purpose(p_purpose_code_c, p_name_c, p_comment_c) VALUES ('NEWSLETTER','newsletter','Can be used to send newsletter');
 
-
-INSERT INTO s_module_table_access_permission VALUES ('FINANCE-1','p_country',1,1,1,1,NULL,NULL,NULL,NULL,NOW());
+-- Careful: some databases might have been patched already for this bug
+INSERT INTO s_module_table_access_permission VALUES ('FINANCE-1','p_country',1,1,1,1,NULL,NULL,NULL,NULL,NOW())
+  ON DUPLICATE KEY UPDATE s_module_id_c='FINANCE-1';
 
 ALTER TABLE p_type ADD COLUMN p_system_type_l boolean DEFAULT 0 AFTER p_valid_type_l;
 UPDATE p_type SET p_system_type_l = 1 WHERE p_type_code_c IN ('BOARDING_SCHOOL','CHILDREN_HOME','HOME_BASED','PREVIOUS_CHILD','CHILD_DIED','LEDGER');
