@@ -138,13 +138,7 @@ namespace Ict.Common.DB
         {
             if (AException is PostgresException)
             {
-                AErrorMessage = AErrorMessage +
-                                "Message: " + ((PostgresException)AException).Message + Environment.NewLine +
-                                "Detail: " + ((PostgresException)AException).Detail.ToString() + Environment.NewLine +
-                                "Where: " + ((PostgresException)AException).Where + Environment.NewLine +
-                                "SQL: " + ((PostgresException)AException).Statement.SQL + Environment.NewLine +
-                                "Position in SQL: " + ((PostgresException)AException).Position + Environment.NewLine;
-
+                AErrorMessage += AException.ToString();
                 return true;
             }
 
@@ -162,6 +156,9 @@ namespace Ict.Common.DB
             string ReturnValue = ASqlQuery;
 
             ReturnValue = Regex.Replace(ReturnValue, "PUB_|PUB\\.", "public.", RegexOptions.IgnoreCase);
+
+            // PostgreSQL does not work with backticks as MySQL does
+            ReturnValue = ReturnValue.Replace("`", "");
 
 //          ReturnValue = ReturnValue.Replace("\"", "'");   // I guess this was intended to ensure that single quotes are used for literals,
             //  but it also changes quotes within strings!  (Tim Ingham, March 2014)
@@ -229,6 +226,13 @@ namespace Ict.Common.DB
             while (ReturnValue.Contains("DAYOFYEAR("))
             {
                 ReturnValue = ReplaceDayOfYear(ReturnValue);
+            }
+
+            // replace GROUP_CONCAT with STRING_AGG
+            if (ReturnValue.Contains("GROUP_CONCAT("))
+            {
+                ReturnValue = ReturnValue.Replace("GROUP_CONCAT(", "STRING_AGG(");
+                ReturnValue = ReturnValue.Replace(" SEPARATOR ',')", ",',')");
             }
 
             return ReturnValue;

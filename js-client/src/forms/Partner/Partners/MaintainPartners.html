@@ -381,16 +381,17 @@
 							<h4>{consent permissions}: <span class="selected-type">-</span></h4>
 							<hr>
 							<div permissions style="overflow-y:auto;overflow-x:hidden;max-height:20vh;"></div>
-							<button type="button" style="position:absolute;top:0;right:0;" onclick="submit_consent_edit(false)" id="consent_edit_btn">{forms.save}</button>
+							<button type="button" class="btn btn-primary" onclick="submit_consent_edit(this,false)" id="consent_edit_btn">{forms.save}</button>
+							<hr>
 						</div>
 
 						<div>
 							<h4>{history}: <span class="selected-type">-</span></h4>
 							<hr>
 							<div class="row">
-								<div class="col">{date}</div>
+								<div class="col">{consent_date}</div>
 								<div class="col">{history}</div>
-								<div class="col">{consent permissions}</div>
+								<div class="col">{consent_permissions_question}</div>
 							</div>
 							<div history style="overflow-y:auto;overflow-x:hidden;max-height:50vh;"></div>
 						</div>
@@ -401,7 +402,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			<button class="btn btn-primary" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 		</div>
 		</div>
 		</div>
@@ -416,6 +417,10 @@
 				</div>
 				<div class="modal-body">
 					<div class="container">
+
+						<div class="row">
+							<p>{consent_description}</p>
+						</div>
 
 						<div class="row">
 							<div class="col">
@@ -435,34 +440,46 @@
 							</div>
 						</div>
 
-						<hr>
-
-						<div class="row" mode="partner_edit">
+						<div class="row">
 							<div class="col">
-								{consent permissions}
+								{consent_date}
+							</div>
+							<div class="col">
+								<input type="date" name="consent_date"></select>
 							</div>
 						</div>
 
-						<!-- gets filled with copys of: [phantom] .permission-option -->
-						<div class="permissions" mode="partner_edit"></div>
+						<div class="row" mode="partner_edit">
+							<div class="col">
+								{consent_permissions_question}
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">&nbsp;</div>
+							<div class="col">
+								<!-- gets filled with copys of: [phantom] .permission-option -->
+								<div class="permissions" mode="partner_edit"></div>
+							</div>
+						</div>
 
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-light" onclick="$('#modal_space .tpl_consent').modal('hide')" mode="consent_edit">{forms.close}</button>
-					<button class="btn btn-primary" onclick="submit_consent_edit(true)" mode="consent_edit">{forms.save}</button>
-					<button class="btn btn-primary" onclick="submit_changes_consent()" mode="partner_edit">{forms.save}</button>
+					<button class="btn btn-primary" onclick="submit_consent_edit(this,true)" mode="consent_edit">{forms.save}</button>
+					<button id="btnPartnerEditConsent" class="btn btn-primary" onclick="submit_changes_consent(this)" mode="partner_edit">{forms.save}</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<label class="row permission-option">
-		<div class="col">
-			<span name></span>
-		</div>
-		<div class="col">
+		<div class="col-2">
 			<input type="checkbox" purposecode>
+		</div>
+		<div class="col-2">
+			<span name></span>
 		</div>
 	</label>
 
@@ -484,7 +501,7 @@
 						<span>{consent channel}: </span><span name="Channel"></span>
 					</div><br>
 					<div class="">
-						<span>{consent permissions}: </span><span name="Consent"></span>
+						<span>{consent_permissions_question}: </span><span name="Consent"></span>
 					</div>
 
 				</div>
@@ -577,3 +594,4 @@
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/modal.js" charset="utf-8"></script>

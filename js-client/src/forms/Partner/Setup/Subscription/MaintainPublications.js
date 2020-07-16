@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2019 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -132,10 +132,15 @@ function delete_entry(d) {
   if (!s) {return}
 
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
-    function () {
-      display_message(i18next.t('MaintainPublications.confirm_delete'), 'success');
-			raw.modal('hide');
-			display_list();
+		function (data) {
+			parsed = JSON.parse(data.data.d);
+			if (parsed.result == true) {
+				display_message(i18next.t('forms.deleted'), 'success');
+				raw.modal('hide');
+				display_list();
+			} else {
+				display_error( i18next.t('forms.notdeleted') );
+			}
 		}
   );
 

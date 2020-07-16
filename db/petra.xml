@@ -4830,6 +4830,13 @@
                 label="Assignable"
                 help="Select if this Type Code is selectable by users"
                 initial="Yes"/>
+    <tablefield name="p_system_type_l"
+                type="bit"
+                descr="This type can only be assigned by the system"
+                format="Yes/No"
+                label="System Type"
+                columnlabel="System Type"
+                initial="no"/>
     <tablefield name="p_type_deletable_l"
                 type="bit"
                 descr="This defines if the type code can be deleted.
@@ -24139,11 +24146,11 @@
                 otherFields="p_key_n"/>
     <!-- Explicit Indexes on table s_group_file_info  -->
   </table>
-  <table name="p_data_history"
+  <table name="p_consent_history"
          descr="Keeps track of all data changes for GDPR"
          area="Petra Data"
          label="contact data history"
-         dumpname="p_data_history"
+         dumpname="p_consent_history"
          group="partner">
     <tablefield name="p_entry_id_i"
                 type="number"
@@ -24176,27 +24183,32 @@
                 descr="Value for type key"
                 format="X(512)"
                 label="Value for Key"/>
+    <tablefield name="p_consent_date_d"
+                type="date"
+                descr="Date the consent was given"
+                notnull="yes"
+                label="Consent Date"/>
     <tablefield name="p_channel_code_c"
                 type="varchar"
                 descr="Code of channel"
                 notnull="yes"
                 format="X(20)"
                 label="Channel Code"/>
-    <!-- Constraints on table p_data_history -->
-    <primarykey name="p_data_history_pk"
+    <!-- Constraints on table p_consent_history -->
+    <primarykey name="p_consent_history_pk"
                 thisFields="p_entry_id_i"/>
-    <foreignkey name="p_data_history_fk1"
+    <foreignkey name="p_consent_history_fk1"
                 descr=""
                 thisFields="p_partner_key_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
-    <foreignkey name="p_data_history_fk2"
+    <foreignkey name="p_consent_history_fk2"
                 descr=""
                 thisFields="p_channel_code_c"
                 otherTable="p_consent_channel"
                 otherFields="p_channel_code_c"/>
-    <!-- Explicit Indexes on table pm_document_file  -->
-    <index name="dp_data_history_k"
+    <!-- Explicit Indexes on table p_consent_history  -->
+    <index name="p_consent_history_k"
            descr=""
            area="Petra Index"
            primary="no"
@@ -24205,7 +24217,7 @@
     </index>
   </table>
   <table name="p_consent_channel"
-         descr="All possible channels to get data changes"
+         descr="All possible channels to get data changes and consent"
          area="Petra Data"
          dumpname="p_consent_channel"
          label="data consent channel"
@@ -24219,7 +24231,7 @@
     <tablefield name="p_name_c"
                 type="varchar"
                 format="X(64)"
-                descr="internatinal name for i18n translation"
+                descr="international name for i18n translation"
                 label="Name"
                 notnull="yes"
                 initial="0"/>
@@ -24231,12 +24243,11 @@
     <!-- Constraints on table p_consent_channel -->
     <primarykey name="p_consent_channel_pk"
                 thisFields="p_channel_code_c"/>
-    <!-- Explicit Indexes on table pm_document_file  -->
   </table>
-  <table name="p_purpose"
-         descr="All possible use cases for data"
+  <table name="p_consent_purpose"
+         descr="Purposes for consent, for which the data may be used"
          area="Petra Data"
-         dumpname="p_purpose"
+         dumpname="p_consent_purpose"
          label="data purposes"
          group="partner">
     <tablefield name="p_purpose_code_c"
@@ -24248,7 +24259,7 @@
     <tablefield name="p_name_c"
                 type="varchar"
                 format="X(64)"
-                descr="internatinal name for i18n translation"
+                descr="international name for i18n translation"
                 label="Name"
                 notnull="yes"
                 initial="0"/>
@@ -24257,18 +24268,18 @@
                 format="X(256)"
                 descr="comment for a purpose"
                 label="Comment"/>
-    <!-- Constraints on table p_consent_channel -->
-    <primarykey name="p_purpose_pk"
+    <!-- Constraints on table p_consent_purpose -->
+    <primarykey name="p_consent_purpose_pk"
                 thisFields="p_purpose_code_c"/>
-    <!-- Explicit Indexes on table pm_document_file  -->
+    <!-- Explicit Indexes on table p_consent_purpose  -->
   </table>
-  <table name="p_data_history_permission"
-         descr="Contains for what data can be uses"
+  <table name="p_consent_history_permission"
+         descr="The history of consent for personal data"
          area="Petra Data"
-         dumpname="p_data_history_permission"
+         dumpname="p_consent_history_permission"
          label="data purposes permission"
          group="partner">
-    <tablefield name="p_data_history_entry_i"
+    <tablefield name="p_consent_history_entry_i"
                 descr="ID for entrys"
                 length="10"
                 type="number"
@@ -24282,26 +24293,26 @@
                 format="X(20)"
                 label="Purpose code"
                 notnull="yes"/>
-    <!-- Constraints on table p_consent_channel -->
-    <primarykey name="p_data_history_permission_pk"
-                thisFields="p_data_history_entry_i, p_purpose_code_c"/>
-    <foreignkey name="p_data_history_permission_fk1"
+    <!-- Constraints on table p_consent_history_permission -->
+    <primarykey name="p_consent_history_permission_pk"
+                thisFields="p_consent_history_entry_i, p_purpose_code_c"/>
+    <foreignkey name="p_consent_history_permission_fk1"
                 descr=""
-                thisFields="p_data_history_entry_i"
-                otherTable="p_data_history"
+                thisFields="p_consent_history_entry_i"
+                otherTable="p_consent_history"
                 otherFields="p_entry_id_i"/>
-    <foreignkey name="p_data_history_permission_fk2"
+    <foreignkey name="p_consent_history_permission_fk2"
                 descr=""
                 thisFields="p_purpose_code_c"
-                otherTable="p_purpose"
+                otherTable="p_consent_purpose"
                 otherFields="p_purpose_code_c"/>
-    <!-- Explicit Indexes on table pm_document_file  -->
-    <index name="p_data_history_permission_k"
+    <!-- Explicit Indexes on table p_consent_history_permission  -->
+    <index name="p_consent_history_permission_k"
            descr=""
            area="Petra Index"
            primary="yes"
            unique="yes">
-      <indexfield name="p_data_history_entry_i" order="ascending"/>
+      <indexfield name="p_consent_history_entry_i" order="ascending"/>
       <indexfield name="p_purpose_code_c" order="ascending"/>
     </index>
   </table>

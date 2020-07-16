@@ -32,9 +32,16 @@
 </target>
 
 <target name="importDemodata" depends="init, initConfigFiles">
+    <if test="${not file::exists(dir.bin + '/libsodium.so')}">
+        <exec program="bash"
+            workingdir="${dir.bin}"
+            commandline="-c &quot;ln -s ${libsodium.so} libsodium.so&quot;"/>
+    </if>
+
     <!-- requires a server to be started that we can connect to and upload our data -->
     <property name="operation" value="all" overwrite="false"/>
     <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.SampleDataConstructor.exe" 
+        workingdir="${dir.bin}"
         commandline="-C:&quot;${dir.etc}/TestServer.config&quot; -dir.data.generated:&quot;${dir.root}/demodata/generated&quot; -operation:${operation}"
         failonerror="true"/>
 </target>

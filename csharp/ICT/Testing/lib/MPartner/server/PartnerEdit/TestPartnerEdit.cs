@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,8 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Tests.MPartner.shared.CreateTestPartnerData;
@@ -55,10 +57,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Testing.NUnitTools;
-
-using Ict.Petra.Server.MPartner.Partner.WebConnectors;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Tests.MPartner.Server.PartnerEdit
 {
@@ -946,7 +944,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 out dummy3
             );
             string NewPartnerKey = NewUser.PPartner[0].PartnerKey.ToString();
-            string AddressChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"address\",\"Value\":\"" + TestValueAddress + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR,NEWSL\",\"Valid\":true}";
+            string AddressChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"address\",\"Value\":\"" + TestValueAddress + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR,NEWSLETTER\",\"Valid\":true}";
             string EmailChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"email address\",\"Value\":\"" + TestValueEmail + "\",\"ChannelCode\":\"PHONE\",\"Permissions\":\"PR\",\"Valid\":true}";
             string LandlinChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"phone landline\",\"Value\":\"" + TestValuePhone + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR\",\"Valid\":true}";
             string MobileChangeObject = "{\"PartnerKey\":\"" + NewPartnerKey + "\",\"Type\":\"phone mobile\",\"Value\":\"" + TestValueMobile + "\",\"ChannelCode\":\"EMAIL\",\"Permissions\":\"GR\",\"Valid\":true}";
@@ -1030,31 +1028,31 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // 5th test: get current known entry for address, based on our consents it should have rights for GR and NEWSL
             DataConsentTDS LastEntry = TDataHistoryWebConnector.LastKnownEntry(long.Parse(NewPartnerKey), "address");
-            Assert.IsTrue( LastEntry.PDataHistory.Count == 1 );
+            Assert.IsTrue( LastEntry.PConsentHistory.Count == 1 );
 
-            List<string> allowed = LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList();
-            string LastKnownAddressValue = LastEntry.PDataHistory[0].Value; // for later
+            List<string> allowed = LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList();
+            string LastKnownAddressValue = LastEntry.PConsentHistory[0].Value; // for later
 
-            Assert.IsTrue("EMAIL" == LastEntry.PDataHistory[0].ChannelCode);
+            Assert.IsTrue("EMAIL" == LastEntry.PConsentHistory[0].ChannelCode);
             Assert.Contains("GR", allowed);
             allowed.Remove("GR");
-            Assert.Contains("NEWSL", allowed);
-            allowed.Remove("NEWSL");
+            Assert.Contains("NEWSLETTER", allowed);
+            allowed.Remove("NEWSLETTER");
             Assert.IsEmpty(allowed);
             TLogging.Log("Fifth test passed");
 
             // 6th test: edit this entry
-            success = TDataHistoryWebConnector.EditHistory(long.Parse(NewPartnerKey), "address", "PHONE", "GR,PR", out VerificationResult);
+            success = TDataHistoryWebConnector.EditHistory(long.Parse(NewPartnerKey), "address", "PHONE", DateTime.Now, "GR,PR", out VerificationResult);
             Assert.IsTrue(success);
             TLogging.Log("Sixth Edit passed");
 
             // last test, check if new entry is right
             LastEntry = TDataHistoryWebConnector.LastKnownEntry(long.Parse(NewPartnerKey), "address");
-            Assert.IsTrue(LastEntry.PDataHistory.Count == 1);
-            allowed = LastEntry.PDataHistory[0].AllowedPurposes.Split(',').ToList();
+            Assert.IsTrue(LastEntry.PConsentHistory.Count == 1);
+            allowed = LastEntry.PConsentHistory[0].AllowedPurposes.Split(',').ToList();
 
-            Assert.IsTrue(LastKnownAddressValue == LastEntry.PDataHistory[0].Value);
-            Assert.IsTrue("PHONE" == LastEntry.PDataHistory[0].ChannelCode);
+            Assert.IsTrue(LastKnownAddressValue == LastEntry.PConsentHistory[0].Value);
+            Assert.IsTrue("PHONE" == LastEntry.PConsentHistory[0].ChannelCode);
             Assert.Contains("GR", allowed);
             allowed.Remove("GR");
             Assert.Contains("PR", allowed);

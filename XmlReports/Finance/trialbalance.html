@@ -1,0 +1,118 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>OpenPetra Reports</title>
+<link href="/css/report.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="head">
+	<div class="title1">Trial Balance</div>
+	<div class="title2">[getLedgerName({{param_ledger_number_i}})]</div>
+	<div class="descr1"><!-- TODO --></div>
+	<div class="descr2"><!-- TODO --></div>
+	<div class="descr3"><!-- TODO --></div>
+	<div class="period1"><!-- TODO --></div>
+
+	<div class="period2">
+		<div visible="{param_rgrCostCentres} == 'CostCentreRange'">Cost Centre: {{param_cost_centre_code_start}} To {{param_cost_centre_code_end}}</div>
+		<div visible="{param_rgrCostCentres} == 'CostCentreList'">Cost Centres: {{param_cost_centre_codes}}</div>
+	</div>
+	<div class="period3"><!-- TODO --></div>
+</div>
+
+<!-- BeginSQL SelectTransactions -->
+SELECT
+a_account_code_c,
+a_cost_centre_code_c,
+a_transaction_date_d,
+trans.a_batch_number_i as batchNumber,
+trans.a_journal_number_i as journalNumber,
+trans.a_transaction_number_i as transactionNumber,
+a_debit_credit_indicator_l,
+j.a_transaction_currency_c,
+a_transaction_amount_n,
+a_narrative_c,
+a_reference_c
+FROM PUB.a_transaction AS trans, PUB.a_journal AS j, PUB.a_batch as batch
+WHERE trans.a_ledger_number_i = j.a_ledger_number_i
+AND trans.a_journal_number_i = j.a_journal_number_i
+AND trans.a_batch_number_i = j.a_batch_number_i
+AND trans.a_ledger_number_i = {param_ledger_number_i}
+AND batch.a_ledger_number_i = trans.a_ledger_number_i
+AND batch.a_batch_number_i = trans.a_batch_number_i
+#if {param_account_code_start}
+AND trans.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
+#endif
+#if {param_account_codes}
+AND trans.a_account_code_c IN {LIST param_account_codes}
+#endif
+#if {param_cost_centre_code_start}
+AND trans.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
+#endif
+#if {param_cost_centre_codes}
+AND trans.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
+#endif
+AND batch.a_batch_period_i BETWEEN {param_start_period_i} AND {param_end_period_i}
+AND batch.a_batch_year_i = {param_year_i}
+AND trans.a_transaction_status_l = 1
+AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
+ORDER BY 1, 2, 3, 4
+<!-- EndSQL SelectTransactions -->
+
+<!-- BeginSQL SelectBalances -->
+SELECT gl.a_account_code_c, gl.a_cost_centre_code_c, a_year_i, a_period_number_i,
+		a_actual_base_n AS end_balance,
+		acc.a_debit_credit_indicator_l,
+		acc.a_account_code_short_desc_c AS account_name, cc.a_cost_centre_name_c AS cc_name
+FROM PUB.a_general_ledger_master AS gl, PUB.a_general_ledger_master_period AS glm, PUB.a_account AS acc, PUB.a_cost_centre AS cc
+WHERE gl.a_glm_sequence_i = glm.a_glm_sequence_i
+AND gl.a_ledger_number_i = {{param_ledger_number_i}}
+AND acc.a_ledger_number_i = gl.a_ledger_number_i
+AND acc.a_account_code_c = gl.a_account_code_c
+AND cc.a_ledger_number_i = gl.a_ledger_number_i
+AND cc.a_cost_centre_code_c = gl.a_cost_centre_code_c
+AND gl.a_year_i = {{param_year_i}}
+AND glm.a_period_number_i = {{param_end_period_i}}
+#if {param_account_code_start}
+AND gl.a_account_code_c BETWEEN {param_account_code_start} AND {param_account_code_end}
+#endif
+#if {param_account_codes}
+AND gl.a_account_code_c IN {LIST param_account_codes}
+#endif
+#if {param_cost_centre_code_start}
+AND gl.a_cost_centre_code_c BETWEEN {param_cost_centre_code_start} AND {param_cost_centre_code_end}
+#endif
+#if {param_cost_centre_codes}
+AND gl.a_cost_centre_code_c IN {LIST param_cost_centre_codes}
+#endif
+ORDER BY 1,2
+<!-- EndSQL SelectBalances-->
+
+<div id="column_headings" class="row">
+        <div class="col-2">Code</div>
+        <div class="col-4">Name</div>
+	<div class="col-1">Debit</div>
+	<div class="col-1">Credit</div>
+	<div class="col-2">End Balance</div>
+</div>
+<div class="row">
+	<div class="col-12">
+		<hr/>
+	</div>
+</div>
+<div id="content">
+	<div id="costcentreaccount_template">
+		<div class="row">
+			<div class="col-2">{a_cost_centre_code_c}-{a_account_code_c}</div>
+			<div class="col-4">{cc_name}, {account_name}</div>
+			<div class="col-1 currency">{total_debit}</div>
+			<div class="col-1 currency">{total_credit}</div>
+			<div class="col-2 currency">{end_balance}</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
