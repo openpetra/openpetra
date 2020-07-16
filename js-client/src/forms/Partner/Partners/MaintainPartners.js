@@ -427,7 +427,7 @@ function load_history_data(HTMLButton) {
 			first = false;
 		}
 
-		for (var entry of parsed.result.PDataHistory) {
+		for (var entry of parsed.result.PConsentHistory) {
 			var HistPerm = add_history_entry(
 				purposes, channels,
 				first,
@@ -445,7 +445,7 @@ function load_history_data(HTMLButton) {
 		var TargetPurpose = Target.find("[permissions]").html("");
 
 		var purposes = parsed.result.PConsentPurpose;
-		var last_known_configuration = parsed.result.PDataHistory.pop(); // could be empty
+		var last_known_configuration = parsed.result.PConsentHistory.pop(); // could be empty
 		if (last_known_configuration == null || last_known_configuration.AllowedPurposes == null) {
 			last_known_configuration = [];
 			last_known_configuration["AllowedPurposes"]="";
@@ -503,7 +503,7 @@ function open_consent_modal(partner_key, field, mode="partner_edit") {
 
 		var purposes = parsed.result.PConsentPurpose;
 		var channels = parsed.result.PConsentChannel;
-		var last_known_configuration = parsed.result.PDataHistory.pop() || {}; // could be empty
+		var last_known_configuration = parsed.result.PConsentHistory.pop() || {}; // could be empty
 
 		// because it could be empty
 		if (last_known_configuration.AllowedPurposes == null) {
