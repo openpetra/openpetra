@@ -256,7 +256,12 @@
         "familyname": "Etternavn",
         "title": "Tittel",
         "history": "Historikk",
-        "edittitle_history": "Datahistorikk"
+        "edittitle_history": "Datahistorikk",
+        "consent channel": "Hvordan?",
+        "email": "E-post",
+        "date": "Dato",
+        "permission change": "Endringer",
+        "data_type": "Datatype"
     },
     "GLBatches": {
         "caption": "Håndter GL-knipper og overføringer",
@@ -406,7 +411,8 @@
         "entry_freq": "Frekvens",
         "ask_delete": "Er du sikker på at du ønsker å slette dette abonnementet?",
         "confirm_edit": "Abonnement redigert.",
-        "confirm_delete": "Abonnement slettet."
+        "confirm_delete": "Abonnement slettet.",
+        "confirm_create": "Abonnement påbegynt."
     },
     "MaintainTypes": {
         "caption": "Rediger kategorier",
@@ -644,7 +650,9 @@
         "partner_firstname": "Fornavn",
         "partner_status": "Status",
         "edittitle_reminder": "Rediger påminnelse",
-        "edittitle_comment": "Rediger kommentar"
+        "edittitle_comment": "Rediger kommentar",
+        "passed_away": "Avdød",
+        "previous_child": "Tidligere barn"
     },
     "TrialBalance": {
         "account_start": "Fra konto",
