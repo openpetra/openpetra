@@ -399,8 +399,24 @@ rewrite_conf() {
 init() {
     if [ -z "$OPENPETRA_DBPWD" ]
     then
-      echo "please define a password for your OpenPetra database, eg. OPENPETRA_DBPWD=topsecret openpetra-server init"
-      exit -1
+      export OPENPETRA_DBPWD=`generatepwd`
+    fi
+    if [ -z "$OPENPETRA_DBHOST" ]
+    then
+      export OPENPETRA_DBHOST="localhost"
+    fi
+    if [ -z "$OPENPETRA_DBUSER" ]
+    then
+      export OPENPETRA_DBUSER=$OP_CUSTOMER
+    fi
+    if [ -z "$OPENPETRA_DBNAME" ]
+    then
+      export OPENPETRA_DBNAME=$OP_CUSTOMER
+    fi
+    if [ ! -z $URL ]; then
+      export OPENPETRA_URL=${OP_CUSTOMER/op_/op}.$URL
+      export OPENPETRA_EMAILDOMAIN=$URL
+      export OPENPETRA_HTTP_URL=https://$OPENPETRA_URL
     fi
 
     userName=$OP_CUSTOMER
