@@ -506,6 +506,7 @@ init() {
     sed -i "s#OPENPETRA_PORT#$OPENPETRA_HTTP_PORT#g" $nginx_conf_path
     sed -i "s#OPENPETRA_HOME#$OpenPetraPath#g" $nginx_conf_path
     sed -i "s#OPENPETRA_URL#$OPENPETRA_HTTP_URL#g" $nginx_conf_path
+    systemctl reload nginx
 
     touch /home/$userName/log/Server.log
     chown -R $userName:openpetra /home/$userName
