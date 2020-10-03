@@ -895,9 +895,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             {
                 matchtext = matchtext.Substring(0, matchtext.IndexOf("EREF+")) + matchtext.Substring(matchtext.IndexOf("SVWZ+"));
             }
-            else if (matchtext.Contains("EREF+") && (matchtext.LastIndexOf("+") == matchtext.IndexOf("EREF+") + 4))
+            else if (matchtext.Contains("EREF+") && (matchtext.LastIndexOf("+") == matchtext.IndexOf("EREF+") + 4) && (matchtext.LastIndexOf(":") <= matchtext.IndexOf("EREF+")))
             {
-                matchtext = matchtext.Substring(0, matchtext.IndexOf("EREF+"))
+                matchtext = matchtext.Substring(0, matchtext.IndexOf("EREF+"));
             }
 
             if (matchtext.Contains("IBAN:") && matchtext.Contains("BIC:"))
