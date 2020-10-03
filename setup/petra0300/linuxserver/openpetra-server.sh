@@ -203,6 +203,11 @@ FINISH
 
 # restore the mysql database
 mysqlrestore() {
+    if [ -z "$MYSQL_ROOT_PWD" ]; then
+      echo "missing MYSQL_ROOT_PWD environment variable"
+      exit -1
+    fi
+
     echo "This will overwrite your database!!!"
     echo "Please enter 'yes' if that is ok:"
     read response
@@ -220,7 +225,7 @@ mysqlrestore() {
     echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     cat $OpenPetraPath/db/createtables-MySQL.sql >> $OpenPetraPath/tmp/createtables-MySQL.sql
     echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\` IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createtables-MySQL.sql
-    mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createtables-MySQL.sql
+    mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createtables-MySQL.sql
     rm $OpenPetraPath/tmp/createtables-MySQL.sql
 
     echo "loading data and constraints and indexes..."
@@ -525,19 +530,20 @@ mysqlinitdb() {
 
     if [ "$OPENPETRA_DBHOST" == "localhost" -o "$OPENPETRA_DBHOST" == "127.0.0.1" ]
     then
+
+      if [ -z "$MYSQL_ROOT_PWD" ]; then
+        echo "missing MYSQL_ROOT_PWD environment variable"
+        exit -1
+      fi
+
       echo "initialise database"
       systemctl start mariadb
       systemctl enable mariadb
       echo "DROP DATABASE IF EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
-      if [ ! -z "$MYSQL_ROOT_PWD" ]; then 
-        echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@'%' IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
-        mysql -u root --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
-      else
-        echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
-        mysql -u root --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
-      fi
+      echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
+      mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
       rm -f $OpenPetraPath/tmp/createdb-MySQL.sql
     fi
     echo "creating tables..."
