@@ -23,18 +23,20 @@
 
 $('document').ready(function () {
 
+  refresh = "?" + Date.now();
+
   var releasenotes = axios.create({
     baseURL: '/releasenotes/'
   });
 
   let x = {};
-  releasenotes.get(i18next.t('ReleaseNotes.releasenotes_url'),x)
+  releasenotes.get(i18next.t('ReleaseNotes.releasenotes_url') + refresh,x)
     .then(function(data) {
       $('#contentReleaseNotes').html(data.data);
     })
     .catch(function (error) {
       // default to english release notes
-      releasenotes.get('releasenotes.html',x)
+      releasenotes.get('releasenotes.html' + refresh,x)
         .then(function(data) {
           $('#contentReleaseNotes').html(data.data);
         });
