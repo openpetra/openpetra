@@ -1,0 +1,5 @@
+[
+	{"name": "htmlfile", "value": "Partner/PartnerBySubscription.html"},
+	{"name": "CalculateFromClass", "value": "Ict.Petra.Server.MReporting.MPartner.PartnerBySubscription"},
+	{"name": "currentReport", "value": "eString:Partner by Subscription"}
+]

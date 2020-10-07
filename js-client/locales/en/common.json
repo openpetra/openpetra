@@ -507,6 +507,10 @@
         "onlyValidAddresses": "Only valid mailing addresses",
         "excludeNoSolicitations": "Exclude people who don't want any solicitations"
     },
+    "PartnerBySubscription": {
+        "caption": "Partner by Subscription",
+        "PublicationCode": "Publication code"
+    },
     "AnnualReportWithoutAnnualReceiptRecipients": {
         "caption": "Partner addresses for annual report without donors",
         "PublicationCode": "Publication code",

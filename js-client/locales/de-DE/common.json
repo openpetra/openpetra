@@ -508,6 +508,10 @@
         "onlyValidAddresses": "Nur mit für den Versand gültigen Adressen",
         "excludeNoSolicitations": "Ohne Kontakte die nicht mit Zusendungen belästigt werden wollen"
     },
+    "PartnerBySubscription": {
+        "caption": "Kontakte mit Abonnements",
+        "PublicationCode": "Abonnement"
+    },
     "AnnualReportWithoutAnnualReceiptRecipients": {
         "caption": "Adressen für Jahresrückblick ohne Spender",
         "PublicationCode": "Abonnement",
