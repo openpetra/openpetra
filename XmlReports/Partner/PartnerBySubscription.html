@@ -13,7 +13,7 @@
 
 <!-- BeginSQL SelectRecipients-->
 -- Select recipients
-select p.p_partner_key_n, p.p_partner_short_name_c AS PartnerName, p.p_partner_class_c,
+select p.p_partner_key_n AS PartnerKey, p.p_partner_short_name_c AS PartnerName, p.p_partner_class_c,
 l.p_street_name_c, l.p_city_c, l.p_postal_code_c, l.p_country_code_c,
 m.p_value_c as email, p_send_mail_l as validaddress
 from p_partner p
@@ -52,7 +52,7 @@ ORDER BY validaddress, p_city_c, email;
 <div id="content">
 	<div id="partner_template">
 		<div id="transaction_template" class="row">
-			<div class="col-1">{p_partner_key_n}</div>
+			<div class="col-1">{PartnerKey}</div>
 			<div class="col-1">{validaddress}</div>
 			<div class="col-2">{PartnerName}</div>
 			<div class="col-2">{p_street_name_c}</div>
