@@ -246,6 +246,7 @@
         "address": "Adresse",
         "subscriptions": "Abonnements",
         "types": "Kategorien",
+        "empty_types": "Es wurden noch keine Kategorien konfiguriert",
         "comment": "Anmerkungen",
         "financedetails": "Finanzen",
         "receiptletterfrequency": "Häufigkeit von Spendenbescheinigungen",
