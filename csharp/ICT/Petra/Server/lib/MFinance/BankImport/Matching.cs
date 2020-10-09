@@ -1,9 +1,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -891,10 +891,13 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             {
                 matchtext = matchtext.Substring(0, matchtext.IndexOf("EREF+")) + matchtext.Substring(matchtext.IndexOf("PURP+RINP"));
             }
-
-            if (matchtext.Contains("EREF+") && (matchtext.IndexOf("SVWZ+") > matchtext.IndexOf("EREF+")))
+            else if (matchtext.Contains("EREF+") && (matchtext.IndexOf("SVWZ+") > matchtext.IndexOf("EREF+")))
             {
                 matchtext = matchtext.Substring(0, matchtext.IndexOf("EREF+")) + matchtext.Substring(matchtext.IndexOf("SVWZ+"));
+            }
+            else if (matchtext.Contains("EREF+") && (matchtext.LastIndexOf("+") == matchtext.IndexOf("EREF+") + 4) && (matchtext.LastIndexOf(":") <= matchtext.IndexOf("EREF+")))
+            {
+                matchtext = matchtext.Substring(0, matchtext.IndexOf("EREF+"));
             }
 
             if (matchtext.Contains("IBAN:") && matchtext.Contains("BIC:"))

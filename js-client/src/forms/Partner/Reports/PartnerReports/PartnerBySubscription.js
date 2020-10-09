@@ -1,9 +1,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2017-2018 by TBits.net
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,37 +23,28 @@
 
 var last_opened_entry_data = {};
 
-$('document').ready(function () {
-	loadInConsents();
-	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPartnerTypes', {}).then(function (data) {
-		parsed = JSON.parse(data.data.d);
-		display_report_form(parsed);
+function get_publications() {
+	let x = {};
+	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPublications', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		publications = data.result.PPublication;
+		for (publication of publications) {
+			let y = $('<option value="'+publication.p_publication_code_c+'">'+publication.p_publication_code_c+'</option>');
+			$('#PublicationCode').append(y);
+		}
 	})
-});
-
-function display_report_form(parsed) {
-	// generated fields
-	load_tags(parsed.result.PType, $('#reportfilter'));
 }
+
+$(function() {
+	get_publications();
+});
 
 function calculate_report() {
 	let obj = $('#reportfilter');
 	// extract information from a jquery object
 	let params = extract_data(obj);
 
-	// get all tags for the partner
-	applied_tags = []
-	obj.find('#types').find('.tpl_check').each(function (i, o) {
-		o = $(o);
-		if (o.find('input').is(':checked')) {
-			applied_tags.push(o.find('data').attr('value'));
-		}
-	});
-
-	params['param_explicit_specialtypes'] = applied_tags;
-	params['param_today'] = new Date();
-
-	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySpecialType.json", params);
+	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySubscription.json", params);
 }
 
 function loadInConsents() {
@@ -70,15 +61,6 @@ function loadInConsents() {
 	})
 }
 
-// used to load all available tags
-function load_tags(all_tags, obj) {
-	let p = $('<div class="container">');
-	for (tag of all_tags) {
-		let pe = $('[phantom] .tpl_check').clone();
-		pe.find('data').attr('value', tag['p_type_code_c']);
-		pe.find('span').text(tag['p_type_description_c']);
-		p.append(pe);
-	}
-	obj.find('#types').html(p);
-	return obj;
-}
+$("document").ready(function () {
+	loadInConsents();
+})

@@ -246,6 +246,7 @@
         "address": "Address",
         "subscriptions": "Subscriptions",
         "types": "Tags",
+        "empty_types": "There are no tags configured yet",
         "comment": "Comments",
         "financedetails": "Financial Details",
         "receiptletterfrequency": "Frequency for receipt letters",
@@ -506,6 +507,10 @@
         "activePartnersOnly": "Active Partners Only",
         "onlyValidAddresses": "Only valid mailing addresses",
         "excludeNoSolicitations": "Exclude people who don't want any solicitations"
+    },
+    "PartnerBySubscription": {
+        "caption": "Partner by Subscription",
+        "PublicationCode": "Publication code"
     },
     "AnnualReportWithoutAnnualReceiptRecipients": {
         "caption": "Partner addresses for annual report without donors",

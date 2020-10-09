@@ -37,7 +37,7 @@ OpenPetra:
                     Reports: {Path=Partner/Reports/PartnerReports}
                         PartnerByCity:
                         PartnerBySpecialType:
-                        #PartnerBySubscription:
+                        PartnerBySubscription:
                         AnnualReportWithoutAnnualReceiptRecipients:
                     Setup:
                         MaintainTypes: {Path=Partner/Setup/Types, fa-icon=wrench}
