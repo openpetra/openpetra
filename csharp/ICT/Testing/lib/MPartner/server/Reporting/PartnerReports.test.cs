@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,7 +45,10 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Common.Data;
 using Ict.Petra.Server.MReporting.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Tests.MReporting.Tools;
 
 namespace Tests.MPartner.Server.Reporting
@@ -106,6 +109,70 @@ namespace Tests.MPartner.Server.Reporting
             SpecificParameters.Add("param_today", new TVariant(new DateTime(2017, 1, 1)));
             SpecificParameters.Add("param_city", new TVariant("Westhausen"));
             SpecificParameters.Add("param_active", new TVariant(true));
+
+            TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
+
+            TReportTestingTools.TestResult(resultFile);
+        }
+
+        private void AddSubscription(long APartnerKey, string APublicationCode, string AConsentCode)
+        {
+            TVerificationResultCollection VerificationResult;
+
+            List<string> Subscriptions;
+            List<string> PartnerTypes;
+            string DefaultEmailAddress;
+            string DefaultPhoneMobile;
+            string DefaultPhoneLandline;
+            PartnerEditTDS MainDS = TSimplePartnerEditWebConnector.GetPartnerDetails(APartnerKey,
+                out Subscriptions,
+                out PartnerTypes,
+                out DefaultEmailAddress,
+                out DefaultPhoneMobile,
+                out DefaultPhoneLandline);
+
+            if (!Subscriptions.Contains(APublicationCode))
+            {
+                Subscriptions.Add(APublicationCode);
+            }
+
+            string EmailChangeObject = "{\"PartnerKey\":\"" + APartnerKey + "\",\"Type\":\"email address\"," +
+                "\"Value\":\"" + DefaultEmailAddress + "\",\"ChannelCode\":\"PHONE\",\"Permissions\":\"" + AConsentCode + "\"," +
+                "\"ConsentDate\":\"" + DateTime.Today.ToString("yyyy-MM-dd") + "\"," +
+                "\"Valid\":true}";
+
+            bool SendMail = true;
+            bool result = TSimplePartnerEditWebConnector.SavePartner(MainDS,
+                Subscriptions,
+                PartnerTypes,
+                new List<string>() { EmailChangeObject },
+                SendMail,
+                DefaultEmailAddress,
+                DefaultPhoneMobile,
+                DefaultPhoneLandline,
+                out VerificationResult);
+
+            Assert.IsTrue(result, "AddSubscription.SavePartner");
+        }
+
+        /// <summary>
+        /// Test the partner by subscription report
+        /// </summary>
+        [Test]
+        public void TestPartnerBySubscription()
+        {
+            // Prepare test cases
+            // 43012100 and 43013911 should have subscriptions for NEWSUPDATES
+            // only 43012100 has consent for Newsletter
+            AddSubscription(43012100, "NEWSUPDATES", "NEWSLETTER");
+            AddSubscription(43013911, "NEWSUPDATES", "PR");
+
+            string testFile = "../../js-client/src/forms/Partner/Reports/PartnerReports/PartnerBySubscription.json";
+            string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySubscription.Results.html";
+
+            TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("PublicationCode", new TVariant("NEWSUPDATES"));
+            SpecificParameters.Add("param_consent", new TVariant("NEWSLETTER"));
 
             TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
