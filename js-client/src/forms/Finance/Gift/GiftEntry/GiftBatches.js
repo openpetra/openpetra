@@ -244,7 +244,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 
 	// TODO: use serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		parsed = JSON.parse(data.data.d, parseDates);
 		let searched = null;
 		for (trans of parsed.result.AGift) {
 			if (trans.a_gift_transaction_number_i == trans_id) {

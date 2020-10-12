@@ -88,6 +88,15 @@ function format_tpl(tpl, data, limit_to_table) {
   return tpl;
 }
 
+function parseDates(key, value) {
+  const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+  if (typeof value === "string" && dateFormat.test(value)) {
+    return new Date(value);
+  }
+
+  return value;
+}
+
 // this will fill all possible elements with data, if their name=
 // attribute is the same as the given object key
 function set_values_of_input_variables(tpl, data, limit_to_table) {
