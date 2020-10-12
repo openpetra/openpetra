@@ -169,7 +169,6 @@ function open_transactions(obj, number = -1, reload = false) {
 			for (costcentre of data.result.ACostCentre) {
 				if (costcentre['a_cost_centre_code_c'] == item['a_cost_centre_code_c']) {
 					item['costcentre_name'] = costcentre['a_cost_centre_name_c'];
-					console.log(item['a_cost_centre_code_c'] + " " + costcentre['a_cost_centre_name_c']);
 				}
 			}
 			// console.log(item);
