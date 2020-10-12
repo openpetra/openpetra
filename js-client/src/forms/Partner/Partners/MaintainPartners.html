@@ -3,11 +3,19 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_detail(this)" id="partner{val_p_partner_key_n}">
+	<div class="tpl_row" id="partner{val_p_partner_key_n}">
 		<div class="row">
 			<div class="col-2">{val_p_partner_key_n}</div>
 			<div class="col-2">{val_p_status_code_c}</div>
-			<div class="col-8">{val_p_partner_short_name_c}</div>
+			<div class="col-6">{val_p_partner_short_name_c}</div>
+			<div class="col-2" style="margin-top:0.3em;">
+				<button type="button" class="btn btn-primary" onclick="open_detail(this)">
+					<i class="fas fa-folder-open"></i>
+				</button>
+				<button type="button" class="btn btn-primary" onclick="open_edit('{val_p_partner_key_n}')" title="{forms.edit}">
+					<i class="fas fa-wrench"></i>
+				</button>
+			</div>
 		</div>
 		<div class="row">
 			<div class="col">
@@ -18,6 +26,15 @@
 
 	<div class="collapse tpl_view">
 		<div class="container group-container">
+			<div class="row" style="margin-top:0.5em;">
+				<div class="col">
+				</div>
+				<div class="col-1">
+					<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');" title="{forms.close}">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			</div>
 			<div class="row">
 				<div class="col">{partnerkey}</div><div class="col">{val_p_partner_key_n}</div>
 			</div>
@@ -37,8 +54,6 @@
 				<div class="col">{lastdonation}</div><div class="col">{val_LastGiftDate}</div>
 			</div>
 		</div>
-		<button class="btn btn-light" onclick="$(this).closest('.collapse').collapse('hide')">{forms.close}</button>
-		<button id="btnEdit" class="btn btn-primary" onclick="open_edit('{val_p_partner_key_n}')">{forms.edit}</button>
 	</div>
 
 	<div class="tpl_check">

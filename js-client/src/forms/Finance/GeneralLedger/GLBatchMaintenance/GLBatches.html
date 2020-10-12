@@ -3,39 +3,42 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
+	<div class="tpl_row" id="Batch{val_a_batch_number_i}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
 			<div class="col format_date">{val_a_date_effective_d}</div>
-			<div class="col">{val_a_batch_description_c}</div>
+			<div class="col-3">{val_a_batch_description_c}</div>
 			<div class="col format_currency">{val_a_batch_debit_total_n}</div>
 			<div class="col" batch-status>{val_a_batch_status_c}</div>
-			<div class="col-1">
-				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
+			<div class="col" style="margin-top:0.3em;">
+				<button type="button" class="btn btn-primary" onclick="open_transactions(this)">
+					<i class="fas fa-folder-open"></i>
+				</button>
+				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
 		</div>
 		<div class="row">
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
-				<div class="row">
+				<div class="row" style="margin-top:0.5em;">
 					<div class="col">
-						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="new_trans({val_a_batch_number_i}, '{val_a_date_effective_d}')">
+						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="new_trans({val_a_batch_number_i}, '{val_a_date_effective_d}')">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
-						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="importTransactions({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="importTransactions({val_a_batch_number_i})">
 							<span>{import}&nbsp;</span><i class="fas fa-file"></i>
 						</button>
-						<button type="button" class="btn btn-warning only_show_when_not_posted" style="margin-top:0.5em;" onclick="batch_cancel({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning only_show_when_not_posted" onclick="batch_cancel({val_a_batch_number_i})">
 							<span>{batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
-						<button type="button" class="btn btn-primary btn-warning only_show_when_posted" style="margin-top:0.5em;" onclick="batch_reverse({val_a_batch_number_i}, '{val_a_date_effective_d}')">
+						<button type="button" class="btn btn-primary btn-warning only_show_when_posted" onclick="batch_reverse({val_a_batch_number_i}, '{val_a_date_effective_d}')">
 							<span>{batch_reverse}&nbsp;</span><i class="fas fa-unlock"></i>
 						</button>
-						<button type="button" class="btn btn-primary only_show_when_not_posted" style="margin-top:0.5em;" onclick="test_post({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="test_post({val_a_batch_number_i})">
 							<span>{batch_test_post}&nbsp;</span><i class="fas fa-question"></i>
 						</button>
-						<button type="button" class="btn btn-primary btn-warning only_show_when_not_posted" style="margin-top:0.5em;" onclick="batch_post({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary btn-warning only_show_when_not_posted" onclick="batch_post({val_a_batch_number_i})">
 							<span>{batch_post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
 						<div class="import_space" style="display:none;">
@@ -44,6 +47,11 @@
 							<textarea rows="8" cols="80"></textarea>
 							<button type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).siblings('textarea').val() )">{forms.import}</button>
 						</div>
+					</div>
+					<div class="col-1">
+						<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');" title="{forms.close}">
+							<i class="fas fa-times"></i>
+						</button>
 					</div>
 				</div>
 				<div class="row">
@@ -56,11 +64,6 @@
 							<div class="col">{trans_account_code}</div>
 							<div class="col">{trans_ccenter_code}</div>
 							<div class="col-3">{trans_narrative_code}</div>
-							<div class="col-1">
-								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
-									<i class="fas fa-times"></i>
-								</button>
-							</div>
 						</div>
 					</div></b>
 				</div>

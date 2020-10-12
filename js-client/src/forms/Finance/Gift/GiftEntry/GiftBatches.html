@@ -4,23 +4,26 @@
 <div phantom hidden>
 
 	<!-- Batch line in list, with collapse list of transactions -->
-	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
+	<div class="tpl_row" id="Batch{val_a_batch_number_i}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
 			<div class="col format_date">{val_a_gl_effective_date_d}</div>
-			<div class="col">{val_a_batch_description_c}</div>
+			<div class="col-3">{val_a_batch_description_c}</div>
 			<div class="col format_currency">{val_GiftBatchTotal}</div>
 			<div class="col" batch-status>{val_a_batch_status_c}</div>
-			<div class="col-1">
-				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
+			<div class="col" style="margin-top:0.3em;">
+				<button type="button" class="btn btn-primary" onclick="open_gift_transactions(this)">
+					<i class="fas fa-folder-open"></i>
+				</button>
+				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
 		</div>
 		<div class="row">
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
-				<div class="row">
-					<div class="col" style="margin-top:0.5em;">
+				<div class="row" style="margin-top:0.5em;">
+					<div class="col">
 						<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
@@ -40,7 +43,11 @@
 							<span>{GLBatches.batch_test_post}&nbsp;</span><i class="fas fa-question"></i>
 						</button>
 					</div>
-					<div class="col"></div>
+					<div class="col-1">
+						<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');" title="{forms.close}">
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
 				</div>
 				<div class="row">
 					<div class="col"><b>
@@ -49,11 +56,6 @@
 							<div class="col">{trans_date}</div>
 							<div class="col">{trans_donor}</div>
 							<div class="col">{trans_amount_in_base}</div>
-							<div class="col-1">
-								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
-									<i class="fas fa-times"></i>
-								</button>
-							</div>
 						</div>
 					</div></b>
 				</div>
@@ -409,10 +411,10 @@
 	<div class="row">
 		<div class="col"><b>{batchnumber}</b></div>
 		<div class="col"><b>{batchdate}</b></div>
-		<div class="col"><b>{batchname}</b></div>
+		<div class="col-3"><b>{batchname}</b></div>
 		<div class="col"><b>{batchtotal}</b></div>
 		<div class="col"><b>{batchstatus}</b></div>
-	<div class="col-1"></div>
+		<div class="col"></div>
 	</div>
 
 	<div id="browse_container" class="container-list">

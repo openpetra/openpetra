@@ -127,9 +127,16 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_transactions(obj, number, reload = false) {
+function open_transactions(obj, number = -1, reload = false) {
 	obj = $(obj);
+	if (number == -1) {
+		while(!obj[0].hasAttribute('id') || !obj[0].id.includes("Batch")) {
+			obj = obj.parent();
+		}
+		number = obj[0].id.replace("Batch", "");
+	}
 	if (!reload && obj.find('.collapse').is(':visible') ) {
+		$('.tpl_row .collapse').collapse('hide');
 		return;
 	}
 	if (obj.find('[batch-status]').text() == "Posted" ) {
