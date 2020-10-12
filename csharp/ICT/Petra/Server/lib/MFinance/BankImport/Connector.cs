@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1337,8 +1337,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         {
                             AVerificationResult.Add(new TVerificationResult(
                                     String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
-                                    String.Format(Catalog.GetString("Cannot find motivation group '{0}' and motivation detail '{1}'"),
-                                        detail.MotivationGroupCode, detail.MotivationDetailCode),
+                                    String.Format(Catalog.GetString("Cannot find motivation group '{0}' and motivation detail '{1}' in line {2} with description {3}"),
+                                        detail.MotivationGroupCode, detail.MotivationDetailCode, transactionRow.Order, transactionRow.Description),
                                     TResultSeverity.Resv_Critical));
                         }
 
