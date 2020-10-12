@@ -1184,8 +1184,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// loads a specific gift batch, without gift transactions nor details
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
+        public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted, out string ACurrencyCode)
         {
+            ACurrencyCode = String.Empty;
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -1207,17 +1209,31 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadAGiftBatchSingle");
+            string CurrencyCode = String.Empty;
 
             db.ReadTransaction(
                 ref Transaction,
                 delegate
                 {
                     MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, ref Transaction);
+
+                    // now get the gift detail transaction amounts for the gift batch total
+                    AGiftDetailTable gd = AGiftDetailAccess.LoadViaAGiftBatch(ALedgerNumber, ABatchNumber, Transaction);
+
+                    MainDS.AGiftBatch[0].GiftBatchTotal = 0;
+
+                    foreach (AGiftDetailRow gdRow in gd.Rows)
+                    {
+                        MainDS.AGiftBatch[0].GiftBatchTotal += gdRow.GiftTransactionAmount;
+                    }
+
+                    CurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber, db);                   
                 });
 
             MainDS.AcceptChanges();
 
             ABatchIsUnposted = MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+            ACurrencyCode = CurrencyCode;
 
             db.CloseDBConnection();
 
@@ -2259,7 +2275,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool BatchIsUnposted;
-            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
+            string CurrencyCode;
+            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
             AVerificationResult = new TVerificationResultCollection();
 
             if (!BatchIsUnposted)
@@ -2366,7 +2383,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool BatchIsUnposted;
-            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, out BatchIsUnposted);
+            string CurrencyCode;
+            GiftBatchTDS MainDS = LoadAGiftBatchSingle(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")
