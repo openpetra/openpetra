@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -136,6 +136,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             String StatusFilter =
                 (AIncludeUnposted) ? " AND (PUB_a_gift_batch.a_batch_status_c = 'Posted' OR PUB_a_gift_batch.a_batch_status_c = 'Unposted')"
                 : " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'";
+
+            if (ABatchNumberStart == ABatchNumberEnd)
+            {
+                StatusFilter = "";
+            }
 
             TDataBase db = DBAccess.Connect("ExportAllGiftBatchData");
 
