@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 
 using Ict.Common;
@@ -429,6 +430,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ABatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                         AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
                         ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                        StringCollection FieldList = new StringCollection();
+                        FieldList.AddRange(new String[]{"a_account_code_c", "a_account_code_long_desc_c"});
+                        AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, FieldList, Transaction);
+                        FieldList = new StringCollection();
+                        FieldList.AddRange(new String[]{"a_cost_centre_code_c", "a_cost_centre_name_c"});
+                        ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, FieldList, Transaction);
 
                         CurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber, db);
 

@@ -161,6 +161,17 @@ function open_transactions(obj, number = -1, reload = false) {
 				item['debitamountbase'] = '';
 				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
 			}
+			for (account of data.result.AAccount) {
+				if (account['a_account_code_c'] == item['a_account_code_c']) {
+					item['account_name'] = account['a_account_code_long_desc_c'];
+				}
+			}
+			for (costcentre of data.result.ACostCentre) {
+				if (costcentre['a_cost_centre_code_c'] == item['a_cost_centre_code_c']) {
+					item['costcentre_name'] = costcentre['a_cost_centre_name_c'];
+					console.log(item['a_cost_centre_code_c'] + " " + costcentre['a_cost_centre_name_c']);
+				}
+			}
 			// console.log(item);
 			let transaction_row = $('[phantom] .tpl_transaction').clone();
 			transaction_row = format_tpl(transaction_row, item);

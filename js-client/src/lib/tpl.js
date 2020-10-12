@@ -57,6 +57,11 @@ function replace_val_variables(tpl, data) {
         $(tpl).attr('onclick', replace_val_variables_in_attr(onclick, data));
     }
 
+    let title = $(tpl).attr('title');
+    if (title !== undefined && title != null) {
+        $(tpl).attr('title', replace_val_variables_in_attr(title, data));
+    }
+
     $(tpl).find('button, div div, div div span, div span').each(function() {
         let id = $(this).attr('id');
         if (id !== undefined && id != null) {
@@ -65,6 +70,10 @@ function replace_val_variables(tpl, data) {
         let onclick = $(this).attr('onclick');
         if (onclick !== undefined && onclick != null) {
             $(this).attr('onclick', replace_val_variables_in_attr(onclick, data));
+        }
+        let title = $(this).attr('title');
+        if (title !== undefined && title != null) {
+            $(this).attr('title', replace_val_variables_in_attr(title, data));
         }
         let text = $(this).text();
         if (text !== undefined && text != null && text[0] == "{") {
