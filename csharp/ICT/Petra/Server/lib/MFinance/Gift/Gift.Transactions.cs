@@ -1181,9 +1181,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// loads a list of batches for the given ledger
-        /// also get the ledger for the base currency etc
-        /// TODO: limit to period, limit to batch status, etc
+        /// loads a specific gift batch, without gift transactions nor details
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted)
@@ -1227,9 +1225,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// loads a list of recurring batches for the given ledger
-        /// also get the ledger for the base currency etc
-        /// TODO: limit to period, limit to batch status, etc
+        /// loads a specific gift batch, without gift transactions nor details
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -2294,6 +2290,64 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return false;
             }
             
+            return true;
+        }
+
+        /// <summary>
+        /// return a string that shows the totals for each Motivation Detail
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool PreviewGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out string ResultingTotals)
+        {
+            ResultingTotals = String.Empty;
+
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
+
+            if (MainDS.AGiftBatch.Rows.Count != 1)
+            {
+                return false;
+            }
+
+            Dictionary<string, decimal> AmountsPerMotivationDetail = new Dictionary<string, decimal>();
+
+            foreach (AGiftDetailRow row in MainDS.AGiftDetail.Rows)
+            {
+                string motivationID = row.MotivationGroupCode + " - " + row.MotivationDetailCode;
+                if (!AmountsPerMotivationDetail.ContainsKey(motivationID))
+                {
+                    AmountsPerMotivationDetail.Add(motivationID, row.GiftTransactionAmount);
+                }
+                else
+                {
+                    AmountsPerMotivationDetail[motivationID] += row.GiftTransactionAmount;
+                }
+            }
+
+            foreach (string motivationID in AmountsPerMotivationDetail.Keys)
+            {
+                // return formatted string
+                ResultingTotals += motivationID + ": " +
+                    AmountsPerMotivationDetail[motivationID].ToString("#.##") +
+                    "<br/>";
+            }
+
             return true;
         }
 

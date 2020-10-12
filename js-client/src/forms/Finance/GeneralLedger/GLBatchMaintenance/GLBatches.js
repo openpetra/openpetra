@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -404,7 +404,8 @@ function test_post(batch_id) {
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			display_message ( data.ResultingBalances );
+			// 2 minute timeout
+			display_message ( data.ResultingBalances, null, 2*60*1000 );
 		} else {
 			display_error( data.AVerifications );
 		}

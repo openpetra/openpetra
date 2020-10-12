@@ -20,21 +20,24 @@
 		<div class="row">
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row">
-					<div class="col">
-						<button type="button" class="btn btn-primary not_show_when_posted" style="margin-top:0.5em;" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
+					<div class="col" style="margin-top:0.5em;">
+						<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="export_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-primary" onclick="export_batch({val_a_batch_number_i})">
 							<span>{forms.export}&nbsp;</span><i class="fas fa-table"></i>
 						</button>
-						<button type="button" class="btn btn-warning only_show_when_posted" style="margin-top:0.5em;" onclick="adjust_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning only_show_when_posted" onclick="adjust_batch({val_a_batch_number_i})">
 							<span>{GLBatches.batch_adjust}&nbsp;</span><i class="fas fa-toggle-right"></i>
 						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning not_show_when_posted" onclick="post_batch({val_a_batch_number_i})">
 							<span>{forms.post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="cancel_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning not_show_when_posted" onclick="cancel_batch({val_a_batch_number_i})">
 							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
+						</button>
+						<button type="button" class="btn btn-primary not_show_when_posted" onclick="preview_batch({val_a_batch_number_i})">
+							<span>{GLBatches.batch_test_post}&nbsp;</span><i class="fas fa-question"></i>
 						</button>
 					</div>
 					<div class="col"></div>

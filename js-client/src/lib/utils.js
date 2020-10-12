@@ -24,7 +24,7 @@
 //
 
 // a global message that generates messages in the upper middle of the screen, duh.
-function display_message(content, style_arguments) {
+function display_message(content, style_arguments = null, timeout = 5000) {
   var display_space = $('#global_message_space');
   if (display_space.length == 0) {
     let x = $('<div id ="global_message_space" class="text-center" style="position:fixed;top:10vh;width:100%;z-index:5000;">');
@@ -62,7 +62,7 @@ function display_message(content, style_arguments) {
 
   setTimeout(function () {
     $('[message-id='+m_id+']').remove();
-  }, 5000);
+  }, timeout);
 
 }
 
