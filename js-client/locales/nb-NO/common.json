@@ -116,7 +116,11 @@
         "CostCenterTree_label": "Håndter kostnadssentrum",
         "MonthEnd_label": "Lukk nåværende periode",
         "YearEnd_label": "Kjør årsslutt",
-        "RecurringGiftBatches_label": "Vedvarende donasjoner"
+        "RecurringGiftBatches_label": "Vedvarende donasjoner",
+        "MaintainChildren_label": "Behold sponsing",
+        "Children_label": "Sponsing",
+        "SponsorShip_label": "Sponsor",
+        "SysManAssistantInit_label": "Oppsettsassistent"
     },
     "forms": {
         "search": "Søk",
@@ -148,7 +152,10 @@
         "confirm_title": "Er du sikker?",
         "save_preset": "Lagre forhåndsinnstilling",
         "preset": "Forhåndsinnstilling",
-        "NotEnoughPermissions": "Manglende tilganger"
+        "NotEnoughPermissions": "Manglende tilganger",
+        "upload_success": "Opplastet",
+        "upload": "Last opp",
+        "ask_delete": "Ønsker du virkelig å slette?"
     },
     "errors": {
         "general": "En feil har inntruffet",
@@ -261,7 +268,16 @@
         "email": "E-post",
         "date": "Dato",
         "permission change": "Endringer",
-        "data_type": "Datatype"
+        "data_type": "Datatype",
+        "change_history": "Endre historikk",
+        "newsletter": "Nyhetsbrev",
+        "gift receipting": "Donasjoner",
+        "consent_date": "Når?",
+        "phone": "Telefon",
+        "letter": "Brev",
+        "conversation": "Samtale",
+        "changed value": "Endrer verdi",
+        "edittitle_consent": "Dokumenter samtykket"
     },
     "GLBatches": {
         "caption": "Håndter GL-knipper og overføringer",
@@ -652,7 +668,8 @@
         "edittitle_reminder": "Rediger påminnelse",
         "edittitle_comment": "Rediger kommentar",
         "passed_away": "Avdød",
-        "previous_child": "Tidligere barn"
+        "previous_child": "Tidligere barn",
+        "ErrMissingAmount": "Skriv inn et gyldig beløp"
     },
     "TrialBalance": {
         "account_start": "Fra konto",
