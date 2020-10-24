@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -621,23 +621,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                     else
                     {
-                        // the following statements are for the demo databases generated before version 0.2.24.
-                        // CurrencyCode was added to a_ap_document and a_ap_payment.
-                        // it is impossible during the load, to get the correct currencycode, via the supplier, because a_ap_supplier is loaded after a_ap_document.
-                        // as a temporary workaround, and because we are still in Alpha, we are using the Base currency of the ledger
-                        if ((ATableName == "a_ap_document") && (col.ColumnName == "CurrencyCode"))
+                        if ((col.ColumnName == "ModificationId") && (DBAccess.DBType == TDBType.PostgreSQL))
                         {
-                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
-                            p.Value = ACurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
-                            Parameters.Add(p);
-                            InsertStatement.Append("?");
-                        }
-                        else if ((ATableName == "a_ap_payment") && (col.ColumnName == "CurrencyCode"))
-                        {
-                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
-                            p.Value = ACurrencyPerLedger[Convert.ToInt32(RowDetails["LedgerNumber"])];
-                            Parameters.Add(p);
-                            InsertStatement.Append("?");
+                            InsertStatement.Append("CURRENT_TIMESTAMP");
                         }
                         else
                         {
