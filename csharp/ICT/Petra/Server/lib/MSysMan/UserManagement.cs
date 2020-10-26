@@ -761,7 +761,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string AFirstName, string ALastName, string AEmailAddress, string ALanguageCode,
             bool AAccountLocked, bool ARetired,
             bool ASendMail,
-            List<string> AModulePermissions, Int64 AModificationId,
+            List<string> AModulePermissions, String AModificationId,
             out TVerificationResultCollection AVerificationResult)
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
@@ -787,7 +787,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // we don't want to overwrite existing records with a new record
             // we don't want to save changes if someone else already modified the user since we got the data
-            if (SubmitDS.SUser.Count == 0 && AModificationId == 0)
+            if (SubmitDS.SUser.Count == 0 && AModificationId == "0")
             {
                 if (AEmailAddress == String.Empty)
                 {
@@ -826,9 +826,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
             else
             {
-                DateTimeOffset offset = new DateTimeOffset(SubmitDS.SUser[0].ModificationId);
-                if (offset.ToUnixTimeMilliseconds() != AModificationId) {
-                    if (AModificationId == 0)
+                if (SubmitDS.SUser[0].ModificationId != Convert.ToDateTime(AModificationId)) {
+                    if (AModificationId == "0")
                     {
                         AVerificationResult.Add(new TVerificationResult(
                             "SaveUserAndModulePermissions",
