@@ -367,7 +367,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
 
             result = TMaintenanceWebConnector.SaveUserAndModulePermissions(
                 AUserID, AFirstName, ALastName, AEmailAddress, ALanguageCode,
-                false, false, false, AInitialModulePermissions, 0,
+                false, false, false, AInitialModulePermissions, "0",
                 out VerificationResultCollection);
 
             if (result != false)
