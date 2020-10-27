@@ -202,6 +202,7 @@ var MaintainChildren = new (class {
     $("#detail_modal").attr("mode", "create");
     $("#detail_modal").find("select[name='ASponsorshipStatus'] option[value='CHILDREN_HOME']").prop('selected',true);
     $("#detail_modal").modal("show");
+    this.showWindow(null, "details");
   }
 
 })
