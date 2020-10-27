@@ -41,6 +41,7 @@ var MaintainChildren = new (class {
         var parsed = JSON.parse(data.data.d);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
+          entry["translated_p_type_code_c"] = i18next.t("MaintainChildren." + entry["p_type_code_c"].toLowerCase());
           var Copy = $("[phantom] .children").clone();
           insertData(Copy, entry);
           List.append(Copy);
