@@ -1,3 +1,29 @@
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       Christopher Jäkel
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com
+//
+// Copyright 2020 by SolidCharity.com
+//
+// This file is part of OpenPetra.
+//
+// OpenPetra is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+MAX_LENGTH_COMMENT_PREVIEW = 64;
+
 $("document").ready(function () {
   MaintainChildren.initRecurringGiftBatch();
   loadPartnerAdmins();
@@ -229,8 +255,9 @@ var MaintainChildComments = new (class {
       this.highest_index = comment["p_index_i"]
 
       // short comment in preview
-      if (comment["p_comment_c"].length > 32) {
-        comment["p_comment_c"] = comment["p_comment_c"].substring(0, 30) + "..";
+      comment["p_comment_short_c"] = comment["p_comment_c"];
+      if (comment["p_comment_c"].length > MAX_LENGTH_COMMENT_PREVIEW) {
+        comment["p_comment_short_c"] = comment["p_comment_c"].substring(0, MAX_LENGTH_COMMENT_PREVIEW-2) + "..";
       }
 
       insertData(Copy, comment);
@@ -462,8 +489,9 @@ var MaintainChildReminders = new (class {
       this.highest_index = reminder["p_reminder_id_i"]
 
       // short reminder in preview
-      if (reminder["p_comment_c"].length > 32) {
-        reminder["p_comment_c"] = reminder["p_comment_c"].substring(0, 30) + "..";
+      reminder["p_comment_short_c"] = reminder["p_comment_c"];
+      if (reminder["p_comment_c"].length > MAX_LENGTH_COMMENT_PREVIEW) {
+        reminder["p_comment_short_c"] = reminder["p_comment_c"].substring(0, MAX_LENGTH_COMMENT_PREVIEW-2) + "..";
       }
 
       insertData(Copy, reminder);

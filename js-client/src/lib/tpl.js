@@ -62,7 +62,7 @@ function replace_val_variables(tpl, data) {
         $(tpl).attr('title', replace_val_variables_in_attr(title, data));
     }
 
-    $(tpl).find('button, div div, div div span, div span').each(function() {
+    $(tpl).find('button, div, div span, div div, div div span, div span').each(function() {
         let id = $(this).attr('id');
         if (id !== undefined && id != null) {
             $(this).attr('id', replace_val_variables_in_attr(id, data));
@@ -466,4 +466,5 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
     }
     catch (e) { continue }
   }
+  replace_val_variables(o,d);
 }
