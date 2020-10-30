@@ -664,12 +664,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(SaveDS.PPartner[0].PartnerKey);
 
             // we search in every possible changed list, and added the data_type to NeededChanges
-            // everything in this list will be valided by TDataHistoryWebConnector.RegisterChanges
-            // it throws a error if a needed change cant be validated 
+            // everything in this list will be validated by TDataHistoryWebConnector.RegisterChanges
+            // it throws an error if a needed change can't be validated 
             List<string> NeededChanges = new List<string>();
 
             foreach (PLocationRow Loc in SaveDS.PLocation.Rows)
-            { 
+            {
                 if (Loc.RowState == DataRowState.Modified) { NeededChanges.Add("address"); } 
             }
 
