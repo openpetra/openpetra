@@ -37,7 +37,26 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
         /// Upgrade to version 2020-10
         public static bool UpgradeDatabase202009_202010(TDataBase ADataBase)
         {
-            // no changes in the database structure
+            // update status options for sponsored child
+            TDBTransaction SubmitChangesTransaction = new TDBTransaction();
+            bool SubmitOK = false;
+
+            ADataBase.WriteTransaction(ref SubmitChangesTransaction,
+                ref SubmitOK,
+                delegate
+                {
+                    string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade202009_202010.sql").Split(new char[]{';'});
+
+                    foreach (string stmt in SqlStmts)
+                    {
+                        if (stmt.Trim().Length > 0)
+                        {
+                            ADataBase.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                        }
+                    }
+
+                    SubmitOK = true;
+                });
             return true;
         }
     }

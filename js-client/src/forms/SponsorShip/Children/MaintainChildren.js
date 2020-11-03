@@ -27,6 +27,7 @@ MAX_LENGTH_COMMENT_PREVIEW = 64;
 $("document").ready(function () {
   MaintainChildren.initRecurringGiftBatch();
   loadPartnerAdmins();
+  loadChildrenStatus();
 
   MaintainChildren.show();
 });
@@ -67,7 +68,6 @@ var MaintainChildren = new (class {
         var parsed = JSON.parse(data.data.d);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
-          entry["translated_p_type_code_c"] = i18next.t("MaintainChildren." + entry["p_type_code_c"].toLowerCase());
           var Copy = $("[phantom] .children").clone();
           insertData(Copy, entry);
           List.append(Copy);
@@ -598,7 +598,34 @@ function loadPartnerAdmins() {
 
     }
   );
+}
 
+function loadChildrenStatus() {
+  api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_GetChildrenStatusOptions', {}).then(
+    function (data) {
+      var parsed = JSON.parse(data.data.d);
+
+      var TargetFields = $("#filter [name=ASponsorshipStatus]").html('<option value="">('+i18next.t("forms.any")+')</option>');
+      for (var statustype of parsed.result) {
+        let NewOption = $("<option></option>");
+        NewOption.attr("value", statustype.p_type_code_c);
+        let name = statustype.p_type_description_c;
+        NewOption.text(name);
+        TargetFields.append(NewOption);
+      }
+
+      // without any option
+      var TargetFields = $("#detail_modal [name=ASponsorshipStatus]").html('');
+      for (var statustype of parsed.result) {
+        let NewOption = $("<option></option>");
+        NewOption.attr("value", statustype.p_type_code_c);
+        let name = statustype.p_type_description_c;
+        NewOption.text(name);
+        TargetFields.append(NewOption);
+      }
+
+    }
+  );
 }
 
 // fix for muti modals, maybe move this to a global file?

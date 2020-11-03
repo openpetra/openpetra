@@ -70,10 +70,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("FindChildren");
             string sql = "SELECT p.p_partner_short_name_c, p.p_status_code_c, p.p_partner_key_n, p.p_user_id_c, " +
-                "f.p_first_name_c, f.p_family_name_c, t.p_type_code_c " +
-                "FROM PUB_p_partner p, PUB_p_family f, PUB_p_partner_type t " +
+                "f.p_first_name_c, f.p_family_name_c, t.p_type_code_c, t.p_type_description_c " +
+                "FROM PUB_p_partner p, PUB_p_family f, PUB_p_partner_type pt, PUB_p_type t, PUB_p_type_category tc " +
                 "WHERE p.p_partner_key_n = f.p_partner_key_n " +
-                "AND p.p_partner_key_n = t.p_partner_key_n";
+                "AND p.p_partner_key_n = pt.p_partner_key_n " +
+                "AND pt.p_type_code_c = t.p_type_code_c " +
+                "AND t.p_category_code_c = tc.p_code_c";
 
             int CountParameters = 0;
             int Pos = 0;
@@ -92,7 +94,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
             else
             {
-                sql += " AND t.p_type_code_c IN ('CHILDREN_HOME','HOME_BASED','BOARDING_SCHOOL','PREVIOUS_CHILD','CHILD_DIED')";
+                sql += " AND t.p_category_code_c = 'SPONSORED_CHILD_STATUS' ";
             }
 
             if (AFirstName != String.Empty)
@@ -145,6 +147,31 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 "ON u.s_user_id_c = p.s_user_id_c AND p.s_module_id_c = 'SPONSORADMIN'";
 
             SUserTable result = new SUserTable();
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    db.SelectDT(result, sql, t);
+                });
+
+            db.CloseDBConnection();
+
+            return result;
+        }
+
+        /// <summary>
+        /// find the status options available for children
+        /// </summary>
+        [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
+        public static PTypeTable GetChildrenStatusOptions()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("FindChildrenStatusOptions");
+            string sql = "SELECT p_type_code_c, p_type_description_c "+
+                "FROM PUB_p_type "+
+                "WHERE p_valid_type_l = 1 AND p_category_code_c = 'SPONSORED_CHILD_STATUS'";
+
+            PTypeTable result = new PTypeTable();
 
             db.ReadTransaction(ref t,
                 delegate
@@ -304,6 +331,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 {
                     PPartnerAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
                     PFamilyAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                    PTypeAccess.LoadAll(MainDS, Transaction);
                     PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
                     PPartnerReminderAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
@@ -378,13 +406,22 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             bool isSponsoredChild = false;
             ASponsorshipStatus = "[N/A]";
 
-            foreach (PPartnerTypeRow type in MainDS.PPartnerType.Rows)
+            foreach (PPartnerTypeRow partnertype in MainDS.PPartnerType.Rows)
             {
-                if (type.TypeCode == "CHILDREN_HOME" || type.TypeCode == "HOME_BASED" || type.TypeCode == "BOARDING_SCHOOL" || type.TypeCode == "PREVIOUS_CHILD" || type.TypeCode == "CHILD_DIED")
+                MainDS.PType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                    PTypeTable.GetTypeCodeDBName(),
+                    partnertype.TypeCode);
+
+                if (MainDS.PType.DefaultView.Count == 1)
                 {
-                    isSponsoredChild = true;
+                    PTypeRow type = (PTypeRow) MainDS.PType.DefaultView[0].Row;
+
+                    if (type.CategoryCode == "SPONSORED_CHILD_STATUS")
+                    {
+                        isSponsoredChild = true;
+                        ASponsorshipStatus = type.TypeCode;
+                    }
                 }
-                ASponsorshipStatus = type.TypeCode;
             }
 
             if (!isSponsoredChild)
