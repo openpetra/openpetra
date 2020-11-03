@@ -101,6 +101,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 sql += " AND f.p_first_name_c LIKE ?";
                 parameters[Pos] = new OdbcParameter("FirstName", OdbcType.VarChar);
+                AFirstName = '%' + AFirstName + '%';
                 parameters[Pos].Value = AFirstName;
                 Pos++;
             }
@@ -109,6 +110,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 sql += " AND f.p_family_name_c LIKE ?";
                 parameters[Pos] = new OdbcParameter("AFamilyName", OdbcType.VarChar);
+                AFamilyName = '%' + AFamilyName + '%';
                 parameters[Pos].Value = AFamilyName;
                 Pos++;
             }
