@@ -57,7 +57,12 @@ function replace_val_variables(tpl, data) {
         $(tpl).attr('onclick', replace_val_variables_in_attr(onclick, data));
     }
 
-    $(tpl).find('button, div div, div div span, div span').each(function() {
+    let title = $(tpl).attr('title');
+    if (title !== undefined && title != null) {
+        $(tpl).attr('title', replace_val_variables_in_attr(title, data));
+    }
+
+    $(tpl).find('button, div, div span, div div, div div span, div span').each(function() {
         let id = $(this).attr('id');
         if (id !== undefined && id != null) {
             $(this).attr('id', replace_val_variables_in_attr(id, data));
@@ -65,6 +70,10 @@ function replace_val_variables(tpl, data) {
         let onclick = $(this).attr('onclick');
         if (onclick !== undefined && onclick != null) {
             $(this).attr('onclick', replace_val_variables_in_attr(onclick, data));
+        }
+        let title = $(this).attr('title');
+        if (title !== undefined && title != null) {
+            $(this).attr('title', replace_val_variables_in_attr(title, data));
         }
         let text = $(this).text();
         if (text !== undefined && text != null && text[0] == "{") {
@@ -86,6 +95,15 @@ function format_tpl(tpl, data, limit_to_table) {
   tpl = set_values_of_input_variables(tpl, data, limit_to_table);
 
   return tpl;
+}
+
+function parseDates(key, value) {
+  const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+  if (typeof value === "string" && dateFormat.test(value)) {
+    return new Date(value);
+  }
+
+  return value;
 }
 
 // this will fill all possible elements with data, if their name=
@@ -249,6 +267,7 @@ function format_chk() {
 			obj = $(obj);
 			let t = obj.text();
 			if (t == null || t.length <=1) {return}
+			if (t[0] == "{") {return}
 
 			if (t == "false") {
 				obj.html("<i class='fas fa-circle-thin'></i>");
@@ -440,7 +459,7 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
             f.text( printCurrency(v, currencyCode) );
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
-          f.text( v );
+          f.html( v );
         } else {
           f.val( v );
         }
@@ -448,4 +467,5 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
     }
     catch (e) { continue }
   }
+  replace_val_variables(o,d);
 }

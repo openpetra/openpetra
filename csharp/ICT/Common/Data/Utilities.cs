@@ -619,7 +619,21 @@ namespace Ict.Common.Data
                     object data2 = ASourceRow[col];
 
                     // Only copy if different - that way the destination row RowState can remain 'Unchanged'.
+                    bool doCopy = false;
                     if (!data1.Equals(data2))
+                    {
+                        if (data1.GetType() == typeof(DateTime))
+                        {
+                            // Ticks are different. On the js client, we don't transfer the milliseconds
+                            doCopy = (((DateTime)data1).Ticks/10000000 != ((DateTime)data2).Ticks/10000000);
+                        }
+                        else
+                        {
+                            doCopy = true;
+                        }
+                    }
+
+                    if (doCopy)
                     {
                         ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal] = data2;
                     }

@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                     "GROUP BY `ch`.`p_entry_id_i` " +
                     "ORDER BY `ch`.`p_entry_id_i` DESC";
 
-                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey.ToString() });
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey });
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType });
 
                 Set.PConsentHistory.Constraints.Clear(); //mmmm...

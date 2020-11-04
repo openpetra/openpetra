@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -127,9 +127,16 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_transactions(obj, number, reload = false) {
+function open_transactions(obj, number = -1, reload = false) {
 	obj = $(obj);
+	if (number == -1) {
+		while(!obj[0].hasAttribute('id') || !obj[0].id.includes("Batch")) {
+			obj = obj.parent();
+		}
+		number = obj[0].id.replace("Batch", "");
+	}
 	if (!reload && obj.find('.collapse').is(':visible') ) {
+		$('.tpl_row .collapse').collapse('hide');
 		return;
 	}
 	if (obj.find('[batch-status]').text() == "Posted" ) {
@@ -153,6 +160,16 @@ function open_transactions(obj, number, reload = false) {
 				item['debitcredit'] = i18next.t('GLBatches.CREDIT');
 				item['debitamountbase'] = '';
 				item['creditamountbase'] = item['a_amount_in_base_currency_n'];
+			}
+			for (account of data.result.AAccount) {
+				if (account['a_account_code_c'] == item['a_account_code_c']) {
+					item['account_name'] = account['a_account_code_long_desc_c'];
+				}
+			}
+			for (costcentre of data.result.ACostCentre) {
+				if (costcentre['a_cost_centre_code_c'] == item['a_cost_centre_code_c']) {
+					item['costcentre_name'] = costcentre['a_cost_centre_name_c'];
+				}
 			}
 			// console.log(item);
 			let transaction_row = $('[phantom] .tpl_transaction').clone();
@@ -404,7 +421,8 @@ function test_post(batch_id) {
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_TestPostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			display_message ( data.ResultingBalances );
+			// 2 minute timeout
+			display_message ( data.ResultingBalances, null, 2*60*1000 );
 		} else {
 			display_error( data.AVerifications );
 		}

@@ -512,7 +512,19 @@ $('document').ready(function () {
 function LoadAvailableLedgerDropDown() {
 	// check for FINANCE-1 permission. else: hide the ledger selection
 	permissions = window.localStorage.getItem('ModulePermissions');
-	if ((permissions == null) || !(" " + permissions.replace(/\n/g, ' ') + " ").includes(" FINANCE-1 ")) {
+	if (permissions == null) {
+		permissions = "";
+	}
+	permissionsFormatted = (" " + permissions.replace(/\n/g, ' ') + " ");
+	if (!permissionsFormatted.includes(" FINANCE-1 ")) {
+
+		// if the user still has access to a ledger (e.g. SponsorADMIN), then store that as default ledger
+		if (permissionsFormatted.includes(" LEDGER")) {
+			let i = permissionsFormatted.indexOf(" LEDGER") + " LEDGER".length;
+			let ledgernumber = permissionsFormatted.substring(i, i + 4); 
+			window.localStorage.setItem('current_ledger', parseInt(ledgernumber));
+		}
+
 		$('#LedgerSelection').hide();
 		return;
 	}

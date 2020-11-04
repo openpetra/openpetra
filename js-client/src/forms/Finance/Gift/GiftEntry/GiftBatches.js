@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -113,9 +113,16 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_gift_transactions(obj, number, reload = false) {
-	obj = $(obj);
+function open_gift_transactions(obj, number = -1, reload = false) {
+	obj = $(obj)
+	if (number == -1) {
+		while(!obj[0].hasAttribute('id') || !obj[0].id.includes("Batch")) {
+			obj = obj.parent();
+		}
+		number = obj[0].id.replace("Batch", "");
+	}
 	if (!reload && obj.find('.collapse').is(':visible') ) {
+		$('.tpl_row .collapse').collapse('hide');
 		return;
 	}
 	if (obj.find('[batch-status]').text() == "Posted" || obj.find('[batch-status]').text() == "Cancelled") {
@@ -244,7 +251,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 
 	// TODO: use serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		parsed = JSON.parse(data.data.d, parseDates);
 		let searched = null;
 		for (trans of parsed.result.AGift) {
 			if (trans.a_gift_transaction_number_i == trans_id) {
@@ -480,6 +487,22 @@ function get_available_periods(year, fn_to_call) {
 		}
 	})
 
+}
+
+function preview_batch(batch_id) {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumber: batch_id
+	};
+	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_PreviewGiftBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		if (data.result == true) {
+			// 2 minute timeout
+			display_message ( data.ResultingTotals, null, 2*60*1000);
+		} else {
+			display_error( data.AVerifications );
+		}
+	})
 }
 
 function post_batch(batch_id) {

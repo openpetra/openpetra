@@ -29,6 +29,8 @@
 
       <Field sqltable="p_person" sqlfield="p_first_name_c"/>
       <Field sqltable="p_person" sqlfield="p_family_name_c"/>
+
+      <CustomField name="DonorName" type="String"/>
     </CustomTable>
   </DataSet>
 </PetraDataSets>

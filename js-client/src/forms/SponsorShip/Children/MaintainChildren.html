@@ -31,11 +31,6 @@
     <div class="col">
       <select type="text" name="ASponsorshipStatus" value="">
         <option value="" selected>{forms.any}</option>
-        <option value="BOARDING_SCHOOL">{boarding_school}</option>
-        <option value="CHILDREN_HOME">{children_home}</option>
-        <option value="HOME_BASED">{home_based}</option>
-        <option value="PREVIOUS_CHILD">{previous_child}</option>
-        <option value="CHILD_DIED">{passed_away}</option>
       </select>
     </div>
   </div>
@@ -64,21 +59,37 @@
 
 </form>
 
-<div id="result" class="container container-list">
-  <!-- gets filled with copys of: [phantom] .children -->
+<div class="container" id="browse">
+  <div class="row">
+    <div class="col"><b>{child_name}</b></div>
+    <div class="col"><b>{partner_status}</b></div>
+    <div class="col"><b>{donor_name}</b></div>
+    <div class="col"><b>{sponsor_admin}</b></div>
+    <div class="col-1"></div>
+  </div>
+
+  <div id="result" class="container container-list">
+    <!-- gets filled with copys of: [phantom] .children -->
+  </div>
 </div>
 
 <div phantom hidden>
 
   <div class="row children">
+    <div class="invisible">
+      <data name="p_partner_key_n" value="-1"></data>
+    </div>    
     <div class="col">
       <span type="text" name="p_first_name_c"></span> <span type="text" name="p_family_name_c"></span>
     </div>
     <div class="col">
-      <data name="p_partner_key_n" value="-1"></data>
+      <span type="text" name="p_type_description_c"></span>
     </div>
     <div class="col">
-      <span type="text" name="p_status_code_c"></span>
+      <span type="text" name="DonorName"></span>
+    </div>
+    <div class="col">
+      <span type="text" name="p_user_id_c"></span>
     </div>
     <div class="col-1">
       <button type="button" class="btn btn-primary" onclick="MaintainChildren.detail(this)"><i class="fas fa-wrench"></i></button>
@@ -89,8 +100,8 @@
     <div class="col">
       <span type="date" name="s_date_created_d"></span>
     </div>
-    <div class="col">
-      <span name="p_comment_c"></span>
+    <div class="col" title="{val_p_comment_c}">
+      <span name="p_comment_short_c"></span>
     </div>
     <div class="col-1">
       <data name="p_comment_type_c" value="-1"></data>
@@ -130,8 +141,8 @@
     <div class="col">
       <span type="date" name="p_event_date_d"></span>
     </div>
-    <div class="col">
-      <span name="p_comment_c"></span>
+    <div class="col" title="{val_p_comment_c}">
+      <span name="p_comment_short_c"></span>
     </div>
     <div class="col">
       <span type="date" name="p_first_reminder_date_d"></span>
@@ -171,11 +182,6 @@
             </div>
             <div class="col-3">
               <select name="ASponsorshipStatus">
-                <option value="BOARDING_SCHOOL">{boarding_school}</option>
-                <option value="CHILDREN_HOME">{children_home}</option>
-                <option value="HOME_BASED">{home_based}</option>
-                <option value="PREVIOUS_CHILD">{previous_child}</option>
-                <option value="CHILD_DIED">{passed_away}</option>
               </select>
             </div>
           </div>
@@ -266,7 +272,7 @@
                 <div class="col" mode-hide="create">
                   <div class="row">
                     <div class="col">
-                      <img name="p_photo_b" src="" alt="photo" height="256">
+                      <img name="p_photo_b" src="" alt="{photo}" height="256">
                     </div>
                   </div>
                   <div class="row">
