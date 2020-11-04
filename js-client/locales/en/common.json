@@ -684,6 +684,8 @@
         "partner_status": "Status",
         "partner_firstname": "First name",
         "partner_lastname": "Surname",
+        "child_name": "Name of Child",
+        "donor_name": "Names of Sponsors",
         "gender": "Gender",
         "unknown": "unknown",
         "male": "male",

@@ -59,8 +59,18 @@
 
 </form>
 
-<div id="result" class="container container-list">
-  <!-- gets filled with copys of: [phantom] .children -->
+<div class="container" id="browse">
+  <div class="row">
+    <div class="col"><b>{child_name}</b></div>
+    <div class="col"><b>{partner_status}</b></div>
+    <div class="col"><b>{donor_name}</b></div>
+    <div class="col"><b>{sponsor_admin}</b></div>
+    <div class="col-1"></div>
+  </div>
+
+  <div id="result" class="container container-list">
+    <!-- gets filled with copys of: [phantom] .children -->
+  </div>
 </div>
 
 <div phantom hidden>
@@ -70,10 +80,10 @@
       <span type="text" name="p_first_name_c"></span> <span type="text" name="p_family_name_c"></span>
     </div>
     <div class="col">
-      <data name="p_partner_key_n" value="-1"></data>
+      <span type="text" name="p_type_description_c"></span>
     </div>
     <div class="col">
-      <span type="text" name="p_type_description_c"></span>
+      <span type="text" name="DonorName"></span>
     </div>
     <div class="col">
       <span type="text" name="p_user_id_c"></span>

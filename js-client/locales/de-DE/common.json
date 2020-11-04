@@ -685,6 +685,8 @@
         "partner_status": "Status",
         "partner_firstname": "Vorname",
         "partner_lastname": "Nachname",
+        "child_name": "Name des Kindes",
+        "donor_name": "Namen der Paten",
         "gender": "Geschlecht",
         "unknown": "unbekannt",
         "male": "Männlich",

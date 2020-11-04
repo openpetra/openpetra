@@ -458,7 +458,7 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
             f.text( printCurrency(v, currencyCode) );
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
-          f.text( v );
+          f.html( v );
         } else {
           f.val( v );
         }

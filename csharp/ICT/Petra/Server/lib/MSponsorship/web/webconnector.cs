@@ -130,6 +130,40 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     db.SelectDT(result, sql, t, parameters);
                 });
 
+
+            foreach (SponsorshipFindTDSSearchResultRow child in result.Rows)
+            {
+                sql = "SELECT DISTINCT p.* " +
+                    "FROM a_recurring_gift rg, a_recurring_gift_detail rgd, PUB_p_partner p " +
+                    "WHERE rgd.a_ledger_number_i = rg.a_ledger_number_i " +
+                    "AND rgd.a_batch_number_i = rg.a_batch_number_i " +
+                    "AND rgd.a_gift_transaction_number_i = rg.a_gift_transaction_number_i " +
+                    "AND rgd.p_recipient_key_n = " + child.PartnerKey + " " +
+                    "AND NOW() >= rgd.a_start_donations_d " +
+                    "AND (NOW() <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
+                    "AND rg.p_donor_key_n = p.p_partner_key_n";
+
+                PPartnerTable donors = new PPartnerTable();
+
+                db.ReadTransaction(ref t,
+                    delegate
+                    {
+                        db.SelectDT(donors, sql, t);
+                    });
+
+                bool firstName = true;
+                foreach (PPartnerRow donor in donors.Rows)
+                {
+                    if (!firstName)
+                    {
+                        child["DonorName"] += ";";
+                    }
+
+                    child["DonorName"] += donor.PartnerShortName;
+                    firstName = false;
+                }
+            }
+
             db.CloseDBConnection();
 
             return result;

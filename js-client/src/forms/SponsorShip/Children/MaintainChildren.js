@@ -69,6 +69,9 @@ var MaintainChildren = new (class {
         var List = $("#result").html("");
         for (var entry of parsed.result) {
           var Copy = $("[phantom] .children").clone();
+          if (entry["DonorName"]) {
+            entry["DonorName"] = entry["DonorName"].replace(";", ";<br/>");
+          }
           insertData(Copy, entry);
           List.append(Copy);
         }
