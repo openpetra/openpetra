@@ -12,6 +12,35 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2020.10: November 4th, 2020</h3>
+
+<p>This release has improvements to the Contact Find form, the management of users, GL Batch and Donations Batch, and Sponsorship module.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+<ul>
+<li>Improvements to Contact List: option for sorting of search result, and displaying more results than 25.</li>
+<li>Fixed: Consent button on Contact Edit has misleading label</li>
+<li>Various fixes for sponsorship module: tooltips for reminders and comments in the list,
+children categories are not hardcoded anymore, fix permissions for users that don't have FINANCE permissions, 
+filter child's name with fragments of the name, show current donors in list of children.</li>
+<li>Fixed: Manage Users: cannot save edited user</li>
+<li>Various fixes for user management form: show last login, and fix refresh after changing a user.</li>
+<li>GL Batch: show names of accounts and cost centres in the list of transactions</li>
+<li>Test functionality for posting a donation batch: show the sum of the amounts per motivation detail.</li>
+<li>Fixed: After editing the gift batch, the total is not displayed anymore in the list</li>
+<li>Fixed: Closing the gift transaction list in gift batch screen does not work</li>
+<li>When exporting a single gift batch, don't consider the state of the batch. This means you can now export cancelled batches.</li>
+<li>Bankimport: when creating a gift batch display meaningful error message on missing motivation detail</li>
+<li>Fixed: Edit Gift Transaction: does not properly show entry date</li>
+<li>Fixed: PostgreSQL: cannot edit contact in Web UI</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the 
+<a href="https://github.com/openpetra/openpetra/milestone/13?closed=1" 
+rel=" nofollow ugc">Milestone at Github for release 2020.10</a>!</p>
+
+
 <h3>Release 2020.09: October 10th, 2020</h3>
 
 <p>There are only small changes in this release.</p>
