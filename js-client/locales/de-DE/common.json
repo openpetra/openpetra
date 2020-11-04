@@ -157,6 +157,9 @@
         "confirm_title": "Ganz sicher?",
         "save_preset": "Als Voreinstellung speichern",
         "preset": "Voreinstellung",
+        "maxresults": "Maximale Anzahl der Ergebnisse anzeigen",
+        "show_all_records": "Alle Ergebnisse anzeigen",
+        "sortby": "Sortieren nach",
         "upload": "Hochladen",
         "upload_success": "Hochladen erfolgreich"
     },
@@ -290,6 +293,9 @@
         "consent_error": "Einwilligungs Fehler",
         "data_type": "Datenart",
         "editor": "Editor",
+        "sort_by_date_created": "Anlegereihenfolge",
+        "sort_by_name": "Name des Kontaktes",
+        "sort_by_partnerkey": "Nummer des Kontaktes",
         "permission change": "Änderung",
         "date": "Datum"
     },

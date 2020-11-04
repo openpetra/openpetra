@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -249,10 +249,27 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             // see https://stackoverflow.com/questions/19601948/must-appear-in-the-group-by-clause-or-be-used-in-an-aggregate-function
             WhereClause += " GROUP BY " + groupBy.ToString();
 
+            string SortByClause = "PUB.p_partner.p_partner_short_name_c, PUB.p_partner.p_partner_class_c";
+            if (CriteriaRow["SortBy"].ToString() != String.Empty)
+            {
+                if (CriteriaRow["SortBy"].ToString() == "Created")
+                {
+                    SortByClause = "PUB.p_partner.s_date_created_d, PUB.p_partner.p_partner_key_n";
+                }
+                else if (CriteriaRow["SortBy"].ToString() == "PartnerName")
+                {
+                    SortByClause = "PUB.p_partner.p_partner_short_name_c";
+                }
+                else if (CriteriaRow["SortBy"].ToString() == "PartnerKey")
+                {
+                    SortByClause = "PUB.p_partner.p_partner_key_n";
+                }
+            }
+
             FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(FieldList,
                 FromClause,
                 WhereClause,
-                "PUB.p_partner.p_partner_short_name_c, PUB.p_partner.p_partner_class_c",
+                SortByClause,
                 ColumnNameMapping,
                 ParametersArray);
 

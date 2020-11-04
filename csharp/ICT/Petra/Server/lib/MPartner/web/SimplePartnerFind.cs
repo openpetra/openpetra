@@ -57,8 +57,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string APostCode,
             string APartnerClass,
             bool AActiveOnly,
-            short AMaxRecords,
-            out int ATotalRecords)
+            string ASortBy,
+            Int16 AMaxRecords,
+            out Int32 ATotalRecords)
         {
             TPartnerFind PartnerFind = new TPartnerFind();
 
@@ -95,10 +96,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 CriteriaRow.PartnerStatus = "*";
             }
 
+            CriteriaRow.SortBy = ASortBy;
+
             PartnerFind.PerformSearch(CriteriaData, true);
 
             Int32 TotalRecords;
-            short TotalPages;
+            Int16 TotalPages;
+            
+            if (AMaxRecords <= 0)
+            {
+                AMaxRecords = 32767;
+            }
 
             DataTable typedResult = PartnerFind.GetDataPagedResult(0, AMaxRecords, out TotalRecords, out TotalPages);
 
@@ -175,7 +183,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             int TotalRecords;
-            AResult = FindPartners(String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, ALimit, out TotalRecords);
+            AResult = FindPartners(String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, "PartnerName", ALimit, out TotalRecords);
 
             return AResult.Rows.Count > 0;
         }
