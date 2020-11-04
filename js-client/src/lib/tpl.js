@@ -267,6 +267,7 @@ function format_chk() {
 			obj = $(obj);
 			let t = obj.text();
 			if (t == null || t.length <=1) {return}
+			if (t[0] == "{") {return}
 
 			if (t == "false") {
 				obj.html("<i class='fas fa-circle-thin'></i>");

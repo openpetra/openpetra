@@ -159,9 +159,7 @@ function save_entry(obj_modal) {
 		} else {
 			$('.modal').modal('hide');
 			display_message(i18next.t('forms.saved'), "success");
-			if (NewUser) {
-				display_list();
-			}
+			display_list();
 		}
 	})
 }
