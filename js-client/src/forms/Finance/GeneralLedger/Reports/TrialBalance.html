@@ -1,4 +1,5 @@
 <h2>{caption}</h2>
+<link rel="stylesheet" href="/css/autocomplete.css">
 
 
 <!-- Phantom Storage -->
@@ -67,13 +68,17 @@
 				<span>{account_start}:</span>
 			</div>
 			<div class="col">
-				<input type="input" name="param_account_code_start" value="0100">
+				<div class="autocomplete">
+					<input type="text" name="param_account_code_start_name" key-name="param_account_code_start" value="0100" oninput="autocomplete_a(this)">
+				</div>
 			</div>
 			<div class="col">
 				<span>{account_end}:</span>
 			</div>
 			<div class="col">
-				<input type="input" name="param_account_code_end" value="0400">
+				<div class="autocomplete">
+					<input type="text" name="param_account_code_end_name" key-name="param_account_code_end" value="0400" oninput="autocomplete_a(this)">
+				</div>
 			</div>
 		</div>
 
@@ -94,4 +99,5 @@
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
 <script src="/src/lib/finance.js" charset="utf-8"></script>
 <script src="/src/lib/reports.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
