@@ -28,9 +28,24 @@ $("document").ready(function () {
   MaintainChildren.initRecurringGiftBatch();
   loadPartnerAdmins();
   loadChildrenStatus();
-
-  MaintainChildren.show();
 });
+
+countComboboxes = 0;
+function AfterLoadingComboboxes() {
+  countComboboxes++;
+  if (countComboboxes == 2) {
+    load_preset();
+    MaintainChildren.filterShow();
+  }
+}
+
+function load_preset() {
+  var x = window.localStorage.getItem('MaintainChildren');
+  if (x != null) {
+    x = JSON.parse(x);
+    format_tpl($('#tabfilter'), x);
+  }
+}
 
 var MaintainChildren = new (class {
   constructor() {
@@ -39,7 +54,7 @@ var MaintainChildren = new (class {
 
   filterShow() {
       // get infos from the filter and search with them
-      var filter = extract_data($("#filter"));
+      var filter = extract_data($("#tabfilter"));
       this.show(filter);
   }
 
@@ -61,6 +76,7 @@ var MaintainChildren = new (class {
       "APartnerStatus": filter.APartnerStatus ? filter.APartnerStatus : "",
       "ASponsorshipStatus": filter.ASponsorshipStatus ? filter.ASponsorshipStatus : "",
       "ASponsorAdmin": filter.ASponsorAdmin ? filter.ASponsorAdmin : "",
+      "ASortBy": filter.ASortBy ? filter.ASortBy : "",
     };
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren', req).then(
@@ -599,6 +615,7 @@ function loadPartnerAdmins() {
         TargetFields.append(NewOption);
       }
 
+      AfterLoadingComboboxes();
     }
   );
 }
@@ -608,7 +625,7 @@ function loadChildrenStatus() {
     function (data) {
       var parsed = JSON.parse(data.data.d);
 
-      var TargetFields = $("#filter [name=ASponsorshipStatus]").html('<option value="">('+i18next.t("forms.any")+')</option>');
+      var TargetFields = $("#tabfilter [name=ASponsorshipStatus]").html('<option value="">('+i18next.t("forms.any")+')</option>');
       for (var statustype of parsed.result) {
         let NewOption = $("<option></option>");
         NewOption.attr("value", statustype.p_type_code_c);
@@ -627,6 +644,7 @@ function loadChildrenStatus() {
         TargetFields.append(NewOption);
       }
 
+      AfterLoadingComboboxes();
     }
   );
 }

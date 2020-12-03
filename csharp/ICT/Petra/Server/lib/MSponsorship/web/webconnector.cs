@@ -65,7 +65,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string AFamilyName,
             string APartnerStatus,
             string ASponsorshipStatus,
-            string ASponsorAdmin)
+            string ASponsorAdmin,
+            string ASortBy)
         {
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("FindChildren");
@@ -122,6 +123,20 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 parameters[Pos].Value = ASponsorAdmin;
                 Pos++;
             }
+
+            if (ASortBy == "ChildName")
+            {
+                sql += " ORDER BY f.p_first_name_c, f.p_family_name_c";
+            }
+            else if (ASortBy == "SponsorAdmin")
+            {
+                sql += " ORDER BY p.p_user_id_c, f.p_first_name_c, f.p_family_name_c";
+            }
+            else if (ASortBy == "ChildKey")
+            {
+                sql += " ORDER BY p.p_partner_key_n";
+            }
+
             SponsorshipFindTDSSearchResultTable result = new SponsorshipFindTDSSearchResultTable();
 
             db.ReadTransaction(ref t,

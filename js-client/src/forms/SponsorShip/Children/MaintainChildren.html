@@ -1,7 +1,7 @@
 <h2>{caption}</h2>
 <link rel="stylesheet" href="/css/autocomplete.css">
 
-<form id="filter" class="container" action="javascript:MaintainChildren.filterShow()">
+<form id="tabfilter" class="container" action="javascript:MaintainChildren.filterShow()">
 
   <!-- last -->
   <div class="row">
@@ -47,11 +47,29 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="col">
+      <span>{forms.sortby}:</span>
+    </div>
+    <div class="col">
+      <select name="ASortBy">
+        <option value="ChildName" selected>{sort_by_name}</option>
+        <option value="ChildKey">{sort_by_partnerkey}</option>
+        <option value="SponsorAdmin">{sort_by_sponsor_admin}</option>
+      </select>
+    </div>
+  </div>
+
   <!-- button -->
   <div class="row">
     <div class="col">
+      <button type="button" class="btn btn-secondary" onclick="save_preset('MaintainChildren')">{forms.save_preset}</button>
       <button type="submit" class="btn btn-primary">{forms.filter}</button>
-      <button type="button" class="btn btn-primary" onclick="MaintainChildren.showCreate()">{forms.new}</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.showCreate()">{new_child}</button>
     </div>
     <div class="col">
     </div>
