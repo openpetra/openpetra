@@ -85,10 +85,10 @@
     <copy todir="${dir.bin}">
       <fileset basedir="${foldername}">
         <patternset refid="3rdPartyPattern" />
-        <patternset refid="NunitPattern" />
       </fileset>
     </copy>
   </foreach>
+  <copy file="${dir.nuget}/NUnit.3.12.0/lib/net45/nunit.framework.dll" todir="${dir.bin}"/>
   <call target="removeWindowsDlls"/>
   <if test="${'win32'==platform::get-name()}">
     <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
