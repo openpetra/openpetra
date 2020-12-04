@@ -13,6 +13,21 @@
     </msbuild>
 </target>
 
+<target name="installNuget">
+    <if test="${not file::exists(dir.nuget + '/nuget.exe')}">
+      <mkdir dir="${dir.nuget}" failonerror="false"/>
+      <exec program="curl" workingdir="${dir.nuget}" resultproperty="rc"> 
+        <arg value="--location" />
+        <arg value="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" />
+        <arg value="--output" />
+        <arg value="${dir.nuget}/nuget.exe" />
+      </exec>
+    </if>
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+    <ExecDotNet program="${dir.nuget}/nuget.exe"
+        commandline="install ${dir.3rdParty}/packages.config -OutputDirectory ${dir.nuget}"/>
+</target>
+
 <target name="uncrustify" depends="indent" 
         description="indent the code, so it adheres the formatting guidelines" />
 

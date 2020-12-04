@@ -58,3 +58,4 @@ csharp/ICT/Petra/Server/sql/Upgrade*.sql
 csharp/ICT/Petra/Plugins/*
 !csharp/ICT/Petra/Plugins/Plugins.build
 .vs
+csharp/ThirdParty/packages

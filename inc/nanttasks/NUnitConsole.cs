@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -117,7 +117,7 @@ namespace Ict.Tools.NAntTasks
                 process.StartInfo.Arguments += " --test=" + FTestCase;
             }
 
-            process.StartInfo.Arguments += " -labels=On";
+            process.StartInfo.Arguments += " -labels=OnOutputOnly";
 
             System.Console.WriteLine("Testing " + FAssemblyName + " " + FTestCase);
 
