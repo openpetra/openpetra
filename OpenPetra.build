@@ -241,7 +241,6 @@ useful parameters
     <echo message="Target minimalGenerateSolution started at: ${datetime::now()}" /> 
     
     <call target="generateTools"/>
-    <call target="installNuget"/>
     <call target="generateORM"/>
     <call target="generateGlue"/>
     <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
