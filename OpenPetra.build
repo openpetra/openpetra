@@ -319,13 +319,6 @@ useful parameters
   <echo message="Target generateProjectFilesInternal finished at: ${datetime::now()}" />
 </target>
 
-<target name="installNuget">
-  <echo message="Target installNuget started at: ${datetime::now()}" />
-  <nant inheritall="false" target="installNuget" 
-        buildfile="inc/nant/OpenPetra.csharp.xml" />
-  <echo message="Target installNuget finished at: ${datetime::now()}" />
-</target>
-
 <!-- Include default implementation -->
 <include buildfile="inc/nant/OpenPetra.subdirs.xml"/> 
 

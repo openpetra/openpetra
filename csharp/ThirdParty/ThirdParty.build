@@ -61,8 +61,26 @@
   </if>
 </target>
 
-<target name="compile" description="Copy Thirdparty DLLs to bin directory">
+<target name="installNuget">
+    <if test="${not file::exists(dir.nuget + '/nuget.exe')}">
+      <mkdir dir="${dir.nuget}" failonerror="false"/>
+      <exec program="curl" workingdir="${dir.nuget}" resultproperty="rc"> 
+        <arg value="--location" />
+        <arg value="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" />
+        <arg value="--output" />
+        <arg value="${dir.nuget}/nuget.exe" />
+      </exec>
+    </if>
+</target>
+
+<target name="compile" description="Copy Thirdparty DLLs to bin directory"
+  depends="installNuget">
   <echo message="Target ThirdParty compile started at: ${datetime::now()}" />         
+
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+  <ExecDotNet program="${dir.nuget}/nuget.exe"
+      commandline="install ${dir.3rdParty}/packages.config -OutputDirectory ${dir.nuget}"/>
+
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
     <copy todir="${dir.bin}">
       <fileset basedir="${foldername}">
