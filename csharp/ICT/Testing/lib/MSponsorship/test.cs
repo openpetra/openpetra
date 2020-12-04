@@ -135,7 +135,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
         {
 
 
-            SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
+            SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "", "");
 
             totalChildsBeforeTest = Result.Rows.Count;
             TLogging.Log("All Childs returns: " + totalChildsBeforeTest);
@@ -190,6 +190,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
                 new_child_lastname,
                 "",
                 "",
+                "",
                 ""
             );
 
@@ -209,7 +210,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
         public void CreateNewReminders()
         {
 
-            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
+            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "", "");
 
             TLogging.Log("Created new Reminder:");
         }
@@ -221,7 +222,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
         public void CreateNewComments()
         {
 
-            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
+            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "", "");
 
             TLogging.Log("Created new Comments for School:");
             TLogging.Log("Created new Comments for Family:");
@@ -234,7 +235,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
         public void CreateNewSponsorship()
         {
 
-            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
+            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "", "");
 
             TLogging.Log("Created new Sponsorship:");
         }
