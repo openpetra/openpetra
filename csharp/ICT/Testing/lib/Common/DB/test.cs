@@ -39,7 +39,7 @@ using Ict.Common.Data;
 using Ict.Common.Exceptions;
 using Npgsql;
 using NpgsqlTypes;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace Ict.Common.DB.Testing
 {
