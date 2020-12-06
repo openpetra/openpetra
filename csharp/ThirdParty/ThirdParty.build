@@ -3,6 +3,35 @@
 
 <include buildfile="../../inc/nant/OpenPetra.common.xml"/>
 
+<script language="C#" prefix="OP" >
+  <code>
+    <![CDATA[
+    /// copy the dlls from nuget packages to delivery/bin
+    [Function("CopyNugetDllsToBin")]
+    public static string CopyNugetDllsToBin(string NuGetPath, string BinPath)
+    {
+      foreach (string path in Directory.GetDirectories(NuGetPath))
+      {
+        string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45" };
+        foreach (string netVersionPath in netVersionPaths)
+        {
+          if (Directory.Exists(path + netVersionPath))
+          {
+            foreach (string f in Directory.GetFiles(path + netVersionPath, "*.dll"))
+            {
+              Console.WriteLine(f);
+              File.Copy(f, BinPath, true);
+            }
+            break;
+          }
+        }
+      }
+      return String.Empty;
+    }
+]]>
+    </code>
+</script>
+
 <target name="clean" >
   <delete>
     <fileset basedir="${dir.bin}">
@@ -86,9 +115,7 @@
       </fileset>
     </copy>
   </foreach>
-  <copy file="${dir.nuget}/NUnit.3.12.0/lib/net45/nunit.framework.dll" todir="${dir.bin}"/>
-  <copy file="${dir.nuget}/MySqlConnector.1.2.0/lib/net461/MySqlConnector.dll" todir="${dir.bin}"/>
-  <copy file="${dir.nuget}/System.Buffers.4.5.1/lib/net461/System.Buffers.dll" todir="${dir.bin}"/>
+  <echo message="${OP::CopyNugetDllsToBin(dir.nuget, dir.bin)}"/>
   <call target="removeWindowsDlls"/>
   <if test="${'win32'==platform::get-name()}">
     <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
