@@ -545,7 +545,7 @@ namespace Ict.Common.DB
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
 
-            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
+            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection, (MySqlTransaction)ATransaction.WrappedTransaction))
             {
                 cmd.ExecuteNonQuery();
             }
@@ -565,7 +565,7 @@ namespace Ict.Common.DB
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
 
-            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
+            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection, (MySqlTransaction)ATransaction.WrappedTransaction))
             {
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
