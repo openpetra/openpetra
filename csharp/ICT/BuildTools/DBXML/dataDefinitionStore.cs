@@ -882,10 +882,18 @@ namespace Ict.Tools.DBXML
 
             foreach (TTableField field in this.grpTableField)
             {
-                Object val = StringHelper.GetNextCSV(ref line, Separator);
                 OdbcType odbcType = field.ToOdbcType();
+                Object val = System.DBNull.Value;
+
+                if (line.Length > 0)
+                    val = StringHelper.GetNextCSV(ref line, Separator);
 
                 if (val.ToString() == "?")
+                {
+                    val = System.DBNull.Value;
+                }
+                else if (((field.strType == "date") || (field.strType == "datetime") || (field.strType == "timestamp"))
+                    && (val.ToString().Length == 0))
                 {
                     val = System.DBNull.Value;
                 }
