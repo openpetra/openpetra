@@ -163,16 +163,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             if (FSearchTransactions)
             {
-                if (DBAccess.DBType == TDBType.SQLite)
-                {
-                    // Fix for SQLite: it does not support the 'to_char' Function
-                    PaymentNumberSQLPart = "PUB_a_ap_payment.a_payment_number_i as InvNum, ";
-                }
-                else
-                {
-                    // whereas PostgreSQL does!
-                    PaymentNumberSQLPart = "to_char(PUB_a_ap_payment.a_payment_number_i, '99999') as InvNum, ";
-                }
+                PaymentNumberSQLPart = "to_char(PUB_a_ap_payment.a_payment_number_i, '99999') as InvNum, ";
 
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
                 String SqlQuery = "SELECT DISTINCT " +

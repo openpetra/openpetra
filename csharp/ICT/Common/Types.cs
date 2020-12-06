@@ -130,10 +130,7 @@ namespace Ict.Common
         PostgreSQL,
 
         /// <summary>The MySQL RDBMS</summary>
-        MySQL,
-
-        /// <summary>For standalone and demo system, SQLite</summary>
-        SQLite
+        MySQL
     }
 
     /// <summary>
@@ -368,11 +365,6 @@ namespace Ict.Common
             if (ADBType.ToLower() == "mysql")
             {
                 return TDBType.MySQL;
-            }
-
-            if (ADBType.ToLower() == "sqlite")
-            {
-                return TDBType.SQLite;
             }
 
             throw new Exception(Catalog.GetString("invalid database system"));

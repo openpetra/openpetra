@@ -134,8 +134,6 @@
             commandline="-c &quot;ln -s ${libsodium.so} libsodium.so&quot;"/>
       </if>
       <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
-      <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
-      <delete file="${dir.bin}/sqlite3.dll"/>
       <delete file="${dir.bin}/libsodium.dll"/>
       <delete file="${dir.bin}/libsodium-64.dll"/>
   </if>

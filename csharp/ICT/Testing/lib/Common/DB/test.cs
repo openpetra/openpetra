@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,6 @@ using Ict.Common.Data;
 using Ict.Common.Exceptions;
 using Npgsql;
 using NpgsqlTypes;
-using Mono.Data.Sqlite;
 using MySql.Data.MySqlClient;
 
 namespace Ict.Common.DB.Testing
@@ -770,12 +769,6 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_CantJoinExistingTransaction()
         {
-            if (FDBType == TDBType.SQLite)
-            {
-                // do not run this test with SQLite
-                return;
-            }
-
             TDataBase db = DBAccess.Connect("TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_CantJoinExistingTransaction");
             TDBTransaction FirstTransaction = db.BeginTransaction(ATransactionName : "FirstTransaction");
             TDBTransaction ReadTransaction = new TDBTransaction();
@@ -854,12 +847,6 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnectionJoin()
         {
-            if (FDBType == TDBType.SQLite)
-            {
-                // do not run this test with SQLite
-                return;
-            }
-
             TDataBase RequestedConnection = DBAccess.Connect("New DB Connection");
             TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(IsolationLevel.ReadCommitted, -1, "FirstTransaction");
             bool newTransaction;

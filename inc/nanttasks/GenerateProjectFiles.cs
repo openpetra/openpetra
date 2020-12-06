@@ -189,7 +189,6 @@ namespace Ict.Tools.NAntTasks
         {
             String ProjectPath = FCodeRootDir + Path.DirectorySeparatorChar +
                 AProjectName.
-                Replace("Ict.Tools.SQLiteConsole", "Ict.Petra.Tools.SQLiteConsole").
                 Replace("Ict.Petra.Tools.MSysMan.YmlGzImportExport", "Ict.Petra.Tools.YmlGzImportExport").
                 Replace("Ict.Petra.Tools.MFinance.Server.GDPdUExport", "Ict.Petra.Tools.FinanceGDPdUExport").
                 Replace("Ict.Tools.", "ICT.BuildTools.").

@@ -473,11 +473,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (count != 1)
                 {
-                    if ((DBAccess.DBType == TDBType.SQLite)
-                       || (DBAccess.DBType == TDBType.MySQL)
+                    if ((DBAccess.DBType == TDBType.MySQL)
                        || ((count % 500) == 0))
                     {
-                        // SQLite does not support INSERT of several rows at the same time
                         // MySQL is very slow with INSERT of several rows at the same time
                         try
                         {

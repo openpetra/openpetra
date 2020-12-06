@@ -52,11 +52,7 @@ namespace GenerateSQL
             /// <summary>
             /// MySQL
             /// </summary>
-            MySQL,
-            /// <summary>
-            /// SQLite
-            /// </summary>
-            Sqlite
+            MySQL
         };
 
         private enum eInclude { eInCreateTable, eIncludeSeparate, eOnlyForeign, eOnlyLocal };
@@ -78,19 +74,13 @@ namespace GenerateSQL
                 return eDatabaseType.MySQL;
             }
 
-            if (name.ToLower() == "sqlite")
-            {
-                return eDatabaseType.Sqlite;
-            }
-
             // default and recommended
             return eDatabaseType.PostgreSQL;
         }
 
         /// <summary>
-        /// create a database file or the scripts for creating a database.
-        /// for SQLite that is directly the file,
-        /// for the other database systems the sql create table scripts etc are written
+        /// create the scripts for creating a database.
+        /// ie. the sql create table scripts etc are written
         /// </summary>
         /// <param name="AStore"></param>
         /// <param name="ATargetDatabase"></param>
@@ -184,15 +174,9 @@ namespace GenerateSQL
                 sw.WriteLine("DROP TABLE IF EXISTS " + Table.strName + " CASCADE;");
             }
 
-            if (ATargetDatabase == eDatabaseType.Sqlite)
+            if (ATargetDatabase == eDatabaseType.MySQL)
             {
-                // see http://www.mail-archive.com/sqlite-users@sqlite.org/msg05123.html
-                // see http://www.sqlite.org/faq.html#q1
-                // no sequences in sqlite
-            }
-            else if (ATargetDatabase == eDatabaseType.MySQL)
-            {
-                // also no sequences in Mysql
+                // there are no sequences in Mysql
                 // see http://dev.mysql.com/doc/refman/5.0/en/information-functions.html for a workaround
                 // look for CREATE TABLE sequence and LAST_INSERT_ID
                 List <TSequence>Sequences = AStore.GetSequences();
@@ -202,7 +186,7 @@ namespace GenerateSQL
                     sw.WriteLine("DROP TABLE IF EXISTS " + Sequence.strName + ";");
                 }
             }
-            else
+            else if (ATargetDatabase == eDatabaseType.PostgreSQL)
             {
                 List <TSequence>Sequences = AStore.GetSequences();
 
@@ -278,15 +262,7 @@ namespace GenerateSQL
 
             foreach (TTable Table in Tables)
             {
-                if (ATargetDatabase == eDatabaseType.Sqlite)
-                {
-                    // see http://www.sqlite.org/omitted.html:
-                    // sqlite does not support Alter table add constraint
-                }
-                else
-                {
-                    DumpConstraints(sw, Table, eInclude.eOnlyForeign, true);
-                }
+                DumpConstraints(sw, Table, eInclude.eOnlyForeign, true);
             }
 
             foreach (TTable Table in Tables)
@@ -333,15 +309,9 @@ namespace GenerateSQL
             TDataDefinitionStore AStore,
             bool AWithSequenceInitialisation)
         {
-            if (ATargetDatabase == eDatabaseType.Sqlite)
+            if (ATargetDatabase == eDatabaseType.MySQL)
             {
-                // see http://www.mail-archive.com/sqlite-users@sqlite.org/msg05123.html
-                // see http://www.sqlite.org/faq.html#q1
-                // no sequences in sqlite
-            }
-            else if (ATargetDatabase == eDatabaseType.MySQL)
-            {
-                // also no sequences in Mysql
+                // there are no sequences in Mysql
                 // see http://dev.mysql.com/doc/refman/5.0/en/information-functions.html for a workaround
                 // look for CREATE TABLE sequence and LAST_INSERT_ID
                 List <TSequence>Sequences = AStore.GetSequences();
@@ -359,7 +329,7 @@ namespace GenerateSQL
                     }
                 }
             }
-            else
+            else if (ATargetDatabase == eDatabaseType.PostgreSQL)
             {
                 List <TSequence>Sequences = AStore.GetSequences();
 
@@ -523,10 +493,6 @@ namespace GenerateSQL
                 if (ATargetDatabase == eDatabaseType.PostgreSQL)
                 {
                     result += String.Format("  {0} SERIAL", field.strName);
-                }
-                else if (ATargetDatabase == eDatabaseType.Sqlite)
-                {
-                    result += String.Format("  {0} INTEGER PRIMARY KEY AUTOINCREMENT ", field.strName);
                 }
                 else if (ATargetDatabase == eDatabaseType.MySQL)
                 {

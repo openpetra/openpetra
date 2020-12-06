@@ -211,10 +211,6 @@ namespace Ict.Testing.NUnitTools
             {
                 nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
             }
-            else if (TSrvSetting.RDMBSType == TDBType.SQLite)
-            {
-                nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
-            }
             else if (TSrvSetting.RDMBSType == TDBType.MySQL)
             {
                 LoadTestDataMySQL(strSqlFilePathFromCSharpName);
