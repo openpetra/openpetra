@@ -29,7 +29,7 @@ using System.Data.Common;
 using System.Net;
 using System.Text.RegularExpressions;
 
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 using Ict.Common.DB.Exceptions;
 
@@ -62,7 +62,7 @@ namespace Ict.Common.DB
         {
             MySqlConnection TheConnection = null;
 
-            if (String.IsNullOrEmpty(AConnectionString))
+            if (String.IsNullOrEmpty(AConnectionString) || !AConnectionString.StartsWith("SERVER="))
             {
                 if (AUsername == "")
                 {
@@ -70,6 +70,7 @@ namespace Ict.Common.DB
                 }
 
                 AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" +
+                    AConnectionString +
                     "Convert Zero Datetime=True;"+"UID=" +
                     AUsername + ";" + "PASSWORD=";
             }
