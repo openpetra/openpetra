@@ -226,7 +226,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                             " = PUB_" + AConstraint.strOtherTable + "." + otherfield;
 
                 odbcParametersForeignKey += "ParametersArray[" + counterKeyField.ToString() + "] = " +
-                                            "new OdbcParameter(\"\", " + CodeGenerationPetra.ToOdbcTypeString(otherTypedField) +
+                                            "new OdbcParameter(\"\", " + otherTypedField.ToOdbcTypeString() +
                                             (otherTypedField.iLength != -1 ? ", " +
                                              otherTypedField.iLength.ToString() : "") + ");" + Environment.NewLine;
                 odbcParametersForeignKey += "ParametersArray[" + counterKeyField.ToString() + "].Value = " +
