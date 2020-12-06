@@ -434,7 +434,7 @@ namespace Ict.Common.DB
                 }
             }
 
-            ObjReturn = new MySqlCommand(ACommandText, (MySqlConnection)AConnection);
+            ObjReturn = new MySqlCommand(ACommandText, (MySqlConnection)AConnection, (MySqlTransaction)ATransaction.WrappedTransaction);
 
             ObjReturn.CommandTimeout = TAppSettingsManager.GetInt32("Server.DBCommandTimeout", 3600);
 

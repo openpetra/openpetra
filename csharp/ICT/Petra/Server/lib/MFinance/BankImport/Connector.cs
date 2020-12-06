@@ -733,7 +733,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             db.SelectDT(ResultDataset.AEpMatch,
                 sqlLoadMatchesOfStatement,
-                null,
+                Transaction,
                 new OdbcParameter[] { param, paramLedgerNumber }, -1, -1);
 
             // update the custom field for cost centre name for each match
