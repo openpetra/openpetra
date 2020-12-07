@@ -4,6 +4,12 @@
 <include buildfile="../../inc/nant/OpenPetra.common.xml"/>
 
 <script language="C#" prefix="OP" >
+  <references>
+    <include name="System.dll"/>
+  </references>  
+  <imports>
+    <import namespace="System.Diagnostics" />
+  </imports>
   <code>
     <![CDATA[
     /// copy the dlls from nuget packages to delivery/bin
@@ -27,6 +33,28 @@
         }
       }
       return String.Empty;
+    }
+
+    /// get the Mono version
+    [Function("GetMonoVersion")]
+    public static Version GetMonoVersion()
+    {
+        System.Diagnostics.Process process = new System.Diagnostics.Process();
+        process.StartInfo.FileName = "/bin/bash";
+        process.StartInfo.Arguments += "-c \"mono --version | head -1 |  awk '{print $5}'\"";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.Start();
+        process.WaitForExit();
+        return new Version(process.StandardOutput.ReadToEnd());
+    }
+
+    
+    /// compare the Mono version to another version
+    [Function("CompareMonoVersionTo")]
+    public static Int32 CompareMonoVersionTo(string v)
+    {
+        return GetMonoVersion().CompareTo(new Version(v));
     }
 ]]>
     </code>
@@ -91,22 +119,64 @@
 <target name="installNuget">
     <if test="${not file::exists(dir.nuget + '/nuget.exe')}">
       <mkdir dir="${dir.nuget}" failonerror="false"/>
-      <exec program="curl" workingdir="${dir.nuget}" resultproperty="rc"> 
+      <exec program="curl" workingdir="${dir.nuget}">
         <arg value="--location" />
         <arg value="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" />
         <arg value="--output" />
         <arg value="${dir.nuget}/nuget.exe" />
       </exec>
     </if>
+
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+    <ExecDotNet program="${dir.nuget}/nuget.exe"
+        commandline="install ${dir.3rdParty}/packages.config -OutputDirectory ${dir.nuget}"/>
 </target>
 
-<target name="compile" description="Copy Thirdparty DLLs to bin directory"
-  depends="installNuget">
+<target name="emulateGetNupkg">
+  <property name="nupkgfile" value="${dir.nuget}/${packagename}.${packageversion}/${packagename}.${packageversion}.nupkg"/>
+  <if test="${not file::exists(nupkgfile)}">
+    <mkdir dir="${dir.nuget}/${packagename}.${packageversion}" failonerror="false"/>
+    <exec program="curl" workingdir="${dir.nuget}">
+        <arg value="--location" />
+        <arg value="https://www.nuget.org/api/v2/package/${packagename}/${packageversion}" />
+        <arg value="--output"/>
+        <arg value="${nupkgfile}" />
+    </exec>
+  </if>
+  <unzip zipfile="${nupkgfile}" todir="${dir.nuget}/${packagename}.${packageversion}"/>
+</target>
+
+<target name="emulateNuget">
+    <mkdir dir="${dir.nuget}" failonerror="false"/>
+    <!-- todo read from packages.config -->
+    <property name="packagename" value="nunit"/>
+    <property name="packageversion" value="3.12.0"/>
+    <call target="emulateGetNupkg"/>
+    <property name="packagename" value="NUnit.Console"/>
+    <property name="packageversion" value="3.11.1"/>
+    <call target="emulateGetNupkg"/>
+    <property name="packagename" value="NUnit.ConsoleRunner"/>
+    <property name="packageversion" value="3.11.1"/>
+    <call target="emulateGetNupkg"/>
+    <property name="packagename" value="MySqlConnector"/>
+    <property name="packageversion" value="1.2.0"/>
+    <call target="emulateGetNupkg"/>
+    <property name="packagename" value="System.Buffers"/>
+    <property name="packageversion" value="4.5.1"/>
+    <call target="emulateGetNupkg"/>
+</target>
+  
+<target name="compile" description="Copy Thirdparty DLLs to bin directory">
   <echo message="Target ThirdParty compile started at: ${datetime::now()}" />         
 
-  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <ExecDotNet program="${dir.nuget}/nuget.exe"
-      commandline="install ${dir.3rdParty}/packages.config -OutputDirectory ${dir.nuget}"/>
+  <!-- only use nuget.exe on Mono > 6.0.0.0 because it does not work on Mono 5 -->
+  <if test="${OP::CompareMonoVersionTo('6.0.0.0') &gt; 0}">
+    <call target="installNuget"/>
+  </if>
+  <!-- for older Mono, we download the nuget packages directly -->
+  <if test="${OP::CompareMonoVersionTo('6.0.0.0') &lt; 0}">
+    <call target="emulateNuget"/>
+  </if>
 
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
     <copy todir="${dir.bin}">
