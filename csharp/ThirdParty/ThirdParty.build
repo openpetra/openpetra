@@ -56,6 +56,51 @@
     {
         return GetMonoVersion().CompareTo(new Version(v));
     }
+
+    /// emulate nuget.exe: collect nuget packages depending on package.config
+    [Function("EmulateNugetExe")]
+    public static string EmulateNugetExe(string NuGetPackagesPath)
+    {
+        string NugetPackagesConfigFile = NuGetPackagesPath + ".config";
+
+        StreamReader nugetSr = new StreamReader(NugetPackagesConfigFile);
+        while (!nugetSr.EndOfStream)
+        {
+            string line = nugetSr.ReadLine();
+            if (line.Trim().StartsWith("<package id="))
+            {
+                int pos1 = line.IndexOf('"');
+                int pos2 = line.IndexOf('"', pos1 + 1);
+                string pkgId = line.Substring(pos1 + 1, pos2 - pos1 - 1);
+                int pos3 = line.IndexOf('"', pos2 + 1);
+                int pos4 = line.IndexOf('"', pos3 + 1);
+                string version = line.Substring(pos3 + 1, pos4 - pos3 - 1);
+
+                string nupkgfolder = NuGetPackagesPath + "/" + pkgId + "." + version;
+                string nupkgfile = nupkgfolder + "/" + pkgId + "." + version + ".nupkg";
+                if (!Directory.Exists(nupkgfolder))
+                {
+                    Directory.CreateDirectory(nupkgfolder);
+
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    process.StartInfo.FileName = "curl";
+                    process.StartInfo.Arguments += "--location https://www.nuget.org/api/v2/package/" + 
+                        pkgId + "/" + version + " --output " + nupkgfile;
+                    process.Start();
+                    process.WaitForExit();
+
+                    process = new System.Diagnostics.Process();
+                    process.StartInfo.FileName = "unzip";
+                    process.StartInfo.WorkingDirectory = nupkgfolder;
+                    process.StartInfo.Arguments += "-o " + nupkgfile;
+                    process.Start();
+                    process.WaitForExit();
+                }
+            }
+        }
+
+        return "We have emulated nuget.exe for the packages.config file";
+    }
 ]]>
     </code>
 </script>
@@ -132,45 +177,9 @@
         commandline="install ${dir.3rdParty}/packages.config -OutputDirectory ${dir.nuget}"/>
 </target>
 
-<target name="emulateGetNupkg">
-  <property name="nupkgfolder" value="${dir.nuget}/${packagename}.${packageversion}"/>
-  <property name="nupkgfile" value="${nupkgfolder}/${packagename}.${packageversion}.nupkg"/>
-  <if test="${not directory::exists(nupkgfolder)}">
-    <mkdir dir="${dir.nuget}/${packagename}.${packageversion}" failonerror="false"/>
-    
-    <exec program="curl" workingdir="${dir.nuget}">
-        <arg value="--location" />
-        <arg value="https://www.nuget.org/api/v2/package/${packagename}/${packageversion}" />
-        <arg value="--output"/>
-        <arg value="${nupkgfile}" />
-    </exec>
-
-    <!-- NAnt unzip has an issue with a file with length 0 in System.Buffers -->
-    <exec program="unzip" workingdir="${dir.nuget}/${packagename}.${packageversion}">
-          <arg value="-o" />
-          <arg value="${nupkgfile}" />
-    </exec>
-  </if>
-</target>
-
 <target name="emulateNuget">
     <mkdir dir="${dir.nuget}" failonerror="false"/>
-    <!-- todo read from packages.config -->
-    <property name="packagename" value="NUnit"/>
-    <property name="packageversion" value="3.12.0"/>
-    <call target="emulateGetNupkg"/>
-    <property name="packagename" value="NUnit.Console"/>
-    <property name="packageversion" value="3.11.1"/>
-    <call target="emulateGetNupkg"/>
-    <property name="packagename" value="NUnit.ConsoleRunner"/>
-    <property name="packageversion" value="3.11.1"/>
-    <call target="emulateGetNupkg"/>
-    <property name="packagename" value="MySqlConnector"/>
-    <property name="packageversion" value="1.2.0"/>
-    <call target="emulateGetNupkg"/>
-    <property name="packagename" value="System.Buffers"/>
-    <property name="packageversion" value="4.5.1"/>
-    <call target="emulateGetNupkg"/>
+    <echo message="${OP::EmulateNugetExe(dir.nuget)}"/>
 </target>
   
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">

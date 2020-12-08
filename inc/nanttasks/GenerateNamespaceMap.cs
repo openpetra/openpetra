@@ -484,6 +484,7 @@ namespace Ict.Tools.NAntTasks
                             }
 
                             values[1] = "${dir.nuget}" + PSC + dllPath;
+                            //Console.WriteLine("Adding " + values[0] + " " + values[1]);
                         }
                     }
 
