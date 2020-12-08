@@ -619,7 +619,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                     else
                     {
-                        if ((col.ColumnName == "ModificationId") && (DBAccess.DBType == TDBType.PostgreSQL))
+                        if (col.ColumnName == "ModificationId")
                         {
                             InsertStatement.Append("CURRENT_TIMESTAMP");
                         }

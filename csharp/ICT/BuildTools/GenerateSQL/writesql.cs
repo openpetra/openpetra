@@ -453,7 +453,7 @@ namespace GenerateSQL
                 }
             }
 
-            if ((field.strType == "timestamp") && (ATargetDatabase == eDatabaseType.PostgreSQL))
+            if (field.strType == "timestamp")
             {
                 // we want to default to the current timestamp
                 field.strDefault = "CURRENT_TIMESTAMP";
