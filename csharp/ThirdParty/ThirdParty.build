@@ -25,14 +25,14 @@
           {
             foreach (string f in Directory.GetFiles(path + netVersionPath, "*.dll"))
             {
-              Console.WriteLine(f);
+              // Console.WriteLine(f);
               File.Copy(f, BinPath, true);
             }
             break;
           }
         }
       }
-      return String.Empty;
+      return "Nuget Dlls have been copied to " + BinPath;
     }
 
     /// get the Mono version
@@ -133,17 +133,24 @@
 </target>
 
 <target name="emulateGetNupkg">
-  <property name="nupkgfile" value="${dir.nuget}/${packagename}.${packageversion}/${packagename}.${packageversion}.nupkg"/>
-  <if test="${not file::exists(nupkgfile)}">
+  <property name="nupkgfolder" value="${dir.nuget}/${packagename}.${packageversion}"/>
+  <property name="nupkgfile" value="${nupkgfolder}/${packagename}.${packageversion}.nupkg"/>
+  <if test="${not directory::exists(nupkgfolder)}">
     <mkdir dir="${dir.nuget}/${packagename}.${packageversion}" failonerror="false"/>
+    
     <exec program="curl" workingdir="${dir.nuget}">
         <arg value="--location" />
         <arg value="https://www.nuget.org/api/v2/package/${packagename}/${packageversion}" />
         <arg value="--output"/>
         <arg value="${nupkgfile}" />
     </exec>
+
+    <!-- NAnt unzip has an issue with a file with length 0 in System.Buffers -->
+    <exec program="unzip" workingdir="${dir.nuget}/${packagename}.${packageversion}">
+          <arg value="-o" />
+          <arg value="${nupkgfile}" />
+    </exec>
   </if>
-  <unzip zipfile="${nupkgfile}" todir="${dir.nuget}/${packagename}.${packageversion}"/>
 </target>
 
 <target name="emulateNuget">

@@ -442,10 +442,9 @@
     </if>
 
     <!-- we are now using nunit3-console from nuget -->
-    <property name="search.NUnitConsole" value="${dir.nuget}/NUnit.ConsoleRunner.3.11.1/tools/nunit3-console.exe"/>
-    <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
+    <property name="external.NUnitConsole" value="${dir.nuget}/NUnit.ConsoleRunner.3.11.1/tools/nunit3-console.exe" overwrite="false"/>
     <if test="${not file::exists(external.NUnitConsole)}">
-        <echo>Cannot find nunit3-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</echo>
+        <echo>Cannot find nunit3-console.exe! Please run nant generateTools</echo>
     </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">
