@@ -156,7 +156,7 @@
 <target name="emulateNuget">
     <mkdir dir="${dir.nuget}" failonerror="false"/>
     <!-- todo read from packages.config -->
-    <property name="packagename" value="nunit"/>
+    <property name="packagename" value="NUnit"/>
     <property name="packageversion" value="3.12.0"/>
     <call target="emulateGetNupkg"/>
     <property name="packagename" value="NUnit.Console"/>
