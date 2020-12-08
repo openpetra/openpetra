@@ -26,7 +26,7 @@
             foreach (string f in Directory.GetFiles(path + netVersionPath, "*.dll"))
             {
               // Console.WriteLine(f);
-              File.Copy(f, BinPath, true);
+              File.Copy(f, BinPath + "/" + Path.GetFileName(f), true);
             }
             break;
           }
