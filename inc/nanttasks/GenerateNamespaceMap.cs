@@ -473,7 +473,7 @@ namespace Ict.Tools.NAntTasks
                         {
                             string dllPath = pkgName + "." + NuPackages[pkgName];
 
-                            string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45" };
+                            string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45", "/lib/Net40", "/lib/net20" };
                             foreach (string netVersionPath in netVersionPaths)
                             {
                                 if (Directory.Exists(NugetPackagesPath + PSC + dllPath + netVersionPath))
