@@ -1,6 +1,9 @@
 OpenPetra
 =========
 
+
+(https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true)](https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true)
+
 INTRODUCTION
 ------------
 The goal of OpenPetra is to provide an easy to use software system for the administration of non-profit organisations.
