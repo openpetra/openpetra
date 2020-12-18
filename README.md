@@ -1,10 +1,8 @@
 OpenPetra
 =========
 
-
-<p>    <a href="https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true">
-        <img src="https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true"
-            alt="service-test status"></a></p>
+[![Build status](https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true)](https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 INTRODUCTION
 ------------
