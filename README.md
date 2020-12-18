@@ -2,7 +2,7 @@ OpenPetra
 =========
 
 
-[https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true](https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true)
+https://ci.appveyor.com/api/projects/status/github/openpetra/openpetra?branch=test&svg=true
 
 INTRODUCTION
 ------------
