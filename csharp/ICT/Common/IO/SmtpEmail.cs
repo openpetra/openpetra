@@ -292,7 +292,7 @@ namespace Ict.Common.IO
             }
             else
             {
-                return new MailboxAddress(AAddressWithName.Trim());
+                return MailboxAddress.Parse(AAddressWithName.Trim());
             }
         }
 
