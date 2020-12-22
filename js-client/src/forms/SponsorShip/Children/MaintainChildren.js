@@ -71,8 +71,8 @@ var MaintainChildren = new (class {
     // get data from server and show them
 
     var req = {
-      "AFirstName": filter.AFirstName ? filter.AFirstName : "",
-      "AFamilyName": filter.AFamilyName ? filter.AFamilyName : "",
+      "AChildName": filter.ChildName ? filter.ChildName : "",
+      "ADonorName": filter.DonorName ? filter.DonorName : "",
       "APartnerStatus": filter.APartnerStatus ? filter.APartnerStatus : "",
       "ASponsorshipStatus": filter.ASponsorshipStatus ? filter.ASponsorshipStatus : "",
       "ASponsorAdmin": filter.ASponsorAdmin ? filter.ASponsorAdmin : "",

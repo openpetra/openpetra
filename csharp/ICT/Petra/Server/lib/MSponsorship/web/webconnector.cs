@@ -61,8 +61,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// </summary>
         [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
         public static SponsorshipFindTDSSearchResultTable FindChildren(
-            string AFirstName,
-            string AFamilyName,
+            string AChildName,
+            string ADonorName,
             string APartnerStatus,
             string ASponsorshipStatus,
             string ASponsorAdmin,
@@ -80,9 +80,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             int CountParameters = 0;
             int Pos = 0;
-            CountParameters += (AFirstName != String.Empty ? 1 : 0);
+            CountParameters += (AChildName != String.Empty ? 1 : 0);
             CountParameters += (ASponsorshipStatus != String.Empty ? 1 : 0);
-            CountParameters += (AFamilyName != String.Empty ? 1 : 0);
             CountParameters += (ASponsorAdmin != String.Empty ? 1 : 0);
             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
 
@@ -98,21 +97,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 sql += " AND t.p_category_code_c = 'SPONSORED_CHILD_STATUS' ";
             }
 
-            if (AFirstName != String.Empty)
+            if (AChildName != String.Empty)
             {
-                sql += " AND f.p_first_name_c LIKE ?";
-                parameters[Pos] = new OdbcParameter("FirstName", OdbcType.VarChar);
-                AFirstName = '%' + AFirstName + '%';
-                parameters[Pos].Value = AFirstName;
-                Pos++;
-            }
-
-            if (AFamilyName != String.Empty)
-            {
-                sql += " AND f.p_family_name_c LIKE ?";
-                parameters[Pos] = new OdbcParameter("AFamilyName", OdbcType.VarChar);
-                AFamilyName = '%' + AFamilyName + '%';
-                parameters[Pos].Value = AFamilyName;
+                sql += " AND CONCAT(f.p_first_name_c, ' ', f.p_family_name_c) LIKE ?";
+                parameters[Pos] = new OdbcParameter("ChildName", OdbcType.VarChar);
+                AChildName = '%' + AChildName + '%';
+                parameters[Pos].Value = AChildName;
                 Pos++;
             }
 
@@ -146,6 +136,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 });
 
 
+            List<SponsorshipFindTDSSearchResultRow> childrenNotMatchingDonor = new List<SponsorshipFindTDSSearchResultRow>();
+
             foreach (SponsorshipFindTDSSearchResultRow child in result.Rows)
             {
                 sql = "SELECT DISTINCT p.* " +
@@ -158,13 +150,33 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     "AND (NOW() <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
                     "AND rg.p_donor_key_n = p.p_partner_key_n";
 
+                parameters = null;
+
+                if (ADonorName != String.Empty)
+                {
+                    parameters = new OdbcParameter[1];
+                    sql += " AND p.p_partner_short_name_c LIKE ?";
+                    parameters[0] = new OdbcParameter("ADonorName", OdbcType.VarChar);
+                    ADonorName = '%' + ADonorName + '%';
+                    parameters[0].Value = ADonorName;
+                }
+
                 PPartnerTable donors = new PPartnerTable();
 
                 db.ReadTransaction(ref t,
                     delegate
                     {
-                        db.SelectDT(donors, sql, t);
+                        db.SelectDT(donors, sql, t, parameters);
                     });
+
+                if (ADonorName != String.Empty)
+                {
+                    // drop all children that don't have a donor match
+                    if (donors.Rows.Count == 0)
+                    {
+                        childrenNotMatchingDonor.Add(child);
+                    }
+                }
 
                 bool firstName = true;
                 foreach (PPartnerRow donor in donors.Rows)
@@ -177,6 +189,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     child["DonorName"] += donor.PartnerShortName;
                     firstName = false;
                 }
+            }
+
+            foreach (SponsorshipFindTDSSearchResultRow child in childrenNotMatchingDonor)
+            {
+                result.Rows.Remove(child);
             }
 
             db.CloseDBConnection();
