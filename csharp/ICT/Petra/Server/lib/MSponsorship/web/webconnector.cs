@@ -44,6 +44,7 @@ using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 
 namespace Ict.Petra.Server.MSponsorship.WebConnectors
 {
@@ -498,6 +499,35 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             }
 
             return MainDS;
+        }
+
+        /// <summary>
+        /// delete the currently edited child
+        /// </summary>
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool DeleteChild(
+            Int64 APartnerKey,
+            Int32 ALedgerNumber,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            string SponsorshipStatus;
+            SponsorshipTDS MainDS = GetChildDetails(APartnerKey,
+                ALedgerNumber,
+                false,
+                out SponsorshipStatus);
+
+            // cannot delete if there are sponsorships
+            if (MainDS.ARecurringGiftDetail.Rows.Count != 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please manually delete the sponsorship first", "",
+                    "MaintainChildren.ErrFirstDeleteSponsorship", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            // delete the child, and the comments and reminders.
+            return TPartnerWebConnector.DeletePartner(APartnerKey, out AVerificationResult);
         }
 
         /// <summary>

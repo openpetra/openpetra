@@ -156,6 +156,28 @@ var MaintainChildren = new (class {
     $("#multi_window").attr("active", show);
   }
 
+  delete() {
+    let s = confirm( i18next.t('MaintainChildren.ask_delete_child') );
+    if (!s) {return}
+
+    var MaintainChildrenO = this;
+    var req = translate_to_server(extractData($("#detail_modal")));
+    req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
+    req["APartnerKey"] = $("input[name=p_partner_key_n]").val();
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_DeleteChild', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        } else {
+          display_message( i18next.t("forms.deleted"), "success");
+          $("#detail_modal").modal("hide");
+          MaintainChildrenO.filterShow();
+        }
+      });
+  }
+
   saveEdit() {
 
     var MaintainChildrenO = this;

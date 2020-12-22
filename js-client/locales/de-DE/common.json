@@ -707,6 +707,8 @@
         "photo": "Foto",
         "details": "Details",
         "sponsorship": "Patenschaft",
+        "ask_delete_child": "Soll das Kind wirklich gelöscht werden, mit allen Patenschaften und Notizen?",
+        "ErrFirstDeleteSponsorship": "Bitte erst die Patenschaften des Kindes löschen",
         "dates_reminder": "Daten / Erinnerungen",
         "family_situations": "Familiäre Situation",
         "school_situations": "Schulische Situation",

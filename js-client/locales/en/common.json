@@ -707,6 +707,8 @@
         "details": "Details",
         "sponsorship": "Sponsorship",
         "dates_reminder": "Dates / Reminders",
+        "ask_delete_child": "Do you really want to delete this child with all sponsorships and notes?",
+        "ErrFirstDeleteSponsorship": "Please first delete the sponsorships of the child.",
         "family_situations": "Family situations",
         "school_situations": "School situations",
         "ErrMissingSponsorshipStatus": "Please select the status",
