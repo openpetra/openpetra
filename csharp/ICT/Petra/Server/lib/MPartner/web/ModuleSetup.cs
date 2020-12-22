@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// </summary>
         /// <param name="AInspectDS"></param>
         /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static TSubmitChangesResult SavePartnerMaintenanceTables(ref PartnerSetupTDS AInspectDS)
         {
             if (AInspectDS != null)
@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// save partner types
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// save consent channels
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static bool MaintainConsentChannels(string action, string AChannelCode, string AName, string AComment, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
@@ -289,7 +289,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// save consent purposes
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static bool MaintainConsentPurposes(string action, string APurposeCode, string AName, string AComment, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
@@ -389,7 +389,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// maintain publications
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static bool MaintainPublications(string action, string APublicationCode, string APublicationDescription, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
