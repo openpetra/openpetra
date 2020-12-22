@@ -186,8 +186,8 @@ namespace Tests.MSponsorship.Server.MSponsorship
         public void SelectCreatedChild()
         {
             SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren(
-                new_child_firstname,
-                new_child_lastname,
+                new_child_firstname + ' ' + new_child_lastname,
+                "",
                 "",
                 "",
                 "",
