@@ -211,6 +211,7 @@
         "sendresetpasswordlink": "Neues Passwort",
         "sendresetpasswordlink_checkbox": "E-Mail zum Setzen des Passworts an den neuen Benutzer schicken",
         "permissions": "Berechtigungen",
+        "lastlogin": "Letzte Anmeldung",
         "locked": "Gesperrt",
         "retired": "Deaktiviert"
     },
