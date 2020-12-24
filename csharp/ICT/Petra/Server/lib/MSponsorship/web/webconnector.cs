@@ -443,7 +443,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
+
+                                    string PrimaryPhoneNumber, PrimaryEmailAddress;
+                                    PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(recurrGiftRow.DonorKey,
+                                        false, false,
+                                        out PrimaryPhoneNumber, out PrimaryEmailAddress);
+
                                     gdr.DonorName = donorRow.PartnerShortName;
+                                    gdr.DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+                                    gdr.DonorEmailAddress = PrimaryEmailAddress;
+                                    gdr.DonorPhoneNumber = PrimaryPhoneNumber;
                                     gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
 
