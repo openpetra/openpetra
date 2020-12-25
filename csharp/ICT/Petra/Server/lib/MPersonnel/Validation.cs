@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MPersonnel.Validation;
+using Ict.Petra.Server.MPersonnel.Validation;
 
 namespace Ict.Petra.Server.MPersonnel.WebConnectors
 {
@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedPersonnelValidation_Personnel.ValidateCommitmentManual("TPersonnelWebConnector" +
+                TPersonnelValidation_Personnel.ValidateCommitmentManual("TPersonnelWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PmStaffDataRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

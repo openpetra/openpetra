@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, alanP
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Validation;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
@@ -44,9 +45,9 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Server.MFinance.Validation;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Account.Validation;
+using Ict.Petra.Server.MFinance.Account.Validation;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
 namespace Ict.Petra.Server.MFinance.GL

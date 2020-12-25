@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,7 @@ using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MCommon;
-using Ict.Petra.Shared.MPersonnel.Personnel.Validation;
+using Ict.Petra.Server.MPersonnel.Personnel.Validation;
 
 namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
 {

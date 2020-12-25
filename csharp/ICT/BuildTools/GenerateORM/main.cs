@@ -147,56 +147,56 @@ namespace Ict.Tools.GenerateORM
                             "Common.Tables");
 
                         CodeGenerationTableValidation.WriteValidation(store, "partner", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MPartner/validation/",
-                            "Ict.Petra.Shared.MPartner.Partner.Validation",
+                                "outputserver") + "/lib/MPartner/validation/",
+                            "Ict.Petra.Server.MPartner.Partner.Validation",
                             "Partner.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "mailroom", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MPartner/validation/",
-                            "Ict.Petra.Shared.MPartner.Mailroom.Validation",
+                                "outputserver") + "/lib/MPartner/validation/",
+                            "Ict.Petra.Server.MPartner.Mailroom.Validation",
                             "Mailroom.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "personnel", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MPersonnel/validation/",
-                            "Ict.Petra.Shared.MPersonnel.Personnel.Validation",
+                                "outputserver") + "/lib/MPersonnel/validation/",
+                            "Ict.Petra.Server.MPersonnel.Personnel.Validation",
                             "Personnel.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "units", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MPersonnel/validation/",
-                            "Ict.Petra.Shared.MPersonnel.Units.Validation",
+                                "outputserver") + "/lib/MPersonnel/validation/",
+                            "Ict.Petra.Server.MPersonnel.Units.Validation",
                             "Units.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "conference", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MConference/validation/",
-                            "Ict.Petra.Shared.MConference.Validation",
+                                "outputserver") + "/lib/MConference/validation/",
+                            "Ict.Petra.Server.MConference.Validation",
                             "Conference.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "hospitality", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MHospitality/validation/",
-                            "Ict.Petra.Shared.MHospitality.Validation",
+                                "outputserver") + "/lib/MHospitality/validation/",
+                            "Ict.Petra.Server.MHospitality.Validation",
                             "Hospitality.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "sponsorship", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MSponsorship/validation/",
-                            "Ict.Petra.Shared.MSponsorship.Validation",
+                                "outputserver") + "/lib/MSponsorship/validation/",
+                            "Ict.Petra.Server.MSponsorship.Validation",
                             "Sponsorship.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "account", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MFinance/validation/",
-                            "Ict.Petra.Shared.MFinance.Account.Validation",
+                                "outputserver") + "/lib/MFinance/validation/",
+                            "Ict.Petra.Server.MFinance.Account.Validation",
                             "Account.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "ap", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MFinance/validation/",
-                            "Ict.Petra.Shared.MFinance.AP.Validation",
+                                "outputserver") + "/lib/MFinance/validation/",
+                            "Ict.Petra.Server.MFinance.AP.Validation",
                             "AP.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "ar", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MFinance/validation/",
-                            "Ict.Petra.Shared.MFinance.AR.Validation",
+                                "outputserver") + "/lib/MFinance/validation/",
+                            "Ict.Petra.Server.MFinance.AR.Validation",
                             "AR.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "gift", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MFinance/validation/",
-                            "Ict.Petra.Shared.MFinance.Gift.Validation",
+                                "outputserver") + "/lib/MFinance/validation/",
+                            "Ict.Petra.Server.MFinance.Gift.Validation",
                             "Gift.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "sysman", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MSysMan/validation/",
-                            "Ict.Petra.Shared.MSysMan.Validation",
+                                "outputserver") + "/lib/MSysMan/validation/",
+                            "Ict.Petra.Server.MSysMan.Validation",
                             "SysMan.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "common", cmdLine.GetOptValue(
-                                "outputshared") + "/lib/MCommon/validation/",
-                            "Ict.Petra.Shared.MCommon.Validation",
+                                "outputserver") + "/lib/MCommon/validation/",
+                            "Ict.Petra.Server.MCommon.Validation",
                             "Common.Validation");
 
                         TGenerateTableList.WriteTableList(store, cmdLine.GetOptValue(

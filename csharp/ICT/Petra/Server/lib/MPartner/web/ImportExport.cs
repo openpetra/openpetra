@@ -896,9 +896,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     SameValueButAttributeTypeMismatch = false;
 
                     // Check each Partner Contact Detail...
-                    if ((ExistingPartnerAttribDV[Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN]
+                    if ((ExistingPartnerAttribDV[Ict.Petra.Server.MPartner.Common.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN]
                          != System.DBNull.Value)
-                        && ((bool)ExistingPartnerAttribDV[Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN] ==
+                        && ((bool)ExistingPartnerAttribDV[Ict.Petra.Server.MPartner.Common.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN] ==
                             true))
                     {
                         // ... that is 'Primary' in the DB ...

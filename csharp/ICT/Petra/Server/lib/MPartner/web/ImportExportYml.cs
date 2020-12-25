@@ -6,7 +6,7 @@
 //       thomass
 //       ChristianK
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -472,7 +472,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 LocalNode = LocalNode.NextSibling;
             }
 
-            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);
+            Ict.Petra.Server.MPartner.Common.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);
         }
 
         private void ParseFinancialDetails(PartnerImportExportTDS AMainDS,

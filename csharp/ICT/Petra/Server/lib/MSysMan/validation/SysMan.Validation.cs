@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,7 +30,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 
-namespace Ict.Petra.Shared.MSysMan.Validation
+namespace Ict.Petra.Server.MSysMan.Validation
 {
     /// <summary>
     /// Contains functions for the validation of MPartner Partner DataTables.

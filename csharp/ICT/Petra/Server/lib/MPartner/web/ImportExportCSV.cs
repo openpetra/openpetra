@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,6 +46,7 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {

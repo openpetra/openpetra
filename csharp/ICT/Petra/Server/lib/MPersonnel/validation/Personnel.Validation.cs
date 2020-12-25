@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,19 +27,19 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.Validation;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Server.MPartner.Validation;
 
-namespace Ict.Petra.Shared.MPersonnel.Validation
+namespace Ict.Petra.Server.MPersonnel.Validation
 {
     /// <summary>
     /// Contains functions for the validation of MPersonnel Personnel DataTables.
     /// </summary>
-    public static partial class TSharedPersonnelValidation_Personnel
+    public static partial class TPersonnelValidation_Personnel
     {
         /// <summary>
         /// Validates the Commitment data of a Partner.

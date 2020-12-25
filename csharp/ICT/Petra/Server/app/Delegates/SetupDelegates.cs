@@ -35,10 +35,10 @@ using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Application.WebConnectors;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.Validation;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Validation;
-using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Server.MPartner.Validation;
+using Ict.Petra.Server.MFinance.Validation;
 using Ict.Petra.Server.MCommon.DataReader.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
@@ -146,13 +146,13 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
 
             TSharedDataCache.TMPartner.GetPartnerCalculationsSystemCategoryAttributeTypesDelegate =
-                @Ict.Petra.Shared.MPartner.Calculations.DetermineSystemCategoryAttributeTypes;
+                @Ict.Petra.Server.MPartner.Common.Calculations.DetermineSystemCategoryAttributeTypes;
             TSharedDataCache.TMPartner.GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate =
-                @Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributeTypes;
+                @Ict.Petra.Server.MPartner.Common.Calculations.DeterminePartnerContactDetailAttributeTypes;
             TSharedDataCache.TMPartner.GetPartnerCalculationsEmailPartnerAttributeTypesDelegate =
-                @Ict.Petra.Shared.MPartner.Calculations.DetermineEmailPartnerAttributeTypes;
+                @Ict.Petra.Server.MPartner.Common.Calculations.DetermineEmailPartnerAttributeTypes;
             TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
-                @Ict.Petra.Shared.MPartner.Calculations.DeterminePhonePartnerAttributeTypes;
+                @Ict.Petra.Server.MPartner.Common.Calculations.DeterminePhonePartnerAttributeTypes;
 
             TCacheableTablesManager.Init();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));

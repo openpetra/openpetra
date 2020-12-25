@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ using Ict.Common.Remoting.Server;
 using System.IO;
 using HtmlAgilityPack;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MReporting.MPartner
 {

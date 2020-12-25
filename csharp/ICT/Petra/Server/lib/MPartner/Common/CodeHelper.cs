@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,9 +24,10 @@
 using System;
 using System.Data;
 
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-namespace Ict.Petra.Shared.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Gets descriptions for codes in the Partner Module.

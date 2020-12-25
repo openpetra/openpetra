@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -144,7 +144,7 @@ namespace Ict.Petra.Shared.MPartner
     }
 
     /// different ways to format the shortname of a partner
-    /// used eg by Ict.Petra.Shared.MPartner.Calculations.FormatShortName()
+    /// used eg by Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName()
     public enum eShortNameFormat
     {
         /// lastname, firstname, title

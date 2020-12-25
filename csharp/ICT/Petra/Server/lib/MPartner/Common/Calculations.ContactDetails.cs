@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,13 +29,14 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Exceptions;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-namespace Ict.Petra.Shared.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Contains functions to be used by the Server and the Client that perform

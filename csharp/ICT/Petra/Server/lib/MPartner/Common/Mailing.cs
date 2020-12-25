@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -365,8 +365,8 @@ namespace Ict.Petra.Server.MPartner.Common
                     // find all locations of the partner, put it into a dataset
                     PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, Transaction);
 
-                    Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
-                    Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationsDS);
+                    Ict.Petra.Server.MPartner.Common.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
+                    Ict.Petra.Server.MPartner.Common.Calculations.DetermineBestAddress(PartnerLocationsDS);
 
                     foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
                     {

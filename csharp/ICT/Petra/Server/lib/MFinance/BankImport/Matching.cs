@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance.BankImport.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.BankImport.Data.Access;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.App.Core;

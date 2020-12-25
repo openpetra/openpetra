@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +35,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Data;
 
-namespace Ict.Petra.Shared.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Contains functions to be used by the Server and the Client that perform
@@ -65,7 +65,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>
         /// Specifies how to format the String that is returned by Method
-        /// <see cref="M:Ict.Petra.Shared.MPartner.Calculations.DetermineLocationString(Ict.Petra.Shared.MPartner.Partner.Data.PLocationRow, Ict.Petra.Shared.MPartner.Calculations.TPartnerLocationFormatEnum)" />.
+        /// <see cref="M:Ict.Petra.Server.MPartner.Common.Calculations.DetermineLocationString(Ict.Petra.Shared.MPartner.Partner.Data.PLocationRow, Ict.Petra.Shared.MPartner.Calculations.TPartnerLocationFormatEnum)" />.
         /// </summary>
         public enum TPartnerLocationFormatEnum
         {

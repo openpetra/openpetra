@@ -14,7 +14,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.Validation;
 using {#DATATABLENAMESPACE};
 
 namespace {#NAMESPACE}

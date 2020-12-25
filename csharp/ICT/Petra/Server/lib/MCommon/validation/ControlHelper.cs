@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 
-namespace Ict.Petra.Shared.MCommon.Validation
+namespace Ict.Petra.Server.MCommon.Validation
 {
     /// <summary>
     /// Contains helper functions for the shared validation of data, specific to Controls.

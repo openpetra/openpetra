@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm, alanP
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,9 +41,9 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Shared.MFinance.Gift.Validation;
+using Ict.Petra.Server.MFinance.Gift.Validation;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Server.MFinance.Validation;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared;

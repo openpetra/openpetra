@@ -29,7 +29,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 
-namespace Ict.Petra.Shared.MCommon.Validation
+namespace Ict.Petra.Server.MCommon.Validation
 {
     /// <summary>
     /// Contains helper functions for the shared validation of data.

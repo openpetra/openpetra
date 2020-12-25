@@ -40,7 +40,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Shared.MSysMan.Validation;
+using Ict.Petra.Server.MSysMan.Validation;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MSysMan.Data.Access;

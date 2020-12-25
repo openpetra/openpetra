@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop, alanP
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,13 +30,14 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.Validation;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Server.MPartner.Validation;
 
-namespace Ict.Petra.Shared.MFinance.Validation
+namespace Ict.Petra.Server.MFinance.Validation
 {
     /// <summary>
     /// Contains functions for the validation of MFinance Gift DataTables.

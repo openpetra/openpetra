@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 
-namespace Ict.Petra.Shared.MCommon.Validation
+namespace Ict.Petra.Server.MCommon.Validation
 {
     /// <summary>
     /// Contains functions for the validation of Cacheable DataTables.

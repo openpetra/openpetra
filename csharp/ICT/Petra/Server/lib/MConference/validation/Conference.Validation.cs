@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,10 +29,10 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.Validation;
 using Ict.Petra.Shared.MConference.Data;
 
-namespace Ict.Petra.Shared.MConference.Validation
+namespace Ict.Petra.Server.MConference.Validation
 {
     /// <summary>
     /// Contains functions for the validation of Conference DataTables.

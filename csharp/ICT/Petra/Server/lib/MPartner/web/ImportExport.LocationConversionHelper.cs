@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -151,7 +151,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     break;
                 }
-                else if (AImportedPartnerAttribRow.AttributeType == Ict.Petra.Shared.MPartner.Calculations.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD)
+                else if (AImportedPartnerAttribRow.AttributeType == Ict.Petra.Server.MPartner.Common.Calculations.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD)
                 {
                     // This *is* the same Partner Attribute!
                     AFoundPartnerAttribDR = ExistingPartnerAttributeDT[Counter];

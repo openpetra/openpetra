@@ -36,6 +36,7 @@ using Ict.Common.Remoting.Server;
 using System.IO;
 using HtmlAgilityPack;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MReporting.MPartner
 {

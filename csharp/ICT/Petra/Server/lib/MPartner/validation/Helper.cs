@@ -30,7 +30,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Shared;
 
-namespace Ict.Petra.Shared.MPartner.Validation
+namespace Ict.Petra.Server.MPartner.Validation
 {
     /// <summary>
     /// Contains helper functions for the shared validation of Partner data.
