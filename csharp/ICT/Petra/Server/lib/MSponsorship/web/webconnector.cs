@@ -444,15 +444,18 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
 
-                                    string PrimaryPhoneNumber, PrimaryEmailAddress;
+                                    List<string> Subscriptions;
+                                    List<string> PartnerTypes;
+
+                                    string DefaultEmailAddress, DefaultPhoneMobile, DefaultPhoneLandline;
                                     PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(recurrGiftRow.DonorKey,
-                                        false, false,
-                                        out PrimaryPhoneNumber, out PrimaryEmailAddress);
+                                        out Subscriptions, out PartnerTypes,
+                                        out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline);
 
                                     gdr.DonorName = donorRow.PartnerShortName;
                                     gdr.DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
-                                    gdr.DonorEmailAddress = PrimaryEmailAddress;
-                                    gdr.DonorPhoneNumber = PrimaryPhoneNumber;
+                                    gdr.DonorEmailAddress = DefaultEmailAddress;
+                                    gdr.DonorPhoneNumber = (DefaultPhoneLandline + " " + DefaultPhoneMobile).Trim();
                                     gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
 
