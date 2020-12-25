@@ -34,7 +34,7 @@ namespace Ict.Petra.Server.MCommon.Validation
     /// <summary>
     /// Contains helper functions for the shared validation of data.
     /// </summary>
-    public static class TSharedValidationHelper
+    public static class TValidationHelper
     {
         /// <summary>
         /// Delegate for invoking the simple data reader.

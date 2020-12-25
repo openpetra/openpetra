@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MPartner.Validation
     /// <summary>
     /// Contains functions for the validation of MPartner Partner DataTables.
     /// </summary>
-    public static partial class TSharedPartnerValidation_Partner
+    public static partial class TPartnerValidation_Partner
     {
         /// <summary>todoComment</summary>
         private static readonly string StrBICSwiftCodeInvalid = Catalog.GetString(
@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                             || (TypeRow.AssignableDate <= DateTime.Today)))
                     {
                         // if 'Marital Status' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PPersonTable.GetMaritalStatusDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PPersonTable.GetMaritalStatusDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -210,7 +210,7 @@ namespace Ict.Petra.Server.MPartner.Validation
 
             if (true)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MaritalStatusSince,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.MaritalStatusSince,
                     String.Empty, AVerificationResultCollection, false,
                     AContext, ValidationColumn);
 
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                             || (TypeRow.AssignableDate <= DateTime.Today)))
                     {
                         // if 'Marital Status' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PFamilyTable.GetMaritalStatusDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PFamilyTable.GetMaritalStatusDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -305,7 +305,7 @@ namespace Ict.Petra.Server.MPartner.Validation
 
             if (true)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MaritalStatusSince,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.MaritalStatusSince,
                     String.Empty, AVerificationResultCollection, false,
                     AContext, ValidationColumn);
 
@@ -371,7 +371,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                         && !DenominationRow.ValidDenomination)
                     {
                         // if 'Denomination' is invalid then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PChurchTable.GetDenominationCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PChurchTable.GetDenominationCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -781,7 +781,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                 if (!(AValidateForNewPartner
                       && (APartnerKey == ARow.PartnerKey)))
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                    VerificationResult = TPartnerValidation_Partner.IsValidPartner(
                         ARow.PartnerKey,
                         new TPartnerClass[] { },
                         false, false, "",
@@ -821,7 +821,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                 if (!(AValidateForNewPartner
                       && (APartnerKey == ARow.RelationKey)))
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                    VerificationResult = TPartnerValidation_Partner.IsValidPartner(
                         ARow.RelationKey,
                         new TPartnerClass[] { },
                         false, false, "",
@@ -926,7 +926,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                 string ShortName;
                 TPartnerClass partnerClass;
                 TStdPartnerStatusCode partnerStatus;
-                bool VerificationOK = TSharedPartnerValidationHelper.VerifyPartner(APartnerKey, AValidPartnerClasses, out PartnerExists,
+                bool VerificationOK = TPartnerValidationHelper.VerifyPartner(APartnerKey, AValidPartnerClasses, out PartnerExists,
                     out ShortName, out partnerClass, out partnerStatus);
 
                 if (!VerificationOK)
@@ -978,7 +978,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                 } // !VerificationOK
                 else // Partner exists and it's the right class..
                 {
-                    if (AMustBeActive && !TSharedPartnerValidationHelper.PartnerHasActiveStatus(APartnerKey))
+                    if (AMustBeActive && !TPartnerValidationHelper.PartnerHasActiveStatus(APartnerKey))
                     {
                         ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                                 PetraErrorCodes.ERR_PARTNER_NOT_ACTIVE, new string[] { APartnerKey.ToString("0000000000") }));
@@ -1010,7 +1010,7 @@ namespace Ict.Petra.Server.MPartner.Validation
         {
             TVerificationResult ReturnValue = null;
 
-            bool VerificationOK = TSharedPartnerValidationHelper.PartnerOfTypeCCIsLinked(ALedgerNumber, APartnerKey);
+            bool VerificationOK = TPartnerValidationHelper.PartnerOfTypeCCIsLinked(ALedgerNumber, APartnerKey);
 
             if (!VerificationOK)
             {
@@ -1047,7 +1047,7 @@ namespace Ict.Petra.Server.MPartner.Validation
         {
             TVerificationResult ReturnValue = null;
 
-            bool VerificationOK = TSharedPartnerValidationHelper.PartnerHasCurrentGiftDestination(APartnerKey, AGiftDate);
+            bool VerificationOK = TPartnerValidationHelper.PartnerHasCurrentGiftDestination(APartnerKey, AGiftDate);
 
             if (!VerificationOK)
             {
@@ -1165,7 +1165,7 @@ namespace Ict.Petra.Server.MPartner.Validation
 
             if (true)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MailingDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.MailingDate,
                     String.Empty, AVerificationResultCollection, false,
                     AContext, ValidationColumn);
 
@@ -1444,7 +1444,7 @@ namespace Ict.Petra.Server.MPartner.Validation
                             || (RelationCategoryRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Relationship Category' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PRelationTable.GetRelationCategoryDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PRelationTable.GetRelationCategoryDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -1797,7 +1797,7 @@ namespace Ict.Petra.Server.MPartner.Validation
 
             if (true)
             {
-                if (!TSharedPartnerValidationHelper.PartnerIsLinkedToCC(ARow.FieldKey))
+                if (!TPartnerValidationHelper.PartnerIsLinkedToCC(ARow.FieldKey))
                 {
                     VerificationResult = new TScreenVerificationResult(AContext, ValidationColumn,
                         String.Format(
@@ -2131,7 +2131,7 @@ namespace Ict.Petra.Server.MPartner.Validation
             {
                 if (ARow.Unassignable)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }

@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
             if (true)
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                VerificationResult = TPartnerValidation_Partner.IsValidUNITPartner(
                     ARow.ReceivingField, false, THelper.NiceValueDescription(
                         String.Empty) + " must be set correctly.",
                     AContext, ValidationColumn);
@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
             if (true)
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(ARow.HomeOffice, false,
+                VerificationResult = TPartnerValidation_Partner.IsValidUNITPartner(ARow.HomeOffice, false,
                     THelper.NiceValueDescription(String.Empty) + " must be set correctly.",
                     AContext, ValidationColumn);
 
@@ -99,7 +99,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
             if (true)
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(ARow.OfficeRecruitedBy, false,
+                VerificationResult = TPartnerValidation_Partner.IsValidUNITPartner(ARow.OfficeRecruitedBy, false,
                     THelper.NiceValueDescription(String.Empty) + " must be set correctly.",
                     AContext, ValidationColumn);
 
@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
             if (true)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.FromDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.FromDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
 
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
             if (true)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.ToDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.ToDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
 
@@ -209,7 +209,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
             if (true)
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                VerificationResult = TPartnerValidation_Partner.IsValidUNITPartner(
                     ARow.UnitKey, false, THelper.NiceValueDescription(
                         String.Empty) + " must be set correctly.",
                     AContext, ValidationColumn);
@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (TypeRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Assignment Type' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmJobAssignmentTable.GetAssignmentTypeCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmJobAssignmentTable.GetAssignmentTypeCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -283,7 +283,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (PositionRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Position' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmJobAssignmentTable.GetPositionNameDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmJobAssignmentTable.GetPositionNameDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -393,7 +393,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (TypeRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Passport Type' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPassportDetailsTable.GetPassportDetailsTypeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmPassportDetailsTable.GetPassportDetailsTypeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -450,7 +450,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (DocTypeRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Document Type' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTable.GetDocCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTable.GetDocCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -554,7 +554,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (LanguageLevelRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Language Level' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonLanguageTable.GetLanguageLevelDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonLanguageTable.GetLanguageLevelDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -612,7 +612,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (CategoryRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Skill Category' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonSkillTable.GetSkillCategoryCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonSkillTable.GetSkillCategoryCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -649,7 +649,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (LevelRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Skill Level' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonSkillTable.GetSkillLevelDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonSkillTable.GetSkillLevelDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -773,7 +773,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
             if (true)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.EvaluationDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.EvaluationDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
 
@@ -790,7 +790,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
                 if (ARow.EvaluationType != "Leaving")
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.NextEvaluationDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.NextEvaluationDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -916,7 +916,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (AppTypeRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Application Type' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetAppTypeNameDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetAppTypeNameDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -953,7 +953,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (AppStatusRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Application Status' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenApplicationStatusDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenApplicationStatusDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -994,7 +994,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                                 || (ContactRow.UnassignableDate <= DateTime.Today)))
                         {
                             // if 'Contact' is unassignable then check if the value has been changed or if it is a new record
-                            if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact1DBName()))
+                            if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact1DBName()))
                             {
                                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                         ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -1032,7 +1032,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                                 || (ContactRow.UnassignableDate <= DateTime.Today)))
                         {
                             // if 'Contact' is unassignable then check if the value has been changed or if it is a new record
-                            if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact2DBName()))
+                            if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact2DBName()))
                             {
                                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                         ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -1064,7 +1064,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                     }
                     else
                     {
-                        VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                        VerificationResult = TPartnerValidation_Partner.IsValidUNITPartner(
                             ARow.GenAppPossSrvUnitKey, false, THelper.NiceValueDescription(
                                 String.Empty) + " must be set correctly.",
                             AContext, ValidationColumn);
@@ -1155,7 +1155,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                 }
                 else
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                    VerificationResult = TPartnerValidation_Partner.IsValidUNITPartner(
                         ARow.StConfirmedOption, false, THelper.NiceValueDescription(
                             String.Empty) + " must be set correctly.",
                         AContext, ValidationColumn);
@@ -1171,7 +1171,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
             // 'Charged Field' must be a Partner of Class 'UNIT'
             //
             // HOWEVER, 'null' is a perfectly valid value for 'Charged Field' (according to WolfgangB).
-            // If it is null then we must not call TSharedPartnerValidation_Partner.IsValidUNITPartner
+            // If it is null then we must not call TPartnerValidation_Partner.IsValidUNITPartner
             // as the attempt to retrieve 'ARow.StFieldCharged' would result in
             // 'System.Data.StrongTypingException("Error: DB null", null)'!!!
             if (!ARow.IsStFieldChargedNull())
@@ -1180,7 +1180,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
 
                 if (true)
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                    VerificationResult = TPartnerValidation_Partner.IsValidUNITPartner(
                         ARow.StFieldCharged, true, THelper.NiceValueDescription(
                             String.Empty) + " must be set correctly.",
                         AContext, ValidationColumn);
@@ -1216,7 +1216,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (TravelTypeRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Arrival Method' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetTravelTypeToCongCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetTravelTypeToCongCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -1253,7 +1253,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (TravelTypeRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Departure Method' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetTravelTypeFromCongCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetTravelTypeFromCongCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -1356,7 +1356,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (ArrivalPointRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Contact' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetArrivalPointCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetArrivalPointCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -1394,7 +1394,7 @@ namespace Ict.Petra.Server.MPersonnel.Validation
                             || (ArrivalPointRow.UnassignableDate <= DateTime.Today)))
                     {
                         // if 'Arrival Point' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetDeparturePointCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetDeparturePointCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,

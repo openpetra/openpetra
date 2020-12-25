@@ -358,7 +358,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
             if (AInitialPassword != String.Empty)
             {
                 // check if password is valid, it meets the criteria
-                if (!TSharedSysManValidation.CheckPasswordQuality(AInitialPassword, out VerificationResult))
+                if (!TSysManValidation.CheckPasswordQuality(AInitialPassword, out VerificationResult))
                 {
                     AVerificationResult.Add(VerificationResult);
                     return false;

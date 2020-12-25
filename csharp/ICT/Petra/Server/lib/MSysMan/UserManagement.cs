@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             AVerification = new TVerificationResultCollection();
 
             // Password quality check
-            if (!TSharedSysManValidation.CheckPasswordQuality(ANewPassword, out VerificationResult))
+            if (!TSysManValidation.CheckPasswordQuality(ANewPassword, out VerificationResult))
             {
                 AVerification.Add(VerificationResult);
 
@@ -227,7 +227,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             // Password quality check
-            if (!TSharedSysManValidation.CheckPasswordQuality(ANewPassword, out VerificationResult))
+            if (!TSysManValidation.CheckPasswordQuality(ANewPassword, out VerificationResult))
             {
                 AVerification.Add(VerificationResult);
 
@@ -1279,7 +1279,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // Password quality check
             TVerificationResult VerificationResult;
-            if (!TSharedSysManValidation.CheckPasswordQuality(APassword, out VerificationResult))
+            if (!TSysManValidation.CheckPasswordQuality(APassword, out VerificationResult))
             {
                 AVerification.Add(VerificationResult);
                 return false;

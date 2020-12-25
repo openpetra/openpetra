@@ -37,7 +37,7 @@ namespace Ict.Petra.Server.MFinance.Validation
     /// <summary>
     /// Contains functions for the validation of MFinance GL DataTables.
     /// </summary>
-    public static partial class TSharedFinanceValidation_GLSetup
+    public static partial class TFinanceValidation_GLSetup
     {
         /// <summary>
         /// Validates the Daily Exchange Rates screen data.
@@ -98,7 +98,7 @@ namespace Ict.Petra.Server.MFinance.Validation
 
             if (true)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.DateEffectiveFrom,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.DateEffectiveFrom,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
 

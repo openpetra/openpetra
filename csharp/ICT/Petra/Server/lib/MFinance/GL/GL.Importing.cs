@@ -342,7 +342,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                         // Now do the additional manual validation
                                         ImportMessage = Catalog.GetString("Additional validation of the batch data");
-                                        TSharedFinanceValidation_GL.ValidateGLBatchManual(this, NewBatch, ref Messages);
+                                        TFinanceValidation_GL.ValidateGLBatchManual(this, NewBatch, ref Messages);
 
                                         for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
                                         {
@@ -451,7 +451,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                         // Now do the additional manual validation
                                         ImportMessage = Catalog.GetString("Additional validation of the journal data");
-                                        TSharedFinanceValidation_GL.ValidateGLJournalManual(this, NewJournal, ref Messages,
+                                        TFinanceValidation_GL.ValidateGLJournalManual(this, NewJournal, ref Messages,
                                             SetupDS, CurrencyTable,
                                             CorporateExchangeRateTable, LedgerBaseCurrency, LedgerIntlCurrency);
 
@@ -508,7 +508,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                             // (There may possibly be others between then and the effective date)
                                             DateTime firstDayOfMonth;
 
-                                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournal.DateEffective,
+                                            if (TFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournal.DateEffective,
                                                     out firstDayOfMonth, db))
                                             {
                                                 TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency,
@@ -885,8 +885,8 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 // This needs to be initialised because we will be calling the method
-                TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
-                TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
+                TFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
+                TFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
 
                 db.WriteTransaction(ref Transaction, ref submissionOK,
                     delegate
@@ -936,7 +936,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             string intlCurrency = LedgerTable[0].IntlCurrency;
                             string baseCurrency = LedgerTable[0].BaseCurrency;
 
-                            if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournalRow.DateEffective,
+                            if (TFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ALedgerNumber, NewJournalRow.DateEffective,
                                     out firstDayOfMonth, db))
                             {
                                 TExchangeRateTools.GetCorporateExchangeRate(baseCurrency, intlCurrency, firstDayOfMonth,
@@ -1380,7 +1380,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 // And do the additional manual ones
                 AImportMessage = Catalog.GetString("Additional validation of the transaction data");
-                TSharedFinanceValidation_GL.ValidateGLDetailManual(this,
+                TFinanceValidation_GL.ValidateGLDetailManual(this,
                     ANewBatchRow,
                     NewTransaction,
                     ref AMessages,

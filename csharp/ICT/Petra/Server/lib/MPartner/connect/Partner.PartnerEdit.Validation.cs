@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedPartnerValidation_Partner.ValidatePartnerManual("TPartnerEditUIConnector" +
+                TPartnerValidation_Partner.ValidatePartnerManual("TPartnerEditUIConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PPartnerRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedPartnerValidation_Partner.ValidatePartnerBankManual("TPartnerEditUIConnector" +
+                TPartnerValidation_Partner.ValidatePartnerBankManual("TPartnerEditUIConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PBankRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

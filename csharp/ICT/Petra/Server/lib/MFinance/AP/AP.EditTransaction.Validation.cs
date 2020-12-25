@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedFinanceValidation_AP.ValidateApDocumentDetailManual("TTransactionWebConnector" +
+                TFinanceValidation_AP.ValidateApDocumentDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (AApDocumentDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

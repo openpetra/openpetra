@@ -36,7 +36,7 @@ namespace Ict.Petra.Server.MConference.Validation
     /// <summary>
     /// Contains functions for the validation of Cacheable DataTables.
     /// </summary>
-    public static partial class TSharedValidation_CacheableDataTables
+    public static partial class TValidation_CacheableDataTables
     {
         /// <summary>
         /// Validates the MPartner Marital Status screen data.
@@ -64,7 +64,7 @@ namespace Ict.Petra.Server.MConference.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }

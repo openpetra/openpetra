@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Tim Ingham
+//       Tim Ingham, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
     /// <summary>
     /// Contains functions for the validation of MFinance Maintain Table screens.
     /// </summary>
-    public static partial class TSharedFinanceValidation_Setup
+    public static partial class TFinanceValidation_Setup
     {
         /// <summary>
         /// Check that Foreign Currency Accounts are using a valid currency

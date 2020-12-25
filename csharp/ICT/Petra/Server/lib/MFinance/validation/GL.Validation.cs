@@ -38,7 +38,7 @@ namespace Ict.Petra.Server.MFinance.Validation
     /// <summary>
     /// Contains functions for the validation of MFinance GL DataTables.
     /// </summary>
-    public static partial class TSharedFinanceValidation_GL
+    public static partial class TFinanceValidation_GL
     {
         /// <summary>
         /// Validates the GL Batch data.
@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MFinance.Validation
 
             if ((AStartDateCurrentPeriod == null) || (AEndDateLastForwardingPeriod == null))
             {
-                TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+                TFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
                     out StartDateCurrentPeriod,
                     out EndDateLastForwardingPeriod);
             }
@@ -126,7 +126,7 @@ namespace Ict.Petra.Server.MFinance.Validation
             int VerifResultCollAddedCount = 0;
 
             // 'Reversal Date' must be a valid date
-            TVerificationResult Result = TSharedValidationControlHelper.IsNotInvalidDate(ABatchDate,
+            TVerificationResult Result = TValidationControlHelper.IsNotInvalidDate(ABatchDate,
                 ADescription, AVerificationResultCollection, true,
                 null);
 
@@ -285,7 +285,7 @@ namespace Ict.Petra.Server.MFinance.Validation
                 {
                     DateTime firstOfMonth;
 
-                    if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ARow.LedgerNumber,
+                    if (TFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ARow.LedgerNumber,
                             ARow.DateEffective, out firstOfMonth))
                     {
                         ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
@@ -482,7 +482,7 @@ namespace Ict.Petra.Server.MFinance.Validation
             {
                 DateTime StartDatePeriod;
                 DateTime EndDatePeriod;
-                TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, ABatchRow.BatchYear, 0, ABatchRow.BatchPeriod,
+                TFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, ABatchRow.BatchYear, 0, ABatchRow.BatchPeriod,
                     out StartDatePeriod,
                     out EndDatePeriod);
 

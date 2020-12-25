@@ -36,7 +36,7 @@ namespace Ict.Petra.Server.MCommon.Validation
     /// <summary>
     /// Contains functions for the validation of MCommon DataTables.
     /// </summary>
-    public static class TSharedCommonValidation
+    public static class TCommonValidation
     {
         /// <summary>
         /// Checks whether an International Postal Type is valid. Null values are accepted.
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (AInternatPostalTypeCode != String.Empty)
                 {
-                    TSharedValidationHelper.GetData(PInternationalPostalTypeTable.GetTableDBName(), null, out IntPostalDT);
+                    TValidationHelper.GetData(PInternationalPostalTypeTable.GetTableDBName(), null, out IntPostalDT);
 
                     if (IntPostalDT.Rows.Find(new object[] { AInternatPostalTypeCode }) == null)
                     {

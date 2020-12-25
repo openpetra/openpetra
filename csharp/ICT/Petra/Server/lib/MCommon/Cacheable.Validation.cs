@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedValidation_CacheableDataTables.ValidateCountrySetupManual(this.GetType().Name +
+                TValidation_CacheableDataTables.ValidateCountrySetupManual(this.GetType().Name +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PCountryRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

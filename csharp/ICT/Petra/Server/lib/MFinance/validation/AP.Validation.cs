@@ -34,7 +34,7 @@ namespace Ict.Petra.Server.MFinance.Validation
     /// <summary>
     /// Contains functions for the validation of MFinance AP DataTables.
     /// </summary>
-    public static partial class TSharedFinanceValidation_AP
+    public static partial class TFinanceValidation_AP
     {
         /// <summary>
         /// Detail 'Amount' must be positive or 0

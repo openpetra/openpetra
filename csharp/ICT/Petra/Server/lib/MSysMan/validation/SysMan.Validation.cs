@@ -35,7 +35,7 @@ namespace Ict.Petra.Server.MSysMan.Validation
     /// <summary>
     /// Contains functions for the validation of MPartner Partner DataTables.
     /// </summary>
-    public static partial class TSharedSysManValidation
+    public static partial class TSysManValidation
     {
         /// <summary>
         /// Validates SUser Details

@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MFinance.Validation
     /// <summary>
     /// Contains functions for the validation of MFinance Gift DataTables.
     /// </summary>
-    public static partial class TSharedFinanceValidation_Gift
+    public static partial class TFinanceValidation_Gift
     {
         /// <summary>
         /// Validates the Gift Batch data.
@@ -316,7 +316,7 @@ namespace Ict.Petra.Server.MFinance.Validation
 
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
-            TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+            TFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod);
 
@@ -343,7 +343,7 @@ namespace Ict.Petra.Server.MFinance.Validation
                 {
                     DateTime firstOfMonth;
 
-                    if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ARow.LedgerNumber, ARow.GlEffectiveDate, out firstOfMonth))
+                    if (TFinanceValidationHelper.GetFirstDayOfAccountingPeriod(ARow.LedgerNumber, ARow.GlEffectiveDate, out firstOfMonth))
                     {
                         ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
                             new object[] { ABaseCurrency, AInternationalCurrency, firstOfMonth });
@@ -446,7 +446,7 @@ namespace Ict.Petra.Server.MFinance.Validation
             // Check if valid recipient
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientKeyId];
 
-            VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
+            VerificationResult = (TScreenVerificationResult)TPartnerValidation_Partner.IsValidPartner(
                 ARow.RecipientKey,
                 new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
                 true, // Must Be Active
@@ -465,7 +465,7 @@ namespace Ict.Petra.Server.MFinance.Validation
             //Check for links if recipient is partner of type CC
             TScreenVerificationResult VerificationResult2 = null;
 
-            VerificationResult2 = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartnerLinks(ARow.LedgerNumber,
+            VerificationResult2 = (TScreenVerificationResult)TPartnerValidation_Partner.IsValidPartnerLinks(ARow.LedgerNumber,
                 ARow.RecipientKey,
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
@@ -728,7 +728,7 @@ namespace Ict.Petra.Server.MFinance.Validation
 
                 //if ((ARow.RecipientKey > 0) && ValidPartner)
                 //{
-                //    VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidRecipientGiftDestination(
+                //    VerificationResult = (TScreenVerificationResult)TPartnerValidation_Partner.IsValidRecipientGiftDestination(
                 //        ARow.RecipientKey,
                 //        ARow.DateEntered,
                 //        THelper.NiceValueDescription(ValidationContext.ToString()),
@@ -1095,7 +1095,7 @@ namespace Ict.Petra.Server.MFinance.Validation
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber);
 
-            VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
+            VerificationResult = (TScreenVerificationResult)TPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey,
                 new TPartnerClass[] { },
                 true, // Must Be Active
@@ -1119,7 +1119,7 @@ namespace Ict.Petra.Server.MFinance.Validation
 
                 DateTime StartDateCurrentPeriod;
                 DateTime EndDateCurrentPeriod;
-                TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, AYear, 0, APeriod,
+                TFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, AYear, 0, APeriod,
                     out StartDateCurrentPeriod,
                     out EndDateCurrentPeriod);
 
@@ -1332,7 +1332,7 @@ namespace Ict.Petra.Server.MFinance.Validation
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber);
 
-            VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
+            VerificationResult = (TScreenVerificationResult)TPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey,
                 new TPartnerClass[] { },
                 false, // Must Be Active
@@ -1392,7 +1392,7 @@ namespace Ict.Petra.Server.MFinance.Validation
             // Check if valid recipient
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnRecipientKeyId];
 
-            VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
+            VerificationResult = (TScreenVerificationResult)TPartnerValidation_Partner.IsValidPartner(
                 ARow.RecipientKey,
                 new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
                 false, // Must Be Active
@@ -1411,7 +1411,7 @@ namespace Ict.Petra.Server.MFinance.Validation
             //Check for links if recipient is partner of type CC
             TScreenVerificationResult VerificationResult2 = null;
 
-            VerificationResult2 = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartnerLinks(ARow.LedgerNumber,
+            VerificationResult2 = (TScreenVerificationResult)TPartnerValidation_Partner.IsValidPartnerLinks(ARow.LedgerNumber,
                 ARow.RecipientKey,
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
@@ -1656,7 +1656,7 @@ namespace Ict.Petra.Server.MFinance.Validation
                         && !MotivationGroupPointRow.GroupStatus)
                     {
                         // if 'Motivation Group' is unassignable then check if the value has been changed or if it is a new record
-                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, AMotivationDetailTable.GetMotivationGroupCodeDBName()))
+                        if (TValidationHelper.IsRowAddedOrFieldModified(ARow, AMotivationDetailTable.GetMotivationGroupCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,

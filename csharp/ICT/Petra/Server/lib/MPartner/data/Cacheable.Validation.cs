@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             {
                 if (ASubmitTable.Rows[Counter].RowState != DataRowState.Deleted)
                 {
-                    TSharedValidation_CacheableDataTables.ValidateMaritalStatus(this.GetType().Name +
+                    TValidation_CacheableDataTables.ValidateMaritalStatus(this.GetType().Name +
                         " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                         (PtMaritalStatusRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
                 }

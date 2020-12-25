@@ -141,12 +141,12 @@ VerificationResult = TNumericalChecks.IsNumberPrecisionNotExceeded(ARow.{#COLUMN
     AContext, ValidationColumn);
 
 {##CHECKEMPTYDATE}
-VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
+VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
     String.Empty, AVerificationResultCollection, true,
     AContext, ValidationColumn);
 
 {##CHECKVALIDDATE}
-VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
+VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
     String.Empty, AVerificationResultCollection, false,
     AContext, ValidationColumn);
     

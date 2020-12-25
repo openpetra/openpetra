@@ -34,7 +34,7 @@ namespace Ict.Petra.Server.MCommon.Validation
     /// <summary>
     /// Contains helper functions for the shared validation of data, specific to Controls.
     /// </summary>
-    public static class TSharedValidationControlHelper
+    public static class TValidationControlHelper
     {
         /// <summary>
         /// Checks wheter a given DateTime is an invalid date. A check whether it is an undefined DateTime is always performed.

@@ -34,7 +34,7 @@ namespace Ict.Petra.Server.MFinance.Validation
     /// <summary>
     /// Contains helper functions for the shared validation of Finance data.
     /// </summary>
-    public static class TSharedFinanceValidationHelper
+    public static class TFinanceValidationHelper
     {
         /// <summary>
         /// Delegate for invoking the process of finding the valid start and end dates for the specified Ledger.

@@ -103,15 +103,15 @@ namespace Ict.Petra.Server.App.Delegates
         /// </summary>
         public static void Init()
         {
-            TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
-            TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
-            TSharedPartnerValidationHelper.PartnerHasActiveStatusDelegate = @TPartnerServerLookups.PartnerHasActiveStatus;
-            TSharedPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TPartnerServerLookups.PartnerIsLinkedToCC;
-            TSharedPartnerValidationHelper.PartnerOfTypeCCIsLinkedDelegate = @TPartnerServerLookups.PartnerOfTypeCCIsLinked;
-            TSharedPartnerValidationHelper.PartnerHasCurrentGiftDestinationDelegate = @TPartnerServerLookups.PartnerHasCurrentGiftDestination;
-            TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
-            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
-            TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
+            TValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
+            TPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
+            TPartnerValidationHelper.PartnerHasActiveStatusDelegate = @TPartnerServerLookups.PartnerHasActiveStatus;
+            TPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TPartnerServerLookups.PartnerIsLinkedToCC;
+            TPartnerValidationHelper.PartnerOfTypeCCIsLinkedDelegate = @TPartnerServerLookups.PartnerOfTypeCCIsLinked;
+            TPartnerValidationHelper.PartnerHasCurrentGiftDestinationDelegate = @TPartnerServerLookups.PartnerHasCurrentGiftDestination;
+            TFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookupWebConnector.GetCurrentPostingRangeDates;
+            TFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
+            TFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;
 
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on server side

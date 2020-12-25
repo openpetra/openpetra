@@ -39,7 +39,7 @@ namespace Ict.Petra.Server.MCommon.Validation
     /// <summary>
     /// Contains functions for the validation of Cacheable DataTables.
     /// </summary>
-    public static partial class TSharedValidation_CacheableDataTables
+    public static partial class TValidation_CacheableDataTables
     {
         /// <summary>
         /// Validates the Setup Countries screen data.
@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             // 'International Postal Type' must be in 'p_international_postal_type' DB Table (this DB Table is not a Cacheable DataTable)
             ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatPostalTypeCodeId];
 
-            VerificationResult = TSharedCommonValidation.IsValidInternationalPostalCode(ARow.InternatPostalTypeCode,
+            VerificationResult = TCommonValidation.IsValidInternationalPostalCode(ARow.InternatPostalTypeCode,
                 String.Empty,
                 AContext, ValidationColumn);
 
@@ -285,7 +285,7 @@ namespace Ict.Petra.Server.MCommon.Validation
 
             if (!ARow.AssignableFlag)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.AssignableDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.AssignableDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
             }
@@ -318,7 +318,7 @@ namespace Ict.Petra.Server.MCommon.Validation
 
             if (ARow.UnassignableFlag)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
             }
@@ -391,7 +391,7 @@ namespace Ict.Petra.Server.MCommon.Validation
 
             if (ARow.UnassignableFlag)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
             }
@@ -424,7 +424,7 @@ namespace Ict.Petra.Server.MCommon.Validation
 
             if (ARow.UnassignableFlag)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
             }
@@ -459,7 +459,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -495,7 +495,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -531,7 +531,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -567,7 +567,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -603,7 +603,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -639,7 +639,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.QualificationFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.QualificationDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.QualificationDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -675,7 +675,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -711,7 +711,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -747,7 +747,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -783,7 +783,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -819,7 +819,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -855,7 +855,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -885,7 +885,7 @@ namespace Ict.Petra.Server.MCommon.Validation
                         || (DocumentCategoryRow.UnassignableDate <= DateTime.Today)))
                 {
                     // if 'Document Category' is unassignable then check if the value has been changed or if it is a new record
-                    if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTypeTable.GetDocCategoryDBName()))
+                    if (TValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTypeTable.GetDocCategoryDBName()))
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
@@ -925,7 +925,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -961,7 +961,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -997,7 +997,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -1033,7 +1033,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -1069,7 +1069,7 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (ARow.UnassignableFlag)
                 {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                    VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                         String.Empty, AVerificationResultCollection, true,
                         AContext, ValidationColumn);
                 }
@@ -1097,7 +1097,7 @@ namespace Ict.Petra.Server.MCommon.Validation
 
             if (ARow.UnassignableFlag)
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                VerificationResult = TValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
                     String.Empty, AVerificationResultCollection, true,
                     AContext, ValidationColumn);
             }

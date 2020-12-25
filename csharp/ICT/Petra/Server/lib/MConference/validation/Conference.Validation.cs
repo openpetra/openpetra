@@ -37,7 +37,7 @@ namespace Ict.Petra.Server.MConference.Validation
     /// <summary>
     /// Contains functions for the validation of Conference DataTables.
     /// </summary>
-    public static partial class TSharedConferenceValidation_Conference
+    public static partial class TConferenceValidation_Conference
     {
         /// <summary>
         /// Validates the MConference Standard Cost Setup screen data.

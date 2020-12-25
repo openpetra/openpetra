@@ -35,7 +35,7 @@ namespace Ict.Petra.Server.MPartner.Validation
     /// <summary>
     /// Contains helper functions for the shared validation of Partner data.
     /// </summary>
-    public static class TSharedPartnerValidationHelper
+    public static class TPartnerValidationHelper
     {
         /// <summary>Delegate for invoking the verification of the existence of a Partner.</summary>
         public delegate bool TVerifyPartner(Int64 APartnerKey, TPartnerClass[] AValidPartnerClasses, out bool APartnerExists,
