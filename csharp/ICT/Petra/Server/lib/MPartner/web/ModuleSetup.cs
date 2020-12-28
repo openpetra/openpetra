@@ -92,7 +92,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// save partner types
         /// </summary>
         [RequireModulePermission("PTNRADMIN")]
-        public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription, out TVerificationResultCollection AVerificationResult)
+        public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription, string ACategoryCode, bool AValidType, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
             AVerificationResult = new TVerificationResultCollection();
@@ -102,6 +102,8 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                 PTypeRow row = MainDS.PType.NewRowTyped();
                 row.TypeCode = ATypeCode.ToUpper();
                 row.TypeDescription = ATypeDescription;
+                row.CategoryCode = ACategoryCode;
+                row.ValidType = AValidType;
                 MainDS.PType.Rows.Add(row);
                 try
                 {
@@ -121,6 +123,8 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                     if (row.TypeCode == ATypeCode)
                     {
                         row.TypeDescription = ATypeDescription;
+                        row.CategoryCode = ACategoryCode;
+                        row.ValidType = AValidType;
                     }
                 }
 
@@ -141,6 +145,12 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                 {
                     if (row.TypeCode == ATypeCode)
                     {
+                        if (!row.TypeDeletable)
+                        {
+                            AVerificationResult.Add(new TVerificationResult("error", "not_deletable", TResultSeverity.Resv_Critical));
+                            return false;
+                        }
+                        
                         row.Delete();
                     }
                 }

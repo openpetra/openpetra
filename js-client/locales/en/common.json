@@ -476,6 +476,11 @@
         "confirm_edit": "Category has been updated successfully",
         "confirm_delete": "Category has been deleted successfully",
         "ask_delete": "Sure you wanna delete this category?",
+        "group_name": "Group name",
+        "system_type": "Predefined by System",
+        "type_deletable": "May be deleted",
+        "sponsored_child_status": "Status of a sponsored child",
+        "without_group": "Without group",
         "entry_name": "Category name",
         "entry_status": "Active",
         "entry_dis": "Category description"
