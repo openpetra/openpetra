@@ -18,7 +18,8 @@
     {
       foreach (string path in Directory.GetDirectories(NuGetPath))
       {
-        string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45", "/lib/Net40", "/lib/net20" };
+        // if another path is added here, also add in GenerateNamespaceMap.cs
+        string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net20" };
         foreach (string netVersionPath in netVersionPaths)
         {
           if (Directory.Exists(path + netVersionPath))
