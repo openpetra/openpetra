@@ -1,0 +1,27 @@
+OpenPetra Erinnerung für Kontakt {partnername}
+Sehr geehrte(r) {FirstName} {LastName},
+
+Es gibt eine Erinnerung von {Domain}:
+
+Kontakt {partnername}, Nummer [{partnerkey}]
+
+{ifdef ContactDetails}
+{ContactDetails}
+{endif ContactDetails}
+
+{ifdef Reason}
+Grund: {Reason}
+{endif Reason}
+{ifdef EventDate}
+Datum des Ereignisses: {EventDate}
+{endif EventDate}
+Bemerkung: {Comment}
+{ifdef NextReminderDate}
+Nächste Erinnerung: {NextReminderDate}
+{endif NextReminderDate}
+{ifdef ReminderDisabled}
+
+Diese Erinnerung wurde nun beendet.
+{endif ReminderDisabled}
+
+Dies ist eine automatisch verschickte E-Mail.
