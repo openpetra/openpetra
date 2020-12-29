@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -209,40 +209,7 @@ namespace Ict.Common.Remoting.Shared
         /// <returns></returns>
         bool AddUser(string AUserID, string APassword = "");
 
-        /// <summary>
-        /// Lists the GPG keys for the Intranet server that are available to the Petra Server.
-        /// </summary>
-        /// <param name="List">Return the output of the gpg command.</param>
-        /// <returns>Return code of external gpg command.</returns>
-        int ListGpgKeys(out string List);
-
-        /// <summary>
-        /// Imports the GPG encryption keys for the Intranet server.
-        /// </summary>
-        /// <param name="List">Return the output of the gpg command.</param>
-        /// <returns>Return code of external gpg command.</returns>
-        int ImportGpgKeys(out string List);
-
-        /// <summary>
-        /// Whether the 'Server Timed Processing' has been set up.
-        /// </summary>
-        bool ServerTimedProcessingSetup
-        {
-            get;
-        }
-
         /// Allows the server or admin console to run a timed job now
         void PerformTimedProcessingNow(string AProcessName);
-
-        /// Is the process job enabled?
-        bool TimedProcessingJobEnabled(string AProcessName);
-
-        /// <summary>
-        /// the daily start time for the timed processing
-        /// </summary>
-        string TimedProcessingDailyStartTime24Hrs
-        {
-            get;
-        }
     }
 }

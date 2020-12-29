@@ -171,6 +171,11 @@ menu() {
     runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
+# send reminders per E-Mail
+sendReminders() {
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SendReminders"
+}
+
 # export variables for debugging to use mysql on the command line
 mysqlscript() {
     export DBHost=$OPENPETRA_DBHOST
@@ -713,6 +718,9 @@ case "$1" in
     dumpYmlGz)
         dumpYmlGz
         ;;
+    reminder)
+        sendReminders
+        ;;
     menu)
         menu
         ;;
@@ -720,7 +728,7 @@ case "$1" in
         status
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|update|upgradedb|rewrite_conf|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|update|upgradedb|rewrite_conf|loadYmlGz|dumpYmlGz|reminder}"
         exit 1
         ;;
 esac
