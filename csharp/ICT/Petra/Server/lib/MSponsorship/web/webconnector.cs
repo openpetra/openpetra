@@ -189,6 +189,21 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
                     child["DonorName"] += donor.PartnerShortName;
                     firstName = false;
+
+                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                    GetDonorContactDetails(donor.PartnerKey,
+                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
+
+                    child["DonorContactDetails"] += donor.PartnerShortName + ";" + DonorAddress + ";";
+                    if (DonorEmailAddress != String.Empty)
+                    {
+                        child["DonorContactDetails"] += "<a href='mailto:" + DonorEmailAddress + "'>" + DonorEmailAddress + "</a>;";
+                    }
+                    if (DonorPhoneNumber != String.Empty)
+                    {
+                        child["DonorContactDetails"] += DonorPhoneNumber + ";";
+                    }
+                    child["DonorContactDetails"] += ";";
                 }
             }
 
@@ -382,6 +397,27 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             return -1;
         }
 
+        private static void GetDonorContactDetails(Int64 ADonorKey,
+            out string DonorAddress, out string DonorEmailAddress, out string DonorPhoneNumber)
+        {
+            List<string> Subscriptions;
+            List<string> PartnerTypes;
+
+            string DefaultEmailAddress, DefaultPhoneMobile, DefaultPhoneLandline;
+            PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(ADonorKey,
+                out Subscriptions, out PartnerTypes,
+                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline);
+
+            DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+            DonorEmailAddress = DefaultEmailAddress;
+            DonorPhoneNumber = DefaultPhoneLandline;
+            if (DonorPhoneNumber != String.Empty && DefaultPhoneMobile != String.Empty)
+            {
+                DonorPhoneNumber += "; ";
+            }
+            DonorPhoneNumber += DefaultPhoneMobile;
+        }
+
         /// <summary>
         /// return the existing data of a child
         /// </summary>
@@ -444,18 +480,13 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
 
-                                    List<string> Subscriptions;
-                                    List<string> PartnerTypes;
-
-                                    string DefaultEmailAddress, DefaultPhoneMobile, DefaultPhoneLandline;
-                                    PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(recurrGiftRow.DonorKey,
-                                        out Subscriptions, out PartnerTypes,
-                                        out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline);
-
+                                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                                    GetDonorContactDetails(recurrGiftRow.DonorKey,
+                                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
                                     gdr.DonorName = donorRow.PartnerShortName;
-                                    gdr.DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
-                                    gdr.DonorEmailAddress = DefaultEmailAddress;
-                                    gdr.DonorPhoneNumber = (DefaultPhoneLandline + " " + DefaultPhoneMobile).Trim();
+                                    gdr.DonorAddress = DonorAddress;
+                                    gdr.DonorEmailAddress = DonorEmailAddress;
+                                    gdr.DonorPhoneNumber = DonorPhoneNumber;
                                     gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
 

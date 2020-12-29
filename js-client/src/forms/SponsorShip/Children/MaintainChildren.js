@@ -84,18 +84,26 @@ var MaintainChildren = new (class {
         var parsed = JSON.parse(data.data.d);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
-          var Copy = $("[phantom] .children").clone();
-          if (entry["DonorName"]) {
-            entry["DonorName"] = entry["DonorName"].replace(";", ";<br/>");
+          if (entry.DonorName) {
+            entry.DonorName = entry.DonorName.replace(/;/g, ";<br/>");
           }
+          if (entry.DonorContactDetails) {
+            entry.DonorContactDetails = entry.DonorContactDetails.replace(/;/g, "<br/>");
+          }
+
+          var Copy = $("[phantom] .children").clone();
+          let view = $("[phantom] .tpl_view").clone();
+
           insertData(Copy, entry);
+          insertData(view, entry);
           List.append(Copy);
+          $('#child'+entry['p_partner_key_n']).find('.collapse_col').append(view);
         }
       }
     );
   }
 
-  detail(HTMLBottom, overwrite, OpenTab=null) {
+  edit(HTMLBottom, overwrite, OpenTab=null) {
     // get details for the child the user clicked on and open modal
 
     var req = {
@@ -136,6 +144,19 @@ var MaintainChildren = new (class {
       }
     );
 
+  }
+
+  open_detail(obj) {
+    obj = $(obj);
+    while(!obj[0].hasAttribute('id') || !obj[0].id.includes("child")) {
+      obj = obj.parent();
+    }
+    if (obj.find('.collapse').is(':visible') ) {
+      $('.tpl_row .collapse').collapse('hide');
+      return;
+    }
+    $('.tpl_row .collapse').collapse('hide');
+    obj.find('.collapse').collapse('show')
   }
 
   showWindow(HTMLAnchor, overwrite) {
@@ -343,13 +364,13 @@ var MaintainChildComments = new (class {
           case "SCHOOL": tabname = "school_situations"; break;
         }
         
-        MaintainChildren.detail(null, req["APartnerKey"], tabname);
+        MaintainChildren.edit(null, req["APartnerKey"], tabname);
       }
     );
 
   }
 
-  detail(HTMLBottom) {
+  edit(HTMLBottom) {
     HTMLBottom = $(HTMLBottom).closest(".comment");
 
     var comment_index = HTMLBottom.find("[name=p_index_i]").val();
@@ -395,6 +416,14 @@ var MaintainChildSponsorship = new (class {
     var SponsorList = $("#detail_modal [window=sponsorship] .container-list").html("");
 
     for (var sponsorship of gift_details) {
+
+      if ((sponsorship.DonorAddress !== null) && (sponsorship.DonorAddress != '')) {
+        sponsorship.DonorAddress += '<br/>';
+      }
+      if ((sponsorship.DonorEmailAddress !== null) && (sponsorship.DonorEmailAddress != '')) {
+        sponsorship.DonorEmailAddress = '<a href="mailto:' + sponsorship.DonorEmailAddress + '">' + sponsorship.DonorEmailAddress + '</a><br/>';
+      }
+
       var Copy = $("[phantom] .sponsorship").clone();
       insertData(Copy, sponsorship, sponsorship.CurrencyCode);
       SponsorList.append(Copy);
@@ -448,7 +477,7 @@ var MaintainChildSponsorship = new (class {
         }
 
         $("#recurring_modal").modal("hide");
-        MaintainChildren.detail(null, req["ARecipientKey"], "sponsorship");
+        MaintainChildren.edit(null, req["ARecipientKey"], "sponsorship");
       }
     );
   }
@@ -465,11 +494,11 @@ var MaintainChildSponsorship = new (class {
         }
 
         $("#recurring_modal").modal("hide");
-        MaintainChildren.detail(null, payload["ARecipientKey"], "sponsorship");
+        MaintainChildren.edit(null, payload["ARecipientKey"], "sponsorship");
       });
   }
 
-  detail(HTMLBottom, overwrite) {
+  edit(HTMLBottom, overwrite) {
 
     HTMLBottom = $(HTMLBottom).closest(".sponsorship");
     var req_detail = extractData(HTMLBottom);
@@ -580,13 +609,13 @@ var MaintainChildReminders = new (class {
         }
 
         $("#reminder_modal").modal("hide");
-        MaintainChildren.detail(null, req["APartnerKey"], "dates_reminder");
+        MaintainChildren.edit(null, req["APartnerKey"], "dates_reminder");
       }
     );
 
   }
 
-  detail(HTMLBottom) {
+  edit(HTMLBottom) {
     HTMLBottom = $(HTMLBottom).closest(".reminder");
 
     var reminder_id = HTMLBottom.find("[name=p_reminder_id_i]").val();

@@ -34,6 +34,7 @@
       <Field sqltable="p_person" sqlfield="p_family_name_c"/>
 
       <CustomField name="DonorName" type="String"/>
+      <CustomField name="DonorContactDetails" type="String"/>
     </CustomTable>
   </DataSet>
 </PetraDataSets>
