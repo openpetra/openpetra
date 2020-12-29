@@ -603,7 +603,17 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 CurrentEdit.PFamily[0].FamilyName = AFamilyName;
                 CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
                 CurrentEdit.PFamily[0].Gender = AGender;
-                CurrentEdit.PPartner[0].UserId = AUserId;
+
+                if (AUserId != CurrentEdit.PPartner[0].UserId)
+                {
+                    CurrentEdit.PPartner[0].UserId = AUserId;
+
+                    // we need to update the reminders as well
+                    foreach (PPartnerReminderRow ReminderRow in CurrentEdit.PPartnerReminder.Rows)
+                    {
+                        ReminderRow.UserId = AUserId;
+                    }
+                }
 
                 // only on a actual change, else skip this
                 if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
@@ -756,6 +766,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 NewReminderRow.FirstReminderDate = AFirstReminderDate;
                 NewReminderRow.Comment = AComment;
                 NewReminderRow.ReminderId = AReminderId;
+                NewReminderRow.ActionType = "SendEmail";
+                NewReminderRow.UserId = CurrentEdit.PPartner[0].UserId;
                 CurrentEdit.PPartnerReminder.Rows.Add( NewReminderRow );
             }
 

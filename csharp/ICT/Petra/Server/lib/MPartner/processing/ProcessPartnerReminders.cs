@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timh, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -147,7 +147,14 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                     PartnerReminderDR.BeginEdit();
                     PartnerReminderDR.LastReminderSent = DateTime.Now.Date;
-                    PartnerReminderDR.NextReminderDate = DateTime.Now.Date.AddDays(ReminderFreqency);
+                    if (ReminderFreqency == 0)
+                    {
+                        PartnerReminderDR.SetNextReminderDateNull();
+                    }
+                    else
+                    {
+                        PartnerReminderDR.NextReminderDate = DateTime.Now.Date.AddDays(ReminderFreqency);
+                    }
 
                     if (!PartnerReminderDR.IsEventDateNull())   // Reminder has an Event Date
                     {
@@ -411,9 +418,9 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             SQLCommand = "SELECT * FROM PUB_p_partner_reminder WHERE ";
             SQLCommand += " ( p_next_reminder_date_d > ? OR p_last_reminder_sent_d IS NULL) AND ";
-            SQLCommand += " p_next_reminder_date_d <= ? AND ";
+            SQLCommand += " (p_next_reminder_date_d <= ? OR p_first_reminder_date_d <= ?) AND ";
             SQLCommand += " p_reminder_active_l = TRUE AND ";
-            SQLCommand += " p_email_address_c <> ''";
+            SQLCommand += " (p_email_address_c <> '' OR s_user_id_c <> '')";
 
             OdbcParams = new List <OdbcParameter>();
 
@@ -424,6 +431,10 @@ namespace Ict.Petra.Server.MPartner.Processing
             // Parameter 2 = Today's date
             OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
             OdbcParams[1].Value = DateTime.Now.Date;
+
+            // Parameter 3 = Today's date
+            OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
+            OdbcParams[2].Value = DateTime.Now.Date;
 
             AReadTransaction.DataBaseObj.Select(ReminderResultsDS,
                 SQLCommand,
@@ -452,6 +463,11 @@ namespace Ict.Petra.Server.MPartner.Processing
             string PartnerShortName;
             char LF = Convert.ToChar(10);
 
+            if ((Destination == String.Empty) && (APartnerReminderDR.UserId != String.Empty))
+            {
+                // Get the email of the user
+                Destination = GetEmailOfUser(APartnerReminderDR.UserId, AReadWriteTransaction);
+            }
 
             // Retrieve ShortName of the Partner about whom the Reminder Email should be sent
             PartnerShortName = GetPartnerShortName(APartnerReminderDR.PartnerKey, AReadWriteTransaction);
@@ -459,17 +475,18 @@ namespace Ict.Petra.Server.MPartner.Processing
             // Compose Email Subject
             Subject = String.Format("OpenPetra Reminder about {0}", PartnerShortName);
 
-            /*
-             * Compose Email Body
-             */
+            // Compose Email Body
             Body = string.Format("Partner: {0}   [{1:0000000000}]{2}", PartnerShortName, APartnerReminderDR.PartnerKey, LF);
 
-            if (APartnerReminderDR.ContactId != 0)
+            if (!APartnerReminderDR.IsContactIdNull() && APartnerReminderDR.ContactId != 0)
             {
                 Body += GetContactDetails(APartnerReminderDR.ContactId, AReadWriteTransaction);
             }
 
-            Body += String.Format("Reason: {0}{1}", APartnerReminderDR.ReminderReason, LF);
+            if (!APartnerReminderDR.IsReminderReasonNull())
+            {
+                Body += String.Format("Reason: {0}{1}", APartnerReminderDR.ReminderReason, LF);
+            }
 
             if (!APartnerReminderDR.IsEventDateNull())
             {
@@ -509,6 +526,24 @@ namespace Ict.Petra.Server.MPartner.Processing
             PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Columns, ATransaction);
 
             return PartnerTable[0].PartnerShortName;
+        }
+
+        /// <summary>
+        /// Retrieves the e-mail address of the given user
+        /// </summary>
+        /// <param name="AUserID">User Id.</param>
+        /// <param name="ATransaction">Database transaction to use.</param>
+        /// <returns>E-Mail Address</returns>
+        private static string GetEmailOfUser(string AUserID, TDBTransaction ATransaction)
+        {
+            SUserTable Users;
+            var Columns = new StringCollection();
+
+            Columns.Add(SUserTable.GetEmailAddressDBName());
+
+            Users = SUserAccess.LoadByPrimaryKey(AUserID, Columns, ATransaction);
+
+            return Users[0].EmailAddress;
         }
 
         /// <summary>
