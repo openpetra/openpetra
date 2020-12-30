@@ -28,6 +28,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
 using System.IO;
+using System.Text;
 using System.Diagnostics;
 
 using GNU.Gettext;
@@ -59,6 +60,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 
@@ -115,6 +117,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     try
                     {
+                        if (AHTMLTemplate == String.Empty)
+                        {
+                            string TmpFilename;
+                            byte[] data = Convert.FromBase64String(LoadFileTemplate("AnnualReceiptHTML", Transaction, out TmpFilename));
+                            AHTMLTemplate = Encoding.UTF8.GetString(data);
+                        }
+
+                        if (ALogoFilename == String.Empty)
+                        {
+                            ALogoImage = Convert.FromBase64String(LoadFileTemplate("AnnualReceiptLOGO", Transaction, out ALogoFilename));
+                        }
+
+                        if (ASignatureFilename == String.Empty)
+                        {
+                            ASignatureImage = Convert.FromBase64String(LoadFileTemplate("AnnualReceiptSIGN", Transaction, out ASignatureFilename));
+                        }
+
                         // get the local country code
                         string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
                         DataTable donorkeys = new DataTable();
@@ -1268,6 +1287,153 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         throw;
                     }
                 });
+        }
+
+        /// Store a default HTML or logo or signature file
+        [RequireModulePermission("FINANCE-3")]
+        public static bool StoreDefaultFile(string APurpose, string AFileName, byte[] AFileContent,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            string FormCode = "AnnualReceipt" + APurpose;
+            string FormName = FormCode;
+            string FormLanguage = "99";
+
+            if (FormCode.Length > 20)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "FormCode is too long", "",
+                    "AnnualReceipts.ErrFormCodeTooLong", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            if (AFileName.Length > 100)
+            {
+                AFileName = AFileName.Substring(AFileName.Length - 100);
+            }
+
+            PFormTable Tbl = new PFormTable();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("StoreDefaultFile");
+            bool SubmissionOK = false;
+
+            db.WriteTransaction(
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    try
+                    {
+                        Tbl.Merge(PFormAccess.LoadByPrimaryKey(FormCode, FormName, FormLanguage, Transaction));
+
+                        PFormRow FormRow = null;
+
+                        if (Tbl.Rows.Count == 0)
+                        {
+                            FormRow = Tbl.NewRowTyped(true);
+                            FormRow.FormCode = FormCode;
+                            FormRow.FormName = FormName;
+                            FormRow.FormLanguage = FormLanguage;
+                            FormRow.FormTypeCode = "ANNUALRECEIPT";
+                            Tbl.Rows.Add(FormRow);
+                        }
+
+                        FormRow = Tbl[0];
+                        FormRow.TemplateDocument = Convert.ToBase64String(AFileContent);
+                        FormRow.FormDescription = AFileName;
+                        FormRow.TemplateFileExtension = Path.GetExtension(AFileName);
+
+                        PFormAccess.SubmitChanges(Tbl, Transaction);
+                        SubmissionOK = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    }
+                });
+
+                if (!SubmissionOK)
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Some error storing the template", "",
+                        "AnnualReceipts.ErrSavingTemplate", TResultSeverity.Resv_Critical));
+                }
+
+                return SubmissionOK;
+        }
+
+        /// get the filenames of the stored template files for annual gift receipt
+        [RequireModulePermission("FINANCE-1")]
+        public static bool LoadDefaultTemplateFileNames(out string AFileNameHTML, out string AFileNameLogo, out string AFileNameSignature)
+        {
+            AFileNameHTML = String.Empty;
+            AFileNameLogo = String.Empty;
+            AFileNameSignature = String.Empty;
+
+            string FileNameHTML = String.Empty;
+            string FileNameLogo = String.Empty;
+            string FileNameSignature = String.Empty;
+
+            string FormCode = "AnnualReceipt";
+            string FormLanguage = "99";
+
+            PFormTable Tbl = new PFormTable();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadDefaultFile");
+
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    StringCollection Columns = new StringCollection();
+                    Columns.Add(PFormTable.GetFormDescriptionDBName());
+
+                    Tbl = PFormAccess.LoadByPrimaryKey(FormCode + "HTML", FormCode + "HTML", FormLanguage, Columns, Transaction);
+
+                    if (Tbl.Rows.Count > 0)
+                    {
+                        FileNameHTML = Tbl[0].FormDescription;
+                    }
+
+                    Tbl = PFormAccess.LoadByPrimaryKey(FormCode + "LOGO", FormCode + "LOGO", FormLanguage, Columns, Transaction);
+
+                    if (Tbl.Rows.Count > 0)
+                    {
+                        FileNameLogo = Tbl[0].FormDescription;
+                    }
+
+                    Tbl = PFormAccess.LoadByPrimaryKey(FormCode + "SIGN", FormCode + "SIGN", FormLanguage, Columns, Transaction);
+
+                    if (Tbl.Rows.Count > 0)
+                    {
+                        FileNameSignature = Tbl[0].FormDescription;
+                    }
+                });
+
+            AFileNameHTML = FileNameHTML;
+            AFileNameLogo = FileNameLogo;
+            AFileNameSignature = FileNameSignature;
+
+            return true;
+        }
+
+        private static string LoadFileTemplate(string FormCode, TDBTransaction Transaction, out string AFileName)
+        {
+            AFileName = String.Empty;
+            string FormLanguage = "99";
+
+            StringCollection Columns = new StringCollection();
+            Columns.Add(PFormTable.GetTemplateDocumentDBName());
+            Columns.Add(PFormTable.GetFormDescriptionDBName());
+            PFormTable Tbl = PFormAccess.LoadByPrimaryKey(FormCode, FormCode, FormLanguage, Columns, Transaction);
+
+            if (Tbl.Rows.Count > 0)
+            {
+                AFileName = Tbl[0].FormDescription;
+                return Tbl[0].TemplateDocument;
+            }
+
+            return String.Empty;
         }
     }
 }

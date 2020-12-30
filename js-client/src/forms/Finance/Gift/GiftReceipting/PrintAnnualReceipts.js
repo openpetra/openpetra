@@ -1,9 +1,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//  Timotheus Pokorra <timotheus@pokorra@solidcharity.com>
+//  Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2020 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -25,6 +25,7 @@ $(function() {
 	var year = (new Date()).getYear() + 1900 - 1;
 	$("#StartDate").val(year + "-01-01");
 	$("#EndDate").val(year + "-12-31");
+	LoadDefaultTemplateFiles();
 });
 
 function ReadFile(control, fn) {
@@ -54,12 +55,13 @@ function ReadFile(control, fn) {
 var htmltemplate = null;
 var logoimage = null;
 var signatureimage = null;
+var DefaultNames = {};
 
 var htmldata = "";
 function SetHtmlTemplate(filename, filedata) {
 	htmldata = filedata;
 
-	if (htmldata.length == 0) {
+	if (htmldata.length == 0 && DefaultNames["DefaultFileNameHTML"] == "") {
 		display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
 		setTimeout(hidePleaseWait, 500);
 		return;
@@ -102,6 +104,104 @@ function GenerateAnnualReceipts() {
 	showPleaseWait();
 
 	ReadFile(htmltemplate, SetHtmlTemplate);
+}
+
+function SetTemplateDefault(filename, filedata, purpose) {
+
+	if (filename == "delete") {
+		p = {'AFileContent': "",
+			'AFileName': "",
+			'APurpose': purpose
+			};
+	} else {
+		if (filedata.length == 0) {
+			display_message(i18next.t('PrintAnnualReceipts.emptytemplatefile'), "fail");
+			return;
+		}
+		p = {'AFileContent': filedata,
+			'AFileName': filename,
+			'APurpose': purpose
+			};
+	}
+
+	api.post('serverMFinance.asmx/TReceiptingWebConnector_StoreDefaultFile', p)
+	.then(function (result) {
+		var parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+		} else {
+			display_message(i18next.t('forms.notsaved'), "fail");
+		}
+	});
+}
+
+function SetHtmlTemplateDefault(filename, filedata) {
+	SetTemplateDefault(filename, filedata, "HTML");
+	DefaultNames["DefaultFileNameHTML"] = filename;
+	insertData("#parameters", DefaultNames);
+}
+
+function SetLogoTemplateDefault(filename, filedata) {
+	SetTemplateDefault(filename, filedata, "LOGO");
+	DefaultNames["DefaultFileNameLogo"] = filename;
+	insertData("#parameters", DefaultNames);
+}
+
+function SetSignatureTemplateDefault(filename, filedata) {
+	SetTemplateDefault(filename, filedata, "SIGN");
+	DefaultNames["DefaultFileNameSignature"] = filename;
+	insertData("#parameters", DefaultNames);
+}
+
+function StoreHtmlTemplateAsDefault() {
+	htmltemplate = $('#HTMLTemplate');
+
+	ReadFile(htmltemplate, SetHtmlTemplateDefault);
+}
+
+function StoreLogoTemplateAsDefault() {
+	logoimage = $('#LogoImage');
+
+	ReadFile(logoimage, SetLogoTemplateDefault);
+}
+
+function StoreSignatureTemplateAsDefault() {
+	signatureimage = $('#SignatureImage');
+
+	ReadFile(signatureimage, SetSignatureTemplateDefault);
+}
+
+function ClearHtmlTemplateAsDefault() {
+	SetTemplateDefault("delete", "", "HTML");
+	DefaultNames["DefaultFileNameHTML"] = '';
+	insertData("#parameters", DefaultNames);
+}
+
+function ClearLogoTemplateAsDefault() {
+	SetTemplateDefault("delete", "", "LOGO");
+	DefaultNames["DefaultFileNameLogo"] = '';
+	insertData("#parameters", DefaultNames);
+}
+
+function ClearSignatureTemplateAsDefault() {
+	SetTemplateDefault("delete", "", "SIGN");
+	DefaultNames["DefaultFileNameSignature"] = '';
+	insertData("#parameters", DefaultNames);
+}
+
+function LoadDefaultTemplateFiles() {
+	p = {};
+
+	api.post('serverMFinance.asmx/TReceiptingWebConnector_LoadDefaultTemplateFileNames', p)
+	.then(function (result) {
+		var parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			DefaultNames["DefaultFileNameHTML"] = parsed.AFileNameHTML;
+			DefaultNames["DefaultFileNameLogo"] = parsed.AFileNameLogo;
+			DefaultNames["DefaultFileNameSignature"] = parsed.AFileNameSignature;
+			insertData("#parameters", DefaultNames);
+		}
+	});
 }
 
 function GenerateAnnualReceiptsRemote() {

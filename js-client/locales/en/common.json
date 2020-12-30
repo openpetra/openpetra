@@ -610,6 +610,10 @@
         "signature": "Signature image",
         "signature_help": "This is optional.",
         "emptytemplate": "You must upload an HTML template",
+        "emptytemplatefile": "You must first select a file",
+        "default": "Default",
+        "store_as_default": "Store as default",
+        "clear_as_default": "Clear default",
         "errorempty": "There are no gift batches in this time period with annual receipting",
         "uploaderror": "Error with receipts"
     },

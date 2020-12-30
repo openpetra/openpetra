@@ -610,6 +610,10 @@
         "signature": "Bild für die eingescannte Unterschrift",
         "signature_help": "Es kann auch leer gelassen werden.",
         "emptytemplate": "Es muss eine HTML Vorlage hochgeladen werden",
+        "emptytemplatefile": "Bitte erst eine Datei wählen.",
+        "default": "Voreinstellung",
+        "store_as_default": "Als Voreinstellung speichern",
+        "clear_as_default": "Voreinstellung leeren",
         "errorempty": "In dem Zeitraum gab es keine zu bescheinigende Spendenstapel",
         "uploaderror": "Fehler beim Erstellen der Spendenbescheinigungen"
     },

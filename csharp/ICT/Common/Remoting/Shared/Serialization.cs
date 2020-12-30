@@ -256,6 +256,11 @@ namespace Ict.Common.Remoting.Shared
                 return null;
             }
 
+            if (s == "" && type == "binary")
+            {
+                return new byte[0];
+            }
+
             if (s.EndsWith(":System.String"))
             {
                 s = s.Substring(0, s.Length - ":System.String".Length);
