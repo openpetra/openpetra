@@ -12,6 +12,51 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2020.12: January 2nd, 2021</h3>
+
+<p>This release includes the work of two months, November and December. A lot has happened in the sponsorship module. But also other areas got fixes and new features, and technical improvements have been implemented as well.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+Sponsorship module:
+<ul>
+<li>Make sure that Reminders for Sponsorship work</li>
+<li>Reminder: use template files for emails</li>
+<li>Sponsorship: show future sponsors of children in the search result</li>
+<li>Sponsorship: Filter by firstname of child if there is an empty family name</li>
+<li>Filter sponsored children by the attribute they have no sponsor</li>
+<li>Filter sponsorships by sponsor</li>
+<li>sort sponsorship by child, or by admin</li>
+<li>Upload of image of child does not show error</li>
+<li>Deletion of sponsored children</li>
+<li>Display address and contact details of sponsor</li>
+<li>Sponsorship: Preview Sponsorship in List with contact details of donor</li>
+</ul>
+
+Other features and fixes:
+<ul>
+<li>Contact Find: filter by contact key</li>
+<li>Limit Consent Channel and Purpose Edit to permission PTNRADMIN</li>
+<li>Empty contact: fix error messages when trying to modify; not asking for consent</li>
+<li>Partner Types: edit flag for active type and type category</li>
+<li>Gift Receipting: Store HTML Template and Logo as default</li>
+<li>Type Ahead for Account Detail Report and Trial Balance Report</li>
+<li>Restoring database (loadymlgz) sets the database version but does not run the upgrade scripts</li>
+<li>New installation of instance should not change the database version without running the db updates</li>
+</ul>
+
+Technical improvements:
+<ul>
+<li>Completely drop support for SQLite from the code</li>
+<li>Support for MySQL 8</li>
+<li>Use MysqlConnector instead of Mysql.Data</li>
+<li>Update NUnit to latest version 3.12 and use nuget packages</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the 
+<a href="https://github.com/openpetra/openpetra/milestone/14?closed=1" 
+rel=" nofollow ugc">Milestone at Github for release 2020.12</a>!</p>
+
 <h3>Release 2020.10: November 4th, 2020</h3>
 
 <p>This release has improvements to the Contact Find form, the management of users, GL Batch and Donations Batch, and Sponsorship module.</p>
