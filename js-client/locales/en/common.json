@@ -707,6 +707,7 @@
         "partner_lastname": "Surname",
         "child_name": "Name of Child",
         "donor_name": "Names of Sponsors",
+        "child_without_donor": "Child without Sponsor",
         "gender": "Gender",
         "unknown": "unknown",
         "male": "male",

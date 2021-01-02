@@ -68,6 +68,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         public static SponsorshipFindTDSSearchResultTable FindChildren(
             string AChildName,
             string ADonorName,
+            bool AChildWithoutDonor,
             string APartnerStatus,
             string ASponsorshipStatus,
             string ASponsorAdmin,
@@ -193,6 +194,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 {
                     // drop all children that don't have a donor match
                     if (donors.Rows.Count == 0)
+                    {
+                        childrenNotMatchingDonor.Add(child);
+                    }
+                }
+
+                if (AChildWithoutDonor)
+                {
+                    // drop all children that have a donor match
+                    if (donors.Rows.Count != 0)
                     {
                         childrenNotMatchingDonor.Add(child);
                     }

@@ -77,6 +77,7 @@ var MaintainChildren = new (class {
       "ASponsorshipStatus": filter.ASponsorshipStatus ? filter.ASponsorshipStatus : "",
       "ASponsorAdmin": filter.ASponsorAdmin ? filter.ASponsorAdmin : "",
       "ASortBy": filter.ASortBy ? filter.ASortBy : "",
+      "AChildWithoutDonor": filter.ChildWithoutDonor ? true : false,
     };
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren', req).then(

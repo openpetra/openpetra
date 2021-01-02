@@ -707,6 +707,7 @@
         "partner_lastname": "Nachname",
         "child_name": "Name des Kindes",
         "donor_name": "Namen der Paten",
+        "child_without_donor": "Kind ohne Paten",
         "gender": "Geschlecht",
         "unknown": "unbekannt",
         "male": "Männlich",
