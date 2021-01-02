@@ -2,9 +2,9 @@
 //
 // @Authors:
 //       Christopher Jäkel
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2020 by SolidCharity.com
+// Copyright 2020-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -128,6 +128,7 @@ var MaintainChildren = new (class {
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
+        $("#new_photo").val('');
 
         MaintainChildSponsorship.build(recurring, recurring_detail);
         MaintainChildComments.build(comments);
@@ -137,7 +138,7 @@ var MaintainChildren = new (class {
 
         $("#detail_modal").attr("mode", "edit");
         $("#detail_modal").modal("show");
-        
+
         if (OpenTab !== null) {
           MaintainChildren.showWindow(null, OpenTab);
         }
@@ -258,19 +259,27 @@ var MaintainChildren = new (class {
 
     var Reader = new FileReader();
 
-    Reader.onload = function (event) {
-      let file_content = event.target.result;
-      file_content = btoa(file_content);
+    Reader.onload = function (theFile) {
+      let file_content = theFile.target.result;
+      //file_content = btoa(file_content);
+
+      // somehow, theFile.name on Firefox is undefined
+      let filename = theFile.name;
+      if (filename == undefined) {
+        filename = PhotoField[0].value.split("\\").pop();
+      }
+      if (filename == undefined) {
+        filename="undefined.txt";
+      }
 
       var req = {
         "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
-        "AUploadPhoto":true,
-        "ADateOfBirth": "null",
         "ALedgerNumber": window.localStorage.getItem("current_ledger"),
+        "APhotoFilename": filename,
         "APhoto":file_content
       };
 
-      api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req)
+      api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_UploadPhoto', req)
       .then(function (data) {
           var parsed = JSON.parse(data.data.d);
           if (parsed.result) {
@@ -278,10 +287,15 @@ var MaintainChildren = new (class {
           } else {
             display_error(parsed.AVerificationResult);
           }
+      })
+      .catch(error => {
+        console.log(error)
+        display_message(i18next.t('forms.uploaderror'), "fail");
       });
+
     }
 
-    Reader.readAsBinaryString(PhotoField[0].files[0]);
+    Reader.readAsDataURL(PhotoField[0].files[0]);
 
   }
 

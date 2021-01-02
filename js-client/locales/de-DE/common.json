@@ -161,6 +161,7 @@
         "show_all_records": "Alle Ergebnisse anzeigen",
         "sortby": "Sortieren nach",
         "upload": "Hochladen",
+        "uploaderror": "Das Hochladen hat nicht funktioniert. Ist die Datei zu groß?",
         "upload_success": "Hochladen erfolgreich"
     },
     "errors": {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,10 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -582,8 +586,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string AFirstName,
             string AFamilyName,
             DateTime? ADateOfBirth,
-            string APhoto,
-            bool AUploadPhoto,
             string AGender,
             string AUserId,
             Int64 APartnerKey,
@@ -606,60 +608,51 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, true, out dummy);
             }
 
-            // we only save pictures if there is a value in the request
-            if (AUploadPhoto)
+            if ((ASponsorshipStatus == "") || (ASponsorshipStatus == null))
             {
-                CurrentEdit.PFamily[0].Photo = APhoto;
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
+                    "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
             }
-            else
+
+            if ((AFirstName == "") || (AFirstName == null))
             {
-                if ((ASponsorshipStatus == "") || (ASponsorshipStatus == null))
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
+                    "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
+            }
+
+            if (AVerificationResult.HasCriticalErrors)
+            {
+                return false;
+            }
+
+            CurrentEdit.PFamily[0].FirstName = AFirstName;
+            CurrentEdit.PFamily[0].FamilyName = AFamilyName;
+            CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
+            CurrentEdit.PFamily[0].Gender = AGender;
+
+            if (AUserId != CurrentEdit.PPartner[0].UserId)
+            {
+                CurrentEdit.PPartner[0].UserId = AUserId;
+
+                // we need to update the reminders as well
+                foreach (PPartnerReminderRow ReminderRow in CurrentEdit.PPartnerReminder.Rows)
                 {
-                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
-                        "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
+                    ReminderRow.UserId = AUserId;
                 }
+            }
 
-                if ((AFirstName == "") || (AFirstName == null))
-                {
-                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
-                        "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
-                }
+            // only on a actual change, else skip this
+            if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
+            {
+                PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
+                OldTypeRow.Delete();
 
-                if (AVerificationResult.HasCriticalErrors)
-                {
-                    return false;
-                }
+                PPartnerTypeRow NewTypeRow = CurrentEdit.PPartnerType.NewRowTyped(true);
 
-                CurrentEdit.PFamily[0].FirstName = AFirstName;
-                CurrentEdit.PFamily[0].FamilyName = AFamilyName;
-                CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
-                CurrentEdit.PFamily[0].Gender = AGender;
+                NewTypeRow.TypeCode = ASponsorshipStatus;
+                NewTypeRow.PartnerKey = CurrentEdit.PPartner[0].PartnerKey;
 
-                if (AUserId != CurrentEdit.PPartner[0].UserId)
-                {
-                    CurrentEdit.PPartner[0].UserId = AUserId;
-
-                    // we need to update the reminders as well
-                    foreach (PPartnerReminderRow ReminderRow in CurrentEdit.PPartnerReminder.Rows)
-                    {
-                        ReminderRow.UserId = AUserId;
-                    }
-                }
-
-                // only on a actual change, else skip this
-                if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
-                {
-                    PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
-                    OldTypeRow.Delete();
-
-                    PPartnerTypeRow NewTypeRow = CurrentEdit.PPartnerType.NewRowTyped(true);
-
-                    NewTypeRow.TypeCode = ASponsorshipStatus;
-                    NewTypeRow.PartnerKey = CurrentEdit.PPartner[0].PartnerKey;
-
-                    CurrentEdit.PPartnerType.Rows.Add(NewTypeRow);
-                }
-
+                CurrentEdit.PPartnerType.Rows.Add(NewTypeRow);
             }
 
             CurrentEdit.PPartner[0].PartnerShortName =
@@ -679,6 +672,75 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
                 return false;
             }
+        }
+
+        /// <summary>
+        /// upload a photo of the child
+        /// </summary>
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool UploadPhoto(
+            Int64 APartnerKey,
+            Int32 ALedgerNumber,
+            byte[] APhoto,
+            string APhotoFilename,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (APartnerKey == -1)
+            {
+                return false;
+            }
+
+            string dummy = "0";
+            SponsorshipTDS CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, true, out dummy);
+
+            if (APhotoFilename.Length > 0)
+            {
+                string tempFileName = TFileHelper.GetTempFileName(
+                    "photo",
+                    Path.GetExtension(APhotoFilename));
+                File.WriteAllBytes(tempFileName, APhoto);
+
+                using (var srcImage = Image.FromFile(tempFileName))
+                {
+                    var newHeight = 256;
+                    var newWidth = (int)(srcImage.Width * ((float)newHeight / (float)srcImage.Height));
+
+                    using (var newImage = new Bitmap(newWidth, newHeight))
+                    {
+                        using (var graphics = Graphics.FromImage(newImage))
+                        {
+                            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                            graphics.DrawImage(srcImage, new Rectangle(0, 0, newWidth, newHeight));
+
+                            using (var ms = new MemoryStream())
+                            {
+                                newImage.Save(ms, newImage.RawFormat);
+                                CurrentEdit.PFamily[0].Photo = Convert.ToBase64String(ms.ToArray());
+                            }
+
+                            try
+                            {
+                                SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+                                File.Delete(tempFileName);
+                                return true;
+                            }
+                            catch (Exception e)
+                            {
+                                TLogging.Log(e.ToString());
+                                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                            }
+                        }
+                    }
+                }
+
+                File.Delete(tempFileName);
+            }
+
+            return false;
         }
 
         /// maintain comments about the child
