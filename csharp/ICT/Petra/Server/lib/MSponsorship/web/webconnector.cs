@@ -85,7 +85,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             int CountParameters = 0;
             int Pos = 0;
-            CountParameters += (AChildName != String.Empty ? 1 : 0);
+            CountParameters += (AChildName != String.Empty ? 2 : 0);
             CountParameters += (ASponsorshipStatus != String.Empty ? 1 : 0);
             CountParameters += (ASponsorAdmin != String.Empty ? 1 : 0);
             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
@@ -104,7 +104,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (AChildName != String.Empty)
             {
-                sql += " AND CONCAT(f.p_first_name_c, ' ', f.p_family_name_c) LIKE ?";
+                // cover both cases, that the child has a family name, or it has no family name stored in the database
+                sql += " AND (CONCAT(f.p_first_name_c, ' ', f.p_family_name_c) LIKE ? OR f.p_first_name_c LIKE ?)";
+                parameters[Pos] = new OdbcParameter("ChildName", OdbcType.VarChar);
+                AChildName = '%' + AChildName + '%';
+                parameters[Pos].Value = AChildName;
+                Pos++;
                 parameters[Pos] = new OdbcParameter("ChildName", OdbcType.VarChar);
                 AChildName = '%' + AChildName + '%';
                 parameters[Pos].Value = AChildName;
