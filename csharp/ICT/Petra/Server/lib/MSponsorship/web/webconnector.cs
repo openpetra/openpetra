@@ -151,19 +151,29 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     "AND rgd.a_batch_number_i = rg.a_batch_number_i " +
                     "AND rgd.a_gift_transaction_number_i = rg.a_gift_transaction_number_i " +
                     "AND rgd.p_recipient_key_n = " + child.PartnerKey + " " +
-                    "AND NOW() >= rgd.a_start_donations_d " +
-                    "AND (NOW() <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
+                    "AND ? >= rgd.a_start_donations_d " +
+                    "AND (? <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
                     "AND rg.p_donor_key_n = p.p_partner_key_n";
 
-                parameters = null;
+                List <OdbcParameter> parameterList = new List <OdbcParameter>();
+
+                OdbcParameter param = new OdbcParameter();
+                param = new OdbcParameter("StartDate", OdbcType.DateTime);
+                param.Value = DateTime.Now.AddMonths(+3);
+                parameterList.Add(param);
+
+                param = new OdbcParameter();
+                param = new OdbcParameter("EndDate", OdbcType.DateTime);
+                param.Value = DateTime.Now.AddMonths(-1);
+                parameterList.Add(param);
 
                 if (ADonorName != String.Empty)
                 {
-                    parameters = new OdbcParameter[1];
                     sql += " AND p.p_partner_short_name_c LIKE ?";
-                    parameters[0] = new OdbcParameter("ADonorName", OdbcType.VarChar);
+                    param = new OdbcParameter("ADonorName", OdbcType.VarChar);
                     ADonorName = '%' + ADonorName + '%';
-                    parameters[0].Value = ADonorName;
+                    param.Value = ADonorName;
+                    parameterList.Add(param);
                 }
 
                 PPartnerTable donors = new PPartnerTable();
@@ -171,7 +181,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 db.ReadTransaction(ref t,
                     delegate
                     {
-                        db.SelectDT(donors, sql, t, parameters);
+                        db.SelectDT(donors, sql, t, parameterList.ToArray());
                     });
 
                 if (ADonorName != String.Empty)
