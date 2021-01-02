@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -534,7 +534,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             string PartnerShortName = PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()].ToString();
 
             situation.GetParameters().AddCalculationParameter("NameWithTitle",
-                new TVariant(Ict.Petra.Shared.MPartner.Calculations.FormatShortName(PartnerShortName, eShortNameFormat.eReverseShortname)));
+                new TVariant(Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(PartnerShortName, eShortNameFormat.eReverseShortname)));
 
             DataSet PartnerLocationsDS = new DataSet();
             PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
@@ -1021,7 +1021,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             // find all locations of the partner, put it into a dataset
             PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ASituation.GetDatabaseConnection().Transaction);
 
-            // uses Ict.Petra.Shared.MPartner.Calculations.pas, DetermineBestAddress
+            // uses Ict.Petra.Server.MPartner.Common.Calculations.pas, DetermineBestAddress
             Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationTable, DateTime.Today);
             Calculations.DetermineBestAddress(PartnerLocationTable);
 

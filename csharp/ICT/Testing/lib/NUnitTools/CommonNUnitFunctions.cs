@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,9 +23,11 @@
 using System;
 using System.IO;
 using System.Data;
+using System.Data.Odbc;
 using System.Threading;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Collections.Generic;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -36,6 +38,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Tools.DBXML;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
@@ -109,53 +112,60 @@ namespace Ict.Testing.NUnitTools
         private static void LoadTestDataMySQL(string fileName)
         {
             // parse the sql file, and for each table (are there multiple???) load the data
-            // with command: load data infile '/tmp/mysqltsv' into table tblname
             string sqlfileContent = LoadCSVFileToString(fileName);
 
             string[] lines = sqlfileContent.Split(new char[] { '\n' });
             string currenttable = string.Empty;
-            string tempfile = string.Empty;
-            StreamWriter sw = null;
+            string sqlStmt = string.Empty;
 
-            foreach (string line in lines)
+            TDataDefinitionParser parser = new TDataDefinitionParser(rootPath + Path.DirectorySeparatorChar + "db" + Path.DirectorySeparatorChar + "petra.xml");
+            TDataDefinitionStore store = new TDataDefinitionStore();
+            TTable table = null;
+
+            if (!parser.ParseDocument(ref store))
             {
-                if (line.StartsWith("--") || (line.Trim() == String.Empty))
-                {
-                    continue;
-                }
-                else if (line.StartsWith("COPY "))
-                {
-                    currenttable = line.Substring("COPY ".Length, line.IndexOf("(") - "COPY ".Length - 1);
-                    tempfile = Path.GetTempFileName();
-                    sw = new StreamWriter(tempfile);
-                }
-                else if (line == "\\.")
-                {
-                    sw.Close();
-                    TDBTransaction LoadTransaction = new TDBTransaction();
-                    TDataBase db = DBAccess.Connect("LoadTestDataMySQL");
-                    bool SubmissionOK = false;
-
-                    db.WriteTransaction(ref LoadTransaction,
-                        ref SubmissionOK,
-                        delegate
-                        {
-                            db.ExecuteNonQuery("LOAD DATA LOCAL INFILE '" + tempfile + "' INTO TABLE " + currenttable,
-                                LoadTransaction);
-                            SubmissionOK = true;
-                        });
-
-                    currenttable = String.Empty;
-                    File.Delete(tempfile);
-                }
-                else if (currenttable != String.Empty)
-                {
-                    string convertedLine = line;
-
-                    convertedLine = convertedLine.Replace("\tt\t", "\t1\t").Replace("\tf\t", "\t0\t");
-                    sw.WriteLine(convertedLine);
-                }
+                throw new Exception("failed to parse petra.xml");
             }
+
+            TDBTransaction LoadTransaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadTestDataMySQL");
+            bool SubmissionOK = false;
+
+            db.WriteTransaction(ref LoadTransaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    foreach (string line in lines)
+                    {
+                        if (line.StartsWith("--") || (line.Trim() == String.Empty))
+                        {
+                            continue;
+                        }
+                        else if (line.StartsWith("COPY "))
+                        {
+                            currenttable = line.Substring("COPY ".Length, line.IndexOf("(") - "COPY ".Length - 1);
+
+                            table = store.GetTable(currenttable);
+
+                            sqlStmt = table.PrepareSQLInsertStatement();
+                        }
+                        else if (line == "\\.")
+                        {
+                            currenttable = String.Empty;
+                        }
+                        else if (currenttable != String.Empty)
+                        {
+                            List <OdbcParameter> Parameters = table.PrepareParametersInsertStatement(line);
+
+                            if (db.ExecuteNonQuery(sqlStmt, LoadTransaction, Parameters.ToArray()) == 0)
+                            {
+                                throw new Exception("failed to import line for table " + currenttable);
+                            }
+                        }
+                    }
+
+                    SubmissionOK = true;
+                });
         }
 
         /// <summary>
@@ -198,10 +208,6 @@ namespace Ict.Testing.NUnitTools
             }
 
             if (TSrvSetting.RDMBSType == TDBType.PostgreSQL)
-            {
-                nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
-            }
-            else if (TSrvSetting.RDMBSType == TDBType.SQLite)
             {
                 nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
             }

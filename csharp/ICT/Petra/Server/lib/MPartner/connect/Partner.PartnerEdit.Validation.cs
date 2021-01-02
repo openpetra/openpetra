@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Server.MPartner.Validation;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedPartnerValidation_Partner.ValidatePartnerManual("TPartnerEditUIConnector" +
+                TPartnerValidation_Partner.ValidatePartnerManual("TPartnerEditUIConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PPartnerRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedPartnerValidation_Partner.ValidatePartnerBankManual("TPartnerEditUIConnector" +
+                TPartnerValidation_Partner.ValidatePartnerBankManual("TPartnerEditUIConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PBankRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

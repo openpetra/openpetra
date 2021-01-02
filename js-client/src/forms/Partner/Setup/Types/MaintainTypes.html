@@ -3,13 +3,19 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_detail(this)" id="type{val_p_type_code_c_clean}">
+	<div class="tpl_row" id="type{val_p_type_code_c_clean}">
 
 		<div class="row">
 			<div class="col">{val_p_type_code_c}</div>
-			<div class="col-1">
-				<button class="btn btn-primary" onclick="open_edit('{val_p_type_code_c}')"><i class="fas fa-wrench"></i></button>
+			<div class="col-2" style="margin-top:0.3em;">
+				<button type="button" class="btn btn-primary" onclick="open_detail(this)">
+					<i class="fas fa-folder-open"></i>
+				</button>
+				<button id="btnEdit" type="button" class="btn btn-primary" onclick="open_edit('{val_p_type_code_c}')" title="{forms.edit}">
+					<i class="fas fa-wrench"></i>
+				</button>
 			</div>
+			
 		</div>
 		<div class="row">
 			<div class="col">
@@ -22,6 +28,9 @@
 	<div class="collapse tpl_view">
 		<div class="container group-container">
 			<div class="row">
+				<div class="col">{group_name}</div><div class="col">{val_p_category_code_c}</div>
+			</div>
+			<div class="row">
 				<div class="col">{entry_name}</div><div class="col">{val_p_type_code_c}</div>
 			</div>
 			<div class="row">
@@ -29,6 +38,12 @@
 			</div>
 			<div class="row">
 				<div class="col">{entry_status}</div><div class="col">{val_p_valid_type_l}</div>
+			</div>
+			<div class="row">
+				<div class="col">{system_type}</div><div class="col">{val_p_system_type_l}</div>
+			</div>
+			<div class="row">
+				<div class="col">{type_deletable}</div><div class="col">{val_p_type_deletable_l}</div>
 			</div>
 		</div>
 	</div>
@@ -56,6 +71,18 @@
 
 						<div class="row">
 							<div class="col">
+								<span>{group_name}</span>
+							</div>
+							<div class="col">
+								<select name="p_category_code_c">
+									<option value="">{without_group}</option>
+									<option value="SPONSORED_CHILD_STATUS">{sponsored_child_status}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
 								<span>{entry_name}</span>
 							</div>
 							<div class="col">
@@ -69,6 +96,15 @@
 							</div>
 							<div class="col">
 								<textarea name="p_type_description_c"></textarea>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{entry_status}
+							</div>
+							<div class="col">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="p_valid_type_l" name="p_valid_type_l"> {entry_status}</label>
 							</div>
 						</div>
 
@@ -96,6 +132,18 @@
 
 						<div class="row">
 							<div class="col">
+								<span>{group_name}</span>
+							</div>
+							<div class="col">
+								<select name="p_category_code_c">
+									<option value="" selected>{without_group}</option>
+									<option value="SPONSORED_CHILD_STATUS">{sponsored_child_status}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
 								<span>{entry_name}</span>
 							</div>
 							<div class="col">
@@ -109,6 +157,15 @@
 							</div>
 							<div class="col">
 								<textarea name="p_type_description_c"></textarea>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								{valid_type}
+							</div>
+							<div class="col">
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" checked id="p_valid_type_l" name="p_valid_type_l"> {valid_type}</label>
 							</div>
 						</div>
 

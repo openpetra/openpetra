@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -146,7 +146,7 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                                     UsingNamespaces.Add(Namespace);
                                 }
 
-                                Namespace = "Ict.Petra.Shared." + TTable.GetNamespace(Table.strGroup) + ".Validation";
+                                Namespace = "Ict.Petra.Server." + TTable.GetNamespace(Table.strGroup) + ".Validation";
 
                                 if (!UsingNamespaces.Contains(Namespace))
                                 {

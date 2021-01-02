@@ -29,7 +29,7 @@ using System.Data.Common;
 using System.Net;
 using System.Text.RegularExpressions;
 
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 using Ict.Common.DB.Exceptions;
 
@@ -62,7 +62,7 @@ namespace Ict.Common.DB
         {
             MySqlConnection TheConnection = null;
 
-            if (String.IsNullOrEmpty(AConnectionString))
+            if (String.IsNullOrEmpty(AConnectionString) || !AConnectionString.StartsWith("SERVER="))
             {
                 if (AUsername == "")
                 {
@@ -70,6 +70,7 @@ namespace Ict.Common.DB
                 }
 
                 AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" +
+                    AConnectionString +
                     "Convert Zero Datetime=True;"+"UID=" +
                     AUsername + ";" + "PASSWORD=";
             }
@@ -433,7 +434,7 @@ namespace Ict.Common.DB
                 }
             }
 
-            ObjReturn = new MySqlCommand(ACommandText, (MySqlConnection)AConnection);
+            ObjReturn = new MySqlCommand(ACommandText, (MySqlConnection)AConnection, (MySqlTransaction)ATransaction.WrappedTransaction);
 
             ObjReturn.CommandTimeout = TAppSettingsManager.GetInt32("Server.DBCommandTimeout", 3600);
 
@@ -544,7 +545,7 @@ namespace Ict.Common.DB
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
 
-            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
+            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection, (MySqlTransaction)ATransaction.WrappedTransaction))
             {
                 cmd.ExecuteNonQuery();
             }
@@ -564,7 +565,7 @@ namespace Ict.Common.DB
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
 
-            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
+            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection, (MySqlTransaction)ATransaction.WrappedTransaction))
             {
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }

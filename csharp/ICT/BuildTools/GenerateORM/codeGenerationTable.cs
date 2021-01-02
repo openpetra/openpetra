@@ -242,7 +242,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     tempTemplate.SetCodelet("COLUMNNAME", TTable.NiceFieldName(col));
                     tempTemplate.SetCodelet("COLUMNDBNAME", col.strName);
                     tempTemplate.SetCodelet("COLUMNLABEL", col.strLabel);
-                    tempTemplate.SetCodelet("COLUMNODBCTYPE", CodeGenerationPetra.ToOdbcTypeString(col));
+                    tempTemplate.SetCodelet("COLUMNODBCTYPE", col.ToOdbcTypeString());
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                     tempTemplate.SetCodelet("COLUMNNOTNULL", col.bNotNull.ToString().ToLower());
                     tempTemplate.SetCodelet("COLUMNCOMMA", colOrder + 1 < currentTable.grpTableField.Count ? "," : "");

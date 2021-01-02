@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// </summary>
         /// <param name="AInspectDS"></param>
         /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static TSubmitChangesResult SavePartnerMaintenanceTables(ref PartnerSetupTDS AInspectDS)
         {
             if (AInspectDS != null)
@@ -91,8 +91,8 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// save partner types
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
-        public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription, out TVerificationResultCollection AVerificationResult)
+        [RequireModulePermission("PTNRADMIN")]
+        public static bool MaintainTypes(string action, string ATypeCode, string ATypeDescription, string ACategoryCode, bool AValidType, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
             AVerificationResult = new TVerificationResultCollection();
@@ -102,6 +102,8 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                 PTypeRow row = MainDS.PType.NewRowTyped();
                 row.TypeCode = ATypeCode.ToUpper();
                 row.TypeDescription = ATypeDescription;
+                row.CategoryCode = ACategoryCode;
+                row.ValidType = AValidType;
                 MainDS.PType.Rows.Add(row);
                 try
                 {
@@ -121,6 +123,8 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                     if (row.TypeCode == ATypeCode)
                     {
                         row.TypeDescription = ATypeDescription;
+                        row.CategoryCode = ACategoryCode;
+                        row.ValidType = AValidType;
                     }
                 }
 
@@ -141,6 +145,12 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                 {
                     if (row.TypeCode == ATypeCode)
                     {
+                        if (!row.TypeDeletable)
+                        {
+                            AVerificationResult.Add(new TVerificationResult("error", "not_deletable", TResultSeverity.Resv_Critical));
+                            return false;
+                        }
+                        
                         row.Delete();
                     }
                 }
@@ -189,7 +199,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// save consent channels
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static bool MaintainConsentChannels(string action, string AChannelCode, string AName, string AComment, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
@@ -289,7 +299,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// save consent purposes
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static bool MaintainConsentPurposes(string action, string APurposeCode, string AName, string AComment, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
@@ -389,7 +399,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// <summary>
         /// maintain publications
         /// </summary>
-        [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRADMIN")]
         public static bool MaintainPublications(string action, string APublicationCode, string APublicationDescription, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();

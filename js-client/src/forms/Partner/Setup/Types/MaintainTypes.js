@@ -51,6 +51,9 @@ function format_item(item) {
 
 function open_detail(obj) {
 	obj = $(obj);
+	while(!obj[0].hasAttribute('id') || !obj[0].id.includes("type")) {
+		obj = obj.parent();
+	}
 	if (obj.find('.collapse').is(':visible') ) {
 		$('.tpl_row .collapse').collapse('hide');
 		return;

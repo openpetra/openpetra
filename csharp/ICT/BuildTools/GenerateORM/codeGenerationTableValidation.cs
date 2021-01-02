@@ -213,7 +213,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 "DataTableValidation.cs");
 
             Template.AddToCodelet("NAMESPACE", ANamespaceName);
-            Template.AddToCodelet("DATATABLENAMESPACE", ANamespaceName.Replace("Validation", "Data"));
+            Template.AddToCodelet("DATATABLENAMESPACE", ANamespaceName.Replace("Validation", "Data").Replace(".Server.", ".Shared."));
 
             // load default header with license and copyright
             Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,7 @@ using System.Data;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.Validation;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 
@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             {
                 if (ASubmitTable.Rows[Counter].RowState != DataRowState.Deleted)
                 {
-                    TSharedValidation_CacheableDataTables.ValidateMaritalStatus(this.GetType().Name +
+                    TValidation_CacheableDataTables.ValidateMaritalStatus(this.GetType().Name +
                         " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                         (PtMaritalStatusRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
                 }

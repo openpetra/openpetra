@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm, alanP
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,9 +41,9 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Shared.MFinance.Gift.Validation;
+using Ict.Petra.Server.MFinance.Gift.Validation;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Server.MFinance.Validation;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared;
@@ -355,7 +355,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                         // We need to know what that rate is...
                                         DateTime firstOfMonth;
 
-                                        if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(FLedgerNumber,
+                                        if (TFinanceValidationHelper.GetFirstDayOfAccountingPeriod(FLedgerNumber,
                                                 giftBatch.GlEffectiveDate, out firstOfMonth))
                                         {
                                             TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstOfMonth,
@@ -480,7 +480,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                         // Do our standard validation on this gift
                                         AGiftValidation.Validate(this, gift, ref Messages);
-                                        TSharedFinanceValidation_Gift.ValidateGiftManual(
+                                        TFinanceValidation_Gift.ValidateGiftManual(
                                             this,
                                             gift,
                                             giftBatch.BatchYear,
@@ -496,7 +496,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                             giftDetails,
                                             ref Messages);
 
-                                        TSharedFinanceValidation_Gift.ValidateGiftDetailManual(
+                                        TFinanceValidation_Gift.ValidateGiftDetailManual(
                                             this,
                                             Row,
                                             ref Messages,
@@ -949,8 +949,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             string ImportMessage = Catalog.GetString("Initialising");
 
             // This needs to be initialised because we will be calling the method
-            TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
-            TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
+            TFinanceValidationHelper.GetValidPeriodDatesDelegate = @TAccountingPeriodsWebConnector.GetPeriodDates;
+            TFinanceValidationHelper.GetFirstDayOfAccountingPeriodDelegate = @TAccountingPeriodsWebConnector.GetFirstDayOfAccountingPeriod;
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("ImportGiftTransactions");
@@ -999,7 +999,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         decimal intlRateFromBase = -1.0m;
                         DateTime firstOfMonth;
 
-                        if (TSharedFinanceValidationHelper.GetFirstDayOfAccountingPeriod(FLedgerNumber,
+                        if (TFinanceValidationHelper.GetFirstDayOfAccountingPeriod(FLedgerNumber,
                                 giftBatch.GlEffectiveDate, out firstOfMonth))
                         {
                             TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency, LedgerIntlCurrency, firstOfMonth,
@@ -1112,13 +1112,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                     // Do our standard validation on this gift
                                     AGiftValidation.Validate(this, gift, ref Messages);
-                                    TSharedFinanceValidation_Gift.ValidateGiftManual(this, gift, giftBatch.BatchYear, giftBatch.BatchPeriod,
+                                    TFinanceValidation_Gift.ValidateGiftManual(this, gift, giftBatch.BatchYear, giftBatch.BatchPeriod,
                                         ref Messages, MethodOfGivingTable, MethodOfPaymentTable, MailingFormTable);
 
                                     ImportMessage = Catalog.GetString("Validating the gift details data");
 
                                     AGiftDetailValidation.Validate(this, giftDetails, ref Messages);
-                                    TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, Row,
+                                    TFinanceValidation_Gift.ValidateGiftDetailManual(this, Row,
                                         ref Messages, null, CostCentreTable, AccountTable,
                                         MotivationGroupTable, MotivationDetailTable, MailingTable, giftDetails.RecipientKey);
 
@@ -1429,7 +1429,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 // And do the additional manual ones
                 AImportMessage = Catalog.GetString("Additional validation of the gift batch data");
-                TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages,
+                TFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages,
                     AValidationAccountTable, AValidationCostCentreTable, AValidationAccountPropertyTable, AValidationAccountingPeriodTable,
                     AValidationCorporateExchTable, AValidationCurrencyTable,
                     ALedgerBaseCurrency, ALedgerIntlCurrency);

@@ -292,7 +292,7 @@ namespace Ict.Common.IO
             }
             else
             {
-                return new MailboxAddress(AAddressWithName.Trim());
+                return MailboxAddress.Parse(AAddressWithName.Trim());
             }
         }
 
@@ -620,6 +620,27 @@ namespace Ict.Common.IO
             {
                 subject = subject.Replace("{" + pair.Key + "}", pair.Value);
                 body = body.Replace("{" + pair.Key + "}", pair.Value);
+                body = body.Replace("{ifdef " + pair.Key + "}" + Environment.NewLine, "");
+                body = body.Replace("{endif " + pair.Key + "}" + Environment.NewLine, "");
+            }
+
+            // drop all {ifdef var}...{endif var} if var does not exist in the parameters list
+            int indexIfDef = -1;
+            while ((indexIfDef = body.IndexOf("{ifdef ")) >= 0)
+            {
+                string tmp = body.Substring(indexIfDef + "{ifdef ".Length);
+                int indexIfDefClosingBracket = tmp.IndexOf("}");
+                if (indexIfDefClosingBracket < 0)
+                {
+                    throw new Exception("SendEmailFromTemplate: " + template + ": cannot determine key from ifdef");
+                }
+                string key = tmp.Substring(0, indexIfDefClosingBracket);
+                int indexEnd = body.IndexOf("{endif " + key + "}" + Environment.NewLine);
+                if (indexEnd < 0)
+                {
+                    throw new Exception("SendEmailFromTemplate: " + template + ": missing endif for key " + key);
+                }
+                body = body.Substring(0, indexIfDef) + body.Substring(indexEnd + ("{endif " + key + "}" + Environment.NewLine).Length);
             }
 
             if ((subject.Length == 0) || (body.Length == 0))

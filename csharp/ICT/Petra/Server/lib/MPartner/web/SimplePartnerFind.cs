@@ -51,6 +51,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static PartnerFindTDSSearchResultTable FindPartners(
+            string APartnerKey,
             string AFirstName,
             string AFamilyNameOrOrganisation,
             string ACity,
@@ -68,6 +69,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             CriteriaData.Rows.Add(CriteriaRow);
             CriteriaRow.PartnerName = "%" + AFamilyNameOrOrganisation + "%";
+
+            if (APartnerKey.Length > 0)
+            {
+                CriteriaRow.PartnerKey = System.Convert.ToInt64(APartnerKey);
+                CriteriaRow.ExactPartnerKeyMatch = false;
+            }
 
             // CriteriaRow.PersonalName = AFirstName;
             CriteriaRow.City = ACity;
@@ -183,7 +190,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             int TotalRecords;
-            AResult = FindPartners(String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, "PartnerName", ALimit, out TotalRecords);
+            AResult = FindPartners(String.Empty, String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, "PartnerName", ALimit, out TotalRecords);
 
             return AResult.Rows.Count > 0;
         }

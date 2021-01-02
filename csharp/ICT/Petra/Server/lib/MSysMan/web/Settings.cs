@@ -39,7 +39,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MSysMan.Validation;
+using Ict.Petra.Server.MSysMan.Validation;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
@@ -358,7 +358,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
             if (AInitialPassword != String.Empty)
             {
                 // check if password is valid, it meets the criteria
-                if (!TSharedSysManValidation.CheckPasswordQuality(AInitialPassword, out VerificationResult))
+                if (!TSysManValidation.CheckPasswordQuality(AInitialPassword, out VerificationResult))
                 {
                     AVerificationResult.Add(VerificationResult);
                     return false;

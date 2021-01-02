@@ -3,6 +3,109 @@
 
 <include buildfile="../../inc/nant/OpenPetra.common.xml"/>
 
+<script language="C#" prefix="OP" >
+  <references>
+    <include name="System.dll"/>
+  </references>  
+  <imports>
+    <import namespace="System.Diagnostics" />
+  </imports>
+  <code>
+    <![CDATA[
+    /// copy the dlls from nuget packages to delivery/bin
+    [Function("CopyNugetDllsToBin")]
+    public static string CopyNugetDllsToBin(string NuGetPath, string BinPath)
+    {
+      foreach (string path in Directory.GetDirectories(NuGetPath))
+      {
+        // if another path is added here, also add in GenerateNamespaceMap.cs
+        string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net20" };
+        foreach (string netVersionPath in netVersionPaths)
+        {
+          if (Directory.Exists(path + netVersionPath))
+          {
+            foreach (string f in Directory.GetFiles(path + netVersionPath, "*.dll"))
+            {
+              // Console.WriteLine(f);
+              File.Copy(f, BinPath + "/" + Path.GetFileName(f), true);
+            }
+            break;
+          }
+        }
+      }
+      return "Nuget Dlls have been copied to " + BinPath;
+    }
+
+    /// get the Mono version
+    [Function("GetMonoVersion")]
+    public static Version GetMonoVersion()
+    {
+        System.Diagnostics.Process process = new System.Diagnostics.Process();
+        process.StartInfo.FileName = "/bin/bash";
+        process.StartInfo.Arguments += "-c \"mono --version | head -1 |  awk '{print $5}'\"";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.Start();
+        process.WaitForExit();
+        return new Version(process.StandardOutput.ReadToEnd());
+    }
+
+    
+    /// compare the Mono version to another version
+    [Function("CompareMonoVersionTo")]
+    public static Int32 CompareMonoVersionTo(string v)
+    {
+        return GetMonoVersion().CompareTo(new Version(v));
+    }
+
+    /// emulate nuget.exe: collect nuget packages depending on package.config
+    [Function("EmulateNugetExe")]
+    public static string EmulateNugetExe(string NuGetPackagesPath)
+    {
+        string NugetPackagesConfigFile = NuGetPackagesPath + ".config";
+
+        StreamReader nugetSr = new StreamReader(NugetPackagesConfigFile);
+        while (!nugetSr.EndOfStream)
+        {
+            string line = nugetSr.ReadLine();
+            if (line.Trim().StartsWith("<package id="))
+            {
+                int pos1 = line.IndexOf('"');
+                int pos2 = line.IndexOf('"', pos1 + 1);
+                string pkgId = line.Substring(pos1 + 1, pos2 - pos1 - 1);
+                int pos3 = line.IndexOf('"', pos2 + 1);
+                int pos4 = line.IndexOf('"', pos3 + 1);
+                string version = line.Substring(pos3 + 1, pos4 - pos3 - 1);
+
+                string nupkgfolder = NuGetPackagesPath + "/" + pkgId + "." + version;
+                string nupkgfile = nupkgfolder + "/" + pkgId + "." + version + ".nupkg";
+                if (!Directory.Exists(nupkgfolder))
+                {
+                    Directory.CreateDirectory(nupkgfolder);
+
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    process.StartInfo.FileName = "curl";
+                    process.StartInfo.Arguments += "--location https://www.nuget.org/api/v2/package/" + 
+                        pkgId + "/" + version + " --output " + nupkgfile;
+                    process.Start();
+                    process.WaitForExit();
+
+                    process = new System.Diagnostics.Process();
+                    process.StartInfo.FileName = "unzip";
+                    process.StartInfo.WorkingDirectory = nupkgfolder;
+                    process.StartInfo.Arguments += "-o " + nupkgfile;
+                    process.Start();
+                    process.WaitForExit();
+                }
+            }
+        }
+
+        return "We have emulated nuget.exe for the packages.config file";
+    }
+]]>
+    </code>
+</script>
+
 <target name="clean" >
   <delete>
     <fileset basedir="${dir.bin}">
@@ -54,23 +157,52 @@
 <target name="removeWindowsDlls">
   <if test="${'unix'==platform::get-name()}" >
       <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
-      <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
-      <delete file="${dir.bin}/sqlite3.dll" failonerror="false"/>
       <delete file="${dir.bin}/libsodium.dll" failonerror="false"/>
       <delete file="${dir.bin}/libsodium-64.dll" failonerror="false"/>
   </if>
 </target>
 
+<target name="installNuget">
+    <if test="${not file::exists(dir.nuget + '/nuget.exe')}">
+      <mkdir dir="${dir.nuget}" failonerror="false"/>
+      <exec program="curl" workingdir="${dir.nuget}">
+        <arg value="--location" />
+        <arg value="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" />
+        <arg value="--output" />
+        <arg value="${dir.nuget}/nuget.exe" />
+      </exec>
+    </if>
+
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
+    <ExecDotNet program="${dir.nuget}/nuget.exe"
+        commandline="install ${dir.3rdParty}/packages.config -OutputDirectory ${dir.nuget}"/>
+</target>
+
+<target name="emulateNuget">
+    <mkdir dir="${dir.nuget}" failonerror="false"/>
+    <echo message="${OP::EmulateNugetExe(dir.nuget)}"/>
+</target>
+  
 <target name="compile" description="Copy Thirdparty DLLs to bin directory">
   <echo message="Target ThirdParty compile started at: ${datetime::now()}" />         
+
+  <!-- only use nuget.exe on Mono > 6.0.0.0 because it does not work on Mono 5 -->
+  <if test="${OP::CompareMonoVersionTo('6.0.0.0') &gt; 0}">
+    <call target="installNuget"/>
+  </if>
+  <!-- for older Mono, we download the nuget packages directly -->
+  <if test="${OP::CompareMonoVersionTo('6.0.0.0') &lt; 0}">
+    <call target="emulateNuget"/>
+  </if>
+
   <foreach item="Folder" in="${dir.3rdParty}" property="foldername">
     <copy todir="${dir.bin}">
       <fileset basedir="${foldername}">
         <patternset refid="3rdPartyPattern" />
-        <patternset refid="NunitPattern" />
       </fileset>
     </copy>
   </foreach>
+  <echo message="${OP::CopyNugetDllsToBin(dir.nuget, dir.bin)}"/>
   <call target="removeWindowsDlls"/>
   <if test="${'win32'==platform::get-name()}">
     <foreach item="Folder" in="${dir.3rdParty}" property="foldername">

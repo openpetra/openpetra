@@ -696,7 +696,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                 // Determine whether the Partner has a 'EX-WORKER*' Partner Type
                                 HasEXWORKERPartnerType =
-                                    Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+                                    Ict.Petra.Server.MPartner.Common.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
 
                                 if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                                 {
@@ -720,7 +720,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                 // Determine whether the Partner has a 'EX-WORKER*' Partner Type
                                 HasEXWORKERPartnerType =
-                                    Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+                                    Ict.Petra.Server.MPartner.Common.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
 
                                 if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                                 {
@@ -1455,9 +1455,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                 // If the Partner Attribute is indeed a Partner Contact Detail or if it is the
                                 // 'Primary Contact Method'...
-                                if (((FamilyPartnerAttributeDR[Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN]
+                                if (((FamilyPartnerAttributeDR[Ict.Petra.Server.MPartner.Common.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN]
                                       != System.DBNull.Value)
-                                     && ((bool)FamilyPartnerAttributeDR[Ict.Petra.Shared.MPartner.Calculations.
+                                     && ((bool)FamilyPartnerAttributeDR[Ict.Petra.Server.MPartner.Common.Calculations.
                                                                         PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN] ==
                                          true))
                                     || ((string)FamilyPartnerAttributeDR[PPartnerAttributeTable.GetAttributeTypeDBName()] ==

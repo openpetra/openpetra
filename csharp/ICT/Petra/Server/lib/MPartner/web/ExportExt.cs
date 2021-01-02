@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1201,7 +1201,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
             }
 
-            BestAddressPK = Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(AMainDS);
+            BestAddressPK = Ict.Petra.Server.MPartner.Common.Calculations.DetermineBestAddress(AMainDS);
 
             //
             // If I have not been given a locationKey, I can pull one out of the LocationTable now,

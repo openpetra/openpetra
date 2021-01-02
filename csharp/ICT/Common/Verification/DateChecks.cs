@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,7 +85,7 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">Context of verification (can be null).</param>
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method
-        /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
+        /// 'TValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
         /// empty dates, but dates that are invalid in other respects (e.g. exceeding a valid date range)!!!</remarks>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>
@@ -148,7 +148,7 @@ namespace Ict.Common.Verification
         /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
         /// <param name="AAlternativeFirstDayOfPeriod"></param>
         /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method
-        /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
+        /// 'TValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
         /// empty dates, but dates that are invalid in other respects (e.g. exceeding a valid date range)!!!</remarks>
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>

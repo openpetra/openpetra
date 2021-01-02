@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,9 +23,12 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.IO;
+using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Tools.DBXML;
 
 namespace GenerateSQL
 {
@@ -35,7 +38,7 @@ namespace GenerateSQL
     public class TLoadMysql
     {
         /// load data from csv files and sql statements
-        public static bool LoadData(string AHostname, string ADatabaseName, string AUsername, string APassword, string ALoadSQLFileName)
+        public static bool ExecuteLoadScript(TDataDefinitionStore ADataDefinition, string AHostname, string ADatabaseName, string AUsername, string APassword, string ALoadSQLFileName)
         {
             StreamReader sr = null;
             TDBTransaction WriteTransaction = new TDBTransaction();
@@ -56,116 +59,88 @@ namespace GenerateSQL
                 throw e;
             }
 
-            DBAccessObj.WriteTransaction(ref WriteTransaction,
-                ref SubmissionResult,
-                delegate
+            // one command per line.
+            // file is in postgresql syntax
+            // either COPY FROM or INSERT
+
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine();
+
+                while (!line.Trim().StartsWith("--") && !line.Trim().EndsWith(";") && !sr.EndOfStream)
                 {
-                    // one command per line.
-                    // file is in postgresql syntax
-                    // either COPY FROM or INSERT
+                    string templine = sr.ReadLine();
 
-                    while (!sr.EndOfStream)
+                    if (!templine.StartsWith("--"))
                     {
-                        string line = sr.ReadLine();
-
-                        while (!line.Trim().StartsWith("--") && !line.Trim().EndsWith(";") && !sr.EndOfStream)
-                        {
-                            string templine = sr.ReadLine();
-
-                            if (!templine.StartsWith("--"))
-                            {
-                                line += " " + templine;
-                            }
-                        }
-
-                        if (line.Trim().ToUpper().StartsWith("INSERT"))
-                        {
-                            DBAccessObj.ExecuteNonQuery(line, WriteTransaction);
-                        }
-                        else if (line.Trim().ToUpper().StartsWith("UPDATE"))
-                        {
-                            DBAccessObj.ExecuteNonQuery(line, WriteTransaction);
-                        }
-                        else if (line.Trim().ToUpper().StartsWith("COPY"))
-                        {
-                            // pgsql: COPY p_language FROM 'c:/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-                            // mysql: LOAD DATA LOCAL INFILE 'c:/p_language.csv' INTO TABLE p_language FIELDS TERMINATED BY ',' ENCLOSED BY '"' ESCAPED BY '"';
-
-                            // need to fix the NULL value from ? to NULL
-                            string DataFilename = line.Substring(line.IndexOf("'") + 1);
-                            DataFilename = DataFilename.Substring(0, DataFilename.IndexOf("'"));
-                            string TableName = line.Substring(line.IndexOf("COPY ") + 5);
-                            TableName = TableName.Substring(0, TableName.IndexOf(" "));
-
-                            StreamReader sData = new StreamReader(DataFilename);
-                            StreamWriter sDataWriter = new StreamWriter(DataFilename + ".local");
-                            bool firstRow = true;
-
-                            while (!sData.EndOfStream)
-                            {
-                                string CSVDataQuestionMark = sData.ReadLine().Trim();
-                                string CSVDataNULL = string.Empty;
-
-                                while (CSVDataQuestionMark.Length > 0)
-                                {
-                                    bool quotedValue = CSVDataQuestionMark.StartsWith("\"");
-                                    string value = StringHelper.GetNextCSV(ref CSVDataQuestionMark, ",");
-
-                                    if (value == "?")
-                                    {
-                                        value = "NULL";
-                                    }
-
-                                    // if true or false is written in quotes, do not convert to integer. needed for a_account_property
-                                    if ((!quotedValue && (value == "false")) || (value == "no"))
-                                    {
-                                        value = "0";
-                                    }
-
-                                    if ((!quotedValue && (value == "true")) || (value == "yes"))
-                                    {
-                                        value = "1";
-                                    }
-
-                                    CSVDataNULL = StringHelper.AddCSV(CSVDataNULL, value);
-                                }
-
-                                if (CSVDataNULL.Length > 0)
-                                {
-                                    if (firstRow)
-                                    {
-                                        firstRow = false;
-                                    }
-                                    else
-                                    {
-                                        sDataWriter.WriteLine();
-                                    }
-
-                                    sDataWriter.Write(CSVDataNULL);
-                                }
-                            }
-
-                            sData.Close();
-                            sDataWriter.Close();
-
-                            // see also http://dev.mysql.com/doc/refman/5.1/en/insert-speed.html
-                            string stmt = String.Format(
-                                "LOAD DATA LOCAL INFILE '{0}' INTO TABLE {1} FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' LINES TERMINATED BY '"
-                                +
-                                Environment.NewLine + "';",
-                                DataFilename + ".local",
-                                TableName);
-
-                            DBAccessObj.ExecuteNonQuery(stmt, WriteTransaction);
-                        }
+                        line += " " + templine;
                     }
+                }
 
-                    SubmissionResult = true;
+                if (line.Trim().ToUpper().StartsWith("INSERT") || line.Trim().ToUpper().StartsWith("UPDATE"))
+                {
+                    DBAccessObj.WriteTransaction(ref WriteTransaction,
+                        ref SubmissionResult,
+                        delegate
+                        {
+                            DBAccessObj.ExecuteNonQuery(line, WriteTransaction);
+                            SubmissionResult = true;
+                        });
+                }
+                else if (line.Trim().ToUpper().StartsWith("COPY"))
+                {
+                    // pgsql: COPY p_language FROM 'c:/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+                    // mysql: LOAD DATA LOCAL INFILE 'c:/p_language.csv' INTO TABLE p_language FIELDS TERMINATED BY ',' ENCLOSED BY '"' ESCAPED BY '"';
+                    // But MySQL 8 makes it quite difficult for security reasons, to use LOAD DATA LOCAL INFILE.
+                    // So we parse the file and load the data directly. It is not a huge performance loss.
+                    DBAccessObj.WriteTransaction(ref WriteTransaction,
+                        ref SubmissionResult,
+                        delegate
+                        {
+                            string tablename = StringHelper.GetCSVValue(line.Trim().Replace(" ", ","), 1);
+                            LoadData(DBAccessObj, ADataDefinition, Path.GetDirectoryName(ALoadSQLFileName), tablename);
+                            SubmissionResult = true;
+                        });
+                }
+            }
 
-                    sr.Close();
-                });
+            sr.Close();
 
             DBAccessObj.CloseDBConnection();
+
+            return true;
+        }
+
+        /// <summary>
+        /// load data from a CSV file in Postgresql COPY format
+        /// </summary>
+        static private bool LoadData(TDataBase DBAccessObj, TDataDefinitionStore ADataDefinition, string APath, string ATablename)
+        {
+            TTable table = ADataDefinition.GetTable(ATablename);
+
+            // prepare the statement
+            string sqlStmt = table.PrepareSQLInsertStatement();
+
+            // load the data from the text file
+            string filename = APath + Path.DirectorySeparatorChar + ATablename + ".csv";
+
+            if (File.Exists(filename + ".local"))
+            {
+                filename += ".local";
+            }
+
+            StreamReader reader = new StreamReader(filename);
+            string line;
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                List <OdbcParameter> Parameters = table.PrepareParametersInsertStatement(line);
+
+                if (DBAccessObj.ExecuteNonQuery(sqlStmt, DBAccessObj.Transaction, Parameters.ToArray()) == 0)
+                {
+                    throw new Exception("failed to import line for table " + ATablename);
+                }
+            }
 
             return true;
         }

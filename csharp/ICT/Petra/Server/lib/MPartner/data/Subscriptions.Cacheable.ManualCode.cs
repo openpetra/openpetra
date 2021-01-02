@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MCommon;
-using Ict.Petra.Shared.MPartner.Mailroom.Validation;
+using Ict.Petra.Server.MPartner.Mailroom.Validation;
 
 namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 {

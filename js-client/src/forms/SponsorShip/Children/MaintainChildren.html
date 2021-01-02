@@ -1,25 +1,32 @@
 <h2>{caption}</h2>
 <link rel="stylesheet" href="/css/autocomplete.css">
 
-<form id="filter" class="container" action="javascript:MaintainChildren.filterShow()">
+<form id="tabfilter" class="container" action="javascript:MaintainChildren.filterShow()">
 
-  <!-- last -->
   <div class="row">
     <div class="col">
-      <span>{partner_firstname}</span>
+      <span>{child_name}</span>
     </div>
     <div class="col">
-      <input type="text" name="AFirstName" value="">
+      <input type="text" name="ChildName" value="">
     </div>
   </div>
 
-  <!-- first -->
   <div class="row">
     <div class="col">
-      <span>{partner_lastname}</span>
+      <span>{donor_name}</span>
     </div>
     <div class="col">
-      <input type="text" name="AFamilyName" value="">
+      <input type="text" name="DonorName" value="">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <span>{child_without_donor}</span>
+    </div>
+    <div class="col">
+      <input type="checkbox" name="ChildWithoutDonor" value="">
     </div>
   </div>
 
@@ -47,11 +54,28 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="col">
+      <span>{forms.sortby}:</span>
+    </div>
+    <div class="col">
+      <select name="ASortBy">
+        <option value="ChildName" selected>{sort_by_name}</option>
+        <option value="SponsorAdmin">{sort_by_sponsor_admin}</option>
+      </select>
+    </div>
+  </div>
+
   <!-- button -->
   <div class="row">
     <div class="col">
+      <button type="button" class="btn btn-secondary" onclick="save_preset('MaintainChildren')">{forms.save_preset}</button>
       <button type="submit" class="btn btn-primary">{forms.filter}</button>
-      <button type="button" class="btn btn-primary" onclick="MaintainChildren.showCreate()">{forms.new}</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.showCreate()">{new_child}</button>
     </div>
     <div class="col">
     </div>
@@ -75,7 +99,8 @@
 
 <div phantom hidden>
 
-  <div class="row children">
+  <div class="tpl_row children" id="child{val_p_partner_key_n}">
+  <div class="row">
     <div class="invisible">
       <data name="p_partner_key_n" value="-1"></data>
     </div>    
@@ -91,8 +116,36 @@
     <div class="col">
       <span type="text" name="p_user_id_c"></span>
     </div>
-    <div class="col-1">
-      <button type="button" class="btn btn-primary" onclick="MaintainChildren.detail(this)"><i class="fas fa-wrench"></i></button>
+    <div class="col-2" style="margin-top:0.3em;">
+      <button type="button" class="btn btn-primary" onclick="MaintainChildren.open_detail(this)">
+        <i class="fas fa-folder-open"></i>
+      </button>
+      <button id="btnEdit" type="button" class="btn btn-primary" onclick="MaintainChildren.edit(this)" title="{forms.edit}">
+        <i class="fas fa-wrench"></i>
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="collapse_col"></div>
+    </div>
+  </div>
+  </div>
+
+  <div class="collapse tpl_view">
+    <div class="container group-container">
+      <div class="row" style="margin-top:0.5em;">
+        <div class="col">
+        </div>
+        <div class="col-1">
+          <button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');" title="{forms.close}">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col"><span type="text" name="DonorContactDetails"></span></div>
+      </div>
     </div>
   </div>
 
@@ -107,11 +160,12 @@
       <data name="p_comment_type_c" value="-1"></data>
       <data name="p_index_i" value="-1"></data>
       <data name="p_partner_key_n" value="-1"></data>
-      <button type="button" class="btn btn-primary" onclick="MaintainChildComments.detail(this)"><i class="fas fa-wrench"></i></button>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildComments.edit(this)"><i class="fas fa-wrench"></i></button>
     </div>
   </div>
 
-  <div class="row sponsorship">
+  <div class="sponsorship">
+  <div class="row">
     <div class="col">
       <span name="DonorName"></span>
     </div>
@@ -133,8 +187,16 @@
       <data name="a_batch_number_i"></data>
       <data name="a_gift_transaction_number_i"></data>
       <data name="a_detail_number_i"></data>
-      <button type="button" class="btn btn-primary" onclick="MaintainChildSponsorship.detail(this)"><i class="fas fa-wrench"></i></button>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildSponsorship.edit(this)"><i class="fas fa-wrench"></i></button>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <span name="DonorAddress"></span>
+      <span name="DonorEmailAddress"></span>
+      <span name="DonorPhoneNumber"></span>
+    </div>
+  </div>
   </div>
 
   <div class="row reminder">
@@ -150,7 +212,7 @@
     <div class="col-1">
       <data name="p_reminder_id_i" value="-1"></data>
       <data name="p_partner_key_n" value="-1"></data>
-      <button type="button" class="btn btn-primary" onclick="MaintainChildReminders.detail(this)"><i class="fas fa-wrench"></i></button>
+      <button type="button" class="btn btn-primary" onclick="MaintainChildReminders.edit(this)"><i class="fas fa-wrench"></i></button>
     </div>
   </div>
 
@@ -277,7 +339,7 @@
                   </div>
                   <div class="row">
                     <div class="col">
-                      <input type="file" name="new_photo"  onchange="MaintainChildren.photoPreview()"/>
+                      <input type="file" id="new_photo" name="new_photo"  onchange="MaintainChildren.photoPreview()"/>
                       <button type="button" class="btn btn-primary" onclick="MaintainChildren.uploadNewPhoto()">{forms.upload}</button>
                     </div>
                   </div>
@@ -414,6 +476,7 @@
 
       </div>
       <div class="modal-footer">
+        <button class="btn btn-danger" onclick="MaintainChildren.delete()">{forms.delete}</button>
         <button class="btn btn-primary" onclick="MaintainChildren.saveEdit()">{forms.save}</button>
         <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
       </div>

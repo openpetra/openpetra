@@ -129,15 +129,7 @@ namespace Ict.Common.Data
                     SqlString = SqlString + " AND ";
                 }
 
-                if ((DBAccess.DBType == TDBType.SQLite)
-                    && ADataRow[PrimKeyOrd, WhichVersion] is DateTime)
-                {
-                    SqlString = SqlString + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";
-                }
-                else
-                {
-                    SqlString = SqlString + AColumnNames[PrimKeyOrd] + " = ?";
-                }
+                SqlString = SqlString + AColumnNames[PrimKeyOrd] + " = ?";
             }
 
             OdbcParameter[] Parameters = new OdbcParameter[APrimKeyColumnOrdList.Length];
@@ -1644,15 +1636,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + " AND ";
                 }
 
-                if ((DBAccess.DBType == TDBType.SQLite)
-                    && ADataRow[PrimKeyOrd, DataRowVersion.Original] is DateTime)
-                {
-                    ReturnValue = ReturnValue + "Date(" + AColumnNames[PrimKeyOrd] + ") = Date(?)";
-                }
-                else
-                {
-                    ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
-                }
+                ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
             }
 
             return ReturnValue;

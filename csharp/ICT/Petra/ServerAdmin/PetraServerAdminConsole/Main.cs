@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -313,8 +313,6 @@ namespace PetraServerAdminConsole
             System.Int16 ClientID = 0;                                      // assignment only to make code compile; has no functional implication
             System.Int16 ClientTaskPriority = 1;                    // assignment only to make code compile; has no functional implication
 
-            String GpgList;
-
             // label
             // ReadClientID,               used only for repeating invalid command line input
             // ReadClientTaskPriority;     used only for repeating invalid command line input
@@ -371,7 +369,6 @@ namespace PetraServerAdminConsole
 #if DEBUG
                             Console.WriteLine("     v: Clear all RDBMS Connection Pools");
 #endif
-                            Console.WriteLine("     k: List Intranet GPG encryption keys / K: Import keys");
                             Console.WriteLine("     x: exit PETRAServerADMIN");
                             Console.Write(ServerAdminPrompt);
                             break;
@@ -460,68 +457,11 @@ namespace PetraServerAdminConsole
 
                         case 'p':
                         case 'P':
-#if TODORemoting
-                            string resp = "";
+                            TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
+                            TRemote.PerformTimedProcessingNow("TProcessDataChecks");
 
-                            if (!TRemote.ServerTimedProcessingSetup)
-                            {
-                                Console.WriteLine("  Server Timed Processing Status: NOT SET UP YET - processing cannot be done!");
-
-                                Console.Write(ServerAdminPrompt);
-
-                                break;
-                            }
-
-                            Console.WriteLine("  Server Timed Processing Status: " +
-                            "runs daily at " + TRemote.GetTimedProcessingDailyStartTime24Hrs + ".");
-                            Console.WriteLine("    Partner Reminders: " +
-                            (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders") ? "On" : "Off"));
-                            Console.WriteLine("    Automatic Intranet Export: " +
-                            (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
-                            Console.WriteLine("    Data Checks: " + (TRemote.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
-
-                            Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SmtpHost);
-
-                            if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine("Do you want to run Reminder Processing now?");
-                                Console.Write("Type YES to continue, anything else to skip:");
-                                resp = Console.ReadLine();
-
-                                if (resp == "YES")
-                                {
-                                    TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
-                                }
-                            }
-
-                            if (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport"))
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine("Do you want to run Intranet Export Processing now?");
-                                Console.Write("Type YES to continue, anything else to skip:");
-                                resp = Console.ReadLine();
-
-                                if (resp == "YES")
-                                {
-                                    TRemote.PerformTimedProcessingNow("TProcessAutomatedIntranetExport");
-                                }
-                            }
-
-                            if (TRemote.TimedProcessingJobEnabled("TProcessDataChecks"))
-                            {
-                                Console.WriteLine("");
-                                Console.WriteLine("Do you want to run Data Checks Processing now?");
-                                Console.Write("Type YES to continue, anything else to skip:");
-                                resp = Console.ReadLine();
-
-                                if (resp == "YES")
-                                {
-                                    TRemote.PerformTimedProcessingNow("TProcessDataChecks");
-                                }
-                            }
                             Console.Write(ServerAdminPrompt);
-#endif
+
                             break;
 
                         case 's':
@@ -668,18 +608,6 @@ namespace PetraServerAdminConsole
                         case 'u':
                         case 'U':
                             ReadLineLoopEnd = ShutDown(true);
-                            break;
-
-                        case 'k':
-                            ListGpgKeys(out GpgList);
-                            Console.WriteLine(GpgList);
-                            Console.Write(ServerAdminPrompt);
-                            break;
-
-                        case 'K':
-                            ImportGpgKeys(out GpgList);
-                            Console.WriteLine(GpgList);
-                            Console.Write(ServerAdminPrompt);
                             break;
 
                         case 'x':
@@ -886,6 +814,10 @@ namespace PetraServerAdminConsole
                     else if (TAppSettingsManager.GetValue("Command") == "UpgradeDatabase")
                     {
                         UpgradeDatabase();
+                    }
+                    else if (TAppSettingsManager.GetValue("Command") == "SendReminders")
+                    {
+                        TRemote.PerformTimedProcessingNow("TProcessPartnerReminders");
                     }
                     else if (TAppSettingsManager.GetValue("Command") == "RefreshAllCachedTables")
                     {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Server.MFinance.Validation;
 
 namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 {
@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedFinanceValidation_AP.ValidateApDocumentDetailManual("TTransactionWebConnector" +
+                TFinanceValidation_AP.ValidateApDocumentDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (AApDocumentDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

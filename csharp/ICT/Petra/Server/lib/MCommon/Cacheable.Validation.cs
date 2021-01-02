@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.Validation;
 
 namespace Ict.Petra.Server.MCommon.Cacheable
 {
@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedValidation_CacheableDataTables.ValidateCountrySetupManual(this.GetType().Name +
+                TValidation_CacheableDataTables.ValidateCountrySetupManual(this.GetType().Name +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PCountryRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

@@ -171,6 +171,11 @@ menu() {
     runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
 }
 
+# send reminders per E-Mail
+sendReminders() {
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SendReminders"
+}
+
 # export variables for debugging to use mysql on the command line
 mysqlscript() {
     export DBHost=$OPENPETRA_DBHOST
@@ -224,7 +229,8 @@ mysqlrestore() {
     echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     cat $OpenPetraPath/db/createtables-MySQL.sql >> $OpenPetraPath/tmp/createtables-MySQL.sql
-    echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\` IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createtables-MySQL.sql
+    echo "CREATE USER '$OPENPETRA_DBUSER'@'localhost' IDENTIFIED BY '$OPENPETRA_DBPWD';" >> $OpenPetraPath/tmp/createtables-MySQL.sql
+    echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@\`localhost\`" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createtables-MySQL.sql
     rm $OpenPetraPath/tmp/createtables-MySQL.sql
 
@@ -540,7 +546,8 @@ mysqlinitdb() {
       echo "DROP DATABASE IF EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
-      echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp/createdb-MySQL.sql
+      echo "CREATE USER '$OPENPETRA_DBUSER'@'localhost' IDENTIFIED BY '$OPENPETRA_DBPWD';" >> $OpenPetraPath/tmp/createdb-MySQL.sql
+      echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@\`localhost\`;" >> $OpenPetraPath/tmp/createdb-MySQL.sql
       mysql -u root --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createdb-MySQL.sql || exit -1
       rm -f $OpenPetraPath/tmp/createdb-MySQL.sql
     fi
@@ -711,6 +718,9 @@ case "$1" in
     dumpYmlGz)
         dumpYmlGz
         ;;
+    reminder)
+        sendReminders
+        ;;
     menu)
         menu
         ;;
@@ -718,7 +728,7 @@ case "$1" in
         status
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|update|upgradedb|rewrite_conf|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|status|mysql|backup|backupall|restore|init|initdb|update|upgradedb|rewrite_conf|loadYmlGz|dumpYmlGz|reminder}"
         exit 1
         ;;
 esac

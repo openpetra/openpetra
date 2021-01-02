@@ -203,6 +203,8 @@
           overwrite="false" />
 <property name="dir.3rdParty" value="${path::combine(dir.csharp, 'ThirdParty')}"
           overwrite="false" />
+<property name="dir.nuget" value="${path::combine(dir.csharp, 'ThirdParty/packages')}"
+          overwrite="false" />
 <property name="dir.sql" value="${path::combine(dir.csharp, 'ICT/Petra/Server/sql')}"
           overwrite="false" />
  <!-- delivery -->
@@ -439,15 +441,10 @@
         <property name="external.wkhtmltopdf" value="/usr/bin/wkhtmltopdf" overwrite="true"/>
     </if>
 
-    <!-- this could be the location of NUnit installed by rpm -->
-    <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit3-console.exe"/>
-    <if test="${not file::exists(search.NUnitConsole)}">
-        <!-- we have now included the nunit3-console in our git repository -->
-        <property name="search.NUnitConsole" value="${dir.3rdParty}/NUnit/nunit3-console/nunit3-console.exe"/>
-    </if>
-    <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
+    <!-- we are now using nunit3-console from nuget -->
+    <property name="external.NUnitConsole" value="${dir.nuget}/NUnit.ConsoleRunner.3.12.0-beta1/tools/nunit3-console.exe" overwrite="false"/>
     <if test="${not file::exists(external.NUnitConsole)}">
-        <echo>Cannot find nunit3-console.exe! Please add the path in inc/nant/OpenPetra.common.xml</echo>
+        <echo>Cannot find nunit3-console.exe! Please run nant generateTools</echo>
     </if>
   </if>
   <if test="${'unix'!=platform::get-name()}">

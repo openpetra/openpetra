@@ -12,6 +12,49 @@
 
 <h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra</h2>
 
+<h3>Version 2020.12 vom 2. Januar 2021</h3>
+
+<p>Diese Version beinhaltet die Arbeit von 2 Monaten, November und Dezember. Im Patenschaftsmodul ist viel passiert. Aber auch andere Module erhielten Korrekturen und neue Funktionalität, und auch technische Verbesserungen wurden umgesetzt.</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+Patenschaftsmodul:
+<ul>
+<li>Erinnerungen per E-Mail für Patenschaften funktionieren nun</li>
+<li>Erinnerungen: benutze Vorlagendateien für die E-Mails</li>
+<li>Zeige zukünftige Paten der Kinder im Suchergebnis</li>
+<li>Man kann nach dem Vornamen eines Kindes suchen, auch wenn kein Familienname hinterlegt ist</li>
+<li>Filtern aller Kinder, die noch keinen Paten haben</li>
+<li>Patenschaften nach Pate filtern</li>
+<li>Patenschaften können nach dem Names des Kindes oder nach Patenschaftsbetreuer sortiert werden.</li>
+<li>Das Hochladen vom Foto eines Kindes zeigt nun ggfs. einen Fehler</li>
+<li>Man kann Patenkinder nun auch löschen</li>
+<li>Zeige Anschrift und Kontaktmöglichkeiten eines Paten in der Spendenübersicht</li>
+<li>Im Suchergebnis von Patenschaften gibt es nun eine Vorschau mit Kontaktmöglichkeiten des Paten</li>
+</ul>
+
+Weitere Verbesserungen und Korrekturen:
+<ul>
+<li>Kontaktsuche: filtere nach Schlüssel des Kontaktes</li>
+<li>Nur noch Benutzer mit dem Recht PTNRADMIN können die Einwilligungskanäle und Verwendungszwecke für Einwilligungen bearbeiten</li>
+<li>Leerer Kontakt: Fehlermeldung korrigiert, die gezeigt werden soll, wenn man versucht zu speichern. Es wird nicht mehr nach der Einwilligung gefragt.</li>
+<li>Partner Types: edit flag for active type and type category</li>
+<li>Spendenbescheinigungen: Die HTML Vorlage und das Logo können als Voreinstellung gespeichert werden.</li>
+<li>In den Berichten über die Kontobewegungen und die Kontenbilanzen können die Konten besser ausgewählt werden.</li>
+<li>Beim Wiederherstellen von alten Datenbanken wird nun nicht einfach die Version der Daten gesetzt, sondern es werden entsprechend die Aktualisierung der Daten durchgeführt.</li>
+<li>Bei der Neuinstallierung einer OpenPetra Instanz wird nun nicht einfach die Datenbankversion gesetzt, sondern es werden auch die Datenbankaktualisierungen durchgeführt.</li>
+</ul>
+
+Technische Verbesserungen:
+<ul>
+<li>Alle Unterstützung für SQLite wurde aus dem Quelltext entfernt</li>
+<li>MySQL 8 wird nun unterstützt</li>
+<li>Benutze MysqlConnector anstelle von Mysql.Data</li>
+<li>NUnit wurde auf die neueste Version 3.12 aktualisiert, und es kommen nun nuget Pakete zum Einsatz</li>
+</ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem <a href="https://github.com/openpetra/openpetra/milestone/14?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2020.12</a> zu finden!</p>
+
 <h3>Version 2020.10: vom 4. November 2020</h3>
 
 <p>Diese Version bringt Verbesserungen bei der Kontaktsuche, bei der Verwaltung von Benutzern, 

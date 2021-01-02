@@ -184,12 +184,6 @@ namespace Ict.Tools.NAntTasks
             csc.DocFile = new FileInfo(mainProperties["DocumentationFile"]);
             csc.OutputTarget = mainProperties["OutputType"];
 
-            // needed because of sqlite3.dll, when compiling on Linux for Windows
-            if (this.Project.PlatformName == "unix")
-            {
-                csc.Platform = "x86";
-            }
-
             csc.Define = "DEBUGMODE";
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
@@ -331,12 +325,6 @@ namespace Ict.Tools.NAntTasks
             {
                 // if compilation fails, we want compileProject -D:onlyonce=true to pick up this project
                 File.Delete(OutputFile);
-            }
-
-            // needed because of sqlite3.dll, when compiling on Linux for Windows
-            if (this.Project.PlatformName == "unix")
-            {
-                parameters.CompilerOptions += " /platform:x86";
             }
 
             parameters.OutputAssembly = OutputFile;

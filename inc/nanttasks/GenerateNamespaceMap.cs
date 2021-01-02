@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -432,6 +432,27 @@ namespace Ict.Tools.NAntTasks
         {
             Dictionary <string, string>Result = new Dictionary <string, string>();
 
+            char PSC = Path.DirectorySeparatorChar;
+            string NugetPackagesPath = Path.GetDirectoryName(FNamespaceMap3rdParty) + PSC + "packages";
+            string NugetPackagesConfigFile = NugetPackagesPath + ".config";
+
+            Dictionary <string, string>NuPackages = new Dictionary <string, string>();
+            StreamReader nugetSr = new StreamReader(NugetPackagesConfigFile);
+            while (!nugetSr.EndOfStream)
+            {
+                string line = nugetSr.ReadLine();
+                if (line.Trim().StartsWith("<package id="))
+                {
+                    int pos1 = line.IndexOf('"');
+                    int pos2 = line.IndexOf('"', pos1 + 1);
+                    string pkgId = line.Substring(pos1 + 1, pos2 - pos1 - 1);
+                    int pos3 = line.IndexOf('"', pos2 + 1);
+                    int pos4 = line.IndexOf('"', pos3 + 1);
+                    string version = line.Substring(pos3 + 1, pos4 - pos3 - 1);
+                    NuPackages.Add(pkgId, version);
+                }
+            }
+
             StreamReader sr = new StreamReader(filename);
 
             while (!sr.EndOfStream)
@@ -441,6 +462,33 @@ namespace Ict.Tools.NAntTasks
                 if (line[0] != '#')
                 {
                     string[] values = line.Split(new char[] { '=' });
+
+                    // for nuget packages, read the version from packages.config, and find the right dll
+                    if (values[1].Contains("dir.nuget") && values[1].Contains("*"))
+                    {
+                        string temp = values[1].Substring("${dir.nuget}/".Length);
+                        string dllName = temp.Substring(temp.LastIndexOf('/') + 1);
+                        string pkgName = temp.Substring(0, temp.IndexOf(".*"));
+                        if (NuPackages.ContainsKey(pkgName))
+                        {
+                            string dllPath = pkgName + "." + NuPackages[pkgName];
+
+                            // if another path is added here, also add in ThirdParty.build
+                            string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net20" };
+                            foreach (string netVersionPath in netVersionPaths)
+                            {
+                                if (Directory.Exists(NugetPackagesPath + PSC + dllPath + netVersionPath))
+                                {
+                                    dllPath = dllPath + netVersionPath + PSC + dllName;
+                                    break;
+                                }
+                            }
+
+                            values[1] = "${dir.nuget}" + PSC + dllPath;
+                            //Console.WriteLine("Adding " + values[0] + " " + values[1]);
+                        }
+                    }
+
                     Result.Add(values[0], values[1]);
                 }
             }

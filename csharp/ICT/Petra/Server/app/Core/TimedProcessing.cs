@@ -37,24 +37,22 @@ namespace Ict.Petra.Server.App.Core
 {
     /// <summary>
     /// Provides means to run certain processing routines at timed intervals.
+    /// This class is called by a cronjob.
     /// </summary>
     public static class TTimedProcessing
     {
         /// <summary>Resourcestring used for logging purposes.</summary>
         public const string StrAutomaticProcessing = "Automatic Processing";
 
-        private const int MINUTES_DELAY_BETWEEN_INDIV_PROCESSES = 5;
-        delegate void TGenericProcessor (object processormethod);
+        delegate void TGenericProcessor (string processormethod);
+
         /// <summary>
         /// delegate for processing
         /// </summary>
         public delegate void TProcessDelegate(TDataBase Database, bool ARunManually);
 
-        // TODO_TIMEDPROCESSING: TimedProcessing needs general fixing
         [ThreadStatic]
-        private static SortedList <string, TProcessDelegate>FProcessDelegates = new SortedList <string, TTimedProcessing.TProcessDelegate>();
-        [ThreadStatic]
-        private static List <System.Threading.Timer>FTimers = new List <Timer>();
+        private static SortedList <string, TProcessDelegate>FProcessDelegates = null;
 
         [ThreadStatic]
         private static DateTime FDailyStartTime24Hrs;
@@ -83,86 +81,37 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
-        /// Processes the delegate.
-        /// overload for the thread, does not work with 2 parameters
-        /// </summary>
-        private static void GenericProcessor(object ADelegateName)
-        {
-            GenericProcessor(ADelegateName, false);
-        }
-
-        /// <summary>
         /// processes the delegate
         /// </summary>
-        private static void GenericProcessor(object ADelegateName, bool ARunManually)
+        private static void GenericProcessor(string ADelegateName, bool ARunManually = false)
         {
-            if (!FProcessDelegates.ContainsKey((string)ADelegateName))
+            if (!FProcessDelegates.ContainsKey(ADelegateName))
             {
                 return;
             }
 
-            TDataBase db = EstablishDBConnection();
+            TProcessDelegate TypedDelegate = FProcessDelegates[ADelegateName];
 
-            if (db != null)
+            TDataBase db = null;
+
+            try
             {
-                TProcessDelegate TypedDelegate = FProcessDelegates[(string)ADelegateName];
+                db = DBAccess.Connect("Servers's DB Connection for TimedProcessing");
 
                 TypedDelegate(db, ARunManually);
-
-                CloseDBConnection(db);
 
                 if (TLogging.DebugLevel >= 9)
                 {
                     TLogging.Log("Timed Processing: Delegate " + ADelegateName + " has run.");
                 }
             }
-            else
+            finally
             {
-                TLogging.Log("Timed Processing: Delegate " + ADelegateName + " could not be run because no database connection is available!");
-            }
-        }
-
-        /// <summary>
-        /// Establishes a new Database connection to the Database
-        /// for TTimedProcessing.
-        /// </summary>
-        /// <returns>the database connection object</returns>
-        private static TDataBase EstablishDBConnection()
-        {
-            TDataBase FDBAccessObj;
-            bool ExceptionCausedByUnavailableDBConn;
-
-            try
-            {
-                FDBAccessObj = DBAccess.Connect("Servers's DB Connection for TimedProcessing");
-            }
-            catch (Exception Exc)
-            {
-                ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(Exc);
-
-                if (!ExceptionCausedByUnavailableDBConn)
+                if (db != null)
                 {
-                    TLogging.Log("Timed Processing: Exception occured while establishing connection to Database Server: " + Exc.ToString());
-
-                    throw;
-                }
-                else
-                {
-                    FDBAccessObj = null;  // This gets handled in the calling Method!
+                    db.CloseDBConnection();
                 }
             }
-
-            return FDBAccessObj;
-        }
-
-        /// <summary>
-        /// Closes the Database connection to the Database
-        /// for TTimedProcessing.
-        /// </summary>
-        /// <returns>void</returns>
-        private static void CloseDBConnection(TDataBase DBAccessObj)
-        {
-            DBAccessObj.CloseDBConnection();
         }
 
         /// <summary>
@@ -185,9 +134,9 @@ namespace Ict.Petra.Server.App.Core
         /// run this job now
         /// </summary>
         /// <param name="ADelegateName"></param>
-        public static void RunJobManually(object ADelegateName)
+        public static void RunJobManually(string ADelegateName)
         {
-            GenericProcessor(ADelegateName.ToString(), true);
+            GenericProcessor(ADelegateName, true);
         }
 
         /// <summary>
@@ -246,10 +195,8 @@ namespace Ict.Petra.Server.App.Core
                     TomorrowsStartTime.AddTicks(TwentyfourHrs.Ticks).ToString());
             }
 
-            /*
-             * If the daily start time is earlier that the current time: process individual Processing processes
-             * immediately to ensure that they were run today.
-             */
+            // If the daily start time is earlier that the current time: process individual Processing processes
+            // immediately to ensure that they were run today.
             if (TodaysStartTime < DateTime.Now)
             {
                 foreach (string delegatename in FProcessDelegates.Keys)
@@ -257,22 +204,6 @@ namespace Ict.Petra.Server.App.Core
                     // run the job
                     GenericProcessor(delegatename);
                 }
-            }
-
-            /*
-             * Start the Timer(s) for the individual processing Processes
-             */
-            foreach (string delegatename in FProcessDelegates.Keys)
-            {
-                InitialSleepTime = InitialSleepTime.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0));
-                TwentyfourHrs = TwentyfourHrs.Add(new TimeSpan(0, MINUTES_DELAY_BETWEEN_INDIV_PROCESSES, 0));
-
-                // Schedule the regular processing calls.
-                FTimers.Add(new System.Threading.Timer(
-                        new TimerCallback(new TGenericProcessor(GenericProcessor)),
-                        delegatename,
-                        InitialSleepTime,
-                        TwentyfourHrs));
             }
         }
     }

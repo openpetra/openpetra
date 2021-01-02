@@ -35,8 +35,11 @@
 			<span>{html_template}</span>
 		</div>
 		<div class="col">
+			{default}: <span type="text" name="DefaultFileNameHTML"></span><br/>
 			<input type="file" name="AHTMLTemplate" id="HTMLTemplate">
 			<small class="form-text text-muted">{html_template_help}</small>
+			<button class="btn btn-primary" onclick="StoreHtmlTemplateAsDefault()"><i class="fas fa-save"></i> {store_as_default}</button>
+			<button class="btn btn-danger" onclick="ClearHtmlTemplateAsDefault()">{clear_as_default}</button>
 		</div>
 	</div>
 	<div class="row">
@@ -44,8 +47,11 @@
 			<span>{logo}</span>
 		</div>
 		<div class="col">
+			{default}: <span type="text" name="DefaultFileNameLogo"></span><br/>
 			<input type="file" name="ALogoImage" id="LogoImage">
 			<small class="form-text text-muted">{logo_help}</small>
+			<button class="btn btn-primary" onclick="StoreLogoTemplateAsDefault()"><i class="fas fa-save"></i> {store_as_default}</button>
+			<button class="btn btn-danger" onclick="ClearLogoTemplateAsDefault()">{clear_as_default}</button>
 		</div>
 	</div>
 	<div class="row">
@@ -53,8 +59,11 @@
 			<span>{signature}</span>
 		</div>
 		<div class="col">
+			{default}: <span type="text" name="DefaultFileNameSignature"></span><br/>
 			<input type="file" name="ASignatureImage" id="SignatureImage">
 			<small class="form-text text-muted">{signature_help}</small>
+			<button class="btn btn-primary" onclick="StoreSignatureTemplateAsDefault()"><i class="fas fa-save"></i> {store_as_default}</button>
+			<button class="btn btn-danger" onclick="ClearSignatureTemplateAsDefault()">{clear_as_default}</button>
 		</div>
 	</div>
 </div>

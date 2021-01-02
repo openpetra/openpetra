@@ -279,6 +279,8 @@ useful parameters
   <echo message="Target generateTools started at: ${datetime::now()}" />         
   
   <call target="nanttasks"/>
+  <nant inheritall="false" target="compile"
+        buildfile="csharp/ThirdParty/ThirdParty.build" />
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <property name="solution" value="Tools" overwrite="true"/>
   <GenerateNamespaceMap
@@ -288,8 +290,6 @@ useful parameters
     DependencyMapFilename="${projectDependenciesFile}"
     ShowWarnings="false"
     LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Tools.DBXML,Ict.Tools.CodeGeneration,Ict.Tools.GenerateGlue,Ict.Tools.GenerateI18N,Ict.Tools.GenerateORM,Ict.Tools.GenerateSQL,Ict.Tools.CheckHtml,Ict.Tools.CodeChecker"/>
-  <nant inheritall="false" target="compile" 
-        buildfile="csharp/ThirdParty/ThirdParty.build" />
   <call target="generateProjectFilesInternal"/>
   <call target="quickCompile"/>
   <property name="solution" value="OpenPetra" overwrite="true"/>

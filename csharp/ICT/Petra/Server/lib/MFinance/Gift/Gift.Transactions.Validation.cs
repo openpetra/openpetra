@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Server.MFinance.Validation;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedFinanceValidation_Gift.ValidateGiftBatchManual("TTransactionWebConnector" +
+                TFinanceValidation_Gift.ValidateGiftBatchManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (AGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)ASubmitTable.Rows[Counter];
                     Row.RecipientClass = RecipientPartnerClass.ToString();
 
-                    TSharedFinanceValidation_Gift.ValidateGiftDetailManual("TTransactionWebConnector" +
+                    TFinanceValidation_Gift.ValidateGiftDetailManual("TTransactionWebConnector" +
                         " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                         Row, ref AVerificationResult);
                 }
@@ -78,7 +78,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual("TTransactionWebConnector" +
+                TFinanceValidation_Gift.ValidateRecurringGiftBatchManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (ARecurringGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }
@@ -89,7 +89,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual("TTransactionWebConnector" +
+                TFinanceValidation_Gift.ValidateRecurringGiftDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (GiftBatchTDSARecurringGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult);
             }

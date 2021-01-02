@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1067,7 +1067,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>The calculated age as a string</returns>
         private String CalculateAge(DateTime ABirthday)
         {
-            return Ict.Petra.Shared.MPartner.Calculations.CalculateAge(ABirthday).ToString();
+            return Ict.Petra.Server.MPartner.Common.Calculations.CalculateAge(ABirthday).ToString();
         }
 
         /// <summary>
@@ -1078,7 +1078,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>The calculated age as a string</returns>
         private String CalculateAgeAtDate(DateTime ABirthday, DateTime ATestDate)
         {
-            return Ict.Petra.Shared.MPartner.Calculations.CalculateAge(ABirthday, ATestDate).ToString();
+            return Ict.Petra.Server.MPartner.Common.Calculations.CalculateAge(ABirthday, ATestDate).ToString();
         }
 
         /// <summary>

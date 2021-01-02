@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,7 +38,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Petra.Shared.MSysMan.Validation;
+using Ict.Petra.Server.MSysMan.Validation;
 
 namespace Ict.Petra.Server.MSysMan.Cacheable
 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,10 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -44,6 +48,7 @@ using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 
 namespace Ict.Petra.Server.MSponsorship.WebConnectors
 {
@@ -61,11 +66,13 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// </summary>
         [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
         public static SponsorshipFindTDSSearchResultTable FindChildren(
-            string AFirstName,
-            string AFamilyName,
+            string AChildName,
+            string ADonorName,
+            bool AChildWithoutDonor,
             string APartnerStatus,
             string ASponsorshipStatus,
-            string ASponsorAdmin)
+            string ASponsorAdmin,
+            string ASortBy)
         {
             TDBTransaction t = new TDBTransaction();
             TDataBase db = DBAccess.Connect("FindChildren");
@@ -79,9 +86,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             int CountParameters = 0;
             int Pos = 0;
-            CountParameters += (AFirstName != String.Empty ? 1 : 0);
+            CountParameters += (AChildName != String.Empty ? 2 : 0);
             CountParameters += (ASponsorshipStatus != String.Empty ? 1 : 0);
-            CountParameters += (AFamilyName != String.Empty ? 1 : 0);
             CountParameters += (ASponsorAdmin != String.Empty ? 1 : 0);
             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
 
@@ -97,21 +103,17 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 sql += " AND t.p_category_code_c = 'SPONSORED_CHILD_STATUS' ";
             }
 
-            if (AFirstName != String.Empty)
+            if (AChildName != String.Empty)
             {
-                sql += " AND f.p_first_name_c LIKE ?";
-                parameters[Pos] = new OdbcParameter("FirstName", OdbcType.VarChar);
-                AFirstName = '%' + AFirstName + '%';
-                parameters[Pos].Value = AFirstName;
+                // cover both cases, that the child has a family name, or it has no family name stored in the database
+                sql += " AND (CONCAT(f.p_first_name_c, ' ', f.p_family_name_c) LIKE ? OR f.p_first_name_c LIKE ?)";
+                parameters[Pos] = new OdbcParameter("ChildName", OdbcType.VarChar);
+                AChildName = '%' + AChildName + '%';
+                parameters[Pos].Value = AChildName;
                 Pos++;
-            }
-
-            if (AFamilyName != String.Empty)
-            {
-                sql += " AND f.p_family_name_c LIKE ?";
-                parameters[Pos] = new OdbcParameter("AFamilyName", OdbcType.VarChar);
-                AFamilyName = '%' + AFamilyName + '%';
-                parameters[Pos].Value = AFamilyName;
+                parameters[Pos] = new OdbcParameter("ChildName", OdbcType.VarChar);
+                AChildName = '%' + AChildName + '%';
+                parameters[Pos].Value = AChildName;
                 Pos++;
             }
 
@@ -122,6 +124,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 parameters[Pos].Value = ASponsorAdmin;
                 Pos++;
             }
+
+            if (ASortBy == "ChildName")
+            {
+                sql += " ORDER BY f.p_first_name_c, f.p_family_name_c";
+            }
+            else if (ASortBy == "SponsorAdmin")
+            {
+                sql += " ORDER BY p.p_user_id_c, f.p_first_name_c, f.p_family_name_c";
+            }
+
             SponsorshipFindTDSSearchResultTable result = new SponsorshipFindTDSSearchResultTable();
 
             db.ReadTransaction(ref t,
@@ -131,6 +143,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 });
 
 
+            List<SponsorshipFindTDSSearchResultRow> childrenNotMatchingDonor = new List<SponsorshipFindTDSSearchResultRow>();
+
             foreach (SponsorshipFindTDSSearchResultRow child in result.Rows)
             {
                 sql = "SELECT DISTINCT p.* " +
@@ -139,17 +153,56 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     "AND rgd.a_batch_number_i = rg.a_batch_number_i " +
                     "AND rgd.a_gift_transaction_number_i = rg.a_gift_transaction_number_i " +
                     "AND rgd.p_recipient_key_n = " + child.PartnerKey + " " +
-                    "AND NOW() >= rgd.a_start_donations_d " +
-                    "AND (NOW() <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
+                    "AND ? >= rgd.a_start_donations_d " +
+                    "AND (? <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
                     "AND rg.p_donor_key_n = p.p_partner_key_n";
+
+                List <OdbcParameter> parameterList = new List <OdbcParameter>();
+
+                OdbcParameter param = new OdbcParameter();
+                param = new OdbcParameter("StartDate", OdbcType.DateTime);
+                param.Value = DateTime.Now.AddMonths(+3);
+                parameterList.Add(param);
+
+                param = new OdbcParameter();
+                param = new OdbcParameter("EndDate", OdbcType.DateTime);
+                param.Value = DateTime.Now.AddMonths(-1);
+                parameterList.Add(param);
+
+                if (ADonorName != String.Empty)
+                {
+                    sql += " AND p.p_partner_short_name_c LIKE ?";
+                    param = new OdbcParameter("ADonorName", OdbcType.VarChar);
+                    ADonorName = '%' + ADonorName + '%';
+                    param.Value = ADonorName;
+                    parameterList.Add(param);
+                }
 
                 PPartnerTable donors = new PPartnerTable();
 
                 db.ReadTransaction(ref t,
                     delegate
                     {
-                        db.SelectDT(donors, sql, t);
+                        db.SelectDT(donors, sql, t, parameterList.ToArray());
                     });
+
+                if (ADonorName != String.Empty)
+                {
+                    // drop all children that don't have a donor match
+                    if (donors.Rows.Count == 0)
+                    {
+                        childrenNotMatchingDonor.Add(child);
+                    }
+                }
+
+                if (AChildWithoutDonor)
+                {
+                    // drop all children that have a donor match
+                    if (donors.Rows.Count != 0)
+                    {
+                        childrenNotMatchingDonor.Add(child);
+                    }
+                }
 
                 bool firstName = true;
                 foreach (PPartnerRow donor in donors.Rows)
@@ -161,7 +214,27 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
                     child["DonorName"] += donor.PartnerShortName;
                     firstName = false;
+
+                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                    GetDonorContactDetails(donor.PartnerKey,
+                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
+
+                    child["DonorContactDetails"] += donor.PartnerShortName + ";" + DonorAddress + ";";
+                    if (DonorEmailAddress != String.Empty)
+                    {
+                        child["DonorContactDetails"] += "<a href='mailto:" + DonorEmailAddress + "'>" + DonorEmailAddress + "</a>;";
+                    }
+                    if (DonorPhoneNumber != String.Empty)
+                    {
+                        child["DonorContactDetails"] += DonorPhoneNumber + ";";
+                    }
+                    child["DonorContactDetails"] += ";";
                 }
+            }
+
+            foreach (SponsorshipFindTDSSearchResultRow child in childrenNotMatchingDonor)
+            {
+                result.Rows.Remove(child);
             }
 
             db.CloseDBConnection();
@@ -349,6 +422,27 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             return -1;
         }
 
+        private static void GetDonorContactDetails(Int64 ADonorKey,
+            out string DonorAddress, out string DonorEmailAddress, out string DonorPhoneNumber)
+        {
+            List<string> Subscriptions;
+            List<string> PartnerTypes;
+
+            string DefaultEmailAddress, DefaultPhoneMobile, DefaultPhoneLandline;
+            PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(ADonorKey,
+                out Subscriptions, out PartnerTypes,
+                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline);
+
+            DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+            DonorEmailAddress = DefaultEmailAddress;
+            DonorPhoneNumber = DefaultPhoneLandline;
+            if (DonorPhoneNumber != String.Empty && DefaultPhoneMobile != String.Empty)
+            {
+                DonorPhoneNumber += "; ";
+            }
+            DonorPhoneNumber += DefaultPhoneMobile;
+        }
+
         /// <summary>
         /// return the existing data of a child
         /// </summary>
@@ -410,7 +504,14 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
+
+                                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                                    GetDonorContactDetails(recurrGiftRow.DonorKey,
+                                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
                                     gdr.DonorName = donorRow.PartnerShortName;
+                                    gdr.DonorAddress = DonorAddress;
+                                    gdr.DonorEmailAddress = DonorEmailAddress;
+                                    gdr.DonorPhoneNumber = DonorPhoneNumber;
                                     gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
 
@@ -469,6 +570,35 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
 
         /// <summary>
+        /// delete the currently edited child
+        /// </summary>
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool DeleteChild(
+            Int64 APartnerKey,
+            Int32 ALedgerNumber,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            string SponsorshipStatus;
+            SponsorshipTDS MainDS = GetChildDetails(APartnerKey,
+                ALedgerNumber,
+                false,
+                out SponsorshipStatus);
+
+            // cannot delete if there are sponsorships
+            if (MainDS.ARecurringGiftDetail.Rows.Count != 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Please manually delete the sponsorship first", "",
+                    "MaintainChildren.ErrFirstDeleteSponsorship", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            // delete the child, and the comments and reminders.
+            return TPartnerWebConnector.DeletePartner(APartnerKey, out AVerificationResult);
+        }
+
+        /// <summary>
         /// store the currently edited child
         /// </summary>
         [RequireModulePermission("SPONSORADMIN")]
@@ -477,8 +607,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string AFirstName,
             string AFamilyName,
             DateTime? ADateOfBirth,
-            string APhoto,
-            bool AUploadPhoto,
             string AGender,
             string AUserId,
             Int64 APartnerKey,
@@ -501,50 +629,51 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, true, out dummy);
             }
 
-            // we only save pictures if there is a value in the request
-            if (AUploadPhoto)
+            if ((ASponsorshipStatus == "") || (ASponsorshipStatus == null))
             {
-                CurrentEdit.PFamily[0].Photo = APhoto;
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
+                    "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
             }
-            else
+
+            if ((AFirstName == "") || (AFirstName == null))
             {
-                if ((ASponsorshipStatus == "") || (ASponsorshipStatus == null))
-                {
-                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the status of the sponsorship", "",
-                        "MaintainChildren.ErrMissingSponsorshipStatus", TResultSeverity.Resv_Critical));
-                }
+                AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
+                    "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
+            }
 
-                if ((AFirstName == "") || (AFirstName == null))
-                {
-                    AVerificationResult.Add(new TVerificationResult("error", "Please specify the first name of the sponsored child", "",
-                        "MaintainChildren.ErrMissingFirstName", TResultSeverity.Resv_Critical));
-                }
+            if (AVerificationResult.HasCriticalErrors)
+            {
+                return false;
+            }
 
-                if (AVerificationResult.HasCriticalErrors)
-                {
-                    return false;
-                }
+            CurrentEdit.PFamily[0].FirstName = AFirstName;
+            CurrentEdit.PFamily[0].FamilyName = AFamilyName;
+            CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
+            CurrentEdit.PFamily[0].Gender = AGender;
 
-                CurrentEdit.PFamily[0].FirstName = AFirstName;
-                CurrentEdit.PFamily[0].FamilyName = AFamilyName;
-                CurrentEdit.PFamily[0].DateOfBirth = ADateOfBirth;
-                CurrentEdit.PFamily[0].Gender = AGender;
+            if (AUserId != CurrentEdit.PPartner[0].UserId)
+            {
                 CurrentEdit.PPartner[0].UserId = AUserId;
 
-                // only on a actual change, else skip this
-                if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
+                // we need to update the reminders as well
+                foreach (PPartnerReminderRow ReminderRow in CurrentEdit.PPartnerReminder.Rows)
                 {
-                    PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
-                    OldTypeRow.Delete();
-
-                    PPartnerTypeRow NewTypeRow = CurrentEdit.PPartnerType.NewRowTyped(true);
-
-                    NewTypeRow.TypeCode = ASponsorshipStatus;
-                    NewTypeRow.PartnerKey = CurrentEdit.PPartner[0].PartnerKey;
-
-                    CurrentEdit.PPartnerType.Rows.Add(NewTypeRow);
+                    ReminderRow.UserId = AUserId;
                 }
+            }
 
+            // only on a actual change, else skip this
+            if (ASponsorshipStatus != CurrentEdit.PPartnerType[0].TypeCode)
+            {
+                PPartnerTypeRow OldTypeRow = CurrentEdit.PPartnerType[0];
+                OldTypeRow.Delete();
+
+                PPartnerTypeRow NewTypeRow = CurrentEdit.PPartnerType.NewRowTyped(true);
+
+                NewTypeRow.TypeCode = ASponsorshipStatus;
+                NewTypeRow.PartnerKey = CurrentEdit.PPartner[0].PartnerKey;
+
+                CurrentEdit.PPartnerType.Rows.Add(NewTypeRow);
             }
 
             CurrentEdit.PPartner[0].PartnerShortName =
@@ -564,6 +693,75 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
                 return false;
             }
+        }
+
+        /// <summary>
+        /// upload a photo of the child
+        /// </summary>
+        [RequireModulePermission("SPONSORADMIN")]
+        public static bool UploadPhoto(
+            Int64 APartnerKey,
+            Int32 ALedgerNumber,
+            byte[] APhoto,
+            string APhotoFilename,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (APartnerKey == -1)
+            {
+                return false;
+            }
+
+            string dummy = "0";
+            SponsorshipTDS CurrentEdit = GetChildDetails(APartnerKey, ALedgerNumber, true, out dummy);
+
+            if (APhotoFilename.Length > 0)
+            {
+                string tempFileName = TFileHelper.GetTempFileName(
+                    "photo",
+                    Path.GetExtension(APhotoFilename));
+                File.WriteAllBytes(tempFileName, APhoto);
+
+                using (var srcImage = Image.FromFile(tempFileName))
+                {
+                    var newHeight = 256;
+                    var newWidth = (int)(srcImage.Width * ((float)newHeight / (float)srcImage.Height));
+
+                    using (var newImage = new Bitmap(newWidth, newHeight))
+                    {
+                        using (var graphics = Graphics.FromImage(newImage))
+                        {
+                            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                            graphics.DrawImage(srcImage, new Rectangle(0, 0, newWidth, newHeight));
+
+                            using (var ms = new MemoryStream())
+                            {
+                                newImage.Save(ms, newImage.RawFormat);
+                                CurrentEdit.PFamily[0].Photo = Convert.ToBase64String(ms.ToArray());
+                            }
+
+                            try
+                            {
+                                SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+                                File.Delete(tempFileName);
+                                return true;
+                            }
+                            catch (Exception e)
+                            {
+                                TLogging.Log(e.ToString());
+                                AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                            }
+                        }
+                    }
+                }
+
+                File.Delete(tempFileName);
+            }
+
+            return false;
         }
 
         /// maintain comments about the child
@@ -682,6 +880,8 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 NewReminderRow.FirstReminderDate = AFirstReminderDate;
                 NewReminderRow.Comment = AComment;
                 NewReminderRow.ReminderId = AReminderId;
+                NewReminderRow.ActionType = "SendEmail";
+                NewReminderRow.UserId = CurrentEdit.PPartner[0].UserId;
                 CurrentEdit.PPartnerReminder.Rows.Add( NewReminderRow );
             }
 

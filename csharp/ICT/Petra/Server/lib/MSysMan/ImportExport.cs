@@ -43,6 +43,7 @@ using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
+using Ict.Petra.Server.MSysMan.DBUpgrades;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -331,12 +332,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             success = success && LoadTable("s_system_defaults", ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
                             success = success && LoadTable("s_system_status", ymlParser, ReadWriteTransaction, ref CurrencyPerLedger);
 
-                            // make sure we have the correct database version
-                            TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
-                            ReadWriteTransaction.DataBaseObj.ExecuteNonQuery(String.Format(
-                                    "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                                    serverExeInfo.ToString()), ReadWriteTransaction);
-
                             if (!success)
                             {
                                 // As SubmissionResult is still TSubmitChangesResult.scrError, a DB Transaction Rollback will get
@@ -399,8 +394,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                             // reset all cached tables
                             TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
-
-                            TProgressTracker.FinishJob(ClientID);
                         }
                         catch (Exception e)
                         {
@@ -418,6 +411,17 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     DBConnectionObj.CloseDBConnection();
                 }
             }
+
+            // if we import an older database, we need to upgrade it.
+            // this happens in a separate database connection and database transactions.
+            TProgressTracker.SetCurrentState(ClientID,
+                Catalog.GetString("Updating the database..."),
+                tables.Count + 5 + 5);
+
+            TDBUpgrades upgrades = new TDBUpgrades();
+            upgrades.UpgradeDatabase();
+
+            TProgressTracker.FinishJob(ClientID);
 
             return SubmissionResult;
         }
@@ -473,11 +477,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (count != 1)
                 {
-                    if ((DBAccess.DBType == TDBType.SQLite)
-                       || (DBAccess.DBType == TDBType.MySQL)
+                    if ((DBAccess.DBType == TDBType.MySQL)
                        || ((count % 500) == 0))
                     {
-                        // SQLite does not support INSERT of several rows at the same time
                         // MySQL is very slow with INSERT of several rows at the same time
                         try
                         {
@@ -621,7 +623,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     }
                     else
                     {
-                        if ((col.ColumnName == "ModificationId") && (DBAccess.DBType == TDBType.PostgreSQL))
+                        if (col.ColumnName == "ModificationId")
                         {
                             InsertStatement.Append("CURRENT_TIMESTAMP");
                         }

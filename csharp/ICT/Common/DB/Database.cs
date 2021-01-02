@@ -422,10 +422,6 @@ namespace Ict.Common.DB
                         FDataBaseRDBMS = (IDataBaseRDBMS) new TMySQL();
                         break;
 
-                    case TDBType.SQLite:
-                        FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
-                        break;
-
                     default:
                         throw new ArgumentException(String.Format("EstablishDBConnection cannot deal with ADataBaseType " + "" +
                             "'{0}' that got passed in", ADataBaseType));
@@ -2451,12 +2447,11 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction)
         {
-            // For SQLite and MySQL we directly run commands against the DB (not using Methods of the TDataBase Class), hence
-            // we need to co-ordinate the DB access manually. For PostgreSQL and Progress we use Methods of the TDataBase
+            // For MySQL we directly run commands against the DB (not using Methods of the TDataBase Class), hence
+            // we need to co-ordinate the DB access manually. For PostgreSQL we use Methods of the TDataBase
             // Class that take care of the co-ordination themselves, hence we must not co-ordinate the DB access manually as
             // that would cause a 'deadlock'!
-            if ((FDbType == TDBType.SQLite)
-                || (FDbType == TDBType.MySQL))
+            if (FDbType == TDBType.MySQL)
             {
                 WaitForCoordinatedDBAccess();
             }
@@ -2468,8 +2463,7 @@ namespace Ict.Common.DB
             finally
             {
                 // (See comment above)
-                if ((FDbType == TDBType.SQLite)
-                    || (FDbType == TDBType.MySQL))
+                if (FDbType == TDBType.MySQL)
                 {
                     ReleaseCoordinatedDBAccess();
                 }
@@ -2485,12 +2479,11 @@ namespace Ict.Common.DB
         /// <returns>Sequence Value.</returns>
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction)
         {
-            // For SQLite and MySQL we directly run commands against the DB (not using Methods of the TDataBase Class), hence
-            // we need to co-ordinate the DB access manually. For PostgreSQL and Progress we use Methods of the TDataBase
+            // For MySQL we directly run commands against the DB (not using Methods of the TDataBase Class), hence
+            // we need to co-ordinate the DB access manually. For PostgreSQL we use Methods of the TDataBase
             // Class that take care of the co-ordination themselves, hence we must not co-ordinate the DB access manually as
             // that would cause a 'deadlock'!
-            if ((FDbType == TDBType.SQLite)
-                || (FDbType == TDBType.MySQL))
+            if (FDbType == TDBType.MySQL)
             {
                 WaitForCoordinatedDBAccess();
             }
@@ -2502,8 +2495,7 @@ namespace Ict.Common.DB
             finally
             {
                 // (See comment above)
-                if ((FDbType == TDBType.SQLite)
-                    || (FDbType == TDBType.MySQL))
+                if (FDbType == TDBType.MySQL)
                 {
                     ReleaseCoordinatedDBAccess();
                 }

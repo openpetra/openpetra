@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       auto generated
+//       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
-using Ict.Petra.Shared.MConference.Validation;
+using Ict.Petra.Server.MConference.Validation;
 
 namespace Ict.Petra.Server.MConference.Cacheable
 {

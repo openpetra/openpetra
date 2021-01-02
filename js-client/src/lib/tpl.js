@@ -300,9 +300,16 @@ function extract_data(object) {
     }
   });
 
+  // for typeahead fields:
   object.find('[key-name]').each(function (i, obj) {
     obj = $(obj);
-    r[obj.attr('key-name')] = obj.attr('key-value');
+    if (typeof obj.attr('key-value') !== 'undefined') {
+      r[obj.attr('key-name')] = obj.attr('key-value');
+    }
+    else {
+      // set the default value
+      r[obj.attr('key-name')] = obj.val();
+    }
   });
 
   return r;

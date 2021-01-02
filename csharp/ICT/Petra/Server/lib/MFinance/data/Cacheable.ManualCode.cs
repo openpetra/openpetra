@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,9 +47,9 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.DataAggregates;
-using Ict.Petra.Shared.MFinance.Account.Validation;
-using Ict.Petra.Shared.MFinance.Gift.Validation;
-using Ict.Petra.Shared.MFinance.AP.Validation;
+using Ict.Petra.Server.MFinance.Account.Validation;
+using Ict.Petra.Server.MFinance.Gift.Validation;
+using Ict.Petra.Server.MFinance.AP.Validation;
 
 namespace Ict.Petra.Server.MFinance.Cacheable
 {

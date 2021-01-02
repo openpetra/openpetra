@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -189,7 +189,6 @@ namespace Ict.Tools.NAntTasks
         {
             String ProjectPath = FCodeRootDir + Path.DirectorySeparatorChar +
                 AProjectName.
-                Replace("Ict.Tools.SQLiteConsole", "Ict.Petra.Tools.SQLiteConsole").
                 Replace("Ict.Petra.Tools.MSysMan.YmlGzImportExport", "Ict.Petra.Tools.YmlGzImportExport").
                 Replace("Ict.Petra.Tools.MFinance.Server.GDPdUExport", "Ict.Petra.Tools.FinanceGDPdUExport").
                 Replace("Ict.Tools.", "ICT.BuildTools.").
@@ -942,6 +941,8 @@ namespace Ict.Tools.NAntTasks
 
             template.Replace("${dir.3rdParty}",
                 GetRelativePath(FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty", ASrcPath).Replace("\\", "/"));
+            template.Replace("${dir.nuget}",
+                GetRelativePath(FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty" + Path.DirectorySeparatorChar + "packages", ASrcPath).Replace("\\", "/"));
             template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();

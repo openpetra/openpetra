@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, Tim Ingham
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1305,7 +1305,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transactionRowBank.AccountCode = paymentRow.BankAccount;
                             transactionRowBank.CostCentreCode = StandardCostCentre;
                             transactionRowBank.Narrative = "AP Payment: " + paymentRow.PaymentNumber.ToString() + " - " +
-                                                           Ict.Petra.Shared.MPartner.Calculations.FormatShortName(paymentRow.SupplierName,
+                                                           Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(paymentRow.SupplierName,
                                 eShortNameFormat.eReverseWithoutTitle);
                             transactionRowBank.Reference = paymentRow.Reference;
                             GLDataset.ATransaction.Rows.Add(transactionRowBank);
@@ -1592,7 +1592,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 supplierRow.PartnerKey,
                                 out partnerShortName,
                                 out partnerClass);
-                            supplierPaymentsRow.SupplierName = Ict.Petra.Shared.MPartner.Calculations.FormatShortName(partnerShortName,
+                            supplierPaymentsRow.SupplierName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(partnerShortName,
                                 eShortNameFormat.eReverseWithoutTitle);
 
                             supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.MethodOfPayment + ")";

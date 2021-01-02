@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters, christiank
+//       peters, christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,7 +65,7 @@ namespace Ict.Common
         /// <returns>New password Salt as a byte array.</returns>
         public byte[] GetNewPasswordSalt()
         {
-            byte[] Salt = PasswordHash.GenerateSalt();
+            byte[] Salt = PasswordHash.ScryptGenerateSalt();
 
             //TPasswordHelper.LogByteArrayContents(Salt, "TPasswordHashingScheme_V1 - Salt");
 

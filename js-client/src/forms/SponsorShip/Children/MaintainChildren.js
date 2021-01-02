@@ -2,9 +2,9 @@
 //
 // @Authors:
 //       Christopher Jäkel
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2020 by SolidCharity.com
+// Copyright 2020-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -28,9 +28,24 @@ $("document").ready(function () {
   MaintainChildren.initRecurringGiftBatch();
   loadPartnerAdmins();
   loadChildrenStatus();
-
-  MaintainChildren.show();
 });
+
+countComboboxes = 0;
+function AfterLoadingComboboxes() {
+  countComboboxes++;
+  if (countComboboxes == 2) {
+    load_preset();
+    MaintainChildren.filterShow();
+  }
+}
+
+function load_preset() {
+  var x = window.localStorage.getItem('MaintainChildren');
+  if (x != null) {
+    x = JSON.parse(x);
+    format_tpl($('#tabfilter'), x);
+  }
+}
 
 var MaintainChildren = new (class {
   constructor() {
@@ -39,7 +54,7 @@ var MaintainChildren = new (class {
 
   filterShow() {
       // get infos from the filter and search with them
-      var filter = extract_data($("#filter"));
+      var filter = extract_data($("#tabfilter"));
       this.show(filter);
   }
 
@@ -56,11 +71,13 @@ var MaintainChildren = new (class {
     // get data from server and show them
 
     var req = {
-      "AFirstName": filter.AFirstName ? filter.AFirstName : "",
-      "AFamilyName": filter.AFamilyName ? filter.AFamilyName : "",
+      "AChildName": filter.ChildName ? filter.ChildName : "",
+      "ADonorName": filter.DonorName ? filter.DonorName : "",
       "APartnerStatus": filter.APartnerStatus ? filter.APartnerStatus : "",
       "ASponsorshipStatus": filter.ASponsorshipStatus ? filter.ASponsorshipStatus : "",
       "ASponsorAdmin": filter.ASponsorAdmin ? filter.ASponsorAdmin : "",
+      "ASortBy": filter.ASortBy ? filter.ASortBy : "",
+      "AChildWithoutDonor": filter.ChildWithoutDonor ? true : false,
     };
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren', req).then(
@@ -68,18 +85,26 @@ var MaintainChildren = new (class {
         var parsed = JSON.parse(data.data.d);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
-          var Copy = $("[phantom] .children").clone();
-          if (entry["DonorName"]) {
-            entry["DonorName"] = entry["DonorName"].replace(";", ";<br/>");
+          if (entry.DonorName) {
+            entry.DonorName = entry.DonorName.replace(/;/g, ";<br/>");
           }
+          if (entry.DonorContactDetails) {
+            entry.DonorContactDetails = entry.DonorContactDetails.replace(/;/g, "<br/>");
+          }
+
+          var Copy = $("[phantom] .children").clone();
+          let view = $("[phantom] .tpl_view").clone();
+
           insertData(Copy, entry);
+          insertData(view, entry);
           List.append(Copy);
+          $('#child'+entry['p_partner_key_n']).find('.collapse_col').append(view);
         }
       }
     );
   }
 
-  detail(HTMLBottom, overwrite, OpenTab=null) {
+  edit(HTMLBottom, overwrite, OpenTab=null) {
     // get details for the child the user clicked on and open modal
 
     var req = {
@@ -104,6 +129,7 @@ var MaintainChildren = new (class {
         insertData("#detail_modal", {"ASponsorshipStatus":ASponsorshipStatus});
         insertData("#detail_modal", partner);
         insertData("#detail_modal", family);
+        $("#new_photo").val('');
 
         MaintainChildSponsorship.build(recurring, recurring_detail);
         MaintainChildComments.build(comments);
@@ -113,13 +139,26 @@ var MaintainChildren = new (class {
 
         $("#detail_modal").attr("mode", "edit");
         $("#detail_modal").modal("show");
-        
+
         if (OpenTab !== null) {
           MaintainChildren.showWindow(null, OpenTab);
         }
       }
     );
 
+  }
+
+  open_detail(obj) {
+    obj = $(obj);
+    while(!obj[0].hasAttribute('id') || !obj[0].id.includes("child")) {
+      obj = obj.parent();
+    }
+    if (obj.find('.collapse').is(':visible') ) {
+      $('.tpl_row .collapse').collapse('hide');
+      return;
+    }
+    $('.tpl_row .collapse').collapse('hide');
+    obj.find('.collapse').collapse('show')
   }
 
   showWindow(HTMLAnchor, overwrite) {
@@ -138,6 +177,28 @@ var MaintainChildren = new (class {
     $("#multi_window [window]").hide();
     $(`#multi_window [window=${show}]`).show();
     $("#multi_window").attr("active", show);
+  }
+
+  delete() {
+    let s = confirm( i18next.t('MaintainChildren.ask_delete_child') );
+    if (!s) {return}
+
+    var MaintainChildrenO = this;
+    var req = translate_to_server(extractData($("#detail_modal")));
+    req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
+    req["APartnerKey"] = $("input[name=p_partner_key_n]").val();
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_DeleteChild', req).then(
+      function (data) {
+        var parsed = JSON.parse(data.data.d);
+        if (!parsed.result) {
+          return display_error(parsed.AVerificationResult);
+        } else {
+          display_message( i18next.t("forms.deleted"), "success");
+          $("#detail_modal").modal("hide");
+          MaintainChildrenO.filterShow();
+        }
+      });
   }
 
   saveEdit() {
@@ -199,19 +260,27 @@ var MaintainChildren = new (class {
 
     var Reader = new FileReader();
 
-    Reader.onload = function (event) {
-      let file_content = event.target.result;
-      file_content = btoa(file_content);
+    Reader.onload = function (theFile) {
+      let file_content = theFile.target.result;
+      //file_content = btoa(file_content);
+
+      // somehow, theFile.name on Firefox is undefined
+      let filename = theFile.name;
+      if (filename == undefined) {
+        filename = PhotoField[0].value.split("\\").pop();
+      }
+      if (filename == undefined) {
+        filename="undefined.txt";
+      }
 
       var req = {
         "APartnerKey":$("#detail_modal [name=p_partner_key_n]").val(),
-        "AUploadPhoto":true,
-        "ADateOfBirth": "null",
         "ALedgerNumber": window.localStorage.getItem("current_ledger"),
+        "APhotoFilename": filename,
         "APhoto":file_content
       };
 
-      api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild', req)
+      api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_UploadPhoto', req)
       .then(function (data) {
           var parsed = JSON.parse(data.data.d);
           if (parsed.result) {
@@ -219,10 +288,15 @@ var MaintainChildren = new (class {
           } else {
             display_error(parsed.AVerificationResult);
           }
+      })
+      .catch(error => {
+        console.log(error)
+        display_message(i18next.t('forms.uploaderror'), "fail");
       });
+
     }
 
-    Reader.readAsBinaryString(PhotoField[0].files[0]);
+    Reader.readAsDataURL(PhotoField[0].files[0]);
 
   }
 
@@ -305,13 +379,13 @@ var MaintainChildComments = new (class {
           case "SCHOOL": tabname = "school_situations"; break;
         }
         
-        MaintainChildren.detail(null, req["APartnerKey"], tabname);
+        MaintainChildren.edit(null, req["APartnerKey"], tabname);
       }
     );
 
   }
 
-  detail(HTMLBottom) {
+  edit(HTMLBottom) {
     HTMLBottom = $(HTMLBottom).closest(".comment");
 
     var comment_index = HTMLBottom.find("[name=p_index_i]").val();
@@ -357,6 +431,14 @@ var MaintainChildSponsorship = new (class {
     var SponsorList = $("#detail_modal [window=sponsorship] .container-list").html("");
 
     for (var sponsorship of gift_details) {
+
+      if ((sponsorship.DonorAddress !== null) && (sponsorship.DonorAddress != '')) {
+        sponsorship.DonorAddress += '<br/>';
+      }
+      if ((sponsorship.DonorEmailAddress !== null) && (sponsorship.DonorEmailAddress != '')) {
+        sponsorship.DonorEmailAddress = '<a href="mailto:' + sponsorship.DonorEmailAddress + '">' + sponsorship.DonorEmailAddress + '</a><br/>';
+      }
+
       var Copy = $("[phantom] .sponsorship").clone();
       insertData(Copy, sponsorship, sponsorship.CurrencyCode);
       SponsorList.append(Copy);
@@ -410,7 +492,7 @@ var MaintainChildSponsorship = new (class {
         }
 
         $("#recurring_modal").modal("hide");
-        MaintainChildren.detail(null, req["ARecipientKey"], "sponsorship");
+        MaintainChildren.edit(null, req["ARecipientKey"], "sponsorship");
       }
     );
   }
@@ -427,11 +509,11 @@ var MaintainChildSponsorship = new (class {
         }
 
         $("#recurring_modal").modal("hide");
-        MaintainChildren.detail(null, payload["ARecipientKey"], "sponsorship");
+        MaintainChildren.edit(null, payload["ARecipientKey"], "sponsorship");
       });
   }
 
-  detail(HTMLBottom, overwrite) {
+  edit(HTMLBottom, overwrite) {
 
     HTMLBottom = $(HTMLBottom).closest(".sponsorship");
     var req_detail = extractData(HTMLBottom);
@@ -542,13 +624,13 @@ var MaintainChildReminders = new (class {
         }
 
         $("#reminder_modal").modal("hide");
-        MaintainChildren.detail(null, req["APartnerKey"], "dates_reminder");
+        MaintainChildren.edit(null, req["APartnerKey"], "dates_reminder");
       }
     );
 
   }
 
-  detail(HTMLBottom) {
+  edit(HTMLBottom) {
     HTMLBottom = $(HTMLBottom).closest(".reminder");
 
     var reminder_id = HTMLBottom.find("[name=p_reminder_id_i]").val();
@@ -599,6 +681,7 @@ function loadPartnerAdmins() {
         TargetFields.append(NewOption);
       }
 
+      AfterLoadingComboboxes();
     }
   );
 }
@@ -608,7 +691,7 @@ function loadChildrenStatus() {
     function (data) {
       var parsed = JSON.parse(data.data.d);
 
-      var TargetFields = $("#filter [name=ASponsorshipStatus]").html('<option value="">('+i18next.t("forms.any")+')</option>');
+      var TargetFields = $("#tabfilter [name=ASponsorshipStatus]").html('<option value="">('+i18next.t("forms.any")+')</option>');
       for (var statustype of parsed.result) {
         let NewOption = $("<option></option>");
         NewOption.attr("value", statustype.p_type_code_c);
@@ -627,6 +710,7 @@ function loadChildrenStatus() {
         TargetFields.append(NewOption);
       }
 
+      AfterLoadingComboboxes();
     }
   );
 }

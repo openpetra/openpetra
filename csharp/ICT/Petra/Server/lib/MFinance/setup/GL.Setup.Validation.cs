@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,8 +27,6 @@ using System.Data;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {

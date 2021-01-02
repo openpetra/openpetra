@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -73,8 +73,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
         Int32 FLedgerNumber = -1;
         Int64 APartnerKey = -1;
 
-        Int32 totalChildsBeforeTest = -1;
-        Int32 totalChildsAfterTest = -1;
+        Int32 totalChildrenBeforeTest = -1;
 
         String new_child_firstname = "";
         String new_child_lastname = "";
@@ -87,7 +86,6 @@ namespace Tests.MSponsorship.Server.MSponsorship
         [OneTimeSetUp]
         public void Init()
         {
-            //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
             FLedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
             TLogging.Log("Selected Ledger Number = " + FLedgerNumber);
@@ -109,7 +107,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
         public void RunTest()
         {
             TLogging.Log("Running: selectAllChildren");
-            SelectAllChilds();
+            SelectAllChildren();
 
             TLogging.Log("Running: createNewChild");
             CreateNewChild();
@@ -128,24 +126,22 @@ namespace Tests.MSponsorship.Server.MSponsorship
         }
 
         /// <summary>
-        /// This will select all childs entrys of the webconnector
+        /// This will select all child entrys of the webconnector
         /// serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren
         /// </summary>
-        public void SelectAllChilds()
+        private void SelectAllChildren()
         {
+            SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", false, "", "", "", "");
 
-
-            SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
-
-            totalChildsBeforeTest = Result.Rows.Count;
-            TLogging.Log("All Childs returns: " + totalChildsBeforeTest);
+            totalChildrenBeforeTest = Result.Rows.Count;
+            TLogging.Log("All Children returns: " + totalChildrenBeforeTest);
         }
 
         /// <summary>
-        /// This will select all childs entrys of the webconnector
+        /// This will select all child entrys of the webconnector
         /// serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChild
         /// </summary>
-        public void CreateNewChild()
+        private void CreateNewChild()
         {
             new_child_firstname = RandomString(15, false);
             new_child_lastname = RandomString(8, false);
@@ -158,8 +154,6 @@ namespace Tests.MSponsorship.Server.MSponsorship
                 new_child_firstname,
                 new_child_lastname,
                 new_child_birth,
-                "",
-                false,
                 "MALE",
                 "",
                 APartnerKey,
@@ -183,11 +177,13 @@ namespace Tests.MSponsorship.Server.MSponsorship
         /// Trys to select the same child that we just created
         /// serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren
         /// </summary>
-        public void SelectCreatedChild()
+        private void SelectCreatedChild()
         {
             SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren(
-                new_child_firstname,
-                new_child_lastname,
+                new_child_firstname + ' ' + new_child_lastname,
+                "",
+                false,
+                "",
                 "",
                 "",
                 ""
@@ -206,10 +202,10 @@ namespace Tests.MSponsorship.Server.MSponsorship
         /// Adds new reminders to the created child
         /// serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildReminders
         /// </summary>
-        public void CreateNewReminders()
+        private void CreateNewReminders()
         {
 
-            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
+            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "", "");
 
             TLogging.Log("Created new Reminder:");
         }
@@ -218,10 +214,10 @@ namespace Tests.MSponsorship.Server.MSponsorship
         /// Adds new School and Family comments to the created child
         /// serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildComments
         /// </summary>
-        public void CreateNewComments()
+        private void CreateNewComments()
         {
 
-            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
+            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "", "");
 
             TLogging.Log("Created new Comments for School:");
             TLogging.Log("Created new Comments for Family:");
@@ -231,10 +227,10 @@ namespace Tests.MSponsorship.Server.MSponsorship
         /// Creates a new Recurring gift the new child
         /// serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainSponsorshipRecurringGifts
         /// </summary>
-        public void CreateNewSponsorship()
+        private void CreateNewSponsorship()
         {
 
-            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "");
+            // SponsorshipFindTDSSearchResultTable Result = TSponsorshipWebConnector.FindChildren("", "", "", "", "", "");
 
             TLogging.Log("Created new Sponsorship:");
         }
@@ -244,7 +240,7 @@ namespace Tests.MSponsorship.Server.MSponsorship
 
 
         /// returns random strings
-        public string RandomString(int size, bool lowerCase)
+        private string RandomString(int size, bool lowerCase)
         {
             StringBuilder builder = new StringBuilder();
             Random random = new Random();

@@ -31,8 +31,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.Linq;
 
-using Mono.Data.Sqlite;
-
 using Ict.Common;
 using Ict.Common.DB;
 
@@ -232,76 +230,8 @@ namespace Ict.Common.Session
             return false;
         }
 
-        /// establish a database connection to the alternative sqlite database for the sessions
-        private static TDataBase EstablishDBConnectionSqliteSessionDB(String AConnectionName = "")
-        {
-            TDBType DBType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType", "postgresql"));
-
-            if (DBType != TDBType.SQLite)
-            {
-                throw new Exception("EstablishDBConnectionSqliteSessionDB: we should not get here.");
-            }
-
-            string DatabaseHostOrFile = TAppSettingsManager.GetValue("Server.DBSqliteSession", "localhost");
-            string DatabasePort = String.Empty;
-            string DatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
-            string DBUsername = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
-            string DBPassword = TAppSettingsManager.GetValue("Server.DBPassword", string.Empty, false);
-
-            if (!File.Exists(DatabaseHostOrFile))
-            {
-                // create the sessions database file
-                TLogging.Log("create the sessions database file: " + DatabaseHostOrFile);
-
-                // sqlite on Windows does not support encryption with a password
-                // System.EntryPointNotFoundException: sqlite3_key
-                DBPassword = string.Empty;
-
-                SqliteConnection conn = new SqliteConnection("Data Source=" + DatabaseHostOrFile + (DBPassword.Length > 0 ? ";Password=" + DBPassword : ""));
-                conn.Open();
-
-                string createStmt = 
-                    @"CREATE TABLE s_session (
-                      s_session_id_c varchar(128) NOT NULL,
-                      s_valid_until_d datetime NOT NULL,
-                      s_session_values_c text,
-                      s_date_created_d date,
-                      s_created_by_c varchar(20),
-                      s_date_modified_d date,
-                      s_modified_by_c varchar(20),
-                      s_modification_id_t timestamp,
-                      CONSTRAINT s_session_pk
-                        PRIMARY KEY (s_session_id_c)
-                    )";
-
-                SqliteCommand cmd = new SqliteCommand(createStmt, conn);
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-
-            TDataBase DBAccessObj = new TDataBase();
-
-            DBAccessObj.EstablishDBConnection(DBType,
-                DatabaseHostOrFile,
-                DatabasePort,
-                DatabaseName,
-                DBUsername,
-                DBPassword,
-                "",
-                true,
-                AConnectionName);
-
-            return DBAccessObj;
-        }
-
         private static TDataBase ConnectDB(string AConnectionName)
         {
-            // for SQLite, we use a different database for the session data, to avoid locking the database.
-            if (DBAccess.DBType == TDBType.SQLite)
-            {
-                return EstablishDBConnectionSqliteSessionDB(AConnectionName);
-            }
-
             return DBAccess.Connect(AConnectionName);
         }
 

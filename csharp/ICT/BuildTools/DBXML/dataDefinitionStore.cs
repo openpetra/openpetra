@@ -22,11 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Common.IO;
+using System.Data.Odbc;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
+using Ict.Common.IO;
 
 namespace Ict.Tools.DBXML
 {
@@ -827,6 +828,114 @@ namespace Ict.Tools.DBXML
             grpIndex.Add(AIndex);
             return true;
         }
+
+        /// prepare an INSERT statement for this table
+        public string PrepareSQLInsertStatement()
+        {
+            string stmt = "INSERT INTO " + this.strName + " (";
+            bool first = true;
+
+            foreach (TTableField f in this.grpTableField)
+            {
+                if (!first)
+                {
+                    stmt += ",";
+                }
+
+                first = false;
+
+                stmt += f.strName;
+            }
+
+            stmt += ") VALUES (";
+            first = true;
+
+            foreach (TTableField f in this.grpTableField)
+            {
+                if (!first)
+                {
+                    stmt += ",";
+                }
+
+                first = false;
+                stmt += "?";
+            }
+
+            stmt += ")";
+
+            return stmt;
+        }
+
+        /// prepare the parameters for an INSERT statement, from a CSV line
+        public List <OdbcParameter> PrepareParametersInsertStatement(string line)
+        {
+            List <OdbcParameter> result = new List <OdbcParameter>();
+            int count = 0;
+            string Separator = "\t";
+
+            line = line.Replace("\\N", "?");
+
+            if (!line.Contains(Separator))
+            {
+                Separator = ",";
+            }
+
+            foreach (TTableField field in this.grpTableField)
+            {
+                OdbcType odbcType = field.ToOdbcType();
+                Object val = System.DBNull.Value;
+
+                if (line.Length > 0)
+                    val = StringHelper.GetNextCSV(ref line, Separator);
+
+                if (val.ToString() == "?")
+                {
+                    val = System.DBNull.Value;
+                }
+                else if (((field.strType == "date") || (field.strType == "datetime") || (field.strType == "timestamp"))
+                    && (val.ToString().Length == 0))
+                {
+                    val = System.DBNull.Value;
+                }
+                else if ((field.strType == "date") && (val.ToString().Length != 0))
+                {
+                    if (val.ToString().Contains("-"))
+                    {
+                        StringCollection dateString = StringHelper.StrSplit(val.ToString(), "-");
+                        val = new DateTime(Convert.ToInt16(dateString[0]),
+                            Convert.ToInt16(dateString[1]),
+                            Convert.ToInt16(dateString[2]));
+                    }
+                    else
+                    {
+                        try
+                        {
+                            val = new DateTime(Convert.ToInt16(val.ToString().Substring(0, 3)),
+                                Convert.ToInt16(val.ToString().Substring(4, 2)),
+                                Convert.ToInt16(val.ToString().Substring(6, 2)));
+                        }
+                        catch (Exception e)
+                        {
+                            TLogging.Log(e.ToString());
+                            throw new Exception("error parsing date time " + val);
+                        }
+                    }
+                }
+                else if (field.strType == "bit")
+                {
+                    val = (val.ToString() == "true") || (val.ToString() == "t");
+                }
+
+                result.Add(new OdbcParameter("param" + count.ToString(), odbcType)
+                    {
+                        Value = val
+                    });
+
+                count++;
+            }
+
+            return result;
+        }
     }
 
     /// <summary>
@@ -1222,6 +1331,72 @@ namespace Ict.Tools.DBXML
             else
             {
                 return strType;
+            }
+        }
+
+        /// convert the type from the xml file to an ODBC type
+        public string ToOdbcTypeString()
+        {
+            return "OdbcType." + this.ToOdbcType().ToString();
+        }
+    
+        /// convert the type from the xml file to an ODBC type
+        public OdbcType ToOdbcType()
+        {
+//          Console.WriteLine("ToOdbcTypeString[" + this.strTableName + "]." + this.strName + ": "+ this.strType + "/" + this.strTypeDotNet);
+
+            if ((this.strType == "number") && (this.iLength == 24 || this.iDecimals > 0))
+            {
+                return OdbcType.Decimal;
+            }
+            else if (this.strTypeDotNet.ToLower().Contains("int64"))
+            {
+                return OdbcType.BigInt;
+            }
+            else if ((this.strType == "number") && (this.iLength <= 10))
+            {
+                return OdbcType.BigInt;
+            }
+            else if (this.strType == "number")
+            {
+                return OdbcType.Decimal;
+            }
+            else if (this.strTypeDotNet.ToLower().Contains("decimal"))
+            {
+                return OdbcType.Decimal;
+            }
+            else if ((this.strType == "varchar") || ((this.strTypeDotNet != null) && this.strTypeDotNet.ToLower().Contains("string")))
+            {
+                return OdbcType.VarChar;
+            }
+            else if (this.strType == "text" || this.strType == "longtext")
+            {
+                return OdbcType.Text;
+            }
+            else if (this.strType == "longtext")
+            {
+                return OdbcType.Text;
+            }
+            else if ((this.strType == "bit") || ((this.strTypeDotNet != null) && this.strTypeDotNet.ToLower().Contains("bool")))
+            {
+                return OdbcType.Bit;
+            }
+            else if ((this.strType == "date") || ((this.strTypeDotNet != null) && this.strTypeDotNet.ToLower().Contains("datetime")))
+            {
+                return OdbcType.Date;
+            }
+            else if (this.strType == "timestamp" || this.strType == "datetime")
+            {
+                return OdbcType.DateTime;
+            }
+            else if ((this.strType == "integer") || ((this.strTypeDotNet != null) && this.strTypeDotNet.ToLower().Contains("int32")))
+            {
+                return OdbcType.Int;
+            }
+            else
+            {
+                throw (new Exception("ERROR: Bad Field Type in [" + this.strTableName + "]." + this.strName + ": " + this.strType +
+                           "/" + this.strTypeDotNet));
             }
         }
     }

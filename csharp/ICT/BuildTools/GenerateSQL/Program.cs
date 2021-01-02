@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ namespace Ict.Tools.GenerateSQL
             string operation, xmlfile, outputfile;
 
             new TAppSettingsManager(false);
+            new TLogging(System.IO.Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]) + "/../../log/generatesql.log");
 
             try
             {
@@ -52,26 +53,8 @@ namespace Ict.Tools.GenerateSQL
 
                     if (parser.ParseDocument(ref store))
                     {
-                        if (dbms == TWriteSQL.eDatabaseType.Sqlite)
-                        {
-                            // we want to write directly to the database
-                            string password = "";
-
-                            if (cmdLine.IsFlagSet("password"))
-                            {
-                                password = cmdLine.GetOptValue("password");
-                            }
-
-                            if (!TSQLiteWriter.CreateDatabase(store, outputfile, password))
-                            {
-                                Environment.Exit(-1);
-                            }
-                        }
-                        else
-                        {
-                            // create an sql script that will be loaded into the database later
-                            TWriteSQL.WriteSQL(store, dbms, outputfile);
-                        }
+                        // create an sql script that will be loaded into the database later
+                        TWriteSQL.WriteSQL(store, dbms, outputfile);
                     }
                 }
 
@@ -79,33 +62,17 @@ namespace Ict.Tools.GenerateSQL
                 {
                     if (dbms == TWriteSQL.eDatabaseType.MySQL)
                     {
-                        TLoadMysql.LoadData(cmdLine.GetOptValue("host"), cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"),
-                            cmdLine.GetOptValue("password"), cmdLine.GetOptValue("sqlfile"));
-                    }
-                    else if (dbms == TWriteSQL.eDatabaseType.Sqlite)
-                    {
                         System.Console.WriteLine("Reading xml file {0}...", xmlfile);
                         TDataDefinitionParser parser = new TDataDefinitionParser(xmlfile);
                         TDataDefinitionStore store = new TDataDefinitionStore();
 
                         if (parser.ParseDocument(ref store))
                         {
-                            if (dbms == TWriteSQL.eDatabaseType.Sqlite)
-                            {
-                                // we want to write directly to the database
-                                string password = "";
-
-                                if (cmdLine.IsFlagSet("password"))
-                                {
-                                    password = cmdLine.GetOptValue("password");
-                                }
-
-                                TSQLiteWriter.ExecuteLoadScript(store, outputfile,
-                                    cmdLine.GetOptValue("datapath"),
-                                    cmdLine.GetOptValue("sqlfile"),
-                                    password);
-                            }
+                            // we want to write directly to the database
+                            TLoadMysql.ExecuteLoadScript(store, cmdLine.GetOptValue("host"), cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"),
+                                cmdLine.GetOptValue("password"), cmdLine.GetOptValue("sqlfile"));
                         }
+
                     }
                 }
             }
@@ -125,7 +92,6 @@ namespace Ict.Tools.GenerateSQL
                 System.Console.WriteLine("Available database managment systems and their code:");
                 System.Console.WriteLine("  mysql (recommended)");
                 System.Console.WriteLine("  postgresql (supported)");
-                System.Console.WriteLine("  sqlite (for the light version)");
                 System.Environment.Exit(-1);
             }
         }

@@ -120,7 +120,9 @@
         "MaintainChildren_label": "Behold sponsing",
         "Children_label": "Sponsing",
         "SponsorShip_label": "Sponsor",
-        "SysManAssistantInit_label": "Oppsettsassistent"
+        "SysManAssistantInit_label": "Oppsettsassistent",
+        "MaintainConsentPurposes_label": "Samtykkegrunner",
+        "MaintainConsentChannels_label": "Samtykkekanaler"
     },
     "forms": {
         "search": "Søk",
@@ -155,7 +157,10 @@
         "NotEnoughPermissions": "Manglende tilganger",
         "upload_success": "Opplastet",
         "upload": "Last opp",
-        "ask_delete": "Ønsker du virkelig å slette?"
+        "ask_delete": "Ønsker du virkelig å slette?",
+        "sortby": "Sorter etter",
+        "show_all_records": "Vis alle resultater",
+        "maxresults": "Maksimalt antall resultater å vise"
     },
     "errors": {
         "general": "En feil har inntruffet",
@@ -277,7 +282,12 @@
         "letter": "Brev",
         "conversation": "Samtale",
         "changed value": "Endrer verdi",
-        "edittitle_consent": "Dokumenter samtykket"
+        "edittitle_consent": "Dokumenter samtykket",
+        "sort_by_date_created": "Opprettelsesrekkefølge",
+        "sort_by_partnerkey": "Kontaktnøkkel",
+        "sort_by_name": "Kontaktnavn",
+        "consent_error": "Klarte ikke å endre samtykke",
+        "manage_consent": "Håndter samtykke"
     },
     "GLBatches": {
         "caption": "Håndter GL-knipper og overføringer",
@@ -669,27 +679,41 @@
         "edittitle_comment": "Rediger kommentar",
         "passed_away": "Avdød",
         "previous_child": "Tidligere barn",
-        "ErrMissingAmount": "Skriv inn et gyldig beløp"
+        "ErrMissingAmount": "Skriv inn et gyldig beløp",
+        "ErrMissingMotivation": "Velg en gyldig grunn",
+        "motivation_detail": "Grunn",
+        "partner_key": "Partnernøkkel",
+        "edittitle_donation": "Rediger vedvarende donasjoner",
+        "donor": "Donor",
+        "photo": "Bilde"
     },
     "TrialBalance": {
         "account_start": "Fra konto",
         "account_end": "Til konto",
         "year": "År",
         "end_period": "Til måned",
-        "start_period": "Fra måned"
+        "start_period": "Fra måned",
+        "cost_centre_start": "Fra kostnadssted",
+        "cost_centre_end": "Til kostnadssted"
     },
     "MaintainConsentChannels": {
         "entry_comment": "Kommentar",
         "entry_dis": "Beskrivelse",
         "entry_name": "Kode",
         "name": "Navn",
-        "code": "Kode"
+        "code": "Kode",
+        "edittitle": "Rediger samtykkekanal",
+        "addtitle": "Legg til samtykkekanal",
+        "caption": "Håndter samtykkekanaler"
     },
     "MaintainConsentPurposes": {
         "entry_comment": "Kommentar",
         "entry_dis": "Beskrivelse",
         "entry_name": "Kode",
         "name": "Verdi",
-        "code": "Kode"
+        "code": "Kode",
+        "edittitle": "Rediger samtykkegrunn",
+        "addtitle": "Legg til samtykkegrunn",
+        "caption": "Håndter samtykkegrunner"
     }
 }

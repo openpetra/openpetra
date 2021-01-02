@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timh, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2020 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
@@ -41,6 +42,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 //using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using System.Collections.Specialized;
 
@@ -147,7 +149,14 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                     PartnerReminderDR.BeginEdit();
                     PartnerReminderDR.LastReminderSent = DateTime.Now.Date;
-                    PartnerReminderDR.NextReminderDate = DateTime.Now.Date.AddDays(ReminderFreqency);
+                    if (ReminderFreqency == 0)
+                    {
+                        PartnerReminderDR.SetNextReminderDateNull();
+                    }
+                    else
+                    {
+                        PartnerReminderDR.NextReminderDate = DateTime.Now.Date.AddDays(ReminderFreqency);
+                    }
 
                     if (!PartnerReminderDR.IsEventDateNull())   // Reminder has an Event Date
                     {
@@ -411,9 +420,9 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             SQLCommand = "SELECT * FROM PUB_p_partner_reminder WHERE ";
             SQLCommand += " ( p_next_reminder_date_d > ? OR p_last_reminder_sent_d IS NULL) AND ";
-            SQLCommand += " p_next_reminder_date_d <= ? AND ";
+            SQLCommand += " (p_next_reminder_date_d <= ? OR p_first_reminder_date_d <= ?) AND ";
             SQLCommand += " p_reminder_active_l = TRUE AND ";
-            SQLCommand += " p_email_address_c <> ''";
+            SQLCommand += " (p_email_address_c <> '' OR s_user_id_c <> '')";
 
             OdbcParams = new List <OdbcParameter>();
 
@@ -424,6 +433,10 @@ namespace Ict.Petra.Server.MPartner.Processing
             // Parameter 2 = Today's date
             OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
             OdbcParams[1].Value = DateTime.Now.Date;
+
+            // Parameter 3 = Today's date
+            OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
+            OdbcParams[2].Value = DateTime.Now.Date;
 
             AReadTransaction.DataBaseObj.Select(ReminderResultsDS,
                 SQLCommand,
@@ -446,59 +459,78 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// <returns>True if the sending of the Reminder Email succeeded, otherwise false.</returns>
         private static bool SendReminderEmail(PPartnerReminderRow APartnerReminderDR, TDBTransaction AReadWriteTransaction, TSmtpSender Sender)
         {
-            string Subject = "";
-            string Body = "";
             string Destination = APartnerReminderDR.EmailAddress;
             string PartnerShortName;
-            char LF = Convert.ToChar(10);
+            string LanguageCode = "en";
+            string FirstName = "";
+            string LastName = "";
 
-
-            // Retrieve ShortName of the Partner about whom the Reminder Email should be sent
-            PartnerShortName = GetPartnerShortName(APartnerReminderDR.PartnerKey, AReadWriteTransaction);
-
-            // Compose Email Subject
-            Subject = String.Format("OpenPetra Reminder about {0}", PartnerShortName);
-
-            /*
-             * Compose Email Body
-             */
-            Body = string.Format("Partner: {0}   [{1:0000000000}]{2}", PartnerShortName, APartnerReminderDR.PartnerKey, LF);
-
-            if (APartnerReminderDR.ContactId != 0)
+            if ((Destination == String.Empty) && (APartnerReminderDR.UserId != String.Empty))
             {
-                Body += GetContactDetails(APartnerReminderDR.ContactId, AReadWriteTransaction);
+                // Get the email and language code of the user
+                GetEmailOfUser(APartnerReminderDR.UserId, AReadWriteTransaction,
+                    out Destination, out LanguageCode, out FirstName, out LastName);
             }
 
-            Body += String.Format("Reason: {0}{1}", APartnerReminderDR.ReminderReason, LF);
+            // Retrieve ShortName of the Partner about whom the Reminder Email should be sent
+            PartnerShortName = GetPartnerName(APartnerReminderDR.PartnerKey, AReadWriteTransaction);
+
+            string Domain = TAppSettingsManager.GetValue("Server.Url");
+            string EMailDomain = TAppSettingsManager.GetValue("Server.EmailDomain");
+            Dictionary<string, string> emailparameters = new Dictionary<string, string>();
+            emailparameters.Add("FirstName", FirstName);
+            emailparameters.Add("LastName", LastName);
+            emailparameters.Add("Domain", Domain);
+            emailparameters.Add("partnername", PartnerShortName);
+            emailparameters.Add("partnerkey", string.Format("{0:0000000000}", APartnerReminderDR.PartnerKey));
+
+            if (!APartnerReminderDR.IsContactIdNull() && APartnerReminderDR.ContactId != 0)
+            {
+                emailparameters.Add("ContactDetails", GetContactDetails(APartnerReminderDR.ContactId, AReadWriteTransaction));
+            }
+
+            if (!APartnerReminderDR.IsReminderReasonNull())
+            {
+                emailparameters.Add("Reason", APartnerReminderDR.ReminderReason);
+            }
 
             if (!APartnerReminderDR.IsEventDateNull())
             {
-                Body += String.Format("Event Date: {0}{1}", StringHelper.DateToLocalizedString(APartnerReminderDR.EventDate), LF);
+                emailparameters.Add("EventDate", String.Format("{0}", StringHelper.DateToLocalizedString(APartnerReminderDR.EventDate)));
             }
 
-            Body += String.Format("Comment: {0}{1}", APartnerReminderDR.Comment, LF);
-            Body += String.Format("{0}Next Reminder: {1}{2}", LF, StringHelper.DateToLocalizedString(APartnerReminderDR.NextReminderDate), LF);
+            emailparameters.Add("Comment", APartnerReminderDR.Comment);
+
+            if (!APartnerReminderDR.IsNextReminderDateNull())
+            {
+                emailparameters.Add("NextReminderDate", String.Format("{0}", StringHelper.DateToLocalizedString(APartnerReminderDR.NextReminderDate)));
+            }
 
             if (APartnerReminderDR.ReminderActive == false)
             {
-                Body += String.Format("This Reminder has now been disabled.{0}", LF);
+                emailparameters.Add("ReminderDisabled", "true");
             }
 
             // Send Email (this picks up the SmtpHost AppSetting from the Server Config File)
-            return Sender.SendEmail(TAppSettingsManager.GetValue("NoReplyEmailAddress", "noreply@solidcharity.com"),
-                                    "OpenPetra Server", Destination, Subject, Body);
+            return Sender.SendEmailFromTemplate(
+                    "no-reply@" + EMailDomain,
+                    "OpenPetra Admin",
+                    Destination,
+                    "reminder",
+                    LanguageCode,
+                    emailparameters);
         }
 
         /// <summary>
-        /// Retrieves the ShortName of a Partner.
+        /// Retrieves the Name of a Partner.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="ATransaction">Database transaction to use.</param>
-        /// <returns>ShortName of the specified Partner.</returns>
-        private static string GetPartnerShortName(long APartnerKey, TDBTransaction ATransaction)
+        /// <returns>Name of the specified Partner.</returns>
+        private static string GetPartnerName(long APartnerKey, TDBTransaction ATransaction)
         {
             // Can't use TPartnerServerLookups from here:
-            // TPartnerServerLookups.GetPartnerShortName(APartnerKey, out ShortName, out PartnerClass);
+            // TPartnerServerLookups.GetPartnerName(APartnerKey, out ShortName, out PartnerClass);
 
             PPartnerTable PartnerTable;
             var Columns = new StringCollection();
@@ -508,7 +540,23 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Columns, ATransaction);
 
-            return PartnerTable[0].PartnerShortName;
+            return Calculations.FormatShortName(PartnerTable[0].PartnerShortName, eShortNameFormat.eReverseShortname);
+        }
+
+        /// <summary>
+        /// Retrieves the e-mail address of the given user
+        /// </summary>
+        private static bool GetEmailOfUser(string AUserID, TDBTransaction ATransaction,
+            out string AEmailAddress, out string ALanguageCode,
+            out string AFirstName, out string ALastName)
+        {
+            SUserTable Users = SUserAccess.LoadByPrimaryKey(AUserID, ATransaction);
+            AEmailAddress = Users[0].EmailAddress;
+            ALanguageCode = Users[0].LanguageCode;
+            AFirstName = Users[0].FirstName;
+            ALastName = Users[0].LastName;
+
+            return true;
         }
 
         /// <summary>
