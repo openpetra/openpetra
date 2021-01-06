@@ -187,11 +187,12 @@
   <echo message="Target ThirdParty compile started at: ${datetime::now()}" />         
 
   <!-- only use nuget.exe on Mono > 6.0.0.0 because it does not work on Mono 5 -->
-  <if test="${OP::CompareMonoVersionTo('6.0.0.0') &gt; 0}">
+  <!-- never use nuget, because it now requires /usr/lib/mono/4.7.1-api/WindowsBase.dll, but that cannot be found by NAnt -->
+  <if test="${OP::CompareMonoVersionTo('99.0.0.0') &gt; 0}">
     <call target="installNuget"/>
   </if>
   <!-- for older Mono, we download the nuget packages directly -->
-  <if test="${OP::CompareMonoVersionTo('6.0.0.0') &lt; 0}">
+  <if test="${OP::CompareMonoVersionTo('99.0.0.0') &lt; 0}">
     <call target="emulateNuget"/>
   </if>
 
