@@ -176,6 +176,23 @@ sendReminders() {
     runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SendReminders"
 }
 
+sendRemindersAll() {
+    count=1
+    for d in /home/$OPENPETRA_USER_PREFIX*; do
+        if [ -d $d ]; then
+            count=$((count+1))
+            if [ $count -gt 30 ]; then
+                count=0
+                # we have an issue with too many connections to the database server
+                systemctl restart openpetra
+            fi 
+
+            export OP_CUSTOMER=`basename $d`
+            $THIS_SCRIPT reminder
+        fi
+    done
+}
+
 # export variables for debugging to use mysql on the command line
 mysqlscript() {
     export DBHost=$OPENPETRA_DBHOST
@@ -720,6 +737,9 @@ case "$1" in
         ;;
     reminder)
         sendReminders
+        ;;
+    reminderAll)
+        sendRemindersAll
         ;;
     menu)
         menu
