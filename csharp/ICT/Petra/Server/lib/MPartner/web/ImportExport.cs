@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -450,6 +450,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
 
             return true;
+        }
+
+        private void CheckCountryCode(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
+        {
+            // CountryCode in Location row
+            foreach (PLocationRow rv in MainDS.PLocation.Rows)
+            {
+                if ((rv.CountryCode != "") && (!PCountryAccess.Exists(rv.CountryCode, Transaction)))
+                {
+                    ReferenceResults.Add(new TVerificationResult(
+                        FImportContext, 
+                        "Invalid Country Code " + rv.CountryCode,
+                        rv.CountryCode,
+                        "ERROR_INVALID_COUNTRY_CODE",
+                        TResultSeverity.Resv_Critical));
+                }
+            }
         }
 
         private void CheckLocationType(PartnerImportExportTDS MainDS,
@@ -1903,6 +1922,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 return false;
             }
 
+            CheckCountryCode(MainDS, ref ReferenceResults, Transaction);
             CheckLocationType(MainDS, ref ReferenceResults, Transaction);
             CheckBusiness(MainDS, ref ReferenceResults, Transaction);
             CheckLanguage(MainDS, PartnerRow, ref ReferenceResults, Transaction);
@@ -1938,7 +1958,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckSkillCategoryAndLevel(MainDS, ref ReferenceResults, Transaction);
             CheckSubscriptions(MainDS, ref ReferenceResults, Transaction);
             CheckJobRefs(MainDS, ref ReferenceResults, Transaction);
-            return true;
+
+            return !ReferenceResults.HasCriticalErrors;
         }
 
         /// <summary>
@@ -1969,6 +1990,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             bool CanImport = false;
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
+            string ErrorMsg = String.Empty;
 
             DBAccess.WriteTransaction(
                 ref Transaction,
@@ -2065,6 +2087,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 catch (Exception ex)
                 {
                     TLogging.LogException(ex, "ImportExport.WebConnectors_CommitChanges");
+                    ErrorMsg = ex.Message;
+                    if (ex.InnerException != null) {
+                        ErrorMsg += " " + ex.InnerException.Message;
+                    }
                     TLogging.LogStackTrace(TLoggingType.ToLogfile);
                 }
             }
@@ -2073,7 +2099,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             {
                 // We got an exception!
                 string msg = Catalog.GetString("A server error occurred during import of {0} {1}.  ");
-                msg += Catalog.GetString("More information is available in the server log file.  No data was imported for this row.");
+
+                if (ErrorMsg != String.Empty)
+                {
+                    msg += " " + ErrorMsg;
+                }
+                else
+                {
+                    msg += Catalog.GetString("More information is available in the server log file.  No data was imported for this row.");
+                }
 
                 myObject.AddVerificationResult(
                     ref ReferenceResults,
