@@ -452,6 +452,7 @@
 
     <Table sqltable="p_banking_details"/>
     <Table sqltable="p_partner_banking_details"/>
+    <Table sqltable="p_banking_details_usage"/>
 
     <Table sqltable="p_method_of_contact"/>
     <Table sqltable="p_contact_attribute"/>

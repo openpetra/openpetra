@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +47,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -87,6 +88,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
 
             FLocationKey = -1;
+            int BankingDetailsKey = -1;
             ResultsCol = AReferenceResults;
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
@@ -122,6 +124,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             ResultsContext = "CSV Import Family";
                             PartnerKey = CreateNewFamily(ANode, FamilyForPerson, out LocationKey, ref ResultDS, Transaction);
                             CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS, Transaction);
+                            string AccountName = (TXMLParser.GetAttribute(ANode, "FirstName") + " " +
+                                TXMLParser.GetAttribute(ANode, "FamilyName")).Trim();
+                            CreateBankAccounts(ANode, PartnerKey, AccountName, ref BankingDetailsKey, "IBAN",
+                                ref ResultDS, Transaction, ref ResultsCol);
                             CreateOutputData(ANode, PartnerKey, MPartnerConstants.PARTNERCLASS_FAMILY,
                                 (PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY), ref ResultDS);
                         }
@@ -598,6 +604,65 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
 
             return newPerson.PartnerKey;
+        }
+
+        private bool CreateBankAccounts(XmlNode ANode,
+            Int64 APartnerKey,
+            string AAccountName,
+            ref int ABankingDetailsKey,
+            String ACSVKey,
+            ref PartnerImportExportTDS AMainDS,
+            TDBTransaction ATransaction,
+            ref TVerificationResultCollection AVerificationResult)
+        {
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+            bool MainAccount = true;
+
+            for (int Idx = -1; Idx < 6; Idx++)
+            {
+                String IBAN = TXMLParser.GetAttribute(ANode, ACSVKey + (Idx>=0?Idx.ToString():String.Empty)).Replace(" ", "");
+
+                if (IBAN.Length > 0)
+                {
+                    // Validate IBAN, and calculate the BIC
+                    string BIC;
+                    string BankName;
+                    if (!TSimplePartnerEditWebConnector.ValidateIBAN(IBAN, out BIC, out BankName, out VerificationResult))
+                    {
+                        AVerificationResult.Add(VerificationResult[0]);
+                        return false;
+                    }
+
+                    // TODO: check for existing bank accounts, if this partner already exists in the database
+                    // TODO: also check for main account
+                    PBankingDetailsRow row = AMainDS.PBankingDetails.NewRowTyped();
+                    row.BankingDetailsKey = ABankingDetailsKey;
+                    row.BankingType = 0; // BANK ACCOUNT
+                    row.AccountName = AAccountName;
+                    row.Iban = IBAN;
+                    row.BankKey = TSimplePartnerEditWebConnector.FindOrCreateBank(BIC, BankName);
+                    AMainDS.PBankingDetails.Rows.Add(row);
+
+                    PPartnerBankingDetailsRow pdrow = AMainDS.PPartnerBankingDetails.NewRowTyped();
+                    pdrow.PartnerKey = APartnerKey;
+                    pdrow.BankingDetailsKey = ABankingDetailsKey;
+                    AMainDS.PPartnerBankingDetails.Rows.Add(pdrow);
+
+                    if (MainAccount)
+                    {
+                        PBankingDetailsUsageRow newUsageRow = AMainDS.PBankingDetailsUsage.NewRowTyped(true);
+                        newUsageRow.PartnerKey = APartnerKey;
+                        newUsageRow.BankingDetailsKey = row.BankingDetailsKey;
+                        newUsageRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
+                        AMainDS.PBankingDetailsUsage.Rows.Add(newUsageRow);                        
+                    }
+
+                    MainAccount = false;
+                    ABankingDetailsKey -= 1;
+                }
+            }
+
+            return true;
         }
 
         private void CreateSpecialTypes(XmlNode ANode,

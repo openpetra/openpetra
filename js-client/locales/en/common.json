@@ -628,6 +628,7 @@
     "ImportPartners": {
         "importUser": "Import partners from CSV file",
         "examplefile": "See this example file for the possible columns:",
+        "examplefile_with_iban": "This is an example with one or more values for the IBAN:",
         "upload_partner_success": "Partners have been imported successfully",
         "upload_partner_fail": "Partners could not be imported"
     },

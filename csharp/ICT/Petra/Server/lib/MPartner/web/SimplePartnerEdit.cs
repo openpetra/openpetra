@@ -797,7 +797,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return true;
         }
 
-        private static Int64 FindOrCreateBank(string ABIC, string ABankName)
+        /// Find or create a partner for the bank with the given BIC
+        [NoRemoting]
+        public static Int64 FindOrCreateBank(string ABIC, string ABankName)
         {
             Int64 PartnerKey = -1;
             TDBTransaction Transaction = new TDBTransaction();
