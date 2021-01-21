@@ -84,6 +84,20 @@
 		</div>
 	</div>
 
+	<div class="tpl_account_detail">
+		<div class="row">
+			<div class="col">{val_p_account_name_c}</div>
+			<div class="col">{val_p_iban_c}</div>
+			<div class="col">{val_p_bic_c}</div>
+			<div class="col">{val_p_branch_name_c}</div>
+			<div class="col-1">
+				<button type="button" class="btn btn-primary" name="button" onclick="edit_account({val_p_banking_details_key_i})">
+					<i class="fas fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
 	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -230,6 +244,9 @@
 					<div class="nav-link" style="cursor:pointer;" href="#financial" aria-controls="financial" onclick="show_tab(this)">{financedetails}</div>
 				</li>
 				<li class="nav-item">
+					<div class="nav-link" style="cursor:pointer;" href="#bankaccounts" aria-controls="bankaccounts" onclick="show_tab(this)">{bankaccounts}</div>
+				</li>
+				<li class="nav-item">
 					<div class="nav-link" style="cursor:pointer;" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</div>
 				</li>
 			</ul>
@@ -361,6 +378,31 @@
 						</div>
 					</div>
 				</div>
+				<div class="tab-pane" id="bankaccounts">
+					<div class="container">
+
+						<div class="row" edit-only>
+							<div class="col" id="Account{val_p_partner_key_n}{val_p_banking_details_key_i}">
+								<button type="button" class="btn btn-primary" onclick="new_bank_account({val_p_partner_key_n}, '{val_p_first_name_c}', '{val_p_family_name_c}')">
+									<span>{forms.new}</span>
+									<i class="fas fa-plus"></i>
+								</button>
+
+								<div class="row">
+									<div class="col">{accountname}</div>
+									<div class="col">{iban}</div>
+									<div class="col">{bic}</div>
+									<div class="col">{bankname}</div>
+									<div class="col-1"></div>
+								</div>
+
+								<div class="bank_account_detail_col"></div>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
 				<div class="tab-pane text-center" id="comment">
 					<textarea name="PPartner_p_comment_c" style="width:90%;height:7em;" placeholder="{comment}"></textarea>
 				</div>
@@ -372,6 +414,67 @@
 			<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
 		</div>
 		</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_bank_account" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_bank_account}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<input type="hidden" name="p_partner_key_n" value="">
+						<input type="hidden" name="p_banking_details_key_i" value="">
+
+						<div class="row">
+							<div class="col">
+								<span>{accountname}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_account_name_c" value="" size="30">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{iban}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_iban_c" value="" size="30">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{bic}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_bic_c" value="" size="30" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{bankname}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="p_branch_name_c" value="" size="30" readonly>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button edit-only class="btn btn-danger" onclick="delete_bank_account(this)">{forms.delete}</button>
+					<button class="btn btn-primary" onclick="save_edit_bank_account(this)">{forms.save}</button>
+					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			</div>
+			</div>
 		</div>
 	</div>
 

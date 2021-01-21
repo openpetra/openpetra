@@ -124,6 +124,11 @@ function set_values_of_input_variables(tpl, data, limit_to_table) {
       f = tpl.find("[key-name="+variable+"]");
       key = true;
     }
+    
+    if (f.length == 0) {
+      // console.log("cannot find variable " + variable);
+      continue;
+    }
 
     if (key == true) {
       //hidden key case

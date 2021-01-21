@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -190,7 +190,7 @@ namespace Ict.Common.IO
 
                         if ((buf != null) && (buf.Length > 0))
                         {
-                            ReturnValue = Encoding.ASCII.GetString(buf, 0, buf.Length);
+                            ReturnValue = Encoding.UTF8.GetString(buf, 0, buf.Length);
                         }
                         else
                         {
