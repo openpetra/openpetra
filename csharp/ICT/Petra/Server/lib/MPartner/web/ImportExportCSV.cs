@@ -58,9 +58,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     {
         private Int32 FLocationKey = -1;
         private TVerificationResultCollection ResultsCol;
+        private Int32 FCurrentLine = -1;
         private String ResultsContext;
 
-        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
+        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity = TResultSeverity.Resv_Critical)
         {
             if (ASeverity != TResultSeverity.Resv_Status)
             {
@@ -68,11 +69,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, ASeverity));
-        }
-
-        private void AddVerificationResult(String AResultText)
-        {
-            AddVerificationResult(AResultText, TResultSeverity.Resv_Noncritical);
         }
 
         /// <summary>
@@ -92,6 +88,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ResultsCol = AReferenceResults;
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
+
+            // starting in line 2, because there is the line with the captions
+            FCurrentLine = 2;
 
             DBAccess.WriteTransaction(ref Transaction,
                 ref SubmissionOK,
@@ -147,6 +146,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
 
                         ANode = ANode.NextSibling;
+                        FCurrentLine += 1;
                     }
                 });
 
@@ -353,6 +353,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 newPartner.LanguageCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
 
+            if ((newFamily.FirstName == String.Empty) && (newFamily.FamilyName == String.Empty))
+            {
+                AddVerificationResult("Missing Firstname or family name in line " + FCurrentLine.ToString());
+            }
+
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
             AMainDS.PLocation.Rows.Add(newLocation);
@@ -384,6 +389,28 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'partnerlocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
             partnerlocation["p_mobile_number_c"] =
                 TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'partnerlocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
+
+            if ((newFamily.FirstName == String.Empty) && (newFamily.FamilyName == String.Empty))
+            {
+                AddVerificationResult("Missing Firstname or family name in line " + FCurrentLine.ToString());
+            }
+
+            bool HasAddress = (newLocation.StreetName != String.Empty) || (newLocation.City != String.Empty) || (newLocation.CountryCode != String.Empty);
+            if (HasAddress)
+            {
+                if ((newLocation.StreetName == String.Empty) || (newLocation.City == String.Empty) || (newLocation.CountryCode == String.Empty))
+                {
+                    AddVerificationResult("Address is incomplete, we need streetname, city and country in line " + FCurrentLine.ToString());
+                    HasAddress = false;
+                }
+            }
+            bool HasContactDetail = (partnerlocation["p_email_address_c"].ToString() != String.Empty) || 
+                (partnerlocation["p_telephone_number_c"].ToString() != String.Empty) ||
+                (partnerlocation["p_mobile_number_c"].ToString() != String.Empty);
+            if (!HasAddress && !HasContactDetail)
+            {
+                AddVerificationResult("Missing an address (streetname, city, country code) or phone number or email address in line " + FCurrentLine.ToString());
+            }
 
             AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
 
