@@ -51,6 +51,12 @@ function display_list(source) {
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
 		data = JSON.parse(data.data.d);
+
+		if (data.ATotalRecords == -1) {
+			display_error( data.AVerificationResult, "MaintainPartners" );
+			return;
+		}
+
 		// on reload, clear content
 		$('#browse_container').html('');
 		for (item of data.result) {

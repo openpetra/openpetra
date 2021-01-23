@@ -1,9 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Christopher Jäkel <cj@tbits.net>
+//       Christopher Jäkel
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -43,7 +45,7 @@ function UploadUserCSV(self) {
 			if (result.result == true) {
 				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
-				display_error(result.AVerificationResult, 'ImportPartners.upload_partner_fail');
+				display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
 			}
 		})
 		.catch(error => {

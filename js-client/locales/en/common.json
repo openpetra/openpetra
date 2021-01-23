@@ -231,6 +231,7 @@
         "newfamily": "Add family",
         "neworganisation": "Add organisation",
         "partnerkey": "Partner key",
+        "error_invalid_contact_key": "Invalid contact number in the filter",
         "partnername": "Name",
         "city": "City",
         "postalcode": "Postal code",

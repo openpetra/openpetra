@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -60,9 +61,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             bool AActiveOnly,
             string ASortBy,
             Int16 AMaxRecords,
-            out Int32 ATotalRecords)
+            out Int32 ATotalRecords,
+            out TVerificationResultCollection AVerificationResult)
         {
             TPartnerFind PartnerFind = new TPartnerFind();
+            AVerificationResult = new TVerificationResultCollection();
+            ATotalRecords = -1;
 
             PartnerFindTDSSearchCriteriaTable CriteriaData = new PartnerFindTDSSearchCriteriaTable();
             PartnerFindTDSSearchCriteriaRow CriteriaRow = CriteriaData.NewRowTyped();
@@ -72,7 +76,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             if (APartnerKey.Length > 0)
             {
-                CriteriaRow.PartnerKey = System.Convert.ToInt64(APartnerKey);
+                Int64 PartnerKey = -1;
+
+                if (!Int64.TryParse(APartnerKey, out PartnerKey))
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Invalid Contact Key", "error_invalid_contact_key", TResultSeverity.Resv_Critical));
+
+                    return new PartnerFindTDSSearchResultTable();
+                }
+
+                CriteriaRow.PartnerKey = PartnerKey;
                 CriteriaRow.ExactPartnerKeyMatch = false;
             }
 
@@ -190,7 +203,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             int TotalRecords;
-            AResult = FindPartners(String.Empty, String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, "PartnerName", ALimit, out TotalRecords);
+            TVerificationResultCollection VerificationResult;
+            AResult = FindPartners(String.Empty, String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, "PartnerName", ALimit, out TotalRecords, out VerificationResult);
 
             return AResult.Rows.Count > 0;
         }

@@ -2,10 +2,10 @@
 //
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       Christopher Jäkel <cj@tbits.net>
+//       Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -137,7 +137,7 @@ function save_new() {
 					LoadAvailableLedgerDropDown();
 					display_list();
 				} else {
-					display_error(parsed.AVerificationResult, 'fail');
+					display_error(parsed.AVerificationResult, 'LedgerSetup', 'fail');
 				}
 			}
 		)

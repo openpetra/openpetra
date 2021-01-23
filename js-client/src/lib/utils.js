@@ -2,10 +2,10 @@
 //
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       Christopher Jäkel <cj@tbits.net>
+//       Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -66,7 +66,7 @@ function display_message(content, style_arguments = null, timeout = 5000) {
 
 }
 
-function display_error(VerificationResult, generalerror = 'errors.general') {
+function display_error(VerificationResult, LanguageNamespace = '', generalerror = 'errors.general') {
   if (VerificationResult == null) {
     display_message( i18next.t(generalerror), 'fail');
     return;
@@ -81,7 +81,9 @@ function display_error(VerificationResult, generalerror = 'errors.general') {
       continue;
     }
     s = true;
-    if (error.code != "" && i18next.t(error.code) != error.code) {
+    if (error.code != "" && i18next.t(LanguageNamespace + "." + error.code) != LanguageNamespace + "." + error.code) {
+      display_message( i18next.t(LanguageNamespace + "." + error.code), "fail");
+    } else if (error.code != "" && i18next.t(error.code) != error.code) {
       display_message( i18next.t(error.code), "fail");
     } else {
       display_message( error.message, "fail");

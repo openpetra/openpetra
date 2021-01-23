@@ -231,6 +231,7 @@
         "newfamily": "Familie hinzufügen",
         "neworganisation": "Organisation hinzufügen",
         "partnerkey": "Kontakt Nummer",
+        "error_invalid_contact_key": "Ungültige Kontakt Nummer im Filter",
         "partnername": "Name",
         "city": "Stadt",
         "postalcode": "Postleitzahl",
