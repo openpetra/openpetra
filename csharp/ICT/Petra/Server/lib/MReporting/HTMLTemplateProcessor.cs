@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,8 +31,9 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
 using System.IO;
-using OfficeOpenXml;
 using HtmlAgilityPack;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Ict.Petra.Server.MReporting
 {
@@ -403,22 +404,36 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
-        /// Create a Calc file from the HTML
+        /// Create an Excel file from the HTML
         /// </summary>
-        public static ExcelPackage HTMLToCalc(HtmlDocument html)
+        public static XSSFWorkbook HTMLToCalc(HtmlDocument html)
         {
-            ExcelPackage pck = new ExcelPackage();
+            XSSFWorkbook xssWorkbook = new XSSFWorkbook();
+            IRow wsrow = null;
+            ICell wscell = null;
 
-            ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
+            ISheet worksheet = xssWorkbook.CreateSheet("Data Export");
+
+            ICellStyle wsstyle_bold = xssWorkbook.CreateCellStyle();
+            IFont wsfont = wsstyle_bold.GetFont(xssWorkbook);
+            wsfont.IsBold = true;
+            wsstyle_bold.SetFont(wsfont);
+
+            ICellStyle wsstyle_dateformat = xssWorkbook.CreateCellStyle();
+            ICreationHelper createHelper = xssWorkbook.GetCreationHelper();
+            wsstyle_dateformat.DataFormat = createHelper.CreateDataFormat().GetFormat("dd/mm/yyyy");
+
 
             // write the column headings
             var elements = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='column_headings']/div");
             int colCounter = 1;
             int rowCounter = 3;
+            wsrow = worksheet.CreateRow(rowCounter);
             foreach (var element in elements)
             {
-                worksheet.Cells[rowCounter, colCounter].Value = element.InnerText;
-                worksheet.Cells[rowCounter, colCounter].Style.Font.Bold = true;
+                wscell = wsrow.CreateCell(colCounter);
+                wscell.SetCellValue(element.InnerText);
+                wscell.CellStyle = wsstyle_bold;
                 colCounter++;
             }
             rowCounter+=2;
@@ -426,10 +441,12 @@ namespace Ict.Petra.Server.MReporting
             var rows = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='content']//div[contains(@class, 'row')]");
             foreach (var row in rows)
             {
+                wsrow = worksheet.CreateRow(rowCounter);
                 colCounter = 1;
                 elements = HTMLTemplateProcessor.SelectNodes(row, ".//div[contains(@class, 'col-')]");
                 foreach (var element in elements)
                 {
+                    wscell = wsrow.CreateCell(colCounter);
                     string value = element.InnerText;
 
                     if (value == "&nbsp;")
@@ -440,22 +457,22 @@ namespace Ict.Petra.Server.MReporting
                     if (element.HasClass("currency"))
                     {
                         TVariant v = new TVariant(value);
-                        worksheet.Cells[rowCounter, colCounter].Value = v.ToDecimal();
+                        wscell.SetCellValue((double)v.ToDecimal());
                     }
                     else if (element.HasClass("date"))
                     {
                         TVariant v = new TVariant(value);
-                        worksheet.Cells[rowCounter, colCounter].Value = v.ToDate();
-                        worksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
+                        wscell.SetCellValue(v.ToDate());
+                        wscell.CellStyle = wsstyle_dateformat;
                     }
                     else
                     {
-                        worksheet.Cells[rowCounter, colCounter].Value = value;
+                        wscell.SetCellValue(value);
                     }
 
                     if (element.InnerHtml.Contains("<strong>"))
                     {
-                        worksheet.Cells[rowCounter, colCounter].Style.Font.Bold = true;
+                        wscell.CellStyle = wsstyle_bold;
                     }
 
                     colCounter++;
@@ -464,9 +481,12 @@ namespace Ict.Petra.Server.MReporting
                 rowCounter++;
             }
 
-            worksheet.Cells.AutoFitColumns();
+            for (int colIndex = 1; colIndex < colCounter; colIndex++)
+            {
+                worksheet.AutoSizeColumn(colIndex);
+            }
 
-            return pck;
+            return xssWorkbook;
         }
 
         /// <summary>

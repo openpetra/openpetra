@@ -1,4 +1,3 @@
-OfficeOpenXml*=${dir.3rdParty}/EPPlus/EPPlus.dll
 GNU.Gettext=${dir.3rdParty}/GNU/GNU.Gettext.dll
 PasswordUtilities*=${dir.3rdParty}/PasswordUtilities/PasswordUtilities.dll
 ICSharpCode.NRefactory*=${dir.3rdParty}/ICSharpCode/ICSharpCode.NRefactory.dll
@@ -12,6 +11,9 @@ Sodium*=${dir.nuget}/libsodium-net.*/Sodium.dll
 MailKit*=${dir.nuget}/MailKit.*/MailKit.dll
 MimeKit*=${dir.nuget}/MimeKit.*/MimeKit.dll
 HtmlAgilityPack*=${dir.nuget}/HtmlAgilityPack.*/HtmlAgilityPack.dll
+NPOI.XSSF*=${dir.nuget}/NPOI.*/NPOI.OOXML.dll
+NPOI.OpenXml4Net*=${dir.nuget}/NPOI.*/NPOI.OpenXml4Net.dll
+NPOI*=${dir.nuget}/NPOI.*/NPOI.dll
 Accessibility=${csharpStdLibs}/Accessibility.dll
 System.Collections.Generic=${csharpStdLibs}/System.Core.dll
 System.Configuration=${csharpStdLibs}/System.Configuration.dll
