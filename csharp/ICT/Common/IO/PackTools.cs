@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -274,7 +274,7 @@ namespace Ict.Common.IO
             TLogging.Log("extract " + AFileName, TLoggingType.ToConsole);
             fs = System.IO.File.OpenRead(AFileName);
             fz = new GZipInputStream(fs);
-            tar = TarArchive.CreateInputTarArchive(fz);
+            tar = TarArchive.CreateInputTarArchive(fz, Encoding.UTF8);
             tar.ExtractContents(ATmpDirectory);
             tar.Close();
             fz.Close();
@@ -293,7 +293,7 @@ namespace Ict.Common.IO
 
             TLogging.Log("extract " + AFileName, TLoggingType.ToConsole);
             fs = System.IO.File.OpenRead(AFileName);
-            tar = TarArchive.CreateInputTarArchive(fs);
+            tar = TarArchive.CreateInputTarArchive(fs, Encoding.UTF8);
             tar.ExtractContents(ATmpDirectory);
             tar.Close();
             fs.Close();
