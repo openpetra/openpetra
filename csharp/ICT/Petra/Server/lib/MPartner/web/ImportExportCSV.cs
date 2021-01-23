@@ -383,6 +383,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             partnerlocation.SendMail = true;
 
+// TODO: wrap TXMLParser.GetAttribute and store each attribute that was read
+// then complain about attributes that have not been parsed??? oder probleme bei unterschiedlichen Typen, unterschiedliche Spalten wichtig?
             partnerlocation["p_email_address_c"] =
                 TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'partnerlocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
             partnerlocation["p_telephone_number_c"] =
