@@ -428,14 +428,13 @@ namespace Ict.Common.IO
         /// <summary>
         /// Load an xlsx Excel file into a datatable
         /// </summary>
-        public static DataTable ParseExcelStream2DataTable(MemoryStream AStream,
+        public static DataTable ParseExcelWorkbook2DataTable(Stream AStream,
             bool AHasHeader = false,
             int AWorksheetID = 0,
             List <string>AColumnsToImport = null)
         {
-            XSSFWorkbook xssWorkbook = new XSSFWorkbook(AStream);
-
-            ISheet worksheet = xssWorkbook[AWorksheetID];
+            XSSFWorkbook workbook = new XSSFWorkbook(AStream);
+            ISheet worksheet = workbook[AWorksheetID];
 
             DataTable result = new DataTable();
 

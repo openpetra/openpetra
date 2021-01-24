@@ -428,113 +428,27 @@ namespace Ict.Common.IO.Testing
                 File.Delete(filename);
             }
 
-            XSSFWorkbook workbook = new XSSFWorkbook();
-            ISheet worksheet = workbook.CreateSheet("test");
-
-            IRow wsrow = null;
-            ICell wscell = null;
-
-            wsrow = worksheet.CreateRow(1);
-            wscell = wsrow.CreateCell(1);
-            wscell.SetCellValue("test1");
-            wsrow = worksheet.CreateRow(3);
-            wscell = wsrow.CreateCell(2);
-            wscell.SetCellValue("test2");
-            wsrow = worksheet.CreateRow(7);
-            wscell = wsrow.CreateCell(2);
-            wscell.SetCellValue("test2");
-
-            TLogging.Log("writing to " + filename);
-
-            FileStream sw = File.Create(filename);
-            workbook.Write(sw);
-            sw.Close();
-
-            // can we read the file?
-            using (var stream = new FileStream(filename, FileMode.Open))
+            using (FileStream sw = File.Create(filename))
             {
-                stream.Position = 0;
-                Assert.IsInstanceOf(typeof(XSSFWorkbook), new XSSFWorkbook(stream), "cannot open excel file");
-            }
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                ISheet worksheet = workbook.CreateSheet("test");
 
-            // Set up an empty folder to unzip to
-            string unzipRoot = PathToTestData + "testUnzip";
+                IRow wsrow = null;
+                ICell wscell = null;
 
-            if (Directory.Exists(unzipRoot))
-            {
-                // Something left over from last time??
-                Directory.Delete(unzipRoot, true);
-                Thread.Sleep(1000);
-            }
+                wsrow = worksheet.CreateRow(1);
+                wscell = wsrow.CreateCell(1);
+                wscell.SetCellValue("test1");
+                wsrow = worksheet.CreateRow(3);
+                wscell = wsrow.CreateCell(2);
+                wscell.SetCellValue("test2");
+                wsrow = worksheet.CreateRow(7);
+                wscell = wsrow.CreateCell(2);
+                wscell.SetCellValue("test2");
 
-            Directory.CreateDirectory(unzipRoot);
-
-            // Unzip the Excel file
-            PackTools.Unzip(unzipRoot, filename);
-            FileInfo f = new FileInfo(unzipRoot + "/xl/sharedStrings.xml");
-            Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
-
-            // Try to remove the folder that we unzipped to as part of clean-up
-            Thread.Sleep(1000);
-            try
-            {
-                Directory.Delete(unzipRoot, true);
-            }
-            catch (Exception)
-            {
-            }
-            Thread.Sleep(500);
-        }
-
-        /// <summary>
-        /// test writing to an Excel file
-        /// </summary>
-        [Test]
-        public void TestExcelExportStream()
-        {
-            string filename = PathToTestData + "test.xlsx";
-
-            // display error messages in english
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-
-            if (File.Exists(filename))
-            {
-                File.Delete(filename);
-            }
-
-            // could also use: FileStream fs = new FileStream(filename, FileMode.Create)
-            // but we want to prove here that it works with a MemoryStream, for delivering the files over the web
-            using (StreamWriter sw = new StreamWriter(filename))
-            {
-                using (MemoryStream m = new MemoryStream())
-                {
-                    XSSFWorkbook workbook = new XSSFWorkbook();
-
-                    ISheet worksheet = workbook.CreateSheet("test");
-
-                    IRow wsrow = null;
-                    ICell wscell = null;
-
-                    wsrow = worksheet.CreateRow(1);
-                    wscell = wsrow.CreateCell(1);
-                    wscell.SetCellValue("test1");
-                    wsrow = worksheet.CreateRow(3);
-                    wscell = wsrow.CreateCell(2);
-                    wscell.SetCellValue("test2");
-                    wsrow = worksheet.CreateRow(7);
-                    wscell = wsrow.CreateCell(2);
-                    wscell.SetCellValue("test2");
-
-                    TLogging.Log("writing to " + filename);
-
-                    workbook.Write(m);
-
-                    TLogging.Log("writing to " + filename);
-
-                    m.WriteTo(sw.BaseStream);
-                    m.Close();
-                    sw.Close();
-                }
+                TLogging.Log("writing to " + filename);
+                workbook.Write(sw);
+                sw.Close();
             }
 
             // can we read the file?
@@ -542,6 +456,19 @@ namespace Ict.Common.IO.Testing
             {
                 stream.Position = 0;
                 Assert.IsInstanceOf(typeof(XSSFWorkbook), new XSSFWorkbook(stream), "cannot open excel file");
+            }
+
+            // can we read the file?
+            using (var stream = new FileStream(filename, FileMode.Open))
+            {
+                stream.Position = 0;
+                XSSFWorkbook workbook = new XSSFWorkbook(stream);
+                ISheet worksheet = workbook[0];
+                Assert.AreEqual("test", worksheet.SheetName, "get the first worksheet");
+                IRow row = worksheet.GetRow(1);
+                ICell cell = row.GetCell(1);
+                Assert.AreEqual("test1", cell.ToString(), "get the cell value");
+                //Assert.IsInstanceOf(typeof(XSSFWorkbook), new XSSFWorkbook(stream), "cannot open excel file");
             }
 
             // Set up an empty folder to unzip to
@@ -585,14 +512,10 @@ namespace Ict.Common.IO.Testing
             // display error messages in english
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
 
-            using (MemoryStream ms = new MemoryStream())
+            TLogging.Log("reading " + filename);
+            using (FileStream fs = File.OpenRead(filename))
             {
-                using (FileStream fs = File.OpenRead(filename))
-                {
-                    fs.CopyTo(ms);
-                }
-
-                DataTable table = TCsv2Xml.ParseExcelStream2DataTable(ms, true);
+                DataTable table = TCsv2Xml.ParseExcelWorkbook2DataTable(fs, true);
 
                 Assert.AreEqual("test1", table.Columns[0].ColumnName, "name of first column");
                 Assert.AreEqual("1", table.Rows[0][0].ToString(), "value of first row, first column");
