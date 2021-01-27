@@ -160,7 +160,8 @@
         "ask_delete": "Ønsker du virkelig å slette?",
         "sortby": "Sorter etter",
         "show_all_records": "Vis alle resultater",
-        "maxresults": "Maksimalt antall resultater å vise"
+        "maxresults": "Maksimalt antall resultater å vise",
+        "uploaderror": "Kunne ikke laste opp. Kanskje filen er for stor?"
     },
     "errors": {
         "general": "En feil har inntruffet",
@@ -211,7 +212,8 @@
         "sendresetpasswordlink_checkbox": "Send lenke inneholdende nytt passord til brukeren per e-post",
         "permissions": "Tilganger",
         "locked": "Låst",
-        "retired": "Avskrudd"
+        "retired": "Avskrudd",
+        "lastlogin": "Siste innlogging"
     },
     "ImportAndExportDatabase": {
         "caption": "Sikkerhetskopier og gjenopprett databasen",
@@ -287,7 +289,16 @@
         "sort_by_partnerkey": "Kontaktnøkkel",
         "sort_by_name": "Kontaktnavn",
         "consent_error": "Klarte ikke å endre samtykke",
-        "manage_consent": "Håndter samtykke"
+        "manage_consent": "Håndter samtykke",
+        "editor": "Redigerer",
+        "public relations": "Offentlige relasjoner",
+        "consent_permissions_question": "Til hva?",
+        "consent permissions": "Nåværende samtykke",
+        "consent_description": "Personvernsdata har blitt tiltrodd oss",
+        "consent_not_saved_yet": "Samtykke har ikke blitt lagret enda",
+        "error_consent_unsaved_changes": "Det finnes uendrede samtykkeendringer, derfor godtas nye endringer for tiden ikke.",
+        "error_no_history": "Samtykke har ikke blitt meddelt enda.",
+        "empty_types": "Ingen etiketter satt opp enda"
     },
     "GLBatches": {
         "caption": "Håndter GL-knipper og overføringer",
@@ -451,7 +462,11 @@
         "ask_delete": "Er du sikker på at du ønsker å slette denne kategorien?",
         "entry_name": "Kategorinavn",
         "entry_status": "Aktiv",
-        "entry_dis": "Kategoribeskrivelse"
+        "entry_dis": "Kategoribeskrivelse",
+        "without_group": "Uten gruppe",
+        "type_deletable": "Kan bli slettet",
+        "system_type": "Forhåndsdefinert av systemet",
+        "group_name": "Gruppenavn"
     },
     "LedgerSetup": {
         "addtitle": "Opprett hovedbok",
@@ -576,7 +591,11 @@
         "signature_help": "Dette er valgfritt.",
         "emptytemplate": "Du må laste opp en HTML-mal",
         "errorempty": "Det finnes ingen gaveknipper i denne perioden med årvis kvitteringsnotasjon",
-        "uploaderror": "Feil med kvitteringer"
+        "uploaderror": "Feil med kvitteringer",
+        "clear_as_default": "Tøm forvalg",
+        "store_as_default": "Lagre som forvalg",
+        "default": "Forvalg",
+        "emptytemplatefile": "Du må velge en fil først"
     },
     "ImportPartners": {
         "importUser": "Importer partnere fra CSV-fil",
@@ -648,7 +667,9 @@
         "EmailAddress": "E-postadresse",
         "Lastname": "Etternavn",
         "Firstname": "Fornavn",
-        "UserID": "Brukernavn"
+        "UserID": "Brukernavn",
+        "SelfSignUpEnabled": "Hver besøker kan opprette sin egen bruker og håndtere sin egen personvernsdata",
+        "caption": "Oppsettsassistant"
     },
     "MaintainChildren": {
         "ErrEmptyReminderComment": "Kommentar kan ikke stå tom",
@@ -715,5 +736,8 @@
         "edittitle": "Rediger samtykkegrunn",
         "addtitle": "Legg til samtykkegrunn",
         "caption": "Håndter samtykkegrunner"
+    },
+    "PartnerBySubscription": {
+        "PublicationCode": "Publiseringskode"
     }
 }
