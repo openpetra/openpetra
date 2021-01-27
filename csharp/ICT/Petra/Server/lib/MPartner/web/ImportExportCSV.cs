@@ -424,11 +424,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             partnerlocation["p_mobile_number_c"] =
                 GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'partnerlocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
 
-            if ((newFamily.FirstName == String.Empty) && (newFamily.FamilyName == String.Empty))
-            {
-                AddVerificationResult("Missing Firstname or family name in line " + FCurrentLine.ToString());
-            }
-
             bool HasAddress = (newLocation.StreetName != String.Empty) || (newLocation.City != String.Empty) || (newLocation.CountryCode != String.Empty);
             if (HasAddress)
             {

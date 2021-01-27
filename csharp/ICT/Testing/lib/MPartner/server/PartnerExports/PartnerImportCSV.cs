@@ -95,6 +95,53 @@ namespace Tests.MPartner.Server.PartnerExports
         }
 
         /// <summary>
+        /// Test importing a CSV file with partners, with unknown column
+        /// </summary>
+        [Test]
+        public void TestImportCSVUnknownColumn()
+        {
+            TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
+
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_unknown_column.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "DMY", ";", out VerificationResult);
+
+            Assert.IsNotNull(VerificationResult, "Expected to get errors");
+            Assert.AreEqual(1, VerificationResult.Count, "there should be one error");
+            Assert.AreEqual("Unknown Column(s): Test2", VerificationResult[0].ResultText, "VerificationResult message");
+        }
+
+        /// <summary>
+        /// Test importing a CSV file with partners, without Name
+        /// </summary>
+        [Test]
+        public void TestImportCSVWithoutName()
+        {
+            TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
+
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_invalid.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "DMY", ";", out VerificationResult);
+
+            Assert.IsNotNull(VerificationResult, "Expected to get errors");
+            Assert.AreEqual(3, VerificationResult.Count, "there should be three errors");
+            Assert.AreEqual("Missing Firstname or family name in line 2",
+                VerificationResult[0].ResultText, "VerificationResult message");
+            Assert.AreEqual("Address is incomplete, we need streetname, city and country in line 3",
+                VerificationResult[1].ResultText, "VerificationResult message");
+            Assert.AreEqual("Missing an address (streetname, city, country code) or phone number or email address in line 4",
+                VerificationResult[2].ResultText, "VerificationResult message");
+        }
+
+        /// <summary>
         /// Test importing a CSV file with partners using dates with dmy format
         /// </summary>
         [Test]
@@ -103,7 +150,7 @@ namespace Tests.MPartner.Server.PartnerExports
             TVerificationResultCollection VerificationResult = null;
             string doc = String.Empty;
 
-            using (StreamReader sr = new StreamReader("../../demodata/partners/samplePartnerImport_dates_dmy.csv"))
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_dates_dmy.csv"))
             {
                 doc = sr.ReadToEnd();
             }
@@ -148,7 +195,7 @@ namespace Tests.MPartner.Server.PartnerExports
             TVerificationResultCollection VerificationResult = null;
             string doc = String.Empty;
 
-            using (StreamReader sr = new StreamReader("../../demodata/partners/samplePartnerImport_dates_mdy.csv"))
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_dates_mdy.csv"))
             {
                 doc = sr.ReadToEnd();
             }
