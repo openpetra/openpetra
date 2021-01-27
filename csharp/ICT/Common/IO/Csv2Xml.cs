@@ -699,5 +699,73 @@ namespace Ict.Common.IO
 
             return myDoc;
         }
+
+        /// <summary>
+        /// convert a CSV file to a DataTable.
+        /// the first line is expected to contain the column names/captions, in quotes.
+        /// from the header line, the separator can be determined, if the parameter ASeparator is empty
+        /// </summary>
+        public static DataTable ParseCSV2DataTable(List <string>ALines, string ASeparator)
+        {
+            string headerLine = ALines[0];
+            string separator = ASeparator;
+            DataTable result = new DataTable();
+
+            if (string.IsNullOrEmpty(ASeparator))
+            {
+                if (!headerLine.StartsWith("\""))
+                {
+                    throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
+                        Environment.NewLine +
+                        Catalog.GetString("There must be a row with the column captions, at least the first caption must be in quotes."));
+                }
+                else
+                {
+                    // read separator from header line. at least the first column needs to be quoted
+                    separator = headerLine[StringHelper.FindMatchingQuote(headerLine, 0) + 2].ToString();
+                }
+            }
+
+            while (headerLine.Length > 0)
+            {
+                string attrName = StringHelper.GetNextCSV(ref headerLine, separator);
+
+                if (attrName.Length == 0)
+                {
+                    TLogging.Log("Csv2DataTable: found empty column header, will not consider any following columns");
+                    break;
+                }
+
+                if (attrName.Length > 1)
+                {
+                    attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
+                }
+
+                result.Columns.Add(attrName);
+            }
+
+            int LineCounter = 1;
+
+            while (LineCounter < ALines.Count)
+            {
+                DataRow NewRow = result.NewRow();
+                string line = ALines[LineCounter];
+
+                if (line.Trim().Length > 0)
+                {
+                    foreach (DataColumn c in result.Columns)
+                    {
+                        // support csv values that contain line breaks
+                        NewRow[c.ColumnName] = StringHelper.GetNextCSV(ref line, ALines, ref LineCounter, separator);
+                    }
+
+                    result.Rows.Add(NewRow);
+                }
+
+                LineCounter++;
+            }
+
+            return result;
+        }
     }
 }
