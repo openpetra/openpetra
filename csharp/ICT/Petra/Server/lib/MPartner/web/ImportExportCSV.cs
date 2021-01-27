@@ -60,6 +60,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private TVerificationResultCollection ResultsCol;
         private Int32 FCurrentLine = -1;
         private String ResultsContext;
+        private List<String> FUnusedColumns;
 
         private void AddVerificationResult(String AResultText, TResultSeverity ASeverity = TResultSeverity.Resv_Critical)
         {
@@ -71,15 +72,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, ASeverity));
         }
 
+        private string GetAttribute(XmlNode ANode, string AAttrName)
+        {
+            if (FUnusedColumns.Contains(AAttrName))
+            {
+                FUnusedColumns.Remove(AAttrName);
+            }
+            return TXMLParser.GetAttribute(ANode, AAttrName);
+        }
+
         /// <summary>
         /// Import data from a CSV file
         /// </summary>
         /// <param name="ANode"></param>
+        /// <param name="AColumnNames"></param>
         /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
         /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AReferenceResults"></param>
         /// <returns></returns>
-        public PartnerImportExportTDS ImportData(XmlNode ANode, string ADateFormat, ref TVerificationResultCollection AReferenceResults)
+        public PartnerImportExportTDS ImportData(XmlNode ANode, List<string> AColumnNames, string ADateFormat, ref TVerificationResultCollection AReferenceResults)
         {
             PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
 
@@ -88,6 +99,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ResultsCol = AReferenceResults;
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
+            FUnusedColumns = new List<string>(AColumnNames);
 
             // starting in line 2, because there is the line with the captions
             FCurrentLine = 2;
@@ -99,7 +111,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     while (ANode != null)
                     {
                         ResultsContext = "CSV Import";
-                        String PartnerClass = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
+                        String PartnerClass = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
                         Int64 PartnerKey = 0;
                         int LocationKey = 0;
 
@@ -123,8 +135,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             ResultsContext = "CSV Import Family";
                             PartnerKey = CreateNewFamily(ANode, FamilyForPerson, out LocationKey, ref ResultDS, Transaction);
                             CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS, Transaction);
-                            string AccountName = (TXMLParser.GetAttribute(ANode, "FirstName") + " " +
-                                TXMLParser.GetAttribute(ANode, "FamilyName")).Trim();
+                            string AccountName = (GetAttribute(ANode, "FirstName") + " " +
+                                GetAttribute(ANode, "FamilyName")).Trim();
                             CreateBankAccounts(ANode, PartnerKey, AccountName, ref BankingDetailsKey, "IBAN",
                                 ref ResultDS, Transaction, ref ResultsCol);
                             CreateOutputData(ANode, PartnerKey, MPartnerConstants.PARTNERCLASS_FAMILY,
@@ -150,6 +162,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 });
 
+            if (FUnusedColumns.Count > 0)
+            {
+                AddVerificationResult("Unknown Column(s): " + String.Join(" ", FUnusedColumns.ToArray()));
+                return new PartnerImportExportTDS();
+            }
+
             return ResultDS;
         }
 
@@ -167,7 +185,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             AMainDS.PPartner.Rows.Add(newPartner);
 
             // first check in FamilyPartnerKey for Person Key, otherwise try to find family for given PersonPartnerKey, or then check in field PartnerKey
-            String strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYPARTNERKEY);
+            String strPartnerKey = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYPARTNERKEY);
             newPartner.PartnerKey = 0;
 
             if (strPartnerKey.Length > 0)
@@ -186,7 +204,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 if (AFamilyForPerson)
                 {
                     // if we don't have the family partner key then we can check if we can find the family for a person partner key
-                    String strPersonKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY);
+                    String strPersonKey = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY);
 
                     if (strPersonKey.Length > 0)
                     {
@@ -209,7 +227,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if ((FamilyKey == 0) && !AFamilyForPerson)
                 {
-                    strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
+                    strPartnerKey = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
 
                     if (strPartnerKey.Length > 0)
                     {
@@ -260,12 +278,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESFAMILY))
             {
-                newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESFAMILY);
+                newPartner.Comment = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESFAMILY);
             }
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
-                String AcquisitionCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_AQUISITION);
+                String AcquisitionCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_AQUISITION);
 
                 newPartner.AcquisitionCode = (AcquisitionCode.Length > 0) ? AcquisitionCode : MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
             }
@@ -276,7 +294,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
             {
-                newPartner.AddresseeTypeCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
+                newPartner.AddresseeTypeCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
             }
             else if (IsNewRecord)
             {
@@ -296,7 +314,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
             {
-                newPartner.LanguageCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+                newPartner.LanguageCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
             else if (IsNewRecord && TUserDefaults.HasDefault(MSysManConstants.PARTNER_LANGUAGECODE))
             {
@@ -330,12 +348,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
             {
-                newFamily.FirstName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
+                newFamily.FirstName = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
             }
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
             {
-                newFamily.FamilyName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
+                newFamily.FamilyName = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
             }
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
@@ -345,12 +363,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE))
             {
-                newFamily.Title = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE);
+                newFamily.Title = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE);
             }
 
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
             {
-                newPartner.LanguageCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+                newPartner.LanguageCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
 
             if ((newFamily.FirstName == String.Empty) && (newFamily.FamilyName == String.Empty))
@@ -362,13 +380,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
             AMainDS.PLocation.Rows.Add(newLocation);
             newLocation.LocationKey = FLocationKey;
-            newLocation.Locality = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
-            newLocation.StreetName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_STREET);
-            newLocation.Address3 = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
-            newLocation.PostalCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_POSTCODE);
-            newLocation.City = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CITY);
-            newLocation.County = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTY);
-            newLocation.CountryCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
+            newLocation.Locality = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
+            newLocation.StreetName = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_STREET);
+            newLocation.Address3 = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
+            newLocation.PostalCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_POSTCODE);
+            newLocation.City = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CITY);
+            newLocation.County = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTY);
+            newLocation.CountryCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
             TPartnerContactDetails_LocationConversionHelper myHelper =
                 new TPartnerContactDetails_LocationConversionHelper();
@@ -383,14 +401,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             partnerlocation.SendMail = true;
 
-// TODO: wrap TXMLParser.GetAttribute and store each attribute that was read
-// then complain about attributes that have not been parsed??? oder probleme bei unterschiedlichen Typen, unterschiedliche Spalten wichtig?
             partnerlocation["p_email_address_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'partnerlocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
+                GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'partnerlocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
             partnerlocation["p_telephone_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'partnerlocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
+                GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'partnerlocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
             partnerlocation["p_mobile_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'partnerlocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
+                GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'partnerlocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
 
             if ((newFamily.FirstName == String.Empty) && (newFamily.FamilyName == String.Empty))
             {
@@ -448,7 +464,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             AMainDS.PPartner.Rows.Add(newPartner);
 
             // check in PersonPartnerKey for Person Key, otherwise check in field PartnerKey
-            String strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY);
+            String strPartnerKey = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY);
             newPartner.PartnerKey = 0;
 
             if (strPartnerKey.Length > 0)
@@ -464,7 +480,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
             else
             {
-                strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
+                strPartnerKey = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
 
                 if (strPartnerKey.Length > 0)
                 {
@@ -513,7 +529,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartner.AddresseeTypeCode = PartnerRow.AddresseeTypeCode;
             newPartner.PartnerShortName = PartnerRow.PartnerShortName;
             newPartner.LanguageCode = PartnerRow.LanguageCode;
-            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTES);
+            newPartner.Comment = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTES);
             newPartner.AcquisitionCode = PartnerRow.AcquisitionCode;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
 
@@ -545,7 +561,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             String TimeString = "";
             try
             {
-                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH);
+                TimeString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH);
 
                 if (TimeString.Length > 0)
                 {
@@ -569,9 +585,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             newPartnerLocation.SendMail = false;
 
-            string email = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
-            string phone = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
-            string mobile = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+            string email = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            string phone = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
+            string mobile = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
 
             if (email.Length > 0)
             {
@@ -649,7 +665,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             for (int Idx = -1; Idx < 6; Idx++)
             {
-                String IBAN = TXMLParser.GetAttribute(ANode, ACSVKey + (Idx>=0?Idx.ToString():String.Empty)).Replace(" ", "");
+                String IBAN = GetAttribute(ANode, ACSVKey + (Idx>=0?Idx.ToString():String.Empty)).Replace(" ", "");
 
                 if (IBAN.Length > 0)
                 {
@@ -702,7 +718,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             for (int Idx = 1; Idx < 6; Idx++)
             {
-                String SpecialType = TXMLParser.GetAttribute(ANode, ACSVKey + Idx.ToString());
+                String SpecialType = GetAttribute(ANode, ACSVKey + Idx.ToString());
 
                 if (SpecialType.Length > 0)
                 {
@@ -723,9 +739,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // This previous code requires a format that doesn't conform to the documented standard:
 
 /*
- *          if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
+ *          if (GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
  *          {
- *              string specialTypes = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
+ *              string specialTypes = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
  *
  *              while (specialTypes.Length > 0)
  *              {
@@ -745,7 +761,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
-            String strEventKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
+            String strEventKey = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
             long EventKey = -1;
             Boolean IsNewApplication = true;
 
@@ -836,7 +852,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 // Make sure that application date is definitely set. If not in import file then use today's date.
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE))
                 {
-                    string appDate = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE);
+                    string appDate = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE);
 
                     if (appDate.Length > 0)
                     {
@@ -864,7 +880,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE))
                 {
-                    GenAppRow.AppTypeName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE);
+                    GenAppRow.AppTypeName = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE);
                     ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
                 }
 
@@ -877,26 +893,26 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPSTATUS))
                 {
-                    GenAppRow.GenApplicationStatus = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPSTATUS);
+                    GenAppRow.GenApplicationStatus = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPSTATUS);
                 }
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS))
                 {
-                    GenAppRow.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS);
+                    GenAppRow.Comment = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS);
                 }
 
                 String TimeString = "";
 
                 try
                 {
-                    TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
+                    TimeString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
 
                     if (TimeString.Length > 0)
                     {
                         ShortTermRow.Arrival = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
                     }
 
-                    TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
+                    TimeString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
 
                     if (TimeString.Length > 0)
                     {
@@ -912,7 +928,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 DateTime TempTime;
 
-                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
+                TimeString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
 
                 if (TimeString.Length > 0)
                 {
@@ -930,7 +946,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
 
-                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTURETIME);
+                TimeString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTURETIME);
 
                 if (TimeString.Length > 0)
                 {
@@ -950,10 +966,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE))
                 {
-                    ShortTermRow.StCongressCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
+                    ShortTermRow.StCongressCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
                 }
 
-                String ChargedField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);
+                String ChargedField = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);
 
                 if (ChargedField.Length > 0)
                 {
@@ -972,7 +988,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private void CreatePassport(XmlNode ANode, Int64 APartnerKey, string ADateFormat, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
-            string PassportNum = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
+            string PassportNum = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
 
             if (PassportNum.Length > 0)
             {
@@ -1004,14 +1020,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     NewRow.AcceptChanges();
                 }
 
-                NewRow.FullPassportName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNAME);
-                NewRow.PassportDetailsType = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
-                NewRow.PlaceOfBirth = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
-                NewRow.PassportNationalityCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY);
-                NewRow.PlaceOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE);
-                NewRow.CountryOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE);
+                NewRow.FullPassportName = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNAME);
+                NewRow.PassportDetailsType = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
+                NewRow.PlaceOfBirth = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
+                NewRow.PassportNationalityCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY);
+                NewRow.PlaceOfIssue = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE);
+                NewRow.CountryOfIssue = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE);
 
-                DateString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE);
+                DateString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE);
 
                 if (DateString.Length > 0)
                 {
@@ -1027,7 +1043,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
 
-                DateString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION);
+                DateString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION);
 
                 if (DateString.Length > 0)
                 {
@@ -1079,11 +1095,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     NewRow.AcceptChanges();
                 }
 
-                NewRow.MedicalComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
-                NewRow.DietaryComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS);
-                NewRow.OtherSpecialNeed = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS);
+                NewRow.MedicalComment = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
+                NewRow.DietaryComment = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS);
+                NewRow.OtherSpecialNeed = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS);
 
-                if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN).ToLower() == "yes")
+                if (GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN).ToLower() == "yes")
                 {
                     NewRow.VegetarianFlag = true;
                 }
@@ -1134,7 +1150,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             //TODOWBxxx check for update/create
 
-            string ContactCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTCODE + Suffix);
+            string ContactCode = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTCODE + Suffix);
 
             if (ContactCode.Length > 0)
             {
@@ -1143,7 +1159,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PartnerImportExportTDSPContactLogRow ContactLogRow = AMainDS.PContactLog.NewRowTyped();
                 ContactLogRow.ContactCode = ContactCode;
 
-                DateString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix);
+                DateString = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix);
 
                 if (DateString.Length > 0)
                 {
@@ -1159,12 +1175,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
 
-                //DateTime ContactTime = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
+                //DateTime ContactTime = DateTime.Parse(GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
                 //ContactLogRow.ContactTime = ((ContactTime.Hour * 60) + ContactTime.Minute * 60) + ContactTime.Second;
-                ContactLogRow.Contactor = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
-                ContactLogRow.ContactComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
-                ContactLogRow.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
-                ContactLogRow.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
+                ContactLogRow.Contactor = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
+                ContactLogRow.ContactComment = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
+                ContactLogRow.ContactAttr = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
+                ContactLogRow.ContactDetail = GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
                 AMainDS.PContactLog.Rows.Add(ContactLogRow);
                 AddVerificationResult("Contact Log Record Created.", TResultSeverity.Resv_Status);
 
@@ -1182,7 +1198,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <returns></returns>
         private string GetGenderCode(XmlNode ACurrentPartnerNode)
         {
-            string gender = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_GENDER);
+            string gender = GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_GENDER);
 
             if ((gender.ToLower() == Catalog.GetString("Female").ToLower()) || (gender.ToLower() == "female"))
             {
@@ -1200,7 +1216,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE))
             {
-                return TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE);
+                return GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE);
             }
 
             string genderCode = GetGenderCode(ACurrentPartnerNode);
@@ -1221,7 +1237,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
             {
-                string maritalStatus = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
+                string maritalStatus = GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
 
                 // first look for special cases
                 if (maritalStatus.ToLower() == Catalog.GetString("married").ToLower())

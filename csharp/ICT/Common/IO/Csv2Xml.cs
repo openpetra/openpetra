@@ -518,7 +518,8 @@ namespace Ict.Common.IO
             }
 
             // Either we could not open the file or it is empty
-            return ParseCSV2Xml(new List <string>(), ASeparator);
+            List<string> AllColumns = null;
+            return ParseCSV2Xml(new List <string>(), ASeparator, out AllColumns);
         }
 
         /// <summary>
@@ -543,7 +544,8 @@ namespace Ict.Common.IO
                 reader.Close();
             }
 
-            return ParseCSV2Xml(Lines, ASeparator);
+            List<string> AllColumns = null;
+            return ParseCSV2Xml(Lines, ASeparator, out AllColumns);
         }
 
         /// <summary>
@@ -569,7 +571,8 @@ namespace Ict.Common.IO
 
             AReader.Close();
 
-            return ParseCSV2Xml(CSVRows, ASeparator);
+            List<string> AllColumns = null;
+            return ParseCSV2Xml(CSVRows, ASeparator, out AllColumns);
         }
 
         /// <summary>
@@ -577,7 +580,7 @@ namespace Ict.Common.IO
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
-        public static XmlDocument ParseCSV2Xml(List <string>ALines, string ASeparator = null)
+        public static XmlDocument ParseCSV2Xml(List <string>ALines, string ASeparator, out List <string> AAllAttributes)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
 
@@ -600,7 +603,7 @@ namespace Ict.Common.IO
                 }
             }
 
-            List <string>AllAttributes = new List <string>();
+            AAllAttributes = new List <string>();
 
             while (headerLine.Length > 0)
             {
@@ -636,7 +639,7 @@ namespace Ict.Common.IO
                     attrName = new string(arr);
                 }
 
-                AllAttributes.Add(attrName);
+                AAllAttributes.Add(attrName);
             }
 
             LineCounter = 1;
@@ -649,7 +652,7 @@ namespace Ict.Common.IO
                 {
                     SortedList <string, string>AttributePairs = new SortedList <string, string>();
 
-                    foreach (string attrName in AllAttributes)
+                    foreach (string attrName in AAllAttributes)
                     {
                         // support csv values that contain line breaks
                         AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, ALines, ref LineCounter, separator));
@@ -680,7 +683,7 @@ namespace Ict.Common.IO
                         myDoc.DocumentElement.AppendChild(newNode);
                     }
 
-                    foreach (string attrName in AllAttributes)
+                    foreach (string attrName in AAllAttributes)
                     {
                         if ((attrName != "name") && (attrName != "childOf"))
                         {

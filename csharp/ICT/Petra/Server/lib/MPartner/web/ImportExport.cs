@@ -231,12 +231,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             AVerificationResult = new TVerificationResultCollection();
 
             List<string> Lines = new List<string>(ACSVPartnerData.Split('\n'));
+            List<string> ColumnNames = null;
 
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(Lines, ASeparator);
+            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(Lines, ASeparator, out ColumnNames);
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
-            PartnerImportExportTDS MainDS = new TPartnerImportCSV().ImportData(root, ADateFormat, ref AVerificationResult);
+            PartnerImportExportTDS MainDS = new TPartnerImportCSV().ImportData(root, ColumnNames, ADateFormat, ref AVerificationResult);
 
             return MainDS;
         }
