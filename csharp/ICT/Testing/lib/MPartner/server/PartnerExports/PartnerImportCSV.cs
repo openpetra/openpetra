@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -117,11 +117,9 @@ namespace Tests.MPartner.Server.PartnerExports
 
             // there should be 4 partners imported (2 x family + 2 x person)
             Assert.AreEqual(4, MainDS.PPartner.Rows.Count, "Wrong number of partners");
-            Assert.AreEqual(2, MainDS.PmPassportDetails.Rows.Count, "Wrong number of persons");
+            Assert.AreEqual(2, MainDS.PPerson.Rows.Count, "Wrong number of persons");
 
-            Assert.AreEqual(((PmPassportDetailsRow)MainDS.PmPassportDetails.Rows[0]).DateOfIssue, new DateTime(2016,
-                    4,
-                    22), "passport date of issue is wrong!");
+            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PPerson[0].DateOfBirth, "date of birth is wrong!");
 
             // Now try with the wrong date format
             VerificationResult = null;
@@ -138,7 +136,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 }
             }
 
-            Assert.AreEqual(5, numErrors, "Wrong number of errors");
+            Assert.AreEqual(2, numErrors, "Wrong number of errors");
         }
 
         /// <summary>
@@ -164,11 +162,9 @@ namespace Tests.MPartner.Server.PartnerExports
 
             // there should be 4 partners imported (2 x family + 2 x person)
             Assert.AreEqual(4, MainDS.PPartner.Rows.Count);
-            Assert.AreEqual(2, MainDS.PmPassportDetails.Rows.Count);
+            Assert.AreEqual(2, MainDS.PPerson.Rows.Count);
 
-            Assert.AreEqual(((PmPassportDetailsRow)MainDS.PmPassportDetails.Rows[0]).DateOfIssue, new DateTime(2016,
-                    5,
-                    22), "passport date of issue is wrong!");
+            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PPerson[0].DateOfBirth, "date of birth is wrong!");
 
             // Now try with the wrong date format
             VerificationResult = null;
@@ -185,39 +181,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 }
             }
 
-            Assert.AreEqual(5, numErrors, "Wrong number of errors");
-        }
-
-        /// <summary>
-        /// Test importing a CSV file with partners, the lines are split for inheritance
-        /// </summary>
-        [Test]
-        [Ignore("this does not work at all")]
-        public void TestImportCSV2()
-        {
-            TVerificationResultCollection VerificationResult = null;
-            string doc = String.Empty;
-
-            using (StreamReader sr = new StreamReader("../../demodata/partners/samplefilepartnerimport2.csv"))
-            {
-                doc = sr.ReadToEnd();
-            }
-
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "dMy", ",", out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
-            }
-
-            foreach (PFamilyRow f in MainDS.PFamily.Rows)
-            {
-                Console.WriteLine("Family name : " + f.FamilyName);
-            }
-
-            // we are currently ignoring UNIT and ORGANISATION partners, only importing the 7 FAMILY partners.
-            // due to the strange format of the file, each row is imported as a separate partner, ending up with 27 invalid partners
-            Assert.AreEqual(7, MainDS.PPartner.Rows.Count);
+            Assert.AreEqual(2, numErrors, "Wrong number of errors");
         }
     }
 }

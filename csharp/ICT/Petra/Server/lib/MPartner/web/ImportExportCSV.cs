@@ -900,13 +900,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
                 }
 
-                if (GenAppRow.AppTypeName == "")
-                {
-                    // if column value is missing then preset this with TEENSTREET
-                    GenAppRow.AppTypeName = "TEENSTREET";
-                    ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
-                }
-
                 if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPSTATUS))
                 {
                     GenAppRow.GenApplicationStatus = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPSTATUS);
