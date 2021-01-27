@@ -160,6 +160,7 @@
         "maxresults": "Maximale Anzahl der Ergebnisse anzeigen",
         "show_all_records": "Alle Ergebnisse anzeigen",
         "sortby": "Sortieren nach",
+        "helpmanual": "Zum Handbuch",
         "upload": "Hochladen",
         "uploaderror": "Das Hochladen hat nicht funktioniert. Ist die Datei zu groß?",
         "upload_success": "Hochladen erfolgreich"
@@ -628,8 +629,9 @@
     },
     "ImportPartners": {
         "importUser": "Kontakte aus CSV Datei importieren",
-        "examplefile": "Hier ist ein Beispiel, um das erwartete Format zu beschreiben:",
-        "examplefile_with_iban": "Hier ist ein Beispiel, mit einer oder mehreren Spalten für die IBAN:",
+        "importUserODS": "Kontakte aus LibreOffice Calc Datei (*.ods) importieren",
+        "importUserXLSX": "Kontakte aus MS Excel Datei (*.xlsx) importieren",
+        "help_url": "https://handbuch.openpetra.de/howtos/initial-partner-setup.html#existierende-adressliste-importieren",
         "upload_partner_success": "Kontakte wurden erfolgreich importiert",
         "upload_partner_fail": "Kontakte konnten nicht importiert werden"
     },

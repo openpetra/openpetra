@@ -1,33 +1,15 @@
-<table id="toolbar">
-	<tr>
-		<td>
-			<button type="button" class="btn btn-primary" id="btnImportData" onclick="$('#fileUploadUserCSV').click()">{importUser}</button>
-		</td>
-	</tr>
-</table>
+<button type="button" class="btn btn-primary" id="btnImportDataODS" onclick="$('#fileUploadUserODS').click()">{importUserODS}</button>
+<br/><br/>
+<button type="button" class="btn btn-secondary" id="btnImportDataXLSX" onclick="$('#fileUploadUserXLSX').click()">{importUserXLSX}</button>
+<button type="button" class="btn btn-secondary" id="btnImportData" onclick="$('#fileUploadUserCSV').click()">{importUser}</button>
 
-<input type="file" id="fileUploadUserCSV" name="file" size="10" onchange="UploadUserCSV($(this))" style="visibility:hidden"/>
+<input type="file" id="fileUploadUserCSV" name="file" size="10" onchange="UploadUserCSV($(this))" style="visibility:hidden" accept=".csv,.txt"/>
+<input type="file" id="fileUploadUserODS" name="file" size="10" onchange="UploadUserODS($(this))" style="visibility:hidden" accept=".ods"/>
+<input type="file" id="fileUploadUserXLSX" name="file" size="10" onchange="UploadUserXLSX($(this))" style="visibility:hidden"  accept=".xlsx"/>
 
 <div class="container" id="info">
 	<div class="row">
-{examplefile}<br/><br/>
+		<a href="{help_url}" target="_blank" class="btn btn-primary">{forms.helpmanual}</a>
 	</div>
-	<div class="row">
-<pre>
-"Partner Key";"Title";"FirstName";"FamilyName";"Street";"PostCode";"City";"Country";"Email";"Mobile";"Phone"
-"";Herr;Artur;Müller;"Wiesenstr. 8";"12345";"München";"DE";"mueller@gibts.net";0151-0000000000;01234-123123
-"";Herr und Frau;"Hans-Martin und Martina";"Meier";"Bäckerweg 3";"98765";"Frankfurt am Main";"DE";"meier@gibtsauch.net";;;
-</pre>
-</div>
-
-	<div class="row">
-{examplefile_with_iban}<br/><br/>
-	</div>
-<div class="row">
-<pre>
-"Partner Key";"Title";"FirstName";"FamilyName";"Street";"PostCode";"City";"Country";"Email";"Mobile";"Phone";"IBAN1";"IBAN2"
-"";Herr;Artur;Müller;"Wiesenstr. 8";"12345";"München";"DE";"mueller@gibts.net";0151-0000000000;01234-123123;DE02370501980001802057;;
-"";Herr und Frau;"Hans-Martin und Martina";"Meier";"Bäckerweg 3";"98765";"Frankfurt am Main";"DE";"meier@gibtsauch.net";;;DE02700202700010108669;DE02700100800030876808
-</pre>
 </div>
 </div>

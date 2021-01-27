@@ -160,6 +160,7 @@
         "maxresults": "Maximum number of results to show",
         "show_all_records": "Show all results",
         "sortby": "Sort by",
+        "helpmanual": "See the manual",
         "upload": "Upload",
         "uploaderror": "The upload failed. Perhaps the file is too large?",
         "upload_success": "Upload successfull"
@@ -627,11 +628,12 @@
         "uploaderror": "Error with receipts"
     },
     "ImportPartners": {
-        "importUser": "Import partners from CSV file",
-        "examplefile": "See this example file for the possible columns:",
-        "examplefile_with_iban": "This is an example with one or more values for the IBAN:",
-        "upload_partner_success": "Partners have been imported successfully",
-        "upload_partner_fail": "Partners could not be imported"
+        "importUser": "Import contacts from CSV file",
+        "importUserODS": "Import contacts from LibreOffice Calc file (*.ods)",
+        "importUserXLSX": "Import contacts from MS Excel file (*.xlsx)",
+        "help_url": "https://docs.openpetra.org/howtos/initial-partner-setup.html#import-your-existing-addresses",
+        "upload_partner_success": "Contacts have been imported successfully",
+        "upload_partner_fail": "Contacts could not be imported"
     },
     "LedgerInfo": {
         "caption": "Ledger Info",

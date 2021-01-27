@@ -58,3 +58,75 @@ function UploadUserCSV(self) {
 	reader.readAsText(self[0].files[0]);
 
 };
+
+function UploadUserODS(self) {
+
+	var filename = self.val();
+
+	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		//alert("Great success! All the File APIs are supported.");
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
+	var reader = new FileReader();
+
+	reader.onload = function (theFile) {
+		p = {'AODSPartnerData': theFile.target.result,};
+
+		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromODSFile', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			if (result.result == true) {
+				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+			} else {
+				display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+		});
+
+	}
+
+	// Read in the file as a data URL.
+	reader.readAsDataURL(self[0].files[0]);
+};
+
+function UploadUserXLSX(self) {
+
+	var filename = self.val();
+
+	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		//alert("Great success! All the File APIs are supported.");
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
+	var reader = new FileReader();
+
+	reader.onload = function (theFile) {
+		p = {'AXLSXPartnerData': theFile.target.result};
+
+		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromXLSXFile', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			if (result.result == true) {
+				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+			} else {
+				display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+		});
+
+	}
+
+	// Read in the file as a data URL.
+	reader.readAsDataURL(self[0].files[0]);
+};
