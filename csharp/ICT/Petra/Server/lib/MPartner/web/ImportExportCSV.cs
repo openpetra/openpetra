@@ -131,6 +131,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         String PartnerClass = GetColumnValue(r, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
                         Int64 PartnerKey = 0;
                         int LocationKey = 0;
+                        PPartnerRow newPartner = null;
 
                         if (PartnerClass.Length == 0)
                         {
@@ -150,7 +151,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         {
                             Boolean FamilyForPerson = (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON);
                             ResultsContext = "CSV Import Family";
-                            PartnerKey = CreateNewFamily(r, FamilyForPerson, out LocationKey, ref ResultDS, Transaction);
+                            newPartner = CreateNewFamily(r, FamilyForPerson, out LocationKey, ref ResultDS, Transaction);
+                            PartnerKey = newPartner.PartnerKey;
                             CreateSpecialTypes(r, PartnerKey, "SpecialTypeFamily_", ref ResultDS, Transaction);
                             string AccountName = (GetColumnValue(r, "FirstName") + " " +
                                 GetColumnValue(r, "FamilyName")).Trim();
@@ -163,15 +165,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                         {
                             ResultsContext = "CSV Import Person";
-                            Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, r, ADateFormat, ref ResultDS, Transaction);
-                            CreateShortTermApplication(r, PersonKey, ADateFormat, ref ResultDS, Transaction);
-                            CreateSpecialTypes(r, PersonKey, ref ResultDS, Transaction);
-                            CreateSubscriptions(r, PersonKey, ref ResultDS, Transaction);
-                            CreateContacts(r, PersonKey, ADateFormat, ref ResultDS, "_1", Transaction);
-                            CreateContacts(r, PersonKey, ADateFormat, ref ResultDS, "_2", Transaction);
-                            CreatePassport(r, PersonKey, ADateFormat, ref ResultDS, Transaction);
-                            CreateSpecialNeeds(r, PersonKey, ref ResultDS, Transaction);
-                            CreateOutputData(r, PersonKey, PartnerClass, true, ref ResultDS);
+                            newPartner = CreateNewPerson(PartnerKey, LocationKey, r, ADateFormat, ref ResultDS, Transaction);
+                            PartnerKey = newPartner.PartnerKey;
+                            CreateShortTermApplication(r, PartnerKey, ADateFormat, ref ResultDS, Transaction);
+                            CreateSpecialTypes(r, PartnerKey, ref ResultDS, Transaction);
+                            CreateSubscriptions(r, PartnerKey, ref ResultDS, Transaction);
+                            CreateContacts(r, PartnerKey, ADateFormat, ref ResultDS, "_1", Transaction);
+                            CreateContacts(r, PartnerKey, ADateFormat, ref ResultDS, "_2", Transaction);
+                            CreatePassport(r, PartnerKey, ADateFormat, ref ResultDS, Transaction);
+                            CreateSpecialNeeds(r, PartnerKey, ref ResultDS, Transaction);
+                            CreateOutputData(r, PartnerKey, PartnerClass, true, ref ResultDS);
                         }
 
                         FCurrentLine += 1;
@@ -190,7 +193,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <summary>
         /// Create new partner, family, location and PartnerLocation records in MainDS
         /// </summary>
-        private Int64 CreateNewFamily(DataRow ARow, Boolean AFamilyForPerson, out int ALocationKey, ref PartnerImportExportTDS AMainDS,
+        private PPartnerRow CreateNewFamily(DataRow ARow, Boolean AFamilyForPerson, out int ALocationKey, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             Int64 FamilyKey = 0;
@@ -393,60 +396,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
-            PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
-            AMainDS.PLocation.Rows.Add(newLocation);
-            newLocation.LocationKey = FLocationKey;
-            newLocation.Locality = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
-            newLocation.StreetName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_STREET);
-            newLocation.Address3 = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
-            newLocation.PostalCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_POSTCODE);
-            newLocation.City = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CITY);
-            newLocation.County = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_COUNTY);
-            newLocation.CountryCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
-            TPartnerContactDetails_LocationConversionHelper myHelper =
-                new TPartnerContactDetails_LocationConversionHelper();
+            ALocationKey = CreateNewLocation(ref AMainDS, newPartner, 0, ARow);
+            FLocationKey -= 1;
 
-            PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
-            myHelper.AddOldDBTableColumnsToPartnerLocation(AMainDS.PPartnerLocation);
-
-            partnerlocation.LocationKey = FLocationKey;
-            partnerlocation.SiteKey = 0;
-            partnerlocation.PartnerKey = newPartner.PartnerKey;
-            partnerlocation.DateEffective = DateTime.Now.Date;
-            partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
-            partnerlocation.SendMail = true;
-
-            partnerlocation["p_email_address_c"] =
-                GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'partnerlocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
-            partnerlocation["p_telephone_number_c"] =
-                GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'partnerlocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
-            partnerlocation["p_mobile_number_c"] =
-                GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'partnerlocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
-
-            bool HasAddress = (newLocation.StreetName != String.Empty) || (newLocation.City != String.Empty) || (newLocation.CountryCode != String.Empty);
-            if (HasAddress)
-            {
-                if ((newLocation.StreetName == String.Empty) || (newLocation.City == String.Empty) || (newLocation.CountryCode == String.Empty))
-                {
-                    AddVerificationResult("Address is incomplete, we need streetname, city and country in line " + FCurrentLine.ToString());
-                    HasAddress = false;
-                }
-            }
-            bool HasContactDetail = (partnerlocation["p_email_address_c"].ToString() != String.Empty) || 
-                (partnerlocation["p_telephone_number_c"].ToString() != String.Empty) ||
-                (partnerlocation["p_mobile_number_c"].ToString() != String.Empty);
-            if (!HasAddress && !HasContactDetail)
-            {
-                AddVerificationResult("Missing an address (streetname, city, country code) or phone number or email address in line " + FCurrentLine.ToString());
-            }
-
-            AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
-
-            ALocationKey = FLocationKey;
-            FLocationKey--;
-
-            return newPartner.PartnerKey;
+            return newPartner;
         }
 
         /// <summary>
@@ -459,7 +413,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AMainDS"></param>
         /// <param name="ATransaction"></param>
-        private Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, DataRow ARow, string ADateFormat,
+        private PPartnerRow CreateNewPerson(Int64 AFamilyKey, int ALocationKey, DataRow ARow, string ADateFormat,
             ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
         {
             Int64 PersonKey = 0;
@@ -585,16 +539,45 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AddVerificationResult(string.Format("Bad date of birth: {0} (Expected format: {1})", TimeString, fmt), TResultSeverity.Resv_Critical);
             }
 
+            CreateNewLocation(ref AMainDS, newPartner, ALocationKey, ARow);
 
-            PPartnerLocationRow newPartnerLocation = AMainDS.PPartnerLocation.NewRowTyped();
-            AMainDS.PPartnerLocation.Rows.Add(newPartnerLocation);
+            AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
 
-            newPartnerLocation.LocationKey = ALocationKey; // This person lives at the same address as the family.
-            newPartnerLocation.SiteKey = 0;
-            newPartnerLocation.PartnerKey = newPartner.PartnerKey;
-            newPartnerLocation.DateEffective = DateTime.Now.Date;
-            newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
-            newPartnerLocation.SendMail = false;
+            return newPartner;
+        }
+
+        private int CreateNewLocation(ref PartnerImportExportTDS AMainDS, PPartnerRow ANewPartner, int ALocationKey, DataRow ARow)
+        {
+            PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
+
+            // is this a PERSON and we use the same location as for the family? then ALocationKey will already be set
+            if (ALocationKey == 0)
+            {
+                AMainDS.PLocation.Rows.Add(newLocation);
+                newLocation.LocationKey = FLocationKey;
+                newLocation.Locality = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
+                newLocation.StreetName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_STREET);
+                newLocation.Address3 = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
+                newLocation.PostalCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_POSTCODE);
+                newLocation.City = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CITY);
+                newLocation.County = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_COUNTY);
+                newLocation.CountryCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
+
+                ALocationKey = newLocation.LocationKey;
+            }
+
+            TPartnerContactDetails_LocationConversionHelper myHelper =
+                new TPartnerContactDetails_LocationConversionHelper();
+
+            PPartnerLocationRow partnerlocation = AMainDS.PPartnerLocation.NewRowTyped(true);
+            myHelper.AddOldDBTableColumnsToPartnerLocation(AMainDS.PPartnerLocation);
+
+            partnerlocation.LocationKey = ALocationKey;
+            partnerlocation.SiteKey = 0;
+            partnerlocation.PartnerKey = ANewPartner.PartnerKey;
+            partnerlocation.DateEffective = DateTime.Now.Date;
+            partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
+            partnerlocation.SendMail = true;
 
             string email = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EMAIL);
             string phone = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PHONE);
@@ -603,7 +586,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (email.Length > 0)
             {
                 PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
                 partnerAttributeRow.Index = 0;
                 partnerAttributeRow.Primary = true;
@@ -611,7 +594,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
 
                 partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
@@ -622,7 +605,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (phone.Length > 0)
             {
                 PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
                 partnerAttributeRow.Index = 0;
                 partnerAttributeRow.Primary = true;
@@ -630,7 +613,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
 
                 partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
@@ -641,7 +624,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (mobile.Length > 0)
             {
                 PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
                 partnerAttributeRow.Index = 0;
                 partnerAttributeRow.Primary = true;
@@ -649,7 +632,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
 
                 partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
@@ -657,9 +640,73 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
             }
 
-            AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
+            bool HasAddress = (newLocation.StreetName != String.Empty) || (newLocation.City != String.Empty) || (newLocation.CountryCode != String.Empty);
+            if (HasAddress)
+            {
+                if ((newLocation.StreetName == String.Empty) || (newLocation.City == String.Empty) || (newLocation.CountryCode == String.Empty))
+                {
+                    AddVerificationResult("Address is incomplete, we need streetname, city and country in line " + FCurrentLine.ToString());
+                    HasAddress = false;
+                }
+            }
+            bool HasContactDetail = (email != String.Empty) || 
+                (phone != String.Empty) ||
+                (mobile != String.Empty);
+            if (!HasAddress && !HasContactDetail)
+            {
+                AddVerificationResult("Missing an address (streetname, city, country code) or phone number or email address in line " + FCurrentLine.ToString());
+            }
 
-            return newPerson.PartnerKey;
+            AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
+
+            TVerificationResultCollection FindVerification;
+            // will a new partner be created?
+            if (ANewPartner.PartnerKey < 0)
+            {
+                // do we have a partner with this name and location already?
+                Int32 TotalRecords;
+                PartnerFindTDSSearchResultTable findPartner = TSimplePartnerFindWebConnector.FindPartners(
+                    String.Empty, // PartnerKey
+                    String.Empty, // FirstName
+                    ANewPartner.PartnerShortName,
+                    newLocation.StreetName,
+                    newLocation.City,
+                    newLocation.PostalCode,
+                    String.Empty, // E-Mail Address
+                    ANewPartner.PartnerClass,
+                    true, // ActiveOnly
+                    String.Empty, // SortBy
+                    10, // MaxRecords
+                    out TotalRecords,
+                    out FindVerification);
+
+                if ((TotalRecords == 0) && (partnerlocation["p_email_address_c"].ToString() != String.Empty))
+                {
+                    // what about name and email?
+                    findPartner = TSimplePartnerFindWebConnector.FindPartners(
+                        String.Empty, // PartnerKey
+                        String.Empty, // FirstName
+                        ANewPartner.PartnerShortName,
+                        String.Empty, // StreetName
+                        String.Empty, // City
+                        String.Empty, // PostCode
+                        partnerlocation["p_email_address_c"].ToString(),
+                        ANewPartner.PartnerClass,
+                        true, // ActiveOnly
+                        String.Empty, // SortBy
+                        10, // MaxRecords
+                        out TotalRecords,
+                        out FindVerification);
+                }
+
+                if (TotalRecords > 1)
+                {
+                    AddVerificationResult("Partner " + ANewPartner.PartnerShortName + " in line " + FCurrentLine.ToString() +
+                        " already exists with key " + findPartner[0].PartnerKey.ToString());
+                }
+            }
+
+            return FLocationKey;
         }
 
         private bool CreateBankAccounts(DataRow ARow,

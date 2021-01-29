@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -121,8 +121,6 @@ namespace Ict.Petra.Server.MPartner.Common
             PFamilyTable FamilyTable;
             PFamilyRow FamilyRow = null;
             Int64 ContactPartnerKey = 0;
-            string workingText = string.Empty;
-
 
             AddressTokenList = BuildTokenListFromAddressLayoutBlock(AAddressLayoutBlock);
 

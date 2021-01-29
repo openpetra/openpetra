@@ -346,10 +346,21 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string Dummy3, Dummy4, Dummy5;
             PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
 
-            // Now get the primary email and phone
-            PPartnerAttributeTable attributeTable = TContactDetailsAggregate.GetPartnersContactDetailAttributes(APartnerKey);
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            string PrimaryPhoneNumber = String.Empty;
+            string PrimaryEmailAddress = String.Empty;
 
-            Calculations.GetPrimaryEmailAndPrimaryPhone(attributeTable, out APrimaryPhoneNumber, out APrimaryEmailAddress);
+            DBAccess.ReadTransaction( ref ReadTransaction,
+                delegate
+                {
+                    // Now get the primary email and phone
+                    PPartnerAttributeTable attributeTable = TContactDetailsAggregate.GetPartnersContactDetailAttributes(APartnerKey);
+
+                    Calculations.GetPrimaryEmailAndPrimaryPhone(ReadTransaction, attributeTable, out PrimaryPhoneNumber, out PrimaryEmailAddress);
+                });
+
+            APrimaryPhoneNumber = PrimaryPhoneNumber;
+            APrimaryEmailAddress = PrimaryEmailAddress;
 
             return MainDS;
         }
@@ -1020,18 +1031,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     return false;
                 }
             }
-            else
-            {
-                return false;
-            }
 
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 TLogging.Log(AVerificationResult.BuildVerificationResultString());
-                return false;
             }
 
-            return true;
+            return false;
         }
     }
 }

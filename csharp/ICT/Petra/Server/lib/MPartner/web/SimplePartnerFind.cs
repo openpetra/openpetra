@@ -55,8 +55,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string APartnerKey,
             string AFirstName,
             string AFamilyNameOrOrganisation,
+            string AStreetName,
             string ACity,
             string APostCode,
+            string AEmailAddress,
             string APartnerClass,
             bool AActiveOnly,
             string ASortBy,
@@ -91,6 +93,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             // CriteriaRow.PersonalName = AFirstName;
             CriteriaRow.City = ACity;
+            CriteriaRow.Address2 = AStreetName;
+            CriteriaRow.Email = AEmailAddress;
 
             // TODO: only works for one partner class at the moment
             if (APartnerClass.Length > 0)
@@ -204,7 +208,21 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             int TotalRecords;
             TVerificationResultCollection VerificationResult;
-            AResult = FindPartners(String.Empty, String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, "PartnerName", ALimit, out TotalRecords, out VerificationResult);
+
+            AResult = FindPartners(
+                String.Empty, //PartnerKey
+                String.Empty, // Firstname
+                ASearch, // Name
+                String.Empty, // StreetName
+                String.Empty, // City
+                String.Empty, // Postalcode
+                String.Empty, // Email
+                APartnerClass,
+                AActiveOnly,
+                "PartnerName",
+                ALimit,
+                out TotalRecords,
+                out VerificationResult);
 
             return AResult.Rows.Count > 0;
         }

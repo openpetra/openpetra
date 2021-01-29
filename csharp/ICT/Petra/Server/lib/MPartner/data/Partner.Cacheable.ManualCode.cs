@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -239,10 +239,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             template.PartnerContactCategory = true;
             template.SystemCategory = false;
 
-            TSharedDataCache.TMPartner.MarkPartnerContactDetailAttributeTypesConcatStrNeedsRefreshing();
-            TSharedDataCache.TMPartner.MarkEmailPartnerAttributesConcatStrNeedsRefreshing();
-            TSharedDataCache.TMPartner.MarkPhonePartnerAttributesConcatStrNeedsRefreshing();
-
             return PPartnerAttributeCategoryAccess.LoadUsingTemplate(template, null, null, AReadTransaction,
                 StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC" }), 0, 0);
         }
@@ -253,10 +249,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 
             template.PartnerContactCategory = true;
             template.SystemCategory = false;
-
-            TSharedDataCache.TMPartner.MarkPartnerContactDetailAttributeTypesConcatStrNeedsRefreshing();
-            TSharedDataCache.TMPartner.MarkEmailPartnerAttributesConcatStrNeedsRefreshing();
-            TSharedDataCache.TMPartner.MarkPhonePartnerAttributesConcatStrNeedsRefreshing();
 
             return PPartnerAttributeTypeAccess.LoadViaPPartnerAttributeCategoryTemplate(template, null, null, AReadTransaction,
                 StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeTypeTable.GetTableDBName() + "." +
@@ -269,8 +261,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 
             template.SystemCategory = true;
 
-            TSharedDataCache.TMPartner.MarkSystemCategorySettingsConcatStrNeedsRefreshing();
-
             return PPartnerAttributeTypeAccess.LoadViaPPartnerAttributeCategoryTemplate(template, null, null, AReadTransaction,
                 StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeTypeTable.GetTableDBName() + "." +
                                                        PPartnerAttributeTypeTable.GetIndexDBName() + " ASC" }), 0, 0);
@@ -281,8 +271,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
 
             template.SystemCategory = true;
-
-            TSharedDataCache.TMPartner.MarkSystemCategorySettingsConcatStrNeedsRefreshing();
 
             return PPartnerAttributeCategoryAccess.LoadUsingTemplate(template, null, null, AReadTransaction);
         }

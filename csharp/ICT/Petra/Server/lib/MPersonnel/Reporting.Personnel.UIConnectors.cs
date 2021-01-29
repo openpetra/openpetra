@@ -4,7 +4,7 @@
 // @Authors:
 //       Jakob Englert, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -265,7 +265,9 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         string APrimaryPhone = "";
                         string APrimaryEmailAddress = "";
                         string AFaxNumber = "";
-                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(ECPartnerKey,
+                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(
+                            Transaction,
+                            ECPartnerKey,
                             out APrimaryPhone, out APrimaryEmailAddress, out AFaxNumber);
                         object[] newContactDetails = { ECPartnerKey, APrimaryPhone, APrimaryEmailAddress, AFaxNumber };
                         ECContactDetails.Rows.Add(newContactDetails);

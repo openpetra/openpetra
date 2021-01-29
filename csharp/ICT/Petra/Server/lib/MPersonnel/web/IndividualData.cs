@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -393,7 +393,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
             #region Phone and Email (from 'Best Address')
 
-            if (TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone(APartnerKey, out PhoneNumber, out EmailAddress))
+            if (TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone(AReadTransaction, APartnerKey, out PhoneNumber, out EmailAddress))
             {
                 SummaryDR.PrimaryPhoneNumber = PhoneNumber ?? StrNotAvailable;
                 SummaryDR.PrimaryEmailAddress = EmailAddress ?? StrNotAvailable;
@@ -530,7 +530,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                             Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
                     }
 
-                    if (TContactDetailsAggregate.GetPrimaryPhoneNumber(PartnerRelationshipDT[0].PartnerKey,
+                    if (TContactDetailsAggregate.GetPrimaryPhoneNumber(AReadTransaction, PartnerRelationshipDT[0].PartnerKey,
                             out PhoneNumber))
                     {
                         SummaryDR.ChurchPrimaryPhoneNumber = PhoneNumber ?? StrNotAvailable;
@@ -571,7 +571,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                             #region Pastor's Phone
 
-                            if (TContactDetailsAggregate.GetPrimaryPhoneNumber(PartnerRelationshipDT[0].RelationKey,
+                            if (TContactDetailsAggregate.GetPrimaryPhoneNumber(AReadTransaction, PartnerRelationshipDT[0].RelationKey,
                                     out PhoneNumber))
                             {
                                 SummaryDR.ChurchPastorsPrimaryPhoneNumber = PhoneNumber ?? StrNotAvailable;

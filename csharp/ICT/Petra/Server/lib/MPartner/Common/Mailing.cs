@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -326,10 +326,17 @@ namespace Ict.Petra.Server.MPartner.Common
         {
             string EmailAddress = String.Empty;
 
-            if (!TContactDetailsAggregate.GetPrimaryEmailAddress(APartnerKey, out EmailAddress))
-            {
-                EmailAddress = String.Empty;
-            }
+            TDBTransaction Transaction = new TDBTransaction();
+
+            DBAccess.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    if (!TContactDetailsAggregate.GetPrimaryEmailAddress(Transaction, APartnerKey, out EmailAddress))
+                    {
+                        EmailAddress = String.Empty;
+                    }
+                });
 
             return EmailAddress;
         }
@@ -389,7 +396,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                     if (FoundBestAddress)
                     {
-                        if (!TContactDetailsAggregate.GetPrimaryEmailAddress(APartnerKey, out EmailAddress))
+                        if (!TContactDetailsAggregate.GetPrimaryEmailAddress(Transaction, APartnerKey, out EmailAddress))
                         {
                             EmailAddress = String.Empty;
                         }

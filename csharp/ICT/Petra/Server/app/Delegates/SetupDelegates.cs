@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -144,15 +144,6 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @CachePopulatorUnits.GetCacheableTable;
             TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @CachePopulatorConference.GetCacheableTable;
             TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
-
-            TSharedDataCache.TMPartner.GetPartnerCalculationsSystemCategoryAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DetermineSystemCategoryAttributeTypes;
-            TSharedDataCache.TMPartner.GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DeterminePartnerContactDetailAttributeTypes;
-            TSharedDataCache.TMPartner.GetPartnerCalculationsEmailPartnerAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DetermineEmailPartnerAttributeTypes;
-            TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DeterminePhonePartnerAttributeTypes;
 
             TCacheableTablesManager.Init();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));

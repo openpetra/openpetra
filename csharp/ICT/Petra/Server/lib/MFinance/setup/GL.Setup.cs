@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1715,7 +1715,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                             foreach (DataRow Row in partnerCostCentreTbl.Rows)
                             {
-                                if (TContactDetailsAggregate.GetPrimaryEmailAddress((Int64)Row["PartnerKey"], out emailAddress))
+                                if (TContactDetailsAggregate.GetPrimaryEmailAddress(Transaction, (Int64)Row["PartnerKey"], out emailAddress))
                                 {
                                     // 'Primary Email Address' of Partner (String.Empty is supplied if the Partner hasn't got one)
                                     Row["EmailAddress"] = emailAddress;
@@ -3481,6 +3481,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         out CanDelete,
                         out ErrorMsg);
 
+#if DISABLED
                     // TODO check if we can overrule and delete eg. ILT cost centres.
                     // see https://github.com/openpetra/openpetra/issues/120
                     if (false && !CanDelete)
@@ -3491,6 +3492,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         VerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
                         return false;
                     }
+#endif
 
                     if (!CanDelete)
                     {
