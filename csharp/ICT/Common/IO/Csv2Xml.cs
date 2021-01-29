@@ -479,7 +479,16 @@ namespace Ict.Common.IO
 
                     if (wsrow.GetCell(j) != null)
                     {
-                        NewRow[ColumnNames[j - wsrow.FirstCellNum]] = wsrow.GetCell(j);
+                        ICell wscell = wsrow.GetCell(j);
+                        NewRow[ColumnNames[j - wsrow.FirstCellNum]] = wscell;
+                        
+                        if (wscell.CellType == CellType.Numeric)
+                        {
+                            if (DateUtil.IsCellDateFormatted(wscell))
+                            {
+                                NewRow[ColumnNames[j - wsrow.FirstCellNum]] = new TVariant(wscell.DateCellValue).EncodeToString();
+                            }
+                        }
                     }
                 }
 

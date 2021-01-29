@@ -530,7 +530,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (TimeString.Length > 0)
                 {
-                    newPerson.DateOfBirth = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                    if (TimeString.StartsWith("eDateTime:"))
+                    {
+                        newPerson.DateOfBirth = TVariant.DecodeFromString(TimeString).ToDate();
+                    }
+                    else
+                    {
+                        newPerson.DateOfBirth = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                    }
                 }
             }
             catch (System.FormatException)
