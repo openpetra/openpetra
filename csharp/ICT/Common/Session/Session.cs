@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -206,7 +206,7 @@ namespace Ict.Common.Session
             }
             else
             {
-                TLogging.LogAtLevel(1, "TSession: Loading valid session from database: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
+                TLogging.LogAtLevel(4, "TSession: Loading valid session from database: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
                 FSessionID = sessionID;
                 LoadSession(AWriteTransaction);
                 UpdateLastAccessTime(AWriteTransaction);
