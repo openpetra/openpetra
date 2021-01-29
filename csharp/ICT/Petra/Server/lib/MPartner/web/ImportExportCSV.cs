@@ -680,7 +680,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     out TotalRecords,
                     out FindVerification);
 
-                if ((TotalRecords == 0) && (partnerlocation["p_email_address_c"].ToString() != String.Empty))
+                if ((TotalRecords == 0) && (email != String.Empty))
                 {
                     // what about name and email?
                     findPartner = TSimplePartnerFindWebConnector.FindPartners(
@@ -690,7 +690,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         String.Empty, // StreetName
                         String.Empty, // City
                         String.Empty, // PostCode
-                        partnerlocation["p_email_address_c"].ToString(),
+                        email,
                         ANewPartner.PartnerClass,
                         true, // ActiveOnly
                         String.Empty, // SortBy
@@ -699,10 +699,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         out FindVerification);
                 }
 
-                if (TotalRecords > 1)
+                if (TotalRecords > 0)
                 {
                     AddVerificationResult("Partner " + ANewPartner.PartnerShortName + " in line " + FCurrentLine.ToString() +
-                        " already exists with key " + findPartner[0].PartnerKey.ToString());
+                        " already exists with key " + findPartner[0]["p_partner_key_n"].ToString());
                 }
             }
 

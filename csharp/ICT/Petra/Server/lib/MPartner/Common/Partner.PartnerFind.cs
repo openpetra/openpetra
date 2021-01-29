@@ -909,8 +909,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             DataRow[] CountriesForIntlPhonePrefixDR;
             List <string>CountriesForIntlPhonePrefix = new List <string>(0);
             PCountryTable CountryDT;
-            DataView PhoneAttributesDV;
-            DataView EmailAttributesDV;
 
             // Searched DB Fields: None directly in the 'usual' query - custom 'Partner Contact Details' sub-queries are utilised!
             // --> DISREGARD ALL OTHER SEARCH CRITERIA!!!
@@ -920,16 +918,13 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             if (APhoneNumberIsSearchedFor)
             {
                 // Build list of Partner Contact Attributes Types that constitute Phone Numbers and Fax Numbers
-                PhoneAttributesDV = Calculations.DeterminePhoneAttributes((PPartnerAttributeTypeTable)
-                    TSharedDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList));
-
-                for (int Counter = 0; Counter < PhoneAttributesDV.Count; Counter++)
-                {
-                    AttributeTypeListStr += "'" + ((PPartnerAttributeTypeRow)PhoneAttributesDV[Counter].Row).AttributeType + "', ";
-                }
-
-                // Strip off remaining Attribute Type separation concatenation characters
-                AttributeTypeListStr = AttributeTypeListStr.Substring(0, AttributeTypeListStr.Length - 2);
+                TDBTransaction ReadTransaction = new TDBTransaction();
+                DBAccess.ReadTransaction(
+                    ref ReadTransaction,
+                    delegate
+                    {
+                        AttributeTypeListStr = Calculations.GetPhonePartnerAttributesConcatStr(ReadTransaction);
+                    });
 
                 PhoneNumber = ACriteriaRow["PhoneNumber"].ToString();
 
@@ -996,16 +991,13 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             else
             {
                 // Build list of Partner Contact Attributes Types that constitute Email Addresses
-                EmailAttributesDV = Calculations.DetermineEmailAttributes((PPartnerAttributeTypeTable)
-                    TSharedDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList));
-
-                for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++)
-                {
-                    AttributeTypeListStr += "'" + ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).AttributeType + "', ";
-                }
-
-                // Strip off remaining Attribute Type separation concatenation characters
-                AttributeTypeListStr = AttributeTypeListStr.Substring(0, AttributeTypeListStr.Length - 2);
+                TDBTransaction ReadTransaction = new TDBTransaction();
+                DBAccess.ReadTransaction(
+                    ref ReadTransaction,
+                    delegate
+                    {
+                        AttributeTypeListStr = Calculations.GetEmailPartnerAttributesConcatStr(ReadTransaction);
+                    });
 
                 new TDynamicSearchHelper(PPartnerAttributeTable.TableId,
                     PPartnerAttributeTable.ColumnValueId, ACriteriaRow, "Email", "EmailMatch",
