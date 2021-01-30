@@ -2122,6 +2122,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                 bankingusage.PartnerKey = partner.PartnerKey;
                             }
                         }
+
+                        foreach (PPartnerTypeRow parttype in MainDS.PPartnerType.Rows)
+                        {
+                            if (parttype.PartnerKey == tempKey)
+                            {
+                                parttype.PartnerKey = partner.PartnerKey;
+                            }
+                        }
                     }
                 }
 

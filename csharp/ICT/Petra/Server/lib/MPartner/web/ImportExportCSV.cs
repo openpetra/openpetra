@@ -153,7 +153,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             ResultsContext = "CSV Import Family";
                             newPartner = CreateNewFamily(r, FamilyForPerson, out LocationKey, ref ResultDS, Transaction);
                             PartnerKey = newPartner.PartnerKey;
-                            CreateSpecialTypes(r, PartnerKey, "SpecialTypeFamily_", ref ResultDS, Transaction);
+                            CreateSpecialTypes(r, PartnerKey, "Category", ref ResultDS, Transaction);
                             string AccountName = (GetColumnValue(r, "FirstName") + " " +
                                 GetColumnValue(r, "FamilyName")).Trim();
                             CreateBankAccounts(r, PartnerKey, AccountName, ref BankingDetailsKey, "IBAN",
@@ -168,7 +168,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             newPartner = CreateNewPerson(PartnerKey, LocationKey, r, ADateFormat, ref ResultDS, Transaction);
                             PartnerKey = newPartner.PartnerKey;
                             CreateShortTermApplication(r, PartnerKey, ADateFormat, ref ResultDS, Transaction);
-                            CreateSpecialTypes(r, PartnerKey, ref ResultDS, Transaction);
                             CreateSubscriptions(r, PartnerKey, ref ResultDS, Transaction);
                             CreateContacts(r, PartnerKey, ADateFormat, ref ResultDS, "_1", Transaction);
                             CreateContacts(r, PartnerKey, ADateFormat, ref ResultDS, "_2", Transaction);
@@ -781,9 +780,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
-            for (int Idx = 1; Idx < 6; Idx++)
+            for (int Idx = -1; Idx < 6; Idx++)
             {
-                String SpecialType = GetColumnValue(ARow, ACSVKey + Idx.ToString());
+                String SpecialType = GetColumnValue(ARow, ACSVKey + (Idx>=0?Idx.ToString():String.Empty));
 
                 if (SpecialType.Length > 0)
                 {
@@ -795,29 +794,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         partnerType.TypeCode = SpecialType;
                         AMainDS.PPartnerType.Rows.Add(partnerType);
                     }
+
+                    // validate that this special type exists
+                    if (!PTypeAccess.Exists(SpecialType, ATransaction))
+                    {
+                        AddVerificationResult("invalid category " + SpecialType);
+                    }
                 }
             }
-        }
-
-        private void CreateSpecialTypes(DataRow ARow, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
-        {
-            // This previous code requires a format that doesn't conform to the documented standard:
-
-/*
- *          if (GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
- *          {
- *              string specialTypes = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
- *
- *              while (specialTypes.Length > 0)
- *              {
- *                  PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
- *                  partnerType.PartnerKey = PartnerKey;
- *                  partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
- *                  AMainDS.PPartnerType.Rows.Add(partnerType);
- *              }
- *          }
- */
-            CreateSpecialTypes(ARow, APartnerKey, "SpecialType_", ref AMainDS, ATransaction);
         }
 
         private void CreateShortTermApplication(DataRow ARow,
