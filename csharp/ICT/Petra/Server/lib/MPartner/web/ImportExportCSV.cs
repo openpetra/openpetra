@@ -585,6 +585,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
             partnerlocation.SendMail = true;
 
+            int SequenceCounter = 0;
             string email = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EMAIL);
             string phone = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PHONE);
             string mobile = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
@@ -605,6 +606,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
                 partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_EMAIL;
+                partnerAttributeRow.Sequence = SequenceCounter++;
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
             }
 
@@ -624,6 +626,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
                 partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_PHONE;
+                partnerAttributeRow.Sequence = SequenceCounter++;
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
             }
 
@@ -643,6 +646,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
                 partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                partnerAttributeRow.Sequence = SequenceCounter++;
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
             }
 
