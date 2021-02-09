@@ -631,7 +631,7 @@
         "importUser": "Import contacts from CSV file",
         "importUserODS": "Import contacts from LibreOffice Calc file (*.ods)",
         "importUserXLSX": "Import contacts from MS Excel file (*.xlsx)",
-        "help_url": "https://docs.openpetra.org/howtos/initial-partner-setup.html#import-your-existing-addresses",
+        "help_url": "https://docs.openpetra.org/howtos/initial-contact-setup.html#import-your-existing-addresses",
         "upload_partner_success": "Contacts have been imported successfully",
         "upload_partner_fail": "Contacts could not be imported"
     },
