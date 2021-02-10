@@ -159,14 +159,15 @@ namespace Tests.MPartner.Server.PartnerExports
 
             if (VerificationResult != null)
             {
-                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
+                if (VerificationResult.HasCriticalErrors)
+                    Assert.AreEqual(String.Empty, VerificationResult.BuildVerificationResultString(), "there was an error importing the csv file");
             }
 
-            // there should be 4 partners imported (2 x family + 2 x person)
-            Assert.AreEqual(4, MainDS.PPartner.Rows.Count, "Wrong number of partners");
-            Assert.AreEqual(2, MainDS.PPerson.Rows.Count, "Wrong number of persons");
+            // there should be 2 partners imported (2 x family)
+            Assert.AreEqual(2, MainDS.PPartner.Rows.Count, "Wrong number of partners");
+            Assert.AreEqual(2, MainDS.PFamily.Rows.Count, "Wrong number of families");
 
-            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PPerson[0].DateOfBirth, "date of birth is wrong!");
+            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PFamily[0].DateOfBirth, "date of birth is wrong!");
 
             // Now try with the wrong date format
             VerificationResult = null;
@@ -204,14 +205,15 @@ namespace Tests.MPartner.Server.PartnerExports
 
             if (VerificationResult != null)
             {
-                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
+                if (VerificationResult.HasCriticalErrors)
+                    Assert.AreEqual(String.Empty, VerificationResult.BuildVerificationResultString(), "there was an error importing the csv file");
             }
 
-            // there should be 4 partners imported (2 x family + 2 x person)
-            Assert.AreEqual(4, MainDS.PPartner.Rows.Count);
-            Assert.AreEqual(2, MainDS.PPerson.Rows.Count);
+            // there should be 2 partners imported (2 x family)
+            Assert.AreEqual(2, MainDS.PPartner.Rows.Count);
+            Assert.AreEqual(2, MainDS.PFamily.Rows.Count);
 
-            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PPerson[0].DateOfBirth, "date of birth is wrong!");
+            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PFamily[0].DateOfBirth, "date of birth is wrong!");
 
             // Now try with the wrong date format
             VerificationResult = null;

@@ -535,6 +535,13 @@
       <CustomField name="PartnerShortName" type="string"/>
       <CustomField name="ImportStatus" type="string"/>
     </CustomTable>
+
+    <Table sqltable="p_consent_history">
+      <CustomField name="AllowedPurposes" type="string"/>
+    </Table>
+    <Table sqltable="p_consent_history_permission"/>
+    <Table sqltable="p_consent_purpose"/>
+    <Table sqltable="p_consent_channel"/>
   </DataSet>
 
   <DataSet name="ExtractTDS">
