@@ -4,7 +4,7 @@
 // @Authors:
 //       cjaekel, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,11 +65,31 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 {
                     Types.Add( TypeRow.Field<string>("p_type_c") );
                 }
+
+                // also get types for existing values of the address that don't have a consent yet
+                if (!Types.Contains(MPartnerConstants.CONSENT_TYPE_ADDRESS))
+                {
+                    Types.Add(MPartnerConstants.CONSENT_TYPE_ADDRESS);
+                }
+
+                if (!Types.Contains(MPartnerConstants.CONSENT_TYPE_EMAIL))
+                {
+                    Types.Add(MPartnerConstants.CONSENT_TYPE_EMAIL);
+                }
+
+                if (!Types.Contains(MPartnerConstants.CONSENT_TYPE_LANDLINE))
+                {
+                    Types.Add(MPartnerConstants.CONSENT_TYPE_LANDLINE);
+                }
+
+                if (!Types.Contains(MPartnerConstants.CONSENT_TYPE_MOBILE))
+                {
+                    Types.Add(MPartnerConstants.CONSENT_TYPE_MOBILE);
+                }
             });
 
             return Types;
         }
-
 
         /// <summary>
         /// Returns the last known entry for a partner and type, could be empty
@@ -104,6 +124,68 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                 SQLParameter.Add(new OdbcParameter("DataType", OdbcType.VarChar) { Value = ADataType } );
 
                 DB.SelectDT(Set.PConsentHistory, sql, T, SQLParameter.ToArray()); 
+
+                if (Set.PConsentHistory.Count == 0)
+                {
+                    // there is no consent yet
+                    // do we have a value at all?
+                    List<string> Subscriptions;
+                    List<string> PartnerTypes;
+                    string DefaultEmailAddress;
+                    string DefaultPhoneMobile;
+                    string DefaultPhoneLandline;
+                    PartnerEditTDS PartnerDS = TSimplePartnerEditWebConnector.GetPartnerDetails(APartnerKey,
+                        out Subscriptions,
+                        out PartnerTypes,
+                        out DefaultEmailAddress,
+                        out DefaultPhoneMobile,
+                        out DefaultPhoneLandline);
+
+                    if (ADataType == MPartnerConstants.CONSENT_TYPE_ADDRESS)
+                    {
+                        PLocationRow locationRow = PartnerDS.PLocation[0];
+                        PConsentHistoryRow row = Set.PConsentHistory.NewRowTyped();
+                        row.EntryId = -1;
+                        row.PartnerKey = APartnerKey;
+                        row.Type = ADataType;
+                        row.Value = locationRow.StreetName + ", " + locationRow.PostalCode + " " + locationRow.City + ", " + locationRow.CountryCode;
+                        row.ConsentDate = DateTime.Today;
+                        Set.PConsentHistory.Rows.Add(row);
+                    }
+
+                    if (ADataType == MPartnerConstants.CONSENT_TYPE_EMAIL)
+                    {
+                        PConsentHistoryRow row = Set.PConsentHistory.NewRowTyped();
+                        row.EntryId = -1;
+                        row.PartnerKey = APartnerKey;
+                        row.Type = ADataType;
+                        row.Value = DefaultEmailAddress;
+                        row.ConsentDate = DateTime.Today;
+                        Set.PConsentHistory.Rows.Add(row);
+                    }
+
+                    if (ADataType == MPartnerConstants.CONSENT_TYPE_LANDLINE)
+                    {
+                        PConsentHistoryRow row = Set.PConsentHistory.NewRowTyped();
+                        row.EntryId = -1;
+                        row.PartnerKey = APartnerKey;
+                        row.Type = ADataType;
+                        row.Value = DefaultPhoneLandline;
+                        row.ConsentDate = DateTime.Today;
+                        Set.PConsentHistory.Rows.Add(row);
+                    }
+
+                    if (ADataType == MPartnerConstants.CONSENT_TYPE_MOBILE)
+                    {
+                        PConsentHistoryRow row = Set.PConsentHistory.NewRowTyped();
+                        row.EntryId = -1;
+                        row.PartnerKey = APartnerKey;
+                        row.Type = ADataType;
+                        row.Value = DefaultPhoneMobile;
+                        row.ConsentDate = DateTime.Today;
+                        Set.PConsentHistory.Rows.Add(row);
+                    }
+                }
 
                 PConsentChannelAccess.LoadAll(Set, T);
                 PConsentPurposeAccess.LoadAll(Set, T);

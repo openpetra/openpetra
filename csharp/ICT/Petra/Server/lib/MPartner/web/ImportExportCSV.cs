@@ -755,22 +755,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     if (ConsentType.ToUpper() == "ADDRESS")
                     {
-                        HistoryRow.Type = "address";
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_ADDRESS;
                         HistoryRow.Value = locationRow.StreetName + ", " + locationRow.PostalCode + " " + locationRow.City + ", " + locationRow.CountryCode;
                     }
                     else if (ConsentType.ToUpper() == "EMAIL")
                     {
-                        HistoryRow.Type = "email address";
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_EMAIL;
                         HistoryRow.Value = email;
                     }
                     else if (ConsentType.ToUpper() == "PHONE")
                     {
-                        HistoryRow.Type = "phone landline";
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_LANDLINE;
                         HistoryRow.Value = phone;
                     }
                     else if (ConsentType.ToUpper() == "MOBILE")
                     {
-                        HistoryRow.Type = "phone mobile";
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_MOBILE;
                         HistoryRow.Value = mobile;
                     }
                     else

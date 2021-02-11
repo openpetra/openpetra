@@ -419,6 +419,18 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Default Aquisition Code to use for Partner Import</summary>
         public const String PARTNERIMPORT_AQUISITION_DEFAULT = "IMPORT";
 
+        /// <summary>Consent Type Postal Address</summary>
+        public const String CONSENT_TYPE_ADDRESS = "address";
+
+        /// <summary>Consent Type Email</summary>
+        public const String CONSENT_TYPE_EMAIL = "email address";
+
+        /// <summary>Consent Type Phone Number</summary>
+        public const String CONSENT_TYPE_LANDLINE = "phone landline";
+
+        /// <summary>Consent Type Mobile Number</summary>
+        public const String CONSENT_TYPE_MOBILE = "phone mobile";
+
         /// Default values
         /// <summary>used eg. for PPerson.OccupationCode</summary>
         public const String DEFAULT_CODE_UNKNOWN = "UNKNOWN";

@@ -465,13 +465,11 @@ function open_history(HTMLButton) {
 		var types = [];
 
 		var DataTypeList = Temp.find("[data-types]");
-		var hasHistory = false;
 		for (var type of parsed.result) {
 			types.push(type);
 			let name = i18next.t('MaintainPartners.'+type);
 			let partner = partnerkey;
 			DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
-			hasHistory = true;
 		}
 
 		for (var type of Object.keys(data_changes_log)) {
@@ -479,13 +477,7 @@ function open_history(HTMLButton) {
 				let name = i18next.t('MaintainPartners.'+type);
 				let partner = partnerkey;
 				DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
-				hasHistory = true;
 			}
-		}
-
-		if (!hasHistory) {
-			display_error( "MaintainPartners.error_no_history" );
-			return;
 		}
 
 		modal = ShowModal('history' + partnerkey, Temp);

@@ -282,7 +282,6 @@
         "title": "Title",
         "edittitle_history": "Manage Consent",
         "history": "History",
-        "error_no_history": "No consent has been recorded yet!",
         "error_consent_unsaved_changes": "There are unsaved consent changes, therefore currently we cannot accept new changes!",
         "consent_not_saved_yet": "Consent has not been saved yet",
         "edittitle_consent": "Document the consent",
