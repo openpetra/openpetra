@@ -98,6 +98,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return ARow[AAttrName].ToString();
         }
 
+        private bool RowIsEmpty(DataRow ARow)
+        {
+            foreach (DataColumn column in ARow.Table.Columns)
+                if (!ARow.IsNull(column))
+                    return false;
+
+            return true;
+        }
+
         /// <summary>
         /// Import data from an imported file
         /// </summary>
@@ -122,8 +131,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FUnusedColumns.Add(c.ColumnName);
             }
 
-            // starting in line 2, because there is the line with the captions
-            FCurrentLine = 2;
+            // starting in line 1, because there is the line with the captions
+            FCurrentLine = 1;
 
             DBAccess.WriteTransaction(ref Transaction,
                 ref SubmissionOK,
@@ -134,6 +143,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     foreach (DataRow r in ATable.Rows)
                     {
+                        FCurrentLine += 1;
+
+                        if (RowIsEmpty(r))
+                        {
+                            continue;
+                        }
+
                         ResultsContext = "CSV Import";
                         String PartnerClass = GetColumnValue(r, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
                         Int64 PartnerKey = 0;
@@ -181,8 +197,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             CreateConsent(r, ADateFormat, PartnerKey, "ConsentChannel", "ConsentWhen", "ConsentType", "ConsentPurpose", ref ResultDS, Transaction);
                             CreateOutputData(r, PartnerKey, MPartnerConstants.PARTNERCLASS_ORGANISATION, true, ref ResultDS);
                         }
-
-                        FCurrentLine += 1;
                     }
                 });
 
@@ -723,7 +737,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     HistoryRow.PartnerKey = APartnerKey;
                     HistoryRow.ConsentDate = ConsentWhenDT;
                     HistoryRow.ChannelCode = ConsentChannel;
-                    HistoryRow.Type = ConsentType; // address, phone, email
 
                     // get p_location. either already stored in the database, or just being imported
                     AMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}='{1}'", PPartnerLocationTable.GetPartnerKeyDBName(), APartnerKey);
@@ -740,20 +753,24 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     string phone = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PHONE);
                     string mobile = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
 
-                    if (ConsentType == "address")
+                    if (ConsentType.ToUpper() == "ADDRESS")
                     {
+                        HistoryRow.Type = "address";
                         HistoryRow.Value = locationRow.StreetName + ", " + locationRow.PostalCode + " " + locationRow.City + ", " + locationRow.CountryCode;
                     }
-                    else if (ConsentType == "email address")
+                    else if (ConsentType.ToUpper() == "EMAIL")
                     {
+                        HistoryRow.Type = "email address";
                         HistoryRow.Value = email;
                     }
-                    else if (ConsentType == "phone landline")
+                    else if (ConsentType.ToUpper() == "PHONE")
                     {
+                        HistoryRow.Type = "phone landline";
                         HistoryRow.Value = phone;
                     }
-                    else if (ConsentType == "phone mobile")
+                    else if (ConsentType.ToUpper() == "MOBILE")
                     {
+                        HistoryRow.Type = "phone mobile";
                         HistoryRow.Value = mobile;
                     }
                     else

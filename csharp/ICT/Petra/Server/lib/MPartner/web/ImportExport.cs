@@ -2130,6 +2130,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                 parttype.PartnerKey = partner.PartnerKey;
                             }
                         }
+
+                        foreach (PConsentHistoryRow consent in MainDS.PConsentHistory.Rows)
+                        {
+                            if (consent.PartnerKey == tempKey)
+                            {
+                                consent.PartnerKey = partner.PartnerKey;
+                            }
+                        }
                     }
                 }
 
