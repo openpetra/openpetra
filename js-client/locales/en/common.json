@@ -307,6 +307,8 @@
         "sort_by_name": "Contact Name",
         "sort_by_partnerkey": "Contact Key",
         "permission change": "Changes",
+        "ask_delete_contact": "Do you really want to delete this contact?",
+        "contact_was_deleted": "The contact has been deleted",
         "date": "Date"
     },
     "MaintainConsentPurposes": {

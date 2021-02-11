@@ -6,7 +6,7 @@
 //       CJ <cj@tbits.net>
 //
 // Copyright 2017-2019 by TBits.net
-// Coypright 2019-2020 by SolidCharity.com
+// Coypright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -36,6 +36,20 @@ class Navigation {
 		this.module = null;
 		this.submodule = null;
 		this.getCurrentModule(window.location.pathname);
+	}
+
+	// some javascript files (eg. MaintainPartners) can only be loaded once, due to global variables. They must have a <formname>_Ready() function.
+	LoadJavascript(name, formname, refresh)
+	{
+		// check if there is a ReadyFunc, then call this and we are done
+		var ReadyFunc = formname + "_Ready";
+		if(eval("typeof(" + ReadyFunc + ") == typeof(Function)")) {
+			ReadyFunc += "();";
+			eval(ReadyFunc);
+			return;
+		}
+
+		$.getScript(("/src/forms/" + name + '.js' + refresh).replace("//", "/"));
 	}
 
 	OpenForm(name, title = "", pushState=true, parameter="")
@@ -70,9 +84,10 @@ class Navigation {
 				.then(function(response) {
 					var content = response.data;
 					content = replaceAll(content, ".js", ".js" + refresh);
-					content = translate(content, name.substring(name.lastIndexOf('/')+1));
+					var formname = name.substring(name.lastIndexOf('/')+1);
+					content = translate(content, formname);
 					$("#containerIFrames").html(content);
-					$.getScript("/src/forms/" + name + '.js' + refresh);
+					self.LoadJavascript(name, formname, refresh);
 			});
 		}
 		else // fetch navigation page / dash board

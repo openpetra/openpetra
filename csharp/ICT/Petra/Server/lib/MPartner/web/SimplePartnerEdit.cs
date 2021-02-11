@@ -754,6 +754,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
         }
 
+        /// <summary>
+        /// delete the partner
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool DeletePartner(Int64 APartnerKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            string ErrorMsg = String.Empty;
+
+            if (!TPartnerWebConnector.CanPartnerBeDeleted(APartnerKey, out ErrorMsg))
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(new TVerificationResult("error", ErrorMsg, TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            return TPartnerWebConnector.DeletePartner(APartnerKey, out AVerificationResult);
+        }
+
         private static string FormatIBAN(string AIban)
         {
             AIban = AIban.Replace(" ", "");

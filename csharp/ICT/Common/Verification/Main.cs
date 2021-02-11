@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -692,6 +692,14 @@ namespace Ict.Common.Verification
         /// </summary>
         public TVerificationResultCollection()
         {
+        }
+
+        /// <summary>
+        /// copy constructor
+        /// </summary>
+        public TVerificationResultCollection(TVerificationResultCollection ACollection)
+        {
+            this.AddCollection(ACollection);
         }
 
         /// <summary>

@@ -25,8 +25,13 @@
 
 var last_opened_entry_data = {};
 var data_changes_log = {};
+var PBankingDetails_Store = {}
 
 $('document').ready(function () {
+	MaintainPartners_Ready();
+});
+
+function MaintainPartners_Ready() {
 	load_preset();
 
 	if (window.location.href.endsWith('?NewFamily')) {
@@ -36,7 +41,7 @@ $('document').ready(function () {
 	} else {
 		display_list();
 	}
-});
+}
 
 function load_preset() {
 	var x = window.localStorage.getItem('MaintainPartners');
@@ -46,7 +51,7 @@ function load_preset() {
 	}
 }
 
-function display_list(source) {
+function display_list() {
 	var x = extract_data($('#tabfilter'));
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
@@ -177,7 +182,6 @@ function display_partner(parsed) {
 	myModal = ShowModal('partneredit' + parsed.result.PPartner[0].p_partner_key_n, m);
 }
 
-let PBankingDetails_Store = {}
 function display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
 	PBankingDetails_Store = {}
 	m.find('.bank_account_detail_col').html('');
@@ -292,6 +296,28 @@ function save_entry(obj) {
 	})
 }
 
+function delete_entry(obj) {
+	let modal = FindMyModal(obj)
+	var partnerkey = modal.find("[name=p_partner_key_n]").val();
+
+	let s = confirm( i18next.t('MaintainPartners.ask_delete_contact') );
+	if (!s) {return}
+
+	let r = {'APartnerKey': partnerkey}
+
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeletePartner', r).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			CloseModal(modal.attr('id'));
+			display_message(i18next.t('MaintainPartners.contact_was_deleted'), "success");
+			display_list();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	})
+}
+
 function updateBankAccounts(PartnerKey) {
 	// somehow the original window stays gray when we return from this modal.
 	$('.modal-backdrop').remove();
@@ -313,8 +339,8 @@ function save_edit_bank_account(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
- 	if (payload['ABankingDetailsKey'] == '') payload['ABankingDetailsKey'] = -1;
+	payload['action'] = mode;
+	if (payload['ABankingDetailsKey'] == '') payload['ABankingDetailsKey'] = -1;
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
