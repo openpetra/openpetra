@@ -92,6 +92,33 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
         }
 
         /// <summary>
+        /// Do we have any consent at all for this contact.
+        /// This method has been copied to Ict.Petra.Server.MFinance.Gift.WebConnectors.TReceiptingWebConnector
+        /// to avoid cyclic dependancies.
+        /// </summary>
+        private static bool UndefinedConsent(Int64 APartnerKey)
+        {
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("Get Last known entry");
+            List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
+            bool HasConsent = false;
+
+            DB.ReadTransaction(ref T, delegate {
+
+                string sql = "SELECT " +
+                    "COUNT(*)" +
+                    "FROM `p_consent_history` " +
+                    "WHERE `p_consent_history`.`p_partner_key_n` = ?";
+
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
+
+                HasConsent = (Convert.ToInt32(DB.ExecuteScalar(sql, T, SQLParameter.ToArray())) > 0);
+            });
+
+            return !HasConsent;
+        }
+
+        /// <summary>
         /// Returns the last known entry for a partner and type, could be empty
         /// also returns all consent channel and purposes
         /// </summary>

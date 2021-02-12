@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -354,6 +354,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Do we have any consent at all for this contact.
+        /// This method should be in Ict.Petra.Server.MPartner.Partner.WebConnectors.TDataHistoryWebConnector,
+        /// but that would cause a cyclic dependancy.
+        /// </summary>
+        private static bool UndefinedConsent(Int64 APartnerKey)
+        {
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("Get Last known entry");
+            List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
+            bool HasConsent = false;
+
+            DB.ReadTransaction(ref T, delegate {
+
+                string sql = "SELECT " +
+                    "COUNT(*)" +
+                    "FROM `p_consent_history` " +
+                    "WHERE `p_consent_history`.`p_partner_key_n` = ?";
+
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
+
+                HasConsent = (Convert.ToInt32(DB.ExecuteScalar(sql, T, SQLParameter.ToArray())) > 0);
+            });
+
+            return !HasConsent;
+        }
+
+        /// <summary>
         /// Format the letter for the donor with all the gifts
         ///
         /// Can also used for a single receipt.
@@ -391,6 +418,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 new TSystemDefaults(ATransaction.DataBaseObj).GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             string msg = AHTMLTemplate;
+
+            // do we have a section about consent for a defined purpose?
+            if (msg.Contains("#if UNDEFINEDCONSENT"))
+            {
+                int indexIf = msg.IndexOf("#if UNDEFINEDCONSENT");
+
+                if (UndefinedConsent(ADonorKey))
+                {
+                    // just drop the #if and #endif line
+                    msg = msg.Substring(0, indexIf) + msg.Substring(indexIf + "#if UNDEFINEDCONSENT".Length);
+                    int indexEndif = msg.IndexOf("#endif", indexIf);
+                    msg = msg.Substring(0, indexEndif) + msg.Substring(indexEndif + "#endif".Length);
+                }
+                else
+                {
+                    // drop the whole #if section
+                    int indexEndif = msg.IndexOf("#endif", indexIf);
+                    msg = msg.Substring(0, indexIf) + msg.Substring(indexEndif + "#endif".Length);
+                }
+            }
 
             if (ADonorName.Contains(","))
             {
