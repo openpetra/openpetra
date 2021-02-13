@@ -569,7 +569,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        // now first delete the partner banking details
+                        // delete the banking details usage for this partner
+                        ResultValue = DeleteEntries(PBankingDetailsUsageTable.GetTableDBName(),
+                            PBankingDetailsUsageTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction, out VerificationResult);
+
+                        // delete the partner banking details
                         ResultValue = DeleteEntries(PPartnerBankingDetailsTable.GetTableDBName(),
                             PPartnerBankingDetailsTable.GetPartnerKeyDBName(),
                             APartnerKey, Transaction, out VerificationResult);
