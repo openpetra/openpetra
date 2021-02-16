@@ -260,7 +260,7 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERIMPORT_FAMILYNAME = "FamilyName";
 
         /// <summary>Organisation Name</summary>
-        public const String PARTNERIMPORT_NAME = "Name";
+        public const String PARTNERIMPORT_ORGANISATIONNAME = "OrganisationName";
 
         /// <summary>MaritalStatus</summary>
         public const String PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";

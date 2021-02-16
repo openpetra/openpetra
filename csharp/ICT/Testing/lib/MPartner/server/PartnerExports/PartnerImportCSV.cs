@@ -90,8 +90,12 @@ namespace Tests.MPartner.Server.PartnerExports
                 Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
             }
 
-            // there should be 2 partners imported
-            Assert.AreEqual(2, MainDS.PPartner.Rows.Count);
+            // there should be 4 partners imported
+            Assert.AreEqual(4, MainDS.PPartner.Rows.Count);
+            // there should be 3 families imported
+            Assert.AreEqual(3, MainDS.PFamily.Rows.Count);
+            // there should be 1 organisation imported
+            Assert.AreEqual(1, MainDS.POrganisation.Rows.Count);
         }
 
         /// <summary>
@@ -132,13 +136,11 @@ namespace Tests.MPartner.Server.PartnerExports
             TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "DMY", ";", out VerificationResult);
 
             Assert.IsNotNull(VerificationResult, "Expected to get errors");
-            Assert.AreEqual(3, VerificationResult.Count, "there should be three errors");
+            Assert.AreEqual(2, VerificationResult.Count, "there should be two errors");
             Assert.AreEqual("Missing Firstname or family name in line 2",
                 VerificationResult[0].ResultText, "VerificationResult message");
-            Assert.AreEqual("Address is incomplete, we need streetname, city and country in line 3",
+            Assert.AreEqual("We need either a valid address, phone number, email address or IBAN in line 4",
                 VerificationResult[1].ResultText, "VerificationResult message");
-            Assert.AreEqual("Missing an address (streetname, city, country code) or phone number or email address in line 4",
-                VerificationResult[2].ResultText, "VerificationResult message");
         }
 
         /// <summary>
