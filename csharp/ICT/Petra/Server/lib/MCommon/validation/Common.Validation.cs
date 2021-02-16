@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,10 +26,12 @@ using System.Data;
 
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MCommon.Validation
 {
@@ -60,18 +62,22 @@ namespace Ict.Petra.Server.MCommon.Validation
             {
                 if (AInternatPostalTypeCode != String.Empty)
                 {
-                    TValidationHelper.GetData(PInternationalPostalTypeTable.GetTableDBName(), null, out IntPostalDT);
+                    TDBTransaction t = new TDBTransaction();
+                    DBAccess.ReadTransaction(ref t,
+                        delegate {
+                            IntPostalDT = PInternationalPostalTypeAccess.LoadAll(t);
 
-                    if (IntPostalDT.Rows.Find(new object[] { AInternatPostalTypeCode }) == null)
-                    {
-                        ReturnValue = new TVerificationResult(AResultContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALIDINTERNATIONALPOSTALCODE));
+                            if (IntPostalDT.Rows.Find(new object[] { AInternatPostalTypeCode }) == null)
+                            {
+                                ReturnValue = new TVerificationResult(AResultContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALIDINTERNATIONALPOSTALCODE));
 
-                        if (AResultColumn != null)
-                        {
-                            ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
-                        }
-                    }
+                                if (AResultColumn != null)
+                                {
+                                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn);
+                                }
+                            }
+                        });
                 }
                 else
                 {

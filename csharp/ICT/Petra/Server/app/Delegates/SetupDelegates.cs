@@ -103,7 +103,6 @@ namespace Ict.Petra.Server.App.Delegates
         /// </summary>
         public static void Init()
         {
-            TValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
             TPartnerValidationHelper.PartnerHasActiveStatusDelegate = @TPartnerServerLookups.PartnerHasActiveStatus;
             TPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TPartnerServerLookups.PartnerIsLinkedToCC;

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,54 +36,6 @@ namespace Ict.Petra.Server.MCommon.Validation
     /// </summary>
     public static class TValidationHelper
     {
-        /// <summary>
-        /// Delegate for invoking the simple data reader.
-        /// </summary>
-        public delegate bool TSharedGetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable);
-
-        /// <summary>
-        /// Reference to the Delegate for invoking the simple data reader.
-        /// </summary>
-        [ThreadStatic]
-        private static TSharedGetData FDelegateSharedGetData;
-
-        /// <summary>
-        /// This property is used to provide a function which invokes the simple data reader.
-        /// </summary>
-        /// <description>The Delegate is set up at the start of the application.</description>
-        public static TSharedGetData SharedGetDataDelegate
-        {
-            get
-            {
-                return FDelegateSharedGetData;
-            }
-
-            set
-            {
-                FDelegateSharedGetData = value;
-            }
-        }
-
-        /// <summary>
-        /// simple data reader;
-        /// checks for permissions of the current user;
-        /// </summary>
-        /// <param name="ATablename"></param>
-        /// <param name="ASearchCriteria">a set of search criteria</param>
-        /// <param name="AResultTable">returns typed datatable</param>
-        /// <returns></returns>
-        public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
-        {
-            if (FDelegateSharedGetData != null)
-            {
-                return FDelegateSharedGetData(ATablename, ASearchCriteria, out AResultTable);
-            }
-            else
-            {
-                throw new InvalidOperationException("Delegate 'TSharedGetData' must be initialised before calling this Method");
-            }
-        }
-
         /// <summary>
         /// checks if row has status "Added" or if field value is modified compared to original value
         /// </summary>

@@ -72,8 +72,8 @@ function open_edit(sub_id) {
 		}
 	}
 
-	let p = {"ATablename":"p_country", "ASearchCriteria":""};
-	api.post('serverMCommon.asmx/TCommonDataReader_GetData', p).then(function (data) {
+	let p = {};
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetCountryCodes', p).then(function (data) {
 		data = JSON.parse(data.data.d);
 
 		let m = $('[phantom] .tpl_edit').clone();
@@ -89,8 +89,8 @@ function open_edit(sub_id) {
 function open_new() {
 	if (!allow_modal()) {return}
 
-	let p = {"ATablename":"p_country", "ASearchCriteria":""};
-	api.post('serverMCommon.asmx/TCommonDataReader_GetData', p).then(function (data) {
+	let p = {};
+	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetCountryCodes', p).then(function (data) {
 		data = JSON.parse(data.data.d);
 
 		let m = $('[phantom] .tpl_new').clone();
@@ -101,8 +101,8 @@ function open_new() {
 		}
 		m = load_countries(data.AResultTable, country_code.toUpperCase(), m);
 
-		let p = {"ATablename":"a_currency", "ASearchCriteria":""};
-		api.post('serverMCommon.asmx/TCommonDataReader_GetData', p).then(function (data) {
+		let p = {};
+		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetCurrencyCodes', p).then(function (data) {
 			data = JSON.parse(data.data.d);
 			m = load_currencies(data.AResultTable, "EUR", m);
 

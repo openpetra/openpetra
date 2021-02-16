@@ -4210,6 +4210,48 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// get the country codes
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool GetCountryCodes(out PCountryTable AResultTable)
+        {
+            TDBTransaction Transaction = new TDBTransaction();
+
+            PCountryTable result = new PCountryTable();
+
+            DBAccess.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    result = PCountryAccess.LoadAll(Transaction);
+                });
+
+            AResultTable = result;
+
+            return AResultTable.Rows.Count > 0;
+        }
+
+        /// <summary>
+        /// get the currency codes
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool GetCurrencyCodes(out ACurrencyTable AResultTable)
+        {
+            TDBTransaction Transaction = new TDBTransaction();
+
+            ACurrencyTable result = new ACurrencyTable();
+
+            DBAccess.ReadTransaction(ref Transaction,
+                delegate
+                {
+                    result = ACurrencyAccess.LoadAll(Transaction);
+                });
+
+            AResultTable = result;
+
+            return AResultTable.Rows.Count > 0;
+        }
+
+        /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
