@@ -450,7 +450,7 @@ namespace Ict.Common.IO
             for (int j = 0; j < cellCount; j++)
             {
                 ICell cell = firstRow.GetCell(j);
-                string ColumnName = (AHasHeader ? cell.ToString() : string.Format("Column {0}", j+1));
+                string ColumnName = ((AHasHeader && (cell != null)) ? cell.ToString() : string.Format("Column {0}", j+1));
                 ColumnNames.Add(ColumnName);
 
                 if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnName))
@@ -470,9 +470,9 @@ namespace Ict.Common.IO
 
                 DataRow NewRow = result.NewRow();
 
-                for (int j = wsrow.FirstCellNum; j < cellCount; j++)
+                for (int j = 0; j < cellCount; j++)
                 {
-                    if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnNames[j - wsrow.FirstCellNum]))
+                    if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnNames[j]))
                     {
                         continue;
                     }
@@ -480,13 +480,13 @@ namespace Ict.Common.IO
                     if (wsrow.GetCell(j) != null)
                     {
                         ICell wscell = wsrow.GetCell(j);
-                        NewRow[ColumnNames[j - wsrow.FirstCellNum]] = wscell;
-                        
+                        NewRow[ColumnNames[j]] = wscell;
+
                         if (wscell.CellType == CellType.Numeric)
                         {
                             if (DateUtil.IsCellDateFormatted(wscell))
                             {
-                                NewRow[ColumnNames[j - wsrow.FirstCellNum]] = new TVariant(wscell.DateCellValue).EncodeToString();
+                                NewRow[ColumnNames[j]] = new TVariant(wscell.DateCellValue).EncodeToString();
                             }
                         }
                     }

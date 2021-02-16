@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -107,7 +107,8 @@ namespace Ict.Common.IO
                             continue;
                         }
 
-                        string ColumnName = (AHasHeader ? cellNode.FirstChild.InnerText : string.Format("Column {0}", columnCounter));
+                        string ColumnName = ((AHasHeader && cellNode.FirstChild != null) ? cellNode.FirstChild.InnerText : string.Format("Column {0}", columnCounter));
+
                         ColumnNames.Add(ColumnName);
                         columnCounter++;
 

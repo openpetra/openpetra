@@ -62,8 +62,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private String ResultsContext;
         private List<String> FUnusedColumns;
 
-        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity = TResultSeverity.Resv_Critical)
+        private void ResetVerificationResult()
         {
+            ResultsCol.Clear();
+        }
+
+        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity = TResultSeverity.Resv_Critical, bool AddLineNumber = true)
+        {
+            if (!AResultText.Contains(" in line ") && AddLineNumber)
+            {
+                AResultText += " in line " + FCurrentLine.ToString();
+            }
+
             if (ASeverity != TResultSeverity.Resv_Status)
             {
                 TLogging.Log(AResultText);
@@ -228,7 +238,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (FUnusedColumns.Count > 0)
             {
-                AddVerificationResult("Unknown Column(s): " + String.Join(" ", FUnusedColumns.ToArray()));
+                AddVerificationResult("Unknown Column(s): " + String.Join(" ", FUnusedColumns.ToArray()), TResultSeverity.Resv_Critical, false);
+
+                if (FUnusedColumns.Count > ATable.Columns.Count / 2)
+                {
+                    ResetVerificationResult();
+                    AddVerificationResult("Too many unknown column names. Are you missing the captions?", TResultSeverity.Resv_Critical, false);
+                }
+
                 return new PartnerImportExportTDS();
             }
 
@@ -391,7 +408,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if ((newFamily.FirstName == String.Empty) && (newFamily.FamilyName == String.Empty))
             {
-                AddVerificationResult("Missing Firstname or family name in line " + FCurrentLine.ToString());
+                AddVerificationResult("Missing Firstname or family name");
             }
 
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
@@ -516,11 +533,28 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 (newLocation.PostalCode != String.Empty) ||
                 (newLocation.City != String.Empty) ||
                 (newLocation.CountryCode != String.Empty);
-            AValidAddress = AHasAddress && 
+            AValidAddress = AHasAddress &&
                 (newLocation.StreetName != String.Empty) && // StreetName can contain PO Box number
                 (newLocation.PostalCode != String.Empty) &&
                 (newLocation.City != String.Empty) &&
                 (newLocation.CountryCode != String.Empty);
+
+            if (AHasAddress && !AValidAddress)
+            {
+                if ((newLocation.StreetName != String.Empty) &&
+                    (newLocation.PostalCode != String.Empty) &&
+                    (newLocation.City != String.Empty) &&
+                    (newLocation.CountryCode == String.Empty))
+                {
+                    AddVerificationResult("Country Code is missing");
+                }
+
+                if ((newLocation.StreetName != String.Empty) &&
+                    (newLocation.City == String.Empty))
+                {
+                    AddVerificationResult("City is missing");
+                }
+            }
 
             partnerlocation.SendMail = AValidAddress;
 
@@ -602,28 +636,28 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             if (!AValidAddress && !AHasContactDetail && !AHasIBAN)
             {
-                AddVerificationResult("We need either a valid address, phone number, email address or IBAN in line " + FCurrentLine.ToString());
+                AddVerificationResult("We need either a valid address, phone number, email address or IBAN");
 
                 if (AHasAddress && !AValidAddress)
                 {
                     if (newLocation.StreetName == String.Empty)
                     {
-                        AddVerificationResult("Missing Street in line " + FCurrentLine.ToString());
+                        AddVerificationResult("Missing Street");
                     }
 
                     if (newLocation.PostalCode == String.Empty)
                     {
-                        AddVerificationResult("Missing PostCode in line " + FCurrentLine.ToString());
+                        AddVerificationResult("Missing PostCode");
                     }
 
                     if (newLocation.City == String.Empty)
                     {
-                        AddVerificationResult("Missing City in line " + FCurrentLine.ToString());
+                        AddVerificationResult("Missing City");
                     }
 
                     if (newLocation.CountryCode == String.Empty)
                     {
-                        AddVerificationResult("Missing Country in line " + FCurrentLine.ToString());
+                        AddVerificationResult("Missing Country");
                     }
                 }
             }
