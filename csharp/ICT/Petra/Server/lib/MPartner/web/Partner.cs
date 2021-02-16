@@ -405,7 +405,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TStdPartnerStatusCode PartnerStatusCode;
             bool ResultValue = false;
 
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
             ResultValue = true;
 
             TVerificationResultCollection VerificationResult = null;

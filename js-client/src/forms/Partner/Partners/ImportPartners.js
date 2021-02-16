@@ -130,3 +130,24 @@ function UploadUserXLSX(self) {
 	// Read in the file as a data URL.
 	reader.readAsDataURL(self[0].files[0]);
 };
+
+function DeleteAllContacts() {
+
+	let s = confirm( i18next.t('ImportPartners.ask_delete_all') );
+	if (!s) {return}
+
+	p = {};
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeleteAllPartners', p)
+	.then(function (result) {
+		result = JSON.parse(result.data.d);
+		if (result.result == true) {
+			display_message(i18next.t('ImportPartners.delete_all_partner_success'), "success");
+		} else {
+			display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.delete_all_partners_fail');
+		}
+	})
+	.catch(error => {
+		//console.log(error.response)
+		display_message(i18next.t('ImportPartners.delete_all_partners_fail'), "fail");
+	});
+}

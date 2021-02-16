@@ -774,6 +774,77 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return TPartnerWebConnector.DeletePartner(APartnerKey, out AVerificationResult);
         }
 
+        /// <summary>
+        /// delete all FAMILY and ORGANISATION partners. useful for initial import of contacts, trial and error.
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool DeleteAllPartners(
+            out TVerificationResultCollection AVerificationResult)
+        {
+            string ErrorMsg = String.Empty;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+
+            List<Int64> PartnersToDelete = new List<Int64>();
+
+            TDBTransaction Transaction = new TDBTransaction();
+
+            DBAccess.ReadTransaction( ref Transaction,
+                delegate
+                {
+                    PPartnerTable partners = PPartnerAccess.LoadAll(Transaction);
+
+                    foreach (PPartnerRow row in partners.Rows)
+                    {
+                        if (row.PartnerClass == "FAMILY" || row.PartnerClass == "ORGANISATION")
+                        {
+                            if (!TPartnerWebConnector.CanPartnerBeDeleted(row.PartnerKey, out ErrorMsg, Transaction.DataBaseObj))
+                            {
+                                VerificationResult.Add(new TVerificationResult("error", ErrorMsg + " " + row.PartnerKey.ToString(), TResultSeverity.Resv_Critical));
+                                break;
+                            }
+
+                            PartnersToDelete.Add(row.PartnerKey);
+                        }
+                    }
+                });
+
+            if (VerificationResult.HasCriticalErrors)
+            {
+                AVerificationResult = new TVerificationResultCollection(VerificationResult);
+                return false;
+            }
+
+            Transaction = new TDBTransaction();
+            bool Submit = false;
+            DBAccess.WriteTransaction( ref Transaction,
+                ref Submit,
+                delegate
+                {
+                    foreach (Int64 PartnerKey in PartnersToDelete)
+                    {
+                        if (!TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult, Transaction.DataBaseObj))
+                        {
+                            break;
+                        }
+                    }
+
+                    if (!VerificationResult.HasCriticalErrors)
+                    {
+                        Submit = true;
+                    }
+                });
+
+            if (VerificationResult.HasCriticalErrors)
+            {
+                AVerificationResult = new TVerificationResultCollection(VerificationResult);
+                return false;
+            }
+
+            AVerificationResult = new TVerificationResultCollection();
+            return true;
+        }
+
         private static string FormatIBAN(string AIban)
         {
             AIban = AIban.Replace(" ", "");

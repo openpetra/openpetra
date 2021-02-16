@@ -633,6 +633,10 @@
         "importUserODS": "Import contacts from LibreOffice Calc file (*.ods)",
         "importUserXLSX": "Import contacts from MS Excel file (*.xlsx)",
         "help_url": "https://docs.openpetra.org/howtos/initial-contact-setup.html#import-your-existing-addresses",
+        "DeleteAllContacts": "Delete all Contacts",
+        "ask_delete_all": "You really want to delete ALL contacts?",
+        "delete_all_partner_success": "All contacts have been deleted.",
+        "delete_all_partners_fail": "No contacts were deleted.",
         "upload_partner_success": "Contacts have been imported successfully",
         "upload_partner_fail": "Contacts could not be imported"
     },
