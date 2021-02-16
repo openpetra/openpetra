@@ -707,8 +707,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     string BIC = String.Empty;
                     string BankName = String.Empty;
 
-                    // for german IBAN, validate IBAN, and calculate the BIC
-                    if (IBAN.StartsWith("DE") && !TSimplePartnerEditWebConnector.ValidateIBAN(IBAN, out BIC, out BankName, out VerificationResult))
+                    // validate IBAN, and calculate the BIC
+                    if (!TSimplePartnerEditWebConnector.ValidateIBAN(IBAN, out BIC, out BankName, out VerificationResult))
                     {
                         AVerificationResult.Add(VerificationResult[0]);
                         return false;
