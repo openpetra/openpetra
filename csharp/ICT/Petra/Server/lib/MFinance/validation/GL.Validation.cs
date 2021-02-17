@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -682,8 +682,6 @@ namespace Ict.Petra.Server.MFinance.Validation
                 {
                     VerifResultCollAddedCount++;
                 }
-
-                return VerifResultCollAddedCount == 0;
             }
 
             // Narrative must not be empty

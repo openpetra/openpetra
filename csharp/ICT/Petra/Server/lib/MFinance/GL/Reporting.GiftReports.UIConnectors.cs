@@ -4,7 +4,7 @@
 // @Authors:
 //       peters, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,9 +63,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 delegate
                 {
                     TSystemDefaults SystemDefaults = new TSystemDefaults(DbAdapter.FPrivateDatabaseObj);
-
-                    String CurrentDate = DateTime.Today.ToString(
-                        "yyyy-MM-dd");
 
                     string Query =
                         "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, "
@@ -312,10 +309,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                   " AND Gift.p_donor_key_n = " + APartnerKey
                                                   :
                                                   " AND GiftDetail.p_recipient_key_n = " + APartnerKey;
-                    String partnerKeyName = (AForDonor) ?
-                                            "DonorKey"
-                                            :
-                                            "RecipientKey";
 
                     string Query = "SELECT " +
                                    " SUM (" +
