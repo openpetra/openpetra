@@ -726,7 +726,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 bool consent_success = TDataHistoryWebConnector.RegisterChanges(AChanges, NeededChanges);
                 if (consent_success == false) {
-                    AVerificationResult.Add(new TVerificationResult("error", "consent_error", TResultSeverity.Resv_Critical));
+                    AVerificationResult.Add(new TVerificationResult("error", "consent_error", "consent_error", TResultSeverity.Resv_Critical));
                     return false;
                 }
             }
