@@ -39,7 +39,6 @@ using Ict.Petra.Server.MCommon.Validation;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Validation;
 using Ict.Petra.Server.MFinance.Validation;
-using Ict.Petra.Server.MCommon.DataReader.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MCommon.Cacheable;
