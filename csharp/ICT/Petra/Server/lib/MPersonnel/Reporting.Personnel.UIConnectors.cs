@@ -517,13 +517,6 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             String ASelection,
             bool AUseOrderBy = false)
         {
-            string date = "";
-
-            if (AParameters["param_currentstaffdate"].ToString() != String.Empty)
-            {
-                date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
-            }
-
             TDBTransaction Transaction = new TDBTransaction();
 
             DataTable PreviousExperience = new DataTable();
@@ -574,8 +567,6 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             DataTable PassportExpiryReport = new DataTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-
-            DataTable PreviousExperience = new DataTable();
 
             DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
@@ -657,8 +648,6 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             DataTable ProgressReport = new DataTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-
-            DataTable PreviousExperience = new DataTable();
 
             DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
