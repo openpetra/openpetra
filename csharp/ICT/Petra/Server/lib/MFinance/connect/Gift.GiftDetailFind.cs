@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -102,19 +102,6 @@ namespace Ict.Petra.Server.MFinance.Finance.UIConnectors
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
             return FGiftDetailFind.GetDataPagedResult(APage, APageSize, out ATotalRecords, out ATotalPages);
-        }
-
-        /// <summary>
-        /// Stops the query execution. This is intended to be called as an Event from FAsyncExecProgress.Cancel.
-        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
-        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
-        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
-        /// </remarks>
-        /// </summary>
-        public void StopSearch()
-        {
-            FGiftDetailFind.StopSearch();
         }
     }
 }

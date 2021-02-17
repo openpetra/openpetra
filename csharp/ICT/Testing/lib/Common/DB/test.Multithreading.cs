@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,6 @@ namespace Ict.Common.DB.Testing
             string TableName;
             DataSet TestDS = null;
             DataTable TestDT = null;
-            TDataAdapterCanceller TestDataAdapterCanceller;
 
             return () =>
                    {
@@ -154,7 +153,7 @@ namespace Ict.Common.DB.Testing
                                        TestDT = new DataTable(TableName);
 
                                        TestTransactionInstance.DataBaseObj.SelectUsingDataAdapter(Query, TestTransactionInstance,
-                                       ref TestDT, out TestDataAdapterCanceller);
+                                       ref TestDT);
 
                                        break;
 

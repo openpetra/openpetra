@@ -4,7 +4,7 @@
 // @Authors:
 //       peters, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -355,37 +355,6 @@ namespace Ict.Petra.Server.MFinance.GL
             InternalParameters = null;             // ensure this is GC'd
 
             return CustomWhereCriteria;
-        }
-
-        /// <summary>
-        /// Stops the query execution.
-        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
-        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
-        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
-        /// </remarks>
-        /// </summary>
-        public void StopSearch()
-        {
-            Thread StopQueryThread;
-
-            /* Start a separate Thread that should cancel the executing query
-             * (Microsoft recommends doing it this way!)
-             */
-            TLogging.LogAtLevel(7, "TGLTransactionFindUIConnector.StopSearch: Starting StopQuery thread...");
-
-            StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
-            StopQueryThread.Name = "GLTransactionFindStopQuery" + Guid.NewGuid().ToString();
-            StopQueryThread.Start();
-
-            /* It might take some time until the executing query is cancelled by the DB,
-             * but we consider it as done since the application can 'forget' about the
-             * result of the cancellation process (but beware of executing another query
-             * while the other is stopping - this leads to ADO.NET errors that state that
-             * a ADO.NET command is still executing!
-             */
-
-            TLogging.LogAtLevel(7, "TGLTransactionFindUIConnector.StopSearch: Query cancelled!");
         }
     }
 }

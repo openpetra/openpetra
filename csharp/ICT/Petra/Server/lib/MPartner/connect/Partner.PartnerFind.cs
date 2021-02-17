@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,22 +129,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public Int16 GetPageNumberContainingPartnerKey(Int64 APartnerKey, System.Int16 AStartPage, System.Int16 APageSize)
         {
             return FPartnerFind.GetPageNumberContainingPartnerKey(APartnerKey, AStartPage, APageSize);
-        }
-
-        /// <summary>
-        /// Stops the query execution.
-        ///
-        /// @comment It might take some time until the executing query is cancelled by
-        /// the DB, but this procedure returns immediately. The reason for this is that
-        /// we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of
-        /// executing another query while the other is stopping - this leads to ADO.NET
-        /// errors that state that a ADO.NET command is still executing!).
-        ///
-        /// </summary>
-        public void StopSearch()
-        {
-            FPartnerFind.StopSearch();
         }
 
         /// <summary>
