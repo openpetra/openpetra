@@ -880,21 +880,32 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string result = THTTPUtils.ReadWebsite(url);
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(result);
 
-            XmlNode IbanCheck = TXMLParser.GetChild(doc.DocumentElement, "iban");
-            if (IbanCheck.InnerText == "0")
+            try
             {
+                doc.LoadXml(result);
+
+                XmlNode IbanCheck = TXMLParser.GetChild(doc.DocumentElement, "iban");
+                if (IbanCheck.InnerText == "0")
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "The IBAN is invalid", "",
+                        "MaintainPartners.ErrInvalidIBAN", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                XmlNode BankName = TXMLParser.GetChild(doc.DocumentElement, "bankname");
+                XmlNode City = TXMLParser.GetChild(doc.DocumentElement, "city");
+                ABankName = BankName.InnerText + ", " + City.InnerText;
+                XmlNode BIC = TXMLParser.GetChild(doc.DocumentElement, "bic");
+                ABic = BIC.InnerText;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Error validating IBAN: " + AIban.Replace(" ", ""));
                 AVerificationResult.Add(new TVerificationResult("error", "The IBAN is invalid", "",
                     "MaintainPartners.ErrInvalidIBAN", TResultSeverity.Resv_Critical));
                 return false;
             }
-
-            XmlNode BankName = TXMLParser.GetChild(doc.DocumentElement, "bankname");
-            XmlNode City = TXMLParser.GetChild(doc.DocumentElement, "city");
-            ABankName = BankName.InnerText + ", " + City.InnerText;
-            XmlNode BIC = TXMLParser.GetChild(doc.DocumentElement, "bic");
-            ABic = BIC.InnerText;
 
             return true;
         }
