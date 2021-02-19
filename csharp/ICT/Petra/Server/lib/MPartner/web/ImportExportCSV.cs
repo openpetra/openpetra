@@ -233,6 +233,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             ValidateAddressCriteria(HasAddress, ValidAddress, HasContactDetail, HasIBAN, newLocation);
                             CreateConsent(r, ADateFormat, PartnerKey, "ConsentChannel", "ConsentWhen", "ConsentType", "ConsentPurpose", ref ResultDS, Transaction);
                         }
+
+                        if (ResultsCol.Count > 5)
+                        {
+                            break;
+                        }
                     }
                 });
 
