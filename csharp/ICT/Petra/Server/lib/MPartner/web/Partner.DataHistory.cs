@@ -170,7 +170,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
 
                     if (ADataType == MPartnerConstants.CONSENT_TYPE_ADDRESS)
                     {
-                        PLocationRow locationRow = PartnerDS.PLocation[0];
+                        // what about new contact?
+                        PLocationRow locationRow = null;
+
+                        if (PartnerDS.PLocation.Rows.Count > 0)
+                        {
+                            locationRow = PartnerDS.PLocation[0];
+                        }
+                        else
+                        {
+                            locationRow = PartnerDS.PLocation.NewRowTyped();
+                        }
+
                         PConsentHistoryRow row = Set.PConsentHistory.NewRowTyped();
                         row.EntryId = -1;
                         row.PartnerKey = APartnerKey;
