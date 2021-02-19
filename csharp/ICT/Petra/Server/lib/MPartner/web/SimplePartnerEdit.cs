@@ -899,7 +899,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 XmlNode BIC = TXMLParser.GetChild(doc.DocumentElement, "bic");
                 ABic = BIC.InnerText;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 TLogging.Log("Error validating IBAN: " + AIban.Replace(" ", ""));
                 AVerificationResult.Add(new TVerificationResult("error", "The IBAN is invalid", "",
