@@ -39,9 +39,12 @@ function UploadUserCSV(self) {
 	reader.onload = function (event) {
 		p = {'ACSVPartnerData': event.target.result, 'ADateFormat': "dmy", "ASeparator": ";"};
 
+		showPleaseWait();
+
 		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromCSVFile', p)
 		.then(function (result) {
 			result = JSON.parse(result.data.d);
+			hidePleaseWait();
 			if (result.result == true) {
 				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
@@ -50,6 +53,7 @@ function UploadUserCSV(self) {
 		})
 		.catch(error => {
 			//console.log(error.response)
+			hidePleaseWait();
 			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
 		});
 
@@ -75,9 +79,12 @@ function UploadUserODS(self) {
 	reader.onload = function (theFile) {
 		p = {'AODSPartnerData': theFile.target.result,};
 
+		showPleaseWait();
+
 		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromODSFile', p)
 		.then(function (result) {
 			result = JSON.parse(result.data.d);
+			hidePleaseWait();
 			if (result.result == true) {
 				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
@@ -86,6 +93,7 @@ function UploadUserODS(self) {
 		})
 		.catch(error => {
 			//console.log(error.response)
+			hidePleaseWait();
 			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
 		});
 
@@ -111,9 +119,12 @@ function UploadUserXLSX(self) {
 	reader.onload = function (theFile) {
 		p = {'AXLSXPartnerData': theFile.target.result};
 
+		showPleaseWait();
+
 		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromXLSXFile', p)
 		.then(function (result) {
 			result = JSON.parse(result.data.d);
+			hidePleaseWait();
 			if (result.result == true) {
 				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
@@ -122,6 +133,7 @@ function UploadUserXLSX(self) {
 		})
 		.catch(error => {
 			//console.log(error.response)
+			hidePleaseWait();
 			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
 		});
 
@@ -136,10 +148,13 @@ function DeleteAllContacts() {
 	let s = confirm( i18next.t('ImportPartners.ask_delete_all') );
 	if (!s) {return}
 
+	showPleaseWait();
+
 	p = {};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeleteAllPartners', p)
 	.then(function (result) {
 		result = JSON.parse(result.data.d);
+		hidePleaseWait();
 		if (result.result == true) {
 			display_message(i18next.t('ImportPartners.delete_all_partner_success'), "success");
 		} else {
@@ -148,6 +163,14 @@ function DeleteAllContacts() {
 	})
 	.catch(error => {
 		//console.log(error.response)
+		hidePleaseWait();
 		display_message(i18next.t('ImportPartners.delete_all_partners_fail'), "fail");
 	});
+}
+
+function showPleaseWait() {
+	$('#myModal').modal();
+}
+function hidePleaseWait() {
+	$('#myModal').modal('hide');
 }
