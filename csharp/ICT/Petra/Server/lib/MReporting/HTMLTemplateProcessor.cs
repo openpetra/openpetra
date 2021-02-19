@@ -22,15 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.MReporting;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
+
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.IO;
-using System.IO;
+using Ict.Petra.Shared.MReporting;
+
 using HtmlAgilityPack;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -403,6 +403,73 @@ namespace Ict.Petra.Server.MReporting
             return template;
         }
 
+        /// print simple reports, from one table using an HTML template file
+        public static HtmlDocument Table2Html(DataTable ATable, string ATemplateFilename, string AReportLanguage)
+        {
+            String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
+
+            if (File.Exists(PathCustomReports + Path.DirectorySeparatorChar + ATemplateFilename))
+            {
+                ATemplateFilename = PathCustomReports + Path.DirectorySeparatorChar + ATemplateFilename;
+            }
+            else
+            {
+                String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
+                ATemplateFilename = PathStandardReports + Path.DirectorySeparatorChar + ATemplateFilename;
+            }
+
+            if (!File.Exists(ATemplateFilename))
+            {
+                throw new Exception("Table2Html: Cannot find file " + ATemplateFilename);
+            }
+    
+            HtmlDocument HTMLDocument = new HtmlDocument();
+            string TemplateText = String.Empty;
+
+            using (StreamReader sr = new StreamReader(ATemplateFilename))
+            {
+                TemplateText = sr.ReadToEnd();
+            }
+
+            // TODO: #592: Use i18next on C# server side for translating labels on reports
+            // TemplateText = I18N.Translate(TemplateText, AReportLanguage);
+            
+            HTMLDocument.LoadHtml(TemplateText);
+
+            var RowTemplate = HTMLDocument.DocumentNode.SelectSingleNode("//div[@id='child_template']");
+
+            if (RowTemplate == null)
+            {
+                throw new Exception("Table2Html: cannot find node with id child_template");
+            }
+
+            var ParentNode = RowTemplate.ParentNode;
+
+            int countRow = 0;
+            foreach (DataRow row in ATable.Rows)
+            {
+                var NewHTMLRow = RowTemplate.Clone();
+                string RowId = "row" + countRow.ToString();
+                NewHTMLRow.SetAttributeValue("id", RowId);
+
+                string InnerHtml = NewHTMLRow.InnerHtml;
+                foreach (DataColumn c in ATable.Columns)
+                {
+                    InnerHtml = InnerHtml.Replace("{" + c.ColumnName + "}", row[c.ColumnName].ToString());
+                }
+
+                NewHTMLRow.InnerHtml = InnerHtml;
+
+                ParentNode.AppendChild(NewHTMLRow);
+
+                countRow++;
+            }
+
+            RowTemplate.Remove();
+
+            return HTMLDocument;
+        }
+
         /// <summary>
         /// Create an Excel file from the HTML
         /// </summary>
@@ -422,7 +489,6 @@ namespace Ict.Petra.Server.MReporting
             ICellStyle wsstyle_dateformat = xssWorkbook.CreateCellStyle();
             ICreationHelper createHelper = xssWorkbook.GetCreationHelper();
             wsstyle_dateformat.DataFormat = createHelper.CreateDataFormat().GetFormat("dd/mm/yyyy");
-
 
             // write the column headings
             var elements = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='column_headings']/div");
@@ -489,60 +555,5 @@ namespace Ict.Petra.Server.MReporting
             return xssWorkbook;
         }
 
-        /// <summary>
-        /// Create a PDF file from the HTML
-        /// </summary>
-        public static bool HTMLToPDF(HtmlDocument html, string AOutputPDFFilename)
-        {
-            // export HTML including the CSS to a single file.
-            string HTMLFile = TFileHelper.GetTempFileName(
-                "htmlreport",
-                ".html");
-
-            string CSSContent = String.Empty;
-
-            // ApplicationDirectory points to eg. /home/openpetra/server/bin, we want /home/openpetra/
-            string InstallPath = Path.GetFullPath(TAppSettingsManager.GetValue("ApplicationDirectory") + "/../../");
-
-            using (StreamReader sr = new StreamReader(InstallPath + "client/css/report.css"))
-            {
-                CSSContent = sr.ReadToEnd();
-            }
-
-            string BootstrapCSSContent = String.Empty;
-            using (StreamReader sr = new StreamReader(InstallPath + "bootstrap-4.0/bootstrap.min.css"))
-            {
-                BootstrapCSSContent = sr.ReadToEnd();
-            }
-
-            string BundledJSContent = string.Empty;
-            using (StreamReader sr = new StreamReader(InstallPath + "bootstrap-4.0/bootstrap.bundle.min.js"))
-            {
-                BundledJSContent = sr.ReadToEnd();
-            }
-
-
-            using (StreamWriter sw = new StreamWriter(HTMLFile))
-            {
-                string strhtml = html.DocumentNode.WriteTo().
-                    Replace("<link href=\"/css/report.css\" rel=\"stylesheet\">",
-                            "<style>" + 
-                            BootstrapCSSContent + Environment.NewLine +
-                            CSSContent + "</style>" + Environment.NewLine +
-                            "<script>" + BundledJSContent + "</script>");
-                sw.Write(strhtml);
-                sw.Close();
-            }
-
-            Process process = new Process();
-            process.StartInfo.FileName = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/local/bin/wkhtmltopdf");
-            process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
-            process.Start();
-            process.WaitForExit();
-
-            File.Delete(HTMLFile);
-
-            return true;
-        }
     }
 }

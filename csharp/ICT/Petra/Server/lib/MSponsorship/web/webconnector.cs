@@ -32,6 +32,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Printing;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -49,6 +50,9 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
+using Ict.Petra.Server.MReporting;
+
+using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MSponsorship.WebConnectors
 {
@@ -240,6 +244,39 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             db.CloseDBConnection();
 
             return result;
+        }
+
+        /// <summary>
+        /// find children using filters, and then print a list to PDF
+        /// </summary>
+        [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
+        public static string PrintChildren(
+            string AChildName,
+            string ADonorName,
+            bool AChildWithoutDonor,
+            string APartnerStatus,
+            string ASponsorshipStatus,
+            string ASponsorAdmin,
+            string ASortBy,
+            string AReportLanguage)
+        {
+            SponsorshipFindTDSSearchResultTable table = FindChildren(AChildName, ADonorName, AChildWithoutDonor, APartnerStatus, ASponsorshipStatus, ASponsorAdmin, ASortBy);
+
+            HtmlDocument HTMLDocument = HTMLTemplateProcessor.Table2Html(table, "Sponsorship/SponsoredChildrenList.html", AReportLanguage);
+
+            string PDFFile = TFileHelper.GetTempFileName(
+                "printchildrenlist",
+                ".pdf");
+
+            if (Html2Pdf.HTMLToPDF(HTMLDocument.DocumentNode.WriteTo(), PDFFile))
+            {
+                byte[] data = System.IO.File.ReadAllBytes(PDFFile);
+                string result = Convert.ToBase64String(data);
+                System.IO.File.Delete(PDFFile);
+                return result;
+            }
+
+            return String.Empty;
         }
 
         /// <summary>

@@ -329,7 +329,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         private static bool PrintToPDF(string AFilename, HtmlDocument AHTMLDocument)
         {
             // transform the HTML output to pdf file
-            HTMLTemplateProcessor.HTMLToPDF(AHTMLDocument, AFilename);
+            Html2Pdf.HTMLToPDF(AHTMLDocument.DocumentNode.WriteTo(), AFilename);
 
             return true;
         }
