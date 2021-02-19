@@ -122,7 +122,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             CriteriaRow.SortBy = ASortBy;
 
-            PartnerFind.PerformSearch(CriteriaData, true);
+            // call this in the same thread, without progress tracker.
+            bool UseDifferentThread = false;
+            PartnerFind.PerformSearch(CriteriaData, true, UseDifferentThread);
 
             Int32 TotalRecords;
             Int16 TotalPages;
@@ -159,7 +161,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             CriteriaRow.PartnerClass = "*";
             CriteriaRow.ExactPartnerKeyMatch = AExactMatch;
 
-            PartnerFind.PerformSearch(CriteriaData, true);
+            // call this in the same thread, without progress tracker.
+            bool UseDifferentThread = false;
+            PartnerFind.PerformSearch(CriteriaData, true, UseDifferentThread);
 
             // NOTE from AlanP - Dec 2015:
             // If CriteriaRow.ExactPartnerKeyMatch is false and the value of APartnerKey is, say, 0012345600 the search will return all partners between

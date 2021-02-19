@@ -336,6 +336,36 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
+        /// <summary>
+        /// Executes the query directly. not in a separate thread. without progress tracker.
+        /// </summary>
+        /// <param name="AContext">Context in which this quite generic Method gets called (e.g. 'Partner Find'). This is
+        /// optional but should be specified to aid in debugging as it gets logged in case Exceptions happen when the
+        /// DB Transaction is taken out and the Query gets executed.</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
+        /// <remarks>An instance of TAsyncFindParameters with set up Properties must exist before this procedure can get
+        /// called!
+        /// </remarks>
+        public void ExecuteQueryDirectly(string AContext = null, TDataBase ADataBase = null)
+        {
+            try
+            {
+                // need to initialize the database session
+                TDataBase db = DBAccess.Connect("ExecuteQuery", ADataBase);
+
+                // Create SQL statement and execute it to return all records
+                ExecuteFullQuery(AContext, db);
+
+                db.CloseDBConnection();
+            }
+            catch (Exception exp)
+            {
+                TLogging.Log(this.GetType().FullName + ".ExecuteQuery" +
+                    (AContext == null ? "" : " (Context: " + AContext + ")") + ": Exception occured: " + exp.ToString());
+            }
+        }
+
         private void ExecuteFullQuery(string AContext = null, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;

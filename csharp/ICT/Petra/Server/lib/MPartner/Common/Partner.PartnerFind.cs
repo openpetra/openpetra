@@ -74,7 +74,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// </summary>
         /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters.</param>
         /// <param name="ADetailedResults">Returns more (when true) or less (when false) columns.</param>
-        public void PerformSearch(DataTable ACriteriaData, bool ADetailedResults)
+        /// <param name="AUseDifferentThread">if true, a different thread is used. otherwise the call is made directly, without progress tracker.</param>
+        public void PerformSearch(DataTable ACriteriaData, bool ADetailedResults, bool AUseDifferentThread = true)
         {
             String CustomWhereCriteria;
             Hashtable ColumnNameMapping;
@@ -276,21 +277,28 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             string session = TSession.GetSessionID();
             string configfilename = TAppSettingsManager.ConfigFileName;
 
-            //
-            // Start the Find Thread
-            //
-            try
+            if (AUseDifferentThread)
             {
-                ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(configfilename, session, "Partner Find (by Partner Details)");
-                };
-                FFindThread = new Thread(myThreadStart);
-                FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
-                FFindThread.Start();
+                //
+                // Start the Find Thread
+                //
+                try
+                {
+                    ThreadStart myThreadStart = delegate {
+                        FPagedDataSetObject.ExecuteQuery(configfilename, session, "Partner Find (by Partner Details)");
+                    };
+                    FFindThread = new Thread(myThreadStart);
+                    FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
+                    FFindThread.Start();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
-            catch (Exception)
+            else
             {
-                throw;
+                FPagedDataSetObject.ExecuteQueryDirectly("Partner Find Directly (by Partner Details)");
             }
         }
 
