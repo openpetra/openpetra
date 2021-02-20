@@ -177,16 +177,8 @@ sendReminders() {
 }
 
 sendRemindersAll() {
-    count=1
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
-            count=$((count+1))
-            if [ $count -gt 30 ]; then
-                count=0
-                # we have an issue with too many connections to the database server
-                systemctl restart openpetra
-            fi 
-
             export OP_CUSTOMER=`basename $d`
             $THIS_SCRIPT reminder
         fi
@@ -380,15 +372,8 @@ updateall() {
 
     systemctl restart openpetra
 
-    count=1
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
-            count=$((count+1))
-            if [ $count -gt 30 ]; then
-                count=0
-                # we have an issue with too many connections to the database server
-                systemctl restart openpetra
-            fi 
             export OP_CUSTOMER=`basename $d`
             $THIS_SCRIPT upgradedb
         fi

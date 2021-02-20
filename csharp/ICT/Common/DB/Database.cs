@@ -34,6 +34,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Npgsql;
+using MySqlConnector;
 
 using Ict.Common;
 using Ict.Common.IO;
@@ -482,7 +483,19 @@ namespace Ict.Common.DB
                         TDBConnection.GetConnectionStringWithHiddenPwd(FConnectionString) + " " +
                         GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection());
 
-                    FSqlConnection.Open();
+                   try
+                    {
+                        FSqlConnection.Open();
+                    }
+                    catch (MySqlConnector.MySqlException)
+                    {
+                        // Possible cause: MySqlConnector.MySqlException (0x80004005): Too many connections
+                        // clear all pools, and then try again. see https://github.com/openpetra/openpetra/issues/557
+                        MySqlConnection.ClearAllPools();
+                        FSqlConnection.Open();
+                    }
+
+
                     FDataBaseRDBMS.InitConnection(FSqlConnection);
 
                     FThreadThatConnectionWasEstablishedOn = Thread.CurrentThread;
