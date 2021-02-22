@@ -30,7 +30,7 @@ There is an english forum at https://forum.openpetra.org, and for german speaker
 DEVELOPMENT SETUP
 -----------------
 
-These are the steps required to setup a development environment on CentOS7:
+These are the steps required to setup a development environment on CentOS, Fedora, Debian or Ubuntu:
 
 ```
 curl https://get.openpetra.org | bash -s devenv
