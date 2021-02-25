@@ -163,6 +163,8 @@
         "show_all_records": "Show all results",
         "sortby": "Sort by",
         "helpmanual": "See the manual",
+        "further_messages": "More messages",
+        "download_messages": "Download all messages",
         "upload": "Upload",
         "uploaderror": "The upload failed. Perhaps the file is too large?",
         "upload_success": "Upload successfull"

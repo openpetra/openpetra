@@ -163,6 +163,8 @@
         "show_all_records": "Alle Ergebnisse anzeigen",
         "sortby": "Sortieren nach",
         "helpmanual": "Zum Handbuch",
+        "further_messages": "Weitere Meldungen",
+        "download_messages": "Alle Meldungen herunterladen",
         "upload": "Hochladen",
         "uploaderror": "Das Hochladen hat nicht funktioniert. Ist die Datei zu groß?",
         "upload_success": "Hochladen erfolgreich"

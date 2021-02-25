@@ -23,14 +23,43 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+let DEFAULT_TIMEOUT = 5000;
+let latestTimeout = null;
+function toggle_pin_message(evt, m_id) {
+  evt.stopPropagation();
+  pin = (window.localStorage.getItem('pin_alert_message') === 'OFF');
+
+  if (pin) {
+    window.localStorage.setItem('pin_alert_message', "ON");
+    $('#msgtack').html('<i class="fas fa-thumbtack">');
+    clearTimeout(latestTimeout);
+  }
+  else {
+    window.localStorage.setItem('pin_alert_message', "OFF");
+    $('#msgtack').html('<i class="fas fa-history">');
+    latestTimeout = setTimeout(function () {
+      $('[message-id='+m_id+']').remove();
+    }, DEFAULT_TIMEOUT);
+  }
+}
+
 // a global message that generates messages in the upper middle of the screen, duh.
-function display_message(content, style_arguments = null, timeout = 5000) {
+function display_message(content, style_arguments = null, timeout = DEFAULT_TIMEOUT) {
   var display_space = $('#global_message_space');
   if (display_space.length == 0) {
     let x = $('<div id ="global_message_space" class="text-center" style="position:fixed;top:10vh;width:100%;z-index:5000;">');
     $('body').append(x);
   }
-  var message = $('<div id="message" class="text-center msg" style="width:50%;margin:5px auto;cursor:pointer;" onclick="$(this).closest(\'.msg\').remove()">');
+
+  let fullcontent = "";
+  if (content.includes("|MSGSEPARATOR|")) {
+    fullcontent = content.replace("|MSGSEPARATOR|", "").replaceAll("<br/>", "\n");
+    var blob = new Blob([fullcontent], {type : "text/plain"});
+    var url = URL.createObjectURL(blob);
+    content = content.substring(0, content.indexOf("|MSGSEPARATOR|")) + "[...] " + i18next.t("forms.further_messages") + "<br/><br><a href='" + url + "' download='messages.txt'>" + i18next.t("forms.download_messages") + "</a>";
+  }
+
+  var message = $('<div id="message" class="text-center msg" style="width:50%;margin:5px auto;cursor:pointer;position:relative;" onclick="$(this).closest(\'.msg\').remove()"></div>');
   message.addClass('display_message');
 
   if (style_arguments == null) {
@@ -44,6 +73,7 @@ function display_message(content, style_arguments = null, timeout = 5000) {
     }
     if (style_arguments == "fail") {
       message.addClass('display_message_fail');
+      timeout *= 2;
     }
   } else {
     // if 2nd arg is object we add each thing to style
@@ -52,18 +82,37 @@ function display_message(content, style_arguments = null, timeout = 5000) {
     }
   }
 
-  message.html(content);
-
   // need a random int to delete message
   var m_id = Math.floor(Math.random() * 100000);
+
+  if (window.localStorage.getItem('pin_alert_message') === 'ON') {
+      timeout = 0;
+  }
+
+  if (timeout) {
+    content +=
+      '<div id="msgtack" style="position:absolute;top:0px;right:20px;" onclick="toggle_pin_message(event, '+ m_id +');"><i class="fas fa-history"></i></div>';
+  }
+  else
+  {
+    content +=
+      '<div id="msgtack" style="position:absolute;top:0px;right:20px;" onclick="toggle_pin_message(event, '+ m_id +');"><i class="fas fa-thumbtack"></i></div>';
+  }
+
+  content +=
+    '<div id="msgclose" style="position:absolute;top:0px;right:4px;" onclick="$(this).closest(\'.msg\').remove()"><i class="fas fa-times"></i></div>';
+
+  message.html(content);
+
   message.attr('message-id', m_id);
 
   $('#global_message_space').append(message);
 
-  setTimeout(function () {
-    $('[message-id='+m_id+']').remove();
-  }, timeout);
-
+  if (timeout) {
+    latestTimeout = setTimeout(function () {
+      $('[message-id='+m_id+']').remove();
+    }, timeout);
+  }
 }
 
 function display_error(VerificationResult, LanguageNamespace = '', generalerror = 'errors.general') {
@@ -75,23 +124,31 @@ function display_error(VerificationResult, LanguageNamespace = '', generalerror 
     display_message( i18next.t(VerificationResult), "fail");
     return;
   }
-  let s = false;
+  let msgCount = 0;
+  let errormsg = "";
   for (error of VerificationResult) {
     if (error.code == "" && error.message == "") {
       continue;
     }
-    s = true;
+    msgCount += 1;
+    if (msgCount == 6) {
+      errormsg += "|MSGSEPARATOR|";
+    }
     if (error.code != "" && i18next.t(LanguageNamespace + "." + error.code) != LanguageNamespace + "." + error.code) {
-      display_message( i18next.t(LanguageNamespace + "." + error.code), "fail");
+      errormsg += i18next.t(LanguageNamespace + "." + error.code) + "<br/>";
     } else if (error.code != "" && i18next.t(error.code) != error.code) {
-      display_message( i18next.t(error.code), "fail");
+      errormsg += i18next.t(error.code) + "<br/>";
     } else {
-      display_message( error.message, "fail");
+      errormsg += error.message + "<br/>";
     }
   }
-  if (!s) {
+
+  if (msgCount == 0) {
     display_message( i18next.t(generalerror), 'fail');
+  } else {
+    display_message( errormsg, 'fail');
   }
+  
 }
 
 // splits words on _ and capitalize first letter each word
