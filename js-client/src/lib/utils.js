@@ -23,8 +23,8 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-let DEFAULT_TIMEOUT = 5000;
-let latestTimeout = null;
+var DEFAULT_TIMEOUT = 5000;
+var latestTimeout = null;
 function toggle_pin_message(evt, m_id) {
   evt.stopPropagation();
   pin = (window.localStorage.getItem('pin_alert_message') === 'OFF');
