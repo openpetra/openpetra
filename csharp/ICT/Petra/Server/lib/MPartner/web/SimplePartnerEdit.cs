@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -261,6 +261,31 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
+                        if (true)
+                        {
+                            PBankingDetailsAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                            PPartnerBankingDetailsAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                            PBankingDetailsUsageAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+
+                            foreach(PartnerEditTDSPBankingDetailsRow banking in MainDS.PBankingDetails.Rows)
+                            {
+                                PBankAccess.LoadByPrimaryKey(MainDS, banking.BankKey, Transaction);
+                                banking.Bic = MainDS.PBank[0].Bic;
+                                banking.BranchName = MainDS.PBank[0].BranchName;
+                                banking.Iban = FormatIBAN(banking.Iban);
+                                MainDS.PBank.Rows.Clear();
+                            }
+
+                            foreach (PartnerEditTDSPBankingDetailsRow bd in MainDS.PBankingDetails.Rows)
+                            {
+                                bd.MainAccount =
+                                    (MainDS.PBankingDetailsUsage.Rows.Find(
+                                         new object[] { APartnerKey, bd.BankingDetailsKey, MPartnerConstants.BANKINGUSAGETYPE_MAIN }) != null);
+                            }
+
+                            MainDS.PBankingDetailsUsage.Rows.Clear();
+                        }
+
                         PPartnerStatusAccess.LoadAll(MainDS, Transaction);
                         PTypeRow templateRow = MainDS.PType.NewRowTyped();
                         templateRow.SystemType = false;
@@ -321,10 +346,21 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string Dummy3, Dummy4, Dummy5;
             PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
 
-            // Now get the primary email and phone
-            PPartnerAttributeTable attributeTable = TContactDetailsAggregate.GetPartnersContactDetailAttributes(APartnerKey);
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            string PrimaryPhoneNumber = String.Empty;
+            string PrimaryEmailAddress = String.Empty;
 
-            Calculations.GetPrimaryEmailAndPrimaryPhone(attributeTable, out APrimaryPhoneNumber, out APrimaryEmailAddress);
+            DBAccess.ReadTransaction( ref ReadTransaction,
+                delegate
+                {
+                    // Now get the primary email and phone
+                    PPartnerAttributeTable attributeTable = TContactDetailsAggregate.GetPartnersContactDetailAttributes(APartnerKey);
+
+                    Calculations.GetPrimaryEmailAndPrimaryPhone(ReadTransaction, attributeTable, out PrimaryPhoneNumber, out PrimaryEmailAddress);
+                });
+
+            APrimaryPhoneNumber = PrimaryPhoneNumber;
+            APrimaryEmailAddress = PrimaryEmailAddress;
 
             return MainDS;
         }
@@ -690,7 +726,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 bool consent_success = TDataHistoryWebConnector.RegisterChanges(AChanges, NeededChanges);
                 if (consent_success == false) {
-                    AVerificationResult.Add(new TVerificationResult("error", "consent_error", TResultSeverity.Resv_Critical));
+                    AVerificationResult.Add(new TVerificationResult("error", "consent_error", "consent_error", TResultSeverity.Resv_Critical));
                     return false;
                 }
             }
@@ -716,6 +752,394 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
                 return false;
             }
+        }
+
+        /// <summary>
+        /// delete the partner
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool DeletePartner(Int64 APartnerKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            string ErrorMsg = String.Empty;
+
+            if (!TPartnerWebConnector.CanPartnerBeDeleted(APartnerKey, out ErrorMsg))
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(new TVerificationResult("error", ErrorMsg, TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            return TPartnerWebConnector.DeletePartner(APartnerKey, out AVerificationResult);
+        }
+
+        /// <summary>
+        /// delete all FAMILY and ORGANISATION partners. useful for initial import of contacts, trial and error.
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool DeleteAllPartners(
+            out TVerificationResultCollection AVerificationResult)
+        {
+            string ErrorMsg = String.Empty;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+
+            List<Int64> PartnersToDelete = new List<Int64>();
+
+            TDBTransaction Transaction = new TDBTransaction();
+
+            DBAccess.ReadTransaction( ref Transaction,
+                delegate
+                {
+                    PPartnerTable partners = PPartnerAccess.LoadAll(Transaction);
+
+                    foreach (PPartnerRow row in partners.Rows)
+                    {
+                        if (row.PartnerClass == "FAMILY" || row.PartnerClass == "ORGANISATION")
+                        {
+                            if (!TPartnerWebConnector.CanPartnerBeDeleted(row.PartnerKey, out ErrorMsg, Transaction.DataBaseObj))
+                            {
+                                VerificationResult.Add(new TVerificationResult("error", ErrorMsg + " " + row.PartnerKey.ToString(), TResultSeverity.Resv_Critical));
+                                break;
+                            }
+
+                            PartnersToDelete.Add(row.PartnerKey);
+                        }
+                    }
+                });
+
+            if (VerificationResult.HasCriticalErrors)
+            {
+                AVerificationResult = new TVerificationResultCollection(VerificationResult);
+                return false;
+            }
+
+            Transaction = new TDBTransaction();
+            bool Submit = false;
+            DBAccess.WriteTransaction( ref Transaction,
+                ref Submit,
+                delegate
+                {
+                    foreach (Int64 PartnerKey in PartnersToDelete)
+                    {
+                        if (!TPartnerWebConnector.DeletePartner(PartnerKey, out VerificationResult, Transaction.DataBaseObj))
+                        {
+                            break;
+                        }
+                    }
+
+                    if (!VerificationResult.HasCriticalErrors)
+                    {
+                        Submit = true;
+                    }
+                });
+
+            if (VerificationResult.HasCriticalErrors)
+            {
+                AVerificationResult = new TVerificationResultCollection(VerificationResult);
+                return false;
+            }
+
+            AVerificationResult = new TVerificationResultCollection();
+            return true;
+        }
+
+        private static string FormatIBAN(string AIban)
+        {
+            AIban = AIban.Replace(" ", "");
+            int count = 0;
+            string orig = AIban;
+            AIban = String.Empty;
+            while (count + 4 < orig.Length)
+            {
+                AIban += orig.Substring(count, 4) + " ";
+                count += 4;
+            }
+            return (AIban + orig.Substring(count)).Trim();
+        }
+
+        /// this will use an external web service to check the IBAN, and get the BIC and the name of the bank
+        [RequireModulePermission("PTNRUSER")]
+        public static bool ValidateIBAN(string AIban, out string ABic, out string ABankName,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            ABic = String.Empty;
+            ABankName = String.Empty;
+
+            if ((AIban == null) || (AIban.Trim() == String.Empty))
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "The IBAN is invalid", "",
+                    "MaintainPartners.ErrInvalidIBAN", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            string IBANCheckURL = TAppSettingsManager.GetValue("IBANCheck.Url", "https://kontocheck.solidcharity.com/?iban=");
+            string url = IBANCheckURL + AIban.Replace(" ", "");
+            string result = THTTPUtils.ReadWebsite(url);
+
+            XmlDocument doc = new XmlDocument();
+
+            try
+            {
+                doc.LoadXml(result);
+
+                XmlNode IbanCheck = TXMLParser.GetChild(doc.DocumentElement, "iban");
+                if (IbanCheck.InnerText == "0")
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "The IBAN is invalid", "",
+                        "MaintainPartners.ErrInvalidIBAN", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
+                XmlNode BankName = TXMLParser.GetChild(doc.DocumentElement, "bankname");
+                XmlNode City = TXMLParser.GetChild(doc.DocumentElement, "city");
+                ABankName = BankName.InnerText + ", " + City.InnerText;
+                XmlNode BIC = TXMLParser.GetChild(doc.DocumentElement, "bic");
+                ABic = BIC.InnerText;
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Error validating IBAN: " + AIban.Replace(" ", ""));
+                AVerificationResult.Add(new TVerificationResult("error", "The IBAN is invalid", "",
+                    "MaintainPartners.ErrInvalidIBAN", TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            return true;
+        }
+
+        /// Find or create a partner for the bank with the given BIC
+        [NoRemoting]
+        public static Int64 FindOrCreateBank(string ABIC, string ABankName)
+        {
+            Int64 PartnerKey = -1;
+            TDBTransaction Transaction = new TDBTransaction();
+
+            DBAccess.ReadTransaction( ref Transaction,
+                delegate
+                {
+                    string sql = "SELECT p_partner_key_n FROM PUB_p_bank WHERE p_bic_c = ?";
+
+                    OdbcParameter[] parameters = new OdbcParameter[1];
+                    parameters[0] = new OdbcParameter("bic", OdbcType.VarChar);
+                    parameters[0].Value = ABIC;
+
+                    DataTable result = Transaction.DataBaseObj.SelectDT(sql, "bank", Transaction, parameters);
+
+                    if (result.Rows.Count >= 1)
+                    {
+                        PartnerKey = Convert.ToInt64(result.Rows[0][0]);
+                    }
+                });
+
+            if (PartnerKey != -1)
+            {
+                return PartnerKey;
+            }
+
+            // we need to create a bank with this BIC
+            List<string> Subscriptions;
+            List<string> PartnerTypes;
+            string DefaultEmailAddress;
+            string DefaultPhoneMobile;
+            string DefaultPhoneLandline;
+
+            PartnerEditTDS MainDS = CreateNewPartner(MPartnerConstants.PARTNERCLASS_BANK,
+                out Subscriptions,
+                out PartnerTypes,
+                out DefaultEmailAddress,
+                out DefaultPhoneMobile,
+                out DefaultPhoneLandline);
+
+            PBankRow bankRow = MainDS.PBank[0];
+            bankRow.Bic = ABIC;
+            bankRow.BranchName = ABankName;
+
+            try
+            {
+                PartnerEditTDSAccess.SubmitChanges(MainDS);
+                return bankRow.PartnerKey;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// this will return the bank accounts of the partner
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool GetBankAccounts(Int64 APartnerKey, out PartnerEditTDSPBankingDetailsTable PBankingDetails)
+        {
+            List<string> Dummy1, Dummy2;
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+
+            PBankingDetails = new PartnerEditTDSPBankingDetailsTable(); // MainDS.PBankingDetails;
+            PBankingDetails = MainDS.PBankingDetails;
+
+            return true;
+        }
+
+        /// <summary>
+        /// this will create, save and delete a bank account
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool MaintainBankAccounts(
+            string action,
+            Int32 ABankingDetailsKey,
+            Int64 APartnerKey,
+            string AAccountName,
+            string AIban,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            List<string> Dummy1, Dummy2;
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+
+            AVerificationResult = new TVerificationResultCollection();
+
+            AIban = AIban.Replace(" ", "");
+            string BIC = String.Empty;
+            string BankName = String.Empty;
+            if ((action == "create" || action == "edit"))
+            {
+                // Validate IBAN, and calculate the BIC
+                if (!ValidateIBAN(AIban, out BIC, out BankName, out AVerificationResult))
+                {
+                    return false;
+                }
+            }
+
+            if (action == "create")
+            {
+                PartnerEditTDSPBankingDetailsRow row = MainDS.PBankingDetails.NewRowTyped();
+                row.BankingDetailsKey = -1;
+                row.BankingType = 0; // BANK ACCOUNT
+                row.AccountName = AAccountName;
+                row.Iban = AIban;
+                row.BankKey = FindOrCreateBank(BIC, BankName);
+                row.MainAccount = MainDS.PBankingDetails.Count == 0;
+                MainDS.PBankingDetails.Rows.Add(row);
+
+                PPartnerBankingDetailsRow pdrow = MainDS.PPartnerBankingDetails.NewRowTyped();
+                pdrow.PartnerKey = APartnerKey;
+                pdrow.BankingDetailsKey = -1;
+                MainDS.PPartnerBankingDetails.Rows.Add(pdrow);
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+            else if (action == "edit")
+            {
+                foreach (PartnerEditTDSPBankingDetailsRow row in MainDS.PBankingDetails.Rows)
+                {
+                    if (row.BankingDetailsKey == ABankingDetailsKey)
+                    {
+                        row.AccountName = AAccountName;
+                        row.Iban = AIban;
+                        row.BankKey = FindOrCreateBank(BIC, BankName);
+                    }
+                }
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                foreach (PPartnerBankingDetailsRow row in MainDS.PPartnerBankingDetails.Rows)
+                {
+                    if (row.BankingDetailsKey == ABankingDetailsKey)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                bool wasMainAccount = false;
+                PartnerEditTDSPBankingDetailsRow otherAccount = null;
+                foreach (PartnerEditTDSPBankingDetailsRow row in MainDS.PBankingDetails.Rows)
+                {
+                    if (row.BankingDetailsKey == ABankingDetailsKey)
+                    {
+                        if (!row.IsMainAccountNull())
+                        {
+                            wasMainAccount = row.MainAccount;
+                        }
+                        row.Delete();
+                    }
+                    else if (otherAccount == null) {
+                        otherAccount = row;
+                    }
+                }
+
+                // make another bank account the main account
+                if (wasMainAccount && (otherAccount != null)) {
+                    otherAccount.MainAccount = true;
+                }
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+            }
+
+            return false;
         }
     }
 }

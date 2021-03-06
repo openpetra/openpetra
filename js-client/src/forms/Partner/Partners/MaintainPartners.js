@@ -1,11 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
-//       Christopher Jäkel <cj@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//       Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -25,8 +25,13 @@
 
 var last_opened_entry_data = {};
 var data_changes_log = {};
+var PBankingDetails_Store = {}
 
 $('document').ready(function () {
+	MaintainPartners_Ready();
+});
+
+function MaintainPartners_Ready() {
 	load_preset();
 
 	if (window.location.href.endsWith('?NewFamily')) {
@@ -36,7 +41,7 @@ $('document').ready(function () {
 	} else {
 		display_list();
 	}
-});
+}
 
 function load_preset() {
 	var x = window.localStorage.getItem('MaintainPartners');
@@ -46,11 +51,17 @@ function load_preset() {
 	}
 }
 
-function display_list(source) {
+function display_list() {
 	var x = extract_data($('#tabfilter'));
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
 		data = JSON.parse(data.data.d);
+
+		if (data.ATotalRecords == -1) {
+			display_error( data.AVerificationResult, "MaintainPartners" );
+			return;
+		}
+
 		// on reload, clear content
 		$('#browse_container').html('');
 		for (item of data.result) {
@@ -166,7 +177,50 @@ function display_partner(parsed) {
 	m.find('.select_case').hide();
 	m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
 
+	m = display_bankaccounts(parsed.result.PPartner[0].p_partner_key_n, parsed.result.PBankingDetails, m);
+
 	myModal = ShowModal('partneredit' + parsed.result.PPartner[0].p_partner_key_n, m);
+}
+
+function display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
+	PBankingDetails_Store = {}
+	m.find('.bank_account_detail_col').html('');
+	if (PBankingDetails.length > 0) {
+		for (detail of PBankingDetails) {
+			detail['p_partner_key_n'] = p_partner_key_n;
+			let tpl_bank_account_detail = format_tpl( $('[phantom] .tpl_account_detail').clone(), detail);
+			m.find('.bank_account_detail_col').append(tpl_bank_account_detail);
+			PBankingDetails_Store[detail['p_banking_details_key_i']] = detail;
+		}
+	}
+
+	return m;
+}
+
+function new_bank_account(partnerkey, firstname, lastname) {
+	if (!allow_modal()) {return}
+	let x = {
+		p_partner_key_n: partnerkey,
+		p_account_name_c: (firstname + " " + lastname).trim(),
+		a_detail_number_i:  $("#Account" + partnerkey +" .tpl_account_detail").length + 1
+	};
+
+	let p = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), x);
+	$('#modal_space').append(p);
+	p.find('[edit-only]').hide();
+	p.find('[action]').val('create');
+	p.modal('show');
+};
+
+function edit_account(detail_key) {
+	if (!allow_modal()) {return}
+
+	let data = PBankingDetails_Store[detail_key];
+	let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), data);
+
+	$('#modal_space').append(tpl_edit_raw);
+	tpl_edit_raw.find('[action]').val('edit');
+	tpl_edit_raw.modal('show');
 }
 
 function save_entry(obj) {
@@ -232,7 +286,7 @@ function save_entry(obj) {
 			display_message(i18next.t('forms.saved'), "success");
 			display_list();
 		}
-		else if (parsed.AVerificationResult[0].errorcode == "consent_error") {
+		else if (parsed.AVerificationResult[0].code == "consent_error") {
 			// probably only the city or postcode was changed, but not the address
 			insert_consent(obj, 'address');
 		}
@@ -240,6 +294,89 @@ function save_entry(obj) {
 			display_error( parsed.AVerificationResult );
 		}
 	})
+}
+
+function delete_entry(obj) {
+	let modal = FindMyModal(obj)
+	var partnerkey = modal.find("[name=p_partner_key_n]").val();
+
+	let s = confirm( i18next.t('MaintainPartners.ask_delete_contact') );
+	if (!s) {return}
+
+	let r = {'APartnerKey': partnerkey}
+
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeletePartner', r).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			CloseModal(modal.attr('id'));
+			display_message(i18next.t('MaintainPartners.contact_was_deleted'), "success");
+			display_list();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	})
+}
+
+function updateBankAccounts(PartnerKey) {
+	// somehow the original window stays gray when we return from this modal.
+	$('.modal-backdrop').remove();
+	let m = $('#partneredit' + PartnerKey)
+
+	let payload = {}
+	payload['APartnerKey'] = PartnerKey;
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetBankAccounts', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_bankaccounts(PartnerKey, parsed.PBankingDetails, m);
+		}
+	});
+}
+
+function save_edit_bank_account(obj_modal) {
+	let obj = $(obj_modal).closest('.modal');
+	let mode = obj.find('[action]').val();
+
+	// extract information from a jquery object
+	let payload = translate_to_server( extract_data(obj) );
+	payload['action'] = mode;
+	if (payload['ABankingDetailsKey'] == '') payload['ABankingDetailsKey'] = -1;
+
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			obj.modal('hide');
+			updateBankAccounts(payload['APartnerKey']);
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+
+	});
+
+}
+
+function delete_bank_account(obj_modal) {
+
+	let s = confirm( i18next.t('MaintainPartners.ask_delete_bank_account') );
+	if (!s) {return}
+
+	let obj = $(obj_modal).closest('.modal');
+	let payload = translate_to_server( extract_data(obj) );
+	payload["action"] = "delete";
+
+	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+			obj.modal('hide');
+			updateBankAccounts(payload['APartnerKey']);
+		}
+		else if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+	});
 }
 
 function show_tab(tab_id) {
@@ -328,13 +465,11 @@ function open_history(HTMLButton) {
 		var types = [];
 
 		var DataTypeList = Temp.find("[data-types]");
-		var hasHistory = false;
 		for (var type of parsed.result) {
 			types.push(type);
 			let name = i18next.t('MaintainPartners.'+type);
 			let partner = partnerkey;
 			DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
-			hasHistory = true;
 		}
 
 		for (var type of Object.keys(data_changes_log)) {
@@ -342,13 +477,7 @@ function open_history(HTMLButton) {
 				let name = i18next.t('MaintainPartners.'+type);
 				let partner = partnerkey;
 				DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
-				hasHistory = true;
 			}
-		}
-
-		if (!hasHistory) {
-			display_error( "MaintainPartners.error_no_history" );
-			return;
 		}
 
 		modal = ShowModal('history' + partnerkey, Temp);

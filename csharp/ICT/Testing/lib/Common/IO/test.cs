@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,8 +35,10 @@ using System.IO;
 using System.Data;
 using Ict.Common;
 using Ict.Common.IO;
-using OfficeOpenXml;
 using ICSharpCode.SharpZipLib.Zip;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using NPOI.OpenXml4Net.OPC;
 
 namespace Ict.Common.IO.Testing
 {
@@ -426,91 +428,47 @@ namespace Ict.Common.IO.Testing
                 File.Delete(filename);
             }
 
-            using (ExcelPackage pck = new ExcelPackage())
+            using (FileStream sw = File.Create(filename))
             {
-                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                ISheet worksheet = workbook.CreateSheet("test");
 
-                worksheet.Cells["A1"].Value = "test1";
-                worksheet.Cells["B3"].Value = "test2";
-                worksheet.Cells["B7"].Value = "test2";
+                IRow wsrow = null;
+                ICell wscell = null;
+
+                wsrow = worksheet.CreateRow(1);
+                wscell = wsrow.CreateCell(1);
+                wscell.SetCellValue("test1");
+                wsrow = worksheet.CreateRow(3);
+                wscell = wsrow.CreateCell(2);
+                wscell.SetCellValue("test2");
+                wsrow = worksheet.CreateRow(7);
+                wscell = wsrow.CreateCell(2);
+                wscell.SetCellValue("test2");
 
                 TLogging.Log("writing to " + filename);
-
-                pck.SaveAs(new FileInfo(filename));
+                workbook.Write(sw);
+                sw.Close();
             }
 
-            // Set up an empty folder to unzip to
-            string unzipRoot = PathToTestData + "testUnzip";
-
-            if (Directory.Exists(unzipRoot))
+            // can we read the file?
+            using (var stream = new FileStream(filename, FileMode.Open))
             {
-                // Something left over from last time??
-                Directory.Delete(unzipRoot, true);
-                Thread.Sleep(1000);
+                stream.Position = 0;
+                Assert.IsInstanceOf(typeof(XSSFWorkbook), new XSSFWorkbook(stream), "cannot open excel file");
             }
 
-            Directory.CreateDirectory(unzipRoot);
-
-            // Unzip the Excel file
-            new ExcelPackage(new FileInfo(filename));
-            PackTools.Unzip(unzipRoot, filename);
-
-            FileInfo f = new FileInfo(unzipRoot + "/xl/sharedStrings.xml");
-            Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
-
-            Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
-
-            // Try to remove the folder that we unzipped to as part of clean-up
-            Thread.Sleep(1000);
-            try
+            // can we read the file?
+            using (var stream = new FileStream(filename, FileMode.Open))
             {
-                Directory.Delete(unzipRoot, true);
-            }
-            catch (Exception)
-            {
-            }
-            Thread.Sleep(500);
-        }
-
-        /// <summary>
-        /// test writing to an Excel file
-        /// </summary>
-        [Test]
-        public void TestExcelExportStream()
-        {
-            string filename = PathToTestData + "test.xlsx";
-
-            // display error messages in english
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-
-            if (File.Exists(filename))
-            {
-                File.Delete(filename);
-            }
-
-            // could also use: FileStream fs = new FileStream(filename, FileMode.Create)
-            // but we want to prove here that it works with a MemoryStream, for delivering the files over the web
-            using (StreamWriter sw = new StreamWriter(filename))
-            {
-                using (MemoryStream m = new MemoryStream())
-                {
-                    using (ExcelPackage pck = new ExcelPackage(m))
-                    {
-                        ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
-
-                        worksheet.Cells[1, 1].Value = "test1";
-                        worksheet.Cells["B3"].Value = "test2";
-                        worksheet.Cells["B7"].Value = "test2";
-
-                        pck.SaveAs(m);
-                    }
-
-                    TLogging.Log("writing to " + filename);
-
-                    m.WriteTo(sw.BaseStream);
-                    m.Close();
-                    sw.Close();
-                }
+                stream.Position = 0;
+                XSSFWorkbook workbook = new XSSFWorkbook(stream);
+                ISheet worksheet = workbook[0];
+                Assert.AreEqual("test", worksheet.SheetName, "get the first worksheet");
+                IRow row = worksheet.GetRow(1);
+                ICell cell = row.GetCell(1);
+                Assert.AreEqual("test1", cell.ToString(), "get the cell value");
+                //Assert.IsInstanceOf(typeof(XSSFWorkbook), new XSSFWorkbook(stream), "cannot open excel file");
             }
 
             // Set up an empty folder to unzip to
@@ -530,11 +488,6 @@ namespace Ict.Common.IO.Testing
 
             FileInfo f = new FileInfo(unzipRoot + "/xl/sharedStrings.xml");
             Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
-
-            // System.MethodAccessException : Attempt by security transparent method 'OfficeOpenXml.Utils.EncryptedPackageHandler.IsStorageFile(System.String)' to call native code
-            // through method 'OfficeOpenXml.Utils.EncryptedPackageHandler.StgIsStorageFile(System.String)' failed.
-            // Methods must be security critical or security safe-critical to call native code.
-            //Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
 
             // Try to remove the folder that we unzipped to as part of clean-up
             Thread.Sleep(1000);
@@ -559,14 +512,10 @@ namespace Ict.Common.IO.Testing
             // display error messages in english
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
 
-            using (MemoryStream ms = new MemoryStream())
+            TLogging.Log("reading " + filename);
+            using (FileStream fs = File.OpenRead(filename))
             {
-                using (FileStream fs = File.OpenRead(filename))
-                {
-                    fs.CopyTo(ms);
-                }
-
-                DataTable table = TCsv2Xml.ParseExcelStream2DataTable(ms, true);
+                DataTable table = TCsv2Xml.ParseExcelWorkbook2DataTable(fs, true);
 
                 Assert.AreEqual("test1", table.Columns[0].ColumnName, "name of first column");
                 Assert.AreEqual("1", table.Rows[0][0].ToString(), "value of first row, first column");

@@ -4,7 +4,7 @@
 // @Authors:
 //       Jakob Englert, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -265,7 +265,9 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         string APrimaryPhone = "";
                         string APrimaryEmailAddress = "";
                         string AFaxNumber = "";
-                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(ECPartnerKey,
+                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(
+                            Transaction,
+                            ECPartnerKey,
                             out APrimaryPhone, out APrimaryEmailAddress, out AFaxNumber);
                         object[] newContactDetails = { ECPartnerKey, APrimaryPhone, APrimaryEmailAddress, AFaxNumber };
                         ECContactDetails.Rows.Add(newContactDetails);
@@ -515,13 +517,6 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             String ASelection,
             bool AUseOrderBy = false)
         {
-            string date = "";
-
-            if (AParameters["param_currentstaffdate"].ToString() != String.Empty)
-            {
-                date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
-            }
-
             TDBTransaction Transaction = new TDBTransaction();
 
             DataTable PreviousExperience = new DataTable();
@@ -572,8 +567,6 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             DataTable PassportExpiryReport = new DataTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-
-            DataTable PreviousExperience = new DataTable();
 
             DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,
@@ -655,8 +648,6 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             DataTable ProgressReport = new DataTable();
 
             TDBTransaction Transaction = new TDBTransaction();
-
-            DataTable PreviousExperience = new DataTable();
 
             DbAdapter.FPrivateDatabaseObj.ReadTransaction(
                 ref Transaction,

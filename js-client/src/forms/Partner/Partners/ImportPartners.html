@@ -1,22 +1,43 @@
-<table id="toolbar">
-	<tr>
-		<td>
-			<button type="button" class="btn btn-primary" id="btnImportData" onclick="$('#fileUploadUserCSV').click()">{importUser}</button>
-		</td>
-	</tr>
-</table>
+<input type="file" id="fileUploadUserCSV" name="file" size="10" onchange="UploadUserCSV($(this))" style="visibility:hidden" accept=".csv,.txt"/>
+<input type="file" id="fileUploadUserODS" name="file" size="10" onchange="UploadUserODS($(this))" style="visibility:hidden" accept=".ods"/>
+<input type="file" id="fileUploadUserXLSX" name="file" size="10" onchange="UploadUserXLSX($(this))" style="visibility:hidden"  accept=".xlsx"/>
 
-<input type="file" id="fileUploadUserCSV" name="file" size="10" onchange="UploadUserCSV($(this))" style="visibility:hidden"/>
-
+<h1>{navigation.ImportPartners_label}</h1>
 <div class="container" id="info">
 	<div class="row">
-{examplefile}<br/><br/>
+		<a href="{help_url}" target="_blank" class="btn btn-primary">
+			<i class="fas fa-question"><span>&nbsp;{forms.helpmanual}</span></i>
+		</a>
 	</div>
 	<div class="row">
-<pre>
-"Partner Key";"Title";"FirstName";"FamilyName";"Street";"PostCode";"City";"Country";"Email";"Mobile";"Phone"
-"";Herr;Artur;Müller;"Wiesenstr. 8";"12345";"München";"DE";"mueller@gibts.net";0151-0000000000;01234-123123
-"";Herr und Frau;"Hans-Martin und Martina";"Meier";"Bäckerweg 3";"98765";"Frankfurt am Main";"DE";"meier@gibtsauch.net";;;
-</pre>
+		<button type="button" class="btn btn-primary" id="btnImportDataODS" onclick="$('#fileUploadUserODS').click()">{importUserODS}</button>
+	</div>
+	<div class="row">
+		<button type="button" class="btn btn-primary" id="btnImportDataXLSX" onclick="$('#fileUploadUserXLSX').click()">{importUserXLSX}</button>
+	</div>
+	<div class="row">
+		<button type="button" class="btn btn-secondary" id="btnImportData" onclick="$('#fileUploadUserCSV').click()">{importUser}</button>
+	</div>
+
+	<div class="row">
+		<br/><br/><br/>
+	</div>
+
+	<div class="row">
+		<button type="button" class="btn btn-danger" id="btnDeleteAllContacts" onclick="DeleteAllContacts()">{DeleteAllContacts}</button>
+	</div>
 </div>
-</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">{forms.PleaseWait}</h4>
+      </div>
+      <div class="modal-body center-block">
+        {forms.WaitInfo}
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

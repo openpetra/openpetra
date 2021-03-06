@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, timop
+//       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,18 +23,22 @@
 //
 using System;
 using System.Data;
-
+using Ict.Common.DB;
+using Ict.Common;
 using Ict.Common.Data;
-using Ict.Common.Verification;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Data;
 
-namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
+namespace Ict.Petra.Server.MSysMan.DBUpgrades
 {
-    public partial class TCommonDataReader
+    /// <summary>
+    /// Upgrade the database
+    /// </summary>
+    public static partial class TDBUpgrade
     {
-        //
-        // Put Methods for the validation of DataReader-managed DataTables in this code file.
-        //
+        /// Upgrade to version 2021-02
+        public static bool UpgradeDatabase202101_202102(TDataBase ADataBase)
+        {
+            // there are no changes to the database structure
+            return true;
+        }
     }
 }

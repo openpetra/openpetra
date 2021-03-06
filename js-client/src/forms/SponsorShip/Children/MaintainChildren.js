@@ -54,8 +54,7 @@ var MaintainChildren = new (class {
 
   filterShow() {
       // get infos from the filter and search with them
-      var filter = extract_data($("#tabfilter"));
-      this.show(filter);
+      this.show();
   }
 
   initRecurringGiftBatch() {
@@ -67,8 +66,9 @@ var MaintainChildren = new (class {
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_InitRecurringGiftBatchForSponsorship', param);
   }
 
-  show(filter={}) {
-    // get data from server and show them
+  getFilter() {
+
+    var filter = extract_data($("#tabfilter"));
 
     var req = {
       "AChildName": filter.ChildName ? filter.ChildName : "",
@@ -79,6 +79,13 @@ var MaintainChildren = new (class {
       "ASortBy": filter.ASortBy ? filter.ASortBy : "",
       "AChildWithoutDonor": filter.ChildWithoutDonor ? true : false,
     };
+
+    return req;
+  }
+
+  // get data from server and show them
+  show() {
+    var req = this.getFilter();
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_FindChildren', req).then(
       function (data) {
@@ -100,6 +107,26 @@ var MaintainChildren = new (class {
           List.append(Copy);
           $('#child'+entry['p_partner_key_n']).find('.collapse_col').append(view);
         }
+      }
+    );
+  }
+
+  // same as show, but return a PDF file
+  print() {
+    var req = this.getFilter();
+    req["AReportLanguage"] = currentLng();
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_PrintChildren', req).then(
+      function (data) {
+        var report = data.data.d;
+        var link = document.createElement("a");
+        link.style = "display: none";
+        link.href = 'data:application/pdf;base64,'+report;
+        link.download = i18next.t('MaintainChildren.children') + '.pdf';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        display_message( i18next.t("forms.printed_success"), "success");
       }
     );
   }

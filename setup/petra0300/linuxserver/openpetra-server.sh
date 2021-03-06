@@ -177,16 +177,8 @@ sendReminders() {
 }
 
 sendRemindersAll() {
-    count=1
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
-            count=$((count+1))
-            if [ $count -gt 30 ]; then
-                count=0
-                # we have an issue with too many connections to the database server
-                systemctl restart openpetra
-            fi 
-
             export OP_CUSTOMER=`basename $d`
             $THIS_SCRIPT reminder
         fi
@@ -246,7 +238,7 @@ mysqlrestore() {
     echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     cat $OpenPetraPath/db/createtables-MySQL.sql >> $OpenPetraPath/tmp/createtables-MySQL.sql
-    echo "CREATE USER '$OPENPETRA_DBUSER'@'localhost' IDENTIFIED BY '$OPENPETRA_DBPWD';" >> $OpenPetraPath/tmp/createtables-MySQL.sql
+    echo "CREATE USER IF NOT EXISTS '$OPENPETRA_DBUSER'@'localhost' IDENTIFIED BY '$OPENPETRA_DBPWD';" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@\`localhost\`" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createtables-MySQL.sql
     rm $OpenPetraPath/tmp/createtables-MySQL.sql
@@ -380,15 +372,8 @@ updateall() {
 
     systemctl restart openpetra
 
-    count=1
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
-            count=$((count+1))
-            if [ $count -gt 30 ]; then
-                count=0
-                # we have an issue with too many connections to the database server
-                systemctl restart openpetra
-            fi 
             export OP_CUSTOMER=`basename $d`
             $THIS_SCRIPT upgradedb
         fi

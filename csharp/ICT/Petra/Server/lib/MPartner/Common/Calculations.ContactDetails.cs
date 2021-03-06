@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Data;
 using System.Text;
 
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
@@ -35,6 +36,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -244,14 +246,18 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Gets the 'Primary E-Mail Address' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of the Partner whose 'Primary Email Address' should be determined.</param>
         /// <param name="APrimaryEmailAddress">The 'Primary Email Address' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got a 'Primary Email Address', otherwise false.</returns>
-        public static bool GetPrimaryEmailAddress(PPartnerAttributeTable APPartnerAttributeDT,
+        public static bool GetPrimaryEmailAddress(
+            TDBTransaction AReadTransaction,
+            PPartnerAttributeTable APPartnerAttributeDT,
             out string APrimaryEmailAddress)
         {
             TPartnersOverallContactSettings PrimaryContactAttributes = DeterminePrimaryOrWithinOrgSettingsForPartner(
+                AReadTransaction,
                 APPartnerAttributeDT, TOverallContSettingKind.ocskPrimaryEmailAddress);
 
             return GetPrimaryEmailAddress(PrimaryContactAttributes, out APrimaryEmailAddress);
@@ -283,14 +289,18 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Gets the 'Primary Phone Number' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of the Partner whose 'Primary Phone Number' should be determined.</param>
         /// <param name="APrimaryPhoneNumber">The 'Primary Phone Number' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got a 'Primary Phone Number', otherwise false.</returns>
-        public static bool GetPrimaryPhoneNumber(PPartnerAttributeTable APPartnerAttributeDT,
+        public static bool GetPrimaryPhoneNumber(
+            TDBTransaction AReadTransaction,
+            PPartnerAttributeTable APPartnerAttributeDT,
             out string APrimaryPhoneNumber)
         {
             TPartnersOverallContactSettings PrimaryContactAttributes = DeterminePrimaryOrWithinOrgSettingsForPartner(
+                AReadTransaction,
                 APPartnerAttributeDT, TOverallContSettingKind.ocskPrimaryPhoneNumber);
 
             return GetPrimaryPhoneNumber(PrimaryContactAttributes, out APrimaryPhoneNumber);
@@ -322,15 +332,19 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Gets the 'Within Organisation E-Mail Address' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of the Partner whose 'Within Organisation E-Mail Address' should be determined.</param>
         /// <param name="AWithinOrganisationEmailAddress">The 'Within Organisation E-Mail Address' if the Partner has got
         /// one, otherwise null.</param>
         /// <returns>True if the Partner has got a 'Within Organisation E-Mail Address', otherwise false.</returns>
-        public static bool GetWithinOrganisationEmailAddress(PPartnerAttributeTable APPartnerAttributeDT,
+        public static bool GetWithinOrganisationEmailAddress(
+            TDBTransaction AReadTransaction,
+            PPartnerAttributeTable APPartnerAttributeDT,
             out string AWithinOrganisationEmailAddress)
         {
             TPartnersOverallContactSettings PrimaryContactAttributes = DeterminePrimaryOrWithinOrgSettingsForPartner(
+                AReadTransaction,
                 APPartnerAttributeDT, TOverallContSettingKind.ocskEmailAddressWithinOrg);
 
             return GetWithinOrganisationEmailAddress(PrimaryContactAttributes, out AWithinOrganisationEmailAddress);
@@ -363,16 +377,20 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Gets the 'Primary Phone Number' and the 'Primary E-mail Address' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of the Partner whose 'Primary Phone Number' and 'Primary E-mail Address'should be determined.</param>
         /// <param name="APrimaryPhoneNumber">The 'Primary Phone Number' if the Partner has got one, otherwise null.</param>
         /// <param name="APrimaryEmailAddress">The 'Primary E-mail Address' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got at least one of the 'Primary E-mail Address' and the 'Primary Phone Number'
         /// Contact Details, otherwise false.</returns>
-        public static bool GetPrimaryEmailAndPrimaryPhone(PPartnerAttributeTable APPartnerAttributeDT,
+        public static bool GetPrimaryEmailAndPrimaryPhone(
+            TDBTransaction AReadTransaction,
+            PPartnerAttributeTable APPartnerAttributeDT,
             out string APrimaryPhoneNumber, out string APrimaryEmailAddress)
         {
             TPartnersOverallContactSettings PrimaryContactAttributes = DeterminePrimaryOrWithinOrgSettingsForPartner(
+                AReadTransaction,
                 APPartnerAttributeDT,
                 TOverallContSettingKind.ocskPrimaryPhoneNumber |
                 TOverallContSettingKind.ocskPrimaryEmailAddress);
@@ -415,6 +433,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Determines the 'Primary' and/or 'Within Organisation' setting(s) for the Partner whose PPartnerAttributes records
         /// are contained in <paramref name="APPartnerAttributeDT"/>.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of a given Partner. The DataTable must have a special DataColumn added that Method
         /// 'DeterminePartnerContactDetailAttributes' adds, hence that Method must be called before calling this Method.</param>
@@ -426,6 +445,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Current flag is false. It also returns null if no record was found that met what was asked for with
         /// <paramref name="AOverallContSettingKind"/>!</returns>
         public static TPartnersOverallContactSettings DeterminePrimaryOrWithinOrgSettingsForPartner(
+            TDBTransaction AReadTransaction,
             PPartnerAttributeTable APPartnerAttributeDT, TOverallContSettingKind AOverallContSettingKind)
         {
             TPartnersOverallContactSettings ReturnValue;
@@ -458,7 +478,9 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
-                ParsePartnerOvrlCS(APPartnerAttributeDT[0].PartnerKey, APPartnerAttributeDT, ref MockOverallContactSettings,
+                ParsePartnerOvrlCS(
+                    AReadTransaction,
+                    APPartnerAttributeDT[0].PartnerKey, APPartnerAttributeDT, ref MockOverallContactSettings,
                     ref ReturnValue, true, PrimaryIsAskedFor, WithinOrgIsAskedFor);
             }
 
@@ -468,7 +490,9 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
-                ParsePartnerOvrlCS(APPartnerAttributeDT[0].PartnerKey, APPartnerAttributeDT, ref MockOverallContactSettings,
+                ParsePartnerOvrlCS(
+                    AReadTransaction,
+                    APPartnerAttributeDT[0].PartnerKey, APPartnerAttributeDT, ref MockOverallContactSettings,
                     ref ReturnValue, false, PrimaryIsAskedFor, WithinOrgIsAskedFor);
             }
 
@@ -479,6 +503,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Determines the 'Primary' and/or 'Within Organisation' setting(s) for (each of) the Partner(s) contained in
         /// <paramref name="APPartnerAttributeDT"/>.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of a given Partner - or of MANY (!) Partners. The DataTable must have a special DataColumn added that
         /// Method 'DeterminePartnerContactDetailAttributes' adds, hence that Method must be called before calling this Method.
@@ -506,6 +531,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <paramref name="APartnerKey"/>. It also returns null if no record was found that met what was asked for with
         /// <paramref name="AOverallContSettingKind"/>!</returns>
         public static TOverallContactSettings DeterminePrimaryOrWithinOrgSettings(
+            TDBTransaction AReadTransaction,
             PPartnerAttributeTable APPartnerAttributeDT, TOverallContSettingKind AOverallContSettingKind,
             Int64 APartnerKey = -1)
         {
@@ -539,7 +565,9 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
-                ParsePartnerOvrlCS(APartnerKey, APPartnerAttributeDT, ref OverallContactSettings, ref MockPartnersOvrlCS,
+                ParsePartnerOvrlCS(
+                    AReadTransaction,
+                    APartnerKey, APPartnerAttributeDT, ref OverallContactSettings, ref MockPartnersOvrlCS,
                     true, PrimaryIsAskedFor, WithinOrgIsAskedFor);
             }
 
@@ -549,7 +577,9 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if ((AOverallContSettingKind & CheckFlags) != 0)
             {
-                ParsePartnerOvrlCS(APartnerKey, APPartnerAttributeDT, ref OverallContactSettings, ref MockPartnersOvrlCS,
+                ParsePartnerOvrlCS(
+                    AReadTransaction,
+                    APartnerKey, APPartnerAttributeDT, ref OverallContactSettings, ref MockPartnersOvrlCS,
                     false, PrimaryIsAskedFor, WithinOrgIsAskedFor);
             }
 
@@ -691,18 +721,21 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Determines the 'System Category' setting(s) for the Partner whose PPartnerAttributes records
         /// are contained in <paramref name="APartnerAttributeDT"/>.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of a given Partner. The DataTable must have a special DataColumn added that Method
         /// 'DeterminePartnerContactDetailAttributes' adds, hence that Method must be called before calling this Method.</param>
         /// <param name="AOverallContactSettings">Pass in an instance of <see cref="TOverallContactSettings" />.</param>
         /// <param name="AOverallContSettingKind">Specify the kind of Overall Contact Setting(s) that you want returned.
         /// Combine multiple ones with the binary OR operator ( | ).</param>
-        public static void DeterminePartnerSystemCategorySettings(PPartnerAttributeTable APartnerAttributeDT,
+        public static void DeterminePartnerSystemCategorySettings(
+            TDBTransaction AReadTransaction,
+            PPartnerAttributeTable APartnerAttributeDT,
             ref TPartnersOverallContactSettings AOverallContactSettings,
             TOverallContSettingKind AOverallContSettingKind)
         {
             DataView EligibleSystemCategoryAttributesDV = DeterminePartnerSystemCategoryAttributes(
-                APartnerAttributeDT, TSharedDataCache.TMPartner.GetSystemCategorySettingsConcatStr());
+                APartnerAttributeDT, GetSystemCategorySettingsConcatStr(AReadTransaction));
             PPartnerAttributeRow PartnerAttributeDR;
 
             for (int Counter = 0; Counter < EligibleSystemCategoryAttributesDV.Count; Counter++)
@@ -733,6 +766,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// into <paramref name="AOverallContactSettings" /> or into <paramref name="APartnersOvrlCS" /> - depending
         /// on which of the objects isn't null!
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="APartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of a given Partner - or of MANY (!) Partners. The DataTable must have a special DataColumn added that Method
@@ -750,7 +784,9 @@ namespace Ict.Petra.Server.MPartner.Common
         /// the 'DeterminePrimaryOrWithinOrgSettingsForPartner' or the 'DeterminePrimaryOrWithinOrgSettings' Method.
         /// If you want to call this Method from somewhere else, care must be taken in order for it to be doing the right thing!
         /// </remarks>
-        private static void ParsePartnerOvrlCS(Int64 APartnerKey, PPartnerAttributeTable APartnerAttributeDT,
+        private static void ParsePartnerOvrlCS(
+            TDBTransaction AReadTransaction,
+            Int64 APartnerKey, PPartnerAttributeTable APartnerAttributeDT,
             ref TOverallContactSettings AOverallContactSettings, ref TPartnersOverallContactSettings APartnersOvrlCS,
             bool AParseEmailAttributes, bool APrimaryIsAskedFor,
             bool AWithinOrgIsAskedFor)
@@ -762,8 +798,8 @@ namespace Ict.Petra.Server.MPartner.Common
             TPartnersOverallContactSettings PartnersOvrlCS = null;
             Int64 LastPartnerKey = -1;
 
-            PartnerAttributesConcatStr = AParseEmailAttributes ? TSharedDataCache.TMPartner.GetEmailPartnerAttributesConcatStr() :
-                                         TSharedDataCache.TMPartner.GetPhonePartnerAttributesConcatStr();
+            PartnerAttributesConcatStr = AParseEmailAttributes ? GetEmailPartnerAttributesConcatStr(AReadTransaction) :
+                                         GetPhonePartnerAttributesConcatStr(AReadTransaction);
 
             // Check if a certain Partner should be picked out from the PPartnerAttribute Table (useful if it holds rows for many Partners)
             PartnerKeyCriteria = APartnerKey != -1 ? PPartnerAttributeTable.GetPartnerKeyDBName() + " = " +
@@ -877,40 +913,6 @@ namespace Ict.Petra.Server.MPartner.Common
         #endregion
 
         /// <summary>
-        /// Determines the Partner Attribute Types that represent Partner Contact Types.
-        /// </summary>
-        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
-        /// <returns>DataTable containing only Partner Attribute Types that represent Partner Contact Types.</returns>
-        public static PPartnerAttributeTypeTable DeterminePartnerContactTypes(TGetCacheableDataTableFromCache ACacheRetriever)
-        {
-            var ReturnValue = new PPartnerAttributeTypeTable();
-            Type tmp;
-
-            ReturnValue.Merge(ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
-                        TCacheablePartnerTablesEnum.ContactTypeList), out tmp));
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Determines the Partner Attribute Types that represent System Categories.
-        /// </summary>
-        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
-        /// <returns>DataTable containing only Partner Attribute Types that represent System Categories.</returns>
-        public static PPartnerAttributeTypeTable DetermineSystemCategoryTypes(TGetCacheableDataTableFromCache ACacheRetriever)
-        {
-            var ReturnValue = new PPartnerAttributeTypeTable();
-            Type tmp;
-
-            ReturnValue.Merge(ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
-                        TCacheablePartnerTablesEnum.PartnerAttributeSystemCategoryTypeList), out tmp));
-
-            return ReturnValue;
-        }
-
-        /// <summary>
         /// Checks whether the DataRow passed in with <paramref name="APartnerAttributeRow"/> has got an
         /// AttributeType that constitutes a Phone Number (but not a Fax Number).
         /// </summary>
@@ -1018,69 +1020,14 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// Checks if <paramref name="APPartnerAttributeTypeDT"/> isn't null and if so, if it contains records.
-        /// If it is null, <paramref name="ACacheRetriever"/> is used to populate
-        /// <paramref name="APPartnerAttributeTypeDT"/> from a Cacheable DataTable.
-        /// </summary>
-        /// <param name="APPartnerAttributeTypeDT">A populated DataTable, or null. In the latter case,
-        /// <paramref name="ACacheRetriever"/> must not be null!</param>
-        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
-        /// <param name="APartnerContactTypes">Only relevant if <paramref name="APPartnerAttributeTypeDT"/> is null:
-        /// in that case it controls which Cacheable DataTable is fetched from the data cache.</param>
-        private static void GetPPartnerAttributeTable(ref PPartnerAttributeTypeTable APPartnerAttributeTypeDT,
-            TGetCacheableDataTableFromCache ACacheRetriever, bool APartnerContactTypes)
-        {
-            if (APPartnerAttributeTypeDT == null)
-            {
-                if (ACacheRetriever == null)
-                {
-                    throw new ArgumentNullException("ACacheRetriever", "ACacheRetriever must not be null if APPartnerAttributeTypeDT is null");
-                }
-
-                if (APartnerContactTypes)
-                {
-                    // As APPartnerAttributeTypeDT is null we add DataRows from the corresponding Cacheable DataTable
-                    APPartnerAttributeTypeDT = DeterminePartnerContactTypes(ACacheRetriever);
-                }
-                else
-                {
-                    // As APPartnerAttributeTypeDT is null we add DataRows from the corresponding Cacheable DataTable
-                    APPartnerAttributeTypeDT = DetermineSystemCategoryTypes(ACacheRetriever);
-                }
-
-                if (APPartnerAttributeTypeDT.Count == 0)
-                {
-                    throw new EOPAppException(
-                        "The DataTable passed in APPartnerAttributeTypeDT was null, so it got populated via the TDataCache. However, the returned Cacheable DataTable contains no records; for this Method to work that DataTable must hold records!");
-                }
-            }
-            else
-            {
-                if (APPartnerAttributeTypeDT.Count == 0)
-                {
-                    throw new EOPAppException(
-                        "The DataTable passed in APPartnerAttributeTypeDT contains no records; for this Method to work that DataTable must hold records!");
-                }
-            }
-        }
-
-        /// <summary>
         /// Determines which p_partner_attribute_type records have p_category_code_c 'Phone'
         /// </summary>
-        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds Contact Detail datarows, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
-        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an
-        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the
-        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <param name="APPartnerAttributeTypeDT">Pass an instance of <see cref="PPartnerAttributeTypeTable"/>
+        /// that holds Contact Detail datarows</param>
         /// <returns>DataView that is filtered so that it contains only p_partner_attribute_type records that have
         /// p_category_code_c 'Phone'.</returns>
-        public static DataView DeterminePhoneAttributes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
-            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        public static DataView DeterminePhoneAttributes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT)
         {
-            GetPPartnerAttributeTable(ref APPartnerAttributeTypeDT, ACacheRetriever, true);
-
             return new DataView(APPartnerAttributeTypeDT,
                 String.Format(PPartnerAttributeTypeTable.GetCategoryCodeDBName() + " = '{0}' AND " +
                     PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false",
@@ -1092,6 +1039,7 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Determines all p_partner_attribute records whose p_attribute_type points to a p_partner_attribute_type record
         /// that has p_category_code_c 'Phone' and returns the result.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of a given Partner - or of MANY (!) Partners.</param>
         /// <param name="AOnlyCurrentPhoneNumbers">Set to true to only return 'Valid' p_partner_attribute records
@@ -1100,7 +1048,9 @@ namespace Ict.Petra.Server.MPartner.Common
         /// p_attribute_type_c is 'Fax'.</param>
         /// <returns>DataView that is filtered so that it contains only p_partner_attribute records whose p_attribute_type
         /// points to a p_partner_attribute_type record that has p_category_code_c 'Phone'.</returns>
-        public static DataView DeterminePartnerPhoneNumbers(PPartnerAttributeTable APPartnerAttributeDT,
+        public static DataView DeterminePartnerPhoneNumbers(
+            TDBTransaction AReadTransaction,
+            PPartnerAttributeTable APPartnerAttributeDT,
             bool AOnlyCurrentPhoneNumbers, bool AIncludeFaxNumbers)
         {
             string CurrentCriteria;
@@ -1112,7 +1062,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 throw new ArgumentNullException("APPartnerAttributeDT", "APPartnerAttributeDT must not be null");
             }
 
-            PhoneAttributesConcatStr = TSharedDataCache.TMPartner.GetPhonePartnerAttributesConcatStr();
+            PhoneAttributesConcatStr = GetPhonePartnerAttributesConcatStr(AReadTransaction);
 
             if (PhoneAttributesConcatStr.Length > 0)
             {
@@ -1135,11 +1085,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Determines the (first) current 'Fax Number' that is contained in the p_partner_attribute records of a given Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of a given Partner.</param>
         /// <returns>The (first) current 'Fax Number' if it was found, otherwise null. Should there be several current
         /// 'Fax Numbers' then the one that comes first (in the order as seen by the user) will get returned.</returns>
-        public static string DeterminePartnerFaxNumber(PPartnerAttributeTable APPartnerAttributeDT)
+        public static string DeterminePartnerFaxNumber(TDBTransaction AReadTransaction, PPartnerAttributeTable APPartnerAttributeDT)
         {
             string PhoneAttributesConcatStr;
 
@@ -1180,7 +1131,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 }
             }
 
-            PhoneAttributesConcatStr = TSharedDataCache.TMPartner.GetPhonePartnerAttributesConcatStr();
+            PhoneAttributesConcatStr = GetPhonePartnerAttributesConcatStr(AReadTransaction);
 
             if (PhoneAttributesConcatStr.Length > 0)
             {
@@ -1205,24 +1156,16 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Determines all p_partner_attribute_type records that have p_category_code_c 'Phone' and returns the result.
         /// </summary>
-        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds datarows *that constitute Contact Details*, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
-        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an
-        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the
-        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
-        /// <remarks><em>PERFORMANCE NOTE</em>: The return value of this Method is CACHED in the Property
-        /// TSharedDataChache.TMPartner.GetPhonePartnerAttributesConcatStr! Use that Property rather than
-        /// calling this Method!!!</remarks>
+        /// <param name="APPartnerAttributeTypeDT">Pass an instance of <see cref="PPartnerAttributeTypeTable"/>
+        /// that holds datarows *that constitute Contact Details*</param>
         /// <returns>String that contains all p_partner_attribute_type records that have p_category_code_c 'Phone'.
         /// </returns>
-        public static string DeterminePhonePartnerAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
-            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        public static string DeterminePhonePartnerAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT)
         {
             string ReturnValue = String.Empty;
             string PhoneAttributesConcatStr = String.Empty;
 
-            DataView PhoneAttributesDV = DeterminePhoneAttributes(APPartnerAttributeTypeDT, ACacheRetriever);
+            DataView PhoneAttributesDV = DeterminePhoneAttributes(APPartnerAttributeTypeDT);
 
             for (int Counter = 0; Counter < PhoneAttributesDV.Count; Counter++)
             {
@@ -1240,19 +1183,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Determines which p_partner_attribute_type records are of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS'
         /// </summary>
-        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds Contact Detail datarows, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
-        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an
-        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the
-        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <param name="APPartnerAttributeTypeDT">Pass an instance of <see cref="PPartnerAttributeTypeTable"/>
+        /// that holds Contact Detail datarows</param>
         /// <returns>DataView that is filtered so that it contains only p_partner_attribute_type records are of
         /// p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS'.</returns>
-        public static DataView DetermineEmailAttributes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
-            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        public static DataView DetermineEmailAttributes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT)
         {
-            GetPPartnerAttributeTable(ref APPartnerAttributeTypeDT, ACacheRetriever, true);
-
             return new DataView(APPartnerAttributeTypeDT,
                 String.Format(PPartnerAttributeTypeTable.GetAttributeTypeValueKindDBName() + " = '{0}' AND " +
                     PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false",
@@ -1264,24 +1200,16 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Determines all p_partner_attribute_type records that are of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS' and
         /// returns the result.
         /// </summary>
-        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds datarows *that constitute Contact Details*, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
-        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an
-        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the
-        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
-        /// <remarks><em>PERFORMANCE NOTE</em>: The return value of this Method is CACHED in the Property
-        /// TSharedDataChache.TMPartner.GetEmailPartnerAttributesConcatStr! Use that Property rather than
-        /// calling this Method!!!</remarks>
+        /// <param name="APPartnerAttributeTypeDT">Pass an instance of <see cref="PPartnerAttributeTypeTable"/>
+        /// that holds datarows *that constitute Contact Details*</param>
         /// <returns>String that contains all p_partner_attribute_type records are of p_attribute_type_value_kind_c
         /// 'CONTACTDETAIL_EMAILADDRESS'.</returns>
-        public static string DetermineEmailPartnerAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
-            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        public static string DetermineEmailPartnerAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT)
         {
             string ReturnValue = String.Empty;
             string EmailAttributesConcatStr = String.Empty;
 
-            DataView EmailAttributesDV = DetermineEmailAttributes(APPartnerAttributeTypeDT, ACacheRetriever);
+            DataView EmailAttributesDV = DetermineEmailAttributes(APPartnerAttributeTypeDT);
 
             for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++)
             {
@@ -1300,13 +1228,16 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Determines all p_partner_attribute records whose p_attribute_type points to a p_partner_attribute_type record
         /// that is of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS' and returns the result.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail
         /// records of a given Partner - or of MANY (!) Partners.</param>
         /// <param name="AOnlyCurrentEmailAddresses">Set to true to only return 'Valid' p_partner_attribute records
         /// (i.e. p_partner_attribute records whose p_current_l Flag is set to true).</param>
         /// <returns>DataView that is filtered so that it contains only p_partner_attribute records whose p_attribute_type
         /// points to a p_partner_attribute_type record that is of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS'.</returns>
-        public static DataView DeterminePartnerEmailAddresses(PPartnerAttributeTable APPartnerAttributeDT,
+        public static DataView DeterminePartnerEmailAddresses(
+            TDBTransaction AReadTransaction,
+            PPartnerAttributeTable APPartnerAttributeDT,
             bool AOnlyCurrentEmailAddresses)
         {
             string CurrentCriteria;
@@ -1317,7 +1248,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 throw new ArgumentNullException("APPartnerAttributeDT", "APPartnerAttributeDT must not be null");
             }
 
-            EmailAttributesConcatStr = TSharedDataCache.TMPartner.GetEmailPartnerAttributesConcatStr();
+            EmailAttributesConcatStr = GetEmailPartnerAttributesConcatStr(AReadTransaction);
 
             if (EmailAttributesConcatStr.Length > 0)
             {
@@ -1336,68 +1267,88 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// Determines which p_partner_attribute_type records constitute Partner Contact Details.
+        /// Determines all p_partner_attribute_type records which constitute Partner Contact Details and returns the result.
         /// </summary>
-        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds datarows *that are part of a System Category*, or pass null. In the latter case,
-        /// <paramref name="ACacheRetriever"/> must not be null!</param>
-        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an
-        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the
-        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
-        /// <remarks><em>PERFORMANCE NOTE</em>: The return value of this Method is CACHED in the Property
-        /// TSharedDataChache.TMPartner.GetPartnerContactDetailAttributeTypesConcatStr! Use that Property rather than
-        /// calling this Method!!!</remarks>
-        /// <returns>String that contains all p_partner_attribute_type records which are part of a System Category.</returns>
-        public static string DeterminePartnerContactDetailAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
-            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        /// <returns>String that contains all p_partner_attribute_type records which constitute Partner Contact Details.
+        /// </returns>
+        public static string GetSystemCategorySettingsConcatStr(TDBTransaction AReadTransaction)
         {
-            string ReturnValue = String.Empty;
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
 
-            GetPPartnerAttributeTable(ref APPartnerAttributeTypeDT, ACacheRetriever, true);
+            template.SystemCategory = true;
 
-            for (int Counter = 0; Counter < APPartnerAttributeTypeDT.Count; Counter++)
-            {
-                ReturnValue += APPartnerAttributeTypeDT[Counter].AttributeType + "', '";
-            }
-
-            if (ReturnValue.Length > 0)
-            {
-                ReturnValue = "'" + ReturnValue.Substring(0, ReturnValue.Length - 3);
-            }
-
-            return ReturnValue;
+            return ConcatStrPartnerAttributeTypes(GetPartnerAttributeTypes(AReadTransaction, template));
         }
 
         /// <summary>
-        /// Determines which p_partner_attribute_type records are part of a System Category.
+        /// Determines all p_partner_attribute_type records that are of p_attribute_type_value_kind_c
+        /// 'CONTACTDETAIL_EMAILADDRESS' and returns the result.
         /// </summary>
-        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds datarows *that are part of a System Category*, or pass null. In the latter case,
-        /// <paramref name="ACacheRetriever"/> must not be null!</param>
-        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an
-        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
-        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the
-        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
-        /// <remarks><em>PERFORMANCE NOTE</em>: The return value of this Method is CACHED in the Property
-        /// TSharedDataChache.TMPartner.GetSystemCategorySettingsConcatStr! Use that Property rather than
-        /// calling this Method!!!</remarks>
-        /// <returns>String that contains all p_partner_attribute_type records which are part of a System Category.</returns>
-        public static string DetermineSystemCategoryAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
-            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        /// <returns>String that contains all p_partner_attribute_type records are of p_attribute_type_value_kind_c
+        /// 'CONTACTDETAIL_EMAILADDRESS'.</returns>
+        public static string GetEmailPartnerAttributesConcatStr(TDBTransaction AReadTransaction)
+        {
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
+
+            template.PartnerContactCategory = true;
+            template.SystemCategory = false;
+
+            return DetermineEmailPartnerAttributeTypes(GetPartnerAttributeTypes(AReadTransaction, template));
+        }
+
+        /// <summary>
+        /// Determines all p_partner_attribute_type records that have p_category_code_c 'Phone'.
+        /// </summary>
+        /// <returns>String that contains all p_partner_attribute_type records that have p_category_code_c 'Phone'.</returns>
+        public static string GetPhonePartnerAttributesConcatStr(TDBTransaction AReadTransaction)
+        {
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
+
+            template.PartnerContactCategory = true;
+            template.SystemCategory = false;
+
+            return DeterminePhonePartnerAttributeTypes(GetPartnerAttributeTypes(AReadTransaction, template));
+        }
+
+        /// <summary>
+        /// Determines all p_partner_attribute_type records which constitute Partner Contact Details and returns the result.
+        /// </summary>
+        /// <returns>String that contains all p_partner_attribute_type records which constitute Partner Contact Details.
+        /// </returns>
+        private static string GetPartnerContactDetailAttributeTypesConcatStr(TDBTransaction AReadTransaction)
+        {
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
+
+            template.PartnerContactCategory = true;
+            template.SystemCategory = false;
+
+            return ConcatStrPartnerAttributeTypes(GetPartnerAttributeTypes(AReadTransaction, template));
+        }
+
+        private static PPartnerAttributeTypeTable GetPartnerAttributeTypes(TDBTransaction AReadTransaction, PPartnerAttributeCategoryRow ATemplate)
+        {
+            PPartnerAttributeTypeTable PPartnerAttributeTypeDT =
+                PPartnerAttributeTypeAccess.LoadViaPPartnerAttributeCategoryTemplate(ATemplate, null, null, AReadTransaction,
+                    StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeTypeTable.GetTableDBName() + "." +
+                                                       PPartnerAttributeTypeTable.GetIndexDBName() + " ASC" }), 0, 0);
+
+            return PPartnerAttributeTypeDT;
+        }
+
+        private static string ConcatStrPartnerAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT)
         {
             string ReturnValue = String.Empty;
 
-            GetPPartnerAttributeTable(ref APPartnerAttributeTypeDT, ACacheRetriever, false);
-
             for (int Counter = 0; Counter < APPartnerAttributeTypeDT.Count; Counter++)
             {
-                ReturnValue += APPartnerAttributeTypeDT[Counter].AttributeType + "', '";
-            }
+                if (Counter == 0)
+                {
+                    ReturnValue = "'";
+                } else {
+                    ReturnValue += ", '";
+                }
 
-            if (ReturnValue.Length > 0)
-            {
-                ReturnValue = "'" + ReturnValue.Substring(0, ReturnValue.Length - 3);
+                ReturnValue += APPartnerAttributeTypeDT[Counter].AttributeType + "'";
             }
 
             return ReturnValue;
@@ -1410,10 +1361,10 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the p_partner_attribute
         /// records of a given Partner - or of MANY (!) Partners.</param>
         /// <param name="ASystemCategoriesConcatStr">This needs to be the return value of a call to Method
-        /// <see cref="DetermineSystemCategoryAttributeTypes"/>.</param>
+        /// <see cref="GetSystemCategorySettingsConcatStr"/>.</param>
         /// <returns>DataView that is filtered so that it contains only p_partner_attribute records whose p_attribute_type points
         /// to any p_partner_attribute_type record that is part of a System Category.</returns>
-        public static DataView DeterminePartnerSystemCategoryAttributes(PPartnerAttributeTable APPartnerAttributeDT,
+        private static DataView DeterminePartnerSystemCategoryAttributes(PPartnerAttributeTable APPartnerAttributeDT,
             string ASystemCategoriesConcatStr)
         {
             if (APPartnerAttributeDT == null)
@@ -1445,10 +1396,11 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Partner Attributes whose AttributeType is not a PartnerAttributeType whose PartnerAttributeCategory is a
         /// Partner Contact one PPartnerAttributeCategory.PartnerContactCategory Column holds 'false') aren't!
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APPartnerAttributeDT">Partner Attribute Table in which the Partner Contact Attributes
         /// should be determined.</param>
         /// <returns>Number of non-Partner Contact Attributes.</returns>
-        public static int DeterminePartnerContactDetailAttributes(PPartnerAttributeTable APPartnerAttributeDT)
+        public static int DeterminePartnerContactDetailAttributes(TDBTransaction AReadTransaction, PPartnerAttributeTable APPartnerAttributeDT)
         {
             string PartnerContactDetailAttributesConcatStr;
             DataView PartnerAttributeDV;
@@ -1467,7 +1419,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 return 0;
             }
 
-            PartnerContactDetailAttributesConcatStr = TSharedDataCache.TMPartner.GetPartnerContactDetailAttributeTypesConcatStr();
+            PartnerContactDetailAttributesConcatStr = GetPartnerContactDetailAttributeTypesConcatStr(AReadTransaction);
 
             PartnerAttributeDV = new DataView(APPartnerAttributeDT,
                 String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
@@ -1480,7 +1432,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 PartnerAttributeDV[Counter].Row[PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN] = true;
             }
 
-            return APPartnerAttributeDT.Rows.Count - PartnerAttributeDV.Count;;
+            return APPartnerAttributeDT.Rows.Count - PartnerAttributeDV.Count;
         }
 
         /// <summary>

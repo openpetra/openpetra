@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -405,8 +405,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TStdPartnerStatusCode PartnerStatusCode;
             bool ResultValue = false;
 
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
             ResultValue = true;
+
+            TVerificationResultCollection VerificationResult = null;
 
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = false;
@@ -424,14 +426,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(PRecentPartnersTable.GetTableDBName(),
                             PRecentPartnersTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerGraphicTable.GetTableDBName(),
                             PPartnerGraphicTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     /* Delete extract entries before possibly attempting to delete a  */
@@ -456,7 +458,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         // now delete the actual extract entries
                         ResultValue = DeleteEntries(MExtractTable.GetTableDBName(),
                             MExtractTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     // Delete Partner Location. If locations were only used by this partner then also delete location record.
@@ -489,7 +491,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         // now first delete the partner locations
                         ResultValue = DeleteEntries(PPartnerLocationTable.GetTableDBName(),
                             PPartnerLocationTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
 
                         // and now locations if they don't refer to any partners any longer
                         foreach (DataRow RowToDelete in LocationTableToDelete.Rows)
@@ -567,10 +569,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        // now first delete the partner banking details
+                        // delete the banking details usage for this partner
+                        ResultValue = DeleteEntries(PBankingDetailsUsageTable.GetTableDBName(),
+                            PBankingDetailsUsageTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction, out VerificationResult);
+
+                        // delete the partner banking details
                         ResultValue = DeleteEntries(PPartnerBankingDetailsTable.GetTableDBName(),
                             PPartnerBankingDetailsTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
 
                         // and now banking details if they don't refer to any partners any longer
                         foreach (DataRow RowToDelete in BankingDetailsTableToDelete.Rows)
@@ -584,35 +591,35 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(PPartnerTypeTable.GetTableDBName(),
                             PPartnerTypeTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerRelationshipTable.GetTableDBName(),
                             PPartnerRelationshipTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerRelationshipTable.GetTableDBName(),
                             PPartnerRelationshipTable.GetRelationKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PCustomisedGreetingTable.GetTableDBName(),
                             PCustomisedGreetingTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PSubscriptionTable.GetTableDBName(),
                             PSubscriptionTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     // delete reminders before contacts
@@ -620,7 +627,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(PPartnerReminderTable.GetTableDBName(),
                             PPartnerReminderTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     var partnerContacts = MPartner.Partner.WebConnectors.TContactsWebConnector.GetPartnerContactLogData(APartnerKey, db).PPartnerContact
@@ -667,7 +674,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(PPartnerContactTable.GetTableDBName(),
                             PPartnerContactTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     // Delete any would-be orphaned ContactLog records
@@ -683,7 +690,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(AEmailDestinationTable.GetTableDBName(),
                             AEmailDestinationTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
@@ -710,7 +717,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(PDataLabelValuePartnerTable.GetTableDBName(),
                             PDataLabelValuePartnerTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
@@ -731,49 +738,80 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(PmJobAssignmentTable.GetTableDBName(),
                             PmJobAssignmentTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PTaxTable.GetTableDBName(),
                             PTaxTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerInterestTable.GetTableDBName(),
                             PPartnerInterestTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerMergeTable.GetTableDBName(),
                             PPartnerMergeTable.GetMergeFromDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerMergeTable.GetTableDBName(),
                             PPartnerMergeTable.GetMergeToDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerGiftDestinationTable.GetTableDBName(),
                             PPartnerGiftDestinationTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
                     {
                         ResultValue = DeleteEntries(PPartnerCommentTable.GetTableDBName(),
                             PPartnerCommentTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction, out VerificationResult);
+                    }
+
+                    if (ResultValue)
+                    {
+                        PConsentHistoryTable ConsentHistoryTable = PConsentHistoryAccess.LoadViaPPartner(APartnerKey, Transaction);
+
+                        foreach (var row in ConsentHistoryTable.Rows)
+                        {
+                            PConsentHistoryRow r = (PConsentHistoryRow) row;
+
+                            try
+                            {
+                                // build sql statement for deletion
+                                string SqlStmt = "DELETE FROM " + PConsentHistoryPermissionTable.GetTableDBName() +
+                                          " WHERE " + PConsentHistoryPermissionTable.GetConsentHistoryEntryDBName() + " = '" + r.EntryId + "'";
+
+                                db.ExecuteNonQuery(SqlStmt, Transaction);
+                            }
+                            catch (Exception Exc)
+                            {
+                                TLogging.Log(
+                                    "An Exception occured during the deletion of " + PConsentHistoryPermissionTable.GetTableDBName() +
+                                    " while deleting a partner: " + Environment.NewLine + Exc.ToString());
+
+                                throw;
+                            }
+                        }
+
+                        ResultValue = DeleteEntries(PConsentHistoryTable.GetTableDBName(),
+                            PConsentHistoryTable.GetPartnerKeyDBName(),
+                            APartnerKey, Transaction, out VerificationResult);
                     }
 
                     if (ResultValue)
@@ -796,31 +834,31 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         switch (PartnerClass)
                         {
                             case TPartnerClass.FAMILY:
-                                ResultValue = DeleteFamily(APartnerKey, Transaction);
+                                ResultValue = DeleteFamily(APartnerKey, Transaction, out VerificationResult);
                                 break;
 
                             case TPartnerClass.PERSON:
-                                ResultValue = DeletePerson(APartnerKey, Transaction);
+                                ResultValue = DeletePerson(APartnerKey, Transaction, out VerificationResult);
                                 break;
 
                             case TPartnerClass.UNIT:
-                                ResultValue = DeleteUnit(APartnerKey, Transaction);
+                                ResultValue = DeleteUnit(APartnerKey, Transaction, out VerificationResult);
                                 break;
 
                             case TPartnerClass.ORGANISATION:
-                                ResultValue = DeleteOrganisation(APartnerKey, Transaction);
+                                ResultValue = DeleteOrganisation(APartnerKey, Transaction, out VerificationResult);
                                 break;
 
                             case TPartnerClass.CHURCH:
-                                ResultValue = DeleteChurch(APartnerKey, Transaction);
+                                ResultValue = DeleteChurch(APartnerKey, Transaction, out VerificationResult);
                                 break;
 
                             case TPartnerClass.BANK:
-                                ResultValue = DeleteBank(APartnerKey, Transaction);
+                                ResultValue = DeleteBank(APartnerKey, Transaction, out VerificationResult);
                                 break;
 
                             case TPartnerClass.VENUE:
-                                ResultValue = DeleteVenue(APartnerKey, Transaction);
+                                ResultValue = DeleteVenue(APartnerKey, Transaction, out VerificationResult);
                                 break;
 
                             default:
@@ -833,11 +871,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         ResultValue = DeleteEntries(PPartnerTable.GetTableDBName(),
                             PPartnerTable.GetPartnerKeyDBName(),
-                            APartnerKey, Transaction);
+                            APartnerKey, Transaction,
+                            out VerificationResult);
 
                         SubmissionOK = true;
                     }
                 });
+
+            if (VerificationResult != null)
+            {
+                AVerificationResult = new TVerificationResultCollection(VerificationResult);
+            }
 
             return ResultValue;
         }
@@ -1237,11 +1281,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="APartnerKeyColumnName"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if partner can be deleted</returns>
         [RequireModulePermission("PTNRUSER")]
-        private static bool DeleteEntries(String ATableName, String APartnerKeyColumnName, Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeleteEntries(String ATableName, String APartnerKeyColumnName, Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
+            AVerificationResult = null;
 
             string SqlStmt;
 
@@ -1255,9 +1302,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             catch (Exception Exc)
             {
-                TLogging.Log(
-                    "Problem during deletion of " + ATableName + "." + APartnerKeyColumnName + " while deleting a partner: " + Environment.NewLine +
-                    Exc.ToString());
+                string ErrorMsg = "Problem during deletion of " + ATableName + "." + APartnerKeyColumnName + " while deleting a partner: " + Exc.Message;
+
+                if (Exc.InnerException != null)
+                {
+                    ErrorMsg += Exc.InnerException.Message;
+                }
+
+                TLogging.Log(ErrorMsg + Environment.NewLine + Exc.ToString());
+
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(new TVerificationResult("error", ErrorMsg, TResultSeverity.Resv_Critical));
 
                 ResultValue = false;
             }
@@ -1306,9 +1361,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if deletion failed</returns>
         [RequireModulePermission("PTNRUSER")]
-        private static bool DeleteFamily(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeleteFamily(Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
 
@@ -1316,7 +1373,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             ResultValue = DeleteEntries(PFamilyTable.GetTableDBName(),
                 PFamilyTable.GetPartnerKeyDBName(),
-                APartnerKey, ATransaction);
+                APartnerKey, ATransaction, out AVerificationResult);
 
             return ResultValue;
         }
@@ -1326,11 +1383,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if deletion failed</returns>
         [RequireModulePermission("PERSONNEL")]
-        private static bool DeletePerson(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeletePerson(Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
+            AVerificationResult = null;
 
             if (ResultValue)
             {
@@ -1343,35 +1403,35 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = DeleteEntries(PDataLabelValueApplicationTable.GetTableDBName(),
                     PDataLabelValueApplicationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmApplicationStatusHistoryTable.GetTableDBName(),
                     PmApplicationStatusHistoryTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmYearProgramApplicationTable.GetTableDBName(),
                     PmYearProgramApplicationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmShortTermApplicationTable.GetTableDBName(),
                     PmShortTermApplicationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmGeneralApplicationTable.GetTableDBName(),
                     PmGeneralApplicationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             /* pm_document - delete prevented by CanPersonPartnerBeDeleted */
@@ -1380,63 +1440,63 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = DeleteEntries(PmPassportDetailsTable.GetTableDBName(),
                     PmPassportDetailsTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmPersonLanguageTable.GetTableDBName(),
                     PmPersonLanguageTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmPastExperienceTable.GetTableDBName(),
                     PmPastExperienceTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmPersonAbilityTable.GetTableDBName(),
                     PmPersonAbilityTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmPersonSkillTable.GetTableDBName(),
                     PmPersonSkillTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmPersonQualificationTable.GetTableDBName(),
                     PmPersonQualificationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmPersonalDataTable.GetTableDBName(),
                     PmPersonalDataTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmPersonEvaluationTable.GetTableDBName(),
                     PmPersonEvaluationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PmSpecialNeedTable.GetTableDBName(),
                     PmSpecialNeedTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             /* pm_staff_data: referenced by p_partner_field_of_service */
@@ -1465,7 +1525,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = DeleteEntries(PPersonTable.GetTableDBName(),
                     PPersonTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             return ResultValue;
@@ -1476,17 +1536,20 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if deletion failed</returns>
         [RequireModulePermission("PTNRUSER")]
-        private static bool DeleteUnit(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeleteUnit(Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
+            AVerificationResult = null;
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(UmUnitStructureTable.GetTableDBName(),
                     UmUnitStructureTable.GetChildUnitKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             /* p_family - delete prevented by CanUnitPartnerBeDeleted */
@@ -1501,35 +1564,35 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = DeleteEntries(UmUnitAbilityTable.GetTableDBName(),
                     UmUnitAbilityTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(UmUnitLanguageTable.GetTableDBName(),
                     UmUnitLanguageTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(UmUnitCostTable.GetTableDBName(),
                     UmUnitCostTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(UmUnitEvaluationTable.GetTableDBName(),
                     UmUnitEvaluationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PPartnerSetPartnerTable.GetTableDBName(),
                     PPartnerSetPartnerTable.GetPartnerSetUnitKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             /* pc_conference  - delete prevented by CanUnitPartnerBeDeleted */
@@ -1545,7 +1608,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = DeleteEntries(PUnitTable.GetTableDBName(),
                     PUnitTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             return ResultValue;
@@ -1556,39 +1619,42 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if deletion failed</returns>
         [RequireModulePermission("PTNRUSER")]
-        private static bool DeleteOrganisation(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeleteOrganisation(Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
+            AVerificationResult = null;
 
             // delete foundation related records: deadline, proposal detail, proposal, foundation
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PFoundationDeadlineTable.GetTableDBName(),
                     PFoundationDeadlineTable.GetFoundationPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PFoundationProposalDetailTable.GetTableDBName(),
                     PFoundationProposalDetailTable.GetFoundationPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PFoundationProposalTable.GetTableDBName(),
                     PFoundationProposalTable.GetFoundationPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PFoundationTable.GetTableDBName(),
                     PFoundationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             // finally delete p_organisation record itself
@@ -1596,7 +1662,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = DeleteEntries(POrganisationTable.GetTableDBName(),
                     POrganisationTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             return ResultValue;
@@ -1607,17 +1673,20 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if deletion failed</returns>
         [RequireModulePermission("PTNRUSER")]
-        private static bool DeleteChurch(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeleteChurch(Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
+            AVerificationResult = null;
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PChurchTable.GetTableDBName(),
                     PChurchTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             return ResultValue;
@@ -1628,11 +1697,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if deletion failed</returns>
         [RequireModulePermission("PTNRUSER")]
-        private static bool DeleteBank(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeleteBank(Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
+            AVerificationResult = null;
 
             /* p_banking_details - delete not allowed by CanBankPartnerBeDeleted */
 
@@ -1640,7 +1712,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = DeleteEntries(PBankTable.GetTableDBName(),
                     PBankTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             return ResultValue;
@@ -1651,24 +1723,27 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>true if deletion failed</returns>
         [RequireModulePermission("PTNRUSER")]
-        private static bool DeleteVenue(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static bool DeleteVenue(Int64 APartnerKey, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
             Boolean ResultValue = true;
+            AVerificationResult = null;
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PcConferenceVenueTable.GetTableDBName(),
                     PcConferenceVenueTable.GetVenueKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             if (ResultValue)
             {
                 ResultValue = DeleteEntries(PVenueTable.GetTableDBName(),
                     PVenueTable.GetPartnerKeyDBName(),
-                    APartnerKey, ATransaction);
+                    APartnerKey, ATransaction, out AVerificationResult);
             }
 
             return ResultValue;

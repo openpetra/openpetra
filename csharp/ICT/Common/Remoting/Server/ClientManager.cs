@@ -789,6 +789,11 @@ namespace Ict.Common.Remoting.Server
             finally
             {
 // TODORemoting               Monitor.Exit(UConnectClientMonitor);
+
+                if ((ADataBase == null) && (DBConnectionObj != null))
+                {
+                    DBConnectionObj.CloseDBConnection();
+                }
             }
 
             ConnectedClient.StartSession();

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -660,7 +660,8 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             // Now get any additional phone numbers that are current
             string moreMobileNumbers, moreLandlineNumbers;
-            TContactDetailsAggregate.GetPartnersAdditionalPhoneNumbers(APartnerKey, out moreMobileNumbers, out moreLandlineNumbers);
+            TContactDetailsAggregate.GetPartnersAdditionalPhoneNumbers(situation.GetDatabaseConnection().Transaction,
+                APartnerKey, out moreMobileNumbers, out moreLandlineNumbers);
 
             // Add Calculation Parameter for 'Primary Email Address' (String.Empty is supplied if the Partner hasn't got one)
             situation.GetParameters().AddCalculationParameter("EmailAddress",

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,17 +22,18 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.MReporting;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
+
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.IO;
-using System.IO;
-using OfficeOpenXml;
+using Ict.Petra.Shared.MReporting;
+
 using HtmlAgilityPack;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Ict.Petra.Server.MReporting
 {
@@ -402,23 +403,103 @@ namespace Ict.Petra.Server.MReporting
             return template;
         }
 
-        /// <summary>
-        /// Create a Calc file from the HTML
-        /// </summary>
-        public static ExcelPackage HTMLToCalc(HtmlDocument html)
+        /// print simple reports, from one table using an HTML template file
+        public static HtmlDocument Table2Html(DataTable ATable, string ATemplateFilename, string AReportLanguage)
         {
-            ExcelPackage pck = new ExcelPackage();
+            String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
 
-            ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
+            if (File.Exists(PathCustomReports + Path.DirectorySeparatorChar + ATemplateFilename))
+            {
+                ATemplateFilename = PathCustomReports + Path.DirectorySeparatorChar + ATemplateFilename;
+            }
+            else
+            {
+                String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
+                ATemplateFilename = PathStandardReports + Path.DirectorySeparatorChar + ATemplateFilename;
+            }
+
+            if (!File.Exists(ATemplateFilename))
+            {
+                throw new Exception("Table2Html: Cannot find file " + ATemplateFilename);
+            }
+    
+            HtmlDocument HTMLDocument = new HtmlDocument();
+            string TemplateText = String.Empty;
+
+            using (StreamReader sr = new StreamReader(ATemplateFilename))
+            {
+                TemplateText = sr.ReadToEnd();
+            }
+
+            // TODO: #592: Use i18next on C# server side for translating labels on reports
+            // TemplateText = I18N.Translate(TemplateText, AReportLanguage);
+            
+            HTMLDocument.LoadHtml(TemplateText);
+
+            var RowTemplate = HTMLDocument.DocumentNode.SelectSingleNode("//div[@id='child_template']");
+
+            if (RowTemplate == null)
+            {
+                throw new Exception("Table2Html: cannot find node with id child_template");
+            }
+
+            var ParentNode = RowTemplate.ParentNode;
+
+            int countRow = 0;
+            foreach (DataRow row in ATable.Rows)
+            {
+                var NewHTMLRow = RowTemplate.Clone();
+                string RowId = "row" + countRow.ToString();
+                NewHTMLRow.SetAttributeValue("id", RowId);
+
+                string InnerHtml = NewHTMLRow.InnerHtml;
+                foreach (DataColumn c in ATable.Columns)
+                {
+                    InnerHtml = InnerHtml.Replace("{" + c.ColumnName + "}", row[c.ColumnName].ToString());
+                }
+
+                NewHTMLRow.InnerHtml = InnerHtml;
+
+                ParentNode.AppendChild(NewHTMLRow);
+
+                countRow++;
+            }
+
+            RowTemplate.Remove();
+
+            return HTMLDocument;
+        }
+
+        /// <summary>
+        /// Create an Excel file from the HTML
+        /// </summary>
+        public static XSSFWorkbook HTMLToCalc(HtmlDocument html)
+        {
+            XSSFWorkbook xssWorkbook = new XSSFWorkbook();
+            IRow wsrow = null;
+            ICell wscell = null;
+
+            ISheet worksheet = xssWorkbook.CreateSheet("Data Export");
+
+            ICellStyle wsstyle_bold = xssWorkbook.CreateCellStyle();
+            IFont wsfont = wsstyle_bold.GetFont(xssWorkbook);
+            wsfont.IsBold = true;
+            wsstyle_bold.SetFont(wsfont);
+
+            ICellStyle wsstyle_dateformat = xssWorkbook.CreateCellStyle();
+            ICreationHelper createHelper = xssWorkbook.GetCreationHelper();
+            wsstyle_dateformat.DataFormat = createHelper.CreateDataFormat().GetFormat("dd/mm/yyyy");
 
             // write the column headings
             var elements = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='column_headings']/div");
             int colCounter = 1;
             int rowCounter = 3;
+            wsrow = worksheet.CreateRow(rowCounter);
             foreach (var element in elements)
             {
-                worksheet.Cells[rowCounter, colCounter].Value = element.InnerText;
-                worksheet.Cells[rowCounter, colCounter].Style.Font.Bold = true;
+                wscell = wsrow.CreateCell(colCounter);
+                wscell.SetCellValue(element.InnerText);
+                wscell.CellStyle = wsstyle_bold;
                 colCounter++;
             }
             rowCounter+=2;
@@ -426,10 +507,12 @@ namespace Ict.Petra.Server.MReporting
             var rows = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='content']//div[contains(@class, 'row')]");
             foreach (var row in rows)
             {
+                wsrow = worksheet.CreateRow(rowCounter);
                 colCounter = 1;
                 elements = HTMLTemplateProcessor.SelectNodes(row, ".//div[contains(@class, 'col-')]");
                 foreach (var element in elements)
                 {
+                    wscell = wsrow.CreateCell(colCounter);
                     string value = element.InnerText;
 
                     if (value == "&nbsp;")
@@ -440,22 +523,22 @@ namespace Ict.Petra.Server.MReporting
                     if (element.HasClass("currency"))
                     {
                         TVariant v = new TVariant(value);
-                        worksheet.Cells[rowCounter, colCounter].Value = v.ToDecimal();
+                        wscell.SetCellValue((double)v.ToDecimal());
                     }
                     else if (element.HasClass("date"))
                     {
                         TVariant v = new TVariant(value);
-                        worksheet.Cells[rowCounter, colCounter].Value = v.ToDate();
-                        worksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
+                        wscell.SetCellValue(v.ToDate());
+                        wscell.CellStyle = wsstyle_dateformat;
                     }
                     else
                     {
-                        worksheet.Cells[rowCounter, colCounter].Value = value;
+                        wscell.SetCellValue(value);
                     }
 
                     if (element.InnerHtml.Contains("<strong>"))
                     {
-                        worksheet.Cells[rowCounter, colCounter].Style.Font.Bold = true;
+                        wscell.CellStyle = wsstyle_bold;
                     }
 
                     colCounter++;
@@ -464,65 +547,13 @@ namespace Ict.Petra.Server.MReporting
                 rowCounter++;
             }
 
-            worksheet.Cells.AutoFitColumns();
+            for (int colIndex = 1; colIndex < colCounter; colIndex++)
+            {
+                worksheet.AutoSizeColumn(colIndex);
+            }
 
-            return pck;
+            return xssWorkbook;
         }
 
-        /// <summary>
-        /// Create a PDF file from the HTML
-        /// </summary>
-        public static bool HTMLToPDF(HtmlDocument html, string AOutputPDFFilename)
-        {
-            // export HTML including the CSS to a single file.
-            string HTMLFile = TFileHelper.GetTempFileName(
-                "htmlreport",
-                ".html");
-
-            string CSSContent = String.Empty;
-
-            // ApplicationDirectory points to eg. /home/openpetra/server/bin, we want /home/openpetra/
-            string InstallPath = Path.GetFullPath(TAppSettingsManager.GetValue("ApplicationDirectory") + "/../../");
-
-            using (StreamReader sr = new StreamReader(InstallPath + "client/css/report.css"))
-            {
-                CSSContent = sr.ReadToEnd();
-            }
-
-            string BootstrapCSSContent = String.Empty;
-            using (StreamReader sr = new StreamReader(InstallPath + "bootstrap-4.0/bootstrap.min.css"))
-            {
-                BootstrapCSSContent = sr.ReadToEnd();
-            }
-
-            string BundledJSContent = string.Empty;
-            using (StreamReader sr = new StreamReader(InstallPath + "bootstrap-4.0/bootstrap.bundle.min.js"))
-            {
-                BundledJSContent = sr.ReadToEnd();
-            }
-
-
-            using (StreamWriter sw = new StreamWriter(HTMLFile))
-            {
-                string strhtml = html.DocumentNode.WriteTo().
-                    Replace("<link href=\"/css/report.css\" rel=\"stylesheet\">",
-                            "<style>" + 
-                            BootstrapCSSContent + Environment.NewLine +
-                            CSSContent + "</style>" + Environment.NewLine +
-                            "<script>" + BundledJSContent + "</script>");
-                sw.Write(strhtml);
-                sw.Close();
-            }
-
-            Process process = new Process();
-            process.StartInfo.FileName = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/local/bin/wkhtmltopdf");
-            process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
-            process.Start();
-            process.WaitForExit();
-
-            File.Delete(HTMLFile);
-
-            return true;
-        }
     }
 }

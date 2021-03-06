@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -3101,6 +3101,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             NonPartnerContactAttributesCount = Calculations.DeterminePartnerContactDetailAttributes(
+                ReadTransaction,
                 FPartnerEditScreenDS.PPartnerAttribute);
 
             ACount = FPartnerEditScreenDS.PPartnerAttribute.Rows.Count - NonPartnerContactAttributesCount;

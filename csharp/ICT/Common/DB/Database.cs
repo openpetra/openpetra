@@ -3,7 +3,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Npgsql;
+using MySqlConnector;
 
 using Ict.Common;
 using Ict.Common.IO;
@@ -482,7 +483,19 @@ namespace Ict.Common.DB
                         TDBConnection.GetConnectionStringWithHiddenPwd(FConnectionString) + " " +
                         GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection());
 
-                    FSqlConnection.Open();
+                   try
+                    {
+                        FSqlConnection.Open();
+                    }
+                    catch (MySqlConnector.MySqlException)
+                    {
+                        // Possible cause: MySqlConnector.MySqlException (0x80004005): Too many connections
+                        // clear all pools, and then try again. see https://github.com/openpetra/openpetra/issues/557
+                        MySqlConnection.ClearAllPools();
+                        FSqlConnection.Open();
+                    }
+
+
                     FDataBaseRDBMS.InitConnection(FSqlConnection);
 
                     FThreadThatConnectionWasEstablishedOn = Thread.CurrentThread;
@@ -1302,11 +1315,6 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// Executes a SQL Select Statement (once) using a <see cref="DbDataAdapter"/>.
-        /// <para><em>Speciality:</em> The execution of the query can be cancelled at any time using the
-        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method of the
-        /// <see cref="TDataAdapterCanceller"/> instance that gets returned in Argument
-        /// <paramref name="ADataAdapterCanceller"/>!
-        /// </para>
         /// </summary>
         /// <param name="ASqlStatement">SQL statement. Must contain SQL Parameters if
         /// <paramref name="AParametersArray" /> is specified!</param>
@@ -1314,8 +1322,6 @@ namespace Ict.Common.DB
         /// <see cref="IsolationLevel"/>.</param>
         /// <param name="AFillDataTable">Instance of a DataTable. Can be null; in that case a DataTable by the name of
         /// "SelectUsingDataAdapter_DataTable" is created on-the-fly.</param>
-        /// <param name="ADataAdapterCanceller">An instance of the <see cref="TDataAdapterCanceller"/> Class. Call the
-        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method to cancel the execution of the query.</param>
         /// <param name="AOptionalColumnNameMapping">Supply a Delegate to create a mapping between the names of the fields
         /// in the DB and how they should be named in the resulting DataTable. (Optional - pass null for this Argument to not
         /// do that).</param>
@@ -1327,7 +1333,7 @@ namespace Ict.Common.DB
         /// <paramref name="AFillDataTable"/> (=return value of calling DbDataAdapter.Fill) - or -1 in case
         /// the creation of the internally used DataAdapter failed (should not happen).</returns>
         public int SelectUsingDataAdapter(String ASqlStatement, TDBTransaction AReadTransaction,
-            ref DataTable AFillDataTable, out TDataAdapterCanceller ADataAdapterCanceller,
+            ref DataTable AFillDataTable,
             TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
             int ASelectCommandTimeout = -1, DbParameter[] AParametersArray = null)
         {
@@ -1350,7 +1356,6 @@ namespace Ict.Common.DB
             return SelectUsingDataAdapterMulti(ASqlStatement,
                 AReadTransaction,
                 ref AFillDataTable,
-                out ADataAdapterCanceller,
                 AOptionalColumnNameMapping,
                 ASelectCommandTimeout,
                 AParametersArray,
@@ -1360,11 +1365,6 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// Executes a SQL Select Statement (1..n times if a Paramterised Query is used) using a <see cref="DbDataAdapter"/>.
-        /// <para><em>Speciality:</em> The execution of the query can be cancelled at any time using the
-        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method of the
-        /// <see cref="TDataAdapterCanceller"/> instance that gets returned in Argument
-        /// <paramref name="ADataAdapterCanceller"/>!
-        /// </para>
         /// <para>
         /// In case <paramref name="AParameterValues"/> holds more than one entry then the same parameterised query will be
         /// executed as many times as there are entries. The resulting data of all query executions gets appended to
@@ -1377,8 +1377,6 @@ namespace Ict.Common.DB
         /// <see cref="IsolationLevel"/>.</param>
         /// <param name="AFillDataTable">Instance of a DataTable. Can be null; in that case a DataTable by the name of
         /// "SelectUsingDataAdapter_DataTable" is created on-the-fly.</param>
-        /// <param name="ADataAdapterCanceller">An instance of the <see cref="TDataAdapterCanceller"/> Class. Call the
-        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method to cancel the execution of the query.</param>
         /// <param name="AOptionalColumnNameMapping">Supply a Delegate to create a mapping between the names of the fields
         /// in the DB and how they should be named in the resulting DataTable. (Optional - pass null for this Argument to not
         /// do that).</param>
@@ -1404,7 +1402,7 @@ namespace Ict.Common.DB
         /// executed several times (with multiple Parameter Values) then the return value is the added-up number of the calls
         /// to DbDataAdapter.Fill!</returns>
         public int SelectUsingDataAdapterMulti(String ASqlStatement, TDBTransaction AReadTransaction, ref DataTable AFillDataTable,
-            out TDataAdapterCanceller ADataAdapterCanceller, TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
+            TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
             int ASelectCommandTimeout = -1, DbParameter[] AParameterDefinitions = null, List <object[]>AParameterValues = null,
             bool APrepareSelectCommand = false,
             int AProgressUpdateEveryNRecs = 0, MultipleParamQueryProgressUpdateDelegate AMultipleParamQueryProgressUpdateCallback = null)
@@ -1420,7 +1418,6 @@ namespace Ict.Common.DB
                                                  && (AProgressUpdateEveryNRecs != 0);
 
             AFillDataTable = AFillDataTable ?? new DataTable("SelectUsingDataAdapter_DataTable");
-            ADataAdapterCanceller = null;
 
             ASqlStatement = FDataBaseRDBMS.FormatQueryRDBMSSpecific(ASqlStatement);
 
@@ -1510,8 +1507,6 @@ namespace Ict.Common.DB
                             }
                         }
                     }
-
-                    ADataAdapterCanceller = new TDataAdapterCanceller(SelectDataAdapter);
 
                     if (AParameterValues != null)
                     {

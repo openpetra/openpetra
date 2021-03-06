@@ -1,0 +1,42 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Sponsored Children List</title>
+<link href="/css/report.css" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="head">
+</div>
+
+<div id="column_headings" class="row">
+	<!--
+	<div class="col-2">{MaintainChildren.child_name}</div>
+	<div class="col-2">{MaintainChildren.partner_status}</div>
+	<div class="col-4">{MaintainChildren.donor_name}</div>
+	<div class="col-4">{MaintainChildren.sponsor_admin}</div>
+	-->
+	<div class="col-2">Name of Child</div>
+	<div class="col-2">Status</div>
+	<div class="col-4">Name of Sponsor</div>
+	<div class="col-4">Name of Admin</div>
+</div>
+<div class="row">
+	<div class="col-12">
+		<hr/>
+	</div>
+</div>
+<div id="content">
+	<div id="child_template">
+		<div class="row">
+			<div class="col-2">{p_first_name_c} {p_family_name_c}</div>
+			<div class="col-2">{p_type_description_c}</div>
+			<div class="col-4">{DonorName}</div>
+			<div class="col-4">{p_user_id_c}</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

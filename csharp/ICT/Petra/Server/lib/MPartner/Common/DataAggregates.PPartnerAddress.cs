@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2068,10 +2068,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             ref PartnerAddressAggregateTDS AResponseDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            PartnerAddressAggregateTDSSimilarLocationParametersTable ExistingLocationParametersDT;
-            PartnerAddressAggregateTDSChangePromotionParametersTable ChangeLocationParametersDT;
-            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AddressAddedOrChangedPromotionParametersDT;
-
             AVerificationResult = null;
 
             if (AInspectDS == null)
@@ -2081,10 +2077,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             }
 
             AVerificationResult = new TVerificationResultCollection();
-            TLocationPK[, ] SimilarLocationReUseKeyMapping = new TLocationPK[1, 2];
 
             // for the moment, don't check for changed addresses, or duplicate addresses
             return TSubmitChangesResult.scrOK;
+
+#if CHECKFORADDRESSCHANGES
+            PartnerAddressAggregateTDSSimilarLocationParametersTable ExistingLocationParametersDT;
+            PartnerAddressAggregateTDSChangePromotionParametersTable ChangeLocationParametersDT;
+            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AddressAddedOrChangedPromotionParametersDT;
+            TLocationPK[, ] SimilarLocationReUseKeyMapping = new TLocationPK[1, 2];
 
             if (AInspectDS.PLocation != null)
             {
@@ -2245,6 +2246,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             }
 
             return TSubmitChangesResult.scrOK;
+#endif
         }
 
         /// <summary>

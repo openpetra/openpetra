@@ -34,7 +34,6 @@ using Ict.Common.DB;
 using Ict.Common.IO; // Implicit reference
 using Ict.Common.Remoting.Server;
 using System.IO;
-using OfficeOpenXml;
 using HtmlAgilityPack;
 
 namespace Ict.Petra.Server.MReporting.Calculator

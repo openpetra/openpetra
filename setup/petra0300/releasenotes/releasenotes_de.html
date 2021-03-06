@@ -12,6 +12,64 @@
 
 <h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra</h2>
 
+<h3>Version 2021.02 vom 6. März 2021</h3>
+
+<p>Diese Version beinhaltet die Arbeit von 2 Monaten, Januar und Februar. 
+Es gab große Verbesserungen beim Import von Kontakten (zur Einrichtung eines Systems), und auch für Bankkonten pro Kontakt.</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+Kontaktmodul:
+<ul>
+<li>Kontakt bearbeiten: Man kann nun ein oder mehrere Bankkonten pro Kontakt verwalten.</li>
+<li>Kontakt bearbeiten: Fehler behoben bei Einwilligungen, wenn nur der Ort oder das Land geändert wurden.</li>
+<li>Kontakt bearbeiten: Man kann nun manuell auch Einwilligungen aus der Vergangenheit anlegen. Man kann Einwilligungen hinzufügen, wenn bisher noch gar keine Einwilligungen vorlagen.</li>
+<li>Kontakt finden: Fehler behoben: Wenn man ungültige Zeichen bei der Suche nach Kontaktschlüssel eingibt, gibt es eine verständliche Fehlermeldung.</li>
+<li>Kontakt finden: Der Filter auf Kontaktart (Organisation, Familie) ist nun in der Voreinstellung leer.</li>
+<li>Kontakte importieren: man kann nun auch Kontonummern (IBANs) importieren.</li>
+<li>Kontakte importieren: Zeige Fehlermeldung wenn der Ländercode leer ist.</li>
+<li>Kontakte importieren: Man kann nun alle Kontakte löschen, um so die Datenbank in dieser Hinsicht zurückzusetzen.</li>
+<li>Kontakte importieren: Einwilligungen importieren</li>
+<li>Kontakte importieren: Kategorien importieren</li>
+<li>Kontakte importieren: schlägt fehl wenn es den Kontakt mit dem gleichen Namen und gleicher Adresse oder E-Mail Adresse schon gibt.</li>
+<li>Kontakte importieren: Es werden nun auch Microsoft Excel (xlsx) und LibreOffice (ods) Dateien unterstützt. Das ist stabiler als der bisherige CSV Import aus Textdateien.</li>
+<li>Kontakte importieren: Fehlermeldung wenn Spaltenüberschriften unbekannt sind.</li>
+<li>Ein Kontakt kann nun gelöscht werden, falls keine Spenden damit verknüpft sind.</li>
+</ul>
+
+Buchhaltung:
+<ul>
+<li>Ein paar Fehler beim Anlegen eines neuen Hauptbuches wurden behoben.</li>
+</ul>
+
+Spendenverwaltung:
+<ul>
+<li>Neue Option: in der Spendenbescheinigung kann nun auch ein Fragezettel gedruckt werden für Spender, die noch keine Einwilligung für Verwendung ihrer Adresse für den Newsletter gegeben haben.</li>
+<li>Der Bereicht für die Newsletter für Leute ohne Spendenbescheinigung berücksichtigt nun auch die Einwilligungen.</li>
+<li>Spendenbescheinigungen: Fehler beim Drucken wurde behoben.</li>
+</ul>
+
+Patenschaften:
+<ul>
+<li>Es kann nun eine Liste von Patenschaften gedruckt werden.</li>
+</ul>
+
+Allgemeine Verbesserungen:
+<ul>
+<li>Eine Fehlermeldung kann angeheftet werden, damit man mehr Zeit hat sie zu lesen. Außerdem kann man lange Fehlermeldungen als Text-Datei herunterladen.</li>
+</ul>
+
+Technische Verbesserungen:
+<ul>
+<li>Fehler behoben wenn es zu viele Datenbank Verbindungen gab: Verbindungen werden nun geschlossen, wenn nicht mehr benötigt, und der Connection Pool wird automatisch neugestart wenn er leer ist.</li>
+<li>Verwerfe unbenutzten Code beim Abbrechen von Datenbankabfragen.</li>
+<li>Benutzt nun das SharpZipLib nuget Paket anstelle von ICSharpCode.SharpZipLib.dll</li>
+</ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem
+<a href="https://github.com/openpetra/openpetra/milestone/15?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2021.02</a> zu finden!</p>
+
+
 <h3>Version 2020.12 vom 2. Januar 2021</h3>
 
 <p>Diese Version beinhaltet die Arbeit von 2 Monaten, November und Dezember. Im Patenschaftsmodul ist viel passiert. Aber auch andere Module erhielten Korrekturen und neue Funktionalität, und auch technische Verbesserungen wurden umgesetzt.</p>

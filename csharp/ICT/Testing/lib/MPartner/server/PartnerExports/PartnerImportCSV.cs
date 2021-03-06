@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,8 +90,57 @@ namespace Tests.MPartner.Server.PartnerExports
                 Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
             }
 
-            // there should be 2 partners imported
-            Assert.AreEqual(2, MainDS.PPartner.Rows.Count);
+            // there should be 4 partners imported
+            Assert.AreEqual(4, MainDS.PPartner.Rows.Count);
+            // there should be 3 families imported
+            Assert.AreEqual(3, MainDS.PFamily.Rows.Count);
+            // there should be 1 organisation imported
+            Assert.AreEqual(1, MainDS.POrganisation.Rows.Count);
+        }
+
+        /// <summary>
+        /// Test importing a CSV file with partners, with unknown column
+        /// </summary>
+        [Test]
+        public void TestImportCSVUnknownColumn()
+        {
+            TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
+
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_unknown_column.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "DMY", ";", out VerificationResult);
+
+            Assert.IsNotNull(VerificationResult, "Expected to get errors");
+            Assert.AreEqual(1, VerificationResult.Count, "there should be one error");
+            Assert.AreEqual("Unknown Column(s): Test2", VerificationResult[0].ResultText, "VerificationResult message");
+        }
+
+        /// <summary>
+        /// Test importing a CSV file with partners, without Name
+        /// </summary>
+        [Test]
+        public void TestImportCSVWithoutName()
+        {
+            TVerificationResultCollection VerificationResult = null;
+            string doc = String.Empty;
+
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_invalid.csv"))
+            {
+                doc = sr.ReadToEnd();
+            }
+
+            TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "DMY", ";", out VerificationResult);
+
+            Assert.IsNotNull(VerificationResult, "Expected to get errors");
+            Assert.AreEqual(2, VerificationResult.Count, "there should be two errors");
+            Assert.AreEqual("Missing Firstname or family name in line 2",
+                VerificationResult[0].ResultText, "VerificationResult message");
+            Assert.AreEqual("We need either a valid address, phone number, email address or IBAN in line 4",
+                VerificationResult[1].ResultText, "VerificationResult message");
         }
 
         /// <summary>
@@ -103,7 +152,7 @@ namespace Tests.MPartner.Server.PartnerExports
             TVerificationResultCollection VerificationResult = null;
             string doc = String.Empty;
 
-            using (StreamReader sr = new StreamReader("../../demodata/partners/samplePartnerImport_dates_dmy.csv"))
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_dates_dmy.csv"))
             {
                 doc = sr.ReadToEnd();
             }
@@ -112,16 +161,15 @@ namespace Tests.MPartner.Server.PartnerExports
 
             if (VerificationResult != null)
             {
-                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
+                if (VerificationResult.HasCriticalErrors)
+                    Assert.AreEqual(String.Empty, VerificationResult.BuildVerificationResultString(), "there was an error importing the csv file");
             }
 
-            // there should be 4 partners imported (2 x family + 2 x person)
-            Assert.AreEqual(4, MainDS.PPartner.Rows.Count, "Wrong number of partners");
-            Assert.AreEqual(2, MainDS.PmPassportDetails.Rows.Count, "Wrong number of persons");
+            // there should be 2 partners imported (2 x family)
+            Assert.AreEqual(2, MainDS.PPartner.Rows.Count, "Wrong number of partners");
+            Assert.AreEqual(2, MainDS.PFamily.Rows.Count, "Wrong number of families");
 
-            Assert.AreEqual(((PmPassportDetailsRow)MainDS.PmPassportDetails.Rows[0]).DateOfIssue, new DateTime(2016,
-                    4,
-                    22), "passport date of issue is wrong!");
+            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PFamily[0].DateOfBirth, "date of birth is wrong!");
 
             // Now try with the wrong date format
             VerificationResult = null;
@@ -138,7 +186,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 }
             }
 
-            Assert.AreEqual(5, numErrors, "Wrong number of errors");
+            Assert.AreEqual(2, numErrors, "Wrong number of errors");
         }
 
         /// <summary>
@@ -150,7 +198,7 @@ namespace Tests.MPartner.Server.PartnerExports
             TVerificationResultCollection VerificationResult = null;
             string doc = String.Empty;
 
-            using (StreamReader sr = new StreamReader("../../demodata/partners/samplePartnerImport_dates_mdy.csv"))
+            using (StreamReader sr = new StreamReader("../../csharp/ICT/Testing/lib/MPartner/SampleData/samplePartnerImport_dates_mdy.csv"))
             {
                 doc = sr.ReadToEnd();
             }
@@ -159,16 +207,15 @@ namespace Tests.MPartner.Server.PartnerExports
 
             if (VerificationResult != null)
             {
-                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
+                if (VerificationResult.HasCriticalErrors)
+                    Assert.AreEqual(String.Empty, VerificationResult.BuildVerificationResultString(), "there was an error importing the csv file");
             }
 
-            // there should be 4 partners imported (2 x family + 2 x person)
-            Assert.AreEqual(4, MainDS.PPartner.Rows.Count);
-            Assert.AreEqual(2, MainDS.PmPassportDetails.Rows.Count);
+            // there should be 2 partners imported (2 x family)
+            Assert.AreEqual(2, MainDS.PPartner.Rows.Count);
+            Assert.AreEqual(2, MainDS.PFamily.Rows.Count);
 
-            Assert.AreEqual(((PmPassportDetailsRow)MainDS.PmPassportDetails.Rows[0]).DateOfIssue, new DateTime(2016,
-                    5,
-                    22), "passport date of issue is wrong!");
+            Assert.AreEqual(new DateTime(1979,8,19), MainDS.PFamily[0].DateOfBirth, "date of birth is wrong!");
 
             // Now try with the wrong date format
             VerificationResult = null;
@@ -185,39 +232,7 @@ namespace Tests.MPartner.Server.PartnerExports
                 }
             }
 
-            Assert.AreEqual(5, numErrors, "Wrong number of errors");
-        }
-
-        /// <summary>
-        /// Test importing a CSV file with partners, the lines are split for inheritance
-        /// </summary>
-        [Test]
-        [Ignore("this does not work at all")]
-        public void TestImportCSV2()
-        {
-            TVerificationResultCollection VerificationResult = null;
-            string doc = String.Empty;
-
-            using (StreamReader sr = new StreamReader("../../demodata/partners/samplefilepartnerimport2.csv"))
-            {
-                doc = sr.ReadToEnd();
-            }
-
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFileReturnDataSet(doc, "dMy", ",", out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
-            }
-
-            foreach (PFamilyRow f in MainDS.PFamily.Rows)
-            {
-                Console.WriteLine("Family name : " + f.FamilyName);
-            }
-
-            // we are currently ignoring UNIT and ORGANISATION partners, only importing the 7 FAMILY partners.
-            // due to the strange format of the file, each row is imported as a separate partner, ending up with 27 invalid partners
-            Assert.AreEqual(7, MainDS.PPartner.Rows.Count);
+            Assert.AreEqual(2, numErrors, "Wrong number of errors");
         }
     }
 }

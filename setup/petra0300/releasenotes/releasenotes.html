@@ -12,6 +12,62 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2021.02: March 6th, 2021</h3>
+
+<p>This release includes the work of two months, January and February. A lot has happened in the initial import of contacts, and also for bank accounts of contacts.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+Contact Module:
+<ul>
+<li>Edit Contact: Maintain one or multiple bank accounts per contact.</li>
+<li>Edit contact: fix a bug with consent error, if only city or country code is changed.</li>
+<li>Edit contact: Allow manual adding of historic consent to contact. Add consent if there was no consent stored before.</li>
+<li>Find contact: fixed bug: typing not a number in contact key search will return hint to server log</li>
+<li>Find contact: the filter for Contact Type should be empty by default</li>
+<li>Import Contacts: can now import bank accounts (IBAN) as well.</li>
+<li>Import Contacts: display error if Country Code is wrong</li>
+<li>Import Contacts: there is now an option to delete all contacts, to reset the database in that regard.</li>
+<li>Import Contacts: import with consent</li>
+<li>Import Contacts: import with categories</li>
+<li>Import Contacts: fail if contact exists already with the same name and address or email address</li>
+<li>Import Contacts: support from Microsoft Excel (xlsx) and LibreOffice (ods) files. That is more stable than the existing CSV import.</li>
+<li>Import Contacts: complain if column captions cannot be interpreted</li>
+<li>A contact can now be deleted, if it does not have donations associated.</li>
+</ul>
+
+Accounting module:
+<ul>
+<li>Fixed a bug with creating a new ledger.</li>
+</ul>
+
+Donation module:
+<ul>
+<li>New option: Extended the template to print questionnaire for consent on the annual receipt.</li>
+<li>Report for Newsletter for people without annual receipt must consider consent.</li>
+<li>Donation Receipts: fixed bug: Error when trying to print the receipt</li>
+</ul>
+
+Sponsored children:
+<ul>
+<li>Print a list of sponsored children.</li>
+</ul>
+
+General improvements:
+<ul>
+<li>Pin an error message in the js client, and download long error messages as text file.</li>
+</ul>
+
+Technical improvements:
+<ul>
+<li>Fix issues with too many database connections, closing connections when not needed and clearing the pool automatically.</li>
+<li>Drop unused code, for canceling database queries.</li>
+<li>Use SharpZipLib nuget package instead of ICSharpCode.SharpZipLib.dll</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the 
+<a href="https://github.com/openpetra/openpetra/milestone/15?closed=1" rel=" nofollow ugc">Milestone at Github for release 2021.02</a>!</p>
+
 <h3>Release 2020.12: January 2nd, 2021</h3>
 
 <p>This release includes the work of two months, November and December. A lot has happened in the sponsorship module. But also other areas got fixes and new features, and technical improvements have been implemented as well.</p>

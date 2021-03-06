@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -92,43 +92,50 @@ namespace Ict.Common.Session
                 sessionID = ASessionID;
             }
 
+            TDataBase db = null;
+
             // avoid dead lock on parallel logins
             FDeleteSessionMutex.WaitOne();
 
-            TDataBase db = ConnectDB("SessionInitThread");
-
-            TDBTransaction t = new TDBTransaction();
-            bool SubmissionOK = false;
-            bool newSession = false;
-
-            db.WriteTransaction(ref t,
-                ref SubmissionOK,
-                delegate
-                {
-                    // get the session ID, or start a new session
-                    // load the session values from the database
-                    // update the session last access in the database
-                    // clean old sessions
-                    newSession = InitSession(sessionID, t);
-
-                    SubmissionOK = true;
-                });
-
-            if (newSession)
+            try
             {
-                // use a separate transaction to clean old sessions
+                db = ConnectDB("SessionInitThread");
+
+                TDBTransaction t = new TDBTransaction();
+                bool SubmissionOK = false;
+                bool newSession = false;
+
                 db.WriteTransaction(ref t,
                     ref SubmissionOK,
                     delegate
                     {
-                        CleanOldSessions(t);
+                        // get the session ID, or start a new session
+                        // load the session values from the database
+                        // update the session last access in the database
+                        // clean old sessions
+                        newSession = InitSession(sessionID, t);
+
                         SubmissionOK = true;
                     });
+
+                if (newSession)
+                {
+                    // use a separate transaction to clean old sessions
+                    db.WriteTransaction(ref t,
+                        ref SubmissionOK,
+                        delegate
+                        {
+                            CleanOldSessions(t);
+                            SubmissionOK = true;
+                        });
+                }
             }
+            finally
+            {
+                db.CloseDBConnection();
 
-            db.CloseDBConnection();
-
-            FDeleteSessionMutex.ReleaseMutex();
+                FDeleteSessionMutex.ReleaseMutex();
+            }
         }
 
         /// get the current session id from the http context
@@ -206,7 +213,7 @@ namespace Ict.Common.Session
             }
             else
             {
-                TLogging.LogAtLevel(1, "TSession: Loading valid session from database: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
+                TLogging.LogAtLevel(4, "TSession: Loading valid session from database: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
                 FSessionID = sessionID;
                 LoadSession(AWriteTransaction);
                 UpdateLastAccessTime(AWriteTransaction);
@@ -263,12 +270,18 @@ namespace Ict.Common.Session
             OdbcParameter[] parameters = new OdbcParameter[1];
             parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
             parameters[0].Value = FSessionID;
-            
+            string SerializedSessionValues = JsonConvert.SerializeObject(FSessionValues);
+
+            if (SerializedSessionValues.Length > 65500)
+            {
+                throw new Exception("TSession.SaveSession: the session should not get that big: " + SerializedSessionValues.Length.ToString());
+            }
+
             if (Convert.ToInt32(AWriteTransaction.DataBaseObj.ExecuteScalar(sql, AWriteTransaction, parameters)) == 1)
             {
                 parameters = new OdbcParameter[2];
                 parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
-                parameters[0].Value = JsonConvert.SerializeObject(FSessionValues);
+                parameters[0].Value = SerializedSessionValues;
                 parameters[1] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
                 parameters[1].Value = FSessionID;
                 sql = "UPDATE PUB_s_session SET s_session_values_c = ? WHERE s_session_id_c = ?";
@@ -277,7 +290,7 @@ namespace Ict.Common.Session
             {
                 parameters = new OdbcParameter[3];
                 parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
-                parameters[0].Value = JsonConvert.SerializeObject(FSessionValues);
+                parameters[0].Value = SerializedSessionValues;
                 parameters[1] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
                 parameters[1].Value = FSessionID;
                 parameters[2] = new OdbcParameter("s_valid_until_d", OdbcType.DateTime);
@@ -322,6 +335,42 @@ namespace Ict.Common.Session
                     else
                     {
                         FSessionValues.Add(name, (new TVariant(value)).EncodeToString());
+                    }
+
+                    SaveSession(t);
+
+                    SubmissionOK = true;
+                });
+
+            db.CloseDBConnection();
+        }
+
+        /// remove all variables that start with a name, eg. PROGRESSTRACKER
+        public static void ClearVariables(string ANameStartsWith)
+        {
+            TDataBase db = ConnectDB("SessionClearVariables");
+
+            TDBTransaction t = new TDBTransaction();
+            bool SubmissionOK = false;
+
+            db.WriteTransaction(ref t, ref SubmissionOK,
+                delegate
+                {
+                    bool finished = false;
+
+                    while (!finished)
+                    {
+                        finished = true;
+
+                        foreach (string name in FSessionValues.Keys)
+                        {
+                            if (name.StartsWith(ANameStartsWith))
+                            {
+                                FSessionValues.Remove(name);
+                                finished = false;
+                                break;
+                            }
+                        }
                     }
 
                     SaveSession(t);

@@ -47,6 +47,8 @@
     <Table sqltable="p_bank"/>
     <Table sqltable="p_banking_details">
         <CustomField name="MainAccount" type="Boolean"/>
+        <Field name="Bic" sqltable="p_bank" sqlfield="p_bic_c"/>
+        <Field name="BranchName" sqltable="p_bank" sqlfield="p_branch_name_c"/>
     </Table>
     <Table sqltable="p_partner_banking_details"/>
     <Table sqltable="p_banking_details_usage"/>
@@ -450,6 +452,7 @@
 
     <Table sqltable="p_banking_details"/>
     <Table sqltable="p_partner_banking_details"/>
+    <Table sqltable="p_banking_details_usage"/>
 
     <Table sqltable="p_method_of_contact"/>
     <Table sqltable="p_contact_attribute"/>
@@ -532,6 +535,13 @@
       <CustomField name="PartnerShortName" type="string"/>
       <CustomField name="ImportStatus" type="string"/>
     </CustomTable>
+
+    <Table sqltable="p_consent_history">
+      <CustomField name="AllowedPurposes" type="string"/>
+    </Table>
+    <Table sqltable="p_consent_history_permission"/>
+    <Table sqltable="p_consent_purpose"/>
+    <Table sqltable="p_consent_channel"/>
   </DataSet>
 
   <DataSet name="ExtractTDS">

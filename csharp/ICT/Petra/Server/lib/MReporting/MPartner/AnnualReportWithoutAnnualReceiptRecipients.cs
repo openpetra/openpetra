@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,6 +57,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
             // get all the recipients
             string sql = templateProcessor.GetSQLQuery("SelectRecipients");
             recipients = ATransaction.DataBaseObj.SelectDT(sql, "recipients", ATransaction);
+
+            // ensure consents
+            string needed_consent = parameterlist.Get("param_consent").ToString().Replace("*", "").Replace("%", "").Trim();
+            recipients = Utils.PartnerRemoveUnconsentReportData(recipients, needed_consent);
 
             // generate the report from the HTML template
             HtmlDocument html = templateProcessor.GetHTML();

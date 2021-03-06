@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,6 +46,8 @@ namespace Ict.Common.Remoting.Shared
     /// TODO: rename the class
     public class THttpBinarySerializer
     {
+        private const int MAXBASE64PREFIX = 80;
+
         /// <summary>
         /// determine if the server is contacted from the fat client or from the js client
         /// </summary>
@@ -300,7 +302,7 @@ namespace Ict.Common.Remoting.Shared
             }
             else if (type == "System.String")
             {
-                if (s.Length > 30 && s.StartsWith("data:") && s.Substring(0,30).Contains(";base64,"))
+                if (s.Length > MAXBASE64PREFIX && s.StartsWith("data:") && s.Substring(0, MAXBASE64PREFIX).Contains(";base64,"))
                 {
                     return DeserializeFromBase64(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
                 }
@@ -334,7 +336,7 @@ namespace Ict.Common.Remoting.Shared
 
                 throw new Exception("THttpBinarySerializer.DeserializeObject: unknown enum " + type);
             }
-            else if (s.Length > 30 && s.StartsWith("data:") && s.Substring(0,30).Contains(";base64,"))
+            else if (s.Length > MAXBASE64PREFIX && s.StartsWith("data:") && s.Substring(0, MAXBASE64PREFIX).Contains(";base64,"))
             {
                 return Convert.FromBase64String(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
             }

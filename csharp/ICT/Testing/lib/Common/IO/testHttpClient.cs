@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,12 +44,17 @@ namespace Ict.Common.IO.Testing
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Client.DebugLevel", 0);
         }
 
+        private void ReadWebsiteWith500Error()
+        {
+            THTTPUtils.ReadWebsite("http://localhost/api/serverMServerAdmin.asmx/TServerAdminWebConnector_StopServer");
+        }
+
         /// test the THTTPUtils, for 500 error
         [Test]
-        [Ignore("throws an exception and shows the 500 error message")]
         public void TestHttpUtils500()
         {
-            string content = THTTPUtils.ReadWebsite("http://localhost/api/serverMServerAdmin.asmx/TServerAdminWebConnector_StopServer");
+            // throws an exception and shows the 500 error message
+            Assert.Throws <System.AggregateException>(ReadWebsiteWith500Error, "No Exception thrown despite 500 HTTP Error Code");
         }
 
         /// test the THTTPUtils, for retrieving data

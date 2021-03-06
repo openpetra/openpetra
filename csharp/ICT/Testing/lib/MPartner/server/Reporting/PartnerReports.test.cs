@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -89,6 +89,7 @@ namespace Tests.MPartner.Server.Reporting
             SpecificParameters.Add("param_today", new TVariant(new DateTime(2017, 1, 1)));
             SpecificParameters.Add("param_explicit_specialtypes", new TVariant("LEDGER"));
             SpecificParameters.Add("param_active", new TVariant(true));
+            SpecificParameters.Add("param_consent", new TVariant("NEWSLETTER"));
 
             TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
@@ -104,6 +105,10 @@ namespace Tests.MPartner.Server.Reporting
             string testFile = "../../js-client/src/forms/Partner/Reports/PartnerReports/PartnerByCity.json";
             string resultFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Results.html";
 
+            // Prepare test cases
+            // 43013259 should have consent for using the address for Newsletter
+            AddAddressPermission(43013259, "NEWSLETTER");
+
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_only_addresses_valid_on", new TVariant(true));
             SpecificParameters.Add("param_today", new TVariant(new DateTime(2017, 1, 1)));
@@ -113,6 +118,43 @@ namespace Tests.MPartner.Server.Reporting
             TReportTestingTools.CalculateReport(testFile, resultFile, SpecificParameters);
 
             TReportTestingTools.TestResult(resultFile);
+        }
+
+        private void AddAddressPermission(long APartnerKey, string AConsentCode)
+        {
+            TVerificationResultCollection VerificationResult;
+
+            List<string> Subscriptions;
+            List<string> PartnerTypes;
+            string DefaultEmailAddress;
+            string DefaultPhoneMobile;
+            string DefaultPhoneLandline;
+            PartnerEditTDS MainDS = TSimplePartnerEditWebConnector.GetPartnerDetails(APartnerKey,
+                out Subscriptions,
+                out PartnerTypes,
+                out DefaultEmailAddress,
+                out DefaultPhoneMobile,
+                out DefaultPhoneLandline);
+
+            PLocationRow locationRow = MainDS.PLocation[0];
+            string address = locationRow.StreetName + ", " + locationRow.PostalCode + " " + locationRow.City + ", " + locationRow.CountryCode;
+            string PermissionChangeObject = "{\"PartnerKey\":\"" + APartnerKey + "\",\"Type\":\"address\"," +
+                "\"Value\":\"" + address + "\",\"ChannelCode\":\"PHONE\",\"Permissions\":\"" + AConsentCode + "\"," +
+                "\"ConsentDate\":\"" + DateTime.Today.ToString("yyyy-MM-dd") + "\"," +
+                "\"Valid\":true}";
+
+            bool SendMail = true;
+            bool result = TSimplePartnerEditWebConnector.SavePartner(MainDS,
+                Subscriptions,
+                PartnerTypes,
+                new List<string>() { PermissionChangeObject },
+                SendMail,
+                DefaultEmailAddress,
+                DefaultPhoneMobile,
+                DefaultPhoneLandline,
+                out VerificationResult);
+
+            Assert.IsTrue(result, "AddAddressPermission.SavePartner");
         }
 
         private void AddSubscription(long APartnerKey, string APublicationCode, string AConsentCode)

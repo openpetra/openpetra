@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -429,7 +429,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     string Email;
 
                     // retrieve primary phone and primary email
-                    TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone(APartnerKey, out Phone, out Email);
+                    TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone(AReadTransaction, APartnerKey, out Phone, out Email);
 
                     AFormDataPartner.PrimaryPhone = Phone;
                     AFormDataPartner.PrimaryEmail = Email;

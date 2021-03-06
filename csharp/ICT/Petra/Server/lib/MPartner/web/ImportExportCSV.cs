@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +47,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -57,10 +58,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     {
         private Int32 FLocationKey = -1;
         private TVerificationResultCollection ResultsCol;
+        private Int32 FCurrentLine = -1;
         private String ResultsContext;
+        private List<String> FUnusedColumns;
 
-        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
+        private void ResetVerificationResult()
         {
+            ResultsCol.Clear();
+        }
+
+        private void AddVerificationResult(String AResultText, TResultSeverity ASeverity = TResultSeverity.Resv_Critical, bool AddLineNumber = true)
+        {
+            if (!AResultText.Contains(" in line ") && AddLineNumber)
+            {
+                AResultText += " in line " + FCurrentLine.ToString();
+            }
+
             if (ASeverity != TResultSeverity.Resv_Status)
             {
                 TLogging.Log(AResultText);
@@ -68,198 +81,190 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, ASeverity));
         }
-
-        private void AddVerificationResult(String AResultText)
+        
+        private bool HasColumnValue(DataRow ARow, string AAttrName)
         {
-            AddVerificationResult(AResultText, TResultSeverity.Resv_Noncritical);
+            if (!ARow.Table.Columns.Contains(AAttrName))
+            {
+                return false;
+            }
+            if (FUnusedColumns.Contains(AAttrName))
+            {
+                FUnusedColumns.Remove(AAttrName);
+            }
+            return (ARow[AAttrName] != System.DBNull.Value) && (ARow[AAttrName].ToString() != String.Empty);
+        }
+
+        private string GetColumnValue(DataRow ARow, string AAttrName)
+        {
+            if (!ARow.Table.Columns.Contains(AAttrName))
+            {
+                return String.Empty;
+            }
+            if (FUnusedColumns.Contains(AAttrName))
+            {
+                FUnusedColumns.Remove(AAttrName);
+            }
+            return ARow[AAttrName].ToString();
+        }
+
+        private bool RowIsEmpty(DataRow ARow)
+        {
+            foreach (DataColumn column in ARow.Table.Columns)
+                if (!ARow.IsNull(column))
+                    return false;
+
+            return true;
         }
 
         /// <summary>
-        /// Import data from a CSV file
+        /// Import data from an imported file
         /// </summary>
-        /// <param name="ANode"></param>
+        /// <param name="ATable"></param>
         /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
         /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AReferenceResults"></param>
         /// <returns></returns>
-        public PartnerImportExportTDS ImportData(XmlNode ANode, string ADateFormat, ref TVerificationResultCollection AReferenceResults)
+        public PartnerImportExportTDS ImportData(DataTable ATable, string ADateFormat, ref TVerificationResultCollection AReferenceResults)
         {
             PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
 
             FLocationKey = -1;
+            int BankingDetailsKey = -1;
             ResultsCol = AReferenceResults;
             TDBTransaction Transaction = new TDBTransaction();
             bool SubmissionOK = true;
+            FUnusedColumns = new List<string>();
+
+            foreach (DataColumn c in ATable.Columns)
+            {
+                FUnusedColumns.Add(c.ColumnName);
+            }
+
+            // starting in line 1, because there is the line with the captions
+            FCurrentLine = 1;
 
             DBAccess.WriteTransaction(ref Transaction,
                 ref SubmissionOK,
                 delegate
                 {
-                    while (ANode != null)
+                    PConsentChannelAccess.LoadAll(ResultDS, Transaction);
+                    PConsentPurposeAccess.LoadAll(ResultDS, Transaction);
+
+                    foreach (DataRow r in ATable.Rows)
                     {
+                        FCurrentLine += 1;
+
+                        if (RowIsEmpty(r))
+                        {
+                            continue;
+                        }
+
                         ResultsContext = "CSV Import";
-                        String PartnerClass = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
+                        String PartnerClass = GetColumnValue(r, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS).ToUpper();
                         Int64 PartnerKey = 0;
-                        int LocationKey = 0;
+                        PPartnerRow newPartner = null;
+
+                        if (HasColumnValue(r, MPartnerConstants.PARTNERIMPORT_ORGANISATIONNAME) &&
+                            HasColumnValue(r, MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
+                        {
+                            AddVerificationResult("Cannot have names for both family and organisation");
+                        }
 
                         if (PartnerClass.Length == 0)
                         {
-                            PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
-
-                            // if the import line contains an event then this will need to be for a person
-                            if (ANode.Attributes[MPartnerConstants.PARTNERIMPORT_EVENTKEY] != null)
+                            if (HasColumnValue(r, MPartnerConstants.PARTNERIMPORT_ORGANISATIONNAME))
                             {
-                                PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
+                                PartnerClass = MPartnerConstants.PARTNERCLASS_ORGANISATION;
                             }
-
-                            //TODOWB: if partner class is not set then check if for example a value is set for column "EventPartnerKey" in which case we can assume it is a Person that is imported
-                            // there may be other fields that hint for using Person
+                            else
+                            {
+                                PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+                            }
                         }
 
-                        if ((PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY) || (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                        if (HasColumnValue(r, MPartnerConstants.PARTNERIMPORT_PARTNERKEY))
                         {
-                            Boolean FamilyForPerson = (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON);
-                            ResultsContext = "CSV Import Family";
-                            PartnerKey = CreateNewFamily(ANode, FamilyForPerson, out LocationKey, ref ResultDS, Transaction);
-                            CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS, Transaction);
-                            CreateOutputData(ANode, PartnerKey, MPartnerConstants.PARTNERCLASS_FAMILY,
-                                (PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY), ref ResultDS);
+                            string strPartnerKey = GetColumnValue(r, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
+
+                            try
+                            {
+                                PartnerKey = long.Parse(strPartnerKey);
+                            }
+                            catch (System.FormatException)
+                            {
+                                AddVerificationResult("Bad number format in PartnerKey: " + strPartnerKey);
+                            }
                         }
 
-                        if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                        string AccountName = String.Empty;
+                        bool HasAddress = false;
+                        bool ValidAddress = false;
+                        bool HasContactDetail = false;
+                        bool HasIBAN = false;
+                        PLocationRow newLocation = ResultDS.PLocation.NewRowTyped();
+
+                        if (PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                         {
-                            ResultsContext = "CSV Import Person";
-                            Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ADateFormat, ref ResultDS, Transaction);
-                            CreateShortTermApplication(ANode, PersonKey, ADateFormat, ref ResultDS, Transaction);
-                            CreateSpecialTypes(ANode, PersonKey, ref ResultDS, Transaction);
-                            CreateSubscriptions(ANode, PersonKey, ref ResultDS, Transaction);
-                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_1", Transaction);
-                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_2", Transaction);
-                            CreatePassport(ANode, PersonKey, ADateFormat, ref ResultDS, Transaction);
-                            CreateSpecialNeeds(ANode, PersonKey, ref ResultDS, Transaction);
-                            CreateOutputData(ANode, PersonKey, PartnerClass, true, ref ResultDS);
+                            ResultsContext = "Import Family";
+                            newPartner = CreateNewFamily(r, PartnerKey, ref ResultDS, ADateFormat, Transaction,
+                                ref newLocation,
+                                out HasAddress, out ValidAddress, out HasContactDetail);
+                            AccountName = (GetColumnValue(r, "FirstName") + " " +
+                                GetColumnValue(r, "FamilyName")).Trim();
                         }
 
-                        ANode = ANode.NextSibling;
+                        if (PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
+                        {
+                            ResultsContext = "Import Organisation";
+                            newPartner = CreateNewOrganisation(r, PartnerKey, ref ResultDS, Transaction,
+                                ref newLocation,
+                                out HasAddress, out ValidAddress, out HasContactDetail);
+                            AccountName = GetColumnValue(r, "OrganisationName");
+                        }
+
+                        if (newPartner != null)
+                        {
+                            PartnerKey = newPartner.PartnerKey;
+                            CreateSpecialTypes(r, PartnerKey, "Category", ref ResultDS, Transaction);
+                            CreateBankAccounts(r, PartnerKey, AccountName, ref BankingDetailsKey, "IBAN",
+                                ref ResultDS, Transaction, ref ResultsCol,
+                                out HasIBAN);
+                            ValidateAddressCriteria(HasAddress, ValidAddress, HasContactDetail, HasIBAN, newLocation);
+                            CreateConsent(r, ADateFormat, PartnerKey, "ConsentChannel", "ConsentWhen", "ConsentType", "ConsentPurpose", ref ResultDS, Transaction);
+                        }
                     }
                 });
+
+            if (FUnusedColumns.Count > 0)
+            {
+                AddVerificationResult("Unknown Column(s): " + String.Join(" ", FUnusedColumns.ToArray()), TResultSeverity.Resv_Critical, false);
+
+                if (FUnusedColumns.Count > ATable.Columns.Count / 2)
+                {
+                    ResetVerificationResult();
+                    AddVerificationResult("Too many unknown column names. Are you missing the captions?", TResultSeverity.Resv_Critical, false);
+                }
+
+                return new PartnerImportExportTDS();
+            }
 
             return ResultDS;
         }
 
-        /// <summary>
-        /// Create new partner, family, location and PartnerLocation records in MainDS
-        /// </summary>
-        private Int64 CreateNewFamily(XmlNode ANode, Boolean AFamilyForPerson, out int ALocationKey, ref PartnerImportExportTDS AMainDS,
+        private void ImportPartnerDetails(DataRow ARow, ref PPartnerRow newPartner, bool IsNewRecord,
             TDBTransaction ATransaction)
         {
-            Int64 FamilyKey = 0;
-            Boolean IsNewRecord = true;
-
-            PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
-
-            AMainDS.PPartner.Rows.Add(newPartner);
-
-            // first check in FamilyPartnerKey for Person Key, otherwise try to find family for given PersonPartnerKey, or then check in field PartnerKey
-            String strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYPARTNERKEY);
-            newPartner.PartnerKey = 0;
-
-            if (strPartnerKey.Length > 0)
-            {
-                try
-                {
-                    FamilyKey = long.Parse(strPartnerKey);
-                }
-                catch (System.FormatException)
-                {
-                    AddVerificationResult("Bad number format in FamilyPartnerKey: " + strPartnerKey);
-                }
-            }
-            else
-            {
-                if (AFamilyForPerson)
-                {
-                    // if we don't have the family partner key then we can check if we can find the family for a person partner key
-                    String strPersonKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY);
-
-                    if (strPersonKey.Length > 0)
-                    {
-                        try
-                        {
-                            FamilyKey = TPartnerServerLookups.GetFamilyKeyForPerson(long.Parse(strPersonKey));
-                        }
-                        catch (System.FormatException)
-                        {
-                            AddVerificationResult("Bad number format in PersonPartnerKey: " + strPartnerKey);
-                        }
-                        catch (EOPAppException)
-                        {
-                            AddVerificationResult(string.Format("There is no matching Family key for the specified Person Partner key {0}",
-                                    strPersonKey) +
-                                "  Did you enter the key correctly?");
-                        }
-                    }
-                }
-
-                if ((FamilyKey == 0) && !AFamilyForPerson)
-                {
-                    strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
-
-                    if (strPartnerKey.Length > 0)
-                    {
-                        try
-                        {
-                            FamilyKey = long.Parse(strPartnerKey);
-                        }
-                        catch (System.FormatException)
-                        {
-                            AddVerificationResult("Bad number format in PartnerKey: " + strPartnerKey);
-                        }
-                    }
-                }
-            }
-
-            if (FamilyKey > 0)
-            {
-                //TODOWBxxx
-                // now we know the family record that we need to look for in db
-                PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(FamilyKey, ATransaction);
-
-                if ((PartnerTable.Count > 0)
-                    && (((PPartnerRow)PartnerTable.Rows[0]).PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY))
-                {
-                    // we have an existing family partner record
-                    IsNewRecord = false;
-                    newPartner.ItemArray = (object[])PartnerTable.Rows[0].ItemArray.Clone();
-                    newPartner.AcceptChanges();
-                }
-                else
-                {
-                    // no partner found with this family key in this db --> need to create new family
-                    IsNewRecord = true;
-                    FamilyKey = 0;
-                }
-            }
-
-            // now preset the partner key if it is not contained in the csv file or if given key cannot be found in db
-            newPartner.PartnerKey = FamilyKey;
-
-            if (newPartner.PartnerKey == 0)
-            {
-                newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
-            }
-
-            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
             newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESFAMILY))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_NOTES))
             {
-                newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTESFAMILY);
+                newPartner.Comment = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_NOTES);
             }
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_AQUISITION))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
-                String AcquisitionCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_AQUISITION);
+                String AcquisitionCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_AQUISITION);
 
                 newPartner.AcquisitionCode = (AcquisitionCode.Length > 0) ? AcquisitionCode : MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
             }
@@ -268,15 +273,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 newPartner.AcquisitionCode = MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT;
             }
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
             {
-                newPartner.AddresseeTypeCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
+                newPartner.AddresseeTypeCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
             }
             else if (IsNewRecord)
             {
                 newPartner.AddresseeTypeCode = MPartnerConstants.ADDRESSEETYPE_DEFAULT;
 
-                string gender = GetGenderCode(ANode);
+                string gender = GetGenderCode(ARow);
 
                 if (gender == MPartnerConstants.GENDER_MALE)
                 {
@@ -288,9 +293,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
             }
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
             {
-                newPartner.LanguageCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+                newPartner.LanguageCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
             else if (IsNewRecord && TUserDefaults.HasDefault(MSysManConstants.PARTNER_LANGUAGECODE))
             {
@@ -303,61 +308,214 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
                 newPartner.ReceiptEachGift = giftReceiptingDefaults[1].ToUpper() == "YES" || giftReceiptingDefaults[1].ToUpper() == "TRUE";
             }
+        }
 
-            PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();
-            AMainDS.PFamily.Rows.Add(newFamily);
+        /// <summary>
+        /// Create new partner, family, location and PartnerLocation records in MainDS
+        /// </summary>
+        private PPartnerRow CreateNewFamily(DataRow ARow, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
+            string ADateFormat,
+            TDBTransaction ATransaction,
+            ref PLocationRow ANewLocation,
+            out bool AHasAddress,
+            out bool AValidAddress,
+            out bool AHasContactDetail)
+        {
+            Boolean IsNewRecord = true;
+            PPartnerRow newPartner = null;
+            PFamilyRow newFamily = null;
 
-            if (!IsNewRecord)
+            if (APartnerKey == 0)
             {
-                // now we know the family record that we need to look for in db
-                PFamilyTable FamilyTable = PFamilyAccess.LoadByPrimaryKey(FamilyKey, ATransaction);
+                IsNewRecord = true;
 
-                if (FamilyTable.Count > 0)
+                newPartner = AMainDS.PPartner.NewRowTyped();
+                AMainDS.PPartner.Rows.Add(newPartner);
+                newPartner.PartnerKey = 0;
+                newFamily = AMainDS.PFamily.NewRowTyped();
+                AMainDS.PFamily.Rows.Add(newFamily);
+
+                newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
+                newFamily.PartnerKey = newPartner.PartnerKey;
+            }
+            else
+            {
+                IsNewRecord = false;
+
+                PPartnerAccess.LoadByPrimaryKey(AMainDS, APartnerKey, ATransaction);
+                AMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}", PPartnerTable.GetPartnerKeyDBName(), APartnerKey);
+                newPartner = (PPartnerRow)AMainDS.PPartner.DefaultView[0].Row;
+                newPartner.AcceptChanges();
+
+                PFamilyAccess.LoadByPrimaryKey(AMainDS, APartnerKey, ATransaction);
+                AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", PFamilyTable.GetPartnerKeyDBName(), APartnerKey);
+                newFamily = (PFamilyRow)AMainDS.PFamily.DefaultView[0].Row;
+                newFamily.AcceptChanges();
+            }
+
+            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+
+            ImportPartnerDetails(ARow, ref newPartner, IsNewRecord, ATransaction);
+
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+            {
+                newFamily.FirstName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
+            }
+
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
+            {
+                newFamily.FamilyName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
+            }
+
+            string TimeString = String.Empty;
+
+            try
+            {
+                TimeString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH);
+
+                if (TimeString.Length > 0)
                 {
-                    // we have an existing family partner record
-                    newFamily.ItemArray = (object[])FamilyTable.Rows[0].ItemArray.Clone();
-                    newFamily.AcceptChanges();
+                    if (TimeString.StartsWith("eDateTime:"))
+                    {
+                        newFamily.DateOfBirth = TVariant.DecodeFromString(TimeString).ToDate();
+                    }
+                    else
+                    {
+                        newFamily.DateOfBirth = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                    }
                 }
             }
-
-            newFamily.PartnerKey = newPartner.PartnerKey;
-
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+            catch (System.FormatException)
             {
-                newFamily.FirstName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
+                string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                AddVerificationResult(string.Format("Bad date of birth: {0} (Expected format: {1})", TimeString, fmt), TResultSeverity.Resv_Critical);
             }
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
             {
-                newFamily.FamilyName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
+                newFamily.MaritalStatus = GetMaritalStatusCode(ARow, ATransaction);
             }
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_TITLE))
             {
-                newFamily.MaritalStatus = GetMaritalStatusCode(ANode, ATransaction);
+                newFamily.Title = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_TITLE);
             }
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
             {
-                newFamily.Title = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE);
+                newPartner.LanguageCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
             }
 
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
+            if ((newFamily.FirstName == String.Empty) && (newFamily.FamilyName == String.Empty))
             {
-                newPartner.LanguageCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+                AddVerificationResult("Missing Firstname or family name");
             }
 
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
+
+            //if (IsNewRecord) // updating contact is not supported yet
+            {
+                ANewLocation = CreateNewLocation(ref AMainDS, newPartner, ARow,
+                    out AHasAddress, out AValidAddress, out AHasContactDetail);
+                CheckForExistingPartner(ARow, ref newPartner, ref ANewLocation);
+                FLocationKey -= 1;
+            }
+
+            return newPartner;
+        }
+
+        /// <summary>
+        /// Create new partner, organisation, location and PartnerLocation records in MainDS
+        /// </summary>
+        private PPartnerRow CreateNewOrganisation(DataRow ARow, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
+            TDBTransaction ATransaction,
+            ref PLocationRow ANewLocation,
+            out bool AHasAddress,
+            out bool AValidAddress,
+            out bool AHasContactDetail)
+        {
+            Boolean IsNewRecord = true;
+            PPartnerRow newPartner = null;
+            POrganisationRow newOrganisation = null;
+
+            if (APartnerKey == 0)
+            {
+                IsNewRecord = true;
+
+                newPartner = AMainDS.PPartner.NewRowTyped();
+                AMainDS.PPartner.Rows.Add(newPartner);
+                newPartner.PartnerKey = 0;
+                newOrganisation = AMainDS.POrganisation.NewRowTyped();
+                AMainDS.POrganisation.Rows.Add(newOrganisation);
+
+                newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
+                newOrganisation.PartnerKey = newPartner.PartnerKey;
+            }
+            else
+            {
+                IsNewRecord = false;
+
+                PPartnerAccess.LoadByPrimaryKey(AMainDS, APartnerKey, ATransaction);
+                AMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}", PPartnerTable.GetPartnerKeyDBName(), APartnerKey);
+                newPartner = (PPartnerRow)AMainDS.PPartner.DefaultView[0].Row;
+                newPartner.AcceptChanges();
+
+                POrganisationAccess.LoadByPrimaryKey(AMainDS, APartnerKey, ATransaction);
+                AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", POrganisationTable.GetPartnerKeyDBName(), APartnerKey);
+                newOrganisation = (POrganisationRow)AMainDS.POrganisation.DefaultView[0].Row;
+                newOrganisation.AcceptChanges();
+            }
+
+            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_ORGANISATION;
+            newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+
+            ImportPartnerDetails(ARow, ref newPartner, IsNewRecord, ATransaction);
+
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ORGANISATIONNAME))
+            {
+                newOrganisation.OrganisationName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ORGANISATIONNAME);
+            }
+
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
+            {
+                newPartner.LanguageCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+            }
+
+            if (newOrganisation.OrganisationName == String.Empty)
+            {
+                AddVerificationResult("Missing Name in line " + FCurrentLine.ToString());
+            }
+
+            newPartner.PartnerShortName = newOrganisation.OrganisationName;
+
+            //if (IsNewRecord) // updating contact is not supported yet
+            {
+                ANewLocation = CreateNewLocation(ref AMainDS, newPartner, ARow,
+                    out AHasAddress, out AValidAddress, out AHasContactDetail);
+                CheckForExistingPartner(ARow, ref newPartner, ref ANewLocation);
+                FLocationKey -= 1;
+            }
+
+            return newPartner;
+        }
+
+        // TODO: cope with already imported partner
+        private PLocationRow CreateNewLocation(ref PartnerImportExportTDS AMainDS, PPartnerRow ANewPartner, DataRow ARow,
+            out bool AHasAddress,
+            out bool AValidAddress,
+            out bool AHasContactDetail)
+        {
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
+
             AMainDS.PLocation.Rows.Add(newLocation);
             newLocation.LocationKey = FLocationKey;
-            newLocation.Locality = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
-            newLocation.StreetName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_STREET);
-            newLocation.Address3 = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
-            newLocation.PostalCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_POSTCODE);
-            newLocation.City = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CITY);
-            newLocation.County = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTY);
-            newLocation.CountryCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
+            newLocation.Locality = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
+            newLocation.StreetName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_STREET);
+            newLocation.Address3 = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
+            newLocation.PostalCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_POSTCODE);
+            newLocation.City = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CITY);
+            newLocation.County = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_COUNTY);
+            newLocation.CountryCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
 
             TPartnerContactDetails_LocationConversionHelper myHelper =
                 new TPartnerContactDetails_LocationConversionHelper();
@@ -367,181 +525,48 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             partnerlocation.LocationKey = FLocationKey;
             partnerlocation.SiteKey = 0;
-            partnerlocation.PartnerKey = newPartner.PartnerKey;
+            partnerlocation.PartnerKey = ANewPartner.PartnerKey;
             partnerlocation.DateEffective = DateTime.Now.Date;
             partnerlocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
-            partnerlocation.SendMail = true;
 
-            partnerlocation["p_email_address_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'partnerlocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!
-            partnerlocation["p_telephone_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);        // Important: Do not use 'partnerlocation.TelephoneNumber' as this Column will get removed once Contact Details conversion is finished!
-            partnerlocation["p_mobile_number_c"] =
-                TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);  // Important: Do not use 'partnerlocation.MobileNumber' as this Column will get removed once Contact Details conversion is finished!
+            AHasAddress = (newLocation.StreetName != String.Empty) ||
+                (newLocation.PostalCode != String.Empty) ||
+                (newLocation.City != String.Empty) ||
+                (newLocation.CountryCode != String.Empty);
+            AValidAddress = AHasAddress &&
+                (newLocation.StreetName != String.Empty) && // StreetName can contain PO Box number
+                (newLocation.PostalCode != String.Empty) &&
+                (newLocation.City != String.Empty) &&
+                (newLocation.CountryCode != String.Empty);
 
-            AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
-
-            ALocationKey = FLocationKey;
-            FLocationKey--;
-
-            return newPartner.PartnerKey;
-        }
-
-        /// <summary>
-        /// Create a Partner and a Person having this FamilyKey, living at this address.
-        /// </summary>
-        /// <param name="AFamilyKey"></param>
-        /// <param name="ALocationKey"></param>
-        /// <param name="ANode"></param>
-        /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
-        /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
-        /// <param name="AMainDS"></param>
-        /// <param name="ATransaction"></param>
-        private Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode, string ADateFormat,
-            ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
-        {
-            Int64 PersonKey = 0;
-            Boolean IsNewRecord = true;
-
-            AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}", PFamilyTable.GetPartnerKeyDBName(), AFamilyKey);
-            PFamilyRow FamilyRow = (PFamilyRow)AMainDS.PFamily.DefaultView[0].Row;
-
-            AMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}", PPartnerTable.GetPartnerKeyDBName(), AFamilyKey);
-            PPartnerRow PartnerRow = (PPartnerRow)AMainDS.PPartner.DefaultView[0].Row;
-
-            PPartnerRow newPartner = AMainDS.PPartner.NewRowTyped();
-            AMainDS.PPartner.Rows.Add(newPartner);
-
-            // check in PersonPartnerKey for Person Key, otherwise check in field PartnerKey
-            String strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY);
-            newPartner.PartnerKey = 0;
-
-            if (strPartnerKey.Length > 0)
+            if (AHasAddress && !AValidAddress)
             {
-                try
+                if ((newLocation.StreetName != String.Empty) &&
+                    (newLocation.PostalCode != String.Empty) &&
+                    (newLocation.City != String.Empty) &&
+                    (newLocation.CountryCode == String.Empty))
                 {
-                    PersonKey = long.Parse(strPartnerKey);
+                    AddVerificationResult("Country Code is missing");
                 }
-                catch (System.FormatException)
-                {
-                    AddVerificationResult("Bad number format in PersonPartnerKey: " + strPartnerKey);
-                }
-            }
-            else
-            {
-                strPartnerKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
 
-                if (strPartnerKey.Length > 0)
+                if ((newLocation.StreetName != String.Empty) &&
+                    (newLocation.City == String.Empty))
                 {
-                    try
-                    {
-                        PersonKey = long.Parse(strPartnerKey);
-                    }
-                    catch (System.FormatException)
-                    {
-                        AddVerificationResult("Bad number format in PartnerKey: " + strPartnerKey);
-                    }
+                    AddVerificationResult("City is missing");
                 }
             }
 
-            if (PersonKey > 0)
-            {
-                //TODOWBxxx
-                // now we know the family record that we need to look for in db
-                PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(PersonKey, ATransaction);
+            partnerlocation.SendMail = AValidAddress;
 
-                if ((PartnerTable.Count > 0)
-                    && (((PPartnerRow)PartnerTable.Rows[0]).PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
-                {
-                    // we have an existing person partner record
-                    IsNewRecord = false;
-                    newPartner.ItemArray = (object[])PartnerTable.Rows[0].ItemArray.Clone();
-                    newPartner.AcceptChanges();
-                }
-                else
-                {
-                    // no partner found with this person key in this db --> need to create new person
-                    IsNewRecord = true;
-                    PersonKey = 0;
-                }
-            }
-
-            // now preset the partner key if it is not contained in the csv file or if given key cannot be found in db
-            newPartner.PartnerKey = PersonKey;
-
-            if (newPartner.PartnerKey == 0)
-            {
-                newPartner.PartnerKey = (AMainDS.PPartner.Rows.Count + 1) * -1;
-            }
-
-            newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
-            newPartner.AddresseeTypeCode = PartnerRow.AddresseeTypeCode;
-            newPartner.PartnerShortName = PartnerRow.PartnerShortName;
-            newPartner.LanguageCode = PartnerRow.LanguageCode;
-            newPartner.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_NOTES);
-            newPartner.AcquisitionCode = PartnerRow.AcquisitionCode;
-            newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
-
-            PPersonRow newPerson = AMainDS.PPerson.NewRowTyped();
-            AMainDS.PPerson.Rows.Add(newPerson);
-
-            if (!IsNewRecord)
-            {
-                // now we know the family record that we need to look for in db
-                PPersonTable PersonTable = PPersonAccess.LoadByPrimaryKey(PersonKey, ATransaction);
-
-                if (PersonTable.Count > 0)
-                {
-                    // we have an existing person partner record
-                    newPerson.ItemArray = (object[])PersonTable.Rows[0].ItemArray.Clone();
-                    newPerson.AcceptChanges();
-                }
-            }
-
-            newPerson.PartnerKey = newPartner.PartnerKey;
-            newPerson.FamilyKey = AFamilyKey;
-            // When this record is imported, newPerson.FamilyId must be unique for this family!
-            newPerson.FirstName = FamilyRow.FirstName;
-            newPerson.FamilyName = FamilyRow.FamilyName;
-            newPerson.Title = FamilyRow.Title;
-            newPerson.Gender = GetGenderCode(ANode);
-            newPerson.MaritalStatus = FamilyRow.MaritalStatus;
-
-            String TimeString = "";
-            try
-            {
-                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH);
-
-                if (TimeString.Length > 0)
-                {
-                    newPerson.DateOfBirth = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
-                }
-            }
-            catch (System.FormatException)
-            {
-                string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
-                AddVerificationResult(string.Format("Bad date of birth: {0} (Expected format: {1})", TimeString, fmt), TResultSeverity.Resv_Critical);
-            }
-
-
-            PPartnerLocationRow newPartnerLocation = AMainDS.PPartnerLocation.NewRowTyped();
-            AMainDS.PPartnerLocation.Rows.Add(newPartnerLocation);
-
-            newPartnerLocation.LocationKey = ALocationKey; // This person lives at the same address as the family.
-            newPartnerLocation.SiteKey = 0;
-            newPartnerLocation.PartnerKey = newPartner.PartnerKey;
-            newPartnerLocation.DateEffective = DateTime.Now.Date;
-            newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
-            newPartnerLocation.SendMail = false;
-
-            string email = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);
-            string phone = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PHONE);
-            string mobile = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+            int SequenceCounter = 0;
+            string email = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            string phone = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PHONE);
+            string mobile = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
 
             if (email.Length > 0)
             {
                 PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
                 partnerAttributeRow.Index = 0;
                 partnerAttributeRow.Primary = true;
@@ -549,18 +574,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
 
                 partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
                 partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_EMAIL;
+                partnerAttributeRow.Sequence = SequenceCounter++;
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
             }
 
             if (phone.Length > 0)
             {
                 PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
                 partnerAttributeRow.Index = 0;
                 partnerAttributeRow.Primary = true;
@@ -568,18 +594,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
 
                 partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
                 partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_PHONE;
+                partnerAttributeRow.Sequence = SequenceCounter++;
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
             }
 
             if (mobile.Length > 0)
             {
                 PPartnerAttributeRow partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
                 partnerAttributeRow.Index = 0;
                 partnerAttributeRow.Primary = true;
@@ -587,28 +614,300 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
 
                 partnerAttributeRow = AMainDS.PPartnerAttribute.NewRowTyped();
-                partnerAttributeRow.PartnerKey = newPartner.PartnerKey;
+                partnerAttributeRow.PartnerKey = ANewPartner.PartnerKey;
                 partnerAttributeRow.AttributeType = MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
                 partnerAttributeRow.Index = 9999;
                 partnerAttributeRow.Primary = false;
                 partnerAttributeRow.Value = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
+                partnerAttributeRow.Sequence = SequenceCounter++;
                 AMainDS.PPartnerAttribute.Rows.Add(partnerAttributeRow);
             }
 
-            AddVerificationResult("Person Record Created.", TResultSeverity.Resv_Status);
+            AHasContactDetail = (email != String.Empty) ||
+                (phone != String.Empty) ||
+                (mobile != String.Empty);
 
-            return newPerson.PartnerKey;
+            AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
+
+            return newLocation;
         }
 
-        private void CreateSpecialTypes(XmlNode ANode,
+        private void ValidateAddressCriteria(bool AHasAddress, bool AValidAddress, bool AHasContactDetail, bool AHasIBAN, PLocationRow newLocation)
+        {
+            if (!AValidAddress && !AHasContactDetail && !AHasIBAN)
+            {
+                AddVerificationResult("We need either a valid address, phone number, email address or IBAN");
+
+                if (AHasAddress && !AValidAddress)
+                {
+                    if (newLocation.StreetName == String.Empty)
+                    {
+                        AddVerificationResult("Missing Street");
+                    }
+
+                    if (newLocation.PostalCode == String.Empty)
+                    {
+                        AddVerificationResult("Missing PostCode");
+                    }
+
+                    if (newLocation.City == String.Empty)
+                    {
+                        AddVerificationResult("Missing City");
+                    }
+
+                    if (newLocation.CountryCode == String.Empty)
+                    {
+                        AddVerificationResult("Missing Country");
+                    }
+                }
+            }
+        }
+
+        private void CheckForExistingPartner(DataRow ARow, ref PPartnerRow ANewPartner, ref PLocationRow newLocation)
+        {
+            TVerificationResultCollection FindVerification;
+
+            string email = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EMAIL);
+
+            // will a new partner be created?
+            if (ANewPartner.PartnerKey < 0)
+            {
+                // do we have a partner with this name and location already?
+                Int32 TotalRecords;
+                PartnerFindTDSSearchResultTable findPartner = TSimplePartnerFindWebConnector.FindPartners(
+                    String.Empty, // PartnerKey
+                    String.Empty, // FirstName
+                    ANewPartner.PartnerShortName,
+                    newLocation.StreetName,
+                    newLocation.City,
+                    newLocation.PostalCode,
+                    String.Empty, // E-Mail Address
+                    ANewPartner.PartnerClass,
+                    true, // ActiveOnly
+                    String.Empty, // SortBy
+                    10, // MaxRecords
+                    out TotalRecords,
+                    out FindVerification);
+
+                if ((TotalRecords == 0) && (email != String.Empty))
+                {
+                    // what about name and email?
+                    findPartner = TSimplePartnerFindWebConnector.FindPartners(
+                        String.Empty, // PartnerKey
+                        String.Empty, // FirstName
+                        ANewPartner.PartnerShortName,
+                        String.Empty, // StreetName
+                        String.Empty, // City
+                        String.Empty, // PostCode
+                        email,
+                        ANewPartner.PartnerClass,
+                        true, // ActiveOnly
+                        String.Empty, // SortBy
+                        10, // MaxRecords
+                        out TotalRecords,
+                        out FindVerification);
+                }
+
+                if (TotalRecords > 0)
+                {
+                    AddVerificationResult("Partner " + ANewPartner.PartnerShortName + " in line " + FCurrentLine.ToString() +
+                        " already exists with key " + findPartner[0]["p_partner_key_n"].ToString());
+                }
+            }
+        }
+
+        private bool CreateBankAccounts(DataRow ARow,
+            Int64 APartnerKey,
+            string AAccountName,
+            ref int ABankingDetailsKey,
+            String ACSVKey,
+            ref PartnerImportExportTDS AMainDS,
+            TDBTransaction ATransaction,
+            ref TVerificationResultCollection AVerificationResult,
+            out bool AHasIBAN)
+        {
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+            bool MainAccount = true;
+            AHasIBAN = false;
+
+            for (int Idx = -1; Idx < 6; Idx++)
+            {
+                String IBAN = GetColumnValue(ARow, ACSVKey + (Idx>=0?Idx.ToString():String.Empty)).Replace(" ", "").ToUpper();
+
+                if (IBAN.Length > 0)
+                {
+                    AHasIBAN = true;
+
+                    string BIC = String.Empty;
+                    string BankName = String.Empty;
+
+                    // validate IBAN, and calculate the BIC
+                    if (!TSimplePartnerEditWebConnector.ValidateIBAN(IBAN, out BIC, out BankName, out VerificationResult))
+                    {
+                        AVerificationResult.Add(VerificationResult[0]);
+                        return false;
+                    }
+
+                    // TODO: check for existing bank accounts, if this partner already exists in the database
+                    // TODO: also check for main account
+                    PBankingDetailsRow row = AMainDS.PBankingDetails.NewRowTyped();
+                    row.BankingDetailsKey = ABankingDetailsKey;
+                    row.BankingType = 0; // BANK ACCOUNT
+                    row.AccountName = AAccountName;
+                    row.Iban = IBAN;
+                    row.BankKey = TSimplePartnerEditWebConnector.FindOrCreateBank(BIC, BankName);
+                    AMainDS.PBankingDetails.Rows.Add(row);
+
+                    PPartnerBankingDetailsRow pdrow = AMainDS.PPartnerBankingDetails.NewRowTyped();
+                    pdrow.PartnerKey = APartnerKey;
+                    pdrow.BankingDetailsKey = ABankingDetailsKey;
+                    AMainDS.PPartnerBankingDetails.Rows.Add(pdrow);
+
+                    if (MainAccount)
+                    {
+                        PBankingDetailsUsageRow newUsageRow = AMainDS.PBankingDetailsUsage.NewRowTyped(true);
+                        newUsageRow.PartnerKey = APartnerKey;
+                        newUsageRow.BankingDetailsKey = row.BankingDetailsKey;
+                        newUsageRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
+                        AMainDS.PBankingDetailsUsage.Rows.Add(newUsageRow);                        
+                    }
+
+                    MainAccount = false;
+                    ABankingDetailsKey -= 1;
+                }
+            }
+
+            return true;
+        }
+
+        private void CreateConsent(DataRow ARow,
+            string ADateFormat,
+            Int64 APartnerKey,
+            String ACSVKeyHow,
+            String ACSVKeyWhen,
+            String ACSVKeyType,
+            String ACSVKeyFor,
+            ref PartnerImportExportTDS AMainDS,
+            TDBTransaction ATransaction)
+        {
+            for (int Idx = -1; Idx < 6; Idx++)
+            {
+                String ConsentChannel = GetColumnValue(ARow, ACSVKeyHow + (Idx>=0?Idx.ToString():String.Empty));
+                String ConsentPurpose = GetColumnValue(ARow, ACSVKeyFor + (Idx>=0?Idx.ToString():String.Empty));
+                String ConsentWhen = GetColumnValue(ARow, ACSVKeyWhen + (Idx>=0?Idx.ToString():String.Empty));
+                String ConsentType = GetColumnValue(ARow, ACSVKeyType + (Idx>=0?Idx.ToString():String.Empty));
+
+                if (((ConsentChannel.Length > 0) || (ConsentPurpose.Length > 0) || (ConsentWhen.Length > 0) || (ConsentType.Length > 0))
+                    && ((ConsentChannel.Length == 0) || (ConsentPurpose.Length == 0) || (ConsentWhen.Length == 0) || (ConsentType.Length == 0)))
+                {
+                    AddVerificationResult("Missing an element for the consent, all 4 (How, When, For, Type) must be set.");
+                    return;
+                }
+
+                if ((ConsentChannel.Length > 0) && (ConsentPurpose.Length > 0) && (ConsentWhen.Length > 0) && (ConsentType.Length > 0))
+                {
+                    // check for valid how (consent channel), and for (consent purpose)
+                    AMainDS.PConsentChannel.DefaultView.RowFilter = String.Format("{0}='{1}'", PConsentChannelTable.GetChannelCodeDBName(), ConsentChannel);
+                    if (AMainDS.PConsentChannel.DefaultView.Count == 0)
+                    {
+                        AddVerificationResult("Unknown Consent Channel Code " + ConsentChannel);
+                        return;
+                    }
+
+                    // allow multiple purposes with comma separated
+                    foreach (string AllowedPurposeCode in ConsentPurpose.Split(',')) {
+                        if (AllowedPurposeCode.Trim().Equals("")) { continue; } // catch non permission values
+                        AMainDS.PConsentPurpose.DefaultView.RowFilter = String.Format("{0}='{1}'", PConsentPurposeTable.GetPurposeCodeDBName(), AllowedPurposeCode);
+                        if (AMainDS.PConsentPurpose.DefaultView.Count == 0)
+                        {
+                            AddVerificationResult("Unknown Consent Purpose Code " + ConsentPurpose);
+                            return;
+                        }
+                    }
+
+                    DateTime ConsentWhenDT = DateTime.MinValue;
+
+                    if (ConsentWhen.StartsWith("eDateTime:"))
+                    {
+                        ConsentWhenDT = TVariant.DecodeFromString(ConsentWhen).ToDate();
+                    }
+                    else
+                    {
+                        ConsentWhenDT = DateTime.Parse(ConsentWhen, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                    }
+
+                    // TODO: check: do we have already a similar consent history, with same or different purpose?
+                    PConsentHistoryRow HistoryRow = AMainDS.PConsentHistory.NewRowTyped();
+                    HistoryRow.EntryId = (AMainDS.PConsentHistory.Count+1) * -1;
+                    HistoryRow.PartnerKey = APartnerKey;
+                    HistoryRow.ConsentDate = ConsentWhenDT;
+                    HistoryRow.ChannelCode = ConsentChannel;
+
+                    // get p_location. either already stored in the database, or just being imported
+                    AMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}='{1}'", PPartnerLocationTable.GetPartnerKeyDBName(), APartnerKey);
+                    if (AMainDS.PPartnerLocation.DefaultView.Count != 1)
+                    {
+                        AddVerificationResult("There is not a unique location");
+                        return;
+                    }
+                    PPartnerLocationRow partnerlocationRow = (PPartnerLocationRow)AMainDS.PPartnerLocation.DefaultView[0].Row;
+                    AMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'", PLocationTable.GetSiteKeyDBName(), partnerlocationRow.SiteKey, PLocationTable.GetLocationKeyDBName(), partnerlocationRow.LocationKey);
+                    PLocationRow locationRow = (PLocationRow)AMainDS.PLocation.DefaultView[0].Row;
+
+                    string email = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EMAIL);
+                    string phone = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PHONE);
+                    string mobile = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+
+                    if (ConsentType.ToUpper() == "ADDRESS")
+                    {
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_ADDRESS;
+                        HistoryRow.Value = locationRow.StreetName + ", " + locationRow.PostalCode + " " + locationRow.City + ", " + locationRow.CountryCode;
+                    }
+                    else if (ConsentType.ToUpper() == "EMAIL")
+                    {
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_EMAIL;
+                        HistoryRow.Value = email;
+                    }
+                    else if (ConsentType.ToUpper() == "PHONE")
+                    {
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_LANDLINE;
+                        HistoryRow.Value = phone;
+                    }
+                    else if (ConsentType.ToUpper() == "MOBILE")
+                    {
+                        HistoryRow.Type = MPartnerConstants.CONSENT_TYPE_MOBILE;
+                        HistoryRow.Value = mobile;
+                    }
+                    else
+                    {
+                        AddVerificationResult("Unknown Consent Type: " + ConsentType);
+                        return;
+                    }
+
+                    AMainDS.PConsentHistory.Rows.Add(HistoryRow);
+
+                    foreach (string AllowedPurposeCode in ConsentPurpose.Split(',')) {
+                        if (AllowedPurposeCode.Trim().Equals("")) { continue; } // catch non permission values
+                        PConsentHistoryPermissionRow NewPermRow = AMainDS.PConsentHistoryPermission.NewRowTyped();
+
+                        NewPermRow.PurposeCode = AllowedPurposeCode;
+                        NewPermRow.ConsentHistoryEntry = HistoryRow.EntryId;
+
+                        AMainDS.PConsentHistoryPermission.Rows.Add(NewPermRow);
+                    }
+                }
+            }
+        }
+
+        private void CreateSpecialTypes(DataRow ARow,
             Int64 APartnerKey,
             String ACSVKey,
             ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
-            for (int Idx = 1; Idx < 6; Idx++)
+            for (int Idx = -1; Idx < 6; Idx++)
             {
-                String SpecialType = TXMLParser.GetAttribute(ANode, ACSVKey + Idx.ToString());
+                String SpecialType = GetColumnValue(ARow, ACSVKey + (Idx>=0?Idx.ToString():String.Empty));
 
                 if (SpecialType.Length > 0)
                 {
@@ -620,38 +919,23 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         partnerType.TypeCode = SpecialType;
                         AMainDS.PPartnerType.Rows.Add(partnerType);
                     }
+
+                    // validate that this special type exists
+                    if (!PTypeAccess.Exists(SpecialType, ATransaction))
+                    {
+                        AddVerificationResult("invalid category " + SpecialType);
+                    }
                 }
             }
         }
 
-        private void CreateSpecialTypes(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
-        {
-            // This previous code requires a format that doesn't conform to the documented standard:
-
-/*
- *          if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES).Length != 0)
- *          {
- *              string specialTypes = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
- *
- *              while (specialTypes.Length > 0)
- *              {
- *                  PPartnerTypeRow partnerType = AMainDS.PPartnerType.NewRowTyped(true);
- *                  partnerType.PartnerKey = PartnerKey;
- *                  partnerType.TypeCode = StringHelper.GetNextCSV(ref specialTypes, ",").Trim().ToUpper();
- *                  AMainDS.PPartnerType.Rows.Add(partnerType);
- *              }
- *          }
- */
-            CreateSpecialTypes(ANode, APartnerKey, "SpecialType_", ref AMainDS, ATransaction);
-        }
-
-        private void CreateShortTermApplication(XmlNode ANode,
+        private void CreateShortTermApplication(DataRow ARow,
             Int64 APartnerKey,
             string ADateFormat,
             ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
-            String strEventKey = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
+            String strEventKey = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
             long EventKey = -1;
             Boolean IsNewApplication = true;
 
@@ -740,9 +1024,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 // Make sure that application date is definitely set. If not in import file then use today's date.
-                if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE))
+                if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPDATE))
                 {
-                    string appDate = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE);
+                    string appDate = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPDATE);
 
                     if (appDate.Length > 0)
                     {
@@ -768,41 +1052,34 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 ShortTermRow.StAppDate = GenAppRow.GenAppDate;
 
-                if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE))
+                if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPTYPE))
                 {
-                    GenAppRow.AppTypeName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE);
+                    GenAppRow.AppTypeName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPTYPE);
                     ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
                 }
 
-                if (GenAppRow.AppTypeName == "")
+                if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPSTATUS))
                 {
-                    // if column value is missing then preset this with TEENSTREET
-                    GenAppRow.AppTypeName = "TEENSTREET";
-                    ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
+                    GenAppRow.GenApplicationStatus = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPSTATUS);
                 }
 
-                if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPSTATUS))
+                if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS))
                 {
-                    GenAppRow.GenApplicationStatus = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPSTATUS);
-                }
-
-                if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS))
-                {
-                    GenAppRow.Comment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS);
+                    GenAppRow.Comment = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS);
                 }
 
                 String TimeString = "";
 
                 try
                 {
-                    TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
+                    TimeString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
 
                     if (TimeString.Length > 0)
                     {
                         ShortTermRow.Arrival = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
                     }
 
-                    TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
+                    TimeString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
 
                     if (TimeString.Length > 0)
                     {
@@ -818,7 +1095,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 DateTime TempTime;
 
-                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
+                TimeString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
 
                 if (TimeString.Length > 0)
                 {
@@ -836,7 +1113,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
 
-                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTURETIME);
+                TimeString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_DEPARTURETIME);
 
                 if (TimeString.Length > 0)
                 {
@@ -854,12 +1131,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
 
-                if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE))
+                if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EVENTROLE))
                 {
-                    ShortTermRow.StCongressCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
+                    ShortTermRow.StCongressCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
                 }
 
-                String ChargedField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);
+                String ChargedField = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);
 
                 if (ChargedField.Length > 0)
                 {
@@ -875,10 +1152,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void CreatePassport(XmlNode ANode, Int64 APartnerKey, string ADateFormat, ref PartnerImportExportTDS AMainDS,
+        private void CreatePassport(DataRow ARow, Int64 APartnerKey, string ADateFormat, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
-            string PassportNum = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
+            string PassportNum = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
 
             if (PassportNum.Length > 0)
             {
@@ -910,14 +1187,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     NewRow.AcceptChanges();
                 }
 
-                NewRow.FullPassportName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNAME);
-                NewRow.PassportDetailsType = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
-                NewRow.PlaceOfBirth = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
-                NewRow.PassportNationalityCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY);
-                NewRow.PlaceOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE);
-                NewRow.CountryOfIssue = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE);
+                NewRow.FullPassportName = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTNAME);
+                NewRow.PassportDetailsType = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
+                NewRow.PlaceOfBirth = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
+                NewRow.PassportNationalityCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY);
+                NewRow.PlaceOfIssue = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE);
+                NewRow.CountryOfIssue = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE);
 
-                DateString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE);
+                DateString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE);
 
                 if (DateString.Length > 0)
                 {
@@ -933,7 +1210,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
 
-                DateString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION);
+                DateString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION);
 
                 if (DateString.Length > 0)
                 {
@@ -951,14 +1228,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void CreateSpecialNeeds(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
+        private void CreateSpecialNeeds(DataRow ARow, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             // only create special need record if data exists in import file
-            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN)
-                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS)
-                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS)
-                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_VEGETARIAN)
+                || HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS)
+                || HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS)
+                || HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS))
             {
                 PmSpecialNeedRow NewRow = AMainDS.PmSpecialNeed.NewRowTyped();
                 Boolean IsNewRecord = true;
@@ -985,11 +1262,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     NewRow.AcceptChanges();
                 }
 
-                NewRow.MedicalComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
-                NewRow.DietaryComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS);
-                NewRow.OtherSpecialNeed = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS);
+                NewRow.MedicalComment = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
+                NewRow.DietaryComment = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS);
+                NewRow.OtherSpecialNeed = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS);
 
-                if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN).ToLower() == "yes")
+                if (GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_VEGETARIAN).ToLower() == "yes")
                 {
                     NewRow.VegetarianFlag = true;
                 }
@@ -1000,17 +1277,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void CreateSubscriptions(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
+        private void CreateSubscriptions(DataRow ARow, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             int SubsCount = 0;
             String PublicationCode = "";
 
-            foreach (XmlAttribute Attr in ANode.Attributes)
+            foreach (DataColumn c in ARow.Table.Columns)
             {
-                if ((Attr.Name.ToLower().IndexOf("subscribe_") == 0) && (Attr.Value.ToLower() == "yes"))
+                if ((c.ColumnName.ToLower().IndexOf("subscribe_") == 0) && (ARow[c.ColumnName].ToString().ToLower() == "yes"))
                 {
-                    PublicationCode = Attr.Name.Substring(10).ToUpper();
+                    FUnusedColumns.Remove(c.ColumnName);
+                    PublicationCode = c.ColumnName.Substring(10).ToUpper();
 
                     // only add subscription if it does not exist yet
                     //TODOWB: what about existing subscriptions that are cancelled? They would not get updated here.
@@ -1031,7 +1309,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void CreateContacts(XmlNode ANode,
+        private void CreateContacts(DataRow ARow,
             Int64 APartnerKey,
             string ADateFormat,
             ref PartnerImportExportTDS AMainDS,
@@ -1040,7 +1318,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             //TODOWBxxx check for update/create
 
-            string ContactCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTCODE + Suffix);
+            string ContactCode = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CONTACTCODE + Suffix);
 
             if (ContactCode.Length > 0)
             {
@@ -1049,7 +1327,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PartnerImportExportTDSPContactLogRow ContactLogRow = AMainDS.PContactLog.NewRowTyped();
                 ContactLogRow.ContactCode = ContactCode;
 
-                DateString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix);
+                DateString = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CONTACTDATE + Suffix);
 
                 if (DateString.Length > 0)
                 {
@@ -1065,12 +1343,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                 }
 
-                //DateTime ContactTime = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
+                //DateTime ContactTime = DateTime.Parse(GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));
                 //ContactLogRow.ContactTime = ((ContactTime.Hour * 60) + ContactTime.Minute * 60) + ContactTime.Second;
-                ContactLogRow.Contactor = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
-                ContactLogRow.ContactComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
-                ContactLogRow.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
-                ContactLogRow.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
+                ContactLogRow.Contactor = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CONTACTOR + Suffix);
+                ContactLogRow.ContactComment = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES + Suffix);
+                ContactLogRow.ContactAttr = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
+                ContactLogRow.ContactDetail = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
                 AMainDS.PContactLog.Rows.Add(ContactLogRow);
                 AddVerificationResult("Contact Log Record Created.", TResultSeverity.Resv_Status);
 
@@ -1086,9 +1364,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// Returns the gender of the currently selected partner
         /// </summary>
         /// <returns></returns>
-        private string GetGenderCode(XmlNode ACurrentPartnerNode)
+        private string GetGenderCode(DataRow ARow)
         {
-            string gender = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_GENDER);
+            string gender = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_GENDER);
 
             if ((gender.ToLower() == Catalog.GetString("Female").ToLower()) || (gender.ToLower() == "female"))
             {
@@ -1102,14 +1380,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return MPartnerConstants.GENDER_UNKNOWN;
         }
 
-        private string GetTitle(XmlNode ACurrentPartnerNode)
+        private string GetTitle(DataRow ARow)
         {
-            if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_TITLE))
             {
-                return TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_TITLE);
+                return GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_TITLE);
             }
 
-            string genderCode = GetGenderCode(ACurrentPartnerNode);
+            string genderCode = GetGenderCode(ARow);
 
             if (genderCode == MPartnerConstants.GENDER_MALE)
             {
@@ -1123,11 +1401,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return "";
         }
 
-        private string GetMaritalStatusCode(XmlNode ACurrentPartnerNode, TDBTransaction ATransaction)
+        private string GetMaritalStatusCode(DataRow ARow, TDBTransaction ATransaction)
         {
-            if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
+            if (HasColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
             {
-                string maritalStatus = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
+                string maritalStatus = GetColumnValue(ARow, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
 
                 // first look for special cases
                 if (maritalStatus.ToLower() == Catalog.GetString("married").ToLower())
@@ -1156,89 +1434,5 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             return "";
         }
-
-        #region Output CSV Data
-
-        private void CreateOutputData(XmlNode ANode,
-            Int64 APartnerKey,
-            string APartnerClass,
-            bool AIsFromFile,
-            ref PartnerImportExportTDS AMainDS)
-        {
-            PartnerImportExportTDSOutputDataRow newRow = AMainDS.OutputData.NewRowTyped();
-
-            newRow.IsFromFile = AIsFromFile;
-            newRow.PartnerClass = APartnerClass;
-            newRow.ImportStatus = "N";
-            newRow.PartnerShortName = string.Empty;
-            newRow.ImportID = string.Empty;
-
-            if (APartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-            {
-                newRow.OutputFamilyPartnerKey = APartnerKey;
-            }
-            else if (APartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
-            {
-                newRow.OutputPersonPartnerKey = APartnerKey;
-            }
-
-            if (AIsFromFile)
-            {
-                if (ANode.Attributes["ImportID"] != null)
-                {
-                    newRow.ImportID = ANode.Attributes["ImportID"].Value;
-                }
-                else if (ANode.Attributes["EnrolmentID"] != null)
-                {
-                    // British spelling
-                    newRow.ImportID = ANode.Attributes["EnrolmentID"].Value;
-                }
-                else if (ANode.Attributes["EnrollmentID"] != null)
-                {
-                    // American spelling
-                    newRow.ImportID = ANode.Attributes["EnrollmentID"].Value;
-                }
-
-                if ((ANode.Attributes["FirstName"] != null) && (ANode.Attributes["FamilyName"] != null))
-                {
-                    string title = string.Empty;
-
-                    if (ANode.Attributes["Title"] != null)
-                    {
-                        title = ANode.Attributes["Title"].Value;
-                    }
-
-                    newRow.PartnerShortName =
-                        Calculations.DeterminePartnerShortName(ANode.Attributes["FamilyName"].Value, title, ANode.Attributes["FirstName"].Value);
-                }
-
-                long key;
-
-                if (APartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                {
-                    if ((ANode.Attributes["FamilyPartnerKey"] != null) && (ANode.Attributes["FamilyPartnerKey"].Value.Length > 0))
-                    {
-                        if (Int64.TryParse(ANode.Attributes["FamilyPartnerKey"].Value, out key))
-                        {
-                            newRow.InputPartnerKey = key;
-                        }
-                    }
-                }
-                else if (APartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
-                {
-                    if ((ANode.Attributes["PersonPartnerKey"] != null) && (ANode.Attributes["PersonPartnerKey"].Value.Length > 0))
-                    {
-                        if (Int64.TryParse(ANode.Attributes["PersonPartnerKey"].Value, out key))
-                        {
-                            newRow.InputPartnerKey = key;
-                        }
-                    }
-                }
-            }
-
-            AMainDS.OutputData.Rows.Add(newRow);
-        }
-
-        #endregion
     }
 }

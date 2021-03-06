@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop, TimI
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -194,8 +194,6 @@ namespace Ict.Petra.Server.MCommon
         /// <summary>An instance of TAsyncFindParameters containing parameters for the query execution</summary>
         TAsyncFindParameters FFindParameters;
 
-        TDataAdapterCanceller FDataAdapterCanceller;
-
         /// <summary>SQL command that will be used to execute the query</summary>
         String FSelectSQL;
 
@@ -338,6 +336,36 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
+        /// <summary>
+        /// Executes the query directly. not in a separate thread. without progress tracker.
+        /// </summary>
+        /// <param name="AContext">Context in which this quite generic Method gets called (e.g. 'Partner Find'). This is
+        /// optional but should be specified to aid in debugging as it gets logged in case Exceptions happen when the
+        /// DB Transaction is taken out and the Query gets executed.</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with a new Database connection</param>
+        /// <remarks>An instance of TAsyncFindParameters with set up Properties must exist before this procedure can get
+        /// called!
+        /// </remarks>
+        public void ExecuteQueryDirectly(string AContext = null, TDataBase ADataBase = null)
+        {
+            try
+            {
+                // need to initialize the database session
+                TDataBase db = DBAccess.Connect("ExecuteQuery", ADataBase);
+
+                // Create SQL statement and execute it to return all records
+                ExecuteFullQuery(AContext, db);
+
+                db.CloseDBConnection();
+            }
+            catch (Exception exp)
+            {
+                TLogging.Log(this.GetType().FullName + ".ExecuteQuery" +
+                    (AContext == null ? "" : " (Context: " + AContext + ")") + ": Exception occured: " + exp.ToString());
+            }
+        }
+
         private void ExecuteFullQuery(string AContext = null, TDataBase ADataBase = null)
         {
             TDataBase DBConnectionObj = null;
@@ -387,7 +415,7 @@ namespace Ict.Petra.Server.MCommon
 
                 // Fill temporary table with query results (all records)
                 FTotalRecords = ADataBase.SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
-                    ref FTmpDataTable, out FDataAdapterCanceller,
+                    ref FTmpDataTable,
                     delegate(ref IDictionaryEnumerator AEnumerator)
                     {
                         if (FFindParameters.FColumNameMapping != null)
@@ -562,66 +590,6 @@ namespace Ict.Petra.Server.MCommon
             }
 
             TLogging.LogAtLevel(7, String.Format("TPagedDataSet.CopyRowsInPage imported {0} rows into FPageDataTable", RowInPage));
-        }
-
-        /// <summary>
-        /// Cancels an asynchronously executing query. This might take some time!
-        /// </summary>
-        /// <remarks><em>IMPORTANT:</em> This Method <em>MUST</em> be called on a separate Thread as otherwise the cancellation
-        /// will not work correctly (this is an implementation detail of ADO.NET!).</remarks>
-        /// <returns>void</returns>
-        public void StopQuery()
-        {
-#if TODORemoting
-             TLogging.LogAtLevel(7,
-                 (this.GetType().FullName + ".StopQuery: ProgressState = " +
-                  Enum.GetName(typeof(TAsyncExecProgressState), FAsyncExecProgress.ProgressState)));
-#endif
-            // TODO this cannot work, since FDataAdapter is always null
-            // and even if FDataAdapter was implemented, we would have a different thread, and I am not sure how to access the Database object from the other thread?
-
-            if (FDataAdapterCanceller == null)
-            {
-                return;
-            }
-
-            try
-            {
-                // TODORemoting
-                if (true /* FAsyncExecProgress.ProgressState == TAsyncExecProgressState.Aeps_Stopping */ )
-                {
-                    if (FDataAdapterCanceller != null)
-                    {
-                        // Cancel the executing query.
-                        TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery called...");
-
-                        FDataAdapterCanceller.CancelFillOperation();
-
-                        TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery finished.");
-                    }
-                }
-                else
-                {
-                    TLogging.LogAtLevel(7, this.GetType().FullName + ".StopQuery: Query got cancelled after returning records.");
-                }
-
-                TProgressTracker.SetCurrentState(FProgressID, "Query cancelled!", 0.0m);
-                TProgressTracker.CancelJob(FProgressID);
-            }
-            catch (Exception exp)
-            {
-                TLogging.Log(this.GetType().FullName + ".StopQuery:  Exception occured: " + exp.ToString());
-
-                /*
-                 *     WE MUST 'SWALLOW' ANY EXCEPTION HERE, OTHERWISE THE WHOLE
-                 *     PETRASERVER WILL GO DOWN!!! (THIS BEHAVIOUR IS NEW WITH .NET 2.0.)
-                 *
-                 * --> ANY EXCEPTION THAT WOULD LEAVE THIS METHOD WOULD BE SEEN AS AN   <--
-                 * --> UNHANDLED EXCEPTION IN A THREAD, AND THE .NET/MONO RUNTIME       <--
-                 * --> WOULD BRING DOWN THE WHOLE PETRASERVER PROCESS AS A CONSEQUENCE! <--
-                 *
-                 */
-            }
         }
 
         /**
@@ -957,20 +925,17 @@ namespace Ict.Petra.Server.MCommon
     /// <summary>Reporting Query for use with 'FastReports', with Cancel Option.</summary>
     public class TReportingDbAdapter
     {
-        private Boolean FCancelFlag = false;
-        private TDataAdapterCanceller FDataAdapterCanceller;
-        private Boolean FRunningQuery = false;
         private Exception FRunQueryException = null;
 
         /// <summary>Use this object for creating DB Transactions, etc</summary>
         public TDataBase FPrivateDatabaseObj;
 
-        /// <summary>Check this before assuming that the query returned a good result!</summary>
+        /// <summary>We don't support cancelling anymore</summary>
         public Boolean IsCancelled
         {
             get
             {
-                return FCancelFlag;
+                return false;
             }
         }
 
@@ -991,37 +956,6 @@ namespace Ict.Petra.Server.MCommon
         public TReportingDbAdapter()
         {
             FPrivateDatabaseObj = EstablishDBConnection("FastReports Report DB Connection");
-        }
-
-        /// <summary>
-        /// Cancels any reporting query that's running right now, and effectively short-circuits any subsequent queries
-        /// made using this object. This might take some time!
-        /// </summary>
-        public void CancelQuery()
-        {
-            if (FRunningQuery
-                && (!FCancelFlag))
-            {
-                FCancelFlag = true;
-
-                try
-                {
-                    if (FDataAdapterCanceller != null)
-                    {
-                        TLogging.LogAtLevel(7, "TReportingDbAdapter.CancelQuery called. Stopping query...!");
-
-                        FDataAdapterCanceller.CancelFillOperation();
-
-                        TLogging.LogAtLevel(3, "TReportingDbAdapter.CancelQuery: Stopped running query.");
-                    }
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("Exception occured in TReportingDbAdapter.CancelQuery: " + Exc.ToString());
-                }
-            }
-
-            FRunningQuery = false;
         }
 
         /// <summary>
@@ -1093,58 +1027,46 @@ namespace Ict.Petra.Server.MCommon
         {
             var ResultDT = new DataTable(TableName);
 
-            if (!FCancelFlag)
+            try
             {
-                try
+                FPrivateDatabaseObj.SelectUsingDataAdapterMulti(Query, Trans, ref ResultDT,
+                    AOptionalColumnNameMapping, ASelectCommandTimeout, AParameterDefinitions, AParameterValues,
+                    APrepareSelectCommand, AProgressUpdateEveryNRecs, AMultipleParamQueryProgressUpdateCallback);
+            }
+            catch (PostgresException Exp)
+            {
+                if (Exp.SqlState == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
                 {
-                    FRunningQuery = true;
-                    FPrivateDatabaseObj.SelectUsingDataAdapterMulti(Query, Trans, ref ResultDT, out FDataAdapterCanceller,
-                        AOptionalColumnNameMapping, ASelectCommandTimeout, AParameterDefinitions, AParameterValues,
-                        APrepareSelectCommand, AProgressUpdateEveryNRecs, AMultipleParamQueryProgressUpdateCallback);
+                    TLogging.LogAtLevel(7, this.GetType().FullName + ".RunQuery: Query got cancelled; proper reply from Npgsql!");
                 }
-                catch (PostgresException Exp)
+                else if (Exp.SqlState == "25P02")  // Exception with Code 25P02 is what Npgsql raises as a response to a cancellation of a request of a Command when that happens in another code path (eg. on a different Thread [e.g. Partner Find
+                {                               // screen: Cancel got pressed while Report Query ran, for instance])
+                    TLogging.LogAtLevel(1, this.GetType().FullName +
+                        ".RunQuery: Query got cancelled (likely trought another code path [likely on another Thread]); proper reply from Npgsql!");
+                }
+                else
                 {
-                    if (Exp.SqlState == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
-                    {
-                        TLogging.LogAtLevel(7, this.GetType().FullName + ".RunQuery: Query got cancelled; proper reply from Npgsql!");
-                    }
-                    else if (Exp.SqlState == "25P02")  // Exception with Code 25P02 is what Npgsql raises as a response to a cancellation of a request of a Command when that happens in another code path (eg. on a different Thread [e.g. Partner Find
-                    {                               // screen: Cancel got pressed while Report Query ran, for instance])
-                        TLogging.LogAtLevel(1, this.GetType().FullName +
-                            ".RunQuery: Query got cancelled (likely trought another code path [likely on another Thread]); proper reply from Npgsql!");
-                    }
-                    else
-                    {
-                        TLogging.Log(this.GetType().FullName + ".RunQuery: Query got cancelled; general PostgresException occured: " + Exp.ToString());
-                    }
-
-                    FCancelFlag = true;
-
-                    return null;
+                    TLogging.Log(this.GetType().FullName + ".RunQuery: Query got cancelled; general PostgresException occured: " + Exp.ToString());
                 }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception: " + Exc.ToString() +
-                        "\nQuery: " + Query);
 
-                    FRunQueryException = Exc;
+                return null;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception: " + Exc.ToString() +
+                    "\nQuery: " + Query);
 
-                    FCancelFlag = true;
+                FRunQueryException = Exc;
 
-                    /*
-                     *     WE MUST 'SWALLOW' ANY EXCEPTION HERE, OTHERWISE THE WHOLE
-                     *     PETRASERVER WILL GO DOWN!!! (THIS BEHAVIOUR IS NEW WITH .NET 2.0.)
-                     *
-                     * --> ANY EXCEPTION THAT WOULD LEAVE THIS METHOD WOULD BE SEEN AS AN   <--
-                     * --> UNHANDLED EXCEPTION IN A THREAD, AND THE .NET/MONO RUNTIME       <--
-                     * --> WOULD BRING DOWN THE WHOLE PETRASERVER PROCESS AS A CONSEQUENCE. <--
-                     *
-                     */
-                }
-                finally
-                {
-                    FRunningQuery = false;
-                }
+                /*
+                 *     WE MUST 'SWALLOW' ANY EXCEPTION HERE, OTHERWISE THE WHOLE
+                 *     PETRASERVER WILL GO DOWN!!! (THIS BEHAVIOUR IS NEW WITH .NET 2.0.)
+                 *
+                 * --> ANY EXCEPTION THAT WOULD LEAVE THIS METHOD WOULD BE SEEN AS AN   <--
+                 * --> UNHANDLED EXCEPTION IN A THREAD, AND THE .NET/MONO RUNTIME       <--
+                 * --> WOULD BRING DOWN THE WHOLE PETRASERVER PROCESS AS A CONSEQUENCE. <--
+                 *
+                 */
             }
 
             return ResultDT;

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -74,7 +74,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// </summary>
         /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters.</param>
         /// <param name="ADetailedResults">Returns more (when true) or less (when false) columns.</param>
-        public void PerformSearch(DataTable ACriteriaData, bool ADetailedResults)
+        /// <param name="AUseDifferentThread">if true, a different thread is used. otherwise the call is made directly, without progress tracker.</param>
+        public void PerformSearch(DataTable ACriteriaData, bool ADetailedResults, bool AUseDifferentThread = true)
         {
             String CustomWhereCriteria;
             Hashtable ColumnNameMapping;
@@ -276,21 +277,28 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             string session = TSession.GetSessionID();
             string configfilename = TAppSettingsManager.ConfigFileName;
 
-            //
-            // Start the Find Thread
-            //
-            try
+            if (AUseDifferentThread)
             {
-                ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(configfilename, session, "Partner Find (by Partner Details)");
-                };
-                FFindThread = new Thread(myThreadStart);
-                FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
-                FFindThread.Start();
+                //
+                // Start the Find Thread
+                //
+                try
+                {
+                    ThreadStart myThreadStart = delegate {
+                        FPagedDataSetObject.ExecuteQuery(configfilename, session, "Partner Find (by Partner Details)");
+                    };
+                    FFindThread = new Thread(myThreadStart);
+                    FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
+                    FFindThread.Start();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
-            catch (Exception)
+            else
             {
-                throw;
+                FPagedDataSetObject.ExecuteQueryDirectly("Partner Find Directly (by Partner Details)");
             }
         }
 
@@ -909,8 +917,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             DataRow[] CountriesForIntlPhonePrefixDR;
             List <string>CountriesForIntlPhonePrefix = new List <string>(0);
             PCountryTable CountryDT;
-            DataView PhoneAttributesDV;
-            DataView EmailAttributesDV;
 
             // Searched DB Fields: None directly in the 'usual' query - custom 'Partner Contact Details' sub-queries are utilised!
             // --> DISREGARD ALL OTHER SEARCH CRITERIA!!!
@@ -920,16 +926,13 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             if (APhoneNumberIsSearchedFor)
             {
                 // Build list of Partner Contact Attributes Types that constitute Phone Numbers and Fax Numbers
-                PhoneAttributesDV = Calculations.DeterminePhoneAttributes((PPartnerAttributeTypeTable)
-                    TSharedDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList));
-
-                for (int Counter = 0; Counter < PhoneAttributesDV.Count; Counter++)
-                {
-                    AttributeTypeListStr += "'" + ((PPartnerAttributeTypeRow)PhoneAttributesDV[Counter].Row).AttributeType + "', ";
-                }
-
-                // Strip off remaining Attribute Type separation concatenation characters
-                AttributeTypeListStr = AttributeTypeListStr.Substring(0, AttributeTypeListStr.Length - 2);
+                TDBTransaction ReadTransaction = new TDBTransaction();
+                DBAccess.ReadTransaction(
+                    ref ReadTransaction,
+                    delegate
+                    {
+                        AttributeTypeListStr = Calculations.GetPhonePartnerAttributesConcatStr(ReadTransaction);
+                    });
 
                 PhoneNumber = ACriteriaRow["PhoneNumber"].ToString();
 
@@ -996,16 +999,13 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             else
             {
                 // Build list of Partner Contact Attributes Types that constitute Email Addresses
-                EmailAttributesDV = Calculations.DetermineEmailAttributes((PPartnerAttributeTypeTable)
-                    TSharedDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList));
-
-                for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++)
-                {
-                    AttributeTypeListStr += "'" + ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).AttributeType + "', ";
-                }
-
-                // Strip off remaining Attribute Type separation concatenation characters
-                AttributeTypeListStr = AttributeTypeListStr.Substring(0, AttributeTypeListStr.Length - 2);
+                TDBTransaction ReadTransaction = new TDBTransaction();
+                DBAccess.ReadTransaction(
+                    ref ReadTransaction,
+                    delegate
+                    {
+                        AttributeTypeListStr = Calculations.GetEmailPartnerAttributesConcatStr(ReadTransaction);
+                    });
 
                 new TDynamicSearchHelper(PPartnerAttributeTable.TableId,
                     PPartnerAttributeTable.ColumnValueId, ACriteriaRow, "Email", "EmailMatch",
@@ -1299,37 +1299,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             InternalParameters = null;             // ensure this is GC'd
 
             return CustomWhereCriteria;
-        }
-
-        /// <summary>
-        /// Stops the query execution.
-        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
-        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
-        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
-        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
-        /// </remarks>
-        /// </summary>
-        public void StopSearch()
-        {
-            Thread StopQueryThread;
-
-            /* Start a separate Thread that should cancel the executing query
-             * (Microsoft recommends doing it this way!)
-             */
-            TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Starting StopQuery thread...");
-
-            StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
-            StopQueryThread.Name = "PartnerFindStopQuery" + Guid.NewGuid().ToString();
-            StopQueryThread.Start();
-
-            /* It might take some time until the executing query is cancelled by the DB,
-             * but we consider it as done since the application can 'forget' about the
-             * result of the cancellation process (but beware of executing another query
-             * while the other is stopping - this leads to ADO.NET errors that state that
-             * a ADO.NET command is still executing!
-             */
-
-            TLogging.LogAtLevel(7, "TPartnerFindUIConnector.StopSearch: Query cancelled!");
         }
 
         /// <summary>

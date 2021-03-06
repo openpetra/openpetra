@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,9 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 using GNU.Gettext;
-using OfficeOpenXml;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using NPOI.OpenXml4Net.OPC;
 
 namespace Ict.Common.IO
 {
@@ -145,31 +147,28 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// store the data into Excel format, Open Office XML, .xlsx
-        ///
-        /// this makes use of the EPPlus library
-        /// http://epplus.codeplex.com/
         /// </summary>
-        private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet, bool AWithHashInCaption = true)
+        private static void Xml2ExcelWorksheet(XmlDocument ADoc, IWorkbook AWorkbook, ISheet AWorksheet, bool AWithHashInCaption = true)
         {
             Int32 rowCounter = 1;
             Int16 colCounter = 1;
+            IRow wsrow = null;
+            ICell wscell = null;
+
+            ICellStyle wsstyle_dateformat = AWorkbook.CreateCellStyle();
+            ICreationHelper createHelper = AWorkbook.GetCreationHelper();
+            wsstyle_dateformat.DataFormat = createHelper.CreateDataFormat().GetFormat("dd/mm/yyyy");
 
             // first write the header of the csv file
             List <string>AllAttributes = new List <string>();
             List <XmlNode>AllNodes = new List <XmlNode>();
             GetAllAttributesAndNodes(ADoc.DocumentElement, ref AllAttributes, ref AllNodes);
 
+            wsrow = AWorksheet.CreateRow(rowCounter);
             foreach (string attrName in AllAttributes)
             {
-                if (AWithHashInCaption)
-                {
-                    AWorksheet.Cells[rowCounter, colCounter].Value = "#" + attrName;
-                }
-                else
-                {
-                    AWorksheet.Cells[rowCounter, colCounter].Value = attrName;
-                }
-
+                wscell = wsrow.CreateCell(colCounter);
+                wscell.SetCellValue((AWithHashInCaption?"#":"") + attrName);
                 colCounter++;
             }
 
@@ -178,11 +177,15 @@ namespace Ict.Common.IO
 
             foreach (XmlNode node in AllNodes)
             {
+                wsrow = AWorksheet.CreateRow(rowCounter);
+
                 foreach (string attrName in AllAttributes)
                 {
+                    wscell = wsrow.CreateCell(colCounter);
+
                     if (attrName == "childOf")
                     {
-                        AWorksheet.Cells[rowCounter, colCounter].Value = TXMLParser.GetAttribute(node.ParentNode, "name");
+                        wscell.SetCellValue(TXMLParser.GetAttribute(node.ParentNode, "name"));
                     }
                     else
                     {
@@ -190,20 +193,20 @@ namespace Ict.Common.IO
 
                         if (value.StartsWith(eVariantTypes.eDateTime.ToString() + ":"))
                         {
-                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToDate();
-                            AWorksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
+                            wscell.SetCellValue(TVariant.DecodeFromString(value).ToDate());
+                            wscell.CellStyle = wsstyle_dateformat;
                         }
                         else if (value.StartsWith(eVariantTypes.eInteger.ToString() + ":"))
                         {
-                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToInt64();
+                            wscell.SetCellValue(TVariant.DecodeFromString(value).ToInt64());
                         }
                         else if (value.StartsWith(eVariantTypes.eDecimal.ToString() + ":"))
                         {
-                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToDecimal();
+                            wscell.SetCellValue((double)TVariant.DecodeFromString(value).ToDecimal());
                         }
                         else
                         {
-                            AWorksheet.Cells[rowCounter, colCounter].Value = value;
+                            wscell.SetCellValue(value);
                         }
                     }
 
@@ -217,21 +220,17 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// store the data into Excel format, Open Office XML, .xlsx
-        ///
-        /// this makes use of the EPPlus library
-        /// http://epplus.codeplex.com/
         /// </summary>
         public static bool Xml2ExcelStream(XmlDocument ADoc, Stream AStream, bool AWithHashInCaption = true)
         {
             try
             {
-                ExcelPackage pck = new ExcelPackage(AStream);
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                ISheet worksheet = workbook.CreateSheet("Data Export");
 
-                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
+                Xml2ExcelWorksheet(ADoc, workbook, worksheet, AWithHashInCaption);
 
-                Xml2ExcelWorksheet(ADoc, worksheet, AWithHashInCaption);
-
-                pck.SaveAs(AStream);
+                workbook.Write(AStream);
 
                 return true;
             }
@@ -244,26 +243,22 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// store the data into Excel format, Open Office XML, .xlsx
-        ///
-        /// this makes use of the EPPlus library
-        /// http://epplus.codeplex.com/
-        ///
         /// this overload stores several worksheets
         /// </summary>
         public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream, bool AWithHashInCaption = true)
         {
             try
             {
-                ExcelPackage pck = new ExcelPackage();
+                XSSFWorkbook workbook = new XSSFWorkbook();
 
                 foreach (string WorksheetTitle in ADocs.Keys)
                 {
-                    ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
+                    ISheet worksheet = workbook.CreateSheet(WorksheetTitle);
 
-                    Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet, AWithHashInCaption);
+                    Xml2ExcelWorksheet(ADocs[WorksheetTitle], workbook, worksheet, AWithHashInCaption);
                 }
 
-                pck.SaveAs(AStream);
+                workbook.Write(AStream);
                 return true;
             }
             catch (Exception e)
@@ -275,26 +270,24 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// store the data into Excel format, Open Office XML, .xlsx
-        ///
-        /// this makes use of the EPPlus library
-        /// http://epplus.codeplex.com/
         /// </summary>
-        private static void DataTable2ExcelWorksheet(DataTable table, ExcelWorksheet AWorksheet, bool AWithHashInCaption = true)
+        private static void DataTable2ExcelWorksheet(DataTable table, IWorkbook AWorkbook, ISheet AWorksheet, bool AWithHashInCaption = true)
         {
+            IRow wsrow = null;
+            ICell wscell = null;
             Int32 rowCounter = 1;
             Int16 colCounter = 1;
 
+            ICellStyle wsstyle_dateformat = AWorkbook.CreateCellStyle();
+            ICreationHelper createHelper = AWorkbook.GetCreationHelper();
+            wsstyle_dateformat.DataFormat = createHelper.CreateDataFormat().GetFormat("dd/mm/yyyy");
+
             // first write the header of the csv file
+            wsrow = AWorksheet.CreateRow(rowCounter);
             foreach (DataColumn col in table.Columns)
             {
-                if (AWithHashInCaption)
-                {
-                    AWorksheet.Cells[rowCounter, colCounter].Value = "#" + col.ColumnName;
-                }
-                else
-                {
-                    AWorksheet.Cells[rowCounter, colCounter].Value = col.ColumnName;
-                }
+                wscell = wsrow.CreateCell(colCounter);
+                wscell.SetCellValue((AWithHashInCaption?"#":"") + col.ColumnName);
 
                 colCounter++;
             }
@@ -304,11 +297,15 @@ namespace Ict.Common.IO
 
             foreach (DataRow row in table.Rows)
             {
+                wsrow = AWorksheet.CreateRow(rowCounter);
+
                 foreach (DataColumn col in table.Columns)
                 {
+                    wscell = wsrow.CreateCell(colCounter);
+
                     if (row.IsNull(col) || (row[col] == null))
                     {
-                        AWorksheet.Cells[rowCounter, colCounter].Value = "";
+                        wscell.SetCellValue("");
                         colCounter++;
                         continue;
                     }
@@ -317,16 +314,16 @@ namespace Ict.Common.IO
 
                     if (value is DateTime)
                     {
-                        AWorksheet.Cells[rowCounter, colCounter].Value = (DateTime)value;
-                        AWorksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
+                        wscell.SetCellValue((DateTime)value);
+                        wscell.CellStyle = wsstyle_dateformat;
                     }
                     else if (value is Int32 || value is Int64 || value is Int16)
                     {
-                        AWorksheet.Cells[rowCounter, colCounter].Value = Convert.ToInt64(value);
+                        wscell.SetCellValue(Convert.ToInt64(value));
                     }
                     else
                     {
-                        AWorksheet.Cells[rowCounter, colCounter].Value = value.ToString();
+                        wscell.SetCellValue(value.ToString());
                     }
 
                     colCounter++;
@@ -344,13 +341,13 @@ namespace Ict.Common.IO
         {
             try
             {
-                ExcelPackage pck = new ExcelPackage();
+                XSSFWorkbook workbook = new XSSFWorkbook();
 
-                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(table.TableName);
+                ISheet worksheet = workbook.CreateSheet(table.TableName);
 
-                DataTable2ExcelWorksheet(table, worksheet, AWithHashInCaption);
+                DataTable2ExcelWorksheet(table, workbook, worksheet, AWithHashInCaption);
 
-                pck.SaveAs(AStream);
+                workbook.Write(AStream);
 
                 return true;
             }
@@ -368,10 +365,12 @@ namespace Ict.Common.IO
         {
             try
             {
-                ExcelPackage pck = new ExcelPackage();
+                XSSFWorkbook workbook = new XSSFWorkbook();
 
-                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(ATableName);
+                ISheet worksheet = workbook.CreateSheet(ATableName);
 
+                IRow wsrow = null;
+                ICell wscell = null;
                 Int32 rowCounter = 1;
                 Int16 colCounter = 1;
 
@@ -382,28 +381,30 @@ namespace Ict.Common.IO
 
                 while (LineCounter < Lines.Count)
                 {
+                    wsrow = worksheet.CreateRow(rowCounter);
                     string line = Lines[LineCounter];
 
                     while (line.Trim().Length > 0)
                     {
+                        wscell = wsrow.CreateCell(colCounter);
                         string value = StringHelper.GetNextCSV(ref line, Lines, ref LineCounter, ASeparator);
 
                         TVariant v = new TVariant(value);
                         if (v.TypeVariant == eVariantTypes.eDecimal)
                         {
-                            worksheet.Cells[rowCounter, colCounter].Value = v.ToDecimal();
+                            wscell.SetCellValue((double)v.ToDecimal());
                         }
                         else if (v.TypeVariant == eVariantTypes.eInteger)
                         {
-                            worksheet.Cells[rowCounter, colCounter].Value = v.ToInt32();
+                            wscell.SetCellValue(v.ToInt32());
                         }
                         else if (v.TypeVariant == eVariantTypes.eDateTime)
                         {
-                            worksheet.Cells[rowCounter, colCounter].Value = v.ToDate();
+                            wscell.SetCellValue(v.ToDate());
                         }
                         else
                         {
-                            worksheet.Cells[rowCounter, colCounter].Value = value;
+                            wscell.SetCellValue(value);
                         }
                         colCounter++;
                     }
@@ -413,7 +414,7 @@ namespace Ict.Common.IO
                     colCounter = 1;
                 }
 
-                pck.SaveAs(AStream);
+                workbook.Write(AStream);
 
                 return true;
             }
@@ -427,27 +428,13 @@ namespace Ict.Common.IO
         /// <summary>
         /// Load an xlsx Excel file into a datatable
         /// </summary>
-        public static DataTable ParseExcelStream2DataTable(MemoryStream AStream,
+        public static DataTable ParseExcelWorkbook2DataTable(Stream AStream,
             bool AHasHeader = false,
             int AWorksheetID = 0,
             List <string>AColumnsToImport = null)
         {
-            ExcelPackage pck = new ExcelPackage();
-
-            pck.Load(AStream);
-
-            int countWorksheets = 0;
-            ExcelWorksheet worksheet = null;
-
-            foreach (ExcelWorksheet worksheetLoop in pck.Workbook.Worksheets)
-            {
-                if (countWorksheets == AWorksheetID)
-                {
-                    worksheet = worksheetLoop;
-                }
-
-                countWorksheets++;
-            }
+            XSSFWorkbook workbook = new XSSFWorkbook(AStream);
+            ISheet worksheet = workbook[AWorksheetID];
 
             DataTable result = new DataTable();
 
@@ -458,9 +445,12 @@ namespace Ict.Common.IO
 
             List <string>ColumnNames = new List <string>();
 
-            foreach (ExcelRangeBase firstRowCell in worksheet.Cells[1, 1, 1, worksheet.Dimension.End.Column])
+            IRow firstRow = worksheet.GetRow(0);
+            int cellCount = firstRow.LastCellNum;
+            for (int j = 0; j < cellCount; j++)
             {
-                string ColumnName = (AHasHeader ? firstRowCell.Text : string.Format("Column {0}", firstRowCell.Start.Column));
+                ICell cell = firstRow.GetCell(j);
+                string ColumnName = ((AHasHeader && (cell != null)) ? cell.ToString() : string.Format("Column {0}", j+1));
                 ColumnNames.Add(ColumnName);
 
                 if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnName))
@@ -471,21 +461,35 @@ namespace Ict.Common.IO
                 result.Columns.Add(ColumnName);
             }
 
-            int firstDataRow = AHasHeader ? 2 : 1;
-
-            for (int countRow = firstDataRow; countRow <= worksheet.Dimension.End.Row; countRow++)
+            int firstDataRow = AHasHeader ? 1 : 0;
+            for (int countRow = worksheet.FirstRowNum + firstDataRow; countRow <= worksheet.LastRowNum; countRow++)
             {
-                ExcelRangeBase ExcelRow = worksheet.Cells[countRow, 1, countRow, worksheet.Dimension.End.Column];
+                IRow wsrow = worksheet.GetRow(countRow);
+                if (wsrow == null) continue;
+                if (wsrow.Cells.All(d => d.CellType == CellType.Blank)) continue;
+
                 DataRow NewRow = result.NewRow();
 
-                foreach (ExcelRangeBase cell in ExcelRow)
+                for (int j = 0; j < cellCount; j++)
                 {
-                    if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnNames[cell.Start.Column - 1]))
+                    if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnNames[j]))
                     {
                         continue;
                     }
 
-                    NewRow[ColumnNames[cell.Start.Column - 1]] = cell.Value;
+                    if (wsrow.GetCell(j) != null)
+                    {
+                        ICell wscell = wsrow.GetCell(j);
+                        NewRow[ColumnNames[j]] = wscell;
+
+                        if (wscell.CellType == CellType.Numeric)
+                        {
+                            if (DateUtil.IsCellDateFormatted(wscell))
+                            {
+                                NewRow[ColumnNames[j]] = new TVariant(wscell.DateCellValue).EncodeToString();
+                            }
+                        }
+                    }
                 }
 
                 result.Rows.Add(NewRow);
@@ -523,7 +527,8 @@ namespace Ict.Common.IO
             }
 
             // Either we could not open the file or it is empty
-            return ParseCSV2Xml(new List <string>(), ASeparator);
+            List<string> AllColumns = null;
+            return ParseCSV2Xml(new List <string>(), ASeparator, out AllColumns);
         }
 
         /// <summary>
@@ -548,7 +553,8 @@ namespace Ict.Common.IO
                 reader.Close();
             }
 
-            return ParseCSV2Xml(Lines, ASeparator);
+            List<string> AllColumns = null;
+            return ParseCSV2Xml(Lines, ASeparator, out AllColumns);
         }
 
         /// <summary>
@@ -574,7 +580,8 @@ namespace Ict.Common.IO
 
             AReader.Close();
 
-            return ParseCSV2Xml(CSVRows, ASeparator);
+            List<string> AllColumns = null;
+            return ParseCSV2Xml(CSVRows, ASeparator, out AllColumns);
         }
 
         /// <summary>
@@ -582,7 +589,7 @@ namespace Ict.Common.IO
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
-        public static XmlDocument ParseCSV2Xml(List <string>ALines, string ASeparator = null)
+        public static XmlDocument ParseCSV2Xml(List <string>ALines, string ASeparator, out List <string> AAllAttributes)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
 
@@ -605,7 +612,7 @@ namespace Ict.Common.IO
                 }
             }
 
-            List <string>AllAttributes = new List <string>();
+            AAllAttributes = new List <string>();
 
             while (headerLine.Length > 0)
             {
@@ -641,7 +648,7 @@ namespace Ict.Common.IO
                     attrName = new string(arr);
                 }
 
-                AllAttributes.Add(attrName);
+                AAllAttributes.Add(attrName);
             }
 
             LineCounter = 1;
@@ -654,7 +661,7 @@ namespace Ict.Common.IO
                 {
                     SortedList <string, string>AttributePairs = new SortedList <string, string>();
 
-                    foreach (string attrName in AllAttributes)
+                    foreach (string attrName in AAllAttributes)
                     {
                         // support csv values that contain line breaks
                         AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, ALines, ref LineCounter, separator));
@@ -685,7 +692,7 @@ namespace Ict.Common.IO
                         myDoc.DocumentElement.AppendChild(newNode);
                     }
 
-                    foreach (string attrName in AllAttributes)
+                    foreach (string attrName in AAllAttributes)
                     {
                         if ((attrName != "name") && (attrName != "childOf"))
                         {
@@ -700,6 +707,74 @@ namespace Ict.Common.IO
             }
 
             return myDoc;
+        }
+
+        /// <summary>
+        /// convert a CSV file to a DataTable.
+        /// the first line is expected to contain the column names/captions, in quotes.
+        /// from the header line, the separator can be determined, if the parameter ASeparator is empty
+        /// </summary>
+        public static DataTable ParseCSV2DataTable(List <string>ALines, string ASeparator)
+        {
+            string headerLine = ALines[0];
+            string separator = ASeparator;
+            DataTable result = new DataTable();
+
+            if (string.IsNullOrEmpty(ASeparator))
+            {
+                if (!headerLine.StartsWith("\""))
+                {
+                    throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
+                        Environment.NewLine +
+                        Catalog.GetString("There must be a row with the column captions, at least the first caption must be in quotes."));
+                }
+                else
+                {
+                    // read separator from header line. at least the first column needs to be quoted
+                    separator = headerLine[StringHelper.FindMatchingQuote(headerLine, 0) + 2].ToString();
+                }
+            }
+
+            while (headerLine.Length > 0)
+            {
+                string attrName = StringHelper.GetNextCSV(ref headerLine, separator);
+
+                if (attrName.Length == 0)
+                {
+                    TLogging.Log("Csv2DataTable: found empty column header, will not consider any following columns");
+                    break;
+                }
+
+                if (attrName.Length > 1)
+                {
+                    attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
+                }
+
+                result.Columns.Add(attrName);
+            }
+
+            int LineCounter = 1;
+
+            while (LineCounter < ALines.Count)
+            {
+                DataRow NewRow = result.NewRow();
+                string line = ALines[LineCounter];
+
+                if (line.Trim().Length > 0)
+                {
+                    foreach (DataColumn c in result.Columns)
+                    {
+                        // support csv values that contain line breaks
+                        NewRow[c.ColumnName] = StringHelper.GetNextCSV(ref line, ALines, ref LineCounter, separator);
+                    }
+
+                    result.Rows.Add(NewRow);
+                }
+
+                LineCounter++;
+            }
+
+            return result;
         }
     }
 }

@@ -5,7 +5,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -155,7 +155,7 @@ class Auth {
 						window.location.replace('/');
 						}, 3000);
 				} else {
-					display_error(result.AVerificationResult, i18next.t('login.errorPwdChanged'));
+					display_error(result.AVerificationResult, 'login', i18next.t('login.errorPwdChanged'));
 				}
 			})
 			.catch(function(error) {

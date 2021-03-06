@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -3148,7 +3148,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DateTime startDate = AParameters["param_StartDate"].ToDate();
             string strStartDate = startDate.ToString("#yyyy-MM-dd#");
             DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
-            string strEndDate = endDate.ToString("#yyyy-MM-dd#");
 
             Int32 LedgerAccountingPeriods;
             Int32 LedgerForwardPeriods;
@@ -3369,9 +3368,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Decimal MinAmount = AParameters["param_min_amount"].ToDecimal();
             Decimal MaxAmount = AParameters["param_max_amount"].ToDecimal();
-
-            bool TaxDeductiblePercentageEnabled =
-                new TSystemDefaults(DbAdapter.FPrivateDatabaseObj).GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             DataTable resultTable = new DataTable();
             String ExtractTables = " ";

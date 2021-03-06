@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,12 +40,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Gets the 'Primary Phone Number' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="APrimaryPhoneNumber">The 'Primary Phone Number' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got a 'Primary Phone Number', otherwise false.</returns>
-        public static bool GetPrimaryPhoneNumber(Int64 APartnerKey, out string APrimaryPhoneNumber)
+        public static bool GetPrimaryPhoneNumber(TDBTransaction AReadTransaction, Int64 APartnerKey, out string APrimaryPhoneNumber)
         {
-            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
+            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(
+                AReadTransaction,
+                APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryPhoneNumber);
 
             return Calculations.GetPrimaryPhoneNumber(PrimaryContactAttributes,
@@ -55,12 +58,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Gets the 'Primary Email Address' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="APrimaryEmailAddress">The 'Primary Email Address' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got a 'Primary Email Address', otherwise false.</returns>
-        public static bool GetPrimaryEmailAddress(Int64 APartnerKey, out string APrimaryEmailAddress)
+        public static bool GetPrimaryEmailAddress(TDBTransaction AReadTransaction, Int64 APartnerKey, out string APrimaryEmailAddress)
         {
-            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
+            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(
+                AReadTransaction,
+                APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress);
 
             return Calculations.GetPrimaryEmailAddress(PrimaryContactAttributes,
@@ -70,15 +76,18 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Determines the 'Primary Phone Number' and the 'Primary E-mail Address' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="APrimaryPhoneNumber">The 'Primary Phone Number' if the Partner has got one, otherwise null.</param>
         /// <param name="APrimaryEmailAddress">The 'Primary E-mail Address' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got at least one of the 'Primary E-mail Address' and the 'Primary Phone Number'
         /// Contact Details, otherwise false.</returns>
-        public static bool GetPrimaryEmailAndPrimaryPhone(Int64 APartnerKey,
+        public static bool GetPrimaryEmailAndPrimaryPhone(TDBTransaction AReadTransaction, Int64 APartnerKey,
             out string APrimaryPhoneNumber, out string APrimaryEmailAddress)
         {
-            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
+            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(
+                AReadTransaction,
+                APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress |
                 Calculations.TOverallContSettingKind.ocskPrimaryPhoneNumber);
 
@@ -89,6 +98,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Determines the 'Primary Phone Number', 'Primary E-mail Address' and the 'Fax Number' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="APrimaryPhoneNumber">The 'Primary Phone Number' if the Partner has got one, otherwise null.</param>
         /// <param name="APrimaryEmailAddress">The 'Primary E-mail Address' if the Partner has got one, otherwise null.</param>
@@ -97,19 +107,21 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// Argument.</param>
         /// <returns>True if the Partner has got at least one of the 'Primary E-mail Address' and the 'Primary Phone Number'
         /// Contact Details or a 'Fax Number', otherwise false.</returns>
-        public static bool GetPrimaryEmailAndPrimaryPhoneAndFax(Int64 APartnerKey,
+        public static bool GetPrimaryEmailAndPrimaryPhoneAndFax(TDBTransaction AReadTransaction, Int64 APartnerKey,
             out string APrimaryPhoneNumber, out string APrimaryEmailAddress, out string AFaxNumber)
         {
             bool ReturnValue = false;
             PPartnerAttributeTable PartnerAttributeDT;
 
-            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
+            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(
+                AReadTransaction,
+                APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress |
                 Calculations.TOverallContSettingKind.ocskPrimaryPhoneNumber, out PartnerAttributeDT);
 
             if (PartnerAttributeDT != null)
             {
-                AFaxNumber = Calculations.DeterminePartnerFaxNumber(PartnerAttributeDT);
+                AFaxNumber = Calculations.DeterminePartnerFaxNumber(AReadTransaction, PartnerAttributeDT);
 
                 if (AFaxNumber != null)
                 {
@@ -135,12 +147,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Gets the 'Within Organisation Email Address' of a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="AWithinOrganisationEmailAddress">The 'Within Organisation Email Address' if the Partner has got one, otherwise null.</param>
         /// <returns>True if the Partner has got a 'Within Organisation Email Address', otherwise false.</returns>
-        public static bool GetWithinOrganisationEmailAddress(Int64 APartnerKey, out string AWithinOrganisationEmailAddress)
+        public static bool GetWithinOrganisationEmailAddress(TDBTransaction AReadTransaction, Int64 APartnerKey, out string AWithinOrganisationEmailAddress)
         {
-            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
+            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(
+                AReadTransaction,
+                APartnerKey,
                 Calculations.TOverallContSettingKind.ocskEmailAddressWithinOrg);
 
             return Calculations.GetWithinOrganisationEmailAddress(PrimaryContactAttributes,
@@ -150,13 +165,16 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Return the 'within organisation' email, or if that's blank, return the primary email.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="AEmailAddress"></param>
         /// <param name="AEmailType"></param>
         /// <returns>true if there seems to be one</returns>
-        public static bool GetWithinOrganisationOrPrimaryEmailAddress(Int64 APartnerKey, out string AEmailAddress, out String AEmailType)
+        public static bool GetWithinOrganisationOrPrimaryEmailAddress(TDBTransaction AReadTransaction, Int64 APartnerKey, out string AEmailAddress, out String AEmailType)
         {
-            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
+            Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(
+                AReadTransaction,
+                APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress | Calculations.TOverallContSettingKind.ocskEmailAddressWithinOrg);
             Boolean foundOne = Calculations.GetWithinOrganisationEmailAddress(PrimaryContactAttributes, out AEmailAddress);
 
@@ -176,6 +194,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Determines the 'Primary' and/or 'Within Organisation' setting(s) for a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="AOverallContSettingKind">Specify the kind of Overall Contact Setting(s) that you want returned.
         /// Combine multiple ones with the binary OR operator ( | ).</param>
@@ -185,17 +204,20 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// records that constitute Contact Detail records, or when the Partner has got only one p_partner_attribute record
         /// but this records' Current flag is false. It also returns null if no record was found that met what was asked for
         /// with <paramref name="AOverallContSettingKind"/>!</returns>
-        public static Calculations.TPartnersOverallContactSettings GetPartnersOverallCS(Int64 APartnerKey,
+        public static Calculations.TPartnersOverallContactSettings GetPartnersOverallCS(
+            TDBTransaction AReadTransaction,
+            Int64 APartnerKey,
             Calculations.TOverallContSettingKind AOverallContSettingKind)
         {
             PPartnerAttributeTable PartnerAttributeDT;
 
-            return GetPartnersOverallCS(APartnerKey, AOverallContSettingKind, out PartnerAttributeDT);
+            return GetPartnersOverallCS(AReadTransaction, APartnerKey, AOverallContSettingKind, out PartnerAttributeDT);
         }
 
         /// <summary>
         /// Determines the 'Primary' and/or 'Within Organisation' setting(s) for a Partner.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
         /// <param name="AOverallContSettingKind">Specify the kind of Overall Contact Setting(s) that you want returned.
         /// Combine multiple ones with the binary OR operator ( | ).</param>
@@ -208,7 +230,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// records that constitute Contact Detail records, or when the Partner has got only one p_partner_attribute record
         /// but this records' Current flag is false. It also returns null if no record was found that met what was asked for
         /// with <paramref name="AOverallContSettingKind"/>!</returns>
-        public static Calculations.TPartnersOverallContactSettings GetPartnersOverallCS(Int64 APartnerKey,
+        public static Calculations.TPartnersOverallContactSettings GetPartnersOverallCS(
+            TDBTransaction AReadTransaction,
+            Int64 APartnerKey,
             Calculations.TOverallContSettingKind AOverallContSettingKind, out PPartnerAttributeTable APartnerAttributeDT)
         {
             Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = null;
@@ -224,9 +248,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                     if (PartnerAttributeDT.Rows.Count > 0)
                     {
-                        Calculations.DeterminePartnerContactDetailAttributes(PartnerAttributeDT);
+                        Calculations.DeterminePartnerContactDetailAttributes(ReadTransaction, PartnerAttributeDT);
 
                         PrimaryContactAttributes = Calculations.DeterminePrimaryOrWithinOrgSettingsForPartner(
+                            AReadTransaction,
                             PartnerAttributeDT, AOverallContSettingKind);
 
                         if (((AOverallContSettingKind & Calculations.TOverallContSettingKind.ocskPrimaryContactMethod) ==
@@ -240,6 +265,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             }
 
                             Calculations.DeterminePartnerSystemCategorySettings(
+                                AReadTransaction,
                                 PartnerAttributeDT, ref PrimaryContactAttributes, AOverallContSettingKind);
                         }
                     }
@@ -270,7 +296,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 {
                     // Load all PPartnerAttribute records of the Partner and put them into a DataTable
                     ReturnValue = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
-                    Calculations.DeterminePartnerContactDetailAttributes(ReturnValue);
+                    Calculations.DeterminePartnerContactDetailAttributes(ReadTransaction, ReturnValue);
                 });
 
             return ReturnValue;
@@ -279,17 +305,20 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <summary>
         /// Gets additional mobile or landline numbers that are not the primary phone number.
         /// </summary>
+        /// <param name="AReadTransaction"></param>
         /// <param name="APartnerKey">A partner key for which we are finding the additional information.</param>
         /// <param name="AMobileNumbers">Additional mobile numbers for the specified partner.  Empty string if none.</param>
         /// <param name="AAlternatePhoneNumbers">Additional landline numbers for the specified partner.  Empty string if none.</param>
-        public static void GetPartnersAdditionalPhoneNumbers(Int64 APartnerKey, out string AMobileNumbers, out string AAlternatePhoneNumbers)
+        public static void GetPartnersAdditionalPhoneNumbers(
+                TDBTransaction AReadTransaction,
+                Int64 APartnerKey, out string AMobileNumbers, out string AAlternatePhoneNumbers)
         {
             AMobileNumbers = string.Empty;
             AAlternatePhoneNumbers = string.Empty;
 
             // Get all the contact details for the specified partner and then find the ones that relate to phones
             PPartnerAttributeTable partnerAttributeDT = GetPartnersContactDetailAttributes(APartnerKey);
-            DataView allPhoneNumbers = Calculations.DeterminePartnerPhoneNumbers(partnerAttributeDT, true, false);
+            DataView allPhoneNumbers = Calculations.DeterminePartnerPhoneNumbers(AReadTransaction, partnerAttributeDT, true, false);
 
             foreach (DataRowView rv in allPhoneNumbers)
             {

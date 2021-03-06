@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -54,15 +55,20 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string APartnerKey,
             string AFirstName,
             string AFamilyNameOrOrganisation,
+            string AStreetName,
             string ACity,
             string APostCode,
+            string AEmailAddress,
             string APartnerClass,
             bool AActiveOnly,
             string ASortBy,
             Int16 AMaxRecords,
-            out Int32 ATotalRecords)
+            out Int32 ATotalRecords,
+            out TVerificationResultCollection AVerificationResult)
         {
             TPartnerFind PartnerFind = new TPartnerFind();
+            AVerificationResult = new TVerificationResultCollection();
+            ATotalRecords = -1;
 
             PartnerFindTDSSearchCriteriaTable CriteriaData = new PartnerFindTDSSearchCriteriaTable();
             PartnerFindTDSSearchCriteriaRow CriteriaRow = CriteriaData.NewRowTyped();
@@ -72,12 +78,23 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             if (APartnerKey.Length > 0)
             {
-                CriteriaRow.PartnerKey = System.Convert.ToInt64(APartnerKey);
+                Int64 PartnerKey = -1;
+
+                if (!Int64.TryParse(APartnerKey, out PartnerKey))
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Invalid Contact Key", "error_invalid_contact_key", TResultSeverity.Resv_Critical));
+
+                    return new PartnerFindTDSSearchResultTable();
+                }
+
+                CriteriaRow.PartnerKey = PartnerKey;
                 CriteriaRow.ExactPartnerKeyMatch = false;
             }
 
             // CriteriaRow.PersonalName = AFirstName;
             CriteriaRow.City = ACity;
+            CriteriaRow.Address2 = AStreetName;
+            CriteriaRow.Email = AEmailAddress;
 
             // TODO: only works for one partner class at the moment
             if (APartnerClass.Length > 0)
@@ -105,7 +122,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             CriteriaRow.SortBy = ASortBy;
 
-            PartnerFind.PerformSearch(CriteriaData, true);
+            // call this in the same thread, without progress tracker.
+            bool UseDifferentThread = false;
+            PartnerFind.PerformSearch(CriteriaData, true, UseDifferentThread);
 
             Int32 TotalRecords;
             Int16 TotalPages;
@@ -142,7 +161,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             CriteriaRow.PartnerClass = "*";
             CriteriaRow.ExactPartnerKeyMatch = AExactMatch;
 
-            PartnerFind.PerformSearch(CriteriaData, true);
+            // call this in the same thread, without progress tracker.
+            bool UseDifferentThread = false;
+            PartnerFind.PerformSearch(CriteriaData, true, UseDifferentThread);
 
             // NOTE from AlanP - Dec 2015:
             // If CriteriaRow.ExactPartnerKeyMatch is false and the value of APartnerKey is, say, 0012345600 the search will return all partners between
@@ -190,7 +211,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             int TotalRecords;
-            AResult = FindPartners(String.Empty, String.Empty, ASearch, String.Empty, String.Empty, APartnerClass, AActiveOnly, "PartnerName", ALimit, out TotalRecords);
+            TVerificationResultCollection VerificationResult;
+
+            AResult = FindPartners(
+                String.Empty, //PartnerKey
+                String.Empty, // Firstname
+                ASearch, // Name
+                String.Empty, // StreetName
+                String.Empty, // City
+                String.Empty, // Postalcode
+                String.Empty, // Email
+                APartnerClass,
+                AActiveOnly,
+                "PartnerName",
+                ALimit,
+                out TotalRecords,
+                out VerificationResult);
 
             return AResult.Rows.Count > 0;
         }

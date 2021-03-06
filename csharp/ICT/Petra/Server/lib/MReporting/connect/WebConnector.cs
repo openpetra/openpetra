@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, ChristianK
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,8 +52,9 @@ using Ict.Common.Session;
 using Ict.Petra.Shared.MCommon;
 using Ict.Common.Exceptions;
 using Npgsql;
-using OfficeOpenXml;
 using HtmlAgilityPack;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -309,13 +310,13 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         private static bool ExportToExcelFile(string AFilename, HtmlDocument AHTMLDocument)
         {
             // transform the HTML output to xlsx file
-            ExcelPackage ExcelDoc = HTMLTemplateProcessor.HTMLToCalc(AHTMLDocument);
+            XSSFWorkbook workbook = HTMLTemplateProcessor.HTMLToCalc(AHTMLDocument);
 
-            if (ExcelDoc != null)
+            if (workbook != null)
             {
                 using (FileStream fs = new FileStream(AFilename, FileMode.Create))
                 {
-                    ExcelDoc.SaveAs(fs);
+                    workbook.Write(fs);
                     fs.Close();
                 }
 
@@ -328,7 +329,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         private static bool PrintToPDF(string AFilename, HtmlDocument AHTMLDocument)
         {
             // transform the HTML output to pdf file
-            HTMLTemplateProcessor.HTMLToPDF(AHTMLDocument, AFilename);
+            Html2Pdf.HTMLToPDF(AHTMLDocument.DocumentNode.WriteTo(), AFilename);
 
             return true;
         }

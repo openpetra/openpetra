@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,6 @@ using Ict.Petra.Server.MCommon.Validation;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Validation;
 using Ict.Petra.Server.MFinance.Validation;
-using Ict.Petra.Server.MCommon.DataReader.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MCommon.Cacheable;
@@ -103,7 +102,6 @@ namespace Ict.Petra.Server.App.Delegates
         /// </summary>
         public static void Init()
         {
-            TValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
             TPartnerValidationHelper.PartnerHasActiveStatusDelegate = @TPartnerServerLookups.PartnerHasActiveStatus;
             TPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TPartnerServerLookups.PartnerIsLinkedToCC;
@@ -144,15 +142,6 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @CachePopulatorUnits.GetCacheableTable;
             TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @CachePopulatorConference.GetCacheableTable;
             TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
-
-            TSharedDataCache.TMPartner.GetPartnerCalculationsSystemCategoryAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DetermineSystemCategoryAttributeTypes;
-            TSharedDataCache.TMPartner.GetPartnerCalculationsPartnerContactDetailAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DeterminePartnerContactDetailAttributeTypes;
-            TSharedDataCache.TMPartner.GetPartnerCalculationsEmailPartnerAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DetermineEmailPartnerAttributeTypes;
-            TSharedDataCache.TMPartner.GetPartnerCalculationsPhonePartnerAttributeTypesDelegate =
-                @Ict.Petra.Server.MPartner.Common.Calculations.DeterminePhonePartnerAttributeTypes;
 
             TCacheableTablesManager.Init();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));

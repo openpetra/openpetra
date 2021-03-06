@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -55,6 +55,9 @@ namespace Ict.Petra.Server.App.Core
 
             state.AbsoluteOverallAmount = AAbsoluteOverallAmount;
             state.Caption = ACaption;
+
+            // First clear all progress trackers. We cannot have too many variables in the session. We only work with one progress tracker per session.
+            TSession.ClearVariables(PROGRESSTRACKER);
 
             TSession.SetVariable(PROGRESSTRACKER + AClientID, state);
 

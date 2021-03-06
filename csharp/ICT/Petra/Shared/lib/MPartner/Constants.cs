@@ -5,7 +5,7 @@
 //       christiank
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -259,6 +259,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>FamilyName</summary>
         public const String PARTNERIMPORT_FAMILYNAME = "FamilyName";
 
+        /// <summary>Organisation Name</summary>
+        public const String PARTNERIMPORT_ORGANISATIONNAME = "OrganisationName";
+
         /// <summary>MaritalStatus</summary>
         public const String PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";
 
@@ -294,9 +297,6 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Language</summary>
         public const String PARTNERIMPORT_LANGUAGE = "Language";
-
-        /// <summary>OMerField</summary>
-        public const String PARTNERIMPORT_OMERFIELD = "OMerField";
 
         /// <summary>FirstName</summary>
         public const String PARTNERIMPORT_FIRSTNAME = "FirstName";
@@ -370,9 +370,6 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Notes</summary>
         public const String PARTNERIMPORT_NOTES = "Notes";
 
-        /// <summary>NotesFamily</summary>
-        public const String PARTNERIMPORT_NOTESFAMILY = "NotesFamily";
-
         /// <summary>ContactCode</summary>
         public const String PARTNERIMPORT_CONTACTCODE = "ContactCode";
         /// <summary>ContactDate</summary>
@@ -421,6 +418,18 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Default Aquisition Code to use for Partner Import</summary>
         public const String PARTNERIMPORT_AQUISITION_DEFAULT = "IMPORT";
+
+        /// <summary>Consent Type Postal Address</summary>
+        public const String CONSENT_TYPE_ADDRESS = "address";
+
+        /// <summary>Consent Type Email</summary>
+        public const String CONSENT_TYPE_EMAIL = "email address";
+
+        /// <summary>Consent Type Phone Number</summary>
+        public const String CONSENT_TYPE_LANDLINE = "phone landline";
+
+        /// <summary>Consent Type Mobile Number</summary>
+        public const String CONSENT_TYPE_MOBILE = "phone mobile";
 
         /// Default values
         /// <summary>used eg. for PPerson.OccupationCode</summary>
