@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,6 +56,7 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
     public class TBankImportGiftMatching
     {
         Int32 FLedgerNumber = -1;
+        string dirTestData = "../../csharp/ICT/Testing/lib/MFinance/server/BankImport/";
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -85,7 +86,6 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
             // import the test gift batch, and post it
             TGiftImporting importer = new TGiftImporting();
 
-            string dirTestData = "../../csharp/ICT/Testing/lib/MFinance/server/BankImport/";
             string testFile = dirTestData + "GiftBatch.csv";
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
@@ -206,6 +206,70 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
             // TODO: allow 2 gifts to be merged in OpenPetra, even when they come separate on the bank statement.
             //           then 4 gifts could be matched.
             Assert.AreEqual(1, GiftDS.AGift.Rows.Count, "expected two matched gifts");
+        }
+
+
+        /// <summary>
+        /// Test the import of CAMT file
+        /// </summary>
+        [Test]
+        public void TestImportCAMT()
+        {
+            // import the test camt file, will already do the training
+            string testFile = dirTestData + "camt_testfile.xml";
+            StreamReader sr = new StreamReader(testFile);
+            string FileContent = sr.ReadToEnd();
+            sr.Close();
+            FileContent = FileContent.Replace("2015-09-01", DateTime.Now.Year.ToString("0000") + "-09-01");
+            FileContent = FileContent.Replace("JJJJ-MM-TT", DateTime.Now.Year.ToString("0000") + "-09-01");
+            FileContent = FileContent.Replace("JJJJMMTT", DateTime.Now.Year.ToString("0000") + "0901");
+
+            Int32 StatementKey;
+            TVerificationResultCollection VerificationResult;
+            bool success = TBankStatementImportCAMT.ImportFromFile(
+                FLedgerNumber,
+                "6200",
+                "camt_testfileSeptember.xml",
+                FileContent,
+                false,
+                out StatementKey,
+                out VerificationResult);
+            Assert.AreEqual(true, success, "valid bank import dataset september");
+        }
+
+        /// <summary>
+        /// Import a sample CAMT file
+        /// </summary>
+        [Test]
+        public void ImportCAMTFile()
+        {
+            TCAMTParser p = new TCAMTParser();
+
+            string testfile = dirTestData + "camt_testfile.xml";
+            TVerificationResultCollection VerificationResult;
+            string FileContent;
+            using (StreamReader sr = new StreamReader(testfile))
+            {
+                FileContent = sr.ReadToEnd();
+            }
+
+            FileContent = FileContent.Replace("2015-09-01", DateTime.Now.Year.ToString("0000") + "-09-01");
+            FileContent = FileContent.Replace("JJJJ-MM-TT", DateTime.Now.Year.ToString("0000") + "-09-01");
+            FileContent = FileContent.Replace("JJJJMMTT", DateTime.Now.Year.ToString("0000") + "0901");
+
+            p.ProcessFileContent(FileContent, false, out VerificationResult);
+
+            Assert.AreEqual(1, p.statements.Count, "there should be one statement");
+
+            foreach (TStatement stmt in p.statements)
+            {
+                Assert.AreEqual(1, stmt.transactions.Count, "There should be one transaction");
+
+                foreach (TTransaction tr in stmt.transactions)
+                {
+                    Assert.AreEqual(new DateTime(DateTime.Now.Year, 9, 1), tr.valueDate, "The date should match");
+                }
+            }
         }
     }
 }
