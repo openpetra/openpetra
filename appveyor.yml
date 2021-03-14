@@ -14,7 +14,7 @@ install:
 #- sudo -E ln -s `which npm` /usr/bin/npm
 #- sudo -E chown -R 1001:1001 "/home/appveyor/.npm"
 #- sudo sed -i "s/\[mysqld\]/[mysqld]\nskip-name-resolve/g" /etc/mysql/my.cnf && sudo systemctl restart mysql
-- curl https://getopenpetra.com > getopenpetra.sh && chmod a+x getopenpetra.sh && sudo -E ./getopenpetra.sh devenv
+- curl https://get.openpetra.org > getopenpetra.sh && chmod a+x getopenpetra.sh && sudo -E ./getopenpetra.sh devenv
 build_script:
 - echo "building was already done in install section"
 test_script:
