@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -250,6 +250,15 @@ function import_file(self) {
 	  alert('The File APIs are not fully supported in this browser.');
 	}
 
+	if (filename.endsWith(".xml")) {
+		import_camt_file(self, filename);
+	} else {
+		import_csv_file(self, filename);
+	}
+}
+
+function import_csv_file(self, filename) {
+
 	var settings = extract_data($('#tabsettings'));
 
 	var reader = new FileReader();
@@ -288,6 +297,42 @@ function import_file(self) {
 	// Read in the file as a data URL.
 	reader.readAsText(self[0].files[0], settings['AFileEncoding']);
 
+};
+
+function import_camt_file(self, filename) {
+
+	var settings = extract_data($('#tabsettings'));
+
+	var reader = new FileReader();
+
+	reader.onload = function (event) {
+
+		p = {
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'ABankAccountCode': settings['ABankAccountCode'],
+			'ABankStatementFilename': filename,
+			'ACAMTContent': event.target.result,
+			};
+
+		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCAMTFile', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			result = result.result;
+			if (result == true) {
+				display_message(i18next.t('BankImport.upload_success'), "success");
+				display_dropdownlist();
+			} else {
+				display_message(i18next.t('BankImport.upload_fail'), "fail");
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('BankImport.upload_fail'), "fail");
+		});
+
+	}
+	// Read in the file as a data URL.
+	reader.readAsText(self[0].files[0]);
 };
 
 function transform_to_gl() {

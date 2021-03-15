@@ -165,6 +165,34 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         }
 
         /// <summary>
+        /// import the data of a CAMT file
+        /// </summary>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
+        /// <param name="ABankStatementFilename"></param>
+        /// <param name="ACAMTContent"></param>
+        /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportFromCAMTFile(
+            Int32 ALedgerNumber,
+            string ABankAccountCode,
+            string ABankStatementFilename,
+            string ACAMTContent,
+            out Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            return TBankStatementImportCAMT.ImportFromFile(
+                ALedgerNumber,
+                ABankAccountCode,
+                ABankStatementFilename,
+                ACAMTContent,
+                false,
+                out AStatementKey,
+                out AVerificationResult);
+        }
+
+        /// <summary>
         /// train an existing bank statement, where the gift batch has been posted already
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
