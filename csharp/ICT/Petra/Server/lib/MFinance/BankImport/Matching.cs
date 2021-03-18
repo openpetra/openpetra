@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,7 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.BankImport.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.App.Core;
 
@@ -99,13 +100,17 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                     TLogging.LogAtLevel(1, " selected gift batch:   " + SelectedGiftBatch.ToString());
                 }
 
-                if (SelectedGiftBatch == -1)
+                if (SelectedGiftBatch != -1)
+                {
+                    CreateMatches(MainDS, stmt, SelectedGiftBatch, true);
+                }
+                else
                 {
                     // cannot find the posted gift batch without any doubt
-                    continue;
-                }
 
-                CreateMatches(MainDS, stmt, SelectedGiftBatch, true);
+                    // so try to find the donor by the bank account, or the purpose if we only have one motivation detail in the database
+                    CreateAutoMatches(MainDS, stmt);
+                }
             }
         }
 
@@ -130,13 +135,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                 AGiftTable.GetDonorKeyDBName(),
                 DataViewRowState.CurrentRows);
 
-            AMainDS.PBankingDetails.DefaultView.Sort = BankImportTDSPBankingDetailsTable.GetBankSortCodeDBName() + "," +
-                                                       BankImportTDSPBankingDetailsTable.GetBankAccountNumberDBName();
+            AMainDS.PBankingDetails.DefaultView.Sort = BankImportTDSPBankingDetailsTable.GetIbanDBName();
 
             foreach (BankImportTDSAEpTransactionRow transaction in AMainDS.AEpTransaction.Rows)
             {
-                // find the donor for this transaction, by his bank account number
-                Int64 DonorKey = GetDonorByBankAccountNumber(AMainDS, transaction.BranchCode, transaction.BankAccountNumber);
+                // find the donor for this transaction, by his IBAN number
+                Int64 DonorKey = GetDonorByIBAN(AMainDS, transaction.Iban);
 
                 if (transaction.BankAccountNumber.Length == 0)
                 {
@@ -288,33 +292,20 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
             db.Select(AMainDS, stmt, AMainDS.PBankingDetails.TableName, transaction, parameters);
             transaction.Rollback();
+            db.CloseDBConnection();
 
             return true;
         }
 
-        private static Int64 GetDonorByBankAccountNumber(BankImportTDS AMainDS, string ABankSortCode, string ABankAccountNumber)
+        private static Int64 GetDonorByIBAN(BankImportTDS AMainDS, string AIBAN)
         {
-            if (Regex.IsMatch(ABankAccountNumber, "^[A-Z]") && (ABankAccountNumber.Length > 2) && (ABankAccountNumber.Substring(0,2) == "DE"))
-            {
-                // TODO search for IBAN / BIC instead of bank sort code and account number
-
-                // For the moment, we try to assume sort code and account number
-                // it might be wrong, but then we would not find a donor anyway.
-                // we should definitely not store these calculated numbers
-                // perhaps do validation against https://kontocheck.solidcharity.com
-                string IBAN = ABankAccountNumber;
-                ABankSortCode = IBAN.Substring(4, 8);
-                ABankAccountNumber = IBAN.Substring(12).TrimStart(new char[] { '0' });
-                // TLogging.Log("IBAN " + IBAN + " converted to sort code " + ABankSortCode + " and account number + " + ABankAccountNumber);
-            }
-
-            DataRowView[] bankingDetails = AMainDS.PBankingDetails.DefaultView.FindRows(new object[] { ABankSortCode, ABankAccountNumber });
+            DataRowView[] bankingDetails = AMainDS.PBankingDetails.DefaultView.FindRows(new object[] { AIBAN });
 
             if (bankingDetails.Length > 0)
             {
                 if (bankingDetails.Length > 1)
                 {
-                    TLogging.Log("Warning: 2 people own the same bank account " + ABankSortCode + " " + ABankAccountNumber);
+                    TLogging.Log("Warning: 2 people own the same bank account " + AIBAN);
                 }
 
                 // TODO: just return the first partner key; usually not 2 people owning the same bank account donate at the same time???
@@ -327,14 +318,60 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
         private static void FindDonorKeysByBankAccount(BankImportTDS AMainDS)
         {
-            AMainDS.PBankingDetails.DefaultView.Sort = BankImportTDSPBankingDetailsTable.GetBankSortCodeDBName() + "," +
-                                                       BankImportTDSPBankingDetailsTable.GetBankAccountNumberDBName();
+            if (AMainDS.PBankingDetails.Rows.Count == 0)
+            {
+                // First collect all IBANs in this statement
+                List<string> IBANs = new List<string>();
+                foreach (BankImportTDSAEpTransactionRow transaction in AMainDS.AEpTransaction.Rows)
+                {
+                    if (transaction.Iban.Length > 0)
+                    {
+                        IBANs.Add(transaction.Iban);
+                    }
+                }
+
+                // load all banking details by IBAN into AMainDS
+                if (IBANs.Count > 0)
+                {
+                    string sql = "SELECT " + PPartnerBankingDetailsTable.GetPartnerKeyDBName() + " as PartnerKey, " +
+                        "bd.* " +
+                        "FROM " + PBankingDetailsTable.GetTableDBName() + " bd, " + PPartnerBankingDetailsTable.GetTableDBName() + " pbd " +
+                        "WHERE pbd." + PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName() + " = bd." + PBankingDetailsTable.GetBankingDetailsKeyDBName() + " " +
+                        "AND " + BankImportTDSPBankingDetailsTable.GetIbanDBName() + " IN (";
+
+                    List<OdbcParameter> parameters = new List<OdbcParameter>();
+
+                    foreach (string iban in IBANs)
+                    {
+                        if (parameters.Count > 0)
+                        {
+                            sql += ",";
+                        }
+                        sql += "?";
+                        OdbcParameter p = new OdbcParameter("IBAN" + parameters.Count.ToString(), OdbcType.VarChar);
+                        p.Value = iban;
+                        parameters.Add(p); 
+                    }
+
+                    sql += ")";
+
+                    TDataBase db = DBAccess.Connect("FindDonorKeysByBankAccount");
+                    TDBTransaction transaction = db.BeginTransaction(IsolationLevel.ReadUncommitted);
+
+                    db.SelectDT(AMainDS.PBankingDetails, sql, transaction, parameters.ToArray());
+                    
+                    transaction.Rollback();
+                    db.CloseDBConnection();
+                }
+            }
+
+            AMainDS.PBankingDetails.DefaultView.Sort = BankImportTDSPBankingDetailsTable.GetIbanDBName();
 
             foreach (BankImportTDSAEpTransactionRow transaction in AMainDS.AEpTransaction.Rows)
             {
-                Int64 DonorKey = GetDonorByBankAccountNumber(AMainDS, transaction.BranchCode, transaction.BankAccountNumber);
+                Int64 DonorKey = GetDonorByIBAN(AMainDS, transaction.Iban);
 
-                if (transaction.BankAccountNumber.Length == 0)
+                if (transaction.Iban.Length == 0)
                 {
                     // useful for NUnit testing for csv import: partnerkey in description
                     try
@@ -497,6 +534,36 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
                 TLogging.Log("matched: " + CountMatched.ToString() + " of " + AMainDS.AEpTransaction.Rows.Count.ToString());
             }
+
+            StoreCurrentMatches(AMainDS, ACurrentStatement.BankAccountCode);
+        }
+
+        private static void CreateAutoMatches(BankImportTDS AMainDS,
+            AEpStatementRow ACurrentStatement)
+        {
+            List <DataRow>ToDelete = new List <DataRow>();
+
+            foreach (BankImportTDSAEpTransactionRow transaction  in AMainDS.AEpTransaction.Rows)
+            {
+                // delete transactions with negative amount
+                if (transaction.TransactionAmount < 0)
+                {
+                    ToDelete.Add(transaction);
+                }
+                else
+                {
+                    transaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                }
+            }
+
+            foreach (DataRow del in ToDelete)
+            {
+                AMainDS.AEpTransaction.Rows.Remove(del);
+            }
+
+            FindDonorKeysByBankAccount(AMainDS);
+
+            // TODO match motivation detail
 
             StoreCurrentMatches(AMainDS, ACurrentStatement.BankAccountCode);
         }

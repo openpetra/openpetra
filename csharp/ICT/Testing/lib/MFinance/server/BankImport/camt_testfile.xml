@@ -63,7 +63,7 @@
   <Ntry>
     <NtryRef>TTMMJJ0000000000123456748</NtryRef>
     <Amt Ccy="EUR">123.45</Amt>
-    <CdtDbtInd>DBIT</CdtDbtInd>
+    <CdtDbtInd>CRDT</CdtDbtInd>
     <Sts>BOOK</Sts>
     <BookgDt><Dt>2015-09-01</Dt></BookgDt>
     <ValDt><Dt>2015-09-01</Dt></ValDt>
@@ -71,6 +71,10 @@
     <BkTxCd/>
     <NtryDtls>
       <TxDtls>
+
+        <Refs>
+          <EndToEndId>NOTPROVIDED</EndToEndId>
+        </Refs>
         <BkTxCd>
           <Prtry>
             <Cd>ABCD+000</Cd>
@@ -79,10 +83,10 @@
         </BkTxCd>
  
         <RltdPties>
-          <Cdtr><Nm>Name SEPA Creditor</Nm></Cdtr>
-          <CdtrAcct>
-            <Id><Othr><Id>9999999999</Id></Othr></Id>
-            </CdtrAcct>
+          <Dbtr><Nm>Mr Faithful Donor</Nm></Dbtr>
+          <DbtrAcct>
+            <Id><IBAN>DE02100500000054540402</IBAN></Id>
+          </DbtrAcct>
         </RltdPties>
  
         <RltdAgts>
@@ -97,13 +101,66 @@
         </RltdAgts>
  
         <RmtInf>
-          <Ustrd>SEPA TEST SEPA Buchungen SEPA CAMT.053</Ustrd>
+          <Ustrd>Donation for any urgent need</Ustrd>
         </RmtInf>
  
       </TxDtls>
     </NtryDtls>
-    <AddtlNtryInf>SEPA UEBERWEISUNG</AddtlNtryInf>
+    <AddtlNtryInf>Überweisungsgutschr.</AddtlNtryInf>
   </Ntry>
+
+  <Ntry>
+    <Amt Ccy="EUR">258.60</Amt>
+    <CdtDbtInd>DBIT</CdtDbtInd>
+    <Sts>BOOK</Sts>
+    <BookgDt>
+      <Dt>2015-09-01</Dt>
+    </BookgDt>
+    <ValDt>
+      <Dt>2015-09-01</Dt>
+    </ValDt>
+    <AcctSvcrRef>1234567</AcctSvcrRef>
+    <BkTxCd/>
+    <NtryDtls>
+      <TxDtls>
+        <Refs>
+          <EndToEndId>NOTPROVIDED</EndToEndId>
+          <MndtId>XY-123456-20160629</MndtId>
+        </Refs>
+        <BkTxCd>
+          <Prtry>
+            <Cd>NNNN+112+00931</Cd>
+            <Issr>DK</Issr>
+          </Prtry>
+        </BkTxCd>
+        <RltdPties>
+          <Cdtr>
+            <Nm>The Hosting Company</Nm>
+            <Id>
+              <PrvtId>
+                <Othr><Id>DE1200000000012345</Id></Othr>
+              </PrvtId>
+            </Id>
+          </Cdtr>
+          <CdtrAcct>
+            <Id><IBAN>DE02700100800030876808</IBAN></Id>
+          </CdtrAcct>
+        </RltdPties>
+        <RltdAgts>
+          <CdtrAgt>
+            <FinInstnId>
+              <BIC>PBNKDEFF</BIC>
+            </FinInstnId>
+          </CdtrAgt>
+        </RltdAgts>
+        <RmtInf>
+          <Ustrd>Invoice Nr, Hosting of last month</Ustrd>
+        </RmtInf>
+      </TxDtls>
+    </NtryDtls>
+    <AddtlNtryInf>Basislastschrift</AddtlNtryInf>
+  </Ntry>
+
 </Stmt>
  
 </BkToCstmrStmt>
