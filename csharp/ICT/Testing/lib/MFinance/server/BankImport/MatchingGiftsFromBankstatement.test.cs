@@ -263,7 +263,7 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
 
             foreach (TStatement stmt in p.statements)
             {
-                Assert.AreEqual(1, stmt.transactions.Count, "There should be one transaction");
+                Assert.AreEqual(2, stmt.transactions.Count, "There should be two transactions");
 
                 foreach (TTransaction tr in stmt.transactions)
                 {
