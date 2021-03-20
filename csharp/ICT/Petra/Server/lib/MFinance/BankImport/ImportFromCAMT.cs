@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
             foreach (TStatement stmt in parser.statements)
             {
-                if (stmt.severalYears)
+                if (stmt.severalYears && !AParsePreviousYear)
                 {
                     // parse the transactions of the previous year separately
                     ImportFromFile(ALedgerNumber, ABankAccountCode, AFileName, AFileContent,
