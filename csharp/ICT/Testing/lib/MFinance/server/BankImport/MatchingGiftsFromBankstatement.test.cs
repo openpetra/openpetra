@@ -216,7 +216,7 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
         public void TestImportCAMT()
         {
             // import the test camt file, will already do the training
-            string testFile = dirTestData + "camt_testfile.xml";
+            string testFile = dirTestData + "camt_testfile.53.xml";
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
             sr.Close();
@@ -305,6 +305,25 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
                     Assert.AreEqual(new DateTime(DateTime.Now.Year, 9, 1), tr.valueDate, "The date should match");
                 }
             }
+        }
+
+        /// <summary>
+        /// Import a sample mt940 file
+        /// </summary>
+        [Test]
+        public void ImportMT940File()
+        {
+            string testfile = dirTestData + "mt940test.sta";
+            string FileContent;
+            using (StreamReader sr = new StreamReader(testfile))
+            {
+                FileContent = sr.ReadToEnd();
+            }
+
+            TSwiftParser p = new TSwiftParser();
+            p.ProcessFileContent(FileContent);
+
+            Assert.AreEqual(2, p.statements.Count, "there should be two statements");
         }
     }
 }

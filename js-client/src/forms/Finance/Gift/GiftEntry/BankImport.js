@@ -245,7 +245,8 @@ function delete_trans_detail(obj_modal) {
 
 /////
 
-function import_file(self) {
+function import_csv_file(self) {
+
 	self = $(self);
 	var filename = self.val();
 
@@ -255,18 +256,6 @@ function import_file(self) {
 	} else {
 	  alert('The File APIs are not fully supported in this browser.');
 	}
-
-	if (filename.endsWith(".xml")) {
-		import_camt_file(self, filename);
-	}
-	else if (filename.endsWith(".zip")) {
-		import_camt_zip_file(self, filename);
-	} else {
-		import_csv_file(self, filename);
-	}
-}
-
-function import_csv_file(self, filename) {
 
 	var settings = extract_data($('#tabsettings'));
 
@@ -308,7 +297,22 @@ function import_csv_file(self, filename) {
 
 };
 
-function import_camt_file(self, filename) {
+function import_camt_file(self) {
+
+	self = $(self);
+	var filename = self.val();
+
+	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		//alert("Great success! All the File APIs are supported.");
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
+	if (filename.endsWith(".zip")) {
+		import_camt_zip_file(self, filename);
+		return;
+	}
 
 	var settings = extract_data($('#tabsettings'));
 
@@ -378,6 +382,54 @@ function import_camt_zip_file(self, filename) {
 	// Read in the file as a data URL.
 	reader.readAsDataURL(self[0].files[0]);
 };
+
+function import_mt940_file(self) {
+
+	self = $(self);
+	var filename = self.val();
+
+	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		//alert("Great success! All the File APIs are supported.");
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
+	var settings = extract_data($('#tabsettings'));
+
+	var reader = new FileReader();
+
+	reader.onload = function (event) {
+
+		p = {
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'ABankAccountCode': settings['ABankAccountCode'],
+			'ABankStatementFilename': filename,
+			'AMT940Content': event.target.result,
+			};
+
+		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromMT940File', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			result = result.result;
+			if (result == true) {
+				display_message(i18next.t('BankImport.upload_success'), "success");
+				display_dropdownlist();
+			} else {
+				display_message(i18next.t('BankImport.upload_fail'), "fail");
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('BankImport.upload_fail'), "fail");
+		});
+
+	}
+	// Read in the file as a data URL.
+	reader.readAsText(self[0].files[0], settings['AFileEncoding']);
+};
+
+/////
 
 function transform_to_gl() {
  let x = {

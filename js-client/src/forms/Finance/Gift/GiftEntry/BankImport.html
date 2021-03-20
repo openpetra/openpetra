@@ -293,8 +293,19 @@
 			<button id="settings" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{forms.preset}</button>
 		</td>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="$('#import_file').click()">{forms.import}</button>
-			<input type="file" hidden id="import_file" onchange="import_file(this)" accept=".csv,.txt,.xml,.zip">
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					{forms.import}
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" onclick="$('#import_csv_file').click()">{import_csv}</a>
+					<a class="dropdown-item" onclick="$('#import_camt_file').click()">{import_camt}</a>
+					<a class="dropdown-item" onclick="$('#import_mt940_file').click()">{import_mt940}</a>
+				</div>
+			</div>
+			<input type="file" hidden id="import_csv_file" onchange="import_csv_file(this)" accept=".csv,.txt">
+			<input type="file" hidden id="import_camt_file" onchange="import_camt_file(this)" accept=".xml,.zip">
+			<input type="file" hidden id="import_mt940_file" onchange="import_mt940_file(this)" accept=".sta,.mt940">
 		</td>
 	</tr>
 </table>
