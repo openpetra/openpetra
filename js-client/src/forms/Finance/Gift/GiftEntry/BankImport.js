@@ -252,6 +252,9 @@ function import_file(self) {
 
 	if (filename.endsWith(".xml")) {
 		import_camt_file(self, filename);
+	}
+	else if (filename.endsWith(".zip")) {
+		import_camt_zip_file(self, filename);
 	} else {
 		import_csv_file(self, filename);
 	}
@@ -333,6 +336,41 @@ function import_camt_file(self, filename) {
 	}
 	// Read in the file as a data URL.
 	reader.readAsText(self[0].files[0]);
+};
+
+function import_camt_zip_file(self, filename) {
+
+	var settings = extract_data($('#tabsettings'));
+
+	var reader = new FileReader();
+
+	reader.onload = function (event) {
+
+		p = {
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'ABankAccountCode': settings['ABankAccountCode'],
+			'AZipFileContent': event.target.result,
+			};
+
+		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCAMTZIPFile', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			result = result.result;
+			if (result == true) {
+				display_message(i18next.t('BankImport.upload_success'), "success");
+				display_dropdownlist();
+			} else {
+				display_message(i18next.t('BankImport.upload_fail'), "fail");
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('BankImport.upload_fail'), "fail");
+		});
+
+	}
+	// Read in the file as a data URL.
+	reader.readAsDataURL(self[0].files[0]);
 };
 
 function transform_to_gl() {

@@ -41,6 +41,8 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.BankImport.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
+using ICSharpCode.SharpZipLib.Zip;
+
 namespace Ict.Petra.Server.MFinance.BankImport.Logic
 {
     /// <summary>
@@ -48,6 +50,57 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
     /// </summary>
     public class TBankStatementImportCAMT
     {
+        /// import multiple CAMT files from one zip file
+        static public bool ImportFromZipFile(
+            Int32 ALedgerNumber,
+            string ABankAccountCode,
+            byte[] AFileContent,
+            bool AParsePreviousYear,
+            out Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AStatementKey = -1;
+            AVerificationResult = new TVerificationResultCollection();
+
+            // unzip the file content to memory
+            using (MemoryStream stream = new MemoryStream(AFileContent))
+            {
+                stream.Position = 0;
+
+                using (ZipInputStream zs = new ZipInputStream(stream))
+                {
+                    ZipEntry theEntry = zs.GetNextEntry();
+            
+                    // for each contained file, call ImportFromFile with filename and filecontent
+                    while (theEntry != null)
+                    {
+                        string ThisFilename = Path.GetFileName(theEntry.Name.Replace("\\", Path.DirectorySeparatorChar.ToString()));
+                        string ThisFileContent = String.Empty;
+
+                        Int32 sourcebytes = 0;
+                        Byte[] buffer = new Byte[4096*100];
+
+                        do
+                        {
+                            sourcebytes = zs.Read(buffer, 0, buffer.Length);
+                            ThisFileContent += System.Text.Encoding.UTF8.GetString(buffer, 0, sourcebytes);
+                        } while (sourcebytes > 0);
+
+                        if (!ImportFromFile(
+                            ALedgerNumber, ABankAccountCode, ThisFilename, ThisFileContent,
+                            false, out AStatementKey, out AVerificationResult))
+                        {
+                            return false;
+                        }
+
+                        theEntry = zs.GetNextEntry();
+                    }
+                }
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// import one CAMT file, split into multiple statements per year
         /// </summary>

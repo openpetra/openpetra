@@ -193,6 +193,31 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         }
 
         /// <summary>
+        /// import the data of a zip file containing CAMT files
+        /// </summary>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
+        /// <param name="AZipFileContent"></param>
+        /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportFromCAMTZIPFile(
+            Int32 ALedgerNumber,
+            string ABankAccountCode,
+            byte[] AZipFileContent,
+            out Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            return TBankStatementImportCAMT.ImportFromZipFile(
+                ALedgerNumber,
+                ABankAccountCode,
+                AZipFileContent,
+                false,
+                out AStatementKey,
+                out AVerificationResult);
+        }
+
+        /// <summary>
         /// train an existing bank statement, where the gift batch has been posted already
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
