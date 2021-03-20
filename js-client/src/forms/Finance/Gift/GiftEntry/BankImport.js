@@ -86,6 +86,9 @@ function updateTransaction(StatementKey, OrderId) {
 }
 
 function format_item(item) {
+	if (item.a_account_name_c != null) {
+		item.a_description_c = item.a_account_name_c + "; " + item.a_description_c;
+	}
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
 	// row.find('.collapse_col').append(view);
@@ -132,6 +135,9 @@ function edit_gift_trans(statement_key, trans_order) {
 		transaction = parsed.ATransactions[0];
 		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
 		transaction['p_donor_key_n'] = transaction['DonorKey'];
+		if (transaction['a_iban_c'] != null) {
+			transaction['a_account_name_c'] += "; " + transaction['a_iban_c'];
+		}
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
 		for (detail of parsed.ADetails) {

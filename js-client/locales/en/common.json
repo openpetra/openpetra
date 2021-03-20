@@ -591,6 +591,7 @@
         "ignored": "Ignored",
         "edittitle_trans": "Edit transaction",
         "order_id": "Order number",
+        "accountname": "Account Owner with IBAN",
         "description": "Description",
         "transaction_amount": "Transaction amount",
         "transaction_date": "Date",

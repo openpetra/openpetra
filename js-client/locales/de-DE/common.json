@@ -591,6 +591,7 @@
         "ignored": "Ignoriert",
         "edittitle_trans": "Transaktionen bearbeiten",
         "order_id": "Auftragsnummer",
+        "accountname": "Kontoinhaber mit IBAN",
         "description": "Beschreibung",
         "transaction_amount": "Betrag",
         "transaction_date": "Datum",
