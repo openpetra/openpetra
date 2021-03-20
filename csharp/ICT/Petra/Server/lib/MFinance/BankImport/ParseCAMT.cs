@@ -61,6 +61,22 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             }
         }
 
+        private XmlNamespaceManager GetNamespaceManager(XmlDocument doc, string ANamespaceName)
+        {
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
+            nsmgr.AddNamespace("camt", ANamespaceName);
+
+            XmlNode nodeDocument = doc.DocumentElement;
+
+            if ((nodeDocument == null) || (nodeDocument.Attributes["xmlns"].Value != ANamespaceName))
+            {
+                return null;
+            }
+
+            return nsmgr;
+        }
+        
+
         /// <summary>
         /// processing CAMT file
         /// </summary>
@@ -74,18 +90,33 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
             {
                 XmlDocument doc = new XmlDocument();
                 doc.LoadXml(content);
-                string namespaceName = "urn:iso:std:iso:20022:tech:xsd:camt.053.001.02";
-                XmlNamespaceManager nsmgr = new XmlNamespaceManager(doc.NameTable);
-                nsmgr.AddNamespace("camt", namespaceName);
-
                 XmlNode nodeDocument = doc.DocumentElement;
 
-                if ((nodeDocument == null) || (nodeDocument.Attributes["xmlns"].Value != namespaceName))
+                string CAMTVersion = "CAMT.53";
+                XmlNamespaceManager nsmgr = GetNamespaceManager(doc, "urn:iso:std:iso:20022:tech:xsd:camt.053.001.02");
+
+                if (nsmgr == null)
                 {
-                    throw new Exception("expecting xmlns = '" + namespaceName + "'");
+                    CAMTVersion = "CAMT.52";
+                    nsmgr = GetNamespaceManager(doc, "urn:iso:std:iso:20022:tech:xsd:camt.052.001.02");
                 }
 
-                XmlNodeList stmts = nodeDocument.SelectNodes("camt:BkToCstmrStmt/camt:Stmt", nsmgr);
+                if (nsmgr == null)
+                {
+                    throw new Exception("expecting xmlns for CAMT.52 or CAMT.53");
+                }
+
+                XmlNodeList stmts = null;
+                
+                if (CAMTVersion == "CAMT.53")
+                {
+                    stmts = nodeDocument.SelectNodes("camt:BkToCstmrStmt/camt:Stmt", nsmgr);
+                }
+                else if (CAMTVersion == "CAMT.52")
+                {
+                    stmts = nodeDocument.SelectNodes("camt:BkToCstmrAcctRpt/camt:Rpt", nsmgr);
+                }
+
                 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
                 foreach (XmlNode nodeStatement in stmts)
