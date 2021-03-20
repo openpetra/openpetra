@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.052.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:camt.052.001.02 camt.052.001.02.xsd">
+ 
+<BkToCstmrAcctRpt>
+ 
+<GrpHdr>
+  <MsgId>CAMT053JJJJMMTT0000000000000001</MsgId>
+  <CreDtTm>JJJJ-MM-TTT00:00:00.1+01:00</CreDtTm>
+  <MsgRcpt>
+      <Id>
+        <OrgId>
+          <Othr>
+            <Id>999999999</Id>
+            <Issr>NAME BANK</Issr>
+          </Othr>
+        </OrgId>
+      </Id>
+    </MsgRcpt>
+  <MsgPgntn>
+    <PgNb>1</PgNb>
+    <LastPgInd>true</LastPgInd>
+  </MsgPgntn>
+</GrpHdr>
+ 
+<Rpt>
+  <Id>CAMT053999999999999999999</Id>
+  <ElctrncSeqNb>1</ElctrncSeqNb>
+  <CreDtTm>2015-09-01T00:00:00.1+01:00</CreDtTm>
+ 
+  <Acct>
+    <Id><IBAN>DE99111111112222222222</IBAN></Id>
+    <Tp><Prtry>CPD Konto</Prtry></Tp>
+    <Ccy>EUR</Ccy>
+    <Ownr><Nm>Deutsche Bundesbank</Nm></Ownr>
+    <Svcr>
+      <FinInstnId>
+        <BIC>AAAADEBBXXX</BIC>
+        <Nm>NAME SEPA BANK</Nm>
+        <Othr>
+          <Id>DE1234567890</Id>
+          <Issr>UmsStID</Issr>
+        </Othr>
+      </FinInstnId>
+    </Svcr>
+  </Acct>
+ 
+  <Bal>
+    <Tp><CdOrPrtry><Cd>PRCD</Cd></CdOrPrtry></Tp>
+    <CdtLine><Incl>false</Incl></CdtLine>
+    <Amt Ccy="EUR">1234567.89</Amt>
+    <CdtDbtInd>DBIT</CdtDbtInd>
+    <Dt>2015-09-01</Dt>
+  </Bal>
+ 
+  <Bal>
+    <Tp><CdOrPrtry><Cd>CLBD</Cd></CdOrPrtry></Tp>
+    <CdtLine><Incl>false</Incl></CdtLine>
+    <Amt Ccy="EUR">98765.45</Amt>
+    <CdtDbtInd>DBIT</CdtDbtInd>
+    <Dt>2015-09-01</Dt>
+  </Bal>
+ 
+  <Ntry>
+    <NtryRef>TTMMJJ0000000000123456748</NtryRef>
+    <Amt Ccy="EUR">123.45</Amt>
+    <CdtDbtInd>CRDT</CdtDbtInd>
+    <Sts>BOOK</Sts>
+    <BookgDt><Dt>2015-09-01</Dt></BookgDt>
+    <ValDt><Dt>2015-09-01</Dt></ValDt>
+    <AcctSvcrRef>9876543210</AcctSvcrRef>
+    <BkTxCd/>
+    <NtryDtls>
+      <TxDtls>
+
+        <Refs>
+          <EndToEndId>NOTPROVIDED</EndToEndId>
+        </Refs>
+        <BkTxCd>
+          <Prtry>
+            <Cd>ABCD+000</Cd>
+            <Issr>ZKA</Issr>
+          </Prtry>
+        </BkTxCd>
+ 
+        <RltdPties>
+          <Dbtr><Nm>Mr Faithful Donor</Nm></Dbtr>
+          <DbtrAcct>
+            <Id><IBAN>DE02100500000054540402</IBAN></Id>
+          </DbtrAcct>
+        </RltdPties>
+ 
+        <RltdAgts>
+          <CdtrAgt>
+            <FinInstnId>
+               <ClrSysMmbId>
+                <ClrSysId><Cd>AAAAA</Cd></ClrSysId>
+                <MmbId>00000000</MmbId>
+              </ClrSysMmbId>
+            </FinInstnId>
+          </CdtrAgt>
+        </RltdAgts>
+ 
+        <RmtInf>
+          <Ustrd>Donation for any urgent need</Ustrd>
+        </RmtInf>
+ 
+      </TxDtls>
+    </NtryDtls>
+    <AddtlNtryInf>Überweisungsgutschr.</AddtlNtryInf>
+  </Ntry>
+
+  <Ntry>
+    <Amt Ccy="EUR">258.60</Amt>
+    <CdtDbtInd>DBIT</CdtDbtInd>
+    <Sts>BOOK</Sts>
+    <BookgDt>
+      <Dt>2015-09-01</Dt>
+    </BookgDt>
+    <ValDt>
+      <Dt>2015-09-01</Dt>
+    </ValDt>
+    <AcctSvcrRef>1234567</AcctSvcrRef>
+    <BkTxCd/>
+    <NtryDtls>
+      <TxDtls>
+        <Refs>
+          <EndToEndId>NOTPROVIDED</EndToEndId>
+          <MndtId>XY-123456-20160629</MndtId>
+        </Refs>
+        <BkTxCd>
+          <Prtry>
+            <Cd>NNNN+112+00931</Cd>
+            <Issr>DK</Issr>
+          </Prtry>
+        </BkTxCd>
+        <RltdPties>
+          <Cdtr>
+            <Nm>The Hosting Company</Nm>
+            <Id>
+              <PrvtId>
+                <Othr><Id>DE1200000000012345</Id></Othr>
+              </PrvtId>
+            </Id>
+          </Cdtr>
+          <CdtrAcct>
+            <Id><IBAN>DE02700100800030876808</IBAN></Id>
+          </CdtrAcct>
+        </RltdPties>
+        <RltdAgts>
+          <CdtrAgt>
+            <FinInstnId>
+              <BIC>PBNKDEFF</BIC>
+            </FinInstnId>
+          </CdtrAgt>
+        </RltdAgts>
+        <RmtInf>
+          <Ustrd>Invoice Nr, Hosting of last month</Ustrd>
+        </RmtInf>
+      </TxDtls>
+    </NtryDtls>
+    <AddtlNtryInf>Basislastschrift</AddtlNtryInf>
+  </Ntry>
+
+</Rpt>
+ 
+</BkToCstmrAcctRpt>
+ 
+</Document>

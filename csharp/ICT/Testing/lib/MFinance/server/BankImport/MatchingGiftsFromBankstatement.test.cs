@@ -238,14 +238,49 @@ namespace Ict.Testing.Petra.Server.MFinance.BankImport
         }
 
         /// <summary>
-        /// Import a sample CAMT file
+        /// Import a sample CAMT.53 file
         /// </summary>
         [Test]
-        public void ImportCAMTFile()
+        public void ImportCAMTFile53()
         {
             TCAMTParser p = new TCAMTParser();
 
-            string testfile = dirTestData + "camt_testfile.xml";
+            string testfile = dirTestData + "camt_testfile.53.xml";
+            TVerificationResultCollection VerificationResult;
+            string FileContent;
+            using (StreamReader sr = new StreamReader(testfile))
+            {
+                FileContent = sr.ReadToEnd();
+            }
+
+            FileContent = FileContent.Replace("2015-09-01", DateTime.Now.Year.ToString("0000") + "-09-01");
+            FileContent = FileContent.Replace("JJJJ-MM-TT", DateTime.Now.Year.ToString("0000") + "-09-01");
+            FileContent = FileContent.Replace("JJJJMMTT", DateTime.Now.Year.ToString("0000") + "0901");
+
+            p.ProcessFileContent(FileContent, false, out VerificationResult);
+
+            Assert.AreEqual(1, p.statements.Count, "there should be one statement");
+
+            foreach (TStatement stmt in p.statements)
+            {
+                Assert.AreEqual(2, stmt.transactions.Count, "There should be two transactions");
+
+                foreach (TTransaction tr in stmt.transactions)
+                {
+                    Assert.AreEqual(new DateTime(DateTime.Now.Year, 9, 1), tr.valueDate, "The date should match");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Import a sample CAMT.52 file
+        /// </summary>
+        [Test]
+        public void ImportCAMTFile52()
+        {
+            TCAMTParser p = new TCAMTParser();
+
+            string testfile = dirTestData + "camt_testfile.52.xml";
             TVerificationResultCollection VerificationResult;
             string FileContent;
             using (StreamReader sr = new StreamReader(testfile))
