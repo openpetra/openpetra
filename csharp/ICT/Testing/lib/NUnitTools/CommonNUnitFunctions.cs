@@ -362,7 +362,7 @@ namespace Ict.Testing.NUnitTools
             }
             else
             {
-                NantProcess.WaitForExit(60000);
+                NantProcess.WaitForExit(120000);
                 Debug.Print("OS says nant process is finished");
             }
 
