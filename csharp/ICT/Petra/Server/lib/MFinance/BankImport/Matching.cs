@@ -104,13 +104,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                 {
                     CreateMatches(MainDS, stmt, SelectedGiftBatch, true);
                 }
-                else
-                {
-                    // cannot find the posted gift batch without any doubt
-
-                    // so try to find the donor by the bank account, or the purpose if we only have one motivation detail in the database
-                    CreateAutoMatches(MainDS, stmt);
-                }
             }
         }
 
@@ -369,6 +362,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
             foreach (BankImportTDSAEpTransactionRow transaction in AMainDS.AEpTransaction.Rows)
             {
+                // find the donor for this transaction, by his IBAN number
                 Int64 DonorKey = GetDonorByIBAN(AMainDS, transaction.Iban);
 
                 if (transaction.Iban.Length == 0)
@@ -534,36 +528,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
                 TLogging.Log("matched: " + CountMatched.ToString() + " of " + AMainDS.AEpTransaction.Rows.Count.ToString());
             }
-
-            StoreCurrentMatches(AMainDS, ACurrentStatement.BankAccountCode);
-        }
-
-        private static void CreateAutoMatches(BankImportTDS AMainDS,
-            AEpStatementRow ACurrentStatement)
-        {
-            List <DataRow>ToDelete = new List <DataRow>();
-
-            foreach (BankImportTDSAEpTransactionRow transaction  in AMainDS.AEpTransaction.Rows)
-            {
-                // delete transactions with negative amount
-                if (transaction.TransactionAmount < 0)
-                {
-                    ToDelete.Add(transaction);
-                }
-                else
-                {
-                    transaction.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
-                }
-            }
-
-            foreach (DataRow del in ToDelete)
-            {
-                AMainDS.AEpTransaction.Rows.Remove(del);
-            }
-
-            FindDonorKeysByBankAccount(AMainDS);
-
-            // TODO match motivation detail
 
             StoreCurrentMatches(AMainDS, ACurrentStatement.BankAccountCode);
         }

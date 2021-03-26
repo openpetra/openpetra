@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -423,17 +423,16 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
         }
 
-        private static bool FindDonorByAccountNumber(
+        private static bool FindDonorByIBAN(
             DataView APartnerByBankAccount,
-            string ABankSortCode,
-            string AAccountNumber,
+            string AIBAN,
             out string ADonorShortName,
             out Int64 ADonorKey)
         {
             ADonorShortName = String.Empty;
             ADonorKey = -1;
 
-            DataRowView[] rows = APartnerByBankAccount.FindRows(new object[] { ABankSortCode, AAccountNumber });
+            DataRowView[] rows = APartnerByBankAccount.FindRows(new object[] { AIBAN });
 
             if (rows.Length == 1)
             {
@@ -473,15 +472,14 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
         private struct MatchDonor
         {
-            public MatchDonor(AEpMatchRow AR, string ABankCode, string AAccountCode)
+            public MatchDonor(AEpMatchRow AR, string AIBAN)
             {
                 r = AR;
-                a = AAccountCode;
-                b = ABankCode;
+                iban = AIBAN;
             }
 
             public AEpMatchRow r;
-            public string a, b;
+            public string iban;
         }
 
         /// <summary>
@@ -531,18 +529,17 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 string sqlLoadPartnerByBankAccount =
                     "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, " +
                     "p.p_partner_short_name_c AS ShortName, " +
-                    "t.p_branch_code_c AS BranchCode, " +
-                    "t.a_bank_account_number_c AS BankAccountNumber " +
+                    "t.a_iban_c AS IBAN " +
                     "FROM PUB_a_ep_transaction t, PUB_p_banking_details bd, PUB_p_bank b, PUB_p_partner_banking_details pbd, PUB_p_partner p " +
                     "WHERE t.a_statement_key_i = " + AStatementKey.ToString() + " " +
-                    "AND bd.p_bank_account_number_c = t.a_bank_account_number_c " +
+                    "AND ((bd.p_bank_account_number_c = t.a_bank_account_number_c) or (bd.p_iban_c = t.a_iban_c))" +
                     "AND b.p_partner_key_n = bd.p_bank_key_n " +
                     "AND b.p_branch_code_c = t.p_branch_code_c " +
                     "AND pbd.p_banking_details_key_i = bd.p_banking_details_key_i " +
                     "AND p.p_partner_key_n = pbd.p_partner_key_n";
 
                 DataTable PartnerByBankAccount = db.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
-                PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
+                PartnerByBankAccount.DefaultView.Sort = "IBAN";
 
                 // load all partner short names of matches
                 string sqlLoadPartnerName =
@@ -676,7 +673,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
                             if (r.IsDonorKeyNull() || (r.DonorKey <= 0))
                             {
-                                FindDonorKey.Add(new MatchDonor(r, row.BranchCode, row.BankAccountNumber));
+                                FindDonorKey.Add(new MatchDonor(r, row.Iban));
                             }
                         }
 
@@ -714,7 +711,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         String DonorShortName;
                         Int64 DonorKey;
 
-                        if (FindDonorByAccountNumber(PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber, out DonorShortName, out DonorKey))
+                        if (FindDonorByIBAN(PartnerByBankAccount.DefaultView, row.Iban, out DonorShortName, out DonorKey))
                         {
                             tempRow.DonorKey = DonorKey;
                             tempRow.DonorShortName = DonorShortName;
@@ -772,7 +769,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     String DonorShortName;
                     Int64 DonorKey;
 
-                    if (FindDonorByAccountNumber(PartnerByBankAccount.DefaultView, d.b, d.a, out DonorShortName, out DonorKey))
+                    if (FindDonorByIBAN(PartnerByBankAccount.DefaultView, d.iban, out DonorShortName, out DonorKey))
                     {
                         d.r.DonorKey = DonorKey;
                         d.r.DonorShortName = DonorShortName;
