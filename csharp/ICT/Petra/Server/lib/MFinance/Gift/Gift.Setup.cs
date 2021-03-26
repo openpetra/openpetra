@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -161,6 +161,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
 
+                foreach (AMotivationDetailFeeRow row in MainDS.AMotivationDetailFee.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
                 try
                 {
                     GiftBatchTDSAccess.SubmitChanges(MainDS);
@@ -242,6 +250,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
 
                 foreach (AMotivationDetailRow row in MainDS.AMotivationDetail.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode
+                        && row.MotivationDetailCode == AMotivationDetailCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                foreach (AMotivationDetailFeeRow row in MainDS.AMotivationDetailFee.Rows)
                 {
                     if (row.MotivationGroupCode == AMotivationGroupCode
                         && row.MotivationDetailCode == AMotivationDetailCode)

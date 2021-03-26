@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -78,7 +78,11 @@ function format_item(item) {
 
 function open_motivations(obj, code, reload = false) {
 	obj = $(obj);
-	if (!reload && obj.find('.collapse').is(':visible') ) {
+	while(!obj[0].hasAttribute('id') || !obj[0].id.includes("group")) {
+		obj = obj.parent();
+	}
+	if (obj.find('.collapse').is(':visible') ) {
+		$('.tpl_row .collapse').collapse('hide');
 		return;
 	}
 	let x = {

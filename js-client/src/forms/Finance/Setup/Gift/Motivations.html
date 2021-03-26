@@ -3,12 +3,15 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" onclick="open_motivations(this, '{val_a_motivation_group_code_c}')" id="group{val_a_motivation_group_code_c}">
+	<div class="tpl_row" id="group{val_a_motivation_group_code_c}">
 		<div class="row">
 			<div class="col">{val_a_motivation_group_code_c}</div>
 			<div class="col">{val_a_motivation_group_description_c}</div>
-			<div class="col-1">
-				<button type="button" class="btn btn-primary" onclick="edit_group('{val_a_motivation_group_code_c}')">
+			<div class="col-2" style="margin-top:0.3em;">
+				<button type="button" class="btn btn-primary" onclick="open_motivations(this, '{val_a_motivation_group_code_c}')">
+					<i class="fas fa-folder-open"></i>
+				</button>
+				<button id="btnEdit" type="button" class="btn btn-primary" onclick="edit_group('{val_a_motivation_group_code_c}')" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
