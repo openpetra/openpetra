@@ -554,6 +554,7 @@
         "edittitle_moti": "Edit motivation detail",
         "ask_delete_group": "Do you really want to delete this group with all its details?",
         "ask_delete_detail": "Do you really want to delete this detail?",
+        "default_motivation_detail": "Default Motivation for new donations",
         "motivation_group_code": "Group Code",
         "motivation_detail_code": "Detail Code",
         "motivation_desc": "Description",

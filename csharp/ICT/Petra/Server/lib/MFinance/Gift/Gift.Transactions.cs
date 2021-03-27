@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2804,6 +2804,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.RecipientKey = ARecipientKey;
+
+                if (AMotivationGroupCode == String.Empty && AMotivationDetailCode == String.Empty)
+                {
+                    // if there is a default motivation detail in the database, then default to that motivation detail
+                    string DefaultMotivation = new TSystemDefaults().GetSystemDefault("DEFAULTMOTIVATION" + ALedgerNumber.ToString());
+                    if (DefaultMotivation != SharedConstants.SYSDEFAULT_NOT_FOUND)
+                    {
+                        row.MotivationGroupCode = DefaultMotivation.Substring(0, DefaultMotivation.IndexOf("::"));
+                        row.MotivationDetailCode = DefaultMotivation.Substring(DefaultMotivation.IndexOf("::") + 2);
+                    }
+                }
+
                 MainDS.AGiftDetail.Rows.Add(row);
 
                 // TODO update gift last detail number???

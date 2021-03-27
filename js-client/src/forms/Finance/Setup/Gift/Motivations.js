@@ -37,6 +37,11 @@ function display_list() {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
+		let x = {
+				'a_motivation_group_code_c': data.ADefaultMotivationGroup,
+				'a_motivation_detail_code_c': data.ADefaultMotivationDetail
+				}
+		insertData($("#toolbar"), x);
 		for (item of data.result.AMotivationGroup) {
 			format_item(item);
 		}
@@ -279,6 +284,23 @@ function delete_motivation(obj_modal) {
 				display_message(i18next.t(msg.code), "fail");
 			}
 			display_message(i18next.t('forms.notdeleted'), "fail");
+		}
+	});
+}
+
+function save_default_detail(obj) {
+	let payload = translate_to_server( extract_data($(obj).closest('#toolbar')));
+	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+
+	api.post('serverMFinance.asmx/TGiftSetupWebConnector_SetDefaultMotivationDetail', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+		} else {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+			display_message(i18next.t('forms.notsaved'), "fail");
 		}
 	});
 }

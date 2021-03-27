@@ -185,6 +185,17 @@
 
 <table id="toolbar">
 	<tr>
+		<td>{default_motivation_detail}:</td>
+		<td>
+			<input type="hidden" name="a_motivation_group_code_c" value=""/>
+			<div class="autocomplete">
+				<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+			</div>
+		</td>
+		<td><button class="btn btn-primary" onclick="save_default_detail(this)">{forms.save}</button>
+		</td>
+	</tr>
+	<tr>
 		<td>
 			<button id="new" class="btn btn-primary" onclick="new_group()">{forms.new}</button>
 		</td>
@@ -208,5 +219,6 @@
 
 <script src="/src/lib/autocomplete.js" charset="utf-8"></script>
 <script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
