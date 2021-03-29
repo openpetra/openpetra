@@ -290,7 +290,13 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="settings" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{forms.preset}</button>
+			<button id="settings" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{PresetsCSV}</button>
+		</td>
+		<td>
+			<span>{bankaccount}:</span>
+			<div class="autocomplete">
+				<input type="text" name="a_bank_account_name_c" key-name="ABankAccountCode" value="" oninput="autocomplete_a(this)">
+			</div>
 		</td>
 		<td>
 			<div class="btn-group">
@@ -314,16 +320,6 @@
 
 <div class="container collapse" id="tabsettings">
 	<div class="container group-container">
-	<div class="row">
-		<div class="col">
-			<span>{bankaccount}:</span>
-		</div>
-		<div class="col">
-			<div class="autocomplete">
-				<input type="text" name="a_bank_account_name_c" key-name="ABankAccountCode" value="" oninput="autocomplete_a(this)">
-			</div>
-		</div>
-	</div>
 	<div class="row">
 		<div class="col">
 			<span>{startAfterLine}:</span>

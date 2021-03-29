@@ -69,7 +69,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// store settings in s_system_defaults
         [RequireModulePermission("FINANCE-1")]
         public static bool SaveSettings(
-            string ABankAccountCode,
             string ASeparator,
             string AFileEncoding,
             string ADateFormat,
@@ -80,7 +79,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             TDataBase db = DBAccess.Connect("BankImportSaveSettings");
             TSystemDefaults defaults = new TSystemDefaults(db);
 
-            defaults.SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode, db);
             defaults.SetSystemDefault("BANKIMPORT_SEPARATOR", ASeparator, db);
             defaults.SetSystemDefault("BANKIMPORT_ENCODING", AFileEncoding, db);
             defaults.SetSystemDefault("BANKIMPORT_DATEFORMAT", ADateFormat, db);
@@ -149,6 +147,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
             return TBankStatementImportCSV.ImportBankStatement(
                 ALedgerNumber,
                 ABankAccountCode,
@@ -182,6 +182,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
             return TBankStatementImportMT940.ImportFromFile(
                 ALedgerNumber,
                 ABankAccountCode,
@@ -210,6 +212,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
             return TBankStatementImportCAMT.ImportFromFile(
                 ALedgerNumber,
                 ABankAccountCode,
@@ -236,6 +240,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
             return TBankStatementImportCAMT.ImportFromZipFile(
                 ALedgerNumber,
                 ABankAccountCode,

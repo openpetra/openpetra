@@ -570,6 +570,7 @@
         "import_camt": "CAMT.052 oder CAMT.053",
         "import_mt940": "MT940 Datei",
         "bankaccount": "Bankkonto",
+        "PresetsCSV": "Voreinstellungen für CSV",
         "startAfterLine": "Nur Zeilen unter dieser Zeile auswerten",
         "columnMeaning": "Bedeutung der Spalten",
         "numberFormat": "Dezimalzahlen",

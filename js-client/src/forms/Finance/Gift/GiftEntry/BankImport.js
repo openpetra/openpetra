@@ -50,6 +50,7 @@ function load_preset() {
 		data = JSON.parse(data.data.d);
 		data['a_bank_account_name_c'] = data['ABankAccountCode'];
 		format_tpl($('#tabsettings'), data);
+		format_tpl($('#toolbar'), data);
 	});
 }
 
@@ -258,6 +259,7 @@ function import_csv_file(self) {
 	}
 
 	var settings = extract_data($('#tabsettings'));
+	var settings2 = extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
@@ -265,7 +267,7 @@ function import_csv_file(self) {
 
 		p = {
 			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
-			'ABankAccountCode': settings['ABankAccountCode'],
+			'ABankAccountCode': settings2['ABankAccountCode'],
 			'ABankStatementFilename': filename,
 			'ACSVContent': event.target.result,
 			'ASeparator': settings['ASeparator'],
@@ -314,7 +316,7 @@ function import_camt_file(self) {
 		return;
 	}
 
-	var settings = extract_data($('#tabsettings'));
+	var settings = extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
@@ -350,7 +352,7 @@ function import_camt_file(self) {
 
 function import_camt_zip_file(self, filename) {
 
-	var settings = extract_data($('#tabsettings'));
+	var settings = extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
@@ -395,7 +397,7 @@ function import_mt940_file(self) {
 	  alert('The File APIs are not fully supported in this browser.');
 	}
 
-	var settings = extract_data($('#tabsettings'));
+	var settings = extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
