@@ -417,20 +417,31 @@
 <div class="container collapse show" id="tabfilter">
 	<div class="container group-container">
     <div class="row">
-      <div class="col">
+      <div class="col-4">
         <span>{bankimport_name}</span>
       </div>
-      <div class="col">
+      <div class="col-6">
         <select class="dropdown" name="ABankNumber" id="bank_number_id">
 
         </select>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {forms.delete}
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" onclick="delete_current_statement()">{delete_stmt}</a>
+                <a class="dropdown-item" onclick="delete_old_statements()">{delete_old_stmt_1_year}</a>
+                <a class="dropdown-item" onclick="delete_all_statements()">{delete_all_stmts}</a>
+            </div>
+        </div>
       </div>
     </div>
     <div class="row">
-      <div class="col">
+      <div class="col-4">
         <span>{bankimport_status}</span>
       </div>
-      <div class="col">
+      <div class="col-6">
         <select class="dropdown" name="AStatus" id="match_status_id">
           <option value="" selected>{all}</option>
           <option value="UNMATCHED">{unmatched}</option>
@@ -440,8 +451,12 @@
         </select>
       </div>
     </div>
-	</div>
-	<button type="button" class="btn btn-primary" style="margin:2px;" onclick="display_list();">{display}</button>
+    <div class="row">
+      <div class="col-3">
+        <button type="button" class="btn btn-primary" style="margin:2px;" onclick="display_list();">{display}</button>
+      </div>
+    </div>
+</div>
 	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
 	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
 </div>

@@ -272,6 +272,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             ReadTransaction.Rollback();
 
+            db.CloseDBConnection();
+
             if (Statements.Rows.Count == 0)
             {
                 return false;
@@ -386,29 +388,44 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             ReadTransaction.Rollback();
 
+            db.CloseDBConnection();
+
             return result;
         }
 
         /// <summary>
         /// drop a bank statement and all its transactions
         /// </summary>
-        /// <param name="AEpStatementKey"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool DropBankStatement(Int32 AEpStatementKey)
+        [RequireModulePermission("FINANCE-3")]
+        public static bool DropBankStatement(Int32 ALedgerNumber, Int32 AStatementKey, out TVerificationResultCollection AVerificationResult, TDataBase ADataBase = null)
         {
-            TDataBase db = DBAccess.Connect("DropBankStatement");
+            AVerificationResult = new TVerificationResultCollection();
+            TDataBase db = DBAccess.Connect("DropBankStatement", ADataBase);
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             BankImportTDS MainDS = new BankImportTDS();
 
-            AEpStatementAccess.LoadByPrimaryKey(MainDS, AEpStatementKey, Transaction);
-            AEpTransactionAccess.LoadViaAEpStatement(MainDS, AEpStatementKey, Transaction);
+            AEpStatementAccess.LoadByPrimaryKey(MainDS, AStatementKey, Transaction);
+            AEpTransactionAccess.LoadViaAEpStatement(MainDS, AStatementKey, Transaction);
 
             Transaction.Rollback();
 
+            if (MainDS.AEpStatement.Rows.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "cannot find statement", TResultSeverity.Resv_Critical));
+                db.CloseDBConnection();
+                return false;
+            }
+
             foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
             {
+                if (stmtRow.LedgerNumber != ALedgerNumber)
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Statement is not linked to current ledger", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
                 stmtRow.Delete();
             }
 
@@ -420,13 +437,77 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             MainDS.ThrowAwayAfterSubmitChanges = true;
             try
             {
-                BankImportTDSAccess.SubmitChanges(MainDS);
+                BankImportTDSAccess.SubmitChanges(MainDS, db);
                 return true;
             }
             catch (Exception)
             {
+                AVerificationResult.Add(new TVerificationResult("error", "cannot delete statement", TResultSeverity.Resv_Critical));
                 return false;
             }
+            finally
+            {
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
+            }
+        }
+
+        /// <summary>
+        /// drop multiple bank statements by criteria, eg. OlderThan1Year, All
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool DropBankStatements(Int32 ALedgerNumber, String ACriteria, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            TDataBase db = DBAccess.Connect("DropOldBankStatements");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool Result = false;
+            BankImportTDS MainDS = new BankImportTDS();
+            AEpStatementAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            Transaction.Rollback();
+
+            if (MainDS.AEpStatement.Rows.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "cannot find statement", TResultSeverity.Resv_Critical));
+                db.CloseDBConnection();
+                return false;
+            }
+
+            if (ACriteria == "All")
+            {
+                foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
+                {
+                    Result = DropBankStatement(ALedgerNumber, stmtRow.StatementKey, out AVerificationResult, db);
+                    if (!Result)
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (ACriteria == "OlderThan1Year")
+            {
+                foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
+                {
+                    if (stmtRow.Date < DateTime.Now.AddYears(-1))
+                    {
+                        Result = DropBankStatement(ALedgerNumber, stmtRow.StatementKey, out AVerificationResult, db);
+                        if (!Result)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Criteria is not recognised", TResultSeverity.Resv_Critical));
+            }
+
+            db.CloseDBConnection();
+            return Result;
         }
 
         private static bool FindDonorByIBAN(
@@ -884,6 +965,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Transaction.Commit();
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             TProgressTracker.FinishJob(MyClientID);
 
             return ResultDataset;
@@ -1037,7 +1123,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
 
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.Connect("CommitMatches").GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDataBase db = DBAccess.Connect("CommitMatches");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -1062,6 +1149,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 if (NewTransaction)
                 {
                     Transaction.Commit();
+                    db.CloseDBConnection();
                 }
 
                 return true;
@@ -1074,6 +1162,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 {
                     Transaction.Rollback();
                 }
+
+                db.CloseDBConnection();
 
                 return false;
             }
@@ -1337,6 +1427,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                         Transaction.Rollback();
                         TProgressTracker.FinishJob(MyClientID);
+                        if (ADataBase == null)
+                        {
+                            db.CloseDBConnection();
+                        }
                         return false;
                     }
                 }
@@ -1491,6 +1585,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             if (AVerificationResult.HasCriticalErrors)
             {
                 TProgressTracker.FinishJob(MyClientID);
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
                 return false;
             }
 
@@ -1508,6 +1606,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             if (result == TSubmitChangesResult.scrOK)
             {
                 ABatchNumber = giftbatchRow.BatchNumber;
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
                 return true;
             }
             else
@@ -1516,6 +1618,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 TLogging.Log(VerificationResultSubmitChanges.BuildVerificationResultString());
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
             return false;
         }
 
@@ -1525,7 +1631,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// <returns>the GL batch number</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool CreateGLBatch(
-
             Int32 ALedgerNumber,
             Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult,
@@ -1560,6 +1665,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating GL Batch"), msg, TResultSeverity.Resv_Critical));
 
                 Transaction.Rollback();
+                db.CloseDBConnection();
                 return false;
             }
 
@@ -1689,10 +1795,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             if (result == TSubmitChangesResult.scrOK)
             {
                 ABatchNumber = glbatchRow.BatchNumber;
+                db.CloseDBConnection();
                 return true;
             }
 
             TLogging.Log("Problems storing GL Batch");
+            db.CloseDBConnection();
             return false;
         }
     }

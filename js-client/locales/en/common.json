@@ -611,7 +611,12 @@
         "account_code": "account",
         "transform_to_gift": "Create Gift Batch from Import",
         "transform_to_gl": "Create GL Batch from Import",
-        "not_av": "not avaliable for selected option",
+        "delete_stmt": "Delete selected Statement",
+        "delete_old_stmt_1_year": "Delete all Statements older than a year",
+        "delete_all_stmts": "Delete all Statements",
+        "ask_delete_stmt": "Do you really want to delete the selected statement?",
+        "ask_delete_stmts": "Do you really want to delete the selected statements?",
+        "not_av": "not available for selected option",
         "edittitle_trans_detail": "Edit transaction detail",
         "total_debit": "Total Debit",
         "total_credit": "Total Credit"

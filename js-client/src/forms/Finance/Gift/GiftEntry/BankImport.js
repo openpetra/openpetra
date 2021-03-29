@@ -467,3 +467,66 @@ function transform_to_gift() {
 	});
 
 }
+
+function delete_current_statement() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AStatementKey: $('#bank_number_id').val(),
+	};
+
+	let s = confirm( i18next.t('BankImport.ask_delete_stmt') );
+	if (!s) {return}
+
+	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatement', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.deleted'), 'success' );
+			display_dropdownlist();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
+}
+
+function delete_old_statements() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ACriteria: 'OlderThan1Year'
+	};
+
+	let s = confirm( i18next.t('BankImport.ask_delete_stmts') );
+	if (!s) {return}
+
+	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatements', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.deleted'), 'success' );
+			display_dropdownlist();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
+}
+
+function delete_all_statements() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ACriteria: 'All'
+	};
+
+	let s = confirm( i18next.t('BankImport.ask_delete_stmts') );
+	if (!s) {return}
+
+	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatements', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.deleted'), 'success' );
+			display_dropdownlist();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
+}
