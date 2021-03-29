@@ -503,9 +503,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
         private static bool AddUpdateMatches(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, string ADBAction)
         {
-            if (!AUpdates.ContainsKey(ARow.MatchText))
+            if (!AUpdates.ContainsKey(ARow.MatchText + "::" + ARow.Detail.ToString()))
             {
-                AUpdates.Add(ARow.MatchText, new MatchUpdate(ref ARow, ADBAction));
+                AUpdates.Add(ARow.MatchText + "::" + ARow.Detail.ToString(), new MatchUpdate(ref ARow, ADBAction));
             }
 
             return true;
@@ -519,26 +519,26 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         private static void UpdateMatchesRecentMatch(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, DateTime ANewDateEffective)
         {
             AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
-            AUpdates[ARow.MatchText].newValue.RecentMatch = ANewDateEffective;
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.RecentMatch = ANewDateEffective;
         }
 
         private static void UpdateMatchesMotivation(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, string MotivationGroup, string MotivationDetail)
         {
             AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
-            AUpdates[ARow.MatchText].newValue.MotivationGroupCode = MotivationGroup;
-            AUpdates[ARow.MatchText].newValue.MotivationDetailCode = MotivationDetail;
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.MotivationGroupCode = MotivationGroup;
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.MotivationDetailCode = MotivationDetail;
         }
 
         private static void UpdateMatchesDonorKey(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, Int64 ADonorKey)
         {
             AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
-            AUpdates[ARow.MatchText].newValue.DonorKey = ADonorKey;
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.DonorKey = ADonorKey;
         }
 
         private static void UpdateMatchesUnmatch(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow)
         {
             AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
-            AUpdates[ARow.MatchText].newValue.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
         }
 
         /// <summary>
@@ -546,7 +546,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// tries to find matches too
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, TDataBase ADataBase = null)
+        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, bool AInitialLoad = false, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches", ADataBase);
             bool NewTransaction;
@@ -773,9 +773,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             }
                         }
 
-                        // this is kinda wrong. because you always have to change status after every detail edit,
-                        // so we ignore it, for now
-                        if (sum != TrRow.TransactionAmount && false)
+                        if (sum != TrRow.TransactionAmount && AInitialLoad)
                         {
                             TLogging.Log(
                                 "we should drop this match since the total is wrong: " + TrRow.Description + " " + sum.ToString() + " " +
@@ -785,7 +783,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             foreach (DataRowView rv in matches)
                             {
                                 AEpMatchRow r = (AEpMatchRow)rv.Row;
-
                                 UpdateMatchesUnmatch(ref MatchesUpdates, ref r);
                             }
                         }
@@ -900,7 +897,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out String ACurrencyCode
             )
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true);
             ATotalCredit = 0;
             ATotalDebit = 0;
 
@@ -1259,7 +1256,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 ABatchNumber,
             TDataBase ADataBase = null)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, ADataBase);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, ADataBase);
             ABatchNumber = -1;
             string MyClientID = DomainManager.GClientID.ToString();
 
@@ -1528,7 +1525,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out TVerificationResultCollection AVerificationResult,
             out Int32 ABatchNumber)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true);
             ABatchNumber = -1;
 
             MainDS.AEpTransaction.DefaultView.RowFilter =
