@@ -260,6 +260,8 @@ function save_entry(obj) {
 	updated_data.result.PPartnerStatus = [];
 	updated_data.result.PPublication = [];
 	updated_data.result.PCountry = [];
+	updated_data.result.PBankingDetails = [];
+	updated_data.result.PPartnerBankingDetails = [];
 
 	// to be save we have the right address in logs
 	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = getUpdatesAddress(partnerkey); }
