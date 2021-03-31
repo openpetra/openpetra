@@ -61,6 +61,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
         {
             AStatementKey = -1;
             AVerificationResult = new TVerificationResultCollection();
+            int FileImported = 0;
 
             // unzip the file content to memory
             using (MemoryStream stream = new MemoryStream(AFileContent))
@@ -77,6 +78,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                         string ThisFilename = Path.GetFileName(theEntry.Name.Replace("\\", Path.DirectorySeparatorChar.ToString()));
                         string ThisFileContent = String.Empty;
 
+                        TLogging.Log("Importing file inside zip file: " + ThisFilename);
+
                         Int32 sourcebytes = 0;
                         Byte[] buffer = new Byte[4096*100];
 
@@ -86,11 +89,15 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                             ThisFileContent += System.Text.Encoding.UTF8.GetString(buffer, 0, sourcebytes);
                         } while (sourcebytes > 0);
 
-                        if (!ImportFromFile(
+                        if (ImportFromFile(
                             ALedgerNumber, ABankAccountCode, ThisFilename, ThisFileContent,
                             false, out AStatementKey, out AVerificationResult))
                         {
-                            return false;
+                            FileImported++;
+                        }
+                        else
+                        {
+                            TLogging.Log("There have been issues importing the file as CAMT: " + ThisFilename);
                         }
 
                         theEntry = zs.GetNextEntry();
@@ -98,7 +105,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                 }
             }
 
-            return true;
+            return FileImported > 0;
         }
 
         /// <summary>
