@@ -461,11 +461,11 @@ function batch_cancel(batch_id) {
 	})
 }
 
-function batch_reverse(batch_id, date) {
+function batch_reverse(batch_id) {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ABatchNumberToReverse: batch_id,
-		ADateForReversal: date,
+		ADateForReversal: '1900-01-01', // use the date of the batch to reverse, if possible
 		AAutoPostReverseBatch: false
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_ReverseBatch', x).then(function (data) {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, morayh, christophert
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2153,7 +2153,20 @@ namespace Ict.Petra.Server.MFinance.Common
                     ref Transaction, ref SubmissionOK,
                     delegate
                     {
+                        MainDS = LoadGLBatchData(ALedgerNumber, ABatchNumberToReverse, ref Transaction, ref Verifications);
+                        ABatchRow originalBatch = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumberToReverse });
+
                         int dateEffectiveYearNumber, dateEffectivePeriodNumber;
+
+                        if (ADateForReversal.Equals(new DateTime(1900,1,1)))
+                        {
+                            ADateForReversal = originalBatch.DateEffective;
+
+                            // if DateEffective is not in an open period, then use the earliest possible date from the first open period
+                            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateForReversal, out dateEffectivePeriodNumber,
+                                out dateEffectiveYearNumber,
+                                Transaction, true);
+                        }
 
                         if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, ADateForReversal, out dateEffectivePeriodNumber,
                                 out dateEffectiveYearNumber,
@@ -2165,8 +2178,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         }
                         else
                         {
-                            MainDS = LoadGLBatchData(ALedgerNumber, ABatchNumberToReverse, ref Transaction, ref Verifications);
-
                             // get the data from the database into the MainDS
                             ABatchRow newBatchRow = MainDS.ABatch.NewRowTyped(true);
                             newBatchRow.LedgerNumber = ALedgerNumber;
@@ -2176,8 +2187,6 @@ namespace Ict.Petra.Server.MFinance.Common
                             newBatchRow.DateEffective = ADateForReversal;
                             newBatchRow.BatchPeriod = dateEffectivePeriodNumber;
                             newBatchRow.BatchYear = dateEffectiveYearNumber;
-
-                            ABatchRow originalBatch = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumberToReverse });
 
                             #region Validate Data
 
