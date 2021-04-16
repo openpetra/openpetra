@@ -243,6 +243,7 @@
         "countrycode": "Country",
         "lastdonation": "Last Donation",
         "mailingaddress": "Valid address",
+        "set_send_mail": "The address looks complete. Should this address be marked as valid?",
         "nosolicitations1": "Contact Preference",
         "nosolicitations2": "No solicitations",
         "partnerclass": "Partner class",

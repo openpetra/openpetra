@@ -243,6 +243,7 @@
         "countrycode": "Land",
         "lastdonation": "Letzte Spende",
         "mailingaddress": "Gültige Adresse",
+        "set_send_mail": "Die Adresse sieht vollständig aus. Soll diese Adresse als gültig markiert werden?",
         "nosolicitations1": "Kontaktaufnahme",
         "nosolicitations2": "Keine unaufgeforderte Kontaktierung/Werbung erwünscht",
         "partnerclass": "Kontakt-Typ",
