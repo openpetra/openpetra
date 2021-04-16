@@ -333,6 +333,10 @@ function save_edit_batch(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
+	if (payload["AGlEffectiveDate"] == '') {
+		display_message(i18next.t('GiftBatches.missing_batch_date'), "fail");
+		exit;
+	}
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainBatches', payload).then(function (result) {
@@ -354,7 +358,11 @@ function save_edit_trans(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
+	if (payload["ADateEntered"] == '') {
+		display_message(i18next.t('GiftBatches.missing_date_entered'), "fail");
+		exit;
+	}
+	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
