@@ -699,6 +699,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     String.Empty, // E-Mail Address
                     ANewPartner.PartnerClass,
                     true, // ActiveOnly
+                    String.Empty, // NameFormat
                     String.Empty, // SortBy
                     10, // MaxRecords
                     out TotalRecords,
@@ -717,6 +718,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         email,
                         ANewPartner.PartnerClass,
                         true, // ActiveOnly
+                        String.Empty, // NameFormat
                         String.Empty, // SortBy
                         10, // MaxRecords
                         out TotalRecords,

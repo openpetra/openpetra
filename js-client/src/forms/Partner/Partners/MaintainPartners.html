@@ -723,6 +723,19 @@
 
 	<div class="row">
 		<div class="col">
+			<span>{name_format}:</span>
+		</div>
+		<div class="col">
+			<select name="ANameFormat">
+				<option value="WithoutTitle">{display_firstname_lastname}</option>
+				<option value="ReverseShortName">{display_title_firstname_lastname}</option>
+				<option value="ShortName" selected>{display_lastname_firstname_title}</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
 			<span>{forms.sortby}:</span>
 		</div>
 		<div class="col">
