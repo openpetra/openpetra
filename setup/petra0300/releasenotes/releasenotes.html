@@ -12,6 +12,39 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2021.04: April 30th, 2021</h3>
+
+<p>This release includes the work of two months, March and April.
+Most changes have happened in the area of importing bank statements, we now support the CAMT and MT940 file formats.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+Contact Module:
+<ul>
+<li>Find Contact: Option to display Contact Shortname in Readable Order in Result List</li>
+<li>Contact Edit: Set SendMail flag for addresses automatically</li>
+<li>Contact Edit: Bugfix: Modifying bank account might be overwritten</li>
+<li>Contact Import: Column names should be case insensitive</li>
+</ul>
+
+Accounting and Donation module:
+<ul>
+<li>GL Batch and Gift Batch: Saving with an empty date causes an error refering to the server log file</li>
+<li>Use a proper date for reversing a GL batch</li>
+<li>BankImport: Set Default Motivation Detail for new matches</li>
+<li>BankImport: Import Bank Statements from CAMT XML file, matching by bank account number</li>
+<li>BankImport: Import MT940 files</li>
+<li>BankImport: Allow to delete imported statements</li>
+</ul>
+
+Sponsored children:
+<ul>
+<li>Bugfix: cannot open sponsorship if comment is null.</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the 
+<a href="https://github.com/openpetra/openpetra/milestone/16?closed=1" rel=" nofollow ugc">Milestone at Github for release 2021.04</a>!</p>
+
 <h3>Release 2021.02: March 6th, 2021</h3>
 
 <p>This release includes the work of two months, January and February. A lot has happened in the initial import of contacts, and also for bank accounts of contacts.</p>
