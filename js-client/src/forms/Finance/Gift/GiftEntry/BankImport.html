@@ -88,6 +88,15 @@
 
 						<div class="row">
 							<div class="col">
+								<span>{accountname}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_account_name_c" value="" size="40" readonly>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
 								<span>{description}</span>
 							</div>
 							<div class="col">
@@ -281,11 +290,28 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="settings" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{forms.preset}</button>
+			<button id="settings" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{PresetsCSV}</button>
 		</td>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="$('#import_file').click()">{forms.import}</button>
-			<input type="file" hidden id="import_file" onchange="import_file(this)">
+			<span>{bankaccount}:</span>
+			<div class="autocomplete">
+				<input type="text" name="a_bank_account_name_c" key-name="ABankAccountCode" value="" oninput="autocomplete_a(this)">
+			</div>
+		</td>
+		<td>
+			<div class="btn-group">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					{forms.import}
+				</button>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" onclick="$('#import_csv_file').click()">{import_csv}</a>
+					<a class="dropdown-item" onclick="$('#import_camt_file').click()">{import_camt}</a>
+					<a class="dropdown-item" onclick="$('#import_mt940_file').click()">{import_mt940}</a>
+				</div>
+			</div>
+			<input type="file" hidden id="import_csv_file" onchange="import_csv_file(this)" accept=".csv,.txt">
+			<input type="file" hidden id="import_camt_file" onchange="import_camt_file(this)" accept=".xml,.zip">
+			<input type="file" hidden id="import_mt940_file" onchange="import_mt940_file(this)" accept=".sta,.mt940">
 		</td>
 	</tr>
 </table>
@@ -294,16 +320,6 @@
 
 <div class="container collapse" id="tabsettings">
 	<div class="container group-container">
-	<div class="row">
-		<div class="col">
-			<span>{bankaccount}:</span>
-		</div>
-		<div class="col">
-			<div class="autocomplete">
-				<input type="text" name="a_bank_account_name_c" key-name="ABankAccountCode" value="" oninput="autocomplete_a(this)">
-			</div>
-		</div>
-	</div>
 	<div class="row">
 		<div class="col">
 			<span>{startAfterLine}:</span>
@@ -401,20 +417,31 @@
 <div class="container collapse show" id="tabfilter">
 	<div class="container group-container">
     <div class="row">
-      <div class="col">
+      <div class="col-4">
         <span>{bankimport_name}</span>
       </div>
-      <div class="col">
+      <div class="col-6">
         <select class="dropdown" name="ABankNumber" id="bank_number_id">
 
         </select>
+
+        <div class="btn-group">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {forms.delete}
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" onclick="delete_current_statement()">{delete_stmt}</a>
+                <a class="dropdown-item" onclick="delete_old_statements()">{delete_old_stmt_1_year}</a>
+                <a class="dropdown-item" onclick="delete_all_statements()">{delete_all_stmts}</a>
+            </div>
+        </div>
       </div>
     </div>
     <div class="row">
-      <div class="col">
+      <div class="col-4">
         <span>{bankimport_status}</span>
       </div>
-      <div class="col">
+      <div class="col-6">
         <select class="dropdown" name="AStatus" id="match_status_id">
           <option value="" selected>{all}</option>
           <option value="UNMATCHED">{unmatched}</option>
@@ -424,8 +451,12 @@
         </select>
       </div>
     </div>
-	</div>
-	<button type="button" class="btn btn-primary" style="margin:2px;" onclick="display_list();">{display}</button>
+    <div class="row">
+      <div class="col-3">
+        <button type="button" class="btn btn-primary" style="margin:2px;" onclick="display_list();">{display}</button>
+      </div>
+    </div>
+</div>
 	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
 	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
 </div>

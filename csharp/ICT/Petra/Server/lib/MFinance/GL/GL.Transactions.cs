@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -4391,7 +4391,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumberToReverse"></param>
-        /// <param name="ADateForReversal"></param>
+        /// <param name="ADateForReversal">if this is 1900-01-01, the original batch date will be used, or the start date of the current period</param>
         /// <param name="AReversalBatchNumber"></param>
         /// <param name="AVerifications"></param>
         /// <param name="AAutoPostReverseBatch"></param>

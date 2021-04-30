@@ -12,6 +12,40 @@
 
 <h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra</h2>
 
+<h3>Version 2021.04 vom 30. April 2021</h3>
+
+<p>Diese Version beinhaltet die Arbeit von 2 Monaten, März und April.
+Die meisten Änderungen betreffen den Import von Kontoauszügen, wir unterstützen nun die Dateiformate CAMT und MT940.</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+Kontaktmodul:
+<ul>
+<li>Kontakt finden: Man kann die Kontaktnamen nun auch in anderer Reihenfolge im Suchergebnis anzeigen lassen.</li>
+<li>Kontakt bearbeiten: Es wird eine Adresse automatisch als gültig markiert, wenn man sie eingibt.</li>
+<li>Kontakt bearbeiten: Fehler behoben: Es wurde manchmal eine Änderung an der Bankverbindung nicht gespeichert.</li>
+<li>Kontakte importieren: Spaltennamen werden erkannt, auch wenn die Groß/Kleinschreibung unterschiedlich ist.</li>
+</ul>
+
+Buchhaltung und Spendenverwaltung:
+<ul>
+<li>Buchungsstapel und Spendenstapel: Beim Speichern mit einem leeren Datum gab es eine unklare Fehlermeldung.</li>
+<li>Beim Zurücksetzen eines Buchunggstapels wird nun ein funktionierendes Buchungsdatum benutzt.</li>
+<li>BankImport: Man kann einstellen, welcher Verwendungszweck per Voreinstellung für unbekannte Spenden zum Einsatz kommt.</li>
+<li>BankImport: Es können nun Kontoauszüge als CAMT XML Dateien importiert werden, und anhand der Kontonummer wird der Spender direkt zugeordnet.</li>
+<li>BankImport: Es können nun Kontoauszüge als MT940 Dateien importiert werden.</li>
+<li>BankImport: Importierte Kontoauszüge können auch wieder aus OpenPetra gelöscht werden.</li>
+</ul>
+
+Patenschaften:
+<ul>
+<li>Fehler behoben: Man konnte eine Patenschaft nicht öffnen, wenn ein Kommentar leer war.</li>
+</ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem
+<a href="https://github.com/openpetra/openpetra/milestone/16?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2021.04</a> zu finden!</p>
+
+
 <h3>Version 2021.02 vom 6. März 2021</h3>
 
 <p>Diese Version beinhaltet die Arbeit von 2 Monaten, Januar und Februar. 

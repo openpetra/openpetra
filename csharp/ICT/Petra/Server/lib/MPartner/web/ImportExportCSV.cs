@@ -81,29 +81,43 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             ResultsCol.Add(new TVerificationResult(ResultsContext, AResultText, ASeverity));
         }
-        
-        private bool HasColumnValue(DataRow ARow, string AAttrName)
+
+        private void MarkColumnUsed(string AAttrName)
         {
-            if (!ARow.Table.Columns.Contains(AAttrName))
+            if (!FUnusedColumns.Contains(AAttrName))
             {
-                return false;
+                foreach (string s in FUnusedColumns)
+                {
+                    if (s.ToLower() == AAttrName.ToLower())
+                    {
+                        AAttrName = s;
+                    }
+                }
             }
             if (FUnusedColumns.Contains(AAttrName))
             {
                 FUnusedColumns.Remove(AAttrName);
+            }
+        }
+
+        private bool HasColumnValue(DataRow ARow, string AAttrName)
+        {
+            MarkColumnUsed(AAttrName);
+            AAttrName = AAttrName.ToLower();
+            if (!ARow.Table.Columns.Contains(AAttrName))
+            {
+                return false;
             }
             return (ARow[AAttrName] != System.DBNull.Value) && (ARow[AAttrName].ToString() != String.Empty);
         }
 
         private string GetColumnValue(DataRow ARow, string AAttrName)
         {
+            MarkColumnUsed(AAttrName);
+            AAttrName = AAttrName.ToLower();
             if (!ARow.Table.Columns.Contains(AAttrName))
             {
                 return String.Empty;
-            }
-            if (FUnusedColumns.Contains(AAttrName))
-            {
-                FUnusedColumns.Remove(AAttrName);
             }
             return ARow[AAttrName].ToString();
         }
@@ -139,6 +153,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             foreach (DataColumn c in ATable.Columns)
             {
                 FUnusedColumns.Add(c.ColumnName);
+                c.ColumnName = c.ColumnName.ToLower();
             }
 
             // starting in line 1, because there is the line with the captions
@@ -684,6 +699,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     String.Empty, // E-Mail Address
                     ANewPartner.PartnerClass,
                     true, // ActiveOnly
+                    String.Empty, // NameFormat
                     String.Empty, // SortBy
                     10, // MaxRecords
                     out TotalRecords,
@@ -702,6 +718,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         email,
                         ANewPartner.PartnerClass,
                         true, // ActiveOnly
+                        String.Empty, // NameFormat
                         String.Empty, // SortBy
                         10, // MaxRecords
                         out TotalRecords,
@@ -1287,7 +1304,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 if ((c.ColumnName.ToLower().IndexOf("subscribe_") == 0) && (ARow[c.ColumnName].ToString().ToLower() == "yes"))
                 {
-                    FUnusedColumns.Remove(c.ColumnName);
+                    MarkColumnUsed(c.ColumnName);
                     PublicationCode = c.ColumnName.Substring(10).ToUpper();
 
                     // only add subscription if it does not exist yet

@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -50,6 +50,7 @@ function load_preset() {
 		data = JSON.parse(data.data.d);
 		data['a_bank_account_name_c'] = data['ABankAccountCode'];
 		format_tpl($('#tabsettings'), data);
+		format_tpl($('#toolbar'), data);
 	});
 }
 
@@ -86,6 +87,9 @@ function updateTransaction(StatementKey, OrderId) {
 }
 
 function format_item(item) {
+	if (item.a_account_name_c != null) {
+		item.a_description_c = item.a_account_name_c + "; " + item.a_description_c;
+	}
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
 	// row.find('.collapse_col').append(view);
@@ -132,6 +136,9 @@ function edit_gift_trans(statement_key, trans_order) {
 		transaction = parsed.ATransactions[0];
 		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
 		transaction['p_donor_key_n'] = transaction['DonorKey'];
+		if (transaction['a_iban_c'] != null) {
+			transaction['a_account_name_c'] += "; " + transaction['a_iban_c'];
+		}
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
 		for (detail of parsed.ADetails) {
@@ -239,7 +246,8 @@ function delete_trans_detail(obj_modal) {
 
 /////
 
-function import_file(self) {
+function import_csv_file(self) {
+
 	self = $(self);
 	var filename = self.val();
 
@@ -251,6 +259,7 @@ function import_file(self) {
 	}
 
 	var settings = extract_data($('#tabsettings'));
+	var settings2 = extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
@@ -258,7 +267,7 @@ function import_file(self) {
 
 		p = {
 			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
-			'ABankAccountCode': settings['ABankAccountCode'],
+			'ABankAccountCode': settings2['ABankAccountCode'],
 			'ABankStatementFilename': filename,
 			'ACSVContent': event.target.result,
 			'ASeparator': settings['ASeparator'],
@@ -289,6 +298,140 @@ function import_file(self) {
 	reader.readAsText(self[0].files[0], settings['AFileEncoding']);
 
 };
+
+function import_camt_file(self) {
+
+	self = $(self);
+	var filename = self.val();
+
+	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		//alert("Great success! All the File APIs are supported.");
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
+	if (filename.endsWith(".zip")) {
+		import_camt_zip_file(self, filename);
+		return;
+	}
+
+	var settings = extract_data($('#toolbar'));
+
+	var reader = new FileReader();
+
+	reader.onload = function (event) {
+
+		p = {
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'ABankAccountCode': settings['ABankAccountCode'],
+			'ABankStatementFilename': filename,
+			'ACAMTContent': event.target.result,
+			};
+
+		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCAMTFile', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			result = result.result;
+			if (result == true) {
+				display_message(i18next.t('BankImport.upload_success'), "success");
+				display_dropdownlist();
+			} else {
+				display_message(i18next.t('BankImport.upload_fail'), "fail");
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('BankImport.upload_fail'), "fail");
+		});
+
+	}
+	// Read in the file as a data URL.
+	reader.readAsText(self[0].files[0]);
+};
+
+function import_camt_zip_file(self, filename) {
+
+	var settings = extract_data($('#toolbar'));
+
+	var reader = new FileReader();
+
+	reader.onload = function (event) {
+
+		p = {
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'ABankAccountCode': settings['ABankAccountCode'],
+			'AZipFileContent': event.target.result,
+			};
+
+		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCAMTZIPFile', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			result = result.result;
+			if (result == true) {
+				display_message(i18next.t('BankImport.upload_success'), "success");
+				display_dropdownlist();
+			} else {
+				display_message(i18next.t('BankImport.upload_fail'), "fail");
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('BankImport.upload_fail'), "fail");
+		});
+
+	}
+	// Read in the file as a data URL.
+	reader.readAsDataURL(self[0].files[0]);
+};
+
+function import_mt940_file(self) {
+
+	self = $(self);
+	var filename = self.val();
+
+	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		//alert("Great success! All the File APIs are supported.");
+	} else {
+	  alert('The File APIs are not fully supported in this browser.');
+	}
+
+	var settings = extract_data($('#toolbar'));
+
+	var reader = new FileReader();
+
+	reader.onload = function (event) {
+
+		p = {
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'ABankAccountCode': settings['ABankAccountCode'],
+			'ABankStatementFilename': filename,
+			'AMT940Content': event.target.result,
+			};
+
+		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromMT940File', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			result = result.result;
+			if (result == true) {
+				display_message(i18next.t('BankImport.upload_success'), "success");
+				display_dropdownlist();
+			} else {
+				display_message(i18next.t('BankImport.upload_fail'), "fail");
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			display_message(i18next.t('BankImport.upload_fail'), "fail");
+		});
+
+	}
+	// Read in the file as a data URL.
+	reader.readAsText(self[0].files[0], settings['AFileEncoding']);
+};
+
+/////
 
 function transform_to_gl() {
  let x = {
@@ -323,4 +466,67 @@ function transform_to_gift() {
 		}
 	});
 
+}
+
+function delete_current_statement() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AStatementKey: $('#bank_number_id').val(),
+	};
+
+	let s = confirm( i18next.t('BankImport.ask_delete_stmt') );
+	if (!s) {return}
+
+	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatement', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.deleted'), 'success' );
+			display_dropdownlist();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
+}
+
+function delete_old_statements() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ACriteria: 'OlderThan1Year'
+	};
+
+	let s = confirm( i18next.t('BankImport.ask_delete_stmts') );
+	if (!s) {return}
+
+	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatements', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.deleted'), 'success' );
+			display_dropdownlist();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
+}
+
+function delete_all_statements() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ACriteria: 'All'
+	};
+
+	let s = confirm( i18next.t('BankImport.ask_delete_stmts') );
+	if (!s) {return}
+
+	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatements', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('forms.deleted'), 'success' );
+			display_dropdownlist();
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
 }

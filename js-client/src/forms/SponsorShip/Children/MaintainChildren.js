@@ -359,6 +359,7 @@ var MaintainChildComments = new (class {
       this.highest_index = comment["p_index_i"]
 
       // short comment in preview
+      if (comment["p_comment_c"] == null) { comment["p_comment_c"] = ''; }
       comment["p_comment_short_c"] = comment["p_comment_c"];
       if (comment["p_comment_c"].length > MAX_LENGTH_COMMENT_PREVIEW) {
         comment["p_comment_short_c"] = comment["p_comment_c"].substring(0, MAX_LENGTH_COMMENT_PREVIEW-2) + "..";
@@ -601,6 +602,7 @@ var MaintainChildReminders = new (class {
       this.highest_index = reminder["p_reminder_id_i"]
 
       // short reminder in preview
+      if (reminder["p_comment_c"] == null) { reminder["p_comment_c"] = ''; }
       reminder["p_comment_short_c"] = reminder["p_comment_c"];
       if (reminder["p_comment_c"].length > MAX_LENGTH_COMMENT_PREVIEW) {
         reminder["p_comment_short_c"] = reminder["p_comment_c"].substring(0, MAX_LENGTH_COMMENT_PREVIEW-2) + "..";

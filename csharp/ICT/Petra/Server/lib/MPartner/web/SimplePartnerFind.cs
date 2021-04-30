@@ -37,6 +37,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.PartnerFind;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -61,6 +62,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AEmailAddress,
             string APartnerClass,
             bool AActiveOnly,
+            string ANameFormat,
             string ASortBy,
             Int16 AMaxRecords,
             out Int32 ATotalRecords,
@@ -135,6 +137,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             DataTable typedResult = PartnerFind.GetDataPagedResult(0, AMaxRecords, out TotalRecords, out TotalPages);
+
+            if ((ANameFormat != String.Empty) && (ANameFormat != "ShortName"))
+            {
+                foreach (DataRow r in typedResult.Rows)
+                {
+                    if (ANameFormat == "WithoutTitle")
+                    {
+                        r["p_partner_short_name_c"] = Calculations.FormatShortName(r["p_partner_short_name_c"].ToString(), eShortNameFormat.eReverseWithoutTitle);
+                    }
+                    else if (ANameFormat == "ReverseShortName")
+                    {
+                        r["p_partner_short_name_c"] = Calculations.FormatShortName(r["p_partner_short_name_c"].ToString(), eShortNameFormat.eReverseShortname);
+                    }
+                }
+
+                if ((ASortBy == String.Empty) || (ASortBy == "PartnerName"))
+                {
+                    typedResult.DefaultView.Sort = "p_partner_short_name_c ASC";
+                }
+            }
 
             // tell the web client how many records have been found
             ATotalRecords = TotalRecords;
@@ -223,6 +245,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 String.Empty, // Email
                 APartnerClass,
                 AActiveOnly,
+                "ShortName",
                 "PartnerName",
                 ALimit,
                 out TotalRecords,

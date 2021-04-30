@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -194,18 +194,26 @@ function new_trans(ledger_number, batch_number) {
 
 function new_trans_detail(ledger_number, batch_number, trans_id) {
 	if (!allow_modal()) {return}
-	let x = {
-		a_ledger_number_i: ledger_number,
-		a_batch_number_i: batch_number,
-		a_gift_transaction_number_i: trans_id,
-		a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1
+	var r = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger')
 	};
+	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadDefaultMotivation', r).then(function (data) {
+		parsed = JSON.parse(data.data.d)
+		let x = {
+			a_ledger_number_i: ledger_number,
+			a_batch_number_i: batch_number,
+			a_gift_transaction_number_i: trans_id,
+			a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1,
+			a_motivation_group_code_c: parsed.ADefaultMotivationGroup,
+			a_motivation_detail_code_c: parsed.ADefaultMotivationDetail
+		};
 
-	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
-	$('#modal_space').append(p);
-	p.find('[edit-only]').hide();
-	p.find('[action]').val('create');
-	p.modal('show');
+		let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
+		$('#modal_space').append(p);
+		p.find('[edit-only]').hide();
+		p.find('[action]').val('create');
+		p.modal('show');
+	});
 };
 
 /////
@@ -325,6 +333,10 @@ function save_edit_batch(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
+	if (payload["AGlEffectiveDate"] == '') {
+		display_message(i18next.t('GiftBatches.missing_batch_date'), "fail");
+		exit;
+	}
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainBatches', payload).then(function (result) {
@@ -346,7 +358,11 @@ function save_edit_trans(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
+	if (payload["ADateEntered"] == '') {
+		display_message(i18next.t('GiftBatches.missing_date_entered'), "fail");
+		exit;
+	}
+	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);

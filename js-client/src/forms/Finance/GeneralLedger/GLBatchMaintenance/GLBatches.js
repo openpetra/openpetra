@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -305,6 +305,10 @@ function save_edit_batch(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
+	if (payload["ADateEffective"] == '') {
+		display_message(i18next.t('GLBatches.missing_batch_date'), "fail");
+		exit;
+	}
 	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
@@ -328,8 +332,12 @@ function save_edit_trans(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
- 	payload['AJournalNumber'] = 1;
+	if (payload["ATransactionDate"] == '') {
+		display_message(i18next.t('GLBatches.missing_transaction_date'), "fail");
+		exit;
+	}
+	payload['action'] = mode;
+	payload['AJournalNumber'] = 1;
 	payload['AAmountInIntlCurrency'] = 0.0;
 	let amount = payload['ACreditAmountBase'] - payload['ADebitAmountBase'];
 	if (amount < 0) {
@@ -461,11 +469,11 @@ function batch_cancel(batch_id) {
 	})
 }
 
-function batch_reverse(batch_id, date) {
+function batch_reverse(batch_id) {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ABatchNumberToReverse: batch_id,
-		ADateForReversal: date,
+		ADateForReversal: '1900-01-01', // use the date of the batch to reverse, if possible
 		AAutoPostReverseBatch: false
 	};
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_ReverseBatch', x).then(function (data) {

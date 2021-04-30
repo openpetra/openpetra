@@ -72,8 +72,10 @@ namespace Ict.Common.Remoting.Shared
             {
                 table = new List <Dictionary <string, object>>();
 
-                foreach (DataRow dr in dt.Rows)
+                foreach (DataRowView vr in dt.DefaultView)
                 {
+                    DataRow dr = vr.Row;
+
                     row = new Dictionary <string, object>();
 
                     foreach (DataColumn col in dt.Columns)
@@ -107,8 +109,10 @@ namespace Ict.Common.Remoting.Shared
 
             table = new List <Dictionary <string, object>>();
 
-            foreach (DataRow dr in ATable.Rows)
+            foreach (DataRowView vr in ATable.DefaultView)
             {
+                DataRow dr = vr.Row;
+
                 row = new Dictionary <string, object>();
 
                 foreach (DataColumn col in ATable.Columns)

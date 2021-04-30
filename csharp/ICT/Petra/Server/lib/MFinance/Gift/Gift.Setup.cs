@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,6 +37,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
@@ -52,11 +53,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AMotivationGroupCode">if this is set, only the details of the specified motivation group will be returned</param>
+        /// <param name="ADefaultMotivationGroup"></param>
+        /// <param name="ADefaultMotivationDetail"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber, string AMotivationGroupCode)
+        public static GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber, string AMotivationGroupCode, out string ADefaultMotivationGroup, out string ADefaultMotivationDetail)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            LoadDefaultMotivation(ALedgerNumber, out ADefaultMotivationGroup, out ADefaultMotivationDetail);
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadMotivationDetails");
@@ -121,7 +125,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "update")
             {
-                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+                string Dummy1, Dummy2;
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode, out Dummy1, out Dummy2);
 
                 foreach (AMotivationGroupRow row in MainDS.AMotivationGroup.Rows)
                 {
@@ -143,7 +148,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "delete")
             {
-                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+                string Dummy1, Dummy2;
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode, out Dummy1, out Dummy2);
 
                 foreach (AMotivationGroupRow row in MainDS.AMotivationGroup.Rows)
                 {
@@ -154,6 +160,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 foreach (AMotivationDetailRow row in MainDS.AMotivationDetail.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                foreach (AMotivationDetailFeeRow row in MainDS.AMotivationDetailFee.Rows)
                 {
                     if (row.MotivationGroupCode == AMotivationGroupCode)
                     {
@@ -214,7 +228,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "update")
             {
-                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+                string Dummy1, Dummy2;
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode, out Dummy1, out Dummy2);
 
                 foreach (AMotivationDetailRow row in MainDS.AMotivationDetail.Rows)
                 {
@@ -239,9 +254,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (action == "delete")
             {
-                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode);
+                string Dummy1, Dummy2;
+                MainDS = LoadMotivationDetails(ALedgerNumber, AMotivationGroupCode, out Dummy1, out Dummy2);
 
                 foreach (AMotivationDetailRow row in MainDS.AMotivationDetail.Rows)
+                {
+                    if (row.MotivationGroupCode == AMotivationGroupCode
+                        && row.MotivationDetailCode == AMotivationDetailCode)
+                    {
+                        row.Delete();
+                    }
+                }
+
+                foreach (AMotivationDetailFeeRow row in MainDS.AMotivationDetailFee.Rows)
                 {
                     if (row.MotivationGroupCode == AMotivationGroupCode
                         && row.MotivationDetailCode == AMotivationDetailCode)
@@ -265,6 +290,70 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             return true;
+        }
+
+        /// returns the default motivation if it has been set in the system defaults
+        [RequireModulePermission("FINANCE-1")]
+        public static bool LoadDefaultMotivation(Int32 ALedgerNumber, out string ADefaultMotivationGroup, out string ADefaultMotivationDetail)
+        {
+            ADefaultMotivationGroup = String.Empty;
+            ADefaultMotivationDetail = String.Empty;
+
+            string DefaultMotivation = new TSystemDefaults().GetSystemDefault("DEFAULTMOTIVATION" + ALedgerNumber.ToString());
+            if (DefaultMotivation != SharedConstants.SYSDEFAULT_NOT_FOUND)
+            {
+                ADefaultMotivationGroup = DefaultMotivation.Substring(0, DefaultMotivation.IndexOf("::"));
+                ADefaultMotivationDetail = DefaultMotivation.Substring(DefaultMotivation.IndexOf("::") + 2);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// maintain the default motivation detail
+        /// </summary>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool SetDefaultMotivationDetail(Int32 ALedgerNumber,
+            String AMotivationGroupCode, String AMotivationDetailCode,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("SetDefaultMotivationDetail");
+
+            if (!(AMotivationGroupCode == String.Empty && AMotivationDetailCode == String.Empty))
+            {
+                bool validDetail = true;
+
+                db.ReadTransaction(
+                    ref Transaction,
+                    delegate
+                    {
+                        // is this a valid motivation group and detail combination?
+                        AMotivationDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, AMotivationGroupCode, AMotivationDetailCode, Transaction);
+
+                        if (MainDS.AMotivationDetail.Rows.Count == 0)
+                        {
+                            validDetail = false;
+                        }
+                        else if (MainDS.AMotivationDetail[0].MotivationStatus == false)
+                        {
+                            validDetail = false;
+                        }
+                    });
+
+                if (!validDetail)
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "invalid or inactive motivation detail", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+
+            // Store System Default for this ledger
+            return new TSystemDefaults().SetSystemDefault("DEFAULTMOTIVATION" + ALedgerNumber.ToString(), AMotivationGroupCode + "::" + AMotivationDetailCode);
         }
     }
 }

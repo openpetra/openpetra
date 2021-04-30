@@ -230,6 +230,16 @@ function save_entry(obj) {
 	// extract information from a jquery object
 	let x = extract_data(modal);
 
+	if (x['p_send_mail_l'] == false) {
+		if ((x['p_street_name_c'] != '') && (x['p_postal_code_c'] != '') &&
+			(x['p_city_c'] != '') && (x['p_country_code_c'] != '')) {
+			if (confirm(i18next.t('MaintainPartners.set_send_mail'))) {
+				modal.find("[name=p_send_mail_l]")[0].checked = true;
+				x['p_send_mail_l'] = true;
+			}
+		}
+	}
+
 	// replace all new information in the original data
 	last_opened_entry_data.p_default_email_address_c = last_opened_entry_data.ADefaultEmailAddress;
 	last_opened_entry_data.p_default_phone_landline_c = last_opened_entry_data.ADefaultPhoneLandline;
@@ -260,6 +270,8 @@ function save_entry(obj) {
 	updated_data.result.PPartnerStatus = [];
 	updated_data.result.PPublication = [];
 	updated_data.result.PCountry = [];
+	updated_data.result.PBankingDetails = [];
+	updated_data.result.PPartnerBankingDetails = [];
 
 	// to be save we have the right address in logs
 	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = getUpdatesAddress(partnerkey); }

@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -37,6 +37,11 @@ function display_list() {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
+		let x = {
+				'a_motivation_group_code_c': data.ADefaultMotivationGroup,
+				'a_motivation_detail_code_c': data.ADefaultMotivationDetail
+				}
+		insertData($("#toolbar"), x);
 		for (item of data.result.AMotivationGroup) {
 			format_item(item);
 		}
@@ -78,7 +83,11 @@ function format_item(item) {
 
 function open_motivations(obj, code, reload = false) {
 	obj = $(obj);
-	if (!reload && obj.find('.collapse').is(':visible') ) {
+	while(!obj[0].hasAttribute('id') || !obj[0].id.includes("group")) {
+		obj = obj.parent();
+	}
+	if (obj.find('.collapse').is(':visible') ) {
+		$('.tpl_row .collapse').collapse('hide');
 		return;
 	}
 	let x = {
@@ -275,6 +284,23 @@ function delete_motivation(obj_modal) {
 				display_message(i18next.t(msg.code), "fail");
 			}
 			display_message(i18next.t('forms.notdeleted'), "fail");
+		}
+	});
+}
+
+function save_default_detail(obj) {
+	let payload = translate_to_server( extract_data($(obj).closest('#toolbar')));
+	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+
+	api.post('serverMFinance.asmx/TGiftSetupWebConnector_SetDefaultMotivationDetail', payload).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+			display_message(i18next.t('forms.saved'), "success");
+		} else {
+			for (msg of parsed.AVerificationResult) {
+				display_message(i18next.t(msg.code), "fail");
+			}
+			display_message(i18next.t('forms.notsaved'), "fail");
 		}
 	});
 }

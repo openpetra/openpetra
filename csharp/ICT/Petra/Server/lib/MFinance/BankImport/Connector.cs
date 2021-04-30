@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,7 +69,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// store settings in s_system_defaults
         [RequireModulePermission("FINANCE-1")]
         public static bool SaveSettings(
-            string ABankAccountCode,
             string ASeparator,
             string AFileEncoding,
             string ADateFormat,
@@ -80,7 +79,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             TDataBase db = DBAccess.Connect("BankImportSaveSettings");
             TSystemDefaults defaults = new TSystemDefaults(db);
 
-            defaults.SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode, db);
             defaults.SetSystemDefault("BANKIMPORT_SEPARATOR", ASeparator, db);
             defaults.SetSystemDefault("BANKIMPORT_ENCODING", AFileEncoding, db);
             defaults.SetSystemDefault("BANKIMPORT_DATEFORMAT", ADateFormat, db);
@@ -149,6 +147,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
             return TBankStatementImportCSV.ImportBankStatement(
                 ALedgerNumber,
                 ABankAccountCode,
@@ -160,6 +160,93 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 String.Empty,
                 AColumnMeaning,
                 AStartAfterLine,
+                out AStatementKey,
+                out AVerificationResult);
+        }
+
+        /// <summary>
+        /// import the data of a MT940 file
+        /// </summary>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
+        /// <param name="ABankStatementFilename"></param>
+        /// <param name="AMT940Content"></param>
+        /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportFromMT940File(
+            Int32 ALedgerNumber,
+            string ABankAccountCode,
+            string ABankStatementFilename,
+            string AMT940Content,
+            out Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
+            return TBankStatementImportMT940.ImportFromFile(
+                ALedgerNumber,
+                ABankAccountCode,
+                ABankStatementFilename,
+                AMT940Content,
+                false,
+                out AStatementKey,
+                out AVerificationResult);
+        }
+
+        /// <summary>
+        /// import the data of a CAMT file
+        /// </summary>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
+        /// <param name="ABankStatementFilename"></param>
+        /// <param name="ACAMTContent"></param>
+        /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportFromCAMTFile(
+            Int32 ALedgerNumber,
+            string ABankAccountCode,
+            string ABankStatementFilename,
+            string ACAMTContent,
+            out Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
+            return TBankStatementImportCAMT.ImportFromFile(
+                ALedgerNumber,
+                ABankAccountCode,
+                ABankStatementFilename,
+                ACAMTContent,
+                false,
+                out AStatementKey,
+                out AVerificationResult);
+        }
+
+        /// <summary>
+        /// import the data of a zip file containing CAMT files
+        /// </summary>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
+        /// <param name="AZipFileContent"></param>
+        /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportFromCAMTZIPFile(
+            Int32 ALedgerNumber,
+            string ABankAccountCode,
+            byte[] AZipFileContent,
+            out Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            new TSystemDefaults().SetSystemDefault("BANKIMPORT_BANKACCOUNTCODE", ABankAccountCode);
+
+            return TBankStatementImportCAMT.ImportFromZipFile(
+                ALedgerNumber,
+                ABankAccountCode,
+                AZipFileContent,
+                false,
                 out AStatementKey,
                 out AVerificationResult);
         }
@@ -184,6 +271,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             Statements = AEpStatementAccess.LoadUsingTemplate(row, ReadTransaction);
 
             ReadTransaction.Rollback();
+
+            db.CloseDBConnection();
 
             if (Statements.Rows.Count == 0)
             {
@@ -299,29 +388,44 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             ReadTransaction.Rollback();
 
+            db.CloseDBConnection();
+
             return result;
         }
 
         /// <summary>
         /// drop a bank statement and all its transactions
         /// </summary>
-        /// <param name="AEpStatementKey"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static bool DropBankStatement(Int32 AEpStatementKey)
+        [RequireModulePermission("FINANCE-3")]
+        public static bool DropBankStatement(Int32 ALedgerNumber, Int32 AStatementKey, out TVerificationResultCollection AVerificationResult, TDataBase ADataBase = null)
         {
-            TDataBase db = DBAccess.Connect("DropBankStatement");
+            AVerificationResult = new TVerificationResultCollection();
+            TDataBase db = DBAccess.Connect("DropBankStatement", ADataBase);
             TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
 
             BankImportTDS MainDS = new BankImportTDS();
 
-            AEpStatementAccess.LoadByPrimaryKey(MainDS, AEpStatementKey, Transaction);
-            AEpTransactionAccess.LoadViaAEpStatement(MainDS, AEpStatementKey, Transaction);
+            AEpStatementAccess.LoadByPrimaryKey(MainDS, AStatementKey, Transaction);
+            AEpTransactionAccess.LoadViaAEpStatement(MainDS, AStatementKey, Transaction);
 
             Transaction.Rollback();
 
+            if (MainDS.AEpStatement.Rows.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "cannot find statement", TResultSeverity.Resv_Critical));
+                db.CloseDBConnection();
+                return false;
+            }
+
             foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
             {
+                if (stmtRow.LedgerNumber != ALedgerNumber)
+                {
+                    AVerificationResult.Add(new TVerificationResult("error", "Statement is not linked to current ledger", TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
                 stmtRow.Delete();
             }
 
@@ -333,30 +437,90 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             MainDS.ThrowAwayAfterSubmitChanges = true;
             try
             {
-                BankImportTDSAccess.SubmitChanges(MainDS);
+                BankImportTDSAccess.SubmitChanges(MainDS, db);
                 return true;
             }
             catch (Exception)
             {
+                AVerificationResult.Add(new TVerificationResult("error", "cannot delete statement", TResultSeverity.Resv_Critical));
                 return false;
+            }
+            finally
+            {
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
         }
 
-        private static bool FindDonorByAccountNumber(
+        /// <summary>
+        /// drop multiple bank statements by criteria, eg. OlderThan1Year, All
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool DropBankStatements(Int32 ALedgerNumber, String ACriteria, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            TDataBase db = DBAccess.Connect("DropOldBankStatements");
+            TDBTransaction Transaction = db.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool Result = false;
+            BankImportTDS MainDS = new BankImportTDS();
+            AEpStatementAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            Transaction.Rollback();
+
+            if (MainDS.AEpStatement.Rows.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "cannot find statement", TResultSeverity.Resv_Critical));
+                db.CloseDBConnection();
+                return false;
+            }
+
+            if (ACriteria == "All")
+            {
+                foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
+                {
+                    Result = DropBankStatement(ALedgerNumber, stmtRow.StatementKey, out AVerificationResult, db);
+                    if (!Result)
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (ACriteria == "OlderThan1Year")
+            {
+                foreach (AEpStatementRow stmtRow in MainDS.AEpStatement.Rows)
+                {
+                    if (stmtRow.Date < DateTime.Now.AddYears(-1))
+                    {
+                        Result = DropBankStatement(ALedgerNumber, stmtRow.StatementKey, out AVerificationResult, db);
+                        if (!Result)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                AVerificationResult.Add(new TVerificationResult("error", "Criteria is not recognised", TResultSeverity.Resv_Critical));
+            }
+
+            db.CloseDBConnection();
+            return Result;
+        }
+
+        private static bool FindDonorByIBAN(
             DataView APartnerByBankAccount,
-            string ABankSortCode,
-            string AAccountNumber,
-            out string ADonorShortName,
+            string AIBAN,
             out Int64 ADonorKey)
         {
-            ADonorShortName = String.Empty;
             ADonorKey = -1;
 
-            DataRowView[] rows = APartnerByBankAccount.FindRows(new object[] { ABankSortCode, AAccountNumber });
+            DataRowView[] rows = APartnerByBankAccount.FindRows(new object[] { AIBAN });
 
             if (rows.Length == 1)
             {
-                ADonorShortName = rows[0].Row["ShortName"].ToString();
                 ADonorKey = Convert.ToInt64(rows[0].Row["PartnerKey"]);
                 return true;
             }
@@ -378,29 +542,90 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             return String.Empty;
         }
 
-        private struct MatchDate
+        private struct MatchUpdate
         {
-            public MatchDate(AEpMatchRow AR, DateTime AD)
+            public MatchUpdate(ref AEpMatchRow AOldValue, string ADBAction)
             {
-                r = AR;
-                d = AD;
+                actualRow = AOldValue;
+                newValue = ((AEpMatchTable)AOldValue.Table).NewRowTyped();
+                newValue.ItemArray = AOldValue.ItemArray.Clone() as object[];
+                dbAction = ADBAction;
             }
 
-            public AEpMatchRow r;
-            public DateTime d;
+            public AEpMatchRow actualRow;
+            public AEpMatchRow newValue;
+            public string dbAction;
+
+            public bool UpdateActualRow()
+            {
+                bool changed = false;
+                if (actualRow.Action != newValue.Action)
+                {
+                    actualRow.Action = newValue.Action;
+                    changed = true;
+                }
+                if (actualRow.RecentMatch != newValue.RecentMatch)
+                {
+                    actualRow.RecentMatch = newValue.RecentMatch;
+                    changed = true;
+                }
+                if (actualRow.DonorKey != newValue.DonorKey)
+                {
+                    actualRow.DonorKey = newValue.DonorKey;
+                    changed = true;
+                }
+                if (actualRow.MotivationGroupCode != newValue.MotivationGroupCode)
+                {
+                    actualRow.MotivationGroupCode = newValue.MotivationGroupCode;
+                    changed = true;
+                }
+                if (actualRow.MotivationDetailCode != newValue.MotivationDetailCode)
+                {
+                    actualRow.MotivationDetailCode = newValue.MotivationDetailCode;
+                    changed = true;
+                }
+                return changed;
+            }
         }
 
-        private struct MatchDonor
+        private static bool AddUpdateMatches(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, string ADBAction)
         {
-            public MatchDonor(AEpMatchRow AR, string ABankCode, string AAccountCode)
+            if (!AUpdates.ContainsKey(ARow.MatchText + "::" + ARow.Detail.ToString()))
             {
-                r = AR;
-                a = AAccountCode;
-                b = ABankCode;
+                AUpdates.Add(ARow.MatchText + "::" + ARow.Detail.ToString(), new MatchUpdate(ref ARow, ADBAction));
             }
 
-            public AEpMatchRow r;
-            public string a, b;
+            return true;
+        }
+
+        private static void UpdateMatchesInsertNewRow(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow)
+        {
+            AddUpdateMatches(ref AUpdates, ref ARow, "INSERT");
+        }
+
+        private static void UpdateMatchesRecentMatch(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, DateTime ANewDateEffective)
+        {
+            AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.RecentMatch = ANewDateEffective;
+        }
+
+        private static void UpdateMatchesMotivation(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, string MotivationGroup, string MotivationDetail)
+        {
+            AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.MotivationGroupCode = MotivationGroup;
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.MotivationDetailCode = MotivationDetail;
+        }
+
+        private static void UpdateMatchesDonorKey(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow, Int64 ADonorKey)
+        {
+            AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.DonorKey = ADonorKey;
+        }
+
+        private static void UpdateMatchesUnmatch(ref SortedList <string, MatchUpdate>AUpdates, ref AEpMatchRow ARow)
+        {
+            AddUpdateMatches(ref AUpdates, ref ARow, "UPDATE");
+            AUpdates[ARow.MatchText + "::" + ARow.Detail.ToString()].newValue.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
         }
 
         /// <summary>
@@ -408,7 +633,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// tries to find matches too
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, TDataBase ADataBase = null)
+        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, bool AInitialLoad = false, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches", ADataBase);
             bool NewTransaction;
@@ -441,27 +666,29 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 AMotivationDetailAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
 
                 AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
+                AEpMatchAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
 
-                BankImportTDS TempDataset = new BankImportTDS();
-                AEpTransactionAccess.LoadViaAEpStatement(TempDataset, AStatementKey, Transaction);
-                AEpMatchAccess.LoadViaALedger(TempDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
+                BankImportTDS UpdateDS = new BankImportTDS();
+                AEpTransactionAccess.LoadViaAEpStatement(UpdateDS, AStatementKey, Transaction);
+                AEpMatchAccess.LoadViaALedger(UpdateDS, ALedgerNumber, Transaction);
 
                 // load all bankingdetails and partner shortnames related to this statement
                 string sqlLoadPartnerByBankAccount =
                     "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, " +
                     "p.p_partner_short_name_c AS ShortName, " +
-                    "t.p_branch_code_c AS BranchCode, " +
-                    "t.a_bank_account_number_c AS BankAccountNumber " +
+                    "t.a_iban_c AS IBAN " +
                     "FROM PUB_a_ep_transaction t, PUB_p_banking_details bd, PUB_p_bank b, PUB_p_partner_banking_details pbd, PUB_p_partner p " +
                     "WHERE t.a_statement_key_i = " + AStatementKey.ToString() + " " +
-                    "AND bd.p_bank_account_number_c = t.a_bank_account_number_c " +
-                    "AND b.p_partner_key_n = bd.p_bank_key_n " +
-                    "AND b.p_branch_code_c = t.p_branch_code_c " +
+                    "AND ((bd.p_iban_c = t.a_iban_c) or " +
+                    "   (bd.p_bank_account_number_c = t.a_bank_account_number_c " +
+                    "      AND b.p_partner_key_n = bd.p_bank_key_n " +
+                    "      AND b.p_branch_code_c = t.p_branch_code_c) " +
+                    " ) " +
                     "AND pbd.p_banking_details_key_i = bd.p_banking_details_key_i " +
                     "AND p.p_partner_key_n = pbd.p_partner_key_n";
 
                 DataTable PartnerByBankAccount = db.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
-                PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
+                PartnerByBankAccount.DefaultView.Sort = "IBAN";
 
                 // load all partner short names of matches
                 string sqlLoadPartnerName =
@@ -495,17 +722,14 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
 
-                TempDataset.AEpMatch.DefaultView.Sort = AEpMatchTable.GetMatchTextDBName();
+                UpdateDS.AEpMatch.DefaultView.Sort = AEpMatchTable.GetMatchTextDBName();
 
-                SortedList <string, AEpMatchRow>MatchesToAddLater = new SortedList <string, AEpMatchRow>();
-                List <MatchDate>NewDates = new List <MatchDate>();
-                List <AEpMatchRow>SetUnmatched = new List <AEpMatchRow>();
-                List <MatchDonor>FindDonorKey = new List<MatchDonor>();
+                SortedList <string, MatchUpdate>MatchesUpdates = new SortedList <string, MatchUpdate>();
 
                 int count = 0;
 
                 // load the matches or create new matches
-                foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
+                foreach (BankImportTDSAEpTransactionRow TrRow in ResultDataset.AEpTransaction.Rows)
                 {
                     TProgressTracker.SetCurrentState(MyClientID,
                         Catalog.GetString("finding matches") +
@@ -513,23 +737,43 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         10.0m + (count * 80.0m / ResultDataset.AEpTransaction.Rows.Count));
                     count++;
 
-                    BankImportTDSAEpTransactionRow tempTransactionRow =
-                        (BankImportTDSAEpTransactionRow)TempDataset.AEpTransaction.Rows.Find(
+                    // find the same row from the UpdateDS
+                    BankImportTDSAEpTransactionRow UpdateTrRow =
+                        (BankImportTDSAEpTransactionRow)UpdateDS.AEpTransaction.Rows.Find(
                             new object[] {
-                                row.StatementKey,
-                                row.Order,
-                                row.DetailKey
+                                TrRow.StatementKey,
+                                TrRow.Order,
+                                TrRow.DetailKey
                             });
 
                     // find a match with the same match text, or create a new one
-                    if (row.IsMatchTextNull() || (row.MatchText.Length == 0) || !row.MatchText.StartsWith(BankAccountCode))
+                    if (TrRow.IsMatchTextNull() || (TrRow.MatchText.Length == 0) || !TrRow.MatchText.StartsWith(BankAccountCode))
                     {
-                        row.MatchText = TBankImportMatching.CalculateMatchText(BankAccountCode, row);
+                        TrRow.MatchText = TBankImportMatching.CalculateMatchText(BankAccountCode, TrRow);
 
-                        tempTransactionRow.MatchText = row.MatchText;
+                        UpdateTrRow.MatchText = TrRow.MatchText;
                     }
 
-                    DataRowView[] matches = TempDataset.AEpMatch.DefaultView.FindRows(row.MatchText);
+                    DataRowView[] matches = UpdateDS.AEpMatch.DefaultView.FindRows(TrRow.MatchText);
+
+                    if (matches.Length == 0)
+                    {
+                        // create new match
+                        AEpMatchRow newRow = UpdateDS.AEpMatch.NewRowTyped(true);
+                        newRow.EpMatchKey = (UpdateDS.AEpMatch.Count + MatchesUpdates.Count + 1) * -1;
+                        newRow.Detail = 0;
+                        newRow.MatchText = TrRow.MatchText;
+                        newRow.LedgerNumber = ALedgerNumber;
+                        newRow.GiftTransactionAmount = TrRow.TransactionAmount;
+                        newRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+
+                        UpdateMatchesInsertNewRow(ref MatchesUpdates, ref newRow);
+
+                        TrRow.MatchAction = newRow.Action;
+
+                        // filter matches again
+                        matches = UpdateDS.AEpMatch.DefaultView.FindRows(TrRow.MatchText);
+                    }
 
                     if (matches.Length > 0)
                     {
@@ -579,122 +823,69 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                                 action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
                             }
 
-                            if (r.RecentMatch < row.DateEffective)
+                            if (r.RecentMatch < TrRow.DateEffective)
                             {
                                 // do not modify RecentMatch here for speed reasons
                                 // r.RecentMatch = row.DateEffective;
-                                NewDates.Add(new MatchDate(r, row.DateEffective));
+                                UpdateMatchesRecentMatch(ref MatchesUpdates, ref r, TrRow.DateEffective);
                             }
 
                             if (action == MFinanceConstants.BANK_STMT_STATUS_UNMATCHED && r.Action != action)
                             {
-                                SetUnmatched.Add(r);
+                                UpdateMatchesUnmatch(ref MatchesUpdates, ref r);
                             }
 
-                            row.MatchAction = action;
+                            TrRow.MatchAction = action;
 
                             if (r.IsDonorKeyNull() || (r.DonorKey <= 0))
                             {
-                                FindDonorKey.Add(new MatchDonor(r, row.BranchCode, row.BankAccountNumber));
+                                Int64 DonorKey;
+
+                                if (FindDonorByIBAN(PartnerByBankAccount.DefaultView, TrRow.Iban, out DonorKey))
+                                {
+                                    UpdateMatchesDonorKey(ref MatchesUpdates, ref r, DonorKey);
+                                }
+                            }
+
+                            if (r.MotivationGroupCode == String.Empty && r.MotivationDetailCode == String.Empty)
+                            {
+                                // if there is a default motivation detail in the database, then default to that motivation detail
+                                string DefaultMotivation = new TSystemDefaults().GetSystemDefault("DEFAULTMOTIVATION" + ALedgerNumber.ToString());
+                                if (DefaultMotivation != SharedConstants.SYSDEFAULT_NOT_FOUND)
+                                {
+                                    UpdateMatchesMotivation(ref MatchesUpdates, ref r,
+                                        DefaultMotivation.Substring(0, DefaultMotivation.IndexOf("::")),
+                                        DefaultMotivation.Substring(DefaultMotivation.IndexOf("::") + 2));
+                                }
                             }
                         }
 
-                        // this is kinda wrong. because you always have to change status after every detail edit,
-                        // so we ignore it, for now
-                        if (sum != row.TransactionAmount && false)
+                        if (sum != TrRow.TransactionAmount && AInitialLoad)
                         {
                             TLogging.Log(
-                                "we should drop this match since the total is wrong: " + row.Description + " " + sum.ToString() + " " +
-                                row.TransactionAmount.ToString());
-                            row.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
+                                "we should drop this match since the total is wrong: " + TrRow.Description + " " + sum.ToString() + " " +
+                                TrRow.TransactionAmount.ToString());
+                            TrRow.MatchAction = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
 
                             foreach (DataRowView rv in matches)
                             {
                                 AEpMatchRow r = (AEpMatchRow)rv.Row;
-
-                                if (!SetUnmatched.Contains(r))
-                                {
-                                    SetUnmatched.Add(r);
-                                }
+                                UpdateMatchesUnmatch(ref MatchesUpdates, ref r);
                             }
                         }
-                    }
-                    else if (!MatchesToAddLater.ContainsKey(row.MatchText))
-                    {
-                        // create new match
-                        AEpMatchRow tempRow = TempDataset.AEpMatch.NewRowTyped(true);
-                        tempRow.EpMatchKey = (TempDataset.AEpMatch.Count + MatchesToAddLater.Count + 1) * -1;
-                        tempRow.Detail = 0;
-                        tempRow.MatchText = row.MatchText;
-                        tempRow.LedgerNumber = ALedgerNumber;
-                        tempRow.GiftTransactionAmount = row.TransactionAmount;
-                        tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
-
-                        String DonorShortName;
-                        Int64 DonorKey;
-
-                        if (FindDonorByAccountNumber(PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber, out DonorShortName, out DonorKey))
-                        {
-                            tempRow.DonorKey = DonorKey;
-                            tempRow.DonorShortName = DonorShortName;
-                        }
-
-#if disabled
-                        // fuzzy search for the partner. only return if unique result
-                        string sql =
-                            "SELECT p_partner_key_n, p_partner_short_name_c FROM p_partner WHERE p_partner_short_name_c LIKE '{0}%' OR p_partner_short_name_c LIKE '{1}%'";
-                        string[] names = row.AccountName.Split(new char[] { ' ' });
-
-                        if (names.Length > 1)
-                        {
-                            string optionShortName1 = names[0] + ", " + names[1];
-                            string optionShortName2 = names[1] + ", " + names[0];
-
-                            DataTable partner = db.SelectDT(String.Format(sql,
-                                    optionShortName1,
-                                    optionShortName2), "partner", Transaction);
-
-                            if (partner.Rows.Count == 1)
-                            {
-                                tempRow.DonorKey = Convert.ToInt64(partner.Rows[0][0]);
-                            }
-                        }
-#endif
-
-                        MatchesToAddLater.Add(tempRow.MatchText, tempRow);
-
-                        // do not modify tempRow.MatchAction, because that will not be stored in the database anyway, just costs time
-                        row.MatchAction = tempRow.Action;
                     }
                 }
 
                 // for speed reasons, add the new rows after clearing the sort on the view
-                TempDataset.AEpMatch.DefaultView.Sort = string.Empty;
+                UpdateDS.AEpMatch.DefaultView.Sort = string.Empty;
 
-                foreach (AEpMatchRow m in MatchesToAddLater.Values)
+                foreach (MatchUpdate update in MatchesUpdates.Values)
                 {
-                    TempDataset.AEpMatch.Rows.Add(m);
-                }
+                    update.UpdateActualRow();
 
-                foreach (MatchDate date in NewDates)
-                {
-                    date.r.RecentMatch = date.d;
-                }
-
-                foreach (AEpMatchRow r in SetUnmatched)
-                {
-                    r.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
-                }
-
-                foreach (MatchDonor d in FindDonorKey)
-                {
-                    String DonorShortName;
-                    Int64 DonorKey;
-
-                    if (FindDonorByAccountNumber(PartnerByBankAccount.DefaultView, d.b, d.a, out DonorShortName, out DonorKey))
+                    if (update.dbAction == "INSERT")
                     {
-                        d.r.DonorKey = DonorKey;
-                        d.r.DonorShortName = DonorShortName;
+                        UpdateDS.AEpMatch.Rows.Add(update.actualRow);
                     }
                 }
 
@@ -702,9 +893,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     Catalog.GetString("save matches"),
                     90.0m);
 
-                TempDataset.ThrowAwayAfterSubmitChanges = true;
+                UpdateDS.ThrowAwayAfterSubmitChanges = true;
                 // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
-                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true), db);
+                BankImportTDSAccess.SubmitChanges(UpdateDS.GetChangesTyped(true), db);
             }
             catch (Exception e)
             {
@@ -774,6 +965,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Transaction.Commit();
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
+
             TProgressTracker.FinishJob(MyClientID);
 
             return ResultDataset;
@@ -793,7 +989,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out String ACurrencyCode
             )
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true);
             ATotalCredit = 0;
             ATotalDebit = 0;
 
@@ -927,7 +1123,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
 
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.Connect("CommitMatches").GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDataBase db = DBAccess.Connect("CommitMatches");
+            TDBTransaction Transaction = db.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -952,6 +1149,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 if (NewTransaction)
                 {
                     Transaction.Commit();
+                    db.CloseDBConnection();
                 }
 
                 return true;
@@ -964,6 +1162,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 {
                     Transaction.Rollback();
                 }
+
+                db.CloseDBConnection();
 
                 return false;
             }
@@ -1152,7 +1352,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 ABatchNumber,
             TDataBase ADataBase = null)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, ADataBase);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, ADataBase);
             ABatchNumber = -1;
             string MyClientID = DomainManager.GClientID.ToString();
 
@@ -1227,6 +1427,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                         AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
                         Transaction.Rollback();
                         TProgressTracker.FinishJob(MyClientID);
+                        if (ADataBase == null)
+                        {
+                            db.CloseDBConnection();
+                        }
                         return false;
                     }
                 }
@@ -1381,6 +1585,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             if (AVerificationResult.HasCriticalErrors)
             {
                 TProgressTracker.FinishJob(MyClientID);
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
                 return false;
             }
 
@@ -1398,6 +1606,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             if (result == TSubmitChangesResult.scrOK)
             {
                 ABatchNumber = giftbatchRow.BatchNumber;
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
                 return true;
             }
             else
@@ -1406,6 +1618,10 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 TLogging.Log(VerificationResultSubmitChanges.BuildVerificationResultString());
             }
 
+            if (ADataBase == null)
+            {
+                db.CloseDBConnection();
+            }
             return false;
         }
 
@@ -1415,13 +1631,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// <returns>the GL batch number</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool CreateGLBatch(
-
             Int32 ALedgerNumber,
             Int32 AStatementKey,
             out TVerificationResultCollection AVerificationResult,
             out Int32 ABatchNumber)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true);
             ABatchNumber = -1;
 
             MainDS.AEpTransaction.DefaultView.RowFilter =
@@ -1450,6 +1665,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating GL Batch"), msg, TResultSeverity.Resv_Critical));
 
                 Transaction.Rollback();
+                db.CloseDBConnection();
                 return false;
             }
 
@@ -1579,10 +1795,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             if (result == TSubmitChangesResult.scrOK)
             {
                 ABatchNumber = glbatchRow.BatchNumber;
+                db.CloseDBConnection();
                 return true;
             }
 
             TLogging.Log("Problems storing GL Batch");
+            db.CloseDBConnection();
             return false;
         }
     }
