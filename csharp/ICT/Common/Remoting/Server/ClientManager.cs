@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -740,14 +740,16 @@ namespace Ict.Common.Remoting.Server
                                 WelcomeMessage = "Welcome";
                             }
 
-                            // we could do this directly, or via an interface, similar to LogonMessage, see above
-                            string sql = "SELECT s_default_value_c FROM s_system_defaults WHERE s_default_code_c = 'SiteKey'";
+                            // first check if we have a SiteKey configured at all
+                            string sql = "SELECT COUNT(*) FROM s_system_defaults WHERE s_default_code_c = 'SiteKey'";
 
-                            try
+                            if (Convert.ToInt64(DBConnectionObj.ExecuteScalar(sql, ReadWriteTransaction)) == 1)
                             {
+                                sql = "SELECT s_default_value_c FROM s_system_defaults WHERE s_default_code_c = 'SiteKey'";
+
                                 SiteKey = Convert.ToInt64(DBConnectionObj.ExecuteScalar(sql, ReadWriteTransaction));
                             }
-                            catch (EOPDBException)
+                            else
                             {
                                 // there is no site key defined yet.
                                 SiteKey = -1;
