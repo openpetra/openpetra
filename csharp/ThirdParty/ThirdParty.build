@@ -96,6 +96,13 @@
                     process.StartInfo.Arguments += "-o " + nupkgfile;
                     process.Start();
                     process.WaitForExit();
+
+                    process = new System.Diagnostics.Process();
+                    process.StartInfo.FileName = "bash";
+                    process.StartInfo.WorkingDirectory = nupkgfolder;
+                    process.StartInfo.Arguments += "-c 'chmod -R a+rw .'";
+                    process.Start();
+                    process.WaitForExit();
                 }
             }
         }
