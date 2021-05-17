@@ -4,7 +4,7 @@
   "description": "Client for OpenPetra running in the web browser",
   "main": "index.js",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.2",
+    "@fortawesome/fontawesome-free": "^5.15.3",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "browserify": "^16.5.2",
@@ -13,9 +13,9 @@
     "i18next": "^10.6.0",
     "i18next-browser-languagedetector": "^2.2.4",
     "i18next-xhr-backend": "^1.5.1",
-    "jquery": "^3.5.1",
+    "jquery": "^3.6.0",
     "popper.js": "^1.16.1",
-    "uglify-js": "^3.12.8"
+    "uglify-js": "^3.13.6"
   },
   "devDependencies": {},
   "scripts": {

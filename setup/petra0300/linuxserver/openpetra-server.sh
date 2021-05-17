@@ -323,7 +323,29 @@ backupall() {
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
             export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d%H`.sql.gz
-            $THIS_SCRIPT backup
+
+            # if there is no backup for today yet, just create one
+            if [ ! -f /home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`00.sql.gz ]; then
+                $THIS_SCRIPT backup
+            else
+                # do we have a successful login from outside within the past 7 days?
+                needhourlybackup=0
+                if [[ "$OPENPETRA_RDBMSType" == "mysql" ]]; then
+                    export MYSQL_CMD="SELECT COUNT(*) FROM s_login WHERE NOT (s_login_details_c LIKE '%127.0.0.1%' AND s_user_id_c = 'SYSADMIN') AND s_login_type_c = 'LOGIN_SUCCESSFUL' AND s_date_d > DATE_ADD(CURRENT_DATE, INTERVAL -7 DAY);"
+                    output=`$THIS_SCRIPT mysql | grep -v COUNT`
+                    if [ $output -gt 0 ]; then
+                        needhourlybackup=1
+                    fi
+                elif [[ "$OPENPETRA_RDBMSType" == "postgresql" ]]; then
+                    sql="SELECT COUNT(*) FROM s_login WHERE NOT (s_login_details_c LIKE '%127.0.0.1%' AND s_user_id_c = 'SYSADMIN') AND s_login_type_c = 'LOGIN_SUCCESSFUL' AND s_date_d > CURRENT_DATE + INTERVAL '-7 day';"
+                    # not implemented
+                    needhourlybackup=1
+                fi
+                if [ $needhourlybackup -gt 0 ]; then
+                    $THIS_SCRIPT backup
+                fi
+            fi
+
             # only keep the hourly backups of today and yesterday. before that, keep only one backup per day
             if [ -f /home/$OP_CUSTOMER/backup/backup-`date --date='2 days ago' +%Y%m%d`00.sql.gz ]; then
                 for i in {1..23}; do
