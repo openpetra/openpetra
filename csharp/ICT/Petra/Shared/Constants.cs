@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -219,6 +219,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_SELFSIGNUPENABLED = "SelfSignUpEnabled";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_ILTPROCESSINGENABLED = "ILTProcessingEnabled";
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_EXWORKERSPECIALTYPE = "EXWORKERSPECIALTYPE";
