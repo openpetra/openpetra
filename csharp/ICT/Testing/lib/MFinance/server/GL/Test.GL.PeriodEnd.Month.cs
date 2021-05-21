@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -399,7 +399,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            bool WITH_ILT = true;
+            FLedgerNumber = CommonNUnitFunctions.CreateNewLedger(null, WITH_ILT);
             FledgerInfo = new TLedgerInfo(FLedgerNumber);
 
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());

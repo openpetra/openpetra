@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -226,7 +226,7 @@ namespace Ict.Testing.NUnitTools
         /// create a new ledger, with new ledgernumber
         /// </summary>
         /// <returns>ledgernumber of new ledger</returns>
-        public static int CreateNewLedger(DateTime? AStartDate = null)
+        public static int CreateNewLedger(DateTime? AStartDate = null, bool AWithILT = false)
         {
             TDBTransaction ReadTransaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("NUnitFunctions.CreateNewLedger");
@@ -265,6 +265,7 @@ namespace Ict.Testing.NUnitTools
                 12,
                 1,
                 8,
+                AWithILT,
                 out VerificationResult);
 
             return newLedgerNumber;

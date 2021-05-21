@@ -4235,6 +4235,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfAccountingPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberFwdPostingPeriods,
+            bool AWithILT,
             out TVerificationResultCollection AVerificationResult)
         {
             bool AActivateAccountsPayable = false;
@@ -4453,10 +4454,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 costCentreTypesRow.Deletable = false;
                 MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
 
+                TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+
+                if (AWithILT)
+                {
+                    SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_ILTPROCESSINGENABLED, Boolean.TrueString);
+                }
+
                 ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber, ref AVerificationResult);
                 ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
 
-                TSystemDefaults SystemDefaults = new TSystemDefaults(db);
                 if (SystemDefaults.GetBooleanDefault(
                     SharedConstants.SYSDEFAULT_ILTPROCESSINGENABLED, false) == true)
                 {

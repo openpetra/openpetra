@@ -103,7 +103,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TGLSetupWebConnector.CreateNewLedger(FLedgerNumber, "SecondLedger", "GB", "EUR", "EUR",
                     new DateTime(DateTime.Now.Year - 1, 4, 1),
-                    12, 1, FNumberOfFwdPostingPeriods, out VerificationResult);
+                    12, 1, FNumberOfFwdPostingPeriods, false, out VerificationResult);
         }
 
         /// <summary>
