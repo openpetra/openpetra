@@ -3617,7 +3617,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ccRow.LedgerNumber = ALedgerNumber;
                 ccRow.CostCentreCode = costCentreCode;
                 ccRow.CostCentreName = Convert.ToString(row[1]);
-                ccRow.CostCentreToReportTo = "ILT";
+                ccRow.CostCentreToReportTo = MFinanceConstants.INTER_LEDGER_HEADING;
                 ccRow.CostCentreType = "Foreign";
                 ccRow.SystemCostCentreFlag = true;
                 AMainDS.ACostCentre.Rows.Add(ccRow);
@@ -4462,7 +4462,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     ACostCentreRow newCostCentreRow = MainDS.ACostCentre.NewRowTyped();
                     newCostCentreRow.LedgerNumber = ANewLedgerNumber;
-                    newCostCentreRow.CostCentreCode = "ILT";
+                    newCostCentreRow.CostCentreCode = MFinanceConstants.INTER_LEDGER_HEADING;
                     newCostCentreRow.CostCentreToReportTo = "[" + ANewLedgerNumber.ToString() + "]";
                     newCostCentreRow.CostCentreName = "Inter Ledger Transfer Total";
                     newCostCentreRow.PostingCostCentreFlag = false;
