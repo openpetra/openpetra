@@ -4464,7 +4464,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber, ref AVerificationResult);
                 ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
 
-                if (SystemDefaults.GetBooleanDefault(
+                if (AWithILT || SystemDefaults.GetBooleanDefault(
                     SharedConstants.SYSDEFAULT_ILTPROCESSINGENABLED, false) == true)
                 {
                     ACostCentreRow newCostCentreRow = MainDS.ACostCentre.NewRowTyped();
