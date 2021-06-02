@@ -756,6 +756,8 @@ namespace Ict.Common.IO
                         }
 
                         PrintedOriginalError = true;
+
+                        throw new Exception("Problem in line " + currentLine.ToString() + " " + line);
                     }
 
                     throw;

@@ -1046,6 +1046,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AGeneralLedgerMasterAccess.LoadUsingTemplate(MainDS, template, Transaction);
                         ASuspenseAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                        ATransactionTypeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                     });
 
                 // set Account BankAccountFlag if there exists a property
@@ -1191,11 +1192,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyCode + "' AND " +
                     AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
 
-                result.Append(InsertNodeIntoHTMLTreeView(
+
+                foreach (DataRowView vrow in MainDS.AAccountHierarchyDetail.DefaultView)
+                {
+                    result.Append(InsertNodeIntoHTMLTreeView(
                         MainDS,
                         ALedgerNumber,
-                        (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row,
+                        (AAccountHierarchyDetailRow)vrow.Row,
                         true));
+                }
             }
 
             return result.ToString();
@@ -2929,8 +2934,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyName + "' AND " +
                         AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
 
-                    InsertNodeIntoXmlDocument(MainDS, xmlDoc, xmlDoc.DocumentElement,
-                        (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row);
+
+                    foreach (DataRowView vrow in MainDS.AAccountHierarchyDetail.DefaultView)
+                    {
+                        InsertNodeIntoXmlDocument(MainDS, xmlDoc, xmlDoc.DocumentElement,
+                            (AAccountHierarchyDetailRow)vrow.Row);
+                    }
                 }
             }
             catch (Exception ex)
@@ -3276,15 +3285,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     TYml2Xml ymlParser = new TYml2Xml(AYmlAccountHierarchy.Split(new char[] { '\n' }));
                     XMLDoc = ymlParser.ParseYML2XML();
                 }
-                catch (XmlException exp)
+                catch (Exception exp)
                 {
                     TLogging.Log(exp.ToString());
-                    throw new Exception(
-                        Catalog.GetString("There was a problem with the syntax of the file.") +
-                        Environment.NewLine +
-                        exp.Message +
-                        Environment.NewLine +
-                        AYmlAccountHierarchy);
+                    AVerificationResult.Add(new TVerificationResult(
+                        Catalog.GetString("Import hierarchy"),
+                        "base64" + THttpBinarySerializer.SerializeToBase64(
+                            Catalog.GetString("There was a problem with the syntax of the file: ") +
+                            Environment.NewLine +
+                            exp.Message),
+                        TResultSeverity.Resv_Critical));
+                    return false;
                 }
             }
 
@@ -3304,7 +3315,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
-            CreateAccountHierarchyRecursively(ref MainDS, ALedgerNumber, ref ImportedAccountNames, Root, ALedgerNumber.ToString(), ref AVerificationResult);
+            while (Root != null)
+            {
+                CreateAccountHierarchyRecursively(ref MainDS, ALedgerNumber, ref ImportedAccountNames, Root, ALedgerNumber.ToString(), ref AVerificationResult);
+                Root = Root.NextSibling;
+            }
 
             foreach (AAccountRow accountRow in MainDS.AAccount.Rows)
             {
@@ -3325,9 +3340,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     if (transTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
                     {
-                        //
-                        // If the deleted account included Analysis types I need to unlink them from the Account first.
+                        // remove transaction types if they reference the account
+                        foreach (ATransactionTypeRow Row in MainDS.ATransactionType.Rows)
+                        {
+                            if ((Row.RowState != DataRowState.Deleted) && (Row.LedgerNumber == ALedgerNumber) && (Row.DebitAccountCode == accountRow.AccountCode || Row.CreditAccountCode == accountRow.AccountCode))
+                            {
+                                Row.Delete();
+                            }
+                        }
 
+                        // If the deleted account included Analysis types I need to unlink them from the Account first.
                         foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
                         {
                             if ((Row.LedgerNumber == ALedgerNumber) && (Row.AccountCode == accountRow.AccountCode))

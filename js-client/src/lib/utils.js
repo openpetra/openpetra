@@ -139,6 +139,9 @@ function display_error(VerificationResult, LanguageNamespace = '', generalerror 
     } else if (error.code != "" && i18next.t(error.code) != error.code) {
       errormsg += i18next.t(error.code) + "<br/>";
     } else {
+      if (error.message.length > "base64".length && error.message.substr(0,"base64".length) == "base64") {
+          error.message = atob(error.message.substr("base64".length)).replace("\n", "<br/>");
+      }
       errormsg += error.message + "<br/>";
     }
   }
