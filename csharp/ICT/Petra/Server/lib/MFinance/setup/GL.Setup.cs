@@ -3327,6 +3327,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     // if there are any existing posted transactions that reference this account, it can't be deleted.
                     ATransactionTable transTbl = null;
+                    AMotivationDetailTable motivationDetailTbl = null;
 
                     TDBTransaction transaction = new TDBTransaction();
                     TDataBase db = DBAccess.Connect("ImportAccountHierarchy");                    
@@ -3336,9 +3337,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         {
                             // if there are any existing posted transactions that reference this account, it can't be deleted.
                             transTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, transaction);
+
+                            // if this account is referenced by a Motivation Detail, then it can't be deleted
+                            motivationDetailTbl = AMotivationDetailAccess.LoadViaAAccountAccountCode(ALedgerNumber, accountRow.AccountCode, transaction);
                         });
 
-                    if (transTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
+                    if ((motivationDetailTbl.Rows.Count == 0) && (transTbl.Rows.Count == 0)) // No-one's used this account, so I can delete it.
                     {
                         // remove transaction types if they reference the account
                         foreach (ATransactionTypeRow Row in MainDS.ATransactionType.Rows)
@@ -3380,8 +3384,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                     else
                     {
-                        string ErrorMsg = String.Format(Catalog.GetString("There is a balance on account {0}"), accountRow.AccountCode);
-                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                        if (motivationDetailTbl.Rows.Count > 0)
+                        {
+                            foreach (AMotivationDetailRow row in motivationDetailTbl.Rows)
+                            {
+                                string ErrorMsg = String.Format(Catalog.GetString("The motivation detail {0}/{1} references account {2} which should be deleted"), row.MotivationGroupCode, row.MotivationDetailCode, accountRow.AccountCode);
+                                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                            }
+                        }
+
+                        if (transTbl.Rows.Count > 0)
+                        {
+                            string ErrorMsg = String.Format(Catalog.GetString("There is a balance on account {0}"), accountRow.AccountCode);
+                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                        }
                     }
 
                     db.CloseDBConnection();
