@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -931,6 +931,13 @@ namespace Ict.Common.IO
             {
                 // recursive parsing of the yml document
                 ParseNode(root, 0);
+
+                if (GetAbsoluteIndentationNext(currentLine) > 0)
+                {
+                    string line = GetNextLine();
+                    TLogging.Log("Problem in line " + currentLine.ToString() + " " + line);
+                    throw new Exception("Problem in line " + currentLine.ToString() + " " + line);
+                }
             }
             catch (Exception e)
             {
