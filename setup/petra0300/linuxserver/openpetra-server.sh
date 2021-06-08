@@ -238,7 +238,8 @@ mysqlrestore() {
     echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     cat $OpenPetraPath/db/createtables-MySQL.sql >> $OpenPetraPath/tmp/createtables-MySQL.sql
-    echo "CREATE USER IF NOT EXISTS '$OPENPETRA_DBUSER'@'localhost' IDENTIFIED BY '$OPENPETRA_DBPWD';" >> $OpenPetraPath/tmp/createtables-MySQL.sql
+    # CREATE USER IF NOT EXISTS does not work yet on CentOS7 with mariadb 5.5
+    #echo "CREATE USER IF NOT EXISTS '$OPENPETRA_DBUSER'@'localhost' IDENTIFIED BY '$OPENPETRA_DBPWD';" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@\`localhost\`" >> $OpenPetraPath/tmp/createtables-MySQL.sql
     mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --password="$MYSQL_ROOT_PWD" < $OpenPetraPath/tmp/createtables-MySQL.sql
     rm $OpenPetraPath/tmp/createtables-MySQL.sql
