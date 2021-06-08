@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -162,8 +162,11 @@ namespace Tests.MFinance.Server.Gift
 
             bool BatchIsUnposted;
             string CurrencyCode;
-            GiftBatchTDS BatchTDS = TGiftTransactionWebConnector.LoadGiftTransactionsForBatch(
-                FLedgerNumber, AdjustBatchNumber, out BatchIsUnposted, out CurrencyCode);
+            GiftBatchTDS BatchTDS;
+            TVerificationResultCollection VerificationResult;
+
+            TGiftTransactionWebConnector.LoadGiftTransactionsForBatch(
+                FLedgerNumber, AdjustBatchNumber, out BatchIsUnposted, out CurrencyCode, out BatchTDS, out VerificationResult);
 
             // find the transaction to modify
             Int32 ToModify = (BatchTDS.AGiftDetail[1].GiftTransactionNumber == 2)?1:0;
@@ -175,7 +178,6 @@ namespace Tests.MFinance.Server.Gift
             // TODO change of donor
             // BatchTDS.Gift[1].DonorKey = 
 
-            TVerificationResultCollection VerificationResult;
             if (TGiftTransactionWebConnector.SaveGiftBatchTDS(ref BatchTDS, out VerificationResult) != TSubmitChangesResult.scrOK)
             {
                 Assert.Fail("Adjustment Gift Batch was not saved: " + VerificationResult.BuildVerificationResultString());
