@@ -29,6 +29,9 @@
 						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="importTransactions({val_a_batch_number_i})">
 							<span>{import}&nbsp;</span><i class="fas fa-file"></i>
 						</button>
+						<button type="button" class="btn btn-primary" onclick="exportTransactions({val_a_batch_number_i})">
+							<span>{export}&nbsp;</span><i class="fas fa-file"></i>
+						</button>
 						<button type="button" class="btn btn-warning only_show_when_not_posted" onclick="batch_cancel({val_a_batch_number_i})">
 							<span>{batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
@@ -42,10 +45,24 @@
 							<span>{batch_post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
 						<div class="import_space" style="display:none;">
-							<span style="margin-top:1em;">{message_import_howto}</span>
-							<button type="button" class="btn btn-light" onclick="$(this).closest('.import_space').css('display', 'none')"><i class="fas fa-times"></i></button>
-							<textarea rows="8" cols="80"></textarea>
-							<button type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).siblings('textarea').val() )">{forms.import}</button>
+							<div class="row">
+							<div class="col-1">&nbsp;</div>
+							<div class="col">
+								<div class="row"><span style="margin-top:1em;">{message_import_howto}</span>
+									<pre>
+4300	6200	test1	test	08.06.2021	0	100
+4300	9700	test2	test	08.06.2021	100	0</pre>
+									<p>{column_meaning}: {trans_ccenter_code} {trans_account_code} {trans_narrative_code} {trans_ref} {trans_date} {CREDIT} {DEBIT}</p>
+								</div>
+								<div class="row"><textarea rows="8" cols="80" class="import_textarea"></textarea></div>
+								<div class="row"><button type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).parent().parent().find('.import_textarea').val() )">{forms.import}</button></div>
+							</div>
+							<div class="col-1">
+								<button type="button" class="btn btn-light" onclick="$(this).closest('.import_space').css('display', 'none')">
+									<i class="fas fa-times"></i>
+								</button>
+							</div>
+							</div>
 						</div>
 					</div>
 					<div class="col-1">

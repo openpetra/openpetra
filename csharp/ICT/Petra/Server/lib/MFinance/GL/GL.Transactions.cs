@@ -26,11 +26,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.IO;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
+using Ict.Common.IO;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -5378,6 +5380,46 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// export all transactions of a GL Batch to an Excel file
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ExportGLBatchTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, out String AExportExcel)
+        {
+            TGLExporting Exporting = new TGLExporting();
+            string CSVExport;
+            string Delimiter = ";";
+            AExportExcel = String.Empty;
+
+            ArrayList batches = new ArrayList();
+            batches.Add(ABatchNumber);
+            Hashtable requestParams = new Hashtable();
+            requestParams.Add("Delimiter", Delimiter);
+            requestParams.Add("ALedgerNumber", ALedgerNumber);
+            requestParams.Add("TransactionsOnly", true);
+            requestParams.Add("bDontSummarize", true);
+            requestParams.Add("Summary", false);
+            requestParams.Add("DateFormatString", "dd.MM.yyyy");
+            // use journal currency
+            requestParams.Add("bUseBaseCurrency", false);
+            requestParams.Add("BaseCurrency", "99");
+            requestParams.Add("DateForSummary", DateTime.Today);
+            requestParams.Add("NumberFormat", "European");
+
+            if (Exporting.ExportAllGLBatchData(batches, requestParams, out CSVExport))
+            {
+                MemoryStream mstream = new MemoryStream();
+
+                if (TCsv2Xml.CSV2ExcelStream(CSVExport, mstream, Delimiter, "gltransactions"))
+                {
+                    AExportExcel = Convert.ToBase64String(mstream.ToArray());
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Import GL batch data
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately
@@ -5389,7 +5431,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ANumberFormat">European or American</param>
         /// <param name="ANewLine"></param>
         /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
-        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <param name="AVerificationResult">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLBatches(
@@ -5400,12 +5442,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ANumberFormat,
             string ANewLine,
             out bool AClientRefreshRequired,
-            out TVerificationResultCollection AMessages
+            out TVerificationResultCollection AVerificationResult
             )
         {
             TGLImporting Importing = new TGLImporting();
 
-            return Importing.ImportGLBatches(ALedgerNumber, AImportString, ADelimiter, ADateFormatString, ANumberFormat, ANewLine, out AClientRefreshRequired, out AMessages);
+            return Importing.ImportGLBatches(ALedgerNumber, AImportString, ADelimiter, ADateFormatString, ANumberFormat, ANewLine, out AClientRefreshRequired, out AVerificationResult);
         }
 
         /// <summary>
@@ -5422,7 +5464,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ANumberFormat">European or American</param>
         /// <param name="ANewLine"></param>
         /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
-        /// <param name="AMessages"></param>
+        /// <param name="AVerificationResult"></param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLTransactions(
@@ -5435,7 +5477,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ANumberFormat,
             string ANewLine,
             out bool AClientRefreshRequired,
-            out TVerificationResultCollection AMessages
+            out TVerificationResultCollection AVerificationResult
             )
         {
             TGLImporting Importing = new TGLImporting();
@@ -5447,7 +5489,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 AImportString,
                 ADelimiter, ADateFormatString, ANumberFormat, ANewLine,
                 out AClientRefreshRequired,
-                out AMessages);
+                out AVerificationResult);
         }
 
         /// <summary>

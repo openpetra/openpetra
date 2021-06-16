@@ -371,8 +371,8 @@ namespace Ict.Common.IO
 
                 IRow wsrow = null;
                 ICell wscell = null;
-                Int32 rowCounter = 1;
-                Int16 colCounter = 1;
+                Int32 rowCounter = 0;
+                Int16 colCounter = 0;
 
                 // we don't have headers for the columns
 
@@ -411,7 +411,7 @@ namespace Ict.Common.IO
 
                     LineCounter++;
                     rowCounter++;
-                    colCounter = 1;
+                    colCounter = 0;
                 }
 
                 workbook.Write(AStream);

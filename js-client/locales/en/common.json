@@ -378,6 +378,9 @@
         "success_revert": "A reversal batch has been created and can now be posted.",
         "success_posted": "The Batch has been posted",
         "import": "Import transactions",
+        "message_import_howto": "Please copy and paste the transactions directly from Microsoft Excel/LibreOffice Calc. This would look like this:",
+        "column_meaning": "Meaning of the columns",
+        "export": "Export transactions",
         "isPosted": "We cannot edit batches that have been posted already"
     },
     "GiftBatches": {
