@@ -4316,6 +4316,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 Int64 PartnerKey = Convert.ToInt64(ANewLedgerNumber) * 1000000L;
                 GLSetupTDS MainDS = new GLSetupTDS();
 
+                // we currently don't support an international currency
+                AIntlCurrency = ABaseCurrency;
+
                 ALedgerRow ledgerRow = MainDS.ALedger.NewRowTyped();
                 ledgerRow.LedgerNumber = ANewLedgerNumber;
                 ledgerRow.LedgerName = ALedgerName;
