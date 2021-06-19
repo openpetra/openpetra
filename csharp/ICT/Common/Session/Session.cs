@@ -95,7 +95,10 @@ namespace Ict.Common.Session
             TDataBase db = null;
 
             // avoid dead lock on parallel logins
-            FDeleteSessionMutex.WaitOne();
+            if (!FDeleteSessionMutex.WaitOne(5000))
+            {
+                throw new Exception("Server is too busy");
+            }
 
             try
             {
