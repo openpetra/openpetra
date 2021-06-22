@@ -94,10 +94,22 @@ namespace Ict.Common.Session
 
             TDataBase db = null;
 
-            // avoid dead lock on parallel logins
-            if (!FDeleteSessionMutex.WaitOne(5000))
+            try
             {
-                throw new Exception("Server is too busy");
+                // avoid dead lock on parallel logins
+                if (!FDeleteSessionMutex.WaitOne(5000))
+                {
+                    throw new Exception("Server is too busy");
+                }
+            }
+            catch(AbandonedMutexException ex)
+            {
+                TLogging.Log("Mutex was abandoned");
+
+                // Whether or not the exception was thrown, the current
+                // thread owns the mutex, and must release it.
+                if (ex.Mutex != null) ex.Mutex.ReleaseMutex();
+                throw new Exception("AbandonedMutex has been cleared");
             }
 
             try
@@ -135,7 +147,10 @@ namespace Ict.Common.Session
             }
             finally
             {
-                db.CloseDBConnection();
+                if (db != null)
+                {
+                    db.CloseDBConnection();
+                }
 
                 FDeleteSessionMutex.ReleaseMutex();
             }
