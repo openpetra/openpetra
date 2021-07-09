@@ -344,6 +344,7 @@
         "batchnumber": "Batch Number",
         "batchname": "Batch Description",
         "batch_status": "Status",
+        "transaction_currency": "Currency",
         "period": "Period",
         "year": "Year",
         "batchcredit": "Total Credit",

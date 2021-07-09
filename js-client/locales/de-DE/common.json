@@ -345,6 +345,7 @@
         "batchnumber": "Stapel Nummer",
         "batchname": "Stapel Name",
         "batch_status": "Stapel Status",
+        "transaction_currency": "Stapel Währung",
         "period": "Monat",
         "year": "Jahr",
         "batchcredit": "Stapel Kredit",

@@ -7,7 +7,9 @@
   
     <DataSet name="GLBatchTDS">
         <Table sqltable="a_ledger"/>
-        <Table sqltable="a_batch"/>
+        <Table sqltable="a_batch">
+            <CustomField name="TransactionCurrency" type="string"/>
+        </Table>
         <Table sqltable="a_journal">
             <CustomField name="JournalDebitTotalBase" type="decimal" initial="0"/>
             <CustomField name="JournalCreditTotalBase" type="decimal" initial="0"/>

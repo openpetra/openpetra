@@ -45,6 +45,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -185,6 +186,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 ALedgerNumber);
                         db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
                             MainDS.ABatch.TableName, Transaction);
+
+                        // Get the transaction currency of the first journal
+                        foreach (GLBatchTDSABatchRow batch in MainDS.ABatch.Rows)
+                        {
+                            AJournalAccess.LoadViaABatch(MainDS, batch.LedgerNumber, batch.BatchNumber, Transaction);
+                            if (MainDS.AJournal.Count > 0)
+                            {
+                                batch.TransactionCurrency = MainDS.AJournal[0].TransactionCurrency;
+                                MainDS.AJournal.Clear();
+                            }
+                        }
                     });
 
                 MainDS.AcceptChanges();
@@ -282,21 +294,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GLBatchTDS LoadABatchAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            TDataBase db = DBAccess.Connect("LoadABatchAndRelatedTables");
-            
-            return LoadABatchAndRelatedTables(db, ALedgerNumber, ABatchNumber);
-        }
-
-        /// <summary>
-        /// load the specified batch and its journals and transactions and attributes.
-        /// this method is called after a batch has been posted.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatchAndRelatedTablesUsingPrivateDb(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             TDataBase dbConnection = DBAccess.Connect("LoadABatchAndRelatedTables");
 
@@ -3182,6 +3179,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             string ABatchDescription,
             DateTime ADateEffective,
             string ABatchStatus,
+            string TransactionCurrency,
             Decimal ABatchCreditTotal,
             Decimal ABatchDebitTotal,
             out TVerificationResultCollection AVerificationResult,
@@ -3191,42 +3189,92 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             AVerificationResult = new TVerificationResultCollection();
 
-            if ((action == "create") || (action == "edit"))
-            {
-                string CurrencyCode;
-                MainDS = LoadABatch(ALedgerNumber, ABatchNumber, out CurrencyCode);
+            TDataBase db = DBAccess.Connect("MaintainBatches", ADataBase);
 
-                if (MainDS.ABatch.Rows.Count != 1)
+            try
+            {
+                if ((action == "create") || (action == "edit"))
+                {
+                    MainDS = LoadABatchAndRelatedTables(db, ALedgerNumber, ABatchNumber);
+
+                    if (MainDS.ABatch.Rows.Count != 1)
+                    {
+                        return false;
+                    }
+
+                    ABatchRow row = MainDS.ABatch[0];
+
+                    row.BatchDescription = ABatchDescription;
+                    row.DateEffective = ADateEffective;
+                    row.BatchStatus = ABatchStatus;
+                    row.BatchCreditTotal = ABatchCreditTotal;
+                    row.BatchDebitTotal = ABatchDebitTotal;
+
+                    AJournalRow jrow = MainDS.AJournal[0];
+
+                    if (jrow.TransactionCurrency != TransactionCurrency)
+                    {
+                        TransactionCurrency = TransactionCurrency.ToUpper();
+
+                        TDBTransaction Transaction = new TDBTransaction();
+
+                        bool CurrencyExists = false;
+                        db.ReadTransaction(
+                            ref Transaction,
+                            delegate
+                            {
+                                CurrencyExists = ACurrencyAccess.Exists(TransactionCurrency, Transaction);
+                            });
+
+                        if (!CurrencyExists)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    Catalog.GetString("Cannot update currency"),
+                                    Catalog.GetString("Invalid currency code"),
+                                    TResultSeverity.Resv_Critical));
+                            return false;
+                        }
+
+                        if (MainDS.ATransaction.Count == 0)
+                        {
+                            jrow.TransactionCurrency = TransactionCurrency;
+                        }
+                        else
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    Catalog.GetString("Cannot update currency"),
+                                    Catalog.GetString("There are already transactions in the batch"),
+                                    TResultSeverity.Resv_Critical));
+                            return false;
+                        }
+                    }
+
+                    try
+                    {
+                        SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                }
+                else
                 {
                     return false;
                 }
 
-                ABatchRow row = MainDS.ABatch[0];
-
-                row.BatchDescription = ABatchDescription;
-                row.DateEffective = ADateEffective;
-                row.BatchStatus = ABatchStatus;
-                row.BatchCreditTotal = ABatchCreditTotal;
-                row.BatchDebitTotal = ABatchDebitTotal;
-
-                try
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
-                    SaveGLBatchTDS(ref MainDS, out AVerificationResult, ADataBase);
-                }
-                catch (Exception)
-                {
+                    TLogging.Log(AVerificationResult.BuildVerificationResultString());
                     return false;
                 }
             }
-            else
+            finally
             {
-                return false;
-            }
-
-            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
-            {
-                TLogging.Log(AVerificationResult.BuildVerificationResultString());
-                return false;
+                if (ADataBase == null)
+                {
+                    db.CloseDBConnection();
+                }
             }
 
             return true;

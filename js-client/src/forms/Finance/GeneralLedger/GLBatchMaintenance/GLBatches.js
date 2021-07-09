@@ -319,9 +319,7 @@ function save_edit_batch(obj_modal) {
 			updateBatch(payload['ABatchNumber']);
 		}
 		if (parsed.result == false) {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t('GLBatches.' + msg.code), "fail");
-			}
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }
