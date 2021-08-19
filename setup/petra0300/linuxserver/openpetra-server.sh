@@ -36,7 +36,11 @@ generatepwd() {
 }
 
 getConfigOfCurrentCustomer() {
-  config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
+  config=$userHome/etc/PetraServerConsole.config
+  if [ ! -f $config ]
+  then
+    config=$HOME/etc/PetraServerConsole.config
+  fi
   if [ -f $config ]
   then
     export userName=$OP_CUSTOMER
@@ -94,9 +98,13 @@ elif [ "$1" != "init" ]; then
     getConfigOfCurrentCustomer
 fi
 
+if [ -z $userHome ]; then
+  export userHome=/home/$userName
+fi
+
 if [ -z "$backupfile" ]
 then
-  export backupfile=/home/$userName/backup/backup-`date +%Y%m%d%H`.sql.gz
+  export backupfile=$userHome/backup/backup-`date +%Y%m%d%H`.sql.gz
 fi
 
 if [ "$2" != "" ]
@@ -132,7 +140,7 @@ stop() {
     echo "Stopping OpenPetra server"
     if [ "`whoami`" = "$userName" ]
     then
-      cd $documentroot/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:Stop
+      cd $documentroot/bin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config -Command:Stop
     else
       echo "Error: can only stop the server as user $userName"
       exit -1
@@ -142,7 +150,10 @@ stop() {
 runAsUser() {
     cmd=$1
 
-    if [ "`whoami`" = "$userName" ]
+    if [ -f $userHome/etc/PetraServerConsole.config ]
+    then
+      bash -c "$cmd" || exit -1
+    elif [ "`whoami`" = "$userName" ]
     then
       bash -c "$cmd" || exit -1
     else
@@ -152,28 +163,28 @@ runAsUser() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
-    echo "loading database from $ymlgzfile with config /home/$userName/etc/PetraServerConsole.config"
-    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
+    echo "loading database from $ymlgzfile with config $userHome/etc/PetraServerConsole.config"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:$userHome/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
 }
 
 # dump the database to a yml.gz file
 dumpYmlGz() {
-    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile" || exit -1
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:$userHome/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile" || exit -1
 }
 
 # display the status to check for logged in users etc
 status() {
-    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config -Command:ConnectedClients"
 }
 
 # display a menu to check for logged in users etc
 menu() {
-    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config"
 }
 
 # send reminders per E-Mail
 sendReminders() {
-    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SendReminders"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config -Command:SendReminders"
 }
 
 sendRemindersAll() {
@@ -205,12 +216,12 @@ mysqlscript() {
 # backup the mysql database
 mysqlbackup() {
     echo `date` "Writing to " $backupfile
-    cat > /home/$userName/.my.cnf <<FINISH
+    cat > $userHome/.my.cnf <<FINISH
 [mysqldump]
 user=$OPENPETRA_DBUSER
 password="$OPENPETRA_DBPWD"
 FINISH
-    chown $userName:$userName /home/$userName/.my.cnf
+    chown $userName:$userName $userHome/.my.cnf
     runAsUser "mysqldump --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
@@ -248,9 +259,9 @@ mysqlrestore() {
     echo $backupfile|grep -qE '\.gz$'
     if [ $? -eq 0 ]
     then
-        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > /home/$userName/log/mysqlload.log
+        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > $userHome/log/mysqlload.log
     else
-        mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > /home/$userName/log/mysqlload.log
+        mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > $userHome/log/mysqlload.log
     fi
 
     echo `date` "Finished!"
@@ -299,9 +310,9 @@ postgresqlrestore() {
     echo $backupfile|grep -qE '\.gz$'
     if [ $? -eq 0 ]
     then
-        su - $userName -c "cat $backupfile | gunzip | psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q > /home/$userName/log/pgload.log"
+        su - $userName -c "cat $backupfile | gunzip | psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q > $userHome/log/pgload.log"
     else
-        su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $backupfile > /home/$userName/log/pgload.log"
+        su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $backupfile > $userHome/log/pgload.log"
     fi
 
     #if pgdump was called with data-only, we would need to create the contraints and indexes here
@@ -323,10 +334,10 @@ backupall() {
     for d in /home/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
-            export backupfile=/home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d%H`.sql.gz
+            export backupfile=$userHome/backup/backup-`date +%Y%m%d%H`.sql.gz
 
             # if there is no backup for today yet, just create one
-            if [ ! -f /home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`00.sql.gz ]; then
+            if [ ! -f $userHome/backup/backup-`date +%Y%m%d`00.sql.gz ]; then
                 $THIS_SCRIPT backup
             else
                 # do we have a successful login from outside within the past 7 days?
@@ -348,18 +359,18 @@ backupall() {
             fi
 
             # only keep the hourly backups of today and yesterday. before that, keep only one backup per day
-            if [ -f /home/$OP_CUSTOMER/backup/backup-`date --date='2 days ago' +%Y%m%d`00.sql.gz ]; then
+            if [ -f $userHome/backup/backup-`date --date='2 days ago' +%Y%m%d`00.sql.gz ]; then
                 for i in {1..23}; do
                     hour=$(printf "%02d" $i)
-                    rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='2 days ago' +%Y%m%d`$hour.sql.gz
-                    rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='3 days ago' +%Y%m%d`$hour.sql.gz
-                    rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='4 days ago' +%Y%m%d`$hour.sql.gz
+                    rm -f $userHome/backup/backup-`date --date='2 days ago' +%Y%m%d`$hour.sql.gz
+                    rm -f $userHome/backup/backup-`date --date='3 days ago' +%Y%m%d`$hour.sql.gz
+                    rm -f $userHome/backup/backup-`date --date='4 days ago' +%Y%m%d`$hour.sql.gz
                 done
             fi
             # delete backups older than 5 days
-            rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='5 days ago' +%Y%m%d`*.sql.gz
-            rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='6 days ago' +%Y%m%d`*.sql.gz
-            rm -f /home/$OP_CUSTOMER/backup/backup-`date --date='7 days ago' +%Y%m%d`*.sql.gz
+            rm -f $userHome/backup/backup-`date --date='5 days ago' +%Y%m%d`*.sql.gz
+            rm -f $userHome/backup/backup-`date --date='6 days ago' +%Y%m%d`*.sql.gz
+            rm -f $userHome/backup/backup-`date --date='7 days ago' +%Y%m%d`*.sql.gz
         fi
     done
 }
@@ -427,7 +438,7 @@ rewrite_conf() {
             exit -1
         fi
 
-        mv -f /home/$OP_CUSTOMER/etc/PetraServerConsole.config /home/$OP_CUSTOMER/etc/PetraServerConsole.config.bak
+        mv -f $userHome/etc/PetraServerConsole.config $userHome/etc/PetraServerConsole.config.bak
         init
     fi
 }
@@ -458,7 +469,7 @@ init() {
 
     userName=$OP_CUSTOMER
 
-    if [ -f /home/$userName/etc/PetraServerConsole.config ]
+    if [ -f $userHome/etc/PetraServerConsole.config ]
     then
       echo "it seems there is already an instance configured"
       exit -1
@@ -472,14 +483,14 @@ init() {
 
     echo "preparing OpenPetra instance..."
 
-    id $userName > /dev/null 2>&1 || useradd --home /home/$userName -G openpetra $userName
-    mkdir -p /home/$userName/log
-    mkdir -p /home/$userName/tmp
-    mkdir -p /home/$userName/etc
-    mkdir -p /home/$userName/backup
+    id $userName > /dev/null 2>&1 || useradd --home $userHome -G openpetra $userName
+    mkdir -p $userHome/log
+    mkdir -p $userHome/tmp
+    mkdir -p $userHome/etc
+    mkdir -p $userHome/backup
 
     # copy config files (server, serveradmin.config) to etc, with adjustments
-    cfgfile=/home/$userName/etc/PetraServerConsole.config
+    cfgfile=$userHome/etc/PetraServerConsole.config
     cat $OpenPetraPath/templates/PetraServerConsole.config \
        | sed -e "s/OPENPETRA_PORT/$OPENPETRA_HTTP_PORT/" \
        | sed -e "s/OPENPETRA_RDBMSType/$OPENPETRA_RDBMSType/" \
@@ -522,7 +533,7 @@ init() {
     cat $OpenPetraPath/templates/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
        | sed -e "s#/openpetraOPENPETRA_PORT/#:$OPENPETRA_HTTP_PORT/#" \
-       > /home/$userName/etc/PetraServerAdminConsole.config
+       > $userHome/etc/PetraServerAdminConsole.config
 
     nginx_conf_path=/etc/nginx/conf.d/$OP_CUSTOMER.conf
     if [[ "$install_type" == "devenv" ]]; then
@@ -544,15 +555,15 @@ init() {
     sed -i "s#OPENPETRA_URL#$OPENPETRA_HTTP_URL#g" $nginx_conf_path
     systemctl reload nginx
 
-    touch /home/$userName/log/Server.log
-    chown -R $userName:openpetra /home/$userName
-    chmod g+r -R /home/$userName
-    chmod g+rx /home/$userName
-    chmod g+rwx /home/$userName/log
-    chmod g+rwx /home/$userName/tmp
-    chmod g+rwx /home/$userName/backup
-    chmod g+s /home/$userName/log
-    chmod g+rw /home/$userName/log/Server.log
+    touch $userHome/log/Server.log
+    chown -R $userName:openpetra $userHome
+    chmod g+r -R $userHome
+    chmod g+rx $userHome
+    chmod g+rwx $userHome/log
+    chmod g+rwx $userHome/tmp
+    chmod g+rwx $userHome/backup
+    chmod g+s $userHome/log
+    chmod g+rw $userHome/log/Server.log
 }
 
 # this will overwrite all existing data
@@ -613,19 +624,19 @@ postgresqlinitdb() {
     fi
 
     addPwd=1
-    if [ -f /home/$userName/.pgpass ]
+    if [ -f $userHome/.pgpass ]
     then
-        if [ "`cat /home/$userName/.pgpass | grep '^*:'$OPENPETRA_DBPORT':'$OPENPETRA_DBNAME':'$OPENPETRA_DBUSER':'`" ]; then
+        if [ "`cat $userHome/.pgpass | grep '^*:'$OPENPETRA_DBPORT':'$OPENPETRA_DBNAME':'$OPENPETRA_DBUSER':'`" ]; then
             addPwd=0
         fi
     fi
     if [ $addPwd -eq 1 ]
     then
-        echo "*:$OPENPETRA_DBPORT:$OPENPETRA_DBNAME:$OPENPETRA_DBUSER:$OPENPETRA_DBPWD" >> /home/$userName/.pgpass
+        echo "*:$OPENPETRA_DBPORT:$OPENPETRA_DBNAME:$OPENPETRA_DBUSER:$OPENPETRA_DBPWD" >> $userHome/.pgpass
     fi
-    chown -R $userName:$userName /home/$userName
-    chmod 600 /home/$userName/.pgpass
-    chown $userName /home/$userName/.pgpass
+    chown -R $userName:$userName $userHome
+    chmod 600 $userHome/.pgpass
+    chown $userName $userHome/.pgpass
 
     echo "creating tables..."
     su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
@@ -675,20 +686,20 @@ initdb() {
       if [ "$LOCK_SYSADMIN" == 1 ]
       then
         # for hosted environment, the sysadmin user will only be unlocked for a new customer
-        su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LockSysadmin"
+        su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config -Command:LockSysadmin"
       elif [ -z $SYSADMIN_PWD ]
       then
         SYSADMIN_PWD="CHANGEME"
         echo "For production use, please change the password for user SYSADMIN immediately (initial password: $SYSADMIN_PWD)"
       else
-        su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
+        su $userName -c "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config -Command:SetPassword -UserID:SYSADMIN -NewPassword:'$SYSADMIN_PWD' || echo 'ERROR: password was not set. It is probably too weak... Login with password CHANGEME instead, and change it immediately!'"
       fi
     fi
 }
 
 # this will update the current database
 upgradedb() {
-    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$OP_CUSTOMER/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
+    runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
 }
 
 case "$1" in
