@@ -41,6 +41,10 @@ getConfigOfCurrentCustomer() {
   then
     config=$HOME/etc/PetraServerConsole.config
   fi
+  if [ ! -f $config ]
+  then
+    config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
+  fi
   if [ -f $config ]
   then
     export userName=$OP_CUSTOMER
@@ -99,7 +103,7 @@ elif [ "$1" != "init" ]; then
 fi
 
 if [ -z $userHome ]; then
-  export userHome=/home/$userName
+  export userHome=/home/$OP_CUSTOMER
 fi
 
 if [ -z "$backupfile" ]
