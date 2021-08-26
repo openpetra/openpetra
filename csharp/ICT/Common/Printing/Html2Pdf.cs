@@ -78,7 +78,18 @@ namespace Ict.Common.Printing
             }
 
             Process process = new Process();
-            process.StartInfo.FileName = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/local/bin/wkhtmltopdf");
+            process.StartInfo.FileName = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/bin/wkhtmltopdf");
+
+            if (!File.Exists(process.StartInfo.FileName))
+            {
+                process.StartInfo.FileName = "/usr/local/bin/wkhtmltopdf";
+            }
+
+            if (!File.Exists(process.StartInfo.FileName))
+            {
+                throw new Exception("Cannot find wkhtmltopdf. Please set wkhtmltopdf.Path in the config file");
+            }
+
             process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
             process.Start();
             process.WaitForExit();
