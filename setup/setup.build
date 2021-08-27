@@ -99,7 +99,7 @@
   <mkdir dir="${dir.setup}/bootstrap-4.0"/>
 
   <echo file="${dir.setup}/server/bin/version.txt">${ReleaseVersion}</echo>
-  <copy file="${dir.root}/db/pkg_version.txt" todir="${dir.setup}/server/bin">
+  <copy file="${dir.root}/db/pkg_version.txt" todir="${dir.setup}/server/bin"/>
   <copy todir="${dir.setup}/server/bin">
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
