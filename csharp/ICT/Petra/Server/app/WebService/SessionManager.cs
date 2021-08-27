@@ -112,6 +112,12 @@ namespace Ict.Petra.Server.App.WebService
                 ConfigFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "instances") + "/" + Instance + "/etc/PetraServerConsole.config";
             }
 
+            if (!File.Exists(ConfigFileName))
+            {
+                // single tenant on shared hosting
+                ConfigFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), Instance) + "/etc/PetraServerConsole.config";
+            }
+
             if (File.Exists(ConfigFileName))
             {
                 // we are in a multi tenant hosting scenario
