@@ -36,14 +36,15 @@ generatepwd() {
 }
 
 getConfigOfCurrentCustomer() {
+  if [ "$Command" = "init" ]
+  then
+    return 0
+  fi
+
   config=$userHome/etc/PetraServerConsole.config
   if [ ! -f $config ]
   then
     config=$HOME/etc/PetraServerConsole.config
-  fi
-  if [ ! -f $config ]
-  then
-    config=/home/$OP_CUSTOMER/etc/PetraServerConsole.config
   fi
   if [ -f $config ]
   then
@@ -68,16 +69,24 @@ getConfigOfCurrentCustomer() {
     echo "cannot find $config"
     exit -1
   fi
-
-  # in older versions, we did not have the port in the PetraServerConsole.config file
-  if [ -z "$OPENPETRA_HTTP_PORT" ]
-  then
-    if [ -f /etc/nginx/conf.d/$OP_CUSTOMER.conf ]
-    then
-      export OPENPETRA_HTTP_PORT=`cat /etc/nginx/conf.d/$OP_CUSTOMER.conf | grep -m1 listen | sed -e 's#;##' |  awk -F' ' '{print $2}'`
-    fi
-  fi
 }
+
+runAsUser() {
+    cmd=$1
+
+    if [ $userHome = "/home/$userName" ]
+    then
+      su $userName -c "$cmd" || exit -1
+    elif [ "`whoami`" = "$userName" ]
+    then
+      bash -c "$cmd" || exit -1
+    elif [ -f $userHome/etc/PetraServerConsole.config ]
+    then
+      bash -c "$cmd" || exit -1
+    fi
+}
+
+Command="$1"
 
 if [ -z "$OP_CUSTOMER" ]
 then
@@ -98,13 +107,21 @@ then
     dirname=`dirname $THIS_SCRIPT`
     export userName=`basename $dirname`
   fi
-elif [ "$1" != "init" ]; then
+fi
+
+if [ ! -z "$OP_CUSTOMER" ]
+then
+    if [ -z $userHome ]; then
+      export userHome=/home/$OP_CUSTOMER
+    fi
+
+    if [ ! -d $userHome ]; then
+      export userHome=$HOME/$OP_CUSTOMER
+    fi
+
     getConfigOfCurrentCustomer
 fi
 
-if [ -z $userHome ]; then
-  export userHome=/home/$OP_CUSTOMER
-fi
 
 if [ -z "$backupfile" ]
 then
@@ -148,20 +165,6 @@ stop() {
     else
       echo "Error: can only stop the server as user $userName"
       exit -1
-    fi
-}
-
-runAsUser() {
-    cmd=$1
-
-    if [ -f $userHome/etc/PetraServerConsole.config ]
-    then
-      bash -c "$cmd" || exit -1
-    elif [ "`whoami`" = "$userName" ]
-    then
-      bash -c "$cmd" || exit -1
-    else
-      su $userName -c "$cmd" || exit -1
     fi
 }
 
@@ -706,7 +709,7 @@ upgradedb() {
     runAsUser "cd $OpenPetraPathBin; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:$userHome/etc/PetraServerAdminConsole.config -Command:UpgradeDatabase"
 }
 
-case "$1" in
+case "$Command" in
     start)
         start
         ;;
