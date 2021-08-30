@@ -475,6 +475,7 @@ init() {
     fi
 
     userName=$OP_CUSTOMER
+    userHome=/home/$OP_CUSTOMER
 
     if [ -f $userHome/etc/PetraServerConsole.config ]
     then
