@@ -33,6 +33,26 @@ namespace Ict.Common.Printing
     /// usw wkhtmltopdf to print HTML to PDF
     public class Html2Pdf
     {
+        /// get the path to the wkhtmltopdf binary
+        public static string GetWkHTMLToPDFPath()
+        {
+            // Debian
+            string wkhtmltopdf = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/bin/wkhtmltopdf");
+
+            if (!File.Exists(wkhtmltopdf))
+            {
+                // CentOS
+                wkhtmltopdf = "/usr/local/bin/wkhtmltopdf";
+            }
+
+            if (!File.Exists(wkhtmltopdf))
+            {
+                throw new Exception("Cannot find wkhtmltopdf. Please set wkhtmltopdf.Path in the config file");
+            }
+
+            return wkhtmltopdf;
+        }
+
         /// <summary>
         /// Create a PDF file from the HTML
         /// </summary>
@@ -78,18 +98,7 @@ namespace Ict.Common.Printing
             }
 
             Process process = new Process();
-            process.StartInfo.FileName = TAppSettingsManager.GetValue("wkhtmltopdf.Path", "/usr/bin/wkhtmltopdf");
-
-            if (!File.Exists(process.StartInfo.FileName))
-            {
-                process.StartInfo.FileName = "/usr/local/bin/wkhtmltopdf";
-            }
-
-            if (!File.Exists(process.StartInfo.FileName))
-            {
-                throw new Exception("Cannot find wkhtmltopdf. Please set wkhtmltopdf.Path in the config file");
-            }
-
+            process.StartInfo.FileName = GetWkHTMLToPDFPath();
             process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
             process.Start();
             process.WaitForExit();
