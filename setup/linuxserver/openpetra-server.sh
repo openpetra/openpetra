@@ -90,7 +90,17 @@ Command="$1"
 
 if [ -z "$OP_HOME" ]
 then
-  export OP_HOME="/home"
+  if [ -d $HOME/instances ]; then
+      export OP_HOME="$HOME/instances"
+  else
+      export OP_HOME="/home"
+  fi
+
+  if [ ! -z "$OP_CUSTOMER" ]; then
+      if [ -d $HOME/$OP_CUSTOMER ]; then
+          export OP_HOME="$HOME"
+      fi
+  fi
 fi
 
 if [ -z "$OP_CUSTOMER" ]
