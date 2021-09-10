@@ -240,9 +240,8 @@ FINISH
 
 # restore the mysql database
 mysqlrestore() {
-    echo "This will overwrite your database!!!"
-
     if [[ "$IKNOWWHATIAMDOING" != "YES" ]]; then
+        echo "This will overwrite your database!!!"
         echo "Please enter 'yes' if that is ok:"
         read response
         if [ "$response" != 'yes' ]
