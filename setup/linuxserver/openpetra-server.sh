@@ -88,6 +88,11 @@ runAsUser() {
 
 Command="$1"
 
+if [ -z "$OP_HOME" ]
+then
+  export OP_HOME="/home"
+fi
+
 if [ -z "$OP_CUSTOMER" ]
 then
   # check if the current user starts with op_
@@ -195,7 +200,7 @@ sendReminders() {
 }
 
 sendRemindersAll() {
-    for d in /home/$OPENPETRA_USER_PREFIX*; do
+    for d in $OP_HOME/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
             $THIS_SCRIPT reminder
@@ -331,7 +336,7 @@ backup() {
 }
 
 backupall() {
-    for d in /home/$OPENPETRA_USER_PREFIX*; do
+    for d in $OP_HOME/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
             export backupfile=$userHome/backup/backup-`date +%Y%m%d%H`.sql.gz
@@ -406,7 +411,7 @@ updateall() {
 
     systemctl restart openpetra
 
-    for d in /home/$OPENPETRA_USER_PREFIX*; do
+    for d in $OP_HOME/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
             $THIS_SCRIPT upgradedb
@@ -425,7 +430,7 @@ rewrite_conf() {
     fi
 
     if [ -z $OP_CUSTOMER ]; then
-        for d in /home/$OPENPETRA_USER_PREFIX*; do
+        for d in $OP_HOME/$OPENPETRA_USER_PREFIX*; do
             if [ -d $d ]; then
                 export OP_CUSTOMER=`basename $d`
                 rewrite_conf
@@ -468,7 +473,7 @@ init() {
     fi
 
     userName=$OP_CUSTOMER
-    userHome=/home/$OP_CUSTOMER
+    userHome=$OP_HOME/$OP_CUSTOMER
 
     if [ -f $userHome/etc/PetraServerConsole.config ]
     then
