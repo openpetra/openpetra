@@ -117,7 +117,7 @@ fi
 if [ ! -z "$OP_CUSTOMER" ]
 then
     if [ -z $userHome ]; then
-      export userHome=/home/$OP_CUSTOMER
+      export userHome=$OP_HOME/$OP_CUSTOMER
     fi
 
     if [ ! -d $userHome ]; then
