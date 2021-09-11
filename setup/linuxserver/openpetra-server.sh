@@ -351,7 +351,7 @@ backupall() {
             export backupfile=$userHome/backup/backup-`date +%Y%m%d%H`.sql.gz
 
             # if there is no backup for today yet, just create one
-            if [ ! -f $userHome/backup/backup-`date +%Y%m%d`00.sql.gz ]; then
+            if [[ $FORCE_BACKUP -eq 1 || ! -f /home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`00.sql.gz ]]; then
                 $THIS_SCRIPT backup
             else
                 # do we have a successful login from outside within the past 7 days?
