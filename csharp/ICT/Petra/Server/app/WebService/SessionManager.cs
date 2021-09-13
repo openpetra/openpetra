@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.App.WebService
         {
             // make sure the correct config file is used
             string Instance = HttpContext.Current.Request.Url.ToString().Replace("http://", "").Replace("https://", "");
-            Instance = Instance.Substring(0, Instance.IndexOf(".")).Replace("op_","op").Replace("op", "op_");
+            Instance = Instance.Substring(0, Instance.IndexOf(".")).Replace("openpetra", "OPENPETRA").Replace("op_","op").Replace("op", "op_").ToLower();
 
             // for demo etc
             if (!Instance.StartsWith("op_"))
