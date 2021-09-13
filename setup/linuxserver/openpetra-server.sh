@@ -585,7 +585,7 @@ init() {
 mysqlinitdb() {
     mkdir -p $OpenPetraPath/tmp
 
-    if [ "$OPENPETRA_DBHOST" == "localhost" -o "$OPENPETRA_DBHOST" == "127.0.0.1" ]
+    if [ -z "$DO_NOT_CREATE_DATABASE" ]
     then
 
       if [ -z "$MYSQL_ROOT_PWD" ]; then
