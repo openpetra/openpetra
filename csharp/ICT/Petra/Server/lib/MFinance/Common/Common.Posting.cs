@@ -2949,12 +2949,13 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         #endregion Validate Data
 
-                        ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+                        GLBatchTDSABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
                         NewRow.LedgerNumber = ALedgerNumber;
                         MainDS.ALedger[0].LastBatchNumber++;
                         NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
                         NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
                         NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
+                        NewRow.TransactionCurrency = MainDS.ALedger[0].BaseCurrency;
 
                         if (AWithGLJournal)
                         {
