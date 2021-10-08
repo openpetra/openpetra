@@ -243,8 +243,10 @@ mysqlbackup() {
 user=$OPENPETRA_DBUSER
 password="$OPENPETRA_DBPWD"
 FINISH
-    chown $userName:$userName $userHome/.my.cnf
-    runAsUser "mysqldump --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
+    if [ $userHome = "/home/$userName" ]; then
+      chown $userName:$userName $userHome/.my.cnf
+    fi
+    runAsUser "mysqldump --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
 
@@ -348,10 +350,11 @@ backupall() {
     for d in $OP_HOME/$OPENPETRA_USER_PREFIX*; do
         if [ -d $d ]; then
             export OP_CUSTOMER=`basename $d`
+            export userHome=$OP_HOME/$OP_CUSTOMER
             export backupfile=$userHome/backup/backup-`date +%Y%m%d%H`.sql.gz
 
             # if there is no backup for today yet, just create one
-            if [[ $FORCE_BACKUP -eq 1 || ! -f /home/$OP_CUSTOMER/backup/backup-`date +%Y%m%d`00.sql.gz ]]; then
+            if [[ $FORCE_BACKUP -eq 1 || ! -f $userHome/backup/backup-`date +%Y%m%d`00.sql.gz ]]; then
                 $THIS_SCRIPT backup
             else
                 # do we have a successful login from outside within the past 7 days?
