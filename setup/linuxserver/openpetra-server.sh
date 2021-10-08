@@ -74,12 +74,12 @@ getConfigOfCurrentCustomer() {
 runAsUser() {
     cmd=$1
 
-    if [ $userHome = "/home/$userName" ]
-    then
-      su $userName -c "$cmd" || exit -1
-    elif [ "`whoami`" = "$userName" ]
+    if [ "`whoami`" = "$userName" ]
     then
       bash -c "$cmd" || exit -1
+    elif [ $userHome = "/home/$userName" ]
+    then
+      su $userName -c "$cmd" || exit -1
     elif [ -f $userHome/etc/PetraServerConsole.config ]
     then
       bash -c "$cmd" || exit -1
@@ -219,10 +219,20 @@ sendRemindersAll() {
 }
 
 writeMySqlPwd() {
-    cat > $userHome/.my.cnf <<FINISH
-[mysqldump]
+    cat > $userHome/etc/my.cnf <<FINISH
+[client]
 user=$OPENPETRA_DBUSER
 password="$OPENPETRA_DBPWD"
+host=$OPENPETRA_DBHOST
+port=$DBPort
+default-character-set=utf8
+
+[mysql]
+database=$OPENPETRA_DBNAME
+
+[mysqldump]
+databases=false
+
 FINISH
 }
 
@@ -250,7 +260,7 @@ mysqlbackup() {
     if [ $userHome = "/home/$userName" ]; then
       chown $userName:$userName $userHome/.my.cnf
     fi
-    runAsUser "mysqldump --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT --user=$OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
+    runAsUser "mysqldump --defaults-extra-file=$userHome/etc/my.cnf $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
 
@@ -271,18 +281,18 @@ mysqlrestore() {
     writeMySqlPwd
     echo "deleting database..."
     echo "SET FOREIGN_KEY_CHECKS = 0;" > $userHome/tmp/clean.sql
-    mysqldump --add-drop-table --no-data -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME | grep 'DROP TABLE' >> $userHome/tmp/clean.sql
+    mysqldump --defaults-extra-file=$userHome/etc/my.cnf --add-drop-table --no-data $OPENPETRA_DBNAME | grep 'DROP TABLE' >> $userHome/tmp/clean.sql
     echo "SET FOREIGN_KEY_CHECKS = 1;" >> $userHome/tmp/clean.sql
-    mysql -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $userHome/tmp/clean.sql
+    mysql --defaults-extra-file=$userHome/etc/my.cnf < $userHome/tmp/clean.sql
     rm $userHome/tmp/clean.sql
 
     echo "loading data..."
     echo $backupfile|grep -qE '\.gz$'
     if [ $? -eq 0 ]
     then
-        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > $userHome/log/mysqlload.log
+        cat $backupfile | gunzip | mysql --defaults-extra-file=$userHome/etc/my.cnf > $userHome/log/mysqlload.log
     else
-        mysql -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > $userHome/log/mysqlload.log
+        mysql --defaults-extra-file=$userHome/etc/my.cnf < $backupfile > $userHome/log/mysqlload.log
     fi
 
     echo `date` "Finished!"
@@ -612,7 +622,7 @@ mysqlinitdb() {
     fi
     echo "creating tables..."
     writeMySqlPwd
-    mysql -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db/createdb-MySQL.sql
+    mysql --defaults-extra-file=$userHome/etc/my.cnf < $OpenPetraPath/db/createdb-MySQL.sql
 
     echo "initial data..."
     # insert initial data so that loadymlgz will work
@@ -622,7 +632,7 @@ insert into s_module(s_module_id_c) values ('SYSMAN');
 insert into s_user_module_access_permission(s_user_id_c, s_module_id_c, s_can_access_l) values('SYSADMIN', 'SYSMAN', true);
 insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSADMIN', true);
 FINISH
-    mysql -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/tmp/init-MySQL.sql
+    mysql --defaults-extra-file=$userHome/etc/my.cnf < $OpenPetraPath/tmp/init-MySQL.sql
 }
 
 # this will overwrite all existing data
@@ -702,9 +712,9 @@ initdb() {
       if [[ ! $OPENPETRA_HTTP_URL == https://demo.* && ! $OPENPETRA_HTTP_URL == http://demo.* ]]
       then
         writeMySqlPwd
-        mysql -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
+        mysql --defaults-extra-file=$userHome/etc/my.cnf \
            -e "UPDATE s_user SET s_password_needs_change_l = 1 WHERE s_user_id_c = 'SYSADMIN'" $OPENPETRA_DBNAME
-        mysql -u $OPENPETRA_DBUSER --defaults-extra-file=$userHome/.my.cnf --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
+        mysql --defaults-extra-file=$userHome/etc/my.cnf \
            -e "DELETE FROM s_user WHERE s_user_id_c <> 'SYSADMIN'" $OPENPETRA_DBNAME
       fi
 
