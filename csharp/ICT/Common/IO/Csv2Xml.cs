@@ -374,6 +374,10 @@ namespace Ict.Common.IO
                 Int32 rowCounter = 0;
                 Int16 colCounter = 0;
 
+                ICellStyle wsstyle_dateformat = workbook.CreateCellStyle();
+                ICreationHelper createHelper = workbook.GetCreationHelper();
+                wsstyle_dateformat.DataFormat = createHelper.CreateDataFormat().GetFormat("dd/mm/yyyy");
+
                 // we don't have headers for the columns
 
                 List<String> Lines = ACSVData.Split(Environment.NewLine).ToList();
@@ -401,6 +405,7 @@ namespace Ict.Common.IO
                         else if (v.TypeVariant == eVariantTypes.eDateTime)
                         {
                             wscell.SetCellValue(v.ToDate());
+                            wscell.CellStyle = wsstyle_dateformat;
                         }
                         else
                         {

@@ -5446,12 +5446,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             requestParams.Add("TransactionsOnly", true);
             requestParams.Add("bDontSummarize", true);
             requestParams.Add("Summary", false);
-            requestParams.Add("DateFormatString", "dd.MM.yyyy");
+            requestParams.Add("DateFormatString", "yyyy-MM-dd");
             // use journal currency
             requestParams.Add("bUseBaseCurrency", false);
             requestParams.Add("BaseCurrency", "99");
             requestParams.Add("DateForSummary", DateTime.Today);
-            requestParams.Add("NumberFormat", "European");
+            requestParams.Add("NumberFormat", "American"); // need this for TVariant to recognise that as Decimal
 
             if (Exporting.ExportAllGLBatchData(batches, requestParams, out CSVExport))
             {
