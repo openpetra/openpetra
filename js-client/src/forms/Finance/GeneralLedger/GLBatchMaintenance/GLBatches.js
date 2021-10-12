@@ -310,6 +310,12 @@ function save_edit_batch(obj_modal) {
 		exit;
 	}
 	payload['action'] = mode;
+	if (payload['ABatchDebitTotal'] == '') {
+		payload['ABatchDebitTotal'] = 0;
+	}
+	if (payload['ABatchCreditTotal'] == '') {
+		payload['ABatchCreditTotal'] = 0;
+	}
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
