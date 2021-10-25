@@ -1,4 +1,5 @@
-https://code.google.com/p/password-utilities
+was: https://code.google.com/p/password-utilities
+now: https://github.com/MarkStephenPearce/password-utilities
 
 A C# library that handles:
 
