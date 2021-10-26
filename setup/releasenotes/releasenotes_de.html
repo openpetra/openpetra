@@ -12,6 +12,49 @@
 
 <h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra</h2>
 
+<h3>Version 2021.10 vom 26. Oktober 2021</h3>
+
+<p>In dieser Version steckt die Arbeit seit Mai.<br/>
+Es wurde viel Zeit in Arbeit gesteckt, die nicht sichtbar ist: So wurde das Hosting von OpenPetra.com von virtuellen Maschinen auf das Shared Hosting bei https://hostsharing.net umgestellt.<br/>
+Weitere Änderungen wurden bei der Einrichtung des Finanzmoduls vorgenommen, um unterschiedliche Szenarien zu unterstützen.</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+Kontaktmodul:
+<ul>
+<li>Kontaktsuche funktioniert nun mit mehreren Teilen des Namens</li>
+</ul>
+
+Finanzmodul:
+<ul>
+<li>Anlegen eines Hauptbuches: die internationale Währung soll richtig gesetzt werden (nicht nur EUR)</li>
+<li>Importiere den SKR-49 Kontenrahmen von DATEV für Vereine und Stiftungen.</li>
+<li>Import von Kostenstellen: Löscht nun ungenutzte Kostenstellen, die im Import fehlen.</li>
+<li>Buchungstapel: Wenn man einen Stapel ohne Haben oder Soll anlegt, soll ein ordentlicher Hinweis als Fehlermeldung gezeigt werden.</li>
+<li>Haben und Soll sollen immer in der richtigen Reihenfolge erscheinen.</li>
+<li>Buchungsstapel: Buchungen importieren und exportieren</li>
+<li>Export von Buchungsstapel nach xlsx: Dezimalzahlen wurden als Zeichenkette exportiert.</li>
+</ul>
+
+Spendenmodul:
+<ul>
+<li>Zeige eine Fehlermeldung, falls ein Spendenstapel nicht geöffnet werden kann, weil es noch keine Verwendungszwecke gibt.</li>
+</ul>
+
+Patenschaften:
+<ul>
+<li>Beim Bearbeiten der Patenschaft wurde nur ein Pate gezeigt, auch wenn mehrere Paten für das Kind eingetragen waren</li>
+</ul>
+
+Hosting von OpenPetra:
+<ul>
+<li>Ungenutzte Instanzen haben jeden Morgen einen Fehler in die Logdatei geschrieben, weil es keinen SiteKey gab.</li>
+<li>Das stündliche Backup soll nur für Instanzen angefertigt werden, die tatsächlich genutzt wurden.</li>
+</ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem
+<a href="https://github.com/openpetra/openpetra/milestone/17?closed=1" rel=" nofollow ugc">Meilenstein auf Github für die Version 2021.10</a> zu finden!</p>
+
 <h3>Version 2021.04 vom 30. April 2021</h3>
 
 <p>Diese Version beinhaltet die Arbeit von 2 Monaten, März und April.
