@@ -5,7 +5,6 @@
 
 <property name="BuildClientArchive" value="false" overwrite="false" />
 <property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql" overwrite="false" />
-<property name="PetraRelease" value="0300" overwrite="false" />
 
 <target name="buildRelease">
   <property name="OpenBuildService" value="true"/>
@@ -99,6 +98,7 @@
   <mkdir dir="${dir.setup}/bootstrap-4.0"/>
 
   <echo file="${dir.setup}/server/bin/version.txt">${ReleaseVersion}</echo>
+  <copy file="${dir.root}/db/pkg_version.txt" todir="${dir.setup}/server/bin"/>
   <copy todir="${dir.setup}/server/bin">
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
@@ -120,7 +120,7 @@
   <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/server/bin" overwrite="true"/>
 
   <copy todir="${dir.setup}/manuals">
-    <fileset basedir="${dir.root}/setup/petra${PetraRelease}/releasenotes/">
+    <fileset basedir="${dir.root}/setup/releasenotes/">
       <include name="*.html" />
     </fileset>
   </copy>
@@ -145,11 +145,11 @@
     </fileset>
   </copy>
 
-  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/openpetra-server.sh"
+  <copy file="${dir.root}/setup/linuxserver/openpetra-server.sh"
     tofile="${dir.setup}/openpetra-server.sh" overwrite="true"/>
 
   <copy todir="${dir.setup}/templates">
-    <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
+    <fileset basedir="${dir.root}/setup/linuxserver/">
         <include name="*.config" />
         <exclude name="web.config" />
     </fileset>
@@ -158,9 +158,9 @@
     </filterchain>
   </copy>
   <!-- don't modify the file, issues with line endings cause nginx to fail to start -->
-  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/nginx.conf"
+  <copy file="${dir.root}/setup/linuxserver/nginx.conf"
         tofile="${dir.setup}/templates/nginx.conf"/>
-  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/web.config"
+  <copy file="${dir.root}/setup/linuxserver/web.config"
     tofile="${dir.setup}/server/web.config"/>
 
   <copy todir="${dir.setup}/formletters">
@@ -184,7 +184,7 @@
         commandline="-c &quot;curl --silent --location https://github.com/openpetra/demo-databases/raw/master/clean.yml.gz > clean.yml.gz&quot;" />
 
   <if test="${string::contains(DBMS.Type, 'postgresql') and file::exists(DeliveryDB.dir+'/createtables-PostgreSQL.sql')}">
-    <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/postgresql/openpetra.service"
+    <copy file="${dir.root}/setup/linuxserver/postgresql/openpetra.service"
               tofile="${dir.setup}/templates/openpetra.service"/>
     <copy file="${DeliveryDB.dir}/createtables-PostgreSQL.sql"
               tofile="${dir.setup}/db/createtables-PostgreSQL.sql"/>
@@ -196,7 +196,7 @@
     </if>
   </if>
   <if test="${string::contains(DBMS.Type, 'mysql') and file::exists(DeliveryDB.dir+'/createtables-MySQL.sql')}">
-    <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/mysql/openpetra.service"
+    <copy file="${dir.root}/setup/linuxserver/mysql/openpetra.service"
               tofile="${dir.setup}/templates/openpetra.service"/>
     <copy file="${DeliveryDB.dir}/createtables-MySQL.sql"
               tofile="${dir.setup}/db/createtables-MySQL.sql"/>
@@ -209,7 +209,7 @@
               tofile="${dir.setup}/db/demodata-MySQL.sql"/>
     </if>
   </if>
-  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
+  <copy file="${dir.root}/setup/linuxserver/INSTALL"
               tofile="${dir.setup}/INSTALL"/>
   <copy todir="${dir.setup}/sql">
     <fileset basedir="${dir.root}/csharp/ICT/Petra/Server/sql/">

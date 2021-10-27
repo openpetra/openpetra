@@ -1046,6 +1046,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         AGeneralLedgerMasterAccess.LoadUsingTemplate(MainDS, template, Transaction);
                         ASuspenseAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                        ATransactionTypeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                     });
 
                 // set Account BankAccountFlag if there exists a property
@@ -1191,11 +1192,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyCode + "' AND " +
                     AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
 
-                result.Append(InsertNodeIntoHTMLTreeView(
+
+                foreach (DataRowView vrow in MainDS.AAccountHierarchyDetail.DefaultView)
+                {
+                    result.Append(InsertNodeIntoHTMLTreeView(
                         MainDS,
                         ALedgerNumber,
-                        (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row,
+                        (AAccountHierarchyDetailRow)vrow.Row,
                         true));
+                }
             }
 
             return result.ToString();
@@ -2929,8 +2934,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + AAccountHierarchyName + "' AND " +
                         AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
 
-                    InsertNodeIntoXmlDocument(MainDS, xmlDoc, xmlDoc.DocumentElement,
-                        (AAccountHierarchyDetailRow)MainDS.AAccountHierarchyDetail.DefaultView[0].Row);
+
+                    foreach (DataRowView vrow in MainDS.AAccountHierarchyDetail.DefaultView)
+                    {
+                        InsertNodeIntoXmlDocument(MainDS, xmlDoc, xmlDoc.DocumentElement,
+                            (AAccountHierarchyDetailRow)vrow.Row);
+                    }
                 }
             }
             catch (Exception ex)
@@ -3276,15 +3285,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     TYml2Xml ymlParser = new TYml2Xml(AYmlAccountHierarchy.Split(new char[] { '\n' }));
                     XMLDoc = ymlParser.ParseYML2XML();
                 }
-                catch (XmlException exp)
+                catch (Exception exp)
                 {
                     TLogging.Log(exp.ToString());
-                    throw new Exception(
-                        Catalog.GetString("There was a problem with the syntax of the file.") +
-                        Environment.NewLine +
-                        exp.Message +
-                        Environment.NewLine +
-                        AYmlAccountHierarchy);
+                    AVerificationResult.Add(new TVerificationResult(
+                        Catalog.GetString("Import hierarchy"),
+                        "base64" + THttpBinarySerializer.SerializeToBase64(
+                            Catalog.GetString("There was a problem with the syntax of the file: ") +
+                            Environment.NewLine +
+                            exp.Message),
+                        TResultSeverity.Resv_Critical));
+                    return false;
                 }
             }
 
@@ -3304,7 +3315,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
-            CreateAccountHierarchyRecursively(ref MainDS, ALedgerNumber, ref ImportedAccountNames, Root, ALedgerNumber.ToString(), ref AVerificationResult);
+            while (Root != null)
+            {
+                CreateAccountHierarchyRecursively(ref MainDS, ALedgerNumber, ref ImportedAccountNames, Root, ALedgerNumber.ToString(), ref AVerificationResult);
+                Root = Root.NextSibling;
+            }
 
             foreach (AAccountRow accountRow in MainDS.AAccount.Rows)
             {
@@ -3312,6 +3327,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     // if there are any existing posted transactions that reference this account, it can't be deleted.
                     ATransactionTable transTbl = null;
+                    AMotivationDetailTable motivationDetailTbl = null;
 
                     TDBTransaction transaction = new TDBTransaction();
                     TDataBase db = DBAccess.Connect("ImportAccountHierarchy");                    
@@ -3321,13 +3337,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         {
                             // if there are any existing posted transactions that reference this account, it can't be deleted.
                             transTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, transaction);
+
+                            // if this account is referenced by a Motivation Detail, then it can't be deleted
+                            motivationDetailTbl = AMotivationDetailAccess.LoadViaAAccountAccountCode(ALedgerNumber, accountRow.AccountCode, transaction);
                         });
 
-                    if (transTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
+                    if ((motivationDetailTbl.Rows.Count == 0) && (transTbl.Rows.Count == 0)) // No-one's used this account, so I can delete it.
                     {
-                        //
-                        // If the deleted account included Analysis types I need to unlink them from the Account first.
+                        // remove transaction types if they reference the account
+                        foreach (ATransactionTypeRow Row in MainDS.ATransactionType.Rows)
+                        {
+                            if ((Row.RowState != DataRowState.Deleted) && (Row.LedgerNumber == ALedgerNumber) && (Row.DebitAccountCode == accountRow.AccountCode || Row.CreditAccountCode == accountRow.AccountCode))
+                            {
+                                Row.Delete();
+                            }
+                        }
 
+                        // If the deleted account included Analysis types I need to unlink them from the Account first.
                         foreach (AAnalysisAttributeRow Row in MainDS.AAnalysisAttribute.Rows)
                         {
                             if ((Row.LedgerNumber == ALedgerNumber) && (Row.AccountCode == accountRow.AccountCode))
@@ -3358,8 +3384,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                     else
                     {
-                        string ErrorMsg = String.Format(Catalog.GetString("There is a balance on account {0}"), accountRow.AccountCode);
-                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                        if (motivationDetailTbl.Rows.Count > 0)
+                        {
+                            foreach (AMotivationDetailRow row in motivationDetailTbl.Rows)
+                            {
+                                string ErrorMsg = String.Format(Catalog.GetString("The motivation detail {0}/{1} references account {2} which should be deleted"), row.MotivationGroupCode, row.MotivationDetailCode, accountRow.AccountCode);
+                                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                            }
+                        }
+
+                        if (transTbl.Rows.Count > 0)
+                        {
+                            string ErrorMsg = String.Format(Catalog.GetString("There is a balance on account {0}"), accountRow.AccountCode);
+                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                        }
                     }
 
                     db.CloseDBConnection();
@@ -3374,13 +3412,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
 
-        private static void CreateCostCentresRecursively(ref GLSetupTDS AMainDS,
+        private static bool CreateCostCentresRecursively(ref GLSetupTDS AMainDS,
             Int32 ALedgerNumber,
             ref StringCollection AImportedCostCentreCodes,
             XmlNode ACurrentNode,
-            string AParentCostCentreCode)
+            string AParentCostCentreCode,
+            out TVerificationResultCollection AVerificationResult)
         {
             ACostCentreRow newCostCentre = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             string CostCentreCode = TYml2Xml.GetElementName(ACurrentNode).ToUpper();
 
@@ -3393,6 +3433,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (existingCostCentre != null)
             {
                 newCostCentre = (ACostCentreRow)existingCostCentre;
+            }
+            else if ((AParentCostCentreCode == null) && (AMainDS.ACostCentre.Rows.Count > 0))
+            {
+                AVerificationResult.Add(new TVerificationResult("Import CostCentres",
+                    "Root Cost Centre " + CostCentreCode + " does not match existing cost centre", TResultSeverity.Resv_Critical));
+                return false;
             }
             else
             {
@@ -3420,8 +3466,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             foreach (XmlNode child in ACurrentNode.ChildNodes)
             {
-                CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref AImportedCostCentreCodes, child, newCostCentre.CostCentreCode);
+                if (!CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref AImportedCostCentreCodes, child, newCostCentre.CostCentreCode, out AVerificationResult))
+                {
+                    return false;
+                }
             }
+
+            return true;
         }
 
         /// <summary>
@@ -3449,12 +3500,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 catch (XmlException exp)
                 {
                     TLogging.Log(exp.ToString());
-                    throw new Exception(
+                    VerificationResult.Add(new TVerificationResult("Import CostCentres",
                         Catalog.GetString("There was a problem with the syntax of the file.") +
                         Environment.NewLine +
-                        exp.Message +
-                        Environment.NewLine +
-                        AYmlHierarchy);
+                        exp.Message, TResultSeverity.Resv_Critical));
+                    return false;
                 }
             }
 
@@ -3463,15 +3513,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             StringCollection ImportedCostCentreNames = new StringCollection();
 
-            CreateCostCentresRecursively(ref MainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null);
+            if (!CreateCostCentresRecursively(ref MainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null, out VerificationResult))
+            {
+                return false;
+            }
 
             foreach (ACostCentreRow costCentreRow in MainDS.ACostCentre.Rows)
             {
                 if ((costCentreRow.RowState != DataRowState.Deleted) && !ImportedCostCentreNames.Contains(costCentreRow.CostCentreCode))
                 {
-                    // TODO: delete costcentres that don't exist anymore in the new hierarchy, or deactivate them?
+                    // delete costcentres that don't exist anymore in the new hierarchy.
                     // (check if their balance is empty and no transactions exist, or catch database constraint violation)
-                    // TODO: what about system cost centres? probably alright to ignore here
                     bool CanBeParent;
                     bool CanDelete;
                     String ErrorMsg;
@@ -3481,64 +3533,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         out CanDelete,
                         out ErrorMsg);
 
-#if DISABLED
-                    // TODO check if we can overrule and delete eg. ILT cost centres.
-                    // see https://github.com/openpetra/openpetra/issues/120
-                    if (false && !CanDelete)
-                    {
-                        ErrorMsg = String.Format(Catalog.GetString("Unable to delete Cost Centre {0}"), costCentreRow.CostCentreCode) +
-                                   "\r\n" +
-                                   ErrorMsg;
-                        VerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
-                        return false;
-                    }
-#endif
-
                     if (!CanDelete)
                     {
+                        TLogging.Log("cannot delete " + costCentreRow.CostCentreCode + " " + ErrorMsg);
                         costCentreRow.CostCentreActiveFlag = false;
                     }
                     else
                     {
-                        // TODO: need to delete "a_valid_ledger_number" as well if it exists
                         costCentreRow.Delete();
                     }
                 }
             }
 
             return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
-        }
-
-        /// <summary>
-        /// import basic data for new ledger
-        /// </summary>
-        [RequireModulePermission("FINANCE-3")]
-        public static bool ImportNewLedger(Int32 ALedgerNumber,
-            string AXmlLedgerDetails,
-            string AXmlAccountHierarchy,
-            string AXmlCostCentreHierarchy,
-            string AXmlMotivationDetails
-            )
-        {
-            // TODO ImportNewLedger
-
-            // if this ledger already exists, delete all tables first?
-            // Or try to reuse existing balances etc?
-
-            // first create/modify ledger
-            // set ForexGainsLossesAccount; there is no foreign key, so no problem
-
-            // create the calendar for the ledger, automatically calculating the dates of the forwarding periods
-
-            // create the partner with special type LEDGER from the ledger number, with 6 trailing zeros
-
-            // create/modify accounts (might need to drop motivation details)
-
-            // create/modify costcentres (might need to drop motivation details)
-
-            // create/modify motivation details
-
-            return false;
         }
 
         /// import a new Account hierarchy into an empty new ledger
@@ -3615,7 +3622,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             StringCollection ImportedCostCentreNames = new StringCollection();
 
-            CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null);
+            TVerificationResultCollection VerificationResult;
+            CreateCostCentresRecursively(ref AMainDS, ALedgerNumber, ref ImportedCostCentreNames, root, null, out VerificationResult);
         }
 
         private static void SetupILTCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, TDBTransaction ATransaction)
@@ -3647,7 +3655,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ccRow.LedgerNumber = ALedgerNumber;
                 ccRow.CostCentreCode = costCentreCode;
                 ccRow.CostCentreName = Convert.ToString(row[1]);
-                ccRow.CostCentreToReportTo = "ILT";
+                ccRow.CostCentreToReportTo = MFinanceConstants.INTER_LEDGER_HEADING;
                 ccRow.CostCentreType = "Foreign";
                 ccRow.SystemCostCentreFlag = true;
                 AMainDS.ACostCentre.Rows.Add(ccRow);
@@ -4265,6 +4273,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfAccountingPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberFwdPostingPeriods,
+            bool AWithILT,
             out TVerificationResultCollection AVerificationResult)
         {
             bool AActivateAccountsPayable = false;
@@ -4306,6 +4315,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 Int64 PartnerKey = Convert.ToInt64(ANewLedgerNumber) * 1000000L;
                 GLSetupTDS MainDS = new GLSetupTDS();
+
+                // we currently don't support an international currency
+                AIntlCurrency = ABaseCurrency;
 
                 ALedgerRow ledgerRow = MainDS.ALedger.NewRowTyped();
                 ledgerRow.LedgerNumber = ANewLedgerNumber;
@@ -4483,19 +4495,34 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 costCentreTypesRow.Deletable = false;
                 MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
 
+                TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+
+                if (AWithILT)
+                {
+                    SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_ILTPROCESSINGENABLED, Boolean.TrueString);
+                }
+
                 ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber, ref AVerificationResult);
                 ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
 
-                if (MainDS.ACostCentre.Rows.Find(new object[] { ANewLedgerNumber, "ILT" }) != null)
+                if (AWithILT || SystemDefaults.GetBooleanDefault(
+                    SharedConstants.SYSDEFAULT_ILTPROCESSINGENABLED, false) == true)
                 {
+                    ACostCentreRow newCostCentreRow = MainDS.ACostCentre.NewRowTyped();
+                    newCostCentreRow.LedgerNumber = ANewLedgerNumber;
+                    newCostCentreRow.CostCentreCode = MFinanceConstants.INTER_LEDGER_HEADING;
+                    newCostCentreRow.CostCentreToReportTo = "[" + ANewLedgerNumber.ToString() + "]";
+                    newCostCentreRow.CostCentreName = "Inter Ledger Transfer Total";
+                    newCostCentreRow.PostingCostCentreFlag = false;
+                    newCostCentreRow.CostCentreActiveFlag = true;
+                    MainDS.ACostCentre.Rows.Add(newCostCentreRow);
+                    
                     SetupILTCostCentreHierarchy(ref MainDS, ANewLedgerNumber, Transaction);
                 }
 
                 ImportDefaultMotivations(ref MainDS, ANewLedgerNumber, db);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
-                // TODO: modify UI navigation yml file etc?
-                // TODO: permissions for which users?
                 GLSetupTDSAccess.SubmitChanges(MainDS, db);
 
                 // activate gift processing subsystem
@@ -5667,16 +5694,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                         ACostCentreRow CostCentreRow = tempTbl[0];
 
-                        //
-                        // OM - specific code ahead!
-                        // Don't allow any cost centres to be added to ILT or its children.
-                        if ((CostCentreRow.CostCentreCode == MFinanceConstants.INTER_LEDGER_HEADING)
-                            || (CostCentreRow.CostCentreToReportTo == MFinanceConstants.INTER_LEDGER_HEADING))
+                        TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+                        if (SystemDefaults.GetBooleanDefault(
+                            SharedConstants.SYSDEFAULT_ILTPROCESSINGENABLED, false) == true)
                         {
-                            CanBeParent = false;
-                            CanDelete = false;
-                            Msg = Catalog.GetString("Cost Centres in ILT cannot have children.");
-                            return;
+                            // Don't allow any cost centres to be added to ILT or its children.
+                            if ((CostCentreRow.CostCentreCode == MFinanceConstants.INTER_LEDGER_HEADING)
+                                || (CostCentreRow.CostCentreToReportTo == MFinanceConstants.INTER_LEDGER_HEADING))
+                            {
+                                CanBeParent = false;
+                                CanDelete = false;
+                                Msg = Catalog.GetString("Cost Centres in ILT cannot have children.");
+                                return;
+                            }
                         }
 
                         bool isParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
@@ -5692,26 +5722,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             CanDelete = true;
                         }
 
-                        if (CanBeParent || CanDelete)     // I need to check whether the Cost Centre has been linked to a partner.
-                        {                                 // If it has, the link must be deleted first.
-                            AValidLedgerNumberTable vlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
-
-                            if (vlnTbl.Rows.Count > 0)      // There's a link to a partner!
-                            {
-                                CanBeParent = false;
-                                CanDelete = false;
-                                Msg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."),
-                                    vlnTbl[0].PartnerKey);
-                            }
-                        }
-
                         if (!CanBeParent || CanDelete)
                         {
-                            List <TRowReferenceInfo>cascadingReferences;
-                            Int32 refs = MCommon.Data.Cascading.ACostCentreCascading.CountByPrimaryKey(
-                                ALedgerNumber, ACostCentreCode,
-                                5, Transaction, true,
-                                out cascadingReferences);
+                            string sql = "SELECT COUNT(*) FROM PUB_a_transaction " +
+                                "WHERE a_ledger_number_i = " + ALedgerNumber.ToString() + " " +
+                                "AND a_cost_centre_code_c = '" + ACostCentreCode + "'";
+                            Int32 refs = Convert.ToInt32(db.ExecuteScalar(sql, Transaction));
 
                             bool isInUse = (refs > 0);
 

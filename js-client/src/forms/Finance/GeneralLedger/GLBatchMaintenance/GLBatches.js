@@ -310,6 +310,12 @@ function save_edit_batch(obj_modal) {
 		exit;
 	}
 	payload['action'] = mode;
+	if (payload['ABatchDebitTotal'] == '') {
+		payload['ABatchDebitTotal'] = 0;
+	}
+	if (payload['ABatchCreditTotal'] == '') {
+		payload['ABatchCreditTotal'] = 0;
+	}
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
@@ -319,9 +325,7 @@ function save_edit_batch(obj_modal) {
 			updateBatch(payload['ABatchNumber']);
 		}
 		if (parsed.result == false) {
-			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t('GLBatches.' + msg.code), "fail");
-			}
+			display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -400,8 +404,9 @@ function importTransactions(batch_id, csv_file) {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ABatchNumber: batch_id,
 		AJournalNumber: 1,
-		NumberFormat: "European",
-		DateFormatString: "dmy"
+		ANumberFormat: "European",
+		ADateFormatString: "dmy",
+		ADelimiter: "\t",
 	};
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_ImportGLTransactions', x).then(function (result) {
@@ -409,6 +414,32 @@ function importTransactions(batch_id, csv_file) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			updateBatch(batch_id);
+		}
+		if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+		}
+	})
+}
+
+function exportTransactions(batch_id) {
+
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		ABatchNumber: batch_id,
+		AJournalNumber: 1
+	};
+
+	api.post('serverMFinance.asmx/TGLTransactionWebConnector_ExportGLBatchTransactions', x).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result == true) {
+
+			var link = document.createElement("a");
+			link.style = "display: none";
+			link.href = 'data:application/excel;base64,'+parsed.AExportExcel;
+			link.download = i18next.t('GLTransactions') + '.xlsx';
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
 		}
 		if (parsed.result == "false") {
 			for (msg of parsed.AVerificationResult) {

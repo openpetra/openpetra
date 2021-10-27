@@ -551,15 +551,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     gdr.DonorPhoneNumber = DonorPhoneNumber;
                                     gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
-
                             }
-
                         }
+
+                        MainDS.ARecurringGift.DefaultView.RowFilter = "";
 
                         // drop all unrelated gift rows, that don't have a detail for this child
                         for (int i = 0; i < MainDS.ARecurringGift.Count;)
                         {
-                            ARecurringGiftRow gr = MainDS.ARecurringGift[0];
+                            ARecurringGiftRow gr = MainDS.ARecurringGift[i];
                             MainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1}",
                                 ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                                 gr.GiftTransactionNumber);
@@ -572,8 +572,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                             {
                                 i++;
                             }
-
                         }
+
+                        MainDS.ARecurringGiftDetail.DefaultView.RowFilter = "";
                     }
                 });
 

@@ -1719,66 +1719,74 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// loads a list of gift transactions and details for the given ledger and batch
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted, out String ACurrencyCode)
+        public static bool LoadGiftTransactionsForBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out Boolean ABatchIsUnposted, out String ACurrencyCode, out GiftBatchTDS AMainDS, out TVerificationResultCollection AVerificationResult)
         {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-            else if (ABatchNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Batch number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
-            }
-
-            #endregion Validate Arguments
-
-            GiftBatchTDS MainDS = new GiftBatchTDS();
+            AVerificationResult = new TVerificationResultCollection();
             ABatchIsUnposted = false;
+            ACurrencyCode = String.Empty;
+            AMainDS = null;
 
             try
             {
-                MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, false);
+                #region Validate Arguments
+
+                if (ALedgerNumber <= 0)
+                {
+                    throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                                "Function:{0} - The Ledger number must be greater than 0!"),
+                            Utilities.GetMethodName(true)), ALedgerNumber);
+                }
+                else if (ABatchNumber <= 0)
+                {
+                    throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                                "Function:{0} - The Batch number must be greater than 0!"),
+                            Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+                }
+
+                #endregion Validate Arguments
+
+                AMainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, false);
 
                 #region Validate Data
 
-                if ((MainDS == null) || (MainDS.Tables.Count == 0))
+                if ((AMainDS == null) || (AMainDS.Tables.Count == 0))
                 {
                     throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
-                                "Function:{0} - Dataset MainDS is NULL or has no tables!"),
+                                "Function:{0} - Dataset AMainDS is NULL or has no tables!"),
                             Utilities.GetMethodName(true),
                             ALedgerNumber));
                 }
 
                 #endregion Validate Data
 
-                ABatchIsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+                ABatchIsUnposted = (AMainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
                 // drop all tables apart from AGift and AGiftDetail
-                foreach (DataTable table in MainDS.Tables)
+                foreach (DataTable table in AMainDS.Tables)
                 {
-                    if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
+                    if ((table.TableName != AMainDS.AGift.TableName) && (table.TableName != AMainDS.AGiftDetail.TableName))
                     {
                         table.Clear();
                     }
                 }
 
-                MainDS.AcceptChanges();
+                AMainDS.AcceptChanges();
             }
             catch (Exception ex)
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
+                AVerificationResult.Add(new TVerificationResult(
+                    Catalog.GetString("Load Gift Batch"),
+                    "Cannot load gift batch because of error: " + ex.Message,
+                    "Cannot load",
+                    "ERROR_MODIFY_LOADING_GIFTBATCH",
+                    TResultSeverity.Resv_Critical));
+                return false;
             }
 
             ACurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber);
 
-            return MainDS;
+            return true;
         }
 
         /// <summary>
@@ -2535,7 +2543,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             bool BatchIsUnposted;
             string CurrencyCode;
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
+            GiftBatchTDS MainDS;
+
+            if (!LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode, out MainDS, out AVerificationResult))
+            {
+                return false;
+            }
+
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")
@@ -2774,7 +2788,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             bool BatchIsUnposted;
             string CurrencyCode;
-            GiftBatchTDS MainDS = LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode);
+            GiftBatchTDS MainDS;
+
+            if (!LoadGiftTransactionsForBatch(ALedgerNumber, ABatchNumber, out BatchIsUnposted, out CurrencyCode, out MainDS, out AVerificationResult))
+            {
+                return false;
+            }
+
             AVerificationResult = new TVerificationResultCollection();
 
             if (action != "create")

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -362,7 +362,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             if ((LicenseCheckUrl != String.Empty) && (LicenseUser != "openpetra"))
             {
-                string url = LicenseCheckUrl + LicenseUser;
+                string url = LicenseCheckUrl;
+
+                if (url.EndsWith('='))
+                {
+                    url += LicenseUser;
+                }
 
                 string result = THTTPUtils.ReadWebsite(url);
 

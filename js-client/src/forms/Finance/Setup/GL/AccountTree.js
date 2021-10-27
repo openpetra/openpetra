@@ -1,10 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <tp@tbits.net>
+//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2020-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //

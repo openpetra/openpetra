@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PartnerFindTDSSearchCriteriaRow CriteriaRow = CriteriaData.NewRowTyped();
 
             CriteriaData.Rows.Add(CriteriaRow);
-            CriteriaRow.PartnerName = "%" + AFamilyNameOrOrganisation + "%";
+            CriteriaRow.PartnerName = "%" + AFamilyNameOrOrganisation.Replace(" ", "% ") + "%";
 
             if (APartnerKey.Length > 0)
             {
@@ -234,6 +234,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             int TotalRecords;
             TVerificationResultCollection VerificationResult;
+
+            ASearch = ASearch.Replace(" ", "% ");
 
             AResult = FindPartners(
                 String.Empty, //PartnerKey

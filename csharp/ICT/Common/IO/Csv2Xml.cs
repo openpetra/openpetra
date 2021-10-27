@@ -371,8 +371,12 @@ namespace Ict.Common.IO
 
                 IRow wsrow = null;
                 ICell wscell = null;
-                Int32 rowCounter = 1;
-                Int16 colCounter = 1;
+                Int32 rowCounter = 0;
+                Int16 colCounter = 0;
+
+                ICellStyle wsstyle_dateformat = workbook.CreateCellStyle();
+                ICreationHelper createHelper = workbook.GetCreationHelper();
+                wsstyle_dateformat.DataFormat = createHelper.CreateDataFormat().GetFormat("dd/mm/yyyy");
 
                 // we don't have headers for the columns
 
@@ -401,6 +405,7 @@ namespace Ict.Common.IO
                         else if (v.TypeVariant == eVariantTypes.eDateTime)
                         {
                             wscell.SetCellValue(v.ToDate());
+                            wscell.CellStyle = wsstyle_dateformat;
                         }
                         else
                         {
@@ -411,7 +416,7 @@ namespace Ict.Common.IO
 
                     LineCounter++;
                     rowCounter++;
-                    colCounter = 1;
+                    colCounter = 0;
                 }
 
                 workbook.Write(AStream);

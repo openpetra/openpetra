@@ -134,15 +134,21 @@ function open_gift_transactions(obj, number = -1, reload = false) {
 
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
-		data = JSON.parse(data.data.d);
+		parsed = JSON.parse(data.data.d);
+
+		if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+			return;
+		}
+
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
-		for (item of data.result.AGift) {
+		for (item of parsed.AMainDS.AGift) {
 			let transaction_row = $('[phantom] .tpl_gift').clone();
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
-		format_currency(data.ACurrencyCode);
+		format_currency(parsed.ACurrencyCode);
 		format_date();
 		if (!reload) {
 			$('.tpl_row .collapse').collapse('hide');
@@ -260,8 +266,14 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	// TODO: use serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d, parseDates);
+
+		if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+			return;
+		}
+
 		let searched = null;
-		for (trans of parsed.result.AGift) {
+		for (trans of parsed.AMainDS.AGift) {
 			if (trans.a_gift_transaction_number_i == trans_id) {
 				searched = trans;
 				break;
@@ -281,7 +293,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 			tpl_edit_raw.find('.not_show_when_posted').hide();
 		}
 
-		for (detail of parsed.result.AGiftDetail) {
+		for (detail of parsed.AMainDS.AGiftDetail) {
 			if (detail.a_gift_transaction_number_i == trans_id) {
 
 				let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
@@ -302,8 +314,14 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
+
+		if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+			return;
+		}
+
 		let searched = null;
-		for (trans of parsed.result.AGiftDetail) {
+		for (trans of parsed.AMainDS.AGiftDetail) {
 			if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
 				searched = trans;
 				break;

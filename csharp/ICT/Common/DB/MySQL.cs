@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -163,6 +163,7 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
             ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
             ReturnValue = ReturnValue.Replace("SUM (", "SUM(");
+            ReturnValue = ReturnValue.Replace("COUNT (", "COUNT(");
 
             if (ReturnValue.Contains(" AS usage"))
             {

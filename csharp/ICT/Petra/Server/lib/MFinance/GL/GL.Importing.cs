@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -219,6 +220,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         // Go round a loop reading the file line by line
                         ImportMessage = Catalog.GetString("Parsing first line");
                         FImportLine = sr.ReadLine();
+                        FNewLine = String.Empty;
 
                         Int32 TextProcessedLength = 0;
 
@@ -961,6 +963,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         // Go round a loop reading the file line by line
                         FImportLine = sr.ReadLine();
+                        FNewLine = String.Empty;
 
                         while (FImportLine != null)
                         {
@@ -972,7 +975,14 @@ namespace Ict.Petra.Server.MFinance.GL
                             // skip empty lines and commented lines
                             if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                             {
-                                int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count + 1;
+                                StringCollection csvlist = StringHelper.GetCSVList(FImportLine, FDelimiter);
+
+                                if (csvlist == null)
+                                {
+                                    throw new Exception("wrong delimiter");
+                                }
+
+                                int numberOfElements = csvlist.Count + 1;
 
                                 if (numberOfElements < 8)
                                 {
@@ -1362,7 +1372,14 @@ namespace Ict.Petra.Server.MFinance.GL
                     NewTransaction.TransactionAmount = CreditAmount;
                 }
 
-                NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, ANewJournalRow.ExchangeRateToBase);
+                if (ANewJournalRow.ExchangeRateToBase > 0)
+                {
+                    NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, ANewJournalRow.ExchangeRateToBase);
+                }
+                else
+                {
+                    NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount;
+                }
 
                 // If we know the international currency exchange rate we can set the value for the transaction amount
                 if (AIntlRateFromBase > 0.0m)

@@ -12,6 +12,50 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2021.10: October 26th, 2021</h3>
+
+<p>This release includes the work since May.<br/>
+A lot of work was done behind the scenes, to move the hosting of OpenPetra.com from virtual machines to shared hosting at https://hostsharing.net.<br/>
+Other changes happened in the setup of a ledger, for various scenarios.</p>
+
+<p>So here is the list of changes for this release:</p>
+
+Contact Module:
+<ul>
+<li>Search for Contacts with multiple parts of the name</li>
+</ul>
+
+Accounting Module:
+<ul>
+<li>Creating new Ledger: International Currency should be set properly</li>
+<li>add german account hierarchy example</li>
+<li>Import of cost centre yml file: delete unused cost centres</li>
+<li>GL Batch: adding new GL Batch with empty debit or credit will show server error</li>
+<li>Debit and Credit should always be in this order</li>
+<li>GL Batch: Import and Export of transactions</li>
+<li>Exporting GL Batch to xlsx: decimal numbers exported as strings</li>
+</ul>
+
+Donation Module:
+<ul>
+<li>display error message if donation batch cannot be opened because there are no motivation details</li>
+</ul>
+
+Sponsored children:
+<ul>
+<li>Sponsorship: Edit form only shows only one sponsor even if there are multiple sponsors for this child</li>
+</ul>
+
+Hosting OpenPetra:
+<ul>
+<li>empty instances have an error each morning in the log because of failing ExecuteScalar for SiteKey</li>
+<li>Only run the hourly backup if the instance is actually being used</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the 
+<a href="https://github.com/openpetra/openpetra/milestone/17?closed=1" rel=" nofollow ugc">Milestone at Github for release 2021.10</a>!</p>
+
+
 <h3>Release 2021.04: April 30th, 2021</h3>
 
 <p>This release includes the work of two months, March and April.

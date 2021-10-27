@@ -94,11 +94,9 @@ namespace Ict.Petra.Server.App.WebService
         /// </summary>
         private static bool Init()
         {
-            string ConfigFileName = string.Empty;
-
             // make sure the correct config file is used
             string Instance = HttpContext.Current.Request.Url.ToString().Replace("http://", "").Replace("https://", "");
-            Instance = Instance.Substring(0, Instance.IndexOf(".")).Replace("op_","op").Replace("op", "op_");
+            Instance = Instance.Substring(0, Instance.IndexOf(".")).Replace("openpetra", "OPENPETRA").Replace("op_","op").Replace("op", "op_").ToLower();
 
             // for demo etc
             if (!Instance.StartsWith("op_"))
@@ -106,7 +104,19 @@ namespace Ict.Petra.Server.App.WebService
                 Instance = "op_" + Instance;
             }
 
-            ConfigFileName = "/home/" + Instance + "/etc/PetraServerConsole.config";
+            string ConfigFileName = "/home/" + Instance + "/etc/PetraServerConsole.config";
+
+            if (!File.Exists(ConfigFileName))
+            {
+                // multi tenant on shared hosting
+                ConfigFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "instances") + "/" + Instance + "/etc/PetraServerConsole.config";
+            }
+
+            if (!File.Exists(ConfigFileName))
+            {
+                // single tenant on shared hosting
+                ConfigFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), Instance) + "/etc/PetraServerConsole.config";
+            }
 
             if (File.Exists(ConfigFileName))
             {

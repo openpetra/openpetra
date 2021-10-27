@@ -2,4 +2,3 @@
     [{#LEDGERNUMBER}]:{descr="[{#LEDGERNAME}]", active=True, type=Local}
         {#LEDGERNUMBERWITHLEADINGZEROS}00S:{descr="{#LEDGERNAME}"}
             {#LEDGERNUMBERWITHLEADINGZEROS}00:{descr="{#LEDGERNAME}, General"}
-        ILT:{descr="Inter Ledger Transfer Total"}
