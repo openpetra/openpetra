@@ -471,7 +471,8 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
             f.text( printCurrency(v, currencyCode) );
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
-          f.html( v.replace('<', '&lt;').replace('>', '&gt;') );
+          // avoid cross site scripting. still allow newlines as html code
+          f.html( v.replace('<br/>', 'NEWLINE').replace('<', '&lt;').replace('>', '&gt;').replace('NEWLINE', '<br/>') );
         } else {
           f.val( v );
         }
