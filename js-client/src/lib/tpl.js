@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -471,7 +471,7 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
             f.text( printCurrency(v, currencyCode) );
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
-          f.html( v );
+          f.html( v.replace('<', '&lt;').replace('>', '&gt;') );
         } else {
           f.val( v );
         }
