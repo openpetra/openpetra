@@ -290,6 +290,7 @@ function extract_data(object) {
   var r = {};
   object.find('[name]').each(function (i, obj) {
     obj = $(obj);
+    ValidateStringForInjectedHTML(obj.val());
     r[obj.attr('name')] = obj.val();
     if (obj.attr('type') == 'checkbox') {
 
@@ -395,6 +396,7 @@ function extractData(o) {
     }
     else {
       let value = f.val();
+      ValidateStringForInjectedHTML(value);
       data[name] = value;
     }
   }
@@ -482,3 +484,12 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
   }
   replace_val_variables(o,d);
 }
+
+function ValidateStringForInjectedHTML(value)
+{
+  if ((value.indexOf('>') != -1) && (value.indexOf('<') != -1) && (value.indexOf('=') != -1)) {
+    alert('We do not allow a combination of certain characters in ' + value);
+    throw ('We do not allow a combination of certain characters in ' + value);
+  }
+}
+        
