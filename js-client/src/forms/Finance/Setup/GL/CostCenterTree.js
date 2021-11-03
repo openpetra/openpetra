@@ -54,6 +54,10 @@ function import_file(file_field) {
 		return function(e) {
 			s = e.target.result;
 
+			// avoid issues with security checks
+			s = s.replaceAll('<', '&lt;');
+			s = s.replaceAll('>', '&gt;');
+
 			p = {AYmlHierarchy: s,
 				ALedgerNumber: window.localStorage.getItem('current_ledger')};
 
