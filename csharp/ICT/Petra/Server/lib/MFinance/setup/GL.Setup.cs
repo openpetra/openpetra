@@ -4643,7 +4643,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 20);
 
             TDBTransaction Transaction = new TDBTransaction();
-            TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
             bool SubmitOK = false;
             TDataBase db = DBAccess.Connect("DeleteLedger");
             bool Result = true;
@@ -4698,11 +4697,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 ABudgetTable.GetLedgerNumberDBName()),
                             Transaction, ledgerparameter);
 
+                        db.ExecuteNonQuery(
+                            String.Format(
+                                "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
+                                AEpTransactionTable.GetTableDBName(),
+                                AEpStatementTable.GetTableDBName(),
+                                AEpTransactionTable.GetTableDBName(),
+                                AEpTransactionTable.GetStatementKeyDBName(),
+                                AEpStatementTable.GetTableDBName(),
+                                AEpStatementTable.GetStatementKeyDBName(),
+                                AEpStatementTable.GetTableDBName(),
+                                AEpStatementTable.GetLedgerNumberDBName()),
+                            Transaction, ledgerparameter);
+
                         // the following tables are not deleted at the moment as they are not in use
                         //      PFoundationProposalDetailTable.GetTableDBName(),
-                        //      AEpTransactionTable.GetTableDBName(),
-                        //      AEpStatementTable.GetTableDBName(),
-                        //      AEpMatchTable.GetTableDBName(),
                         // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
                         //      (those are tables needed in the accounts receivable module that does not exist yet)
 
@@ -4712,6 +4721,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                  AProcessedFeeTable.GetTableDBName(),
                                  AGeneralLedgerMasterTable.GetTableDBName(),
                                  AMotivationDetailFeeTable.GetTableDBName(),
+
+                                 AEpMatchTable.GetTableDBName(),
+                                 AEpStatementTable.GetTableDBName(),
+                                 AEpAccountTable.GetTableDBName(),
 
                                  ABudgetTable.GetTableDBName(),
                                  ABudgetRevisionTable.GetTableDBName(),
@@ -4791,6 +4804,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             throw new Exception("Deletion of Ledger was cancelled by the user");
                         }
 
+                        SubmitOK = true;
                     }
                     catch (Exception e)
                     {
@@ -4818,8 +4832,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     {
                         TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     }
-
-                    SubmitOK = SubmitChangesResult == TSubmitChangesResult.scrOK;
                 });
 
             db.CloseDBConnection();
