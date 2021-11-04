@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2021 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -222,9 +222,38 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
             return SubmissionOK;
         }
 
+        /// if this user should change the password,
+        /// then redirect to the password page
+        [NoRemoting]
+        public static string GetPasswordNeedsChange()
+        {
+            TDBTransaction t = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("GetPasswordNeedsChange");
+
+            string result = String.Empty;
+            string sql = "SELECT s_password_needs_change_l FROM PUB_s_user u " +
+                "WHERE u.s_user_id_c = ?";
+
+            List<OdbcParameter> parameters = new List<OdbcParameter>();
+            parameters.Add(new OdbcParameter("UserId", OdbcType.VarChar) { Value = UserInfo.GetUserInfo().UserID });
+
+            db.ReadTransaction(ref t,
+                delegate
+                {
+                    if (Convert.ToBoolean(db.ExecuteScalar(sql, t, parameters.ToArray())) == true)
+                    {
+                        result = "Settings/ChangePassword";
+                    }
+                });
+
+            db.CloseDBConnection();
+
+            return result;
+        }
+
         /// if this system does not have a user that does have finance permissions,
         /// then redirect to the SysMan Setup Assistant
-        [RequireModulePermission("SYSMAN")]
+        [NoRemoting]
         public static string GetSetupAssistant()
         {
             TDBTransaction t = new TDBTransaction();
