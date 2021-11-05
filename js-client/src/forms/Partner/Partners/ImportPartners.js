@@ -172,5 +172,6 @@ function showPleaseWait() {
 	$('#myModal').modal();
 }
 function hidePleaseWait() {
-	$('#myModal').modal('hide');
+	// somehow the operation can finish too soon, so delay it by a little
+	setTimeout(function() { $('#myModal').modal('hide'); }, 500);
 }
