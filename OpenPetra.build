@@ -201,16 +201,6 @@ useful parameters
   <echo message="Target quickClean finished at: ${datetime::now()}" /> 
 </target>
 
-<target name="setuptools" description="goes into the directory setup/tools">
-  <echo message="Target setuptools started at: ${datetime::now()}" /> 
-  
-  <property name="target" value="indent" overwrite="false" />
-  <nant inheritall="false" target="${target}" 
-        buildfile="setup/tools/setuptools.build" />
-        
-  <echo message="Target setuptools finished at: ${datetime::now()}" /> 
-</target>
-
 <target name="nanttasks" description="goes into the directory inc/nanttasks">
   <echo message="Target nanttasks started at: ${datetime::now()}" /> 
   
@@ -232,7 +222,7 @@ useful parameters
 </target>
 
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
-        depends="csharp,nanttasks,setuptools" />
+        depends="csharp,nanttasks" />
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
         depends="generateProjectFiles"/>
