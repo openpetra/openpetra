@@ -474,7 +474,7 @@ namespace Ict.Tools.NAntTasks
                             string dllPath = pkgName + "." + NuPackages[pkgName];
 
                             // if another path is added here, also add in ThirdParty.build
-                            string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net5.0", "/lib/net20" };
+                            string[] netVersionPaths = new string[] {"/lib/net461", "/lib/net46", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net5.0", "/lib/net20" };
                             foreach (string netVersionPath in netVersionPaths)
                             {
                                 if (Directory.Exists(NugetPackagesPath + PSC + dllPath + netVersionPath))
