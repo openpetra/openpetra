@@ -174,28 +174,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
 
                             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
-                            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
-                            parameters[0].Value = ALedgerNumber;
-                            parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
-                            parameters[1].Value = AStartDate;
-                            parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
-                            parameters[2].Value = AEndDate;
-                            parameters[3] = new OdbcParameter("IgnoreFrequency", OdbcType.Bit);
+                            parameters[0] = new OdbcParameter("PartnerTypeThankYou", OdbcType.VarChar);
+                            parameters[0].Value = PARTNERTYPE_THANKYOU_NO_RECEIPT;
+                            parameters[1] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                            parameters[1].Value = ALedgerNumber;
+                            parameters[2] = new OdbcParameter("StartDate", OdbcType.Date);
+                            parameters[2].Value = AStartDate;
+                            parameters[3] = new OdbcParameter("EndDate", OdbcType.Date);
+                            parameters[3].Value = AEndDate;
+                            parameters[4] = new OdbcParameter("IgnoreFrequency", OdbcType.Bit);
 
                             if (AFrequency == "")
                             {
-                                parameters[3].Value = true;
+                                parameters[4].Value = true;
                             }
                             else
                             {
-                                parameters[3].Value = false;
+                                parameters[4].Value = false;
                             }
 
-                            parameters[4] = new OdbcParameter("Frequency", OdbcType.VarChar);
-                            parameters[4].Value = AFrequency.ToUpper();
-
-                            parameters[5] = new OdbcParameter("PartnerTypeThankYou", OdbcType.VarChar);
-                            parameters[5].Value = PARTNERTYPE_THANKYOU_NO_RECEIPT;
+                            parameters[5] = new OdbcParameter("Frequency", OdbcType.VarChar);
+                            parameters[5].Value = AFrequency.ToUpper();
 
                             if (!string.IsNullOrEmpty(AExtract))
                             {
