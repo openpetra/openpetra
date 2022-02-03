@@ -12,7 +12,7 @@ AND a_gift_batch.a_batch_status_c = 'Posted'
 AND a_gift.a_ledger_number_i = a_gift_batch.a_ledger_number_i
 AND a_gift.a_batch_number_i = a_gift_batch.a_batch_number_i
 AND p.p_partner_key_n = a_gift.p_donor_key_n
-AND (? OR upper(p_partner.p_receipt_letter_frequency_c) = ?)
+AND (? OR upper(p.p_receipt_letter_frequency_c) = ?)
 
 AND pp.p_type_code_c = ?
 
@@ -22,4 +22,4 @@ AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i
 AND m_extract_master.m_extract_name_c = ?
 {#ENDIF BYEXTRACT}
 
-ORDER BY p_partner.p_partner_short_name_c
+ORDER BY p.p_partner_short_name_c
