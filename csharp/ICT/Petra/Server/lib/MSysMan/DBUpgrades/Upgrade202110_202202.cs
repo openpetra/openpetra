@@ -51,7 +51,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                     sql = "SELECT COUNT(*) FROM PUB_p_type WHERE p_type_code_c = 'THANKYOU_NO_RECEIPT'";
                     if (Convert.ToInt32(ADataBase.ExecuteScalar(sql, SubmitChangesTransaction)) == 0)
                     {
-                        sql = "INSERT INTO PUB_p_type( p_type_code_c, p_type_description_c, p_system_type_l, p_type_deletable_l) VALUES('THANKYOU_NO_RECEIPT','Receives no gift receipt but a thank you letter',0,1)";
+                        sql = "INSERT INTO PUB_p_type( p_type_code_c, p_type_description_c, p_system_type_l, p_type_deletable_l) VALUES('THANKYOU_NO_RECEIPT','Receives no gift receipt but a thank you letter', false, true)";
                         ADataBase.ExecuteNonQuery(sql, SubmitChangesTransaction);
                     }
 
