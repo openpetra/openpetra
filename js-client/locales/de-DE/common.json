@@ -812,7 +812,7 @@
         "Lastname": "Nachname",
         "EmailAddress": "E-Mail Adresse",
         "InitialPassword": "Passwort",
-        "PasswordInfo": "Sie können das vorgeschlagene Passwort übernehmen (bitte notieren!), oder Sie geben ein eigenes Passwort ein, dass diese Kriterien erfüllt: Mindestens 8 Zeichen lang, mindestens ein Buchstabe, mindestens eine Ziffer.",
+        "PasswordInfo": "Sie können das vorgeschlagene Passwort übernehmen (bitte notieren!), oder Sie geben ein eigenes Passwort ein, das diese Kriterien erfüllt: Mindestens 8 Zeichen lang, mindestens ein Buchstabe, mindestens eine Ziffer.",
         "InitialModulePermissions": "Berechtigungen",
         "InfoInitialModulePermissions": "Es werden die allgemeinen Berechtigungen zum Bearbeiten von Kontakten, für Buchhaltung und Patenschaftsverwaltung eingerichtet. Sie können die Berechtigungen als Benutzer SYSADMIN in der Benutzerverwaltung anpassen.",
         "EnableSelfSignUp": "Selbstregistrierung aktivieren",
