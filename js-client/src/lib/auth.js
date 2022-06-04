@@ -2,10 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -134,7 +134,7 @@ class Auth {
 				if (result == true) {
 					display_message(i18next.t('login.successPwdResetEmailSent'), "success");
 					setTimeout(function() {
-						window.location.reload();
+						window.location = window.location.pathname;
 						}, 3000);
 				} else {
 					display_message(i18next.t('login.errorPwdResetEmailSent'), "fail");

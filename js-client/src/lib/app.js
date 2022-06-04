@@ -2,10 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -131,6 +131,10 @@ auth.checkAuth(function(selfsignupEnabled) {
 			auth.login(user, pwd);
 		});
 	}
+	const urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.get('action') == 'resetpwd') {
+		requestNewPassword(urlParams.get('email'));
+	}
 }, function () {
 	setTimeout(keepConnection, 5000);
 	$("#loading").hide();
@@ -144,8 +148,9 @@ auth.checkAuth(function(selfsignupEnabled) {
 	}
 });
 
-function requestNewPassword() {
+function requestNewPassword(emailAddress) {
 	$("#login").hide();
+	$("#txtEmailRequestPwd").val(emailAddress);
 	$("#reqNewPwd").show();
 	$("#btnReqNewPwd").click(function(e) {
 		e.preventDefault();
