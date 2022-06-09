@@ -1,8 +1,8 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       Christopher Jäkel
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
 // Copyright 2019-2022 by SolidCharity.com
@@ -48,15 +48,15 @@ function MaintainPartners_Ready() {
 class MaintainPartners {
 
 load_preset() {
-    var self = this;
+	var self = this;
 
-    var x = window.localStorage.getItem('MaintainPartners');
+	var x = window.localStorage.getItem('MaintainPartners');
 	if (x != null) {
 		x = JSON.parse(x);
 		format_tpl($('#tabfilter'), x);
 	}
 
-    $('#btnSearch').click(function(){ self.display_list(); $('#tabfilter').collapse('toggle'); });
+	$('#btnSearch').click(function(){ self.display_list(); $('#tabfilter').collapse('toggle'); });
 }
 
 display_list() {
@@ -78,7 +78,7 @@ display_list() {
 			self.format_item(item);
 
 			$('#btnDetailPartner' + item.p_partner_key_n).click(function(){ self.open_detail(this); });
-            $('#btnEditPartner' + item.p_partner_key_n).attr('partnerkey', item.p_partner_key_n);
+			$('#btnEditPartner' + item.p_partner_key_n).attr('partnerkey', item.p_partner_key_n);
 			$('#btnEditPartner' + item.p_partner_key_n).click(function(){ self.open_edit($(this).attr('partnerkey')); });
 		}
 	})
@@ -148,7 +148,7 @@ open_edit(partner_id) {
 }
 
 display_partner(parsed) {
-    var self = this;
+	var self = this;
 	if (!allow_modal()) {return}
 	// make a deep copy of the server data and set it as a global var.
 	last_opened_entry_data = $.extend(true, {}, parsed);
@@ -198,7 +198,7 @@ display_partner(parsed) {
 
 	let myModal = ShowModal('partneredit' + parsed.result.PPartner[0].p_partner_key_n, m);
 
-    $('#btnSavePartner' + parsed.result.PPartner[0].p_partner_key_n).click(function(){ self.save_entry(this); });
+	$('#btnSavePartner' + parsed.result.PPartner[0].p_partner_key_n).click(function(){ self.save_entry(this); });
 }
 
 display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
