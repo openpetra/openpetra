@@ -45,6 +45,19 @@ function MaintainPartners_Ready() {
 	}
 }
 
+function show_tab(tab_id) {
+	// used to control tabs in modal, because there are issues with bootstrap
+	let tab = $(tab_id);
+	let target = tab.attr('aria-controls');
+	tab.closest('.nav-tabs').find('.nav-link').removeClass('active');
+	tab.addClass('active');
+
+	tgr = tab.closest('.container').find('.tab-content');
+	tgr.find('.tab-pane').hide();
+	tgr.find('#'+target).show();
+
+}
+
 class MaintainPartners {
 
 load_preset() {
@@ -57,6 +70,8 @@ load_preset() {
 	}
 
 	$('#btnSearch').click(function(){ self.display_list(); $('#tabfilter').collapse('toggle'); });
+	$('#btnNewFamily').click(function(){ self.open_new_family(); });
+	$('#btnNewOrganisation').click(function(){ self.open_new_organisation(); });
 }
 
 display_list() {
@@ -114,7 +129,7 @@ open_detail(obj) {
 
 open_new_family() {
 	var self = this;
-	r = {
+	var r = {
 			APartnerClass: "FAMILY"
 		};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
@@ -125,7 +140,7 @@ open_new_family() {
 
 open_new_organisation() {
 	var self = this;
-	r = {
+	var r = {
 			APartnerClass: "ORGANISATION"
 		};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
@@ -199,6 +214,7 @@ display_partner(parsed) {
 	let myModal = ShowModal('partneredit' + parsed.result.PPartner[0].p_partner_key_n, m);
 
 	$('#btnSavePartner' + parsed.result.PPartner[0].p_partner_key_n).click(function(){ self.save_entry(this); });
+	$('#btnDeletePartner' + parsed.result.PPartner[0].p_partner_key_n).click(function(){ self.delete_entry(this); });
 }
 
 display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
@@ -414,19 +430,6 @@ delete_bank_account(obj_modal) {
 			display_error(parsed.AVerificationResult);
 		}
 	});
-}
-
-show_tab(tab_id) {
-	// used to control tabs in modal, because there are issues with bootstrap
-	let tab = $(tab_id);
-	let target = tab.attr('aria-controls');
-	tab.closest('.nav-tabs').find('.nav-link').removeClass('active');
-	tab.addClass('active');
-
-	tgr = tab.closest('.container').find('.tab-content');
-	tgr.find('.tab-pane').hide();
-	tgr.find('#'+target).show();
-
 }
 
 // used to load all available tags and set checkbox if needed
