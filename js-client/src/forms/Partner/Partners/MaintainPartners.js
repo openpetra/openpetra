@@ -5,7 +5,7 @@
 //       Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -32,27 +32,36 @@ $('document').ready(function () {
 });
 
 function MaintainPartners_Ready() {
-	load_preset();
+	let obj = new MaintainPartners();
+
+	obj.load_preset();
 
 	if (window.location.href.endsWith('?NewFamily')) {
-		open_new_family();
+		obj.open_new_family();
 	} else if (window.location.href.endsWith('?NewOrganisation')) {
-		open_new_organisation();
+		obj.open_new_organisation();
 	} else {
-		display_list();
+		obj.display_list();
 	}
 }
 
-function load_preset() {
-	var x = window.localStorage.getItem('MaintainPartners');
+class MaintainPartners {
+
+load_preset() {
+    var self = this;
+
+    var x = window.localStorage.getItem('MaintainPartners');
 	if (x != null) {
 		x = JSON.parse(x);
 		format_tpl($('#tabfilter'), x);
 	}
+
+    $('#btnSearch').click(function(){ self.display_list(); $('#tabfilter').collapse('toggle'); });
 }
 
-function display_list() {
+display_list() {
 	var x = extract_data($('#tabfilter'));
+	var self = this;
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -64,14 +73,18 @@ function display_list() {
 
 		// on reload, clear content
 		$('#browse_container').html('');
-		for (item of data.result) {
+		for (var item of data.result) {
 			// format a partner for every entry
-			format_item(item);
+			self.format_item(item);
+
+			$('#btnDetailPartner' + item.p_partner_key_n).click(function(){ self.open_detail(this); });
+            $('#btnEditPartner' + item.p_partner_key_n).attr('partnerkey', item.p_partner_key_n);
+			$('#btnEditPartner' + item.p_partner_key_n).click(function(){ self.open_edit($(this).attr('partnerkey')); });
 		}
 	})
 }
 
-function translate_label(label) {
+translate_label(label) {
 	if (i18next.t('MaintainPartners.'+label) == 'MaintainPartners.'+label) {
 		return label;
 	} else {
@@ -79,14 +92,14 @@ function translate_label(label) {
 	}
 }
 
-function format_item(item) {
+format_item(item) {
 	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
 	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
 	$('#browse_container').append(row);
 	$('#partner'+item['p_partner_key_n']).find('.collapse_col').append(view);
 }
 
-function open_detail(obj) {
+open_detail(obj) {
 	obj = $(obj);
 	while(!obj[0].hasAttribute('id') || !obj[0].id.includes("partner")) {
 		obj = obj.parent();
@@ -99,39 +112,43 @@ function open_detail(obj) {
 	obj.find('.collapse').collapse('show')
 }
 
-function open_new_family() {
+open_new_family() {
+	var self = this;
 	r = {
 			APartnerClass: "FAMILY"
 		};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
-		parsed = JSON.parse(data.data.d);
-		display_partner(parsed);
+		var parsed = JSON.parse(data.data.d);
+		self.display_partner(parsed);
 	});
 }
 
-function open_new_organisation() {
+open_new_organisation() {
+	var self = this;
 	r = {
 			APartnerClass: "ORGANISATION"
 		};
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
-		parsed = JSON.parse(data.data.d);
-		display_partner(parsed);
+		var parsed = JSON.parse(data.data.d);
+		self.display_partner(parsed);
 	});
 }
 
-function open_edit(partner_id) {
+open_edit(partner_id) {
+	var self = this;
 	var r = {
 				APartnerKey: partner_id,
 			};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetails', r).then(function (data) {
-		parsed = JSON.parse(data.data.d);
-		display_partner(parsed);
+		var parsed = JSON.parse(data.data.d);
+		self.display_partner(parsed);
 	})
 }
 
-function display_partner(parsed) {
+display_partner(parsed) {
+    var self = this;
 	if (!allow_modal()) {return}
 	// make a deep copy of the server data and set it as a global var.
 	last_opened_entry_data = $.extend(true, {}, parsed);
@@ -158,9 +175,9 @@ function display_partner(parsed) {
 	}
 
 	// generated fields
-	m = load_tags(parsed.result.PType, parsed.APartnerTypes, m);
-	m = load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
-	m = load_countries(parsed.result.PCountry, parsed.result.PLocation[0].p_country_code_c, m);
+	m = this.load_tags(parsed.result.PType, parsed.APartnerTypes, m);
+	m = this.load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
+	m = this.load_countries(parsed.result.PCountry, parsed.result.PLocation[0].p_country_code_c, m);
 
 	var sendmail = false;
 	if (parsed.result.PPartnerLocation.length > 0) {
@@ -177,16 +194,18 @@ function display_partner(parsed) {
 	m.find('.select_case').hide();
 	m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
 
-	m = display_bankaccounts(parsed.result.PPartner[0].p_partner_key_n, parsed.result.PBankingDetails, m);
+	m = this.display_bankaccounts(parsed.result.PPartner[0].p_partner_key_n, parsed.result.PBankingDetails, m);
 
-	myModal = ShowModal('partneredit' + parsed.result.PPartner[0].p_partner_key_n, m);
+	let myModal = ShowModal('partneredit' + parsed.result.PPartner[0].p_partner_key_n, m);
+
+    $('#btnSavePartner' + parsed.result.PPartner[0].p_partner_key_n).click(function(){ self.save_entry(this); });
 }
 
-function display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
+display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
 	PBankingDetails_Store = {}
 	m.find('.bank_account_detail_col').html('');
 	if (PBankingDetails.length > 0) {
-		for (detail of PBankingDetails) {
+		for (var detail of PBankingDetails) {
 			detail['p_partner_key_n'] = p_partner_key_n;
 			let tpl_bank_account_detail = format_tpl( $('[phantom] .tpl_account_detail').clone(), detail);
 			m.find('.bank_account_detail_col').append(tpl_bank_account_detail);
@@ -197,7 +216,7 @@ function display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
 	return m;
 }
 
-function new_bank_account(partnerkey, firstname, lastname) {
+new_bank_account(partnerkey, firstname, lastname) {
 	if (!allow_modal()) {return}
 	let x = {
 		p_partner_key_n: partnerkey,
@@ -212,7 +231,7 @@ function new_bank_account(partnerkey, firstname, lastname) {
 	p.modal('show');
 };
 
-function edit_account(detail_key) {
+edit_account(detail_key) {
 	if (!allow_modal()) {return}
 
 	let data = PBankingDetails_Store[detail_key];
@@ -223,7 +242,8 @@ function edit_account(detail_key) {
 	tpl_edit_raw.modal('show');
 }
 
-function save_entry(obj) {
+save_entry(obj) {
+	var self = this
 	let modal = FindMyModal(obj)
 	var partnerkey = modal.find("[name=p_partner_key_n]").val();
 
@@ -248,7 +268,7 @@ function save_entry(obj) {
 	let updated_data = replace_data(last_opened_entry_data, x);
 
 	// get all tags for the partner
-	applied_tags = []
+	let applied_tags = []
 	modal.find('#types').find('.tpl_check').each(function (i, o) {
 		o = $(o);
 		if (o.find('input').is(':checked')) {
@@ -257,7 +277,7 @@ function save_entry(obj) {
 	});
 
 	// get all subscribed options
-	applied_subs = []
+	let applied_subs = []
 	modal.find('#subscriptions').find('.tpl_check').each(function (i, o) {
 		o = $(o);
 		if (o.find('input').is(':checked')) {
@@ -274,7 +294,7 @@ function save_entry(obj) {
 	updated_data.result.PPartnerBankingDetails = [];
 
 	// to be save we have the right address in logs
-	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = getUpdatesAddress(partnerkey); }
+	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = this.getUpdatesAddress(partnerkey); }
 	var applied_perms = [];
 	for (var perm of Object.values(data_changes_log) ) {
 		if (perm["Valid"] == false) { return display_message( i18next.t("MaintainPartners.consent_error"), 'fail'); }
@@ -292,15 +312,15 @@ function save_entry(obj) {
 			 };
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		var parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
 			CloseModal(modal.attr('id'));
 			display_message(i18next.t('forms.saved'), "success");
-			display_list();
+			self.display_list();
 		}
 		else if (parsed.AVerificationResult[0].code == "consent_error") {
 			// probably only the city or postcode was changed, but not the address
-			insert_consent(obj, 'address');
+			self.insert_consent(obj, 'address');
 		}
 		else {
 			display_error( parsed.AVerificationResult );
@@ -308,7 +328,8 @@ function save_entry(obj) {
 	})
 }
 
-function delete_entry(obj) {
+delete_entry(obj) {
+	var self = this;
 	let modal = FindMyModal(obj)
 	var partnerkey = modal.find("[name=p_partner_key_n]").val();
 
@@ -318,11 +339,11 @@ function delete_entry(obj) {
 	let r = {'APartnerKey': partnerkey}
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeletePartner', r).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		var parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
 			CloseModal(modal.attr('id'));
 			display_message(i18next.t('MaintainPartners.contact_was_deleted'), "success");
-			display_list();
+			self.display_list();
 		}
 		else {
 			display_error( parsed.AVerificationResult );
@@ -330,7 +351,9 @@ function delete_entry(obj) {
 	})
 }
 
-function updateBankAccounts(PartnerKey) {
+updateBankAccounts(PartnerKey) {
+	var self = this;
+
 	// somehow the original window stays gray when we return from this modal.
 	$('.modal-backdrop').remove();
 	let m = $('#partneredit' + PartnerKey)
@@ -340,12 +363,13 @@ function updateBankAccounts(PartnerKey) {
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetBankAccounts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_bankaccounts(PartnerKey, parsed.PBankingDetails, m);
+			self.display_bankaccounts(PartnerKey, parsed.PBankingDetails, m);
 		}
 	});
 }
 
-function save_edit_bank_account(obj_modal) {
+save_edit_bank_account(obj_modal) {
+	var self = this;
 	let obj = $(obj_modal).closest('.modal');
 	let mode = obj.find('[action]').val();
 
@@ -355,11 +379,11 @@ function save_edit_bank_account(obj_modal) {
 	if (payload['ABankingDetailsKey'] == '') payload['ABankingDetailsKey'] = -1;
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		var parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			obj.modal('hide');
-			updateBankAccounts(payload['APartnerKey']);
+			self.updateBankAccounts(payload['APartnerKey']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -369,7 +393,8 @@ function save_edit_bank_account(obj_modal) {
 
 }
 
-function delete_bank_account(obj_modal) {
+delete_bank_account(obj_modal) {
+	var self = this;
 
 	let s = confirm( i18next.t('MaintainPartners.ask_delete_bank_account') );
 	if (!s) {return}
@@ -379,11 +404,11 @@ function delete_bank_account(obj_modal) {
 	payload["action"] = "delete";
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		var parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			obj.modal('hide');
-			updateBankAccounts(payload['APartnerKey']);
+			self.updateBankAccounts(payload['APartnerKey']);
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -391,7 +416,7 @@ function delete_bank_account(obj_modal) {
 	});
 }
 
-function show_tab(tab_id) {
+show_tab(tab_id) {
 	// used to control tabs in modal, because there are issues with bootstrap
 	let tab = $(tab_id);
 	let target = tab.attr('aria-controls');
@@ -405,10 +430,10 @@ function show_tab(tab_id) {
 }
 
 // used to load all available tags and set checkbox if needed
-function load_tags(all_tags, selected_tags, obj) {
+load_tags(all_tags, selected_tags, obj) {
 	let p = $('<div class="container"></div>');
-	empty = true;
-	for (tag of all_tags) {
+	var empty = true;
+	for (var tag of all_tags) {
 		empty = false;
 		let pe = $('[phantom] .tpl_check').clone();
 		pe.find('data').attr('value', tag['p_type_code_c']);
@@ -429,10 +454,10 @@ function load_tags(all_tags, selected_tags, obj) {
 }
 
 // same as: load_tags just with subscriptions
-function load_subs(all_subs, selected_subs, obj) {
+load_subs(all_subs, selected_subs, obj) {
 	let p = $('<div class="container"></div>');
-	empty = true;
-	for (tag of all_subs) {
+	var empty = true;
+	for (var tag of all_subs) {
 		empty = false;
 		let pe = $('[phantom] .tpl_check').clone();
 		pe.find('data').attr('value', tag['p_publication_code_c']);
@@ -453,10 +478,10 @@ function load_subs(all_subs, selected_subs, obj) {
 	return obj;
 }
 
-function load_countries(all_countries, selected_country, obj) {
+load_countries(all_countries, selected_country, obj) {
 	if (selected_country == null) selected_country="99";
-	for (country of all_countries) {
-		selected = (selected_country == country.p_country_code_c)?" selected":"";
+	for (var country of all_countries) {
+		var selected = (selected_country == country.p_country_code_c)?" selected":"";
 		let y = $('<option value="'+country.p_country_code_c+'"' + selected + '>'+country.p_country_code_c + " " + country.p_country_name_c + '</option>');
 		obj.find('#CountryCode').append(y);
 	}
@@ -464,7 +489,7 @@ function load_countries(all_countries, selected_country, obj) {
 }
 
 // following funtions are for data history view/edit
-function open_history(HTMLButton) {
+open_history(HTMLButton) {
 	var partnerkey = $(HTMLButton).closest(".modal").find("[name=p_partner_key_n]").val();
 	var req = {
 		APartnerKey: partnerkey
@@ -481,6 +506,7 @@ function open_history(HTMLButton) {
 			types.push(type);
 			let name = i18next.t('MaintainPartners.'+type);
 			let partner = partnerkey;
+			// TODO???
 			DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
 		}
 
@@ -488,6 +514,7 @@ function open_history(HTMLButton) {
 			if (! types.includes(type)) {
 				let name = i18next.t('MaintainPartners.'+type);
 				let partner = partnerkey;
+				// TODO???
 				DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
 			}
 		}
@@ -503,7 +530,7 @@ function open_history(HTMLButton) {
 	})
 }
 
-function add_history_entry(purposes, channels, first, EventDateStr, AllowedPurposes, Value, CreatedBy, ChannelCode) {
+add_history_entry(purposes, channels, first, EventDateStr, AllowedPurposes, Value, CreatedBy, ChannelCode) {
 	var HistPerm = $("[phantom] .history-entry").clone();
 
 	var EventDate = new Date(EventDateStr);
@@ -535,7 +562,8 @@ function add_history_entry(purposes, channels, first, EventDateStr, AllowedPurpo
 	return HistPerm;
 }
 
-function load_history_data(HTMLButton) {
+load_history_data(HTMLButton) {
+	var self = this;
 	var partner_key = $(HTMLButton).attr("data-partner");
 	var datatype = $(HTMLButton).attr("data-type");
 	var req = {
@@ -561,7 +589,7 @@ function load_history_data(HTMLButton) {
 		if (data_changes_log[datatype] != null) {
 			var entry = data_changes_log[datatype];
 
-			var HistPerm = add_history_entry(
+			var HistPerm = self.add_history_entry(
 				purposes, channels,
 				first,
 				entry.ConsentDate, entry.Permissions,
@@ -572,7 +600,7 @@ function load_history_data(HTMLButton) {
 		}
 
 		for (var entry of parsed.result.PConsentHistory) {
-			var HistPerm = add_history_entry(
+			var HistPerm = self.add_history_entry(
 				purposes, channels,
 				first,
 				entry.p_consent_date_d, entry.AllowedPurposes,
@@ -614,7 +642,7 @@ function load_history_data(HTMLButton) {
 	});
 }
 
-function insert_consent(HTMLField, data_name) {
+insert_consent(HTMLField, data_name) {
 
 	var Obj = $(HTMLField);
 	var value = Obj.val();
@@ -622,7 +650,7 @@ function insert_consent(HTMLField, data_name) {
 	var partnerkey = modal.find("[name=p_partner_key_n]").val();
 
 	// special cases
-	if (data_name == "address") { value = getUpdatesAddress(partnerkey); }
+	if (data_name == "address") { value = this.getUpdatesAddress(partnerkey); }
 
 	data_changes_log[data_name] = {
 		PartnerKey: partnerkey,
@@ -634,15 +662,15 @@ function insert_consent(HTMLField, data_name) {
 		Valid: false // is set later
 	};
 
-	open_consent_modal(partnerkey, data_name);
+	this.open_consent_modal(partnerkey, data_name);
 
 }
 
-function open_consent_modal(partner_key, field, mode="partner_edit") {
+open_consent_modal(partner_key, field, mode="partner_edit") {
 	var req = {APartnerKey: partner_key, ADataType:field};
 
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_LastKnownEntry', req).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		var parsed = JSON.parse(data.data.d);
 		var Temp = $('[phantom] .tpl_consent').clone();
 
 		var purposes = parsed.result.PConsentPurpose;
@@ -696,8 +724,8 @@ function open_consent_modal(partner_key, field, mode="partner_edit") {
 	})
 }
 
-function submit_changes_consent(obj) {
-	modal = FindMyModal(obj);
+submit_changes_consent(obj) {
+	let modal = FindMyModal(obj);
 
 	var current_field = modal.find("data[name=field]").val();
 	var channel_code = modal.find("[name=consent_channel]").val();
@@ -718,7 +746,7 @@ function submit_changes_consent(obj) {
 	CloseModal(modal.attr('id'));
 }
 
-function getUpdatesAddress(partnerkey) {
+getUpdatesAddress(partnerkey) {
 	let modal = FindModal('partneredit'+partnerkey);
 	let street = modal.find("#addresses").find("[name=p_street_name_c]").val();
 	let city = modal.find("#addresses").find("[name=p_city_c]").val();
@@ -727,8 +755,9 @@ function getUpdatesAddress(partnerkey) {
 	return `${street}, ${postal} ${city}, ${land}`;
 }
 
-function submit_consent_edit(Obj, from_modal=false) {
-	modal = FindMyModal(Obj);
+submit_consent_edit(Obj, from_modal=false) {
+	var self = this;
+	let modal = FindMyModal(Obj);
 
 	var partnerkey = modal.attr('partnerkey');
 	var ty = modal.attr("selected-data-type");
@@ -741,7 +770,7 @@ function submit_consent_edit(Obj, from_modal=false) {
 		}
 
 		// we need to ask for date and consent channel
-		open_consent_modal(partnerkey, ty, "consent_edit");
+		this.open_consent_modal(partnerkey, ty, "consent_edit");
 		return;
 	}
 
@@ -761,10 +790,10 @@ function submit_consent_edit(Obj, from_modal=false) {
 	};
 
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_EditHistory', req).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		var parsed = JSON.parse(data.data.d);
 		if (parsed.result) {
 			var HTMLDataButton = $(historyModal).find(`button[data-type='${req.ADataType}']`);
-			load_history_data(HTMLDataButton);
+			self.load_history_data(HTMLDataButton);
 			CloseModal('consent' + partnerkey);
 		} else {
 			if (parsed.AVerificationResult[0].message == "no_changes") {
@@ -776,5 +805,6 @@ function submit_consent_edit(Obj, from_modal=false) {
 
 	})
 
-
 }
+
+} // end of class
