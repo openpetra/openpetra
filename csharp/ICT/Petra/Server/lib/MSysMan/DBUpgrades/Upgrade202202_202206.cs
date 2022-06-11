@@ -46,7 +46,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                 ref SubmitOK,
                 delegate
                 {
-                    sql = "ALTER TABLE s_session ADD COLUMN s_user_id_c varchar(20) DEFAULT NULL AFTER s_session_values_c";
+                    sql = "ALTER TABLE PUB_s_session ADD COLUMN s_user_id_c varchar(20) DEFAULT NULL AFTER s_session_values_c";
                     ADataBase.ExecuteNonQuery(sql, SubmitChangesTransaction);
 
                     SubmitOK = true;
