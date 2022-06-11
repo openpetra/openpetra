@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -348,6 +348,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                 return;
                             }
 
+                            tables.Remove("s_session");
                             tables.Remove("s_user");
                             tables.Remove("s_module");
                             tables.Remove("s_user_module_access_permission");
