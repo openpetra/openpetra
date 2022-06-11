@@ -255,7 +255,7 @@ new_bank_account(partnerkey, firstname, lastname) {
 	let x = {
 		p_partner_key_n: partnerkey,
 		p_account_name_c: (firstname + " " + lastname).trim(),
-		p_banking_details_key_i: $("#Account" + partnerkey +" .tpl_account_detail").length + 1
+		p_banking_details_key_i: -1
 	};
 	let p = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), x);
 	$('#modal_space').append(p);
@@ -263,6 +263,7 @@ new_bank_account(partnerkey, firstname, lastname) {
 	p.find('[action]').val('create');
 
 	p.find('#btnSaveBankAccount'+x.p_banking_details_key_i).click(function(){self.save_edit_bank_account(this)});
+	p.find('#btnCloseBankAccount'+x.p_banking_details_key_i).click(function(){CloseModal(this);});
 
 	p.modal('show');
 };
