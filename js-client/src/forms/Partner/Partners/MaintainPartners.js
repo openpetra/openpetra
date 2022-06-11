@@ -218,6 +218,7 @@ display_partner(parsed) {
 	myModal.find('#btnSavePartner').click(function(){ self.save_partner(this); });
 	myModal.find('#btnDeletePartner').click(function(){ self.delete_partner(this); });
 	myModal.find('#btnAddBankAccount').click(function(){
+		let PartnerEditForm = $('#partneredit' + self.partnerkey);
 		self.new_bank_account(self.partnerkey,
 			PartnerEditForm.find("input[name='PFamily_p_first_name_c']").val(),
 			PartnerEditForm.find("input[name='PFamily_p_family_name_c']").val());
@@ -398,16 +399,14 @@ delete_partner(obj) {
 updateBankAccounts() {
 	var self = this;
 
-	// somehow the original window stays gray when we return from this modal.
-	$('.modal-backdrop').remove();
-	let m = $('#partneredit' + self.partnerkey)
+	let modal = $('#partneredit' + self.partnerkey)
 
 	let payload = {}
-	payload['APartnerKey'] = PartnerKey;
+	payload['APartnerKey'] = self.partnerkey;
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetBankAccounts', payload).then(function (result) {
 		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			self.display_bankaccounts(parsed.PBankingDetails, m);
+			self.display_bankaccounts(parsed.PBankingDetails, modal);
 		}
 	});
 }
