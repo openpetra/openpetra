@@ -340,10 +340,21 @@
     <tablefield name="s_session_values_c"
                 type="text"
                 descr="JSON encoded list of session values."/>
+    <tablefield name="s_user_id_c"
+                type="varchar"
+                descr="This is the system user id. Each user of the system is allocated one"
+                format="X(10)"
+                label="User ID"
+                notnull="no"/>
     <!-- Constraints on table s_session -->
     <primarykey name="s_session_pk"
                 descr=""
                 thisFields="s_session_id_c"/>
+    <foreignkey name="s_session_fk1"
+                descr=""
+                thisFields="s_user_id_c"
+                otherTable="s_user"
+                otherFields="s_user_id_c"/>
   </table>
   <table name="s_report_result"
          descr="Report Results"
