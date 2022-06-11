@@ -46,8 +46,26 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                 ref SubmitOK,
                 delegate
                 {
-                    sql = "ALTER TABLE PUB_s_session ADD COLUMN s_user_id_c varchar(20) DEFAULT NULL AFTER s_session_values_c";
-                    ADataBase.ExecuteNonQuery(sql, SubmitChangesTransaction);
+                    bool ColumnExists = false;
+
+                    try
+                    {
+                        sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_user_id_c = 'TEST'";
+                        if (Convert.ToInt32(ADataBase.ExecuteScalar(sql, SubmitChangesTransaction)) == 0)
+                        {
+                            ColumnExists = true;
+                        }
+                    }
+                    catch (System.Exception)
+                    {
+                        // the column must be added
+                    }
+
+                    if (!ColumnExists)
+                    {
+                        sql = "ALTER TABLE PUB_s_session ADD COLUMN s_user_id_c varchar(20) DEFAULT NULL AFTER s_session_values_c";
+                        ADataBase.ExecuteNonQuery(sql, SubmitChangesTransaction);
+                    }
 
                     SubmitOK = true;
                 });
