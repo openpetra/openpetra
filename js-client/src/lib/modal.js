@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -58,7 +58,10 @@ function FindMyModal(obj) {
   return $(obj.closest(".modal"))
 }
 
-function CloseModal(id) {
-  $("#modal_space #" + id).modal('hide');
-//  $("#modal_space #" + id).remove();
+// close the modal closest to the button, which is eg. a Save/Delete/Close button
+// but we can pass the modal element itself as well
+function CloseModal(btn) {
+    let m=$(btn).closest('.modal');
+    m.modal('hide');
+    setTimeout(function() {m.remove();}, 500);
 }

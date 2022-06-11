@@ -276,7 +276,7 @@ function save_edit_batch(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
+			CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
@@ -298,7 +298,7 @@ function save_edit_trans(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			if (mode=="edit") {
-				$('#modal_space .modal').modal('hide');
+				CloseModal(obj);
 				updateBatch(payload['ABatchNumber']);
 			} else if (mode=="create") {
 				// switch to edit mode
@@ -348,7 +348,7 @@ function delete_trans(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
+			CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
@@ -451,7 +451,7 @@ function post_batch(batch_id) {
 	})
 }
 
-function cancel_batch(batch_id) {
+function cancel_batch(btn, batch_id) {
 	var r = {
 				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ABatchNumber: batch_id,
@@ -461,7 +461,7 @@ function cancel_batch(batch_id) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
+			CloseModal(btn);
 			display_list();
 		}
 		else if (parsed.result == false) {
