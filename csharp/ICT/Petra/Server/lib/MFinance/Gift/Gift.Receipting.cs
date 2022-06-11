@@ -325,6 +325,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 "receipts",
                 ".html");
 
+            strHTMLData = Html2Pdf.StripLastPageBreak(strHTMLData);
+
             using (StreamWriter sw = new StreamWriter(HTMLFile))
             {
                 sw.Write(strHTMLData);
