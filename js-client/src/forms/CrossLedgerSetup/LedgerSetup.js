@@ -154,7 +154,7 @@ function save_entry(update) {
 		function (result) {
 			parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				$('#modal_space .modal').modal('hide');
+				CloseModal(raw);
 				display_message(i18next.t('LedgerSetup.confirm_edit'), 'success');
 				display_list();
 			}
@@ -175,7 +175,7 @@ function delete_entry(d) {
 		function (result) {
 			parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				$('#modal_space .modal').modal('hide');
+				CloseModal(raw);
 				display_message(i18next.t('LedgerSetup.confirm_delete'), 'success');
 				display_list();
 			}

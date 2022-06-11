@@ -36,7 +36,7 @@
 						<button type="button" class="btn btn-warning not_show_when_posted" onclick="post_batch({val_a_batch_number_i})">
 							<span>{forms.post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" onclick="cancel_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning not_show_when_posted" onclick="cancel_batch(this, {val_a_batch_number_i})">
 							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
 						<button type="button" class="btn btn-primary not_show_when_posted" onclick="preview_batch({val_a_batch_number_i})">
