@@ -351,6 +351,7 @@ function delete_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 	let payload = translate_to_server( extract_data(obj) );
 	payload["action"] = "delete";
+	// TODO recurring
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
@@ -369,6 +370,7 @@ function delete_trans_detail(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
 	payload["action"] = "delete";
 	payload["ARecipientKey"] = -1;
+	// TODO recurring
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
@@ -384,70 +386,13 @@ function delete_trans_detail(obj_modal) {
 	});
 }
 
-/////
-
-function get_available_years(fn_to_call) {
-	let x = {
-		ALedgerNumber: window.localStorage.getItem('current_ledger'),
-	};
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_GetAvailableGiftYears', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		r = data.result;
-		let currentYearNumber = -1;
-
-		for (year of r) {
-			let y = $('<option value="'+year.YearNumber+'">'+year.YearDate+'</option>');
-
-			if (year.YearNumber > currentYearNumber) {
-				currentYearNumber = year.YearNumber;
-			}
-			$('#tabfilter [name=AYear]').append(y);
-		}
-
-		get_available_periods(currentYearNumber, fn_to_call);
-	})
-}
-
-function get_available_periods(year, fn_to_call) {
-	selectedPeriod = $('#tabfilter [name=APeriod]').val();
-	if (selectedPeriod == null) {
-		selectedPeriod = -1;
-	}
-	let x = {
-		ALedgerNumber: window.localStorage.getItem('current_ledger'),
-		AFinancialYear: year,
-	};
-	api.post('serverMFinance.asmx/TAccountingPeriodsWebConnector_GetAvailablePeriods', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		r = data.result;
-		$('#tabfilter [name=APeriod]').html('');
-		for (period of r) {
-			let translated = period.PeriodName;
-			transsplit = translated.split(' ');
-			if (transsplit[1] != undefined) {
-				// separate the year
-				translated = i18next.t('SelectPeriods.' + transsplit[0]) + ' ' + transsplit[1];
-			} else {
-				translated = i18next.t('SelectPeriods.' + translated);
-			}
-			selected = (period.PeriodNumber == selectedPeriod)?'selected':'';
-			let y = $('<option value="'+period.PeriodNumber+'" ' + selected + '>'+translated+'</option>');
-			$('#tabfilter [name=APeriod]').append(y);
-		}
-
-		if (fn_to_call != undefined) {
-			fn_to_call();
-		}
-	})
-
-}
-
-function post_batch(batch_id) {
+function submit_batch(batch_id) {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		AGiftBatchNumber: batch_id
 	};
-	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_PostGiftBatch', x).then(function (data) {
+	// TODO submit recurring batch
+	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_SubmitRecurringGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
 			display_message( i18next.t('GiftBatches.success_posted'), 'success' );
@@ -456,25 +401,6 @@ function post_batch(batch_id) {
 			display_error( data.AVerifications );
 		}
 	})
-}
-
-function cancel_batch(btn, batch_id) {
-	var r = {
-				ALedgerNumber: window.localStorage.getItem('current_ledger'),
-				ABatchNumber: batch_id,
-			};
-
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CancelBatch', r).then(function (result) {
-		parsed = JSON.parse(result.data.d);
-		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
-			CloseModal(btn);
-			display_list();
-		}
-		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
-		}
-	});
 }
 
 function export_batch(batch_id) {
@@ -496,7 +422,8 @@ function export_batch(batch_id) {
 				AIncludeUnposted: true
 			};
 
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportAllGiftBatchData', r).then(function (result) {
+	// TODO Recurring
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportAllRecurringGiftBatchData', r).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result > 0) {
 			excelfile = parsed.AExportExcel;
@@ -511,31 +438,6 @@ function export_batch(batch_id) {
 			document.body.appendChild(a);
 
 			a.click();
-		}
-		else if (parsed.result < 0) {
-			display_error(parsed.AVerificationMessages);
-		}
-	});
-}
-
-function adjust_batch(batch_id) {
-	var r = {
-				ALedgerNumber: window.localStorage.getItem('current_ledger'),
-				ABatchNumber: batch_id,
-				AGiftDetailNumber: -1,
-				ABatchSelected: false,
-				ANewBatchNumber: -1,
-				ANewGLDateEffective: "null",
-				AFunction: "AdjustGift",
-				ANoReceipt: false,
-				ANewPct: 0.0
-			};
-
-	api.post('serverMFinance.asmx/TAdjustmentWebConnector_GiftRevertAdjust', r).then(function (result) {
-		parsed = JSON.parse(result.data.d);
-		if (parsed.result > 0) {
-			display_message(i18next.t('GiftBatches.success_adjust'), "success");
-			display_list();
 		}
 		else if (parsed.result < 0) {
 			display_error(parsed.AVerificationMessages);

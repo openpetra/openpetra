@@ -461,6 +461,7 @@
         "edittitle_trans": "Spende bearbeiten",
         "trans_description": "Beschreibung",
         "edittitle_trans_detail": "Spendendetails bearbeiten",
+        "submit_batch": "Spendenstapel für diesen Monat anlegen",
         "success_adjust": "Der Stapel wurde zur Korrektur kopiert",
         "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
         "success_posted": "Der Stapel wurde erfolgreich gebucht"
