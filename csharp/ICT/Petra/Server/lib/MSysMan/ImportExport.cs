@@ -348,7 +348,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                 return;
                             }
 
-                            tables.Remove("s_session");
                             tables.Remove("s_user");
                             tables.Remove("s_module");
                             tables.Remove("s_user_module_access_permission");

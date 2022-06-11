@@ -350,11 +350,6 @@
     <primarykey name="s_session_pk"
                 descr=""
                 thisFields="s_session_id_c"/>
-    <foreignkey name="s_session_fk1"
-                descr=""
-                thisFields="s_user_id_c"
-                otherTable="s_user"
-                otherFields="s_user_id_c"/>
   </table>
   <table name="s_report_result"
          descr="Report Results"
