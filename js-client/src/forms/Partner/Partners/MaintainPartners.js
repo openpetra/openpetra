@@ -165,6 +165,8 @@ open_edit(partner_id) {
 display_partner(parsed) {
 	var self = this;
 	if (!allow_modal()) {return}
+	let partnerkey = parsed.result.PPartner[0].p_partner_key_n
+
 	// make a deep copy of the server data and set it as a global var.
 	last_opened_entry_data = $.extend(true, {}, parsed);
 	// reset the changes object
@@ -209,15 +211,24 @@ display_partner(parsed) {
 	m.find('.select_case').hide();
 	m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
 
-	m = this.display_bankaccounts(parsed.result.PPartner[0].p_partner_key_n, parsed.result.PBankingDetails, m);
+	m = this.display_bankaccounts(partnerkey, parsed.result.PBankingDetails, m);
 
-	let myModal = ShowModal('partneredit' + parsed.result.PPartner[0].p_partner_key_n, m);
+	let myModal = ShowModal('partneredit' + partnerkey, m);
 
-	$('#btnSavePartner' + parsed.result.PPartner[0].p_partner_key_n).click(function(){ self.save_entry(this); });
-	$('#btnDeletePartner' + parsed.result.PPartner[0].p_partner_key_n).click(function(){ self.delete_entry(this); });
+	$('#btnSavePartner' + partnerkey).click(function(){ self.save_entry(this); });
+	$('#btnDeletePartner' + partnerkey).click(function(){ self.delete_entry(this); });
+	$('#btnAddBankAccount' + partnerkey).attr('partnerkey', partnerkey);
+	$('#btnAddBankAccount' + partnerkey).click(function(){
+		let partnerkey = $(this).attr('partnerkey');
+		let PartnerEditForm = $('#partneredit' + partnerkey);
+		self.new_bank_account(partnerkey,
+			PartnerEditForm.find("input[name='PFamily_p_first_name_c']").val(),
+			PartnerEditForm.find("input[name='PFamily_p_family_name_c']").val());
+	});
 }
 
 display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
+	var self = this;
 	PBankingDetails_Store = {}
 	m.find('.bank_account_detail_col').html('');
 	if (PBankingDetails.length > 0) {
@@ -226,6 +237,12 @@ display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
 			let tpl_bank_account_detail = format_tpl( $('[phantom] .tpl_account_detail').clone(), detail);
 			m.find('.bank_account_detail_col').append(tpl_bank_account_detail);
 			PBankingDetails_Store[detail['p_banking_details_key_i']] = detail;
+			let btnEditAccount = m.find("#btnEditBankAccount"+detail['p_banking_details_key_i']);
+			btnEditAccount.attr('bankingdetailkey', detail['p_banking_details_key_i']);
+			btnEditAccount.click(function() {
+				let bankingdetailkey = $(this).attr('bankingdetailkey');
+				self.edit_account(bankingdetailkey);
+			});
 		}
 	}
 
@@ -233,33 +250,40 @@ display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
 }
 
 new_bank_account(partnerkey, firstname, lastname) {
+	var self = this;
 	if (!allow_modal()) {return}
 	let x = {
 		p_partner_key_n: partnerkey,
 		p_account_name_c: (firstname + " " + lastname).trim(),
-		a_detail_number_i:  $("#Account" + partnerkey +" .tpl_account_detail").length + 1
+		p_banking_details_key_i: $("#Account" + partnerkey +" .tpl_account_detail").length + 1
 	};
-
 	let p = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), x);
 	$('#modal_space').append(p);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
+
+	p.find('#btnSaveBankAccount'+x.p_banking_details_key_i).click(function(){self.save_edit_bank_account(this)});
+
 	p.modal('show');
 };
 
 edit_account(detail_key) {
 	if (!allow_modal()) {return}
+	var self = this;
 
 	let data = PBankingDetails_Store[detail_key];
 	let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), data);
 
-	$('#modal_space').append(tpl_edit_raw);
+	let p = $('#modal_space').append(tpl_edit_raw);
+	p.find('#btnSaveBankAccount'+detail_key).click(function(){self.save_edit_bank_account(this)});
+	p.find('#btnDeleteBankAccount'+detail_key).click(function(){self.delete_bank_account(this)});
+	p.find('#btnCloseBankAccount'+detail_key).click(function(){CloseModal(this);});
 	tpl_edit_raw.find('[action]').val('edit');
 	tpl_edit_raw.modal('show');
 }
 
 save_entry(obj) {
-	var self = this
+	var self = this;
 	let modal = FindMyModal(obj)
 	var partnerkey = modal.find("[name=p_partner_key_n]").val();
 
@@ -330,7 +354,7 @@ save_entry(obj) {
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			CloseModal(modal.attr('id'));
+			CloseModal(modal);
 			display_message(i18next.t('forms.saved'), "success");
 			self.display_list();
 		}
@@ -357,7 +381,7 @@ delete_entry(obj) {
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeletePartner', r).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			CloseModal(modal.attr('id'));
+			CloseModal(modal);
 			display_message(i18next.t('MaintainPartners.contact_was_deleted'), "success");
 			self.display_list();
 		}
@@ -377,7 +401,7 @@ updateBankAccounts(PartnerKey) {
 	let payload = {}
 	payload['APartnerKey'] = PartnerKey;
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetBankAccounts', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			self.display_bankaccounts(PartnerKey, parsed.PBankingDetails, m);
 		}
@@ -398,7 +422,7 @@ save_edit_bank_account(obj_modal) {
 		var parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			obj.modal('hide');
+			CloseModal(obj);
 			self.updateBankAccounts(payload['APartnerKey']);
 		}
 		else if (parsed.result == false) {
@@ -423,7 +447,7 @@ delete_bank_account(obj_modal) {
 		var parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			obj.modal('hide');
+			CloseModal(obj);
 			self.updateBankAccounts(payload['APartnerKey']);
 		}
 		else if (parsed.result == false) {
@@ -746,7 +770,7 @@ submit_changes_consent(obj) {
 	data_changes_log[current_field]["ConsentDate"] = consent_date;
 	data_changes_log[current_field]["Permissions"] = perm_list.join(',');
 
-	CloseModal(modal.attr('id'));
+	CloseModal(modal);
 }
 
 getUpdatesAddress(partnerkey) {
@@ -797,10 +821,10 @@ submit_consent_edit(Obj, from_modal=false) {
 		if (parsed.result) {
 			var HTMLDataButton = $(historyModal).find(`button[data-type='${req.ADataType}']`);
 			self.load_history_data(HTMLDataButton);
-			CloseModal('consent' + partnerkey);
+			CloseModal(modal);
 		} else {
 			if (parsed.AVerificationResult[0].message == "no_changes") {
-				CloseModal('consent' + partnerkey);
+				CloseModal(modal);
 			} else {
 				display_error( parsed.AVerificationResult );
 			}

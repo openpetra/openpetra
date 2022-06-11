@@ -91,7 +91,7 @@
 			<div class="col">{val_p_bic_c}</div>
 			<div class="col">{val_p_branch_name_c}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_account({val_p_banking_details_key_i})">
+				<button id="btnEditBankAccount{val_p_banking_details_key_i}" type="button" class="btn btn-primary" name="button">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -383,7 +383,7 @@
 
 						<div class="row" edit-only>
 							<div class="col" id="Account{val_p_partner_key_n}{val_p_banking_details_key_i}">
-								<button type="button" class="btn btn-primary" onclick="new_bank_account({val_p_partner_key_n}, '{val_p_first_name_c}', '{val_p_family_name_c}')">
+								<button id="btnAddBankAccount{val_p_partner_key_n}" type="button" class="btn btn-primary">
 									<span>{forms.new}</span>
 									<i class="fas fa-plus"></i>
 								</button>
@@ -471,9 +471,9 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_bank_account(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_bank_account(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button id="btnDeleteBankAccount{val_p_banking_details_key_i}" edit-only class="btn btn-danger">{forms.delete}</button>
+					<button id="btnSaveBankAccount{val_p_banking_details_key_i}" class="btn btn-primary">{forms.save}</button>
+					<button id="btnCloseBankAccount{val_p_banking_details_key_i}" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
