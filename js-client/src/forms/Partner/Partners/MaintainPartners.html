@@ -103,7 +103,7 @@
 		<div class="modal-content">
 		<div class="modal-header">
 			<h3>{edittitle}</h3>
-			<button type="button" class="btn btn-primary" onclick="open_history(this)" id="history_button">{manage_consent}</button>
+			<button id="btnOpenHistory" type="button" class="btn btn-primary">{manage_consent}</button>
 		</div>
 		<div class="modal-body">
 		<div class="container">
@@ -260,7 +260,7 @@
 								<span>{streetname}</span>
 							</div>
 							<div class="col-3">
-								<input type="text" name="p_street_name_c" onchange="insert_consent(this, 'address')"/>
+								<input id="street_name" type="text" name="p_street_name_c"/>
 							</div>
 
 							<div class="col-3">
@@ -309,7 +309,7 @@
 								<span>{email address}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_email_address_c" size="25" onchange="insert_consent(this,'email address')"/>
+								<input id="email_address" type="text" name="p_default_email_address_c" size="25"/>
 							</div>
 						</div>
 
@@ -318,7 +318,7 @@
 								<span>{phone landline}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_phone_landline_c" size="25" onchange="insert_consent(this, 'phone landline')"/>
+								<input id="phone_landline" type="text" name="p_default_phone_landline_c" size="25"/>
 							</div>
 						</div>
 
@@ -327,7 +327,7 @@
 								<span>{phone mobile}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_default_phone_mobile_c" size="25" onchange="insert_consent(this, 'phone mobile')"/>
+								<input id="phone_mobile" type="text" name="p_default_phone_mobile_c" size="25"/>
 							</div>
 						</div>
 
@@ -383,7 +383,7 @@
 
 						<div class="row" edit-only>
 							<div class="col" id="Account{val_p_partner_key_n}{val_p_banking_details_key_i}">
-								<button id="btnAddBankAccount{val_p_partner_key_n}" type="button" class="btn btn-primary">
+								<button id="btnAddBankAccount" type="button" class="btn btn-primary">
 									<span>{forms.new}</span>
 									<i class="fas fa-plus"></i>
 								</button>
@@ -410,9 +410,9 @@
 		</div>
 		</div>
 		<div class="modal-footer">
-			<button id="btnDeletePartner{val_p_partner_key_n}" class="btn btn-danger">{forms.delete}</button>
-			<button id="btnSavePartner{val_p_partner_key_n}" class="btn btn-primary">{forms.save}</button>
-			<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			<button id="btnDeletePartner" class="btn btn-danger">{forms.delete}</button>
+			<button id="btnSavePartner" class="btn btn-primary">{forms.save}</button>
+			<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 		</div>
 		</div>
 		</div>
@@ -500,8 +500,7 @@
 							<h4>{consent permissions}: <span class="selected-type">-</span></h4>
 							<hr>
 							<div permissions style="overflow-y:auto;overflow-x:hidden;max-height:20vh;"></div>
-							<!-- does this work with a class??? -->
-							<button type="button" class="btn btn-primary" onclick="submit_consent_edit(this,false)" id="consent_edit_btn">{forms.save}</button>
+							<button id="btnSubmitConsentEdit" type="button" class="btn btn-primary">{forms.save}</button>
 							<hr>
 						</div>
 
@@ -522,7 +521,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn btn-primary" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+			<button class="btn btn-primary" onclick="CloseModal(this)">{forms.close}</button>
 		</div>
 		</div>
 		</div>
@@ -586,10 +585,10 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-light" onclick="$('#modal_space .tpl_consent').modal('hide')" mode="consent_edit">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)" mode="consent_edit">{forms.close}</button>
 					<!-- tocheck -->
-					<button class="btn btn-primary" onclick="submit_consent_edit(this,true)" mode="consent_edit">{forms.save}</button>
-					<button id="btnPartnerEditConsent" class="btn btn-primary" onclick="submit_changes_consent(this)" mode="partner_edit">{forms.save}</button>
+					<button id="btnSubmitConsentEdit" class="btn btn-primary" mode="consent_edit">{forms.save}</button>
+					<button id="btnSubmitChangesConsent" class="btn btn-primary" mode="partner_edit">{forms.save}</button>
 				</div>
 			</div>
 		</div>

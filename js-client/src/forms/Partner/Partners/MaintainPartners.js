@@ -165,7 +165,7 @@ open_edit(partner_id) {
 display_partner(parsed) {
 	var self = this;
 	if (!allow_modal()) {return}
-	let partnerkey = parsed.result.PPartner[0].p_partner_key_n
+	self.partnerkey = parsed.result.PPartner[0].p_partner_key_n
 
 	// make a deep copy of the server data and set it as a global var.
 	last_opened_entry_data = $.extend(true, {}, parsed);
@@ -211,29 +211,33 @@ display_partner(parsed) {
 	m.find('.select_case').hide();
 	m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
 
-	m = this.display_bankaccounts(partnerkey, parsed.result.PBankingDetails, m);
+	m = this.display_bankaccounts(parsed.result.PBankingDetails, m);
 
-	let myModal = ShowModal('partneredit' + partnerkey, m);
+	let myModal = ShowModal('partneredit' + self.partnerkey, m);
 
-	$('#btnSavePartner' + partnerkey).click(function(){ self.save_entry(this); });
-	$('#btnDeletePartner' + partnerkey).click(function(){ self.delete_entry(this); });
-	$('#btnAddBankAccount' + partnerkey).attr('partnerkey', partnerkey);
-	$('#btnAddBankAccount' + partnerkey).click(function(){
-		let partnerkey = $(this).attr('partnerkey');
-		let PartnerEditForm = $('#partneredit' + partnerkey);
-		self.new_bank_account(partnerkey,
+	myModal.find('#btnSavePartner').click(function(){ self.save_partner(this); });
+	myModal.find('#btnDeletePartner').click(function(){ self.delete_partner(this); });
+	myModal.find('#btnAddBankAccount').click(function(){
+		self.new_bank_account(self.partnerkey,
 			PartnerEditForm.find("input[name='PFamily_p_first_name_c']").val(),
 			PartnerEditForm.find("input[name='PFamily_p_family_name_c']").val());
 	});
+
+	myModal.find("#btnOpenHistory").click(function() { self.open_history(); });
+
+	myModal.find('#street_name').change(function(){ self.insert_consent(this, 'address') });
+	myModal.find('#email_address').change(function(){ self.insert_consent(this, 'email address') });
+	myModal.find('#phone_landline').change(function(){ self.insert_consent(this, 'phone landline') });
+	myModal.find('#phone_mobile').change(function(){ self.insert_consent(this, 'phone mobile') });
 }
 
-display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
+display_bankaccounts(PBankingDetails, m) {
 	var self = this;
 	PBankingDetails_Store = {}
 	m.find('.bank_account_detail_col').html('');
 	if (PBankingDetails.length > 0) {
 		for (var detail of PBankingDetails) {
-			detail['p_partner_key_n'] = p_partner_key_n;
+			detail['p_partner_key_n'] = self.partnerkey;
 			let tpl_bank_account_detail = format_tpl( $('[phantom] .tpl_account_detail').clone(), detail);
 			m.find('.bank_account_detail_col').append(tpl_bank_account_detail);
 			PBankingDetails_Store[detail['p_banking_details_key_i']] = detail;
@@ -249,11 +253,11 @@ display_bankaccounts(p_partner_key_n, PBankingDetails, m) {
 	return m;
 }
 
-new_bank_account(partnerkey, firstname, lastname) {
+new_bank_account(firstname, lastname) {
 	var self = this;
 	if (!allow_modal()) {return}
 	let x = {
-		p_partner_key_n: partnerkey,
+		p_partner_key_n: self.partnerkey,
 		p_account_name_c: (firstname + " " + lastname).trim(),
 		p_banking_details_key_i: -1
 	};
@@ -283,10 +287,10 @@ edit_account(detail_key) {
 	tpl_edit_raw.modal('show');
 }
 
-save_entry(obj) {
+save_partner(obj) {
 	var self = this;
 	let modal = FindMyModal(obj)
-	var partnerkey = modal.find("[name=p_partner_key_n]").val();
+	self.partnerkey = modal.find("[name=p_partner_key_n]").val();
 
 	// extract information from a jquery object
 	let x = extract_data(modal);
@@ -335,7 +339,7 @@ save_entry(obj) {
 	updated_data.result.PPartnerBankingDetails = [];
 
 	// to be save we have the right address in logs
-	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = this.getUpdatesAddress(partnerkey); }
+	if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = this.getUpdatesAddress(self.partnerkey); }
 	var applied_perms = [];
 	for (var perm of Object.values(data_changes_log) ) {
 		if (perm["Valid"] == false) { return display_message( i18next.t("MaintainPartners.consent_error"), 'fail'); }
@@ -369,15 +373,14 @@ save_entry(obj) {
 	})
 }
 
-delete_entry(obj) {
+delete_partner(obj) {
 	var self = this;
 	let modal = FindMyModal(obj)
-	var partnerkey = modal.find("[name=p_partner_key_n]").val();
 
 	let s = confirm( i18next.t('MaintainPartners.ask_delete_contact') );
 	if (!s) {return}
 
-	let r = {'APartnerKey': partnerkey}
+	let r = {'APartnerKey': self.partnerkey}
 
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeletePartner', r).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
@@ -392,19 +395,19 @@ delete_entry(obj) {
 	})
 }
 
-updateBankAccounts(PartnerKey) {
+updateBankAccounts() {
 	var self = this;
 
 	// somehow the original window stays gray when we return from this modal.
 	$('.modal-backdrop').remove();
-	let m = $('#partneredit' + PartnerKey)
+	let m = $('#partneredit' + self.partnerkey)
 
 	let payload = {}
 	payload['APartnerKey'] = PartnerKey;
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetBankAccounts', payload).then(function (result) {
 		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			self.display_bankaccounts(PartnerKey, parsed.PBankingDetails, m);
+			self.display_bankaccounts(parsed.PBankingDetails, m);
 		}
 	});
 }
@@ -424,7 +427,7 @@ save_edit_bank_account(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
-			self.updateBankAccounts(payload['APartnerKey']);
+			self.updateBankAccounts();
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -449,7 +452,7 @@ delete_bank_account(obj_modal) {
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
-			self.updateBankAccounts(payload['APartnerKey']);
+			self.updateBankAccounts();
 		}
 		else if (parsed.result == false) {
 			display_error(parsed.AVerificationResult);
@@ -517,10 +520,10 @@ load_countries(all_countries, selected_country, obj) {
 }
 
 // following funtions are for data history view/edit
-open_history(HTMLButton) {
-	var partnerkey = $(HTMLButton).closest(".modal").find("[name=p_partner_key_n]").val();
+open_history() {
+	var self = this;
 	var req = {
-		APartnerKey: partnerkey
+		APartnerKey: self.partnerkey
 	};
 
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetUniqueTypes', req).then(function (data) {
@@ -533,25 +536,26 @@ open_history(HTMLButton) {
 		for (var type of parsed.result) {
 			types.push(type);
 			let name = i18next.t('MaintainPartners.'+type);
-			let partner = partnerkey;
-			// TODO???
-			DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+			DataTypeList.append(`<button class='btn btn-secondary selecttype' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+			let btn = Temp.find('button.selecttype:last');
+			btn.click(function(){self.load_history_data(this)});
 		}
 
 		for (var type of Object.keys(data_changes_log)) {
 			if (! types.includes(type)) {
 				let name = i18next.t('MaintainPartners.'+type);
-				let partner = partnerkey;
-				// TODO???
-				DataTypeList.append(`<button class='btn btn-secondary selecttype' onclick='load_history_data(this)' data-partner='${partner}' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+				DataTypeList.append(`<button class='btn btn-secondary selecttype' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
+				let btn = Temp.find('button.selecttype:last');
+				btn.click(function(){self.load_history_data(this)});
 			}
 		}
 
-		modal = ShowModal('history' + partnerkey, Temp);
-		modal.attr('partnerkey', partnerkey);
+		modal = ShowModal('history'+self.partnerkey, Temp);
+
+		modal.find('#btnSubmitConsentEdit').click(function(){self.submit_consent_edit(this,false);});
 
 		// select the first data type by default
-		firstPermission = modal.find('button.selecttype:first');
+		let firstPermission = modal.find('button.selecttype:first');
 		if (firstPermission.length) {
 			firstPermission.click();
 		}
@@ -559,6 +563,7 @@ open_history(HTMLButton) {
 }
 
 add_history_entry(purposes, channels, first, EventDateStr, AllowedPurposes, Value, CreatedBy, ChannelCode) {
+	var self = this;
 	var HistPerm = $("[phantom] .history-entry").clone();
 
 	var EventDate = new Date(EventDateStr);
@@ -578,12 +583,12 @@ add_history_entry(purposes, channels, first, EventDateStr, AllowedPurposes, Valu
 	HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+ChannelCode) );
 	for (var channel of channels) {
 		if (ChannelCode == channel.p_channel_code_c) {
-			HistPerm.find(".detail [name=Channel]").text( translate_label(channel.p_name_c) );
+			HistPerm.find(".detail [name=Channel]").text( self.translate_label(channel.p_name_c) );
 		}
 	}
 	for (var purpose of purposes) {
 		if (AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) {
-			HistPerm.find(".detail [name=Consent]").append( "<br><span>" + translate_label(purpose.p_name_c) + "</span>" );
+			HistPerm.find(".detail [name=Consent]").append( "<br><span>" + self.translate_label(purpose.p_name_c) + "</span>" );
 		}
 	}
 
@@ -592,13 +597,12 @@ add_history_entry(purposes, channels, first, EventDateStr, AllowedPurposes, Valu
 
 load_history_data(HTMLButton) {
 	var self = this;
-	var partner_key = $(HTMLButton).attr("data-partner");
 	var datatype = $(HTMLButton).attr("data-type");
 	var req = {
-		APartnerKey: partner_key,
+		APartnerKey: self.partnerkey,
 		ADataType: datatype
 	};
-	var Target = FindModal('history'+partner_key);
+	var Target = FindModal('history'+self.partnerkey);
 	Target.attr("selected-data-type", datatype);
 
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetHistory', req).then(function (data) {
@@ -659,7 +663,7 @@ load_history_data(HTMLButton) {
 
 		for (var purpose of purposes) {
 			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
-			let name = translate_label(purpose.p_name_c);
+			let name = self.translate_label(purpose.p_name_c);
 
 			var PermTemp = $("[phantom] .permission-option").clone();
 			PermTemp.find("[name]").text(name);
@@ -671,17 +675,16 @@ load_history_data(HTMLButton) {
 }
 
 insert_consent(HTMLField, data_name) {
-
+	var self = this;
 	var Obj = $(HTMLField);
 	var value = Obj.val();
 	var modal = FindMyModal(Obj);
-	var partnerkey = modal.find("[name=p_partner_key_n]").val();
 
 	// special cases
-	if (data_name == "address") { value = this.getUpdatesAddress(partnerkey); }
+	if (data_name == "address") { value = this.getUpdatesAddress(self.partnerkey); }
 
 	data_changes_log[data_name] = {
-		PartnerKey: partnerkey,
+		PartnerKey: self.partnerkey,
 		Type: data_name,
 		Value: value,
 		ChannelCode: "", // is set later
@@ -690,12 +693,13 @@ insert_consent(HTMLField, data_name) {
 		Valid: false // is set later
 	};
 
-	this.open_consent_modal(partnerkey, data_name);
+	this.open_consent_modal(data_name);
 
 }
 
-open_consent_modal(partner_key, field, mode="partner_edit") {
-	var req = {APartnerKey: partner_key, ADataType:field};
+open_consent_modal(field, mode="partner_edit") {
+	var self = this;
+	var req = {APartnerKey: self.partnerkey, ADataType:field};
 
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_LastKnownEntry', req).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
@@ -719,7 +723,7 @@ open_consent_modal(partner_key, field, mode="partner_edit") {
 		var TargetChannel = Temp.find("[name=consent_channel]").html("");
 		for (var channel of channels) {
 			let selected = (channel.p_channel_code_c == last_known_configuration.p_channel_code_c) ? "selected" : "";
-			let name = translate_label(channel.p_name_c);
+			let name = self.translate_label(channel.p_name_c);
 			TargetChannel.append(`<option ${selected} value='${channel.p_channel_code_c}'>${name}</option>`);
 		}
 
@@ -727,7 +731,7 @@ open_consent_modal(partner_key, field, mode="partner_edit") {
 		var TargetPurpose = Temp.find(".permissions").html("");
 		for (var purpose of purposes) {
 			let checked = (last_known_configuration.AllowedPurposes.split(',').indexOf(purpose.p_purpose_code_c) >= 0) ? "checked" : null;
-			let name = translate_label(purpose.p_name_c);
+			let name = self.translate_label(purpose.p_name_c);
 
 			var PermTemp = $("[phantom] .permission-option").clone();
 			PermTemp.find("[name]").text(name);
@@ -737,17 +741,18 @@ open_consent_modal(partner_key, field, mode="partner_edit") {
 			// TargetPurpose.append(`<label><span>${name}</span><input ${checked} type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
 		}
 
-		modal = ShowModal('consent' + partner_key, Temp);
-		modal.attr('partnerkey', partner_key);
+		var modal = ShowModal('consent' + self.partnerkey, Temp);
 
 		if (mode == "partner_edit") {
 			modal.find("[mode]").hide();
 			modal.find("[mode=partner_edit]").show();
+			modal.find('#btnSubmitChangesConsent').click(function() {self.submit_changes_consent(this);});
 		}
 
 		if (mode == "consent_edit") {
 			modal.find("[mode]").hide();
 			modal.find("[mode=consent_edit]").show();
+			modal.find('#btnSubmitConsentEdit').click(function(){self.submit_consent_edit(this,true);});
 		}
 	})
 }
@@ -787,7 +792,6 @@ submit_consent_edit(Obj, from_modal=false) {
 	var self = this;
 	let modal = FindMyModal(Obj);
 
-	var partnerkey = modal.attr('partnerkey');
 	var ty = modal.attr("selected-data-type");
 
 	if (!from_modal) {
@@ -798,19 +802,19 @@ submit_consent_edit(Obj, from_modal=false) {
 		}
 
 		// we need to ask for date and consent channel
-		this.open_consent_modal(partnerkey, ty, "consent_edit");
+		this.open_consent_modal(ty, "consent_edit");
 		return;
 	}
 
 	var perm_list = [];
-	historyModal = FindModal('history'+partnerkey);
+	var historyModal = FindModal('history'+self.partnerkey);
 	var perms = historyModal.find("input[purposecode]:checked");
 	for (var Perm of perms) {
 		perm_list.push( $(Perm).attr("purposecode") );
 	}
 
 	var req = {
-		APartnerKey: partnerkey,
+		APartnerKey: self.partnerkey,
 		ADataType: modal.find("data[name=field]").val(),
 		AChannelCode: modal.find("[name=consent_channel]").val(),
 		AConsentDate: modal.find("[name=consent_date]").val(),
@@ -820,9 +824,9 @@ submit_consent_edit(Obj, from_modal=false) {
 	api.post('serverMPartner.asmx/TDataHistoryWebConnector_EditHistory', req).then(function (data) {
 		var parsed = JSON.parse(data.data.d);
 		if (parsed.result) {
-			var HTMLDataButton = $(historyModal).find(`button[data-type='${req.ADataType}']`);
-			self.load_history_data(HTMLDataButton);
 			CloseModal(modal);
+			var HTMLDataButton = historyModal.find(`button[data-type='${req.ADataType}']`);
+			self.load_history_data(HTMLDataButton);
 		} else {
 			if (parsed.AVerificationResult[0].message == "no_changes") {
 				CloseModal(modal);
