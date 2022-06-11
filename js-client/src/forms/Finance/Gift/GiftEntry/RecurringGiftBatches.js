@@ -1,10 +1,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//		Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -78,24 +78,31 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_gift_transactions(obj, number, reload = false) {
+function open_gift_transactions(obj, number = -1, reload = false) {
 	obj = $(obj);
+	if (number == -1) {
+		while(!obj[0].hasAttribute('id') || !obj[0].id.includes("Batch")) {
+			obj = obj.parent();
+		}
+		number = obj[0].id.replace("Batch", "");
+	}
 	if (!reload && obj.find('.collapse').is(':visible') ) {
+		$('.tpl_row .collapse').collapse('hide');
 		return;
-	}
-	if (obj.find('[batch-status]').text() == "Posted" || obj.find('[batch-status]').text() == "Cancelled") {
-		obj.find('.not_show_when_posted').hide();
-	}
-	if (obj.find('[batch-status]').text() != "Posted") {
-		obj.find('.only_show_when_posted').hide();
 	}
 
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-		data = JSON.parse(data.data.d);
+		parsed = JSON.parse(data.data.d);
+
+		if (parsed.result == false) {
+			display_error(parsed.AVerificationResult);
+			return;
+		}
+
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
-		for (var item of data.result.ARecurringGift) {
+		for (var item of parsed.result.ARecurringGift) {
 			let transaction_row = $('[phantom] .tpl_gift').clone();
 			transaction_row = format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
