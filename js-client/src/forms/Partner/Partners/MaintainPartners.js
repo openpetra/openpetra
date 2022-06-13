@@ -551,7 +551,7 @@ class MaintainPartners {
 
 			modal = ShowModal('history'+self.partnerkey, Temp);
 
-			modal.find('#btnSubmitConsentEdit').click(function(){self.submit_consent_edit(this,false);});
+			modal.find('#btnSubmitConsentEditHistory').click(function(){self.submit_consent_edit(this,false);});
 
 			// select the first data type by default
 			let firstPermission = modal.find('button.selecttype:first');

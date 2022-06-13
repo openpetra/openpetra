@@ -29,14 +29,14 @@ describe('find and edit partner', function() {
     cy.get('#modal_space input[name="p_default_phone_landline_c"]').click()
     // confirm consent
     cy.wait(500)
-    cy.get('#modal_space #btnPartnerEditConsent').click()
+    cy.get('#modal_space #btnSubmitChangesConsent').click()
 
     cy.get('#modal_space input[name="p_no_solicitations_l"]')
         .should('not.be.checked')
         .check()
 
     cy.route('POST','**SavePartner').as('SavePartner')
-    cy.get('#modal_space #btnSave').click()
+    cy.get('#modal_space #btnSavePartner').click()
     cy.wait('@SavePartner')
     cy.get('#message').should("be.visible").should("contain", 'Successfully saved')
 
@@ -58,13 +58,13 @@ describe('find and edit partner', function() {
     cy.get('#modal_space input[name="p_default_phone_landline_c"]').click()
     // confirm consent
     cy.wait(500)
-    cy.get('#modal_space #btnPartnerEditConsent').click()
+    cy.get('#modal_space #btnSubmitChangesConsent').click()
     cy.get('#modal_space input[name="p_no_solicitations_l"]')
         .should('be.checked')
         .uncheck()
 
     cy.route('POST','**SavePartner').as('SavePartner2')
-    cy.get('#modal_space #btnSave').click()
+    cy.get('#modal_space #btnSavePartner').click()
     cy.wait('@SavePartner2')
     cy.get('#message').should("be.visible")
     cy.get('#message').should("contain", 'Successfully saved')
