@@ -10,6 +10,7 @@ NUnit.Framework*=${dir.nuget}/NUnit.*/nunit.framework.dll
 Sodium*=${dir.nuget}/libsodium-net.*/Sodium.dll
 MailKit*=${dir.nuget}/MailKit.*/MailKit.dll
 MimeKit*=${dir.nuget}/MimeKit.*/MimeKit.dll
+System.Runtime=${dir.nuget}/System.Runtime.*/System.Runtime.dll
 HtmlAgilityPack*=${dir.nuget}/HtmlAgilityPack.*/HtmlAgilityPack.dll
 NPOI.XSSF*=${dir.nuget}/NPOI.*/NPOI.OOXML.dll
 NPOI.OpenXml4Net*=${dir.nuget}/NPOI.*/NPOI.OpenXml4Net.dll
