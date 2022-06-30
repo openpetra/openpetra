@@ -387,15 +387,25 @@ function delete_trans_detail(obj_modal) {
 }
 
 function submit_batch(batch_id) {
-	let x = {
+    // TODO: user can choose the date of the donation
+	var today = new Date();
+	today.setUTCHours(0, 0, 0, 0);
+	var strToday = today.toISOString().replace('T00:00:00.000Z', '');
+
+    let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
-		AGiftBatchNumber: batch_id
+		ARecurringBatchNumber: batch_id,
+        AEffectiveDate: strToday,
+        AReference: '',
+        AExchangeRateToBase: 1.0,
+        AExchangeRateIntlToBase: 1.0
 	};
-	// TODO submit recurring batch
 	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_SubmitRecurringGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			display_message( i18next.t('GiftBatches.success_posted'), 'success' );
+            console.log(data);
+            // TODO: open the gift batch in a separate window/tab???
+			display_message( i18next.t('GiftBatches.success_submit'), 'success' );
 			display_list('filter');
 		} else {
 			display_error( data.AVerifications );

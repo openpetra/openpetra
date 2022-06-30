@@ -698,15 +698,11 @@ namespace Tests.MFinance.Server.Gift
             // Act: Submit the batch
             //
 
-            Hashtable requestParams = new Hashtable();
-            requestParams.Add("ALedgerNumber", FLedgerNumber);
-            requestParams.Add("ABatchNumber", RecurringGiftBatchNumber);
-            requestParams.Add("AEffectiveDate", DateTime.Today);
-            requestParams.Add("AExchangeRateToBase", (decimal)1);
-            requestParams.Add("AExchangeRateIntlToBase", (decimal)1);
-
             int NewBatchNo = 0;
-            TGiftTransactionWebConnector.SubmitRecurringGiftBatch(requestParams, out NewBatchNo);
+            TGiftTransactionWebConnector.SubmitRecurringGiftBatch(
+                FLedgerNumber, RecurringGiftBatchNumber,
+                DateTime.Today, String.Empty, 1.0m, 1.0m,
+                out NewBatchNo);
 
             //
             // Assert

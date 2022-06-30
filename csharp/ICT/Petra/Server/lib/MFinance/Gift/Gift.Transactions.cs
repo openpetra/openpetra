@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -218,48 +218,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// create a gift batch from a recurring gift batch
         /// including gift and gift detail
         /// </summary>
-        /// <param name="ARequestParams">HashTable with many parameters</param>
+        /// <param name="ALedgerNumber">The current Ledger</param>
+        /// <param name="ARecurringBatchNumber">The batch number of the recurring gift batch</param>
+        /// <param name="AEffectiveDate">The date effective for the new gift batch</param>
+        /// <param name="AReference">The reference for the gifts. If empty the reference from the recurring gift will be used.</param>
+        /// <param name="AExchangeRateToBase">Exchange rate to base currency</param>
+        /// <param name="AExchangeRateIntlToBase">Exchange rate to international currency</param>
         /// <param name="ANewGiftBatchNo">The new gift batch number</param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool SubmitRecurringGiftBatch(Hashtable ARequestParams, out int ANewGiftBatchNo)
+        public static bool SubmitRecurringGiftBatch(Int32 ALedgerNumber, Int32 ARecurringBatchNumber,
+            DateTime AEffectiveDate, string AReference,
+            Decimal AExchangeRateToBase, Decimal AExchangeRateIntlToBase,
+            out int ANewGiftBatchNo)
         {
             ANewGiftBatchNo = 0;
 
-            Int32 ALedgerNumber;
-            Int32 ABatchNumber;
-            DateTime AEffectiveDate;
-            String AReference;
-            Decimal AExchangeRateToBase;
-            Decimal AExchangeRateIntlToBase;
-
             #region Validate Parameter Arguments
-
-            try
-            {
-                ALedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-                ABatchNumber = (Int32)ARequestParams["ABatchNumber"];
-                AEffectiveDate = (DateTime)ARequestParams["AEffectiveDate"];
-                AReference = (String)ARequestParams["AReference"];
-                AExchangeRateToBase = (Decimal)ARequestParams["AExchangeRateToBase"];
-                AExchangeRateIntlToBase = (Decimal)ARequestParams["AExchangeRateIntlToBase"];
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
-
             if (ALedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
-            else if (ABatchNumber <= 0)
+            else if (ARecurringBatchNumber <= 0)
             {
                 throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Batch number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+                        Utilities.GetMethodName(true)), ALedgerNumber, ARecurringBatchNumber);
             }
             else if (AExchangeRateToBase <= 0)
             {
@@ -283,7 +268,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             int NewGiftBatchNumber = -1;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            GiftBatchTDS MainRecurringDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS MainRecurringDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ARecurringBatchNumber);
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("SubmitRecurringGiftBatch");
@@ -297,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     delegate
                     {
                         ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainRecurringDS, ALedgerNumber, ABatchNumber, Transaction);
+                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainRecurringDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
 
                         #region Validate Data
 
@@ -311,7 +296,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
                                         "Function:{0} - Details for Recurring Gift Batch {1} could not be accessed!"), Utilities.GetMethodSignature(),
-                                    ABatchNumber));
+                                    ARecurringBatchNumber));
                         }
 
                         #endregion Validate Data
@@ -319,7 +304,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         // Assuming all relevant data is loaded in MainRecurringDS
                         ARecurringGiftBatchRow recBatch = (ARecurringGiftBatchRow)MainRecurringDS.ARecurringGiftBatch[0];
 
-                        if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
+                        if ((recBatch.BatchNumber == ARecurringBatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
                         {
                             Decimal batchTotal = 0;
 
@@ -349,7 +334,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             {
                                 ARecurringGiftRow recGift = (ARecurringGiftRow)giftRV.Row;
 
-                                if ((recGift.BatchNumber == ABatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
+                                if ((recGift.BatchNumber == ARecurringBatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
                                 {
                                     //Look if there is a detail which is in the donation period (else continue)
                                     bool foundDetail = false;
@@ -357,7 +342,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
                                     {
                                         if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
-                                            && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                            && (recGiftDetail.BatchNumber == ARecurringBatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
                                             && ((recGiftDetail.StartDonations == null) || (AEffectiveDate >= recGiftDetail.StartDonations))
                                             && ((recGiftDetail.EndDonations == null) || (AEffectiveDate <= recGiftDetail.EndDonations))
                                             )
@@ -420,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         decimal amtTrans = 0M;
 
                                         if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
-                                            && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                            && (recGiftDetail.BatchNumber == ARecurringBatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
                                             && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= AEffectiveDate))
                                             && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
                                             )
