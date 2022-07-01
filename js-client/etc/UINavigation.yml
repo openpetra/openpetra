@@ -59,7 +59,7 @@ OpenPetra:
                 Gift:
                     #GiftEntry: {Path=Finance/Gift/GiftEntry}
                     GiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=money-check-alt}
-                    #RecurringGiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=redo}
+                    RecurringGiftBatches: {Path=Finance/Gift/GiftEntry, fa-icon=redo}
                     BankImport: {Path=Finance/Gift/GiftEntry, fa-icon=file-import}
                     PrintAnnualReceipts: {Path=Finance/Gift/GiftReceipting, fa-icon=file-invoice}
                     #GiftReceipting: {Path=Finance/Gift/GiftReceipting}
