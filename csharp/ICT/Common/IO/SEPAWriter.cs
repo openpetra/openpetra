@@ -176,7 +176,7 @@ namespace Ict.Common.IO
             XmlNode CtrlSum = TXMLParser.FindNodeRecursive(PmtInf, "CtrlSum");
             CtrlSum.InnerText = (Convert.ToDecimal(CtrlSum.InnerText.
                                      Replace(".", CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator)) + AAmount).
-                                ToString().Replace(",", ".");
+                                ToString("0.00").Replace(",", ".");
 
             XmlElement DrctDbtTxInf = FDocument.CreateElement("DrctDbtTxInf");
             PmtInf.AppendChild(DrctDbtTxInf);
@@ -189,7 +189,7 @@ namespace Ict.Common.IO
             XmlAttribute attr = FDocument.CreateAttribute("Ccy");
             attr.Value = "EUR";
             InstdAmt.Attributes.Append(attr);
-            InstdAmt.InnerText = AAmount.ToString().Replace(",", ".");
+            InstdAmt.InnerText = AAmount.ToString("0.00").Replace(",", ".");
 
             XmlElement DrctDbtTx = FDocument.CreateElement("DrctDbtTx");
             DrctDbtTxInf.AppendChild(DrctDbtTx);
