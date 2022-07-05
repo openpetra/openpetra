@@ -460,10 +460,9 @@
         "edittitle_trans": "Edit transaction",
         "trans_description": "Transaction Comment",
         "edittitle_trans_detail": "Edit transaction details",
+        "download_sepa_direct_debit": "Download SEPA Direct Debit File",
         "submit_batch": "Submit to new gift batch",
-        "success_adjust": "An adjustment batch has been created",
-        "success_cancelled": "The Batch has been cancelled",
-        "success_posted": "The Batch has been posted"
+        "success_submit": "The Gift Batch has been submitted for this month"
     },
     "SelectPeriods": {
         "all_periods": "All periods",

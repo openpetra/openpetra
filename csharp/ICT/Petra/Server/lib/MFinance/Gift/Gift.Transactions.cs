@@ -5581,6 +5581,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// export a recurring gift batch to a SEPA Direct Debit file
+        /// </summary>
+        /// <param name="ALedgerNumber">The current Ledger</param>
+        /// <param name="ARecurringBatchNumber">The batch number of the recurring gift batch</param>
+        /// <param name="ACollectionDate">The date when the direct debit will be collected</param>
+        /// <param name="ASEPAFileContent">The content of the SEPA file</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>true on success</returns>
+        [RequireModulePermission("FINANCE-1")]
+        static public Boolean ExportRecurringGiftBatch(
+            Int32 ALedgerNumber,
+            Int32 ARecurringBatchNumber,
+            DateTime ACollectionDate,
+            out String ASEPAFileContent,
+            out TVerificationResultCollection AMessages)
+        {
+            return TGiftExportingSEPA.ExportRecurringGiftBatch(
+                ALedgerNumber,
+                ARecurringBatchNumber,
+                ACollectionDate,
+                out ASEPAFileContent, out AMessages);
+        }
+
+        /// <summary>
         /// Import Gift batch data
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately

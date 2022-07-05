@@ -387,24 +387,24 @@ function delete_trans_detail(obj_modal) {
 }
 
 function submit_batch(batch_id) {
-    // TODO: user can choose the date of the donation
+	// TODO: user can choose the date of the donation
 	var today = new Date();
 	today.setUTCHours(0, 0, 0, 0);
 	var strToday = today.toISOString().replace('T00:00:00.000Z', '');
 
-    let x = {
+	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ARecurringBatchNumber: batch_id,
-        AEffectiveDate: strToday,
-        AReference: '',
-        AExchangeRateToBase: 1.0,
-        AExchangeRateIntlToBase: 1.0
+		AEffectiveDate: strToday,
+		AReference: '',
+		AExchangeRateToBase: 1.0,
+		AExchangeRateIntlToBase: 1.0
 	};
 	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_SubmitRecurringGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-            console.log(data);
-            // TODO: open the gift batch in a separate window/tab???
+			console.log(data);
+			// TODO: open the gift batch in a separate window/tab???
 			display_message( i18next.t('GiftBatches.success_submit'), 'success' );
 			display_list('filter');
 		} else {
@@ -451,6 +451,40 @@ function export_batch(batch_id) {
 		}
 		else if (parsed.result < 0) {
 			display_error(parsed.AVerificationMessages);
+		}
+	});
+}
+
+function download_sepa(batch_id) {
+	// TODO: user can choose the date of the donation
+	var today = new Date();
+	today.setUTCHours(0, 0, 0, 0);
+	var strToday = today.toISOString().replace('T00:00:00.000Z', '');
+
+	var r = {
+				ALedgerNumber: window.localStorage.getItem('current_ledger'),
+				ARecurringBatchNumber: batch_id,
+				ACollectionDate: strToday,
+			};
+
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportRecurringGiftBatch', r).then(function (result) {
+		parsed = JSON.parse(result.data.d);
+		if (parsed.result) {
+			sepafile = parsed.ASEPAFileContent;
+
+			var a = document.createElement("a");
+			a.style = "display: none";
+			a.href = 'data:application/xml;base64,'+sepafile;
+			a.download = i18next.t('RecurringGiftBatch') + '_' + batch_id + '.xml';
+
+			// For Mozilla we need to add the link, otherwise the click won't work
+			// see https://support.mozilla.org/de/questions/968992
+			document.body.appendChild(a);
+
+			a.click();
+		}
+		else {
+			display_error(parsed.AMessages);
 		}
 	});
 }

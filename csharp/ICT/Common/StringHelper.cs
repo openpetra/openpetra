@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -410,6 +410,12 @@ namespace Ict.Common
             MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
 
             return BitConverter.ToString(cr.ComputeHash(System.Text.Encoding.Default.GetBytes(s))).Replace("-", "").ToLower();
+        }
+
+        /// convert string to base64
+        public static string EncodeStringToBase64(string APlainText) {
+            var bytes = Encoding.UTF8.GetBytes(APlainText);
+            return Convert.ToBase64String(bytes);
         }
 
         /// <summary>

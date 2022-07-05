@@ -461,10 +461,9 @@
         "edittitle_trans": "Spende bearbeiten",
         "trans_description": "Beschreibung",
         "edittitle_trans_detail": "Spendendetails bearbeiten",
+        "download_sepa_direct_debit": "SEPA-Lastschrift Datei herunterladen",
         "submit_batch": "Spendenstapel für diesen Monat anlegen",
-        "success_adjust": "Der Stapel wurde zur Korrektur kopiert",
-        "success_cancelled": "Der Stapel wurde erfolgreich abgebrochen",
-        "success_posted": "Der Stapel wurde erfolgreich gebucht"
+        "success_submit": "Der Stapel wurde erfolgreich für diesen Monat angelegt"
     },
     "SelectPeriods": {
         "all_periods": "Alle Monate",

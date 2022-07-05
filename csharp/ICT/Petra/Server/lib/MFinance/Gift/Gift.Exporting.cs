@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //

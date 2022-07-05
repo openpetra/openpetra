@@ -25,8 +25,13 @@
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
+                        <!--
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="export_batch({val_a_batch_number_i})">
 							<span>{forms.export}&nbsp;</span><i class="fas fa-table"></i>
+						</button>
+                        -->
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="download_sepa({val_a_batch_number_i})">
+							<span>{download_sepa_direct_debit}&nbsp;</span><i class="fas fa-table"></i>
 						</button>
 						<button type="button" class="btn btn-warning" style="margin-top:0.5em;" onclick="submit_batch({val_a_batch_number_i})">
 							<span>{submit_batch}&nbsp;</span><i class="fas fa-lock"></i>
