@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -243,6 +243,18 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN = "Extracts_PublicModifyRequiresAdmin";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_SEPA_CREDITOR_NAME = "Sepa_Creditor_Name";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_SEPA_CREDITOR_IBAN = "Sepa_Creditor_IBAN";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_SEPA_CREDITOR_BIC = "Sepa_Creditor_BIC";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_SEPA_CREDITOR_SCHEMEID = "Sepa_Creditor_SchemeID";
 
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";

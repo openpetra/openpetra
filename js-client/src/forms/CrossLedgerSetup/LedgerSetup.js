@@ -1,8 +1,8 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       Christopher Jäkel
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
 // Copyright 2019-2021 by SolidCharity.com
@@ -79,9 +79,20 @@ function open_edit(sub_id) {
 		let m = $('[phantom] .tpl_edit').clone();
 		m = load_countries(data.AResultTable, z.a_country_code_c, m);
 
-		var f = format_tpl( m, z);
-		$('#modal_space').html(f);
-		$('#modal_space .modal').modal('show');
+		p['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetSepaCreditorDetails', p).then(function (data) {
+			data = JSON.parse(data.data.d);
+
+			data["a_sepa_creditor_name_c"] = data["ASepaCreditorName"];
+			data["a_sepa_creditor_iban_c"] = data["ASepaCreditorIban"];
+			data["a_sepa_creditor_bic_c"] = data["ASepaCreditorBic"];
+			data["a_sepa_creditor_scheme_id_c"] = data["ASepaCreditorSchemeId"];
+			m = format_tpl(m, data);
+
+			var f = format_tpl( m, z);
+			$('#modal_space').html(f);
+			$('#modal_space .modal').modal('show');
+		})
 
 	})
 }

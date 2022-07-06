@@ -31,6 +31,8 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 
+using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
@@ -65,6 +67,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             TDBTransaction Transaction = new TDBTransaction();
 
             TDataBase db = DBAccess.Connect("ExportRecurringGiftBatchSEPA");
+            TSystemDefaults SystemDefaults = new TSystemDefaults(db);
 
             try
             {
@@ -75,12 +78,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                         // ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
                         TSEPAWriterDirectDebit writer = new TSEPAWriterDirectDebit();
-                        // TODO read from Settings? Or ledger configuration?
-                        string InitiatorName = "testTODO";
-                        string CreditorName = "testTODO";
-                        string CreditorIBAN = "TODO";
-                        string CreditorBIC = "TODO";
-                        string CreditorSchemeID = "TODO";
+                        string InitiatorName = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_NAME, String.Empty);
+                        string CreditorName = InitiatorName;
+                        string CreditorIBAN = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, String.Empty);;
+                        string CreditorBIC = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, String.Empty);
+                        string CreditorSchemeID = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, String.Empty);
                         writer.Init(InitiatorName, ACollectionDate, CreditorName, CreditorIBAN, CreditorBIC, CreditorSchemeID);
 
                         AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);

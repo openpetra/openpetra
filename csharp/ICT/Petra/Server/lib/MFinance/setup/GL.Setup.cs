@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -4845,6 +4845,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
         public static bool MaintainLedger(string action, Int32 ALedgerNumber, String ALedgerName,
+            string ASepaCreditorName, string ASepaCreditorIban, string ASepaCreditorBic, string ASepaCreditorSchemeId,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
@@ -4854,6 +4855,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TDBTransaction Transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("MaintainLedger");
                 bool SubmissionOK = false;
+                TSystemDefaults SystemDefaults = new TSystemDefaults();
 
                 try
                 {
@@ -4867,6 +4869,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             LedgerRow.LedgerName = ALedgerName;
 
                             ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+
+                            bool added;
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_NAME, ASepaCreditorName, out added, db);
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, ASepaCreditorIban, out added, db);
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, ASepaCreditorBic, out added, db);
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, ASepaCreditorSchemeId, out added, db);
 
                             SubmissionOK = true;
                         });
@@ -4922,6 +4930,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             db.CloseDBConnection();
 
             return LedgerTable;
+        }
+
+        /// <summary>
+        /// get the sepa creditor details of the ledger
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool GetSepaCreditorDetails(Int32 ALedgerNumber,
+            out String ASepaCreditorName, out String ASepaCreditorIban, out String ASepaCreditorBic, out string ASepaCreditorSchemeId)
+        {
+            TDataBase db = DBAccess.Connect("GetAvailableLedgers");
+
+            TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+            ASepaCreditorName = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_NAME, String.Empty);
+            ASepaCreditorIban = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, String.Empty);
+            ASepaCreditorBic = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, String.Empty);
+            ASepaCreditorSchemeId = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, String.Empty);
+
+            db.CloseDBConnection();
+
+            return true;
         }
 
         /// <summary>
