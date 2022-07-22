@@ -62,7 +62,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             ASEPAFileContent = SEPAFileContent;
             var Messages = new TVerificationResultCollection();
             AVerificationMessages = Messages;
-            bool Success = true;
+            bool Success = false;
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = new TDBTransaction();
 
@@ -83,19 +83,69 @@ namespace Ict.Petra.Server.MFinance.Gift
                         string CreditorIBAN = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, String.Empty);;
                         string CreditorBIC = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, String.Empty);
                         string CreditorSchemeID = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, String.Empty);
-                        writer.Init(InitiatorName, ACollectionDate, CreditorName, CreditorIBAN, CreditorBIC, CreditorSchemeID);
 
-                        AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
-                        ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
-                        ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
+                        if (InitiatorName == String.Empty)
+                        {
+                            Messages.Add(new TVerificationResult(
+                                    "Exporting Recurring Gift Batch to SEPA failed",
+                                    "Missing the setting " + SharedConstants.SYSDEFAULT_SEPA_CREDITOR_NAME,
+                                    String.Empty,
+                                    string.Empty,
+                                    TResultSeverity.Resv_Critical,
+                                    Guid.Empty));
+                        }
 
-                        // TODO GiftBatchTDS GiftDS = new GiftBatchTDS();
-                        // TODO TGiftTransactionWebConnector.LoadGiftDonorRelatedData(GiftDS, true, ALedgerNumber, SponsorshipBatchNumber, Transaction);
+                        if (CreditorIBAN == String.Empty)
+                        {
+                            Messages.Add(new TVerificationResult(
+                                    "Exporting Recurring Gift Batch to SEPA failed",
+                                    "Missing the setting " + SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN,
+                                    String.Empty,
+                                    string.Empty,
+                                    TResultSeverity.Resv_Critical,
+                                    Guid.Empty));
+                        }
 
-                        ProcessPmtInf(ref writer, ref MainDS, ACollectionDate);
+                        if (CreditorBIC == String.Empty)
+                        {
+                            Messages.Add(new TVerificationResult(
+                                    "Exporting Recurring Gift Batch to SEPA failed",
+                                    "Missing the setting " + SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC,
+                                    String.Empty,
+                                    string.Empty,
+                                    TResultSeverity.Resv_Critical,
+                                    Guid.Empty));
+                        }
 
-                        SEPAFileContent = StringHelper.EncodeStringToBase64(writer.Document.OuterXml);
+                        if (CreditorSchemeID == String.Empty)
+                        {
+                            Messages.Add(new TVerificationResult(
+                                    "Exporting Recurring Gift Batch to SEPA failed",
+                                    "Missing the setting " + SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID,
+                                    String.Empty,
+                                    string.Empty,
+                                    TResultSeverity.Resv_Critical,
+                                    Guid.Empty));
+                        }
+
+                        if (Messages.Count == 0)
+                        {
+                            writer.Init(InitiatorName, ACollectionDate, CreditorName, CreditorIBAN, CreditorBIC, CreditorSchemeID);
+
+                            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                            ARecurringGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
+                            ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
+                            ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
+
+                            // TODO GiftBatchTDS GiftDS = new GiftBatchTDS();
+                            // TODO TGiftTransactionWebConnector.LoadGiftDonorRelatedData(GiftDS, true, ALedgerNumber, SponsorshipBatchNumber, Transaction);
+
+                            ProcessPmtInf(ref writer, ref MainDS, ACollectionDate);
+
+                            SEPAFileContent = StringHelper.EncodeStringToBase64(writer.Document.OuterXml);
+
+                            Success = true;
+                        }
                     });
 
             }
