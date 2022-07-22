@@ -61,11 +61,11 @@ namespace Ict.Common.IO
             FDocument.PrependChild(FDocument.CreateXmlDeclaration("1.0", "UTF-8", ""));
             XmlElement docNode = FDocument.CreateElement("Document");
             XmlAttribute attr = FDocument.CreateAttribute("xmlns");
-            attr.Value = "urn:iso:std:iso:20022:tech:xsd:pain.008.002.02";
+            attr.Value = "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02";
             docNode.Attributes.Append(attr);
 
             attr = FDocument.CreateAttribute("xsi", "schemaLocation", "http://www.w3.org/2001/XMLSchema-instance");
-            attr.Value = "urn:iso:std:iso:20022:tech:xsd:pain.008.002.02 pain.008.002.02.xsd";
+            attr.Value = "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 pain.008.001.02.xsd";
             docNode.Attributes.Append(attr);
             FDocument.AppendChild(docNode);
 
@@ -204,7 +204,7 @@ namespace Ict.Common.IO
 
             DrctDbtTxInf.AppendChild(FDocument.CreateElement("DbtrAcct")).AppendChild(FDocument.CreateElement("Id")).AppendChild
                 (FDocument.CreateElement("IBAN")).InnerText = ADebtorIBAN.Replace(" ", "");
-            DrctDbtTxInf.AppendChild(FDocument.CreateElement("UltmtDbtr")).AppendChild(FDocument.CreateElement("Nm")).InnerText = ADebtorName;
+            // Do we need this: DrctDbtTxInf.AppendChild(FDocument.CreateElement("UltmtDbtr")).AppendChild(FDocument.CreateElement("Nm")).InnerText = ADebtorName;
             DrctDbtTxInf.AppendChild(FDocument.CreateElement("RmtInf")).AppendChild(FDocument.CreateElement("Ustrd")).InnerText = ADescription;
 
             return true;

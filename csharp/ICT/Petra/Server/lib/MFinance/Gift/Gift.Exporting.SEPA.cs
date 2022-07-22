@@ -32,9 +32,12 @@ using Ict.Common.IO;
 using Ict.Common.Verification;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MFinance.Gift
 {
@@ -137,11 +140,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                             ARecurringGiftAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
                             ARecurringGiftDetailAccess.LoadViaARecurringGiftBatch(MainDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
 
-                            // TODO GiftBatchTDS GiftDS = new GiftBatchTDS();
-                            // TODO TGiftTransactionWebConnector.LoadGiftDonorRelatedData(GiftDS, true, ALedgerNumber, SponsorshipBatchNumber, Transaction);
+                            ProcessPmtInf(ref writer, ref MainDS, ACollectionDate, ref Transaction, ref Messages);
+                        }
 
-                            ProcessPmtInf(ref writer, ref MainDS, ACollectionDate);
-
+                        if (Messages.Count == 0)
+                        {
                             SEPAFileContent = StringHelper.EncodeStringToBase64(writer.Document.OuterXml);
 
                             Success = true;
@@ -265,7 +268,45 @@ namespace Ict.Petra.Server.MFinance.Gift
             return TotalReference;
         }
 
-        private static void ProcessPmtInf(ref TSEPAWriterDirectDebit AWriter, ref GiftBatchTDS MainDS, DateTime APostingDate)
+        private static bool GetBankingDetailsOfPartner(Int64 APartnerKey, ref TDBTransaction ATransaction,
+            out string AAccountName, out string AIBAN, out string ABIC)
+        {
+            AAccountName = String.Empty;
+            AIBAN = String.Empty;
+            ABIC = String.Empty;
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            PBankingDetailsAccess.LoadViaPPartner(MainDS, APartnerKey, ATransaction);
+            PPartnerBankingDetailsAccess.LoadViaPPartner(MainDS, APartnerKey, ATransaction);
+            PBankingDetailsUsageAccess.LoadViaPPartner(MainDS, APartnerKey, ATransaction);
+
+            foreach(PartnerEditTDSPBankingDetailsRow banking in MainDS.PBankingDetails.Rows)
+            {
+
+                banking.MainAccount =
+                    (MainDS.PBankingDetailsUsage.Rows.Find(
+                            new object[] { APartnerKey, banking.BankingDetailsKey, MPartnerConstants.BANKINGUSAGETYPE_MAIN }) != null);
+
+                // TODO support multiple accounts, with usage specifically for DIRECTDEBIT
+                if (banking.MainAccount)
+                {
+                    AAccountName = banking.AccountName;
+                    AIBAN = banking.Iban;
+
+                    PBankAccess.LoadByPrimaryKey(MainDS, banking.BankKey, ATransaction);
+                    ABIC = MainDS.PBank[0].Bic;
+                    MainDS.PBank.Rows.Clear();
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void ProcessPmtInf(ref TSEPAWriterDirectDebit AWriter, ref GiftBatchTDS MainDS, DateTime APostingDate,
+            ref TDBTransaction ATransaction,
+            ref TVerificationResultCollection AMessages)
         {
             // TODO: make list of bank accounts. make sure we only have one transaction for each account: use split gifts instead.
 
@@ -294,9 +335,21 @@ namespace Ict.Petra.Server.MFinance.Gift
                 string DebtorName = "TODO";
                 string DebtorIBAN = "TODO";
                 string DebtorBIC = "TODO";
+
+                if (!GetBankingDetailsOfPartner(Row.DonorKey, ref ATransaction, out DebtorName, out DebtorIBAN, out DebtorBIC))
+                {
+                    AMessages.Add(new TVerificationResult(
+                        "Exporting Recurring Gift Batch to SEPA failed",
+                        "Cannot find bank account details for " + Row.DonorKey.ToString(),
+                        String.Empty,
+                        string.Empty,
+                        TResultSeverity.Resv_Critical,
+                        Guid.Empty));
+               }
+
                 string MandateID = "TODO";
                 DateTime MandateSignatureDate = DateTime.Now; // TODO
-                string EndToEndId = "TODO";
+                string EndToEndId = Row.DonorKey.ToString();
                 AWriter.AddPaymentToSEPADirectDebitFile(SequenceType, DebtorName, DebtorIBAN, DebtorBIC, MandateID, MandateSignatureDate, Amount, Description, EndToEndId);
             }
         }
