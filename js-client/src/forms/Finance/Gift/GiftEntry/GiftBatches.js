@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -59,6 +59,13 @@ function display_list(source) {
 		}
 		format_currency(data.ACurrencyCode);
 		format_date();
+
+		var url = new URL(window.location.href);
+		var batchNumber = url.searchParams.get("batch");
+		if (Number.isInteger(Number.parseInt(batchNumber))) {
+			batchNumber = Number.parseInt(batchNumber);
+			open_gift_transactions($('#Batch' + batchNumber), batchNumber);
+		}
 	})
 }
 

@@ -34,6 +34,17 @@ function display_list(source) {
 		// on reload, clear content
 		$('#browse_container').html('');
 		for (item of data.result.ARecurringGiftBatch) {
+			var today = new Date();
+			var submit_date = today;
+			var test_date = new Date(today.getFullYear(), today.getMonth(), 15);
+			if (test_date > today && submit_date == today) {
+				submit_date = test_date;
+			}
+			test_date = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+			if (test_date > today && submit_date == today) {
+				submit_date = test_date;
+			}
+			item['submit_date'] = submit_date;
 			format_item(item);
 		}
 		format_currency(item.a_currency_code_c);
@@ -386,16 +397,13 @@ function delete_trans_detail(obj_modal) {
 	});
 }
 
-function submit_batch(batch_id) {
-	// TODO: user can choose the date of the donation
-	var today = new Date();
-	today.setUTCHours(0, 0, 0, 0);
-	var strToday = today.toISOString().replace('T00:00:00.000Z', '');
+function submit_batch(obj, batch_id) {
+	var strSubmitDate = $(obj).parent().find('#submit_date').val();
 
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
 		ARecurringBatchNumber: batch_id,
-		AEffectiveDate: strToday,
+		AEffectiveDate: strSubmitDate,
 		AReference: '',
 		AExchangeRateToBase: 1.0,
 		AExchangeRateIntlToBase: 1.0
@@ -403,10 +411,9 @@ function submit_batch(batch_id) {
 	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_SubmitRecurringGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			console.log(data);
-			// TODO: open the gift batch in a separate window/tab???
-			display_message( i18next.t('GiftBatches.success_submit'), 'success' );
+			display_message( i18next.t('RecurringGiftBatches.success_submit'), 'success' );
 			display_list('filter');
+			window.open("/Finance/Gift/GiftEntry/GiftBatches?batch=" + data["ANewGiftBatchNo"], "_blank");
 		} else {
 			display_error( data.AVerifications );
 		}
@@ -455,16 +462,13 @@ function export_batch(batch_id) {
 	});
 }
 
-function download_sepa(batch_id) {
-	// TODO: user can choose the date of the donation
-	var today = new Date();
-	today.setUTCHours(0, 0, 0, 0);
-	var strToday = today.toISOString().replace('T00:00:00.000Z', '');
+function download_sepa(obj, batch_id) {
+	var strSubmitDate = $(obj).parent().find('#submit_date').val();
 
 	var r = {
 				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ARecurringBatchNumber: batch_id,
-				ACollectionDate: strToday,
+				ACollectionDate: strSubmitDate,
 			};
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportRecurringGiftBatch', r).then(function (result) {
