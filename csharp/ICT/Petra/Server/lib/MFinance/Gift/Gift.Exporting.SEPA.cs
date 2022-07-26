@@ -332,9 +332,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 string Description = GenerateReference(ref MainDS, APostingDate);
 
-                string DebtorName = "TODO";
-                string DebtorIBAN = "TODO";
-                string DebtorBIC = "TODO";
+                string DebtorName = "EMPTY";
+                string DebtorIBAN = "EMPTY";
+                string DebtorBIC = "EMPTY";
 
                 if (!GetBankingDetailsOfPartner(Row.DonorKey, ref ATransaction, out DebtorName, out DebtorIBAN, out DebtorBIC))
                 {
@@ -345,12 +345,24 @@ namespace Ict.Petra.Server.MFinance.Gift
                         string.Empty,
                         TResultSeverity.Resv_Critical,
                         Guid.Empty));
-               }
+                }
 
-                string MandateID = "TODO";
-                DateTime MandateSignatureDate = DateTime.Now; // TODO
-                string EndToEndId = Row.DonorKey.ToString();
-                AWriter.AddPaymentToSEPADirectDebitFile(SequenceType, DebtorName, DebtorIBAN, DebtorBIC, MandateID, MandateSignatureDate, Amount, Description, EndToEndId);
+                if (!Row.SepaMandateGiven.HasValue || Row.SepaMandateReference == String.Empty) {
+                    AMessages.Add(new TVerificationResult(
+                        "Exporting Recurring Gift Batch to SEPA failed",
+                        "Invalid SEPA Mandate Reference or Date Given for " + Row.DonorKey.ToString(),
+                        String.Empty,
+                        string.Empty,
+                        TResultSeverity.Resv_Critical,
+                        Guid.Empty));
+                }
+                else
+                {
+                    string EndToEndId = Row.DonorKey.ToString();
+                    AWriter.AddPaymentToSEPADirectDebitFile(SequenceType, DebtorName, DebtorIBAN, DebtorBIC,
+                        Row.SepaMandateReference, Row.SepaMandateGiven.Value,
+                        Amount, Description, EndToEndId);
+                }
             }
         }
     }

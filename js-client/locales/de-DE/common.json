@@ -451,6 +451,8 @@
         "trans_account_code": "Konto",
         "trans_ccenter_code": "Kostenstelle",
         "trans_motivation": "Verwendungszweck",
+        "trans_sepa_mandate_reference": "Mandatsreferenz",
+        "trans_sepa_mandate_given": "Mandat erteilt am",
         "motivation_group_code": "Verwendungszweck Gruppe",
         "motivation_detail_code": "Verwendungszweck Detail",
         "detail_date_start": "Gültig ab",

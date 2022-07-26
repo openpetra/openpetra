@@ -2655,7 +2655,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int64 ADonorKey,
             string AReference,
             string AIBAN,
-            string ASEPAMandate,
+            string ASepaMandateReference,
+            DateTime ASepaMandateGiven,
             out TVerificationResultCollection AVerificationResult)
         {
             GiftBatchTDS MainDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
@@ -2670,8 +2671,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.DonorKey = ADonorKey;
                 row.Reference = AReference;
                 // TODO: set IBAN of main bank account of partner
-                // TODO: set SEPAMandate in p_data_label_value_partner
-                // UpdateSEPAMandate(ALedgerNumber, ADonorKey, AIBAN, ASEPAMandate);
+                row.SepaMandateReference = ASepaMandateReference;
+                row.SepaMandateGiven = ASepaMandateGiven;
                 MainDS.ARecurringGift.Rows.Add(row);
 
                 // TODO update recurring gift batch last transaction number???
@@ -2693,6 +2694,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         row.DonorKey = ADonorKey;
                         row.Reference = AReference;
+                        row.SepaMandateReference = ASepaMandateReference;
+                        row.SepaMandateGiven = ASepaMandateGiven;
                     }
                 }
 

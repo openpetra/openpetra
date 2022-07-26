@@ -450,6 +450,8 @@
         "trans_account_code": "Account",
         "trans_ccenter_code": "Cost centre",
         "trans_motivation": "Motivation Group and Detail",
+        "trans_sepa_mandate_reference": "Mandate Reference",
+        "trans_sepa_mandate_given": "Mandate given on",
         "motivation_group_code": "Motivation Group Code",
         "motivation_detail_code": "Motivation Detail Code",
         "detail_date_start": "Valid from",

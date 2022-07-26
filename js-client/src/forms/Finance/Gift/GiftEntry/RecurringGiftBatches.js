@@ -220,7 +220,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	// so everything is up to date and we don't have to load it, if we only search
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		parsed = JSON.parse(data.data.d, parseDates);
 
 		let searched = null;
 		for (var trans of parsed.result.ARecurringGift) {
@@ -234,7 +234,6 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		}
 
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
-
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 
 		for (var detail of parsed.result.ARecurringGiftDetail) {
@@ -258,7 +257,7 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		parsed = JSON.parse(data.data.d, parseDates);
 		let searched = null;
 		for (trans of parsed.result.ARecurringGiftDetail) {
 			if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
@@ -270,8 +269,6 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 			return alert('ERROR');
 		}
 
-		searched["AStartDonations"] = format_date(searched["a_start_donations_d"]);
-		searched["AEndDonations"] = format_date(searched["a_end_donations_d"]);
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
 
 		$('#modal_space').append(tpl_edit_raw);

@@ -11408,6 +11408,14 @@
                 help="Select the bank or credit card account to use for this gift."
                 notnull="yes"
                 initial="0"/>
+    <tablefield name="a_sepa_mandate_reference_c"
+                type="varchar"
+                descr="This reference is a unique string that reflects the customer or contract and the date of the SEPA mandate"
+                format="X(35)"/>
+    <tablefield name="a_sepa_mandate_given_d"
+                type="date"
+                descr="The date the SEPA Mandate was given"
+                format="99/99/9999"/>
     <tablefield name="a_charge_status_c"
                 type="varchar"
                 descr="Status of the credit card transaction"
