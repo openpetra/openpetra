@@ -220,5 +220,20 @@ namespace Ict.Common.IO
                 return FDocument;
             }
         }
+
+        /// format an IBAN with spaces
+        public static string FormatIBAN(string AIban)
+        {
+            AIban = AIban.Replace(" ", "");
+            int count = 0;
+            string orig = AIban;
+            AIban = String.Empty;
+            while (count + 4 < orig.Length)
+            {
+                AIban += orig.Substring(count, 4) + " ";
+                count += 4;
+            }
+            return (AIban + orig.Substring(count)).Trim();
+        }
     }
 }

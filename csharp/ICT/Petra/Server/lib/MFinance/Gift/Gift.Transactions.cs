@@ -32,6 +32,7 @@ using System.IO;
 
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
@@ -1774,6 +1775,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return true;
         }
 
+        private static void FormatIBAN(ref GiftBatchTDS AGiftDS)
+        {
+            foreach (GiftBatchTDSPPartnerBankingDetailsRow row in AGiftDS.PPartnerBankingDetails.Rows)
+            {
+                row.Iban = TSEPAWriterDirectDebit.FormatIBAN(row["p_iban_c"].ToString());
+                row.AcceptChanges();
+            }
+        }
+
         /// <summary>
         /// loads a list of banking details for the given partner
         /// </summary>
@@ -1805,6 +1815,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     db.Select(GiftDS, getBankAccountsSQL, GiftDS.PPartnerBankingDetails.TableName,
                         Transaction,
                         parameters.ToArray(), 0, 0);
+                    FormatIBAN(ref GiftDS);
                 });
 
             db.CloseDBConnection();
@@ -3816,6 +3827,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ATransaction.DataBaseObj.Select(AGiftDS, getBankAccountsSQL, AGiftDS.PPartnerBankingDetails.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
+                FormatIBAN(ref AGiftDS);
             }
             catch (Exception ex)
             {

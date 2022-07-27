@@ -247,6 +247,20 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 			}
 		}
 
+		let btnEditContact = tpl_edit_raw.find("#btnEditContact");
+		btnEditContact.attr('partnerkey', searched['p_donor_key_n']);
+		btnEditContact.click(function() {
+			let partnerkey = $(this).attr('partnerkey');
+			window.open("/Partner/Partners/MaintainPartners?partnerkey=" + partnerkey, "_blank");
+		});
+
+		let btnRefreshBankAccounts = tpl_edit_raw.find("#btnRefreshBankAccounts");
+		btnRefreshBankAccounts.attr('partnerkey', searched['p_donor_key_n']);
+		btnRefreshBankAccounts.click(function() {
+			let partnerkey = $(this).attr('partnerkey');
+			onselect_donor($(this), partnerkey, false);
+		});
+
 		tpl_edit_raw = loadbankaccounts(parsed.result.PPartnerBankingDetails, searched['p_donor_key_n'], searched['p_banking_details_key_i'], tpl_edit_raw)
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
@@ -255,12 +269,21 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	})
 }
 
-function onselect_donor(obj, donor_key) {
+function onselect_donor(obj, donor_key, reset_selection = true) {
 	// reload the select for bank accounts
 	let x = {"APartnerKey":donor_key};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadBankingDetailsOfPartner', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		loadbankaccounts(parsed.result.PPartnerBankingDetails, donor_key, -1, obj.closest('.modal'));
+		selected = -1;
+		if (!reset_selection) {
+			selected = obj.closest('.modal').find('#BankingDetailsKey').val();
+		}
+		loadbankaccounts(parsed.result.PPartnerBankingDetails, donor_key, selected, obj.closest('.modal'));
+
+		let btnEditContact = obj.closest('.modal').find("#btnEditContact");
+		btnEditContact.attr('partnerkey', donor_key);
+		let btnRefreshBankAccounts = obj.closest('.modal').find("#btnRefreshBankAccounts");
+		btnRefreshBankAccounts.attr('partnerkey', donor_key);
 	})
 }
 
@@ -274,7 +297,7 @@ function loadbankaccounts(accounts_of_donor, donor_key, selected_account, obj) {
 		for (var account of accounts_of_donor) {
 			selected = (selected_account == account.p_banking_details_key_i)?" selected":"";
 			if (account.p_partner_key_n == donor_key) {
-				let y = $('<option value="'+account.p_banking_details_key_i+'"' + selected + '>'+ account.p_iban_c + '</option>');
+				let y = $('<option value="'+account.p_banking_details_key_i+'"' + selected + '>'+ account.Iban + '</option>');
 				obj.find('#BankingDetailsKey').append(y);
 			}
 		}

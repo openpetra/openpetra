@@ -25,11 +25,11 @@
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
-                        <!--
+						<!--
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="export_batch({val_a_batch_number_i})">
 							<span>{forms.export}&nbsp;</span><i class="fas fa-table"></i>
 						</button>
-                        -->
+						-->
 						<br/>{submit_date}: <input type="date" id="submit_date" name="submit_date" value="{val_submit_date}"><br/>
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="download_sepa(this, {val_a_batch_number_i})">
 							<span>{download_sepa_direct_debit}&nbsp;</span><i class="fas fa-table"></i>
@@ -202,6 +202,9 @@
 								<div class="autocomplete">
 									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this, onselect_donor)" size="40">
 								</div>
+								<button type="button" class="btn" id="btnEditContact">
+									<i class="fas fa-wrench"></i>
+								</button>
 							</div>
 						</div>
 
@@ -212,6 +215,9 @@
 							<div class="col">
 								<select name="p_banking_details_key_i" id="BankingDetailsKey">
 								</select>
+								<button type="button" class="btn" id="btnRefreshBankAccounts">
+									<i class="fas fa-sync"></i>
+								</button>
 							</div>
 						</div>
 

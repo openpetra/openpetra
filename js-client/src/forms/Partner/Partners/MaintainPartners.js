@@ -40,6 +40,10 @@ function MaintainPartners_Ready() {
 		obj.open_new_family();
 	} else if (window.location.href.endsWith('?NewOrganisation')) {
 		obj.open_new_organisation();
+	} else if (window.location.href.includes('?partnerkey=')) {
+		var url = new URL(window.location.href);
+		var partnerkey = url.searchParams.get("partnerkey");
+		obj.open_edit(partnerkey);
 	} else {
 		obj.display_list();
 	}
