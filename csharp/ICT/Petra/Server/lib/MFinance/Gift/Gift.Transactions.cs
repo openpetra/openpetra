@@ -1775,6 +1775,44 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of banking details for the given partner
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadBankingDetailsOfPartner(Int64 APartnerKey)
+        {
+            GiftBatchTDS GiftDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadBankingDetailsOfPartner");
+
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    // load the bank accounts of the donors
+                    string getBankAccountsSQL =
+                        "SELECT DISTINCT pbd.p_partner_key_n, pbd.p_banking_details_key_i, bd.p_iban_c" +
+                        " FROM p_partner_banking_details pbd JOIN p_banking_details bd ON pbd.p_banking_details_key_i = bd.p_banking_details_key_i" +
+                        " WHERE pbd.p_partner_key_n = ?";
+
+                    List <OdbcParameter>parameters = new List <OdbcParameter>();
+                    OdbcParameter param = new OdbcParameter("partnerkey", OdbcType.BigInt);
+                    param.Value = APartnerKey;
+                    parameters.Add(param);
+
+                    db.Select(GiftDS, getBankAccountsSQL, GiftDS.PPartnerBankingDetails.TableName,
+                        Transaction,
+                        parameters.ToArray(), 0, 0);
+                });
+
+            db.CloseDBConnection();
+
+            return GiftDS;
+        }
+
+        /// <summary>
         /// loads a list of recurring gift transactions and details for the given ledger and recurring batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -1821,7 +1859,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // drop all tables apart from ARecurringGift and ARecurringGiftDetail
                 foreach (DataTable table in MainDS.Tables)
                 {
-                    if ((table.TableName != MainDS.ARecurringGift.TableName) && (table.TableName != MainDS.ARecurringGiftDetail.TableName))
+                    if ((table.TableName != MainDS.ARecurringGift.TableName)
+                        && (table.TableName != MainDS.ARecurringGiftDetail.TableName)
+                        && (table.TableName != MainDS.PPartnerBankingDetails.TableName))
                     {
                         table.Clear();
                     }
@@ -2654,13 +2694,47 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 AGiftTransactionNumber,
             Int64 ADonorKey,
             string AReference,
-            string AIBAN,
+            Int32 ABankingDetailsKey,
             string ASepaMandateReference,
-            DateTime ASepaMandateGiven,
+            DateTime? ASepaMandateGiven,
             out TVerificationResultCollection AVerificationResult)
         {
             GiftBatchTDS MainDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
             AVerificationResult = new TVerificationResultCollection();
+
+            if ((action == "create" || action == "edit") && ABankingDetailsKey > 0)
+            {
+                // Validate if the BankingDetailsKey belongs to an account of that donor
+                TDBTransaction ReadTransaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("ValidateBankingDetailsKey");
+
+                bool ValidBankAccount = true;
+                try
+                {
+                    db.ReadTransaction(
+                        ref ReadTransaction,
+                        delegate
+                        {
+                            if (false == PPartnerBankingDetailsAccess.Exists(ADonorKey, ABankingDetailsKey, ReadTransaction))
+                            {
+                                TLogging.Log("Someone is trying to connect a bank account of another partner to the current donor");
+                                ValidBankAccount = false;
+                            }
+                        });
+                }
+                catch (Exception ex)
+                {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
+                }
+
+                db.CloseDBConnection();
+
+                if (!ValidBankAccount)
+                {
+                    return false;
+                }
+            }
 
             if (action == "create")
             {
@@ -2670,7 +2744,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.GiftTransactionNumber = AGiftTransactionNumber;
                 row.DonorKey = ADonorKey;
                 row.Reference = AReference;
-                // TODO: set IBAN of main bank account of partner
+                row.BankingDetailsKey = ABankingDetailsKey;
                 row.SepaMandateReference = ASepaMandateReference;
                 row.SepaMandateGiven = ASepaMandateGiven;
                 MainDS.ARecurringGift.Rows.Add(row);
@@ -2694,6 +2768,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         row.DonorKey = ADonorKey;
                         row.Reference = AReference;
+                        row.BankingDetailsKey = ABankingDetailsKey;
                         row.SepaMandateReference = ASepaMandateReference;
                         row.SepaMandateGiven = ASepaMandateGiven;
                     }
@@ -3570,7 +3645,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        /// load the donor names and tax settings for a given batch
+        /// load the donor names and tax settings and bank accounts for a given batch
         [NoRemoting]
         public static void LoadGiftDonorRelatedData(GiftBatchTDS AGiftDS,
             bool ARecurring,
@@ -3723,6 +3798,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ATransaction.DataBaseObj.Select(AGiftDS, query,
                         AGiftDS.PTax.TableName, ATransaction);
                 }
+
+                // load the bank accounts of the donors
+                string getBankAccountsSQL =
+                    "SELECT DISTINCT pbd.p_partner_key_n, pbd.p_banking_details_key_i, bd.p_iban_c" +
+                    " FROM p_partner_banking_details pbd JOIN p_banking_details bd ON pbd.p_banking_details_key_i = bd.p_banking_details_key_i" +
+                    " WHERE pbd.p_partner_key_n IN" +
+                                   " (SELECT DISTINCT p_donor_key_n FROM PUB_a_gift WHERE" +
+                                   " a_ledger_number_i = ?" +
+                                   " AND a_batch_number_i = ?)";
+
+                if (ARecurring)
+                {
+                    getBankAccountsSQL = getBankAccountsSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
+                }
+
+                ATransaction.DataBaseObj.Select(AGiftDS, getBankAccountsSQL, AGiftDS.PPartnerBankingDetails.TableName,
+                    ATransaction,
+                    parameters.ToArray(), 0, 0);
             }
             catch (Exception ex)
             {

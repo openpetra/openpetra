@@ -163,6 +163,8 @@ function new_trans(ledger_number, batch_number) {
 	x['a_date_entered_d'] = strToday.replace('T00:00:00.000Z', '');
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
+	p = loadbankaccounts(null, -1, -1, p);
+
 	$('#modal_space').html(p);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
@@ -245,11 +247,39 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 			}
 		}
 
+		tpl_edit_raw = loadbankaccounts(parsed.result.PPartnerBankingDetails, searched['p_donor_key_n'], searched['p_banking_details_key_i'], tpl_edit_raw)
 		$('#modal_space').html(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
 
 	})
+}
+
+function onselect_donor(obj, donor_key) {
+	// reload the select for bank accounts
+	let x = {"APartnerKey":donor_key};
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadBankingDetailsOfPartner', x).then(function (data) {
+		parsed = JSON.parse(data.data.d);
+		loadbankaccounts(parsed.result.PPartnerBankingDetails, donor_key, -1, obj.closest('.modal'));
+	})
+}
+
+function loadbankaccounts(accounts_of_donor, donor_key, selected_account, obj) {
+	obj.find('#BankingDetailsKey').empty();
+	var selected = (selected_account == "")?" selected":"";
+	let y = $('<option value="-1"' + selected + '>'+ i18next.t('forms.none_selected') +'</option>');
+	obj.find('#BankingDetailsKey').append(y);
+
+	if (accounts_of_donor != null) {
+		for (var account of accounts_of_donor) {
+			selected = (selected_account == account.p_banking_details_key_i)?" selected":"";
+			if (account.p_partner_key_n == donor_key) {
+				let y = $('<option value="'+account.p_banking_details_key_i+'"' + selected + '>'+ account.p_iban_c + '</option>');
+				obj.find('#BankingDetailsKey').append(y);
+			}
+		}
+	}
+	return obj;
 }
 
 function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
@@ -306,6 +336,7 @@ function save_edit_trans(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
+	payload['ASepaMandateGiven'] = payload['ASepaMandateGiven'] ? payload['ASepaMandateGiven'] : "null"; // if no date is given give "null" as a string
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {

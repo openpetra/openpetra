@@ -23,11 +23,11 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-function autocomplete(input_field_object, auto_list) {
-  return autocompleteWithGroup(input_field_object, null, auto_list);
+function autocomplete(input_field_object, auto_list, onselect = null) {
+  return autocompleteWithGroup(input_field_object, null, auto_list, onselect);
 }
 
-function autocompleteWithGroup(input_field_object, input_group_object, auto_list) {
+function autocompleteWithGroup(input_field_object, input_group_object, auto_list, onselect = null) {
 
   if (input_field_object.attr('init-autocomplete') == null) {
     input_field_object.attr('select-field', '0');
@@ -62,7 +62,7 @@ function autocompleteWithGroup(input_field_object, input_group_object, auto_list
         let sub = input_field_object.siblings('.autocomplete-items').find('.autocomplete-active');
         input_field_object.val( sub.text() );
         input_field_object.attr('key-value', sub.find('input[type=hidden]').val());
-
+        if (onselect) { onselect(input_field_object, sub.find('input[type=hidden]').val()); }
         delete_all_guesses();
       }
     })
@@ -94,6 +94,7 @@ function autocompleteWithGroup(input_field_object, input_group_object, auto_list
         input_group_object.val($(this).find('input[type=hidden]').attr("groupkey"));
       }
       delete_all_guesses();
+      if (onselect) { onselect(input_field_object, $(this).find('input[type=hidden]').val()); }
     });
     list_field.append(guess_field);
   }

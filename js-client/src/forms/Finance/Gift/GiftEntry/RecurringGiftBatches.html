@@ -200,8 +200,18 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this, onselect_donor)" size="40">
 								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_sepa_bank_account}</span>
+							</div>
+							<div class="col">
+								<select name="p_banking_details_key_i" id="BankingDetailsKey">
+								</select>
 							</div>
 						</div>
 

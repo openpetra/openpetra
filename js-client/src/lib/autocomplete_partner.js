@@ -23,7 +23,7 @@
 
 var timeout_autocomplete = null;
 
-function autocomplete_donor(input_field) {
+function autocomplete_donor(input_field, onselect = null) {
 
 	if (timeout_autocomplete) {
 		clearTimeout(timeout_autocomplete);
@@ -47,10 +47,10 @@ function autocomplete_donor(input_field) {
 							"<b>" + value.p_partner_short_name_c + "</b> (" + value.p_partner_key_n + ")<br/>" +
 							value.p_street_name_c + "<br/>" + value.p_postal_code_c + " " + value.p_city_c});
 				}
-				autocomplete( $(input_field), list);
+				autocomplete( $(input_field), list, onselect);
 			} else {
 				list = [];
-				autocomplete( $(input_field), list);
+				autocomplete( $(input_field), list, onselect);
 			}
 		});
 	}, 500);
