@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading;
 using System.Net.Security;
 using System.Security;
+using System.Runtime;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
 

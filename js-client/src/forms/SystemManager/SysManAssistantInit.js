@@ -65,7 +65,7 @@ function save_entry(obj_modal) {
 		if (!parsed.result) {
 			return display_error(parsed.AVerificationResult);
 		} else {
-			$('#modal_space .modal').modal('hide');
+			CloseModal(obj);
 			display_message(i18next.t('forms.saved'), "success");
 			setTimeout(reloadUsersPage, 5000);
 		}

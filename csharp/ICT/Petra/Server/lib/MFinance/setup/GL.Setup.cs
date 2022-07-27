@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -4643,7 +4643,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 20);
 
             TDBTransaction Transaction = new TDBTransaction();
-            TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
             bool SubmitOK = false;
             TDataBase db = DBAccess.Connect("DeleteLedger");
             bool Result = true;
@@ -4698,11 +4697,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 ABudgetTable.GetLedgerNumberDBName()),
                             Transaction, ledgerparameter);
 
+                        db.ExecuteNonQuery(
+                            String.Format(
+                                "DELETE FROM PUB_{0} WHERE EXISTS (SELECT * FROM PUB_{1} WHERE {2}.{3} = {4}.{5} AND {6}.{7} = ?)",
+                                AEpTransactionTable.GetTableDBName(),
+                                AEpStatementTable.GetTableDBName(),
+                                AEpTransactionTable.GetTableDBName(),
+                                AEpTransactionTable.GetStatementKeyDBName(),
+                                AEpStatementTable.GetTableDBName(),
+                                AEpStatementTable.GetStatementKeyDBName(),
+                                AEpStatementTable.GetTableDBName(),
+                                AEpStatementTable.GetLedgerNumberDBName()),
+                            Transaction, ledgerparameter);
+
                         // the following tables are not deleted at the moment as they are not in use
                         //      PFoundationProposalDetailTable.GetTableDBName(),
-                        //      AEpTransactionTable.GetTableDBName(),
-                        //      AEpStatementTable.GetTableDBName(),
-                        //      AEpMatchTable.GetTableDBName(),
                         // also: tables referring to ATaxTableTable are not deleted now as they are not yet in use
                         //      (those are tables needed in the accounts receivable module that does not exist yet)
 
@@ -4712,6 +4721,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                  AProcessedFeeTable.GetTableDBName(),
                                  AGeneralLedgerMasterTable.GetTableDBName(),
                                  AMotivationDetailFeeTable.GetTableDBName(),
+
+                                 AEpMatchTable.GetTableDBName(),
+                                 AEpStatementTable.GetTableDBName(),
+                                 AEpAccountTable.GetTableDBName(),
 
                                  ABudgetTable.GetTableDBName(),
                                  ABudgetRevisionTable.GetTableDBName(),
@@ -4791,6 +4804,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             throw new Exception("Deletion of Ledger was cancelled by the user");
                         }
 
+                        SubmitOK = true;
                     }
                     catch (Exception e)
                     {
@@ -4818,8 +4832,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     {
                         TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     }
-
-                    SubmitOK = SubmitChangesResult == TSubmitChangesResult.scrOK;
                 });
 
             db.CloseDBConnection();
@@ -4833,6 +4845,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
         public static bool MaintainLedger(string action, Int32 ALedgerNumber, String ALedgerName,
+            string ASepaCreditorName, string ASepaCreditorIban, string ASepaCreditorBic, string ASepaCreditorSchemeId,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
@@ -4842,6 +4855,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TDBTransaction Transaction = new TDBTransaction();
                 TDataBase db = DBAccess.Connect("MaintainLedger");
                 bool SubmissionOK = false;
+                TSystemDefaults SystemDefaults = new TSystemDefaults();
 
                 try
                 {
@@ -4855,6 +4869,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             LedgerRow.LedgerName = ALedgerName;
 
                             ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+
+                            bool added;
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_NAME, ASepaCreditorName, out added, db);
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, ASepaCreditorIban, out added, db);
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, ASepaCreditorBic, out added, db);
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, ASepaCreditorSchemeId, out added, db);
 
                             SubmissionOK = true;
                         });
@@ -4910,6 +4930,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             db.CloseDBConnection();
 
             return LedgerTable;
+        }
+
+        /// <summary>
+        /// get the sepa creditor details of the ledger
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool GetSepaCreditorDetails(Int32 ALedgerNumber,
+            out String ASepaCreditorName, out String ASepaCreditorIban, out String ASepaCreditorBic, out string ASepaCreditorSchemeId)
+        {
+            TDataBase db = DBAccess.Connect("GetAvailableLedgers");
+
+            TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+            ASepaCreditorName = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_NAME, String.Empty);
+            ASepaCreditorIban = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, String.Empty);
+            ASepaCreditorBic = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, String.Empty);
+            ASepaCreditorSchemeId = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, String.Empty);
+
+            db.CloseDBConnection();
+
+            return true;
         }
 
         /// <summary>

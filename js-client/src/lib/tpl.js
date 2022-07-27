@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2021 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -290,6 +290,7 @@ function extract_data(object) {
   var r = {};
   object.find('[name]').each(function (i, obj) {
     obj = $(obj);
+    ValidateStringForInjectedHTML(obj.val());
     r[obj.attr('name')] = obj.val();
     if (obj.attr('type') == 'checkbox') {
 
@@ -395,6 +396,7 @@ function extractData(o) {
     }
     else {
       let value = f.val();
+      ValidateStringForInjectedHTML(value);
       data[name] = value;
     }
   }
@@ -471,7 +473,8 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
             f.text( printCurrency(v, currencyCode) );
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
-          f.html( v );
+          // avoid cross site scripting. still allow newlines as html code
+          f.html( v.replace('<br/>', 'NEWLINE').replace('<', '&lt;').replace('>', '&gt;').replace('NEWLINE', '<br/>') );
         } else {
           f.val( v );
         }
@@ -481,3 +484,12 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
   }
   replace_val_variables(o,d);
 }
+
+function ValidateStringForInjectedHTML(value)
+{
+  if ((value.indexOf('>') != -1) && (value.indexOf('<') != -1) && (value.indexOf('=') != -1)) {
+    alert('We do not allow a combination of certain characters in ' + value);
+    throw ('We do not allow a combination of certain characters in ' + value);
+  }
+}
+        

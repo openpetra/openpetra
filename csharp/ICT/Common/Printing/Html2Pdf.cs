@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,6 +53,32 @@ namespace Ict.Common.Printing
             return wkhtmltopdf;
         }
 
+        /// strip the last page break if there is not much content after it
+        public static string StripLastPageBreak(string AHtmlText)
+        {
+            if (AHtmlText.Contains("<p class=\"new-page\"></p>"))
+            {
+                int pos = AHtmlText.LastIndexOf("<p class=\"new-page\"></p>");
+                string tail = String.Empty;
+                
+                if (pos > -1)
+                    tail = AHtmlText.Substring(pos + ("<p class=\"new-page\"></p>").Length);
+
+                while (pos > -1 && tail.Replace("</html>","").Replace("</body>","").Replace("&nbsp;","").Trim().Length == 0)
+                {
+                    AHtmlText = AHtmlText.Substring(0, pos) + tail;
+                    pos = AHtmlText.LastIndexOf("<p class=\"new-page\"></p>");
+
+                    if (pos > -1)
+                    {
+                        tail = AHtmlText.Substring(pos + ("<p class=\"new-page\"></p>").Length);
+                    }
+                }
+            }
+
+            return AHtmlText;
+        }
+
         /// <summary>
         /// Create a PDF file from the HTML
         /// </summary>
@@ -93,6 +119,9 @@ namespace Ict.Common.Printing
                             BootstrapCSSContent + Environment.NewLine +
                             CSSContent + "</style>" + Environment.NewLine +
                             "<script>" + BundledJSContent + "</script>");
+
+                AHtmlText = StripLastPageBreak(AHtmlText);
+
                 sw.Write(AHtmlText);
                 sw.Close();
             }

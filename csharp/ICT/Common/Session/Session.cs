@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -303,6 +303,18 @@ namespace Ict.Common.Session
                 parameters[1] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
                 parameters[1].Value = FSessionID;
                 sql = "UPDATE PUB_s_session SET s_session_values_c = ? WHERE s_session_id_c = ?";
+
+                if (FSessionValues.Keys.Contains("UserID"))
+                {
+                    parameters = new OdbcParameter[3];
+                    parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
+                    parameters[0].Value = SerializedSessionValues;
+                    parameters[1] = new OdbcParameter("s_user_id_c", OdbcType.VarChar);
+                    parameters[1].Value = GetVariant("UserID").ToString();
+                    parameters[2] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+                    parameters[2].Value = FSessionID;
+                    sql = "UPDATE PUB_s_session SET s_session_values_c = ?, s_user_id_c = ? WHERE s_session_id_c = ?";
+                }
             }
             else
             {
@@ -479,8 +491,23 @@ namespace Ict.Common.Session
                     OdbcParameter[] parameters = new OdbcParameter[1];
                     parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
                     parameters[0].Value = FSessionID;
+                    string sql = "DELETE FROM s_session WHERE s_session_id_c = ?";
 
-                    string sql = "DELETE FROM  s_session WHERE s_session_id_c = ?";
+                    if (FSessionValues.Keys.Contains("UserID"))
+                    {
+                        string UserID = GetVariant("UserID").ToString();
+
+                        if (UserID != "DEMO")
+                        {
+                            parameters = new OdbcParameter[2];
+                            parameters[0] = new OdbcParameter("s_session_id_c", OdbcType.VarChar);
+                            parameters[0].Value = FSessionID;
+                            parameters[1] = new OdbcParameter("s_user_id_c", OdbcType.VarChar);
+                            parameters[1].Value = UserID;
+                            sql = "DELETE FROM s_session WHERE s_session_id_c = ? OR s_user_id_c = ?";
+                        }
+                    }
+
                     db.ExecuteNonQuery(sql, t, parameters);
                     SubmissionOK = true;
                 });

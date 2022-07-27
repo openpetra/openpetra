@@ -4,12 +4,15 @@
 <div phantom hidden>
 
 	<!-- Batch line in list, with collapse list of transactions -->
-	<div class="tpl_row" onclick="open_gift_transactions(this, {val_a_batch_number_i})" id="Batch{val_a_batch_number_i}">
+	<div class="tpl_row" id="Batch{val_a_batch_number_i}">
 		<div class="row">
 			<div class="col">{val_a_batch_number_i}</div>
-			<div class="col">{val_a_batch_description_c}</div>
+			<div class="col-3">{val_a_batch_description_c}</div>
 			<div class="col format_currency">{val_a_batch_total_n}</div>
-			<div class="col-1">
+			<div class="col" style="margin-top:0.3em;">
+				<button type="button" class="btn btn-primary" onclick="open_gift_transactions(this)">
+					<i class="fas fa-folder-open"></i>
+				</button>
 				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})">
 					<i class="fas fa-wrench"></i>
 				</button>
@@ -18,21 +21,21 @@
 		<div class="row">
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row">
-					<div class="col">
-						<button type="button" class="btn btn-primary not_show_when_posted" style="margin-top:0.5em;" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
+					<div class="col-12">
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
+						<!--
 						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="export_batch({val_a_batch_number_i})">
 							<span>{forms.export}&nbsp;</span><i class="fas fa-table"></i>
 						</button>
-						<button type="button" class="btn btn-warning only_show_when_posted" style="margin-top:0.5em;" onclick="adjust_batch({val_a_batch_number_i})">
-							<span>{GLBatches.batch_adjust}&nbsp;</span><i class="fas fa-toggle-right"></i>
+						-->
+						<br/>{submit_date}: <input type="date" id="submit_date" name="submit_date" value="{val_submit_date}"><br/>
+						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="download_sepa(this, {val_a_batch_number_i})">
+							<span>{download_sepa_direct_debit}&nbsp;</span><i class="fas fa-table"></i>
 						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="post_batch({val_a_batch_number_i})">
-							<span>{forms.post}&nbsp;</span><i class="fas fa-lock"></i>
-						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" style="margin-top:0.5em;" onclick="cancel_batch({val_a_batch_number_i})">
-							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
+						<button type="button" class="btn btn-warning" style="margin-top:0.5em;" onclick="submit_batch(this, {val_a_batch_number_i})">
+							<span>{submit_batch}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
 					</div>
 					<div class="col"></div>
@@ -153,7 +156,7 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 				</div>
 			</div>
 		</div>
@@ -197,8 +200,44 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this, onselect_donor)" size="40">
 								</div>
+								<button type="button" class="btn" id="btnEditContact">
+									<i class="fas fa-wrench"></i>
+								</button>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_sepa_bank_account}</span>
+							</div>
+							<div class="col">
+								<select name="p_banking_details_key_i" id="BankingDetailsKey">
+								</select>
+								<button type="button" class="btn" id="btnRefreshBankAccounts">
+									<i class="fas fa-sync"></i>
+								</button>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_sepa_mandate_reference}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input type="text" name="a_sepa_mandate_reference_c" value="">
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{trans_sepa_mandate_given}</span>
+							</div>
+							<div class="col">
+								<input type="date" name="a_sepa_mandate_given_d" value="">
 							</div>
 						</div>
 
@@ -231,7 +270,7 @@
 				<div class="modal-footer">
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -301,7 +340,7 @@
 								<span>{detail_date_start}</span>
 							</div>
 							<div class="col">
-								<input type="date" name="AStartDonations" required />
+								<input type="date" name="a_start_donations_d" required />
 							</div>
 						</div>
 
@@ -310,7 +349,7 @@
 								<span>{detail_date_end}</span>
 							</div>
 							<div class="col">
-								<input type="date" name="AEndDonations" value="" />
+								<input type="date" name="a_end_donations_d" value="" />
 							</div>
 						</div>
 
@@ -332,7 +371,7 @@
 				<div class="modal-footer">
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -353,9 +392,9 @@
 <div class="container" id="browse">
 	<div class="row">
 		<div class="col"><b>{batchnumber}</b></div>
-		<div class="col"><b>{batchname}</b></div>
+		<div class="col-3"><b>{batchname}</b></div>
 		<div class="col"><b>{batchtotal}</b></div>
-	<div class="col-1"></div>
+		<div class="col"></div>
 	</div>
 
 	<div id="browse_container" class="container-list">
@@ -370,3 +409,4 @@
 <script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/modal.js" charset="utf-8"></script>

@@ -36,7 +36,7 @@
 						<button type="button" class="btn btn-warning not_show_when_posted" onclick="post_batch({val_a_batch_number_i})">
 							<span>{forms.post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" onclick="cancel_batch({val_a_batch_number_i})">
+						<button type="button" class="btn btn-warning not_show_when_posted" onclick="cancel_batch(this, {val_a_batch_number_i})">
 							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
 						<button type="button" class="btn btn-primary not_show_when_posted" onclick="preview_batch({val_a_batch_number_i})">
@@ -180,7 +180,7 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -268,7 +268,7 @@
 					<button edit-only class="btn btn-warning only_show_when_posted" onclick="adjust_trans(this)">{adjustgift}</button>
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -350,7 +350,7 @@
 				<div class="modal-footer">
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -429,3 +429,4 @@
 <script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/modal.js" charset="utf-8"></script>

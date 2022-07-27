@@ -1,5 +1,5 @@
 -- passwords are inserted by OpenPetra.build
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_pwd_scheme_version_i, s_password_needs_change_l) VALUES('SYSADMIN', '{#PASSWORDHASHSYSADMIN}', '{#PASSWORDSALTSYSADMIN}', 0, false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_pwd_scheme_version_i, s_password_needs_change_l) VALUES('SYSADMIN', '{#PASSWORDHASHSYSADMIN}', '{#PASSWORDSALTSYSADMIN}', 0, true);
 INSERT INTO s_user(s_user_id_c, s_account_locked_l) VALUES('SELFSERVICE', false);
 
 -- load base data

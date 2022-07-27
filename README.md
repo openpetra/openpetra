@@ -20,7 +20,7 @@ You are welcome to try the demo at https://demo.openpetra.org. This is a public 
 OPENPETRA AS A SERVICE
 ----------------------
 
-Please have a look at https://www.openpetra.com for your own free test installation of OpenPetra, with unlimited testing period!
+Please have a look at https://openpetra.ossaas.de for your own free test installation of OpenPetra!
 
 COMMUNITY
 ---------
@@ -30,7 +30,7 @@ There is an english forum at https://forum.openpetra.org, and for german speaker
 DEVELOPMENT SETUP
 -----------------
 
-These are the steps required to setup a development environment on CentOS (7 and 8 and 8-Stream), Fedora (33 and 34), Debian (Buster aka 10) or Ubuntu LTS (Bionic aka 18.04, Focal aka 20.04):
+These are the steps required to setup a development environment on CentOS 8-Stream, Fedora 36, Debian Buster and Debian Bullseye, or Ubuntu LTS (Focal aka 20.04, Jammy aka 22.04):
 
 ```
 curl https://get.openpetra.org | bash -s devenv

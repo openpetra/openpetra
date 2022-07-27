@@ -63,7 +63,7 @@ function SetHtmlTemplate(filename, filedata) {
 
 	if (htmldata.length == 0 && DefaultNames["DefaultFileNameHTML"] == "") {
 		display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
-		setTimeout(hidePleaseWait, 500);
+		hidePleaseWait();
 		return;
 	}
 
@@ -258,13 +258,11 @@ function GenerateAnnualReceiptsRemote() {
 		{
 			display_message(i18next.t('PrintAnnualReceipts.errorempty'), "fail");
 		}
-		// somehow the operation can finish too soon, and hidePleaseWait would not hide the dialog
-		setTimeout(hidePleaseWait, 500);
+		hidePleaseWait();
 	})
 	.catch(error => {
 		console.log(error);
-		// somehow the error can be too early, and hidePleaseWait would not hide the dialog
-		setTimeout(hidePleaseWait, 500);
+		hidePleaseWait();
 		display_message(i18next.t('PrintAnnualReceipts.uploaderror'), "fail");
 	});
 };
@@ -273,5 +271,6 @@ function showPleaseWait() {
 	$('#myModal').modal();
 }
 function hidePleaseWait() {
-	$('#myModal').modal('hide');
+	// somehow the operation can finish too soon, so delay it by a little
+	setTimeout(function() { $('#myModal').modal('hide'); }, 500);
 }

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -71,6 +71,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     ///</summary>
     public class TReceiptingWebConnector
     {
+        private const string PARTNERTYPE_THANKYOU_NO_RECEIPT = "THANKYOU_NO_RECEIPT";
+
         /// <summary>
         /// create the annual gift receipts for all donors in the given year;
         /// returns the PDF file containing all receipts
@@ -147,16 +149,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             donorkeys.Columns.Add(new DataColumn("DonorKey"));
                             donorkeys.Columns.Add(new DataColumn("DonorName"));
+                            donorkeys.Columns.Add(new DataColumn("Status"));
+                            donorkeys.Columns.Add(new DataColumn("OnlyThankYouNoReceipt"));
                             DataRow SingleRow = donorkeys.NewRow();
                             SingleRow[0] = ADonorKey;
                             SingleRow[1] = ShortName;
+                            SingleRow[2] = String.Empty;
+                            SingleRow[3] = (DoNotSendReceiptButThankyouLetter(ADonorKey)?PARTNERTYPE_THANKYOU_NO_RECEIPT:String.Empty);
 
                             donorkeys.Rows.Add(SingleRow);
                         }
                         else
                         {
                             SortedList <string, string>Defines = new SortedList <string, string>();
-                            int CountParameters = 5;
+                            int CountParameters = 6;
 
                             if (!string.IsNullOrEmpty(AExtract))
                             {
@@ -168,30 +174,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
 
                             OdbcParameter[] parameters = new OdbcParameter[CountParameters];
-                            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
-                            parameters[0].Value = ALedgerNumber;
-                            parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
-                            parameters[1].Value = AStartDate;
-                            parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
-                            parameters[2].Value = AEndDate;
-                            parameters[3] = new OdbcParameter("IgnoreFrequency", OdbcType.Bit);
+                            parameters[0] = new OdbcParameter("PartnerTypeThankYou", OdbcType.VarChar);
+                            parameters[0].Value = PARTNERTYPE_THANKYOU_NO_RECEIPT;
+                            parameters[1] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                            parameters[1].Value = ALedgerNumber;
+                            parameters[2] = new OdbcParameter("StartDate", OdbcType.Date);
+                            parameters[2].Value = AStartDate;
+                            parameters[3] = new OdbcParameter("EndDate", OdbcType.Date);
+                            parameters[3].Value = AEndDate;
+                            parameters[4] = new OdbcParameter("IgnoreFrequency", OdbcType.Bit);
 
                             if (AFrequency == "")
                             {
-                                parameters[3].Value = true;
+                                parameters[4].Value = true;
                             }
                             else
                             {
-                                parameters[3].Value = false;
+                                parameters[4].Value = false;
                             }
 
-                            parameters[4] = new OdbcParameter("Frequency", OdbcType.VarChar);
-                            parameters[4].Value = AFrequency.ToUpper();
+                            parameters[5] = new OdbcParameter("Frequency", OdbcType.VarChar);
+                            parameters[5].Value = AFrequency.ToUpper();
 
                             if (!string.IsNullOrEmpty(AExtract))
                             {
-                                parameters[5] = new OdbcParameter("Extract", OdbcType.VarChar);
-                                parameters[5].Value = AExtract;
+                                parameters[6] = new OdbcParameter("Extract", OdbcType.VarChar);
+                                parameters[6].Value = AExtract;
                             }
 
                             donorkeys = db.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
@@ -228,6 +236,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             Int64 donorKey = Convert.ToInt64(donorrow[0]);
                             string donorName = donorrow[1].ToString();
+                            bool OnlyThankYouNoReceipt = (GetStringOrEmpty(donorrow[3]) == PARTNERTYPE_THANKYOU_NO_RECEIPT);
 
                             OdbcParameter[] parameters = new OdbcParameter[4];
                             parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
@@ -244,7 +253,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (donations.Rows.Count > 0)
                             {
                                 string letter =
-                                    FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
+                                    FormatLetter(donorKey, donorName, OnlyThankYouNoReceipt, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
 
                                 if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
                                 {
@@ -316,6 +325,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 "receipts",
                 ".html");
 
+            strHTMLData = Html2Pdf.StripLastPageBreak(strHTMLData);
+
             using (StreamWriter sw = new StreamWriter(HTMLFile))
             {
                 sw.Write(strHTMLData);
@@ -381,6 +392,60 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Should this partner receive a donation receipt, or just a thank you letter
+        /// </summary>
+        private static bool DoNotSendReceiptButThankyouLetter(Int64 APartnerKey)
+        {
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("Get Partner Type " + PARTNERTYPE_THANKYOU_NO_RECEIPT);
+            List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
+            bool ThankYouNoReceipt = false;
+
+            DB.ReadTransaction(ref T, delegate {
+
+                string sql = "SELECT " +
+                    "COUNT(*)" +
+                    "FROM `p_partner_type` " +
+                    "WHERE `p_partner_type`.`p_partner_key_n` = ? " +
+                    "AND `p_type_code_c` = '" + PARTNERTYPE_THANKYOU_NO_RECEIPT + "'";
+
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
+
+                ThankYouNoReceipt = (Convert.ToInt32(DB.ExecuteScalar(sql, T, SQLParameter.ToArray())) > 0);
+            });
+
+            return ThankYouNoReceipt;
+        }
+
+        private static string ReplaceIfSection(string msg, string name, bool condition)
+        {
+            while (msg.Contains("#if " + name))
+            {
+                int indexIf = msg.IndexOf("#if " + name);
+
+                int indexEndif = msg.IndexOf("#endif", indexIf);
+                if (indexEndif == -1)
+                {
+                    throw new Exception("missing #endif for " + name);
+                }
+
+                if (condition)
+                {
+                    // just drop the #if and #endif line
+                    msg = msg.Substring(0, indexEndif) + msg.Substring(indexEndif + "#endif".Length);
+                    msg = msg.Substring(0, indexIf) + msg.Substring(indexIf + ("#if " + name).Length);
+                }
+                else
+                {
+                    // drop the whole #if section
+                    msg = msg.Substring(0, indexIf) + msg.Substring(indexEndif + "#endif".Length);
+                }
+            }
+
+            return msg;
+        }
+
+        /// <summary>
         /// Format the letter for the donor with all the gifts
         ///
         /// Can also used for a single receipt.
@@ -388,6 +453,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <returns>One or more html documents, each in its own body tag, for printing with the HTML printer</returns>
         private static string FormatLetter(Int64 ADonorKey,
             string ADonorName,
+            bool AOnlyThankYouNoReceipt,
             DataTable ADonations,
             string ABaseCurrency,
             string AHTMLTemplate,
@@ -419,25 +485,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             string msg = AHTMLTemplate;
 
-            // do we have a section about consent for a defined purpose?
-            if (msg.Contains("#if UNDEFINEDCONSENT"))
-            {
-                int indexIf = msg.IndexOf("#if UNDEFINEDCONSENT");
+            // replace sections about consent for a defined purpose
+            msg = ReplaceIfSection(msg, "UNDEFINEDCONSENT", UndefinedConsent(ADonorKey));
 
-                if (UndefinedConsent(ADonorKey))
-                {
-                    // just drop the #if and #endif line
-                    msg = msg.Substring(0, indexIf) + msg.Substring(indexIf + "#if UNDEFINEDCONSENT".Length);
-                    int indexEndif = msg.IndexOf("#endif", indexIf);
-                    msg = msg.Substring(0, indexEndif) + msg.Substring(indexEndif + "#endif".Length);
-                }
-                else
-                {
-                    // drop the whole #if section
-                    int indexEndif = msg.IndexOf("#endif", indexIf);
-                    msg = msg.Substring(0, indexIf) + msg.Substring(indexEndif + "#endif".Length);
-                }
-            }
+            // replace sections about thank you letters vs receipts
+            msg = ReplaceIfSection(msg, "THANKYOU", AOnlyThankYouNoReceipt);
+            msg = ReplaceIfSection(msg, "RECEIPT", !AOnlyThankYouNoReceipt);
 
             if (ADonorName.Contains(","))
             {

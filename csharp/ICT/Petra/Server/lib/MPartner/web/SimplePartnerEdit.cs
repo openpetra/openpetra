@@ -272,7 +272,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PBankAccess.LoadByPrimaryKey(MainDS, banking.BankKey, Transaction);
                                 banking.Bic = MainDS.PBank[0].Bic;
                                 banking.BranchName = MainDS.PBank[0].BranchName;
-                                banking.Iban = FormatIBAN(banking.Iban);
+                                banking.Iban = TSEPAWriterDirectDebit.FormatIBAN(banking.Iban);
                                 MainDS.PBank.Rows.Clear();
                             }
 
@@ -843,20 +843,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             AVerificationResult = new TVerificationResultCollection();
             return true;
-        }
-
-        private static string FormatIBAN(string AIban)
-        {
-            AIban = AIban.Replace(" ", "");
-            int count = 0;
-            string orig = AIban;
-            AIban = String.Empty;
-            while (count + 4 < orig.Length)
-            {
-                AIban += orig.Substring(count, 4) + " ";
-                count += 4;
-            }
-            return (AIban + orig.Substring(count)).Trim();
         }
 
         /// this will use an external web service to check the IBAN, and get the BIC and the name of the bank

@@ -463,6 +463,11 @@ namespace Ict.Petra.Server.App.WebService
 
             if (assistant == String.Empty)
             {
+                assistant = TSettingsWebConnector.GetPasswordNeedsChange();
+            }
+
+            if (assistant == String.Empty)
+            {
                 assistant = TSettingsWebConnector.GetSetupAssistant();
             }
 

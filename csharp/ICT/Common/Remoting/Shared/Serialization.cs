@@ -270,6 +270,7 @@ namespace Ict.Common.Remoting.Shared
             if (s.EndsWith(":System.String"))
             {
                 s = s.Substring(0, s.Length - ":System.String".Length);
+                ValidateStringForInjectedHTML(s);
             }
 
             if (type == "System.Int64")
@@ -310,6 +311,7 @@ namespace Ict.Common.Remoting.Shared
                 {
                     return DeserializeFromBase64(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
                 }
+                ValidateStringForInjectedHTML(s);
                 return s;
             }
             else if (type == "System.Data.DataTable")
@@ -392,6 +394,7 @@ namespace Ict.Common.Remoting.Shared
                 string key = entry.Key;
                 string value = entry.Value;
 
+                ValidateStringForInjectedHTML(value);
                 result.Add(key, value);
             }
 
@@ -419,6 +422,10 @@ namespace Ict.Common.Remoting.Shared
 
                 foreach (KeyValuePair<string, object> entry in obj)
                 {
+                    if (entry.Value is String)
+                    {
+                        ValidateStringForInjectedHTML(entry.Value.ToString());
+                    }
                     row[entry.Key] = entry.Value;
                 }
 
@@ -447,6 +454,10 @@ namespace Ict.Common.Remoting.Shared
                         }
                         else
                         {
+                            if (cell.Value is String)
+                            {
+                                ValidateStringForInjectedHTML(cell.Value.ToString());
+                            }
                             row[cell.Key] = cell.Value;
                         }
                     }
@@ -456,6 +467,14 @@ namespace Ict.Common.Remoting.Shared
             }
 
             return dataset;
+        }
+
+        static private void ValidateStringForInjectedHTML(string s)
+        {
+            if (s.Contains('<') && s.Contains('>') && s.Contains('='))
+            {
+                throw new Exception("Invalid characters <, > and = in parameter: " + s);
+            }
         }
     }
 }

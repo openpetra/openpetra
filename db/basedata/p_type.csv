@@ -19,3 +19,4 @@ CHILDREN_HOME,Child at Orphanage,SPONSORED_CHILD_STATUS,true,true,false,?,?,?,?,
 HOME_BASED,Child at home,SPONSORED_CHILD_STATUS,true,true,false,?,?,?,?,?,?,?
 PREVIOUS_CHILD,Previous child,SPONSORED_CHILD_STATUS,true,true,false,?,?,?,?,?,?,?
 CHILD_DIED,Child passed away,SPONSORED_CHILD_STATUS,true,true,false,?,?,?,?,?,?,?
+THANKYOU_NO_RECEIPT,Receives no gift receipt but a thank you letter,?,true,false,false,?,?,?,?,?,?,?

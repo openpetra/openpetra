@@ -479,7 +479,7 @@
       <div class="modal-footer">
         <button class="btn btn-danger" onclick="MaintainChildren.delete()">{forms.delete}</button>
         <button class="btn btn-primary" onclick="MaintainChildren.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
       </div>
     </div>
   </div>
@@ -507,7 +507,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="MaintainChildComments.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
       </div>
     </div>
   </div>
@@ -544,7 +544,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="MaintainChildReminders.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
       </div>
     </div>
   </div>
@@ -622,7 +622,7 @@
       <div class="modal-footer">
         <button class="btn btn-danger" onclick="MaintainChildSponsorship.delete(this)">{forms.delete}</button>
         <button class="btn btn-primary" onclick="MaintainChildSponsorship.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
       </div>
     </div>
   </div>
@@ -634,3 +634,4 @@
 <script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/modal.js" charset="utf-8"></script>

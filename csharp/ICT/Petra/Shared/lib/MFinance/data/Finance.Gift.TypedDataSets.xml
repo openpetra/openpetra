@@ -52,6 +52,10 @@
             <CustomField name="CostCentreCode" type="String"/>
         </Table>
 
+        <Table sqltable="p_partner_banking_details">
+            <CustomField name="Iban" type="String"/>
+        </Table>
+
         <Table sqltable="a_motivation_group"/>
         <Table sqltable="a_motivation_detail"/>
         <Table sqltable="a_motivation_detail_fee"/>

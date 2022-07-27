@@ -126,13 +126,45 @@
 							</div>
 						</div>
 
+						<div class="row">
+							<div class="col">
+								<span>{sepa_creditor_name}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_sepa_creditor_name_c">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<span>{sepa_creditor_iban}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_sepa_creditor_iban_c">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<span>{sepa_creditor_bic}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_sepa_creditor_bic_c">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<span>{sepa_creditor_scheme_id}</span>
+							</div>
+							<div class="col">
+								<input type="text" name="a_sepa_creditor_scheme_id_c">
+							</div>
+						</div>
 
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-danger" onclick="delete_entry(this)">{forms.delete}</button>
 					<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 				</div>
 			</div>
 		</div>
@@ -192,7 +224,7 @@
 								<span>{entry_date}</span>
 							</div>
 							<div class="col">
-                <input type="date" class="date" name="ACalendarStartDate" id="ACalendarStartDate">
+								<input type="date" class="date" name="ACalendarStartDate" id="ACalendarStartDate">
 							</div>
 						</div>
 
@@ -213,16 +245,16 @@
 								<span>{entry_first_current_period}</span>
 							</div>
 							<div class="col">
-                <input type="number" name="ACurrentPeriod" value="1">
+								<input type="number" name="ACurrentPeriod" value="1">
 							</div>
 						</div>
 
-            <div class="row">
+						<div class="row">
 							<div class="col">
 								<span>{entry_posting_periods}</span>
 							</div>
 							<div class="col">
-                <input type="number" name="a_number_fwd_posting_periods_i" value="8">
+								<input type="number" name="a_number_fwd_posting_periods_i" value="8">
 							</div>
 						</div>
 
@@ -230,7 +262,7 @@
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-primary" onclick="save_new()">{forms.save}</button>
-					<button class="btn btn-light" onclick="$(this).closest('.modal').modal('hide')">{forms.close}</button>
+					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
 				</div>
 			</div>
 		</div>
@@ -264,3 +296,4 @@
 
 <script src="/src/lib/utils.js" charset="utf-8"></script>
 <script src="/src/lib/tpl.js" charset="utf-8"></script>
+<script src="/src/lib/modal.js" charset="utf-8"></script>

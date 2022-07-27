@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using System.IO;
 
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
@@ -218,48 +219,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// create a gift batch from a recurring gift batch
         /// including gift and gift detail
         /// </summary>
-        /// <param name="ARequestParams">HashTable with many parameters</param>
+        /// <param name="ALedgerNumber">The current Ledger</param>
+        /// <param name="ARecurringBatchNumber">The batch number of the recurring gift batch</param>
+        /// <param name="AEffectiveDate">The date effective for the new gift batch</param>
+        /// <param name="AReference">The reference for the gifts. If empty the reference from the recurring gift will be used.</param>
+        /// <param name="AExchangeRateToBase">Exchange rate to base currency</param>
+        /// <param name="AExchangeRateIntlToBase">Exchange rate to international currency</param>
         /// <param name="ANewGiftBatchNo">The new gift batch number</param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool SubmitRecurringGiftBatch(Hashtable ARequestParams, out int ANewGiftBatchNo)
+        public static bool SubmitRecurringGiftBatch(Int32 ALedgerNumber, Int32 ARecurringBatchNumber,
+            DateTime AEffectiveDate, string AReference,
+            Decimal AExchangeRateToBase, Decimal AExchangeRateIntlToBase,
+            out int ANewGiftBatchNo)
         {
             ANewGiftBatchNo = 0;
 
-            Int32 ALedgerNumber;
-            Int32 ABatchNumber;
-            DateTime AEffectiveDate;
-            String AReference;
-            Decimal AExchangeRateToBase;
-            Decimal AExchangeRateIntlToBase;
-
             #region Validate Parameter Arguments
-
-            try
-            {
-                ALedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-                ABatchNumber = (Int32)ARequestParams["ABatchNumber"];
-                AEffectiveDate = (DateTime)ARequestParams["AEffectiveDate"];
-                AReference = (String)ARequestParams["AReference"];
-                AExchangeRateToBase = (Decimal)ARequestParams["AExchangeRateToBase"];
-                AExchangeRateIntlToBase = (Decimal)ARequestParams["AExchangeRateIntlToBase"];
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
-
             if (ALedgerNumber <= 0)
             {
                 throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
-            else if (ABatchNumber <= 0)
+            else if (ARecurringBatchNumber <= 0)
             {
                 throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Batch number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+                        Utilities.GetMethodName(true)), ALedgerNumber, ARecurringBatchNumber);
             }
             else if (AExchangeRateToBase <= 0)
             {
@@ -283,7 +269,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             int NewGiftBatchNumber = -1;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            GiftBatchTDS MainRecurringDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
+            GiftBatchTDS MainRecurringDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ARecurringBatchNumber);
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("SubmitRecurringGiftBatch");
@@ -297,7 +283,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     delegate
                     {
                         ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainRecurringDS, ALedgerNumber, ABatchNumber, Transaction);
+                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainRecurringDS, ALedgerNumber, ARecurringBatchNumber, Transaction);
 
                         #region Validate Data
 
@@ -311,7 +297,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
                                         "Function:{0} - Details for Recurring Gift Batch {1} could not be accessed!"), Utilities.GetMethodSignature(),
-                                    ABatchNumber));
+                                    ARecurringBatchNumber));
                         }
 
                         #endregion Validate Data
@@ -319,7 +305,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         // Assuming all relevant data is loaded in MainRecurringDS
                         ARecurringGiftBatchRow recBatch = (ARecurringGiftBatchRow)MainRecurringDS.ARecurringGiftBatch[0];
 
-                        if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
+                        if ((recBatch.BatchNumber == ARecurringBatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
                         {
                             Decimal batchTotal = 0;
 
@@ -349,7 +335,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             {
                                 ARecurringGiftRow recGift = (ARecurringGiftRow)giftRV.Row;
 
-                                if ((recGift.BatchNumber == ABatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
+                                if ((recGift.BatchNumber == ARecurringBatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
                                 {
                                     //Look if there is a detail which is in the donation period (else continue)
                                     bool foundDetail = false;
@@ -357,7 +343,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
                                     {
                                         if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
-                                            && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                            && (recGiftDetail.BatchNumber == ARecurringBatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
                                             && ((recGiftDetail.StartDonations == null) || (AEffectiveDate >= recGiftDetail.StartDonations))
                                             && ((recGiftDetail.EndDonations == null) || (AEffectiveDate <= recGiftDetail.EndDonations))
                                             )
@@ -420,7 +406,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         decimal amtTrans = 0M;
 
                                         if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
-                                            && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                            && (recGiftDetail.BatchNumber == ARecurringBatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
                                             && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= AEffectiveDate))
                                             && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
                                             )
@@ -1789,6 +1775,54 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return true;
         }
 
+        private static void FormatIBAN(ref GiftBatchTDS AGiftDS)
+        {
+            foreach (GiftBatchTDSPPartnerBankingDetailsRow row in AGiftDS.PPartnerBankingDetails.Rows)
+            {
+                row.Iban = TSEPAWriterDirectDebit.FormatIBAN(row["p_iban_c"].ToString());
+                row.AcceptChanges();
+            }
+        }
+
+        /// <summary>
+        /// loads a list of banking details for the given partner
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadBankingDetailsOfPartner(Int64 APartnerKey)
+        {
+            GiftBatchTDS GiftDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase db = DBAccess.Connect("LoadBankingDetailsOfPartner");
+
+            db.ReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    // load the bank accounts of the donors
+                    string getBankAccountsSQL =
+                        "SELECT DISTINCT pbd.p_partner_key_n, pbd.p_banking_details_key_i, bd.p_iban_c" +
+                        " FROM p_partner_banking_details pbd JOIN p_banking_details bd ON pbd.p_banking_details_key_i = bd.p_banking_details_key_i" +
+                        " WHERE pbd.p_partner_key_n = ?";
+
+                    List <OdbcParameter>parameters = new List <OdbcParameter>();
+                    OdbcParameter param = new OdbcParameter("partnerkey", OdbcType.BigInt);
+                    param.Value = APartnerKey;
+                    parameters.Add(param);
+
+                    db.Select(GiftDS, getBankAccountsSQL, GiftDS.PPartnerBankingDetails.TableName,
+                        Transaction,
+                        parameters.ToArray(), 0, 0);
+                    FormatIBAN(ref GiftDS);
+                });
+
+            db.CloseDBConnection();
+
+            return GiftDS;
+        }
+
         /// <summary>
         /// loads a list of recurring gift transactions and details for the given ledger and recurring batch
         /// </summary>
@@ -1836,7 +1870,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // drop all tables apart from ARecurringGift and ARecurringGiftDetail
                 foreach (DataTable table in MainDS.Tables)
                 {
-                    if ((table.TableName != MainDS.ARecurringGift.TableName) && (table.TableName != MainDS.ARecurringGiftDetail.TableName))
+                    if ((table.TableName != MainDS.ARecurringGift.TableName)
+                        && (table.TableName != MainDS.ARecurringGiftDetail.TableName)
+                        && (table.TableName != MainDS.PPartnerBankingDetails.TableName))
                     {
                         table.Clear();
                     }
@@ -2669,12 +2705,47 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 AGiftTransactionNumber,
             Int64 ADonorKey,
             string AReference,
-            string AIBAN,
-            string ASEPAMandate,
+            Int32 ABankingDetailsKey,
+            string ASepaMandateReference,
+            DateTime? ASepaMandateGiven,
             out TVerificationResultCollection AVerificationResult)
         {
             GiftBatchTDS MainDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
             AVerificationResult = new TVerificationResultCollection();
+
+            if ((action == "create" || action == "edit") && ABankingDetailsKey > 0)
+            {
+                // Validate if the BankingDetailsKey belongs to an account of that donor
+                TDBTransaction ReadTransaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("ValidateBankingDetailsKey");
+
+                bool ValidBankAccount = true;
+                try
+                {
+                    db.ReadTransaction(
+                        ref ReadTransaction,
+                        delegate
+                        {
+                            if (false == PPartnerBankingDetailsAccess.Exists(ADonorKey, ABankingDetailsKey, ReadTransaction))
+                            {
+                                TLogging.Log("Someone is trying to connect a bank account of another partner to the current donor");
+                                ValidBankAccount = false;
+                            }
+                        });
+                }
+                catch (Exception ex)
+                {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
+                }
+
+                db.CloseDBConnection();
+
+                if (!ValidBankAccount)
+                {
+                    return false;
+                }
+            }
 
             if (action == "create")
             {
@@ -2684,9 +2755,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.GiftTransactionNumber = AGiftTransactionNumber;
                 row.DonorKey = ADonorKey;
                 row.Reference = AReference;
-                // TODO: set IBAN of main bank account of partner
-                // TODO: set SEPAMandate in p_data_label_value_partner
-                // UpdateSEPAMandate(ALedgerNumber, ADonorKey, AIBAN, ASEPAMandate);
+                row.BankingDetailsKey = ABankingDetailsKey;
+                row.SepaMandateReference = ASepaMandateReference;
+                row.SepaMandateGiven = ASepaMandateGiven;
                 MainDS.ARecurringGift.Rows.Add(row);
 
                 // TODO update recurring gift batch last transaction number???
@@ -2708,6 +2779,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         row.DonorKey = ADonorKey;
                         row.Reference = AReference;
+                        row.BankingDetailsKey = ABankingDetailsKey;
+                        row.SepaMandateReference = ASepaMandateReference;
+                        row.SepaMandateGiven = ASepaMandateGiven;
                     }
                 }
 
@@ -3582,7 +3656,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        /// load the donor names and tax settings for a given batch
+        /// load the donor names and tax settings and bank accounts for a given batch
         [NoRemoting]
         public static void LoadGiftDonorRelatedData(GiftBatchTDS AGiftDS,
             bool ARecurring,
@@ -3735,6 +3809,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ATransaction.DataBaseObj.Select(AGiftDS, query,
                         AGiftDS.PTax.TableName, ATransaction);
                 }
+
+                // load the bank accounts of the donors
+                string getBankAccountsSQL =
+                    "SELECT DISTINCT pbd.p_partner_key_n, pbd.p_banking_details_key_i, bd.p_iban_c" +
+                    " FROM p_partner_banking_details pbd JOIN p_banking_details bd ON pbd.p_banking_details_key_i = bd.p_banking_details_key_i" +
+                    " WHERE pbd.p_partner_key_n IN" +
+                                   " (SELECT DISTINCT p_donor_key_n FROM PUB_a_gift WHERE" +
+                                   " a_ledger_number_i = ?" +
+                                   " AND a_batch_number_i = ?)";
+
+                if (ARecurring)
+                {
+                    getBankAccountsSQL = getBankAccountsSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
+                }
+
+                ATransaction.DataBaseObj.Select(AGiftDS, getBankAccountsSQL, AGiftDS.PPartnerBankingDetails.TableName,
+                    ATransaction,
+                    parameters.ToArray(), 0, 0);
+                FormatIBAN(ref AGiftDS);
             }
             catch (Exception ex)
             {
@@ -5593,6 +5686,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AFieldNumber,
                 AIncludeUnposted,
                 out AExportExcel, out AMessages);
+        }
+
+        /// <summary>
+        /// export a recurring gift batch to a SEPA Direct Debit file
+        /// </summary>
+        /// <param name="ALedgerNumber">The current Ledger</param>
+        /// <param name="ARecurringBatchNumber">The batch number of the recurring gift batch</param>
+        /// <param name="ACollectionDate">The date when the direct debit will be collected</param>
+        /// <param name="ASEPAFileContent">The content of the SEPA file</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
+        /// <returns>true on success</returns>
+        [RequireModulePermission("FINANCE-1")]
+        static public Boolean ExportRecurringGiftBatch(
+            Int32 ALedgerNumber,
+            Int32 ARecurringBatchNumber,
+            DateTime ACollectionDate,
+            out String ASEPAFileContent,
+            out TVerificationResultCollection AMessages)
+        {
+            return TGiftExportingSEPA.ExportRecurringGiftBatch(
+                ALedgerNumber,
+                ARecurringBatchNumber,
+                ACollectionDate,
+                out ASEPAFileContent, out AMessages);
         }
 
         /// <summary>

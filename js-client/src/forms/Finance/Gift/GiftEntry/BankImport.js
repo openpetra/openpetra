@@ -191,7 +191,7 @@ function save_edit_trans(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			display_message(i18next.t('forms.saved'), "success");
-			$('#modal_space .modal').modal('hide');
+			CloseModal(obj);
 			display_list();
 		}
 		else if (parsed.result == false) {

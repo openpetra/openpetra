@@ -37,7 +37,7 @@
         "contribute_caption": "We need you!",
         "contribute_text": "OpenPetra is an Open Source project. Everyone can contribute, and give something back. Even without programming skills, there are important tasks, like helping other users in the forum, or to contribute to the manual, and much more...",
         "sales_caption": "You need a professional partner?",
-        "sales_text": "Your charity needs a reliable partner, that helps with getting OpenPetra up and running in your organisation, and can also develop extensions: Contact us at <a href='mailto:sales@openpetra.com'>sales@openpetra.com</a> to start a conversation!"
+        "sales_text": "Your charity needs a reliable partner, that helps with getting OpenPetra up and running in your organisation, and can also develop extensions: Contact us at <a href='mailto:service@openpetra.com'>service@openpetra.com</a> to start a conversation!"
     },
     "navigation": {
         "openpetra": "OpenPetra",
@@ -145,6 +145,7 @@
         "report": "Show Report",
         "download_excel": "Get Excel file",
         "download_pdf": "Get PDF file",
+        "none_selected": "None selected",
         "any": "any",
         "status": "Status",
         "name": "Name",
@@ -236,6 +237,7 @@
         "neworganisation": "Add organisation",
         "partnerkey": "Partner key",
         "error_invalid_contact_key": "Invalid contact number in the filter",
+        "error_first_submit_partner": "You must first save this contact",
         "partnername": "Name",
         "city": "City",
         "postalcode": "Postal code",
@@ -450,6 +452,9 @@
         "trans_account_code": "Account",
         "trans_ccenter_code": "Cost centre",
         "trans_motivation": "Motivation Group and Detail",
+        "trans_sepa_mandate_reference": "Mandate Reference",
+        "trans_sepa_mandate_given": "Mandate given on",
+        "trans_sepa_bank_account": "Bank Account for SEPA Direct Debit",
         "motivation_group_code": "Motivation Group Code",
         "motivation_detail_code": "Motivation Detail Code",
         "detail_date_start": "Valid from",
@@ -460,9 +465,10 @@
         "edittitle_trans": "Edit transaction",
         "trans_description": "Transaction Comment",
         "edittitle_trans_detail": "Edit transaction details",
-        "success_adjust": "An adjustment batch has been created",
-        "success_cancelled": "The Batch has been cancelled",
-        "success_posted": "The Batch has been posted"
+        "submit_date": "Date for current direct debit",
+        "download_sepa_direct_debit": "Download SEPA Direct Debit File",
+        "submit_batch": "Submit to new gift batch",
+        "success_submit": "The Gift Batch has been submitted for this month"
     },
     "SelectPeriods": {
         "all_periods": "All periods",
@@ -526,6 +532,10 @@
         "entry_first_current_period": "start with current period",
         "entry_account_periods": "number of accounting periods",
         "entry_posting_periods": "number of forward posting periods",
+        "sepa_creditor_name": "Our name as account owner for SEPA Direct Debit",
+        "sepa_creditor_iban": "Our IBAN for SEPA Direct Debit",
+        "sepa_creditor_bic": "Our BIC for SEPA Direct Debit",
+        "sepa_creditor_scheme_id": "Our SEPA creditor scheme ID",
         "error_create": "Creation of the ledger failed",
         "ask_delete": "Sure you wanna delete this ledger?",
         "confirm_edit": "The Ledger has been updated",

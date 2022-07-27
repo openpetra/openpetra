@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,6 +66,7 @@ namespace Ict.Petra.Shared
         public static void SetUserInfo(TPetraPrincipal value)
         {
             TSession.SetVariable("UserInfo", value);
+            TSession.SetVariable("UserID", value.UserID);
         }
     }
 }
