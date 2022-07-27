@@ -237,6 +237,7 @@
         "neworganisation": "Add organisation",
         "partnerkey": "Partner key",
         "error_invalid_contact_key": "Invalid contact number in the filter",
+        "error_first_submit_partner": "You must first save this contact",
         "partnername": "Name",
         "city": "City",
         "postalcode": "Postal code",

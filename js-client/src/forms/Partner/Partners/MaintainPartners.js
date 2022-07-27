@@ -134,6 +134,7 @@ class MaintainPartners {
 			};
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
 			var parsed = JSON.parse(data.data.d);
+			self.PartnerStoredInDB = false;
 			self.display_partner(parsed);
 		});
 	}
@@ -145,6 +146,7 @@ class MaintainPartners {
 			};
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_CreateNewPartner', r ).then(function (data) {
 			var parsed = JSON.parse(data.data.d);
+			self.PartnerStoredInDB = false;
 			self.display_partner(parsed);
 		});
 	}
@@ -158,6 +160,7 @@ class MaintainPartners {
 		// so everything is up to date and we don't have to load it, if we only search
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetails', r).then(function (data) {
 			var parsed = JSON.parse(data.data.d);
+			self.PartnerStoredInDB = true;
 			self.display_partner(parsed);
 		})
 	}
@@ -217,14 +220,32 @@ class MaintainPartners {
 
 		myModal.find('#btnSavePartner').click(function(){ self.save_partner(this); });
 		myModal.find('#btnDeletePartner').click(function(){ self.delete_partner(this); });
+		myModal.find('#btnClosePartner').click(function(){ self.close_partner(this); });
 		myModal.find('#btnAddBankAccount').click(function(){
+			if (!self.PartnerStoredInDB) {
+				display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
+				return;
+			}
 			let PartnerEditForm = $('#partneredit' + self.partnerkey);
-			self.new_bank_account(self.partnerkey,
-				PartnerEditForm.find("input[name='PFamily_p_first_name_c']").val(),
-				PartnerEditForm.find("input[name='PFamily_p_family_name_c']").val());
+			let accountname = PartnerEditForm.find("input[name='p_organisation_name_c']").val();
+			if (accountname == "") {
+				accountname = PartnerEditForm.find("input[name='p_unit_name_c']").val();
+			}
+			if (accountname == "") {
+				accountname =
+					PartnerEditForm.find("input[name='PFamily_p_first_name_c']").val() + " " +
+					PartnerEditForm.find("input[name='PFamily_p_family_name_c']").val();
+			}
+			self.new_bank_account(self.partnerkey, accountname.trim());
 		});
 
-		myModal.find("#btnOpenHistory").click(function() { self.open_history(); });
+		myModal.find("#btnOpenHistory").click(function() {
+			if (!self.PartnerStoredInDB) {
+				display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
+				return;
+			}
+			self.open_history();
+		});
 
 		myModal.find('#street_name').change(function(){ self.insert_consent(this, 'address') });
 		myModal.find('#email_address').change(function(){ self.insert_consent(this, 'email address') });
@@ -254,12 +275,12 @@ class MaintainPartners {
 		return m;
 	}
 
-	new_bank_account(firstname, lastname) {
+	new_bank_account(partnerkey, accountname) {
 		var self = this;
 		if (!allow_modal()) {return}
 		let x = {
 			p_partner_key_n: self.partnerkey,
-			p_account_name_c: (firstname + " " + lastname).trim(),
+			p_account_name_c: accountname,
 			p_banking_details_key_i: -1
 		};
 		let p = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), x);
@@ -360,9 +381,19 @@ class MaintainPartners {
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartner', r).then(function (data) {
 			var parsed = JSON.parse(data.data.d);
 			if (parsed.result == true) {
-				CloseModal(modal);
+				self.PartnerStoredInDB = true;
 				display_message(i18next.t('forms.saved'), "success");
-				self.display_list();
+
+				// reload the partner
+				var r = {
+					APartnerKey: self.partnerkey,
+				};
+				api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetPartnerDetails', r).then(function (data) {
+					var parsed = JSON.parse(data.data.d);
+					self.PartnerStoredInDB = true;
+					// make a deep copy of the server data and set it as a global var.
+					last_opened_entry_data = $.extend(true, {}, parsed);
+				});
 			}
 			else if (parsed.AVerificationResult[0].code == "consent_error") {
 				// probably only the city or postcode was changed, but not the address
@@ -372,6 +403,13 @@ class MaintainPartners {
 				display_error( parsed.AVerificationResult );
 			}
 		})
+	}
+
+	close_partner(obj) {
+		var self = this;
+		let modal = FindMyModal(obj)
+		CloseModal(modal);
+		self.display_list();
 	}
 
 	delete_partner(obj) {
