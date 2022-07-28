@@ -282,6 +282,27 @@ namespace Ict.Common.Session
             FSessionValues = JsonConvert.DeserializeObject<SortedList <string, string>>(jsonString);
         }
 
+        // TODO: drop this method once all databases have been upgraded to version 2022.06
+        private static bool CheckForSessionUserIDColumn(TDBTransaction AWriteTransaction)
+        {
+            bool ColumnExists = false;
+
+            try
+            {
+                string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_user_id_c = 'TEST'";
+                if (Convert.ToInt32(AWriteTransaction.DataBaseObj.ExecuteScalar(sql, AWriteTransaction)) == 0)
+                {
+                    ColumnExists = true;
+                }
+            }
+            catch (System.Exception)
+            {
+                // the column must be added
+            }
+
+            return ColumnExists;
+        }
+
         private static void SaveSession(TDBTransaction AWriteTransaction)
         {
             string sql = "SELECT COUNT(*) FROM PUB_s_session WHERE s_session_id_c = ?";
@@ -304,7 +325,11 @@ namespace Ict.Common.Session
                 parameters[1].Value = FSessionID;
                 sql = "UPDATE PUB_s_session SET s_session_values_c = ? WHERE s_session_id_c = ?";
 
-                if (FSessionValues.Keys.Contains("UserID"))
+                // check if the field is already available.
+                // this can be dropped when all databases have been upgraded.
+                bool SessionUserIDColumnExists = CheckForSessionUserIDColumn(AWriteTransaction);
+
+                if (SessionUserIDColumnExists && FSessionValues.Keys.Contains("UserID"))
                 {
                     parameters = new OdbcParameter[3];
                     parameters[0] = new OdbcParameter("s_session_values_c", OdbcType.Text);
