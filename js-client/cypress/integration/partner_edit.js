@@ -39,6 +39,7 @@ describe('find and edit partner', function() {
     cy.get('#modal_space #btnSavePartner').click()
     cy.wait('@SavePartner')
     cy.get('#message').should("be.visible").should("contain", 'Successfully saved')
+    cy.get('#modal_space #btnClosePartner').click()
 
     cy.visit('/Partner/Partners/MaintainPartners')
     cy.get('#btnFilter').click()
@@ -68,6 +69,7 @@ describe('find and edit partner', function() {
     cy.wait('@SavePartner2')
     cy.get('#message').should("be.visible")
     cy.get('#message').should("contain", 'Successfully saved')
+    cy.get('#modal_space #btnClosePartner').click()
 
     cy.get('#navbarDropdownUser').click()
     cy.wait(500) // wait for dropdown to drop down
