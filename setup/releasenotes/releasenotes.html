@@ -12,6 +12,47 @@
 <div id="main">
 <h2>Monthly Releases of OpenPetra</h2>
 
+<h3>Release 2022.07: July 29th, 2022</h3>
+
+<p>This release includes the work since October 2021.<br/>
+There has been quite some work in the background.<br/>
+Most significant changes have been improvements to security, and the new feature of recurring donations and SEPA Direct Debit support.
+</p>
+
+<p>So here is the list of changes for this release:</p>
+
+Security related:
+<ul>
+    <li>Avoid Cross-site scripting by validating all user input from the web</li>
+    <li>If user changes the password then all other sessions must be invalidated</li>
+    <li>Force SYSADMIN to change the password in a fresh system</li>
+</ul>
+
+Donation Module:
+<ul>
+    <li>Recurring Donation Batches for member fees, with export of SEPA Direct Debit file and submission of Donation Batch</li>
+    <li>Do not print a formal receipt for other charities that have donated to our charity</li>
+    <li>There was always an empty page at the end of the receipts</li>
+</ul>
+
+Accounting Module:
+<ul>
+    <li>Delete Ledger: this was broken and now works again</li>
+    <li>Import of skr49 account hierarchy failed because of security check</li>
+</ul>
+
+General UI issues:
+<ul>
+    <li>When an error or success message is displayed at the top of the screen the focus was for the full width</li>
+    <li>switching between different forms did not work properly</li>
+    <li>hide wait message after exporting database as yml.gz file</li>
+    <li>special url or parameter to show password reset form</li>
+</ul>
+
+<p>For more details about the issues solved in this release, visit the 
+    <a href="https://github.com/openpetra/openpetra/milestone/18?closed=1" rel=" nofollow ugc" target="_blank">Milestone at Github for release 2022.07</a>!</p>
+
+
 <h3>Release 2021.10: October 26th, 2021</h3>
 
 <p>This release includes the work since May.<br/>

@@ -12,6 +12,46 @@
 
 <h2>Bemerkungen zu den monatlichen Veröffentlichungen von OpenPetra</h2>
 
+<h3>Version 2022.07 vom 29. Juli 2020</h3>
+
+<p>In dieser Version steckt die Arbeit seit Oktober 2021.<br/>
+Es wurde viel Zeit in verschiedene Verbesserungen investiert.<br/>
+Am wichtigsten sind Verbesserungen im Bereich der Sicherheit, und die neuen Funktionen für die Verwaltung von Lastschriften für Spenden und Mitgliedsbeiträge, inkl. Export einer SEPA Lastschrift Datei.
+</p>
+
+<p>Hier ist die Liste der Verbesserungen in dieser Version:</p>
+
+Bereich der Sicherheit:
+<ul>
+    <li>Verhinderung von Attacken durch Überprüfung aller Benutzereingaben, die aus dem Webbrowser kommen.</li>
+    <li>Falls der Benutzer sein Passwort ändert, werden alle anderen Sitzungen des Benutzers beendet.</li>
+    <li>In einer neuen Instanz wird der Benutzer SYSADMIN dazu aufgefordert, das Passwort zu ändern.</li>
+</ul>
+
+Spendenmodul:
+<ul>
+    <li>Daueraufträge für Lastschriften, für wiederkehrende Spenden oder Mitgliedsbeiträge, mit Erzeugung einer SEPA Lastschriftdatei für die Bank und die Übertragung in einen Spendenstapel im aktuellen Monat.</li>
+    <li>Es ist nun möglich, die Erstellung von Spendenbescheinigungen für andere Vereine zu verhindern, die an unseren Verein gespendet haben, denen wir aber keine Zuwendungsbestätigung ausstellen dürfen.</li>
+    <li>Am Ende der Spendenbescheinigungen wurde immer eine leere Seite gedruckt.</li>
+</ul>
+
+Finanzmodul:
+<ul>
+    <li>Das Löschen eines Hauptbuches funktioniert nun wieder.</li>
+    <li>Der Import von einem SKR-49 Kontorahmen hat vorübergehend nicht funktioniert, weil die Sicherheitsprüfung zu vorsichtig war.</li>
+</ul>
+
+Allgemeine Benutzeroberfläche:
+<ul>
+    <li>Bei Fehlermeldungen oder Warnungen hat das Meldungsfenster den Mausfokus über die ganze Breite des Browsers in Anspruch genommen, obwohl das Fenster kleiner angezeigt wurde.</li>
+    <li>Der Wechsel zwischen verschiedenen Formularen hat nicht richtig funktioniert.</li>
+    <li>Nach dem Export der Daten als yml.gz Datei wird nun die Meldung über das Warten auf den Abschluss am Ende geschlossen.</li>
+    <li>Es gibt nun eine direkte URL für das Zurücksetzen des Passworts.</li>
+</ul>
+
+<p>Weitere Details über die gelösten Aufgaben dieser Version sind in dem
+    <a href="https://github.com/openpetra/openpetra/milestone/18?closed=1" rel=" nofollow ugc" target="_blank">Meilenstein auf Github für die Version 2022.07</a> zu finden!</p>
+
 <h3>Version 2021.10 vom 26. Oktober 2021</h3>
 
 <p>In dieser Version steckt die Arbeit seit Mai.<br/>

@@ -356,7 +356,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         TResultSeverity.Resv_Critical,
                         Guid.Empty));
                 }
-                else
+                else if (Amount > 0)
                 {
                     string EndToEndId = Row.DonorKey.ToString();
                     AWriter.AddPaymentToSEPADirectDebitFile(SequenceType, DebtorName, DebtorIBAN, DebtorBIC,
