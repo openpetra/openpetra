@@ -169,6 +169,8 @@ function new_trans(ledger_number, batch_number) {
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
+
+	install_ContactEdit_and_RefreshAccounts(p, '-1');
 };
 
 function new_trans_detail(ledger_number, batch_number, trans_id) {
@@ -247,19 +249,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 			}
 		}
 
-		let btnEditContact = tpl_edit_raw.find("#btnEditContact");
-		btnEditContact.attr('partnerkey', searched['p_donor_key_n']);
-		btnEditContact.click(function() {
-			let partnerkey = $(this).attr('partnerkey');
-			window.open("/Partner/Partners/MaintainPartners?partnerkey=" + partnerkey, "_blank");
-		});
-
-		let btnRefreshBankAccounts = tpl_edit_raw.find("#btnRefreshBankAccounts");
-		btnRefreshBankAccounts.attr('partnerkey', searched['p_donor_key_n']);
-		btnRefreshBankAccounts.click(function() {
-			let partnerkey = $(this).attr('partnerkey');
-			onselect_donor($(this), partnerkey, false);
-		});
+		install_ContactEdit_and_RefreshAccounts(tpl_edit_raw, searched['p_donor_key_n']);
 
 		tpl_edit_raw = loadbankaccounts(parsed.result.PPartnerBankingDetails, searched['p_donor_key_n'], searched['p_banking_details_key_i'], tpl_edit_raw)
 		$('#modal_space').html(tpl_edit_raw);
@@ -267,6 +257,22 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		tpl_edit_raw.modal('show');
 
 	})
+}
+
+function install_ContactEdit_and_RefreshAccounts(obj, donorkey) {
+	let btnEditContact = obj.find("#btnEditContact");
+	btnEditContact.attr('partnerkey', donorkey);
+	btnEditContact.click(function() {
+		let partnerkey = $(this).attr('partnerkey');
+		window.open("/Partner/Partners/MaintainPartners?partnerkey=" + partnerkey, "_blank");
+	});
+
+	let btnRefreshBankAccounts = obj.find("#btnRefreshBankAccounts");
+	btnRefreshBankAccounts.attr('partnerkey', donorkey);
+	btnRefreshBankAccounts.click(function() {
+		let partnerkey = $(this).attr('partnerkey');
+		onselect_donor($(this), partnerkey, false);
+	});
 }
 
 function onselect_donor(obj, donor_key, reset_selection = true) {
@@ -284,6 +290,14 @@ function onselect_donor(obj, donor_key, reset_selection = true) {
 		btnEditContact.attr('partnerkey', donor_key);
 		let btnRefreshBankAccounts = obj.closest('.modal').find("#btnRefreshBankAccounts");
 		btnRefreshBankAccounts.attr('partnerkey', donor_key);
+
+		mandateReferenceID = obj.closest('.modal').find('input[name=a_sepa_mandate_reference_c]');
+		if (mandateReferenceID.val() == '') {
+			var today = new Date();
+			var datebackwards = today.toISOString().slice(0,10).replace(/-/g,"");
+			mandateReferenceID.val(donor_key + datebackwards);
+		}
+
 	})
 }
 
