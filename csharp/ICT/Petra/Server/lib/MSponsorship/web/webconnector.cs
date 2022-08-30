@@ -1244,7 +1244,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
                 if (BankstatementAmounts.DefaultView.Count == 0)
                 {
-                    string msg = String.Format("cannot find a donation: {0} {4} {1}/{2} {3}",
+                    string msg = String.Format("cannot find a donation:; {0}; {4}; {1}/{2}; sponsorship: {3}",
                         sponsorshipRow["p_donor_key_n"],
                         sponsorshipRow["a_motivation_group_code_c"], sponsorshipRow["a_motivation_detail_code_c"],
                         sponsorshipRow["total"],
@@ -1258,7 +1258,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     DataRow statementRow = BankstatementAmounts.DefaultView[0].Row;
                     if (Convert.ToDecimal(statementRow["total"]) != Convert.ToDecimal(sponsorshipRow["total"]))
                     {
-                        string msg = String.Format("this is different: {0} {5} {1}/{2} statement: {3} sponsorship: {4}",
+                        string msg = String.Format("this is different:; {0}; {5}; {1}/{2}; statement: {3} sponsorship {4}",
                             sponsorshipRow["p_donor_key_n"],
                             sponsorshipRow["a_motivation_group_code_c"], sponsorshipRow["a_motivation_detail_code_c"],
                             statementRow["total"], sponsorshipRow["total"],
@@ -1279,14 +1279,14 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 }
 
                 SponsorshipAmounts.DefaultView.RowFilter =
-                    String.Format("{0}={1}",
+                    String.Format("{0}={1} and {2} = '{3}' and {4} = '{5}'",
                         "p_donor_key_n", statementRow["p_donor_key_n"],
                         "a_motivation_group_code_c", statementRow["a_motivation_group_code_c"],
                         "a_motivation_detail_code_c", statementRow["a_motivation_detail_code_c"]);
 
                 if (SponsorshipAmounts.DefaultView.Count == 0)
                 {
-                    string msg = String.Format("cannot find a sponsorship: {0} {4} {1}/{2} {3}",
+                    string msg = String.Format("cannot find a sponsorship:; {0}; {4}; {1}/{2}; statement: {3}",
                         statementRow["p_donor_key_n"],
                         statementRow["a_motivation_group_code_c"], statementRow["a_motivation_detail_code_c"],
                         statementRow["total"],
