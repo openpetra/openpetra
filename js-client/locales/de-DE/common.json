@@ -632,6 +632,7 @@
         "matchedgl": "Zugeordnete Hauptbuch-Buchung",
         "cost_center_code": "Kostenstelle",
         "account_code": "Konto",
+        "check_sponsorship": "Prüfe erkannte Spenden mit den Patenschaften",
         "transform_to_gift": "Erstelle Spendenstapel aus Kontoauszug",
         "transform_to_gl": "Erstelle GL Stapel aus Kontoauszug",
         "delete_stmt": "Gewählten Auszug löschen",

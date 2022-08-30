@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -466,6 +466,23 @@ function transform_to_gift() {
 		}
 	});
 
+}
+
+function check_for_sponsorship() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AStatementKey: $('#bank_number_id').val(),
+	};
+
+	api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_CheckIncomingDonationsForSponsorship', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('TODO'), 'success' );
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
 }
 
 function delete_current_statement() {

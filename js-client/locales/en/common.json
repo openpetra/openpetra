@@ -631,6 +631,7 @@
         "matchedgl": "matched batch",
         "cost_center_code": "cost center",
         "account_code": "account",
+        "check_sponsorship": "Validate matched donations with the sponsorships",
         "transform_to_gift": "Create Gift Batch from Import",
         "transform_to_gl": "Create GL Batch from Import",
         "delete_stmt": "Delete selected Statement",

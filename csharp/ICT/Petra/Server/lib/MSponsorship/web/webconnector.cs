@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,13 +40,16 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.BankImport.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.BankImport.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
@@ -1161,6 +1164,141 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 DB.CloseDBConnection();
             }
+        }
+
+        /// <summary>
+        /// check the matched gifts against the sponsorship recurring gift batch
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CheckIncomingDonationsForSponsorship(
+            Int32 ALedgerNumber,
+            Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("CheckIncomingDonationsForSponsorship");
+
+            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, DB);
+            AEpStatementRow Statement = BankimportDS.AEpStatement[0];
+            DataTable SponsorshipAmounts = new DataTable();
+            DataTable BankstatementAmounts = new DataTable();
+
+            int SponsorshipBatchNumber = -1;
+            DB.ReadTransaction(ref Transaction, delegate {
+                SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
+                if (SponsorshipBatchNumber > -1)
+                {
+                    string GetSponsorshipAmountsSQL = @"SELECT gift.p_donor_key_n, p.p_partner_short_name_c,
+                        detail.a_motivation_group_code_c, detail.a_motivation_detail_code_c,
+                        SUM(detail.a_gift_amount_n) as total
+                        FROM PUB_a_recurring_gift AS gift JOIN PUB_a_recurring_gift_detail AS detail
+                          ON gift.a_ledger_number_i = detail.a_ledger_number_i AND
+                          gift.a_batch_number_i = detail.a_batch_number_i AND
+                          gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i
+                        JOIN p_partner p
+                            ON p.p_partner_key_n = gift.p_donor_key_n
+                        WHERE gift.a_ledger_number_i = ? AND gift.a_batch_number_i = ?
+                        AND detail.a_start_donations_d <= ? AND (detail.a_end_donations_d IS NULL OR detail.a_end_donations_d >= ?)
+                        GROUP BY gift.p_donor_key_n, p.p_partner_short_name_c, detail.a_motivation_group_code_c, detail.a_motivation_detail_code_c";
+
+                    string GetBankstatementAmountsSQL = @"SELECT m.p_donor_key_n, p.p_partner_short_name_c,
+                        m.a_motivation_group_code_c, m.a_motivation_detail_code_c,
+                        SUM(m.a_gift_transaction_amount_n) as total
+                        FROM PUB_a_ep_transaction tr JOIN PUB_a_ep_match m
+                            ON tr.a_match_text_c = m.a_match_text_c
+                        JOIN p_partner p
+                            ON p.p_partner_key_n = m.p_donor_key_n
+                        WHERE m.a_ledger_number_i = ?
+                        AND tr.a_statement_key_i = ?
+                        GROUP BY m.p_donor_key_n, p.p_partner_short_name_c, m.a_motivation_group_code_c, m.a_motivation_detail_code_c";
+
+                    OdbcParameter[] parameters = new OdbcParameter[4];
+                    parameters[0] = new OdbcParameter("ALedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("BatchNumber", OdbcType.Int);
+                    parameters[1].Value = SponsorshipBatchNumber;
+                    parameters[2] = new OdbcParameter("DateEffective", OdbcType.DateTime);
+                    parameters[2].Value = Statement.Date;
+                    parameters[3] = new OdbcParameter("DateEffective2", OdbcType.DateTime);
+                    parameters[3].Value = Statement.Date;
+                    DB.SelectDT(SponsorshipAmounts, GetSponsorshipAmountsSQL, Transaction, parameters);
+
+                    parameters = new OdbcParameter[2];
+                    parameters[0] = new OdbcParameter("ALedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("StatementKey", OdbcType.Int);
+                    parameters[1].Value = Statement.StatementKey;
+                    DB.SelectDT(BankstatementAmounts, GetBankstatementAmountsSQL, Transaction, parameters);
+                }
+            });
+
+            // go through the sponsorships, and check if we have an exact match on the bank account or none at all
+            foreach (DataRow sponsorshipRow in SponsorshipAmounts.Rows)
+            {
+                BankstatementAmounts.DefaultView.RowFilter =
+                    String.Format("{0}={1} and {2} = '{3}' and {4} = '{5}'",
+                        "p_donor_key_n", sponsorshipRow["p_donor_key_n"],
+                        "a_motivation_group_code_c", sponsorshipRow["a_motivation_group_code_c"],
+                        "a_motivation_detail_code_c", sponsorshipRow["a_motivation_detail_code_c"]);
+
+                if (BankstatementAmounts.DefaultView.Count == 0)
+                {
+                    string msg = String.Format("cannot find a donation: {0} {4} {1}/{2} {3}",
+                        sponsorshipRow["p_donor_key_n"],
+                        sponsorshipRow["a_motivation_group_code_c"], sponsorshipRow["a_motivation_detail_code_c"],
+                        sponsorshipRow["total"],
+                        sponsorshipRow["p_partner_short_name_c"]);
+                    TLogging.Log(msg);
+                    AVerificationResult.Add(new TVerificationResult("error", msg, TResultSeverity.Resv_Critical));
+                }
+
+                if (BankstatementAmounts.DefaultView.Count == 1)
+                {
+                    DataRow statementRow = BankstatementAmounts.DefaultView[0].Row;
+                    if (Convert.ToDecimal(statementRow["total"]) != Convert.ToDecimal(sponsorshipRow["total"]))
+                    {
+                        string msg = String.Format("this is different: {0} {5} {1}/{2} statement: {3} sponsorship: {4}",
+                            sponsorshipRow["p_donor_key_n"],
+                            sponsorshipRow["a_motivation_group_code_c"], sponsorshipRow["a_motivation_detail_code_c"],
+                            statementRow["total"], sponsorshipRow["total"],
+                            sponsorshipRow["p_partner_short_name_c"]);
+                        TLogging.Log(msg);
+                        AVerificationResult.Add(new TVerificationResult("error", msg, TResultSeverity.Resv_Critical));
+                    }
+                }
+            }
+
+            // get all donations on the statement, that have motivation details from sponsorship, but no sponsorship record at all
+            foreach (DataRow statementRow in BankstatementAmounts.Rows)
+            {
+                if (!statementRow["a_motivation_detail_code_c"].ToString().Contains("PATE")
+                    && !statementRow["a_motivation_detail_code_c"].ToString().Contains("SPONSOR"))
+                {
+                    continue;
+                }
+
+                SponsorshipAmounts.DefaultView.RowFilter =
+                    String.Format("{0}={1}",
+                        "p_donor_key_n", statementRow["p_donor_key_n"],
+                        "a_motivation_group_code_c", statementRow["a_motivation_group_code_c"],
+                        "a_motivation_detail_code_c", statementRow["a_motivation_detail_code_c"]);
+
+                if (SponsorshipAmounts.DefaultView.Count == 0)
+                {
+                    string msg = String.Format("cannot find a sponsorship: {0} {4} {1}/{2} {3}",
+                        statementRow["p_donor_key_n"],
+                        statementRow["a_motivation_group_code_c"], statementRow["a_motivation_detail_code_c"],
+                        statementRow["total"],
+                        statementRow["p_partner_short_name_c"]);
+                    TLogging.Log(msg);
+                    AVerificationResult.Add(new TVerificationResult("error", msg, TResultSeverity.Resv_Critical));
+                }
+            }
+
+            DB.CloseDBConnection();
+
+            return !AVerificationResult.HasCriticalErrors;
         }
     }
 }
