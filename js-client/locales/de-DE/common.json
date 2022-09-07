@@ -175,6 +175,13 @@
         "save": "Speichern fehlgeschlagen",
         "edit": "Änderungen sind fehlgeschlagen"
     },
+    "constants": {
+        "true": "ja",
+        "false": "nein",
+        "FAMILY": "MENSCH",
+        "ORGANISATION": "FIRMA/ORGA",
+        "GERMANY": "DEUTSCHLAND"
+    },
     "About": {
         "caption": "Über OpenPetra",
         "description": "<a href='https://www.openpetra.org' target='_blank'>OpenPetra</a> ist eine einfach zu benutzende Softwareanwendung für die Verwaltung von Vereinen, Missionen und Hilfswerken, und steht unter der GPL Lizenz.",
@@ -250,12 +257,9 @@
         "nosolicitations2": "Keine unaufgeforderte Kontaktierung/Werbung erwünscht",
         "partnerclass": "Kontakt-Typ",
         "partnerstatus": "Status",
+        "ACTIVE": "AKTIV",
+        "NOT ACTIVE": "NICHT AKTIV",
         "streetname": "Straße und Hausnummer",
-        "PERSON": "PERSON",
-        "FAMILY": "MENSCH",
-        "ORGANISATION": "FIRMA/ORGA",
-        "BANK": "BANK",
-        "UNIT": "EINHEIT",
         "addresses": "Adressen",
         "address": "Adresse",
         "subscriptions": "Mitteilungen",

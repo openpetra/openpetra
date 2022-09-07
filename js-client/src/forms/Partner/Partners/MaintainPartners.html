@@ -119,7 +119,9 @@
 					<span>{partnerclass}</span>
 				</div>
 				<div class="col-3">
-					<input type="text" name="p_partner_class_c" readonly/>
+					<select id="PartnerClass" disabled>
+					</select>
+					<input name="p_partner_class_c" type="hidden" value="p_partner_class_c">
 				</div>
 			</div>
 
@@ -129,8 +131,8 @@
 				</div>
 				<div class="col-3">
 					<select name="p_status_code_c">
-						<option value="ACTIVE">ACTIVE</option>
-						<option value="INACTIVE">NOT ACTIVE</option>
+						<option value="ACTIVE">{ACTIVE}</option>
+						<option value="INACTIVE">{NOT ACTIVE}</option>
 					</select>
 				</div>
 
@@ -699,11 +701,8 @@
 		<div class="col">
 			<select name="APartnerClass">
 				<option value="" selected>{forms.any}</option>
-				<!--<option value="PERSON">{PERSON}</option>-->
-				<option value="FAMILY">{FAMILY}</option>
-				<option value="ORGANISATION">{ORGANISATION}</option>
-				<!--<option value="UNIT">{UNIT}</option>-->
-				<!--<option value="BANK">{BANK}</option>-->
+				<option value="FAMILY">{constants.FAMILY}</option>
+				<option value="ORGANISATION">{constants.ORGANISATION}</option>
 			</select>
 		</div>
 	</div>

@@ -202,6 +202,7 @@ class MaintainPartners {
 		m = this.load_tags(parsed.result.PType, parsed.APartnerTypes, m);
 		m = this.load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
 		m = this.load_countries(parsed.result.PCountry, parsed.result.PLocation[0].p_country_code_c, m);
+		m = this.load_partner_classes(parsed.result.PPartnerClasses, parsed.result.PPartner[0].p_partner_class_c, m);
 
 		var sendmail = false;
 		if (parsed.result.PPartnerLocation.length > 0) {
@@ -361,6 +362,7 @@ class MaintainPartners {
 		updated_data.result.PPartnerStatus = [];
 		updated_data.result.PPublication = [];
 		updated_data.result.PCountry = [];
+		updated_data.result.PPartnerClasses = [];
 		updated_data.result.PBankingDetails = [];
 		updated_data.result.PPartnerBankingDetails = [];
 
@@ -554,8 +556,18 @@ class MaintainPartners {
 		if (selected_country == null) selected_country="99";
 		for (var country of all_countries) {
 			var selected = (selected_country == country.p_country_code_c)?" selected":"";
-			let y = $('<option value="'+country.p_country_code_c+'"' + selected + '>'+country.p_country_code_c + " " + country.p_country_name_c + '</option>');
+			let translated = i18next.t("constants." + country.p_country_name_c, country.p_country_name_c);
+			let y = $('<option value="'+country.p_country_code_c+'"' + selected + '>'+country.p_country_code_c + " " + translated + '</option>');
 			obj.find('#CountryCode').append(y);
+		}
+		return obj;
+	}
+
+	load_partner_classes(all_classes, selected_class, obj) {
+		for (var c of all_classes) {
+			var selected = (selected_class == c.p_partner_class_c)?" selected":"";
+			let y = $('<option value="'+c.p_partner_class_c+'"' + selected + '>'+i18next.t("constants."+ c.p_partner_class_c, c.p_partner_class_c)+'</option>');
+			obj.find('#PartnerClass').append(y);
 		}
 		return obj;
 	}

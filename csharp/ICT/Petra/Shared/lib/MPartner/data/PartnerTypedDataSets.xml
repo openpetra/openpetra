@@ -80,6 +80,7 @@
     <Table sqltable="p_partner_contact_attribute"/>
     <Table sqltable="p_type"/>
     <Table sqltable="p_publication"/>
+    <Table sqltable="p_partner_classes"/>
 
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>

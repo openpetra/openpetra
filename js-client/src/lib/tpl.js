@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,17 +23,40 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+function translate_constants(value) {
+    if (value == "") {
+        return value;
+    }
+    if (!(typeof value === 'string' || value instanceof String)) {
+        return value;
+    }
+    if (value == value.toUpperCase() || value == "true" || value == "false" ) {
+        // translate constant values if available
+        value = i18next.t("constants."+value, value);
+    }
+    return value;
+}
+
 function replace_val_variables_in_attr(attr, data) {
   if (attr !== undefined && attr.indexOf('{val_') !== -1) {
     for (variable in data) {
       if (data[variable] == null) {
         data[variable] = "";
       }
-      else if (typeof data[variable] === 'string' || data[variable] instanceof String) {
-        data[variable] = parseJSONDate(variable, data[variable]);
+      value = data[variable]
+
+      if (typeof value === 'boolean' || value instanceof Boolean) {
+        value = translate_constants(value.toString());
+      }
+      else if (typeof value === 'string' || value instanceof String) {
+        value = translate_constants(value);
       }
 
-      attr = attr.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
+      if (typeof value === 'string' || value instanceof String) {
+        value = parseJSONDate(variable, value);
+      }
+
+      attr = attr.replace(new RegExp('{val_'+variable+'}',"g"), value);
     }
   }
   return attr;
@@ -170,6 +193,10 @@ function set_values_of_input_variables(tpl, data, limit_to_table) {
       }
       else {
         value = data[variable];
+
+        if (f.attr("type") != "hidden") {
+            value = translate_constants(value);
+        }
         f.attr('value', value);
         f.val(value);
       }

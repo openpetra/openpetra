@@ -112,6 +112,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     PCountryAccess.LoadAll(MainDS, Transaction);
                     PPublicationAccess.LoadAll(MainDS, Transaction);
                     PPartnerStatusAccess.LoadAll(MainDS, Transaction);
+                    PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "FAMILY", Transaction);
+                    PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "ORGANISATION", Transaction);
 
                     PTypeRow templateRow = MainDS.PType.NewRowTyped();
                     templateRow.SystemType = false;
@@ -248,6 +250,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (true)
                         {
                             PCountryAccess.LoadAll(MainDS, Transaction);
+                        }
+
+                        if (true)
+                        {
+                            PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "FAMILY", Transaction);
+                            PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "ORGANISATION", Transaction);
                         }
 
                         if (true)
