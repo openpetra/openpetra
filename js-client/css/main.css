@@ -169,3 +169,9 @@ html {
     color: white;
     background: rgb(0, 175, 255);
 }
+
+button.btn-light {
+    background-color: rgb(224, 224, 224);
+    color: #212529;
+    ;
+}
