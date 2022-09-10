@@ -386,6 +386,7 @@ class MaintainPartners {
 				'APartnerTypes': applied_tags,
 				'ASubscriptions': applied_subs,
 				'AChanges': applied_perms,
+				'ASendMail': x['p_send_mail_l'],
 				'ADefaultEmailAddress': updated_data.p_default_email_address_c,
 				'ADefaultPhoneLandline': updated_data.p_default_phone_landline_c,
 				'ADefaultPhoneMobile': updated_data.p_default_phone_mobile_c
