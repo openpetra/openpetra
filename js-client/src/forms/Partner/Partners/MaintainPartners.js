@@ -74,6 +74,13 @@ class MaintainPartners {
 		}
 
 		$('#btnSearch').click(function(){ self.display_list(); $('#tabfilter').collapse('toggle'); });
+
+		$('#tabfilter').keyup(function(event) {
+			if (event.key === "Enter") {
+				self.display_list()
+			}
+		});
+
 		$('#btnNewFamily').click(function(){ self.open_new_family(); });
 		$('#btnNewOrganisation').click(function(){ self.open_new_organisation(); });
 	}
