@@ -157,3 +157,15 @@ html {
 .home .row a i, .dashboard .row a i {
   font-size: 300%;
 }
+
+/* nav-tabs eg. on Partner Edit */
+.modal-dialog .nav-tabs .nav-item {
+    color: white;
+    background: rgb(0, 123, 255);
+    margin-bottom: 0px;
+    margin-left: 2px;
+}
+.modal-dialog .nav-tabs .nav-link.active {
+    color: white;
+    background: rgb(0, 175, 255);
+}
