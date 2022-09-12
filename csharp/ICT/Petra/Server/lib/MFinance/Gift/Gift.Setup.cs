@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -70,6 +70,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 delegate
                 {
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                    StringCollection FieldList = new StringCollection();
+                    FieldList.AddRange(new String[]{"a_account_code_c", "a_account_code_long_desc_c"});
+                    AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, FieldList, Transaction);
+                    FieldList = new StringCollection();
+                    FieldList.AddRange(new String[]{"a_cost_centre_code_c", "a_cost_centre_name_c"});
+                    ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, FieldList, Transaction);
 
                     if (AMotivationGroupCode.Length > 0)
                     {

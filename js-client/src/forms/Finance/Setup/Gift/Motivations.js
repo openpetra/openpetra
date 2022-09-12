@@ -1,10 +1,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -96,10 +96,23 @@ function open_motivations(obj, code, reload = false) {
 	};
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
 		data = JSON.parse(data.data.d);
+
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
 		if (data.result.hasOwnProperty('AMotivationDetail')) {
 			for (item of data.result.AMotivationDetail) {
+
+				for (account of data.result.AAccount) {
+					if (account['a_account_code_c'] == item['a_account_code_c']) {
+						item['account_name'] = account['a_account_code_long_desc_c'];
+					}
+				}
+				for (costcentre of data.result.ACostCentre) {
+					if (costcentre['a_cost_centre_code_c'] == item['a_cost_centre_code_c']) {
+						item['costcentre_name'] = costcentre['a_cost_centre_name_c'];
+					}
+				}
+
 				let motivation_row = $('[phantom] .tpl_motivation').clone();
 				motivation_row = format_tpl(motivation_row, item);
 				place_to_put_content.append(motivation_row);
