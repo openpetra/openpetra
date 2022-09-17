@@ -224,7 +224,7 @@ namespace Ict.Common.IO
         /// format an IBAN with spaces
         public static string FormatIBAN(string AIban)
         {
-            AIban = AIban.Replace(" ", "");
+            AIban = AIban.Replace(" ", "").ToUpper();
             int count = 0;
             string orig = AIban;
             AIban = String.Empty;
