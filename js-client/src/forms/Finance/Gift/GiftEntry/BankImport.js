@@ -1,8 +1,8 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       Christopher Jäkel <cj@tbits.net>
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
 // Copyright 2019-2022 by SolidCharity.com
@@ -24,11 +24,12 @@
 //
 
 $('document').ready(function () {
+	$('#bank_number_id').click(function(){ display_list(); });
 	display_dropdownlist();
 	load_preset();
 });
 
-function display_dropdownlist() {
+function display_dropdownlist(selected_statement = null) {
 	// x is search
 	let x = {};
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
@@ -37,10 +38,17 @@ function display_dropdownlist() {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		let field = $('#bank_number_id').html('');
+		let first = true;
 		for (item of data.result) {
-			field.append( $('<option value="'+item.a_statement_key_i+'">'+
+			if ((selected_statement == null && first) || (selected_statement == item.a_statement_key_i)) {
+				selected = "selected";
+			} else {
+				selected = "";
+			}
+			field.append( $('<option value="'+item.a_statement_key_i+'" '+selected+'>'+
 				item.a_filename_c + ' ' + printJSONDate(item.a_date_d) + '</option>') );
 		}
+		display_list();
 	})
 }
 
@@ -65,6 +73,11 @@ function display_list() {
 	let x = {};
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	x['AStatementKey'] = $('#bank_number_id').val();
+	if (x['AStatementKey'] == null) {
+		// only clear the list if there is no statement selected
+		let field = $('#browse_container').html('');
+		return;
+	}
 	x['AMatchAction'] = $('#match_status_id').val();
 	api.post('serverMFinance.asmx/TBankImportWebConnector_GetTransactions', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -137,7 +150,12 @@ function edit_gift_trans(statement_key, trans_order) {
 		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
 		transaction['p_donor_key_n'] = transaction['DonorKey'];
 		if (transaction['a_iban_c'] != null) {
-			transaction['a_account_name_c'] += "; " + transaction['a_iban_c'];
+			if (transaction['a_account_name_c'] == null) {
+				transaction['a_account_name_c'] = transaction['a_iban_c'];
+			}
+			else {
+				transaction['a_account_name_c'] += "; " + transaction['a_iban_c'];
+			}
 		}
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
@@ -279,11 +297,11 @@ function import_csv_file(self) {
 
 		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCSVFile', p)
 		.then(function (result) {
-			result = JSON.parse(result.data.d);
-			result = result.result;
+			data = JSON.parse(result.data.d);
+			result = data.result;
 			if (result == true) {
 				display_message(i18next.t('BankImport.upload_success'), "success");
-				display_dropdownlist();
+				display_dropdownlist(data.AStatementKey);
 			} else {
 				display_message(i18next.t('BankImport.upload_fail'), "fail");
 			}
