@@ -457,9 +457,12 @@
       </div>
     </div>
 </div>
-	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
-	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
-	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="check_for_sponsorship();">{check_sponsorship}</button>
+    <button type="button" class="btn btn-primary" style="float:right; margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
+    <button type="button" class="btn btn-primary" style="float:right; margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
+    <!-- TODO disable this button if no permissions for reading sponsorships -->
+    <button type="button" class="btn btn-light" onclick="check_for_sponsorship();">
+            <span>{check_sponsorship}&nbsp;</span><i class="fas fa-question"></i>
+    </button>
 </div>
 </div>
 
