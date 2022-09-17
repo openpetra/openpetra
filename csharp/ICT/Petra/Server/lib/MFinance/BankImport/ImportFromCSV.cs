@@ -302,7 +302,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
                     else if (UseAs.ToLower() == "iban")
                     {
-                        row.Iban = Value.ToUpper().Replace(" ", "");
+                        row.Iban = TSEPAWriterDirectDebit.FormatIBAN(Value.ToUpper());
                     }
 
                     else if (UseAs.ToLower() == "bic")
