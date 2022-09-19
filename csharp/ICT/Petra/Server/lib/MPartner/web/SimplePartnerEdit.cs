@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -280,7 +280,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PBankAccess.LoadByPrimaryKey(MainDS, banking.BankKey, Transaction);
                                 banking.Bic = MainDS.PBank[0].Bic;
                                 banking.BranchName = MainDS.PBank[0].BranchName;
-                                banking.Iban = TSEPAWriterDirectDebit.FormatIBAN(banking.Iban);
+                                banking.Iban = TSEPAWriterDirectDebit.FormatIBAN(banking.Iban, true);
                                 MainDS.PBank.Rows.Clear();
                             }
 

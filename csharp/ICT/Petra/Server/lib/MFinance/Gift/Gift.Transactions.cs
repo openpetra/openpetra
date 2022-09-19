@@ -1775,11 +1775,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return true;
         }
 
-        private static void FormatIBAN(ref GiftBatchTDS AGiftDS)
+        private static void FormatIBAN(ref GiftBatchTDS AGiftDS, bool ADisplayReadable)
         {
             foreach (GiftBatchTDSPPartnerBankingDetailsRow row in AGiftDS.PPartnerBankingDetails.Rows)
             {
-                row.Iban = TSEPAWriterDirectDebit.FormatIBAN(row["p_iban_c"].ToString());
+                row.Iban = TSEPAWriterDirectDebit.FormatIBAN(row["p_iban_c"].ToString(), ADisplayReadable);
                 row.AcceptChanges();
             }
         }
@@ -1815,7 +1815,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     db.Select(GiftDS, getBankAccountsSQL, GiftDS.PPartnerBankingDetails.TableName,
                         Transaction,
                         parameters.ToArray(), 0, 0);
-                    FormatIBAN(ref GiftDS);
+                    FormatIBAN(ref GiftDS, true);
                 });
 
             db.CloseDBConnection();
@@ -3827,7 +3827,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ATransaction.DataBaseObj.Select(AGiftDS, getBankAccountsSQL, AGiftDS.PPartnerBankingDetails.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
-                FormatIBAN(ref AGiftDS);
+                FormatIBAN(ref AGiftDS, true);
             }
             catch (Exception ex)
             {

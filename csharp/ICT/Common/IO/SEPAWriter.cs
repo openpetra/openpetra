@@ -222,9 +222,15 @@ namespace Ict.Common.IO
         }
 
         /// format an IBAN with spaces
-        public static string FormatIBAN(string AIban)
+        public static string FormatIBAN(string AIban, bool ADisplayReadable)
         {
             AIban = AIban.Replace(" ", "").ToUpper();
+
+            if (!ADisplayReadable)
+            {
+                return AIban;
+            }
+
             int count = 0;
             string orig = AIban;
             AIban = String.Empty;

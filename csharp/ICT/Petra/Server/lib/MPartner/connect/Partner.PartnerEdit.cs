@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.DB;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Data;
 using Ict.Common.Exceptions;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core;
@@ -180,6 +181,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             DeletedBankingDetails.Add(Convert.ToInt32(bdrow[AInspectDS.PPartnerBankingDetails.ColumnBankingDetailsKey,
                                                                             DataRowVersion.Original]));
+                        }
+                    }
+                }
+
+                if (AInspectDS.PBankingDetails != null)
+                {
+                    foreach (PartnerEditTDSPBankingDetailsRow bdrow in AInspectDS.PBankingDetails.Rows)
+                    {
+                        // remove spaces
+                        string formattedIBAN = TSEPAWriterDirectDebit.FormatIBAN(bdrow.Iban, false);
+
+                        if (bdrow.Iban != formattedIBAN)
+                        {
+                            bdrow.Iban = formattedIBAN;
                         }
                     }
                 }
