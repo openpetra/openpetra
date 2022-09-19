@@ -147,8 +147,13 @@ function edit_gift_trans(statement_key, trans_order) {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		transaction = parsed.ATransactions[0];
-		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
+		if (transaction['DonorKey'] != 0) {
+			transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
+		} else {
+			transaction['p_donor_name_c'] = "";
+		}
 		transaction['p_donor_key_n'] = transaction['DonorKey'];
+
 		if (transaction['a_iban_c'] != null) {
 			if (transaction['a_account_name_c'] == null) {
 				transaction['a_account_name_c'] = transaction['a_iban_c'];
