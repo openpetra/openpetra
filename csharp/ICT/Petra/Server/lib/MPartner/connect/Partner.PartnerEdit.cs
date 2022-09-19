@@ -189,12 +189,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     foreach (PartnerEditTDSPBankingDetailsRow bdrow in AInspectDS.PBankingDetails.Rows)
                     {
-                        // remove spaces
-                        string formattedIBAN = TSEPAWriterDirectDebit.FormatIBAN(bdrow.Iban, false);
-
-                        if (bdrow.Iban != formattedIBAN)
+                        if (bdrow.RowState != DataRowState.Deleted)
                         {
-                            bdrow.Iban = formattedIBAN;
+                            // remove spaces
+                            string formattedIBAN = TSEPAWriterDirectDebit.FormatIBAN(bdrow.Iban, false);
+
+                            if (bdrow.Iban != formattedIBAN)
+                            {
+                                bdrow.Iban = formattedIBAN;
+                            }
                         }
                     }
                 }
