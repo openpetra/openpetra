@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,6 +60,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string ACity,
             string APostCode,
             string AEmailAddress,
+            string AIban,
             string APartnerClass,
             bool AActiveOnly,
             string ANameFormat,
@@ -120,6 +121,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             else
             {
                 CriteriaRow.PartnerStatus = "*";
+            }
+
+            if (AIban.Length > 0)
+            {
+                CriteriaRow.Iban = AIban;
             }
 
             CriteriaRow.SortBy = ASortBy;
@@ -245,6 +251,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 String.Empty, // City
                 String.Empty, // Postalcode
                 String.Empty, // Email
+                String.Empty, // IBAN
                 APartnerClass,
                 AActiveOnly,
                 "ShortName",

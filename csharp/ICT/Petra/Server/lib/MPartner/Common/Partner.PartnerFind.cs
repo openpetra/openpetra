@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Session;
 using Ict.Petra.Server.App.Core;
@@ -218,6 +219,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 sb.AppendFormat("{0}{1}", "PUB.p_partner", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_partner_location", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.p_partner.p_partner_key_n = PUB.p_partner_location.p_partner_key_n", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_location", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.p_location.p_location_key_i = PUB.p_partner_location.p_location_key_i AND PUB.p_location.p_site_key_n = PUB.p_partner_location.p_site_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_person", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.p_person.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_family", Environment.NewLine);
@@ -226,12 +229,17 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 sb.AppendFormat("{0}{1}", "ON PUB.p_partner.p_partner_key_n = PUB.a_gift.p_donor_key_n", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.a_gift_batch", Environment.NewLine);
                 sb.AppendFormat("{0}{1}", "ON PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift.a_ledger_number_i AND PUB.a_gift_batch.a_batch_number_i = PUB.a_gift.a_batch_number_i", Environment.NewLine);
-                sb.AppendFormat("{0}{1}", ", PUB.p_location", Environment.NewLine);
             }
 
-            sbWhereClause.AppendFormat("{0}{1}", "PUB.p_location.p_location_key_i = PUB.p_partner_location.p_location_key_i", Environment.NewLine);
-            sbWhereClause.AppendFormat("{0}{1}", "AND PUB.p_location.p_site_key_n = PUB.p_partner_location.p_site_key_n", Environment.NewLine);
-            sbWhereClause.AppendFormat("{0}", "AND (PUB.a_gift_batch.a_batch_status_c IS NULL OR PUB.a_gift_batch.a_batch_status_c <> 'Cancelled')");
+            sbWhereClause.AppendFormat("{0}{1}", "(PUB.a_gift_batch.a_batch_status_c IS NULL OR PUB.a_gift_batch.a_batch_status_c <> 'Cancelled')", Environment.NewLine);
+
+            if (CriteriaRow["Iban"].ToString().Length > 0)
+            {
+                sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_partner_banking_details", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.p_partner_banking_details.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_banking_details", Environment.NewLine);
+                sb.AppendFormat("{0}{1}", "ON PUB.p_banking_details.p_banking_details_key_i = PUB.p_partner_banking_details.p_banking_details_key_i", Environment.NewLine);
+            }
 
             FromClause = sb.ToString();
             WhereClause = CustomWhereCriteria;
@@ -659,6 +667,16 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 CustomWhereCriteria = String.Format("{0} AND {1} = ?", CustomWhereCriteria, PLocationTable.GetCountryCodeDBName());                 // CustomWhereCriteria + ' AND p_country_code_c = ?';
                 OdbcParameter miParam = new OdbcParameter("", OdbcType.VarChar, 8);
                 miParam.Value = (object)(CriteriaRow["Country"].ToString().ToUpper());
+                InternalParameters.Add(miParam);
+            }
+
+            if (CriteriaRow["Iban"].ToString().Length > 0)
+            {
+                CustomWhereCriteria = String.Format("{0} AND PUB_{1}.{2} = ?", CustomWhereCriteria,
+                    PBankingDetailsTable.GetTableDBName(),
+                    PBankingDetailsTable.GetIbanDBName());
+                OdbcParameter miParam = new OdbcParameter("", OdbcType.VarChar, 32);
+                miParam.Value = (object)(TSEPAWriterDirectDebit.FormatIBAN(CriteriaRow["Iban"].ToString(), false));
                 InternalParameters.Add(miParam);
             }
 
