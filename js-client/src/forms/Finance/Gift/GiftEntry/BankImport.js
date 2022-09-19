@@ -42,6 +42,7 @@ function display_dropdownlist(selected_statement = null) {
 		for (item of data.result) {
 			if ((selected_statement == null && first) || (selected_statement == item.a_statement_key_i)) {
 				selected = "selected";
+				first = false;
 			} else {
 				selected = "";
 			}
