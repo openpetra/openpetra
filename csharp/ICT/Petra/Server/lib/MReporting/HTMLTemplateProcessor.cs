@@ -458,6 +458,9 @@ namespace Ict.Petra.Server.MReporting
                     InnerHtml = InnerHtml.Replace("{" + c.ColumnName + "}", row[c.ColumnName].ToString());
                 }
 
+                // fix empty email column
+                InnerHtml = InnerHtml.Replace(">,</div>", "></div>");
+
                 NewHTMLRow.InnerHtml = InnerHtml;
 
                 ParentNode.AppendChild(NewHTMLRow);
