@@ -111,11 +111,7 @@ class MaintainPartners {
 	}
 
 	translate_label(label) {
-		if (i18next.t('MaintainPartners.'+label) == 'MaintainPartners.'+label) {
-			return label;
-		} else {
-			return i18next.t('MaintainPartners.'+label);
-		}
+		return i18next.t('MaintainPartners.'+label, label);
 	}
 
 	format_item(item) {
@@ -596,7 +592,7 @@ class MaintainPartners {
 			var DataTypeList = Temp.find("[data-types]");
 			for (var type of parsed.result) {
 				types.push(type);
-				let name = i18next.t('MaintainPartners.'+type);
+				let name = i18next.t('MaintainPartners.'+type, type);
 				DataTypeList.append(`<button class='btn btn-secondary selecttype' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
 				let btn = Temp.find('button.selecttype:last');
 				btn.click(function(){self.load_history_data(this)});
@@ -604,7 +600,7 @@ class MaintainPartners {
 
 			for (var type of Object.keys(data_changes_log)) {
 				if (! types.includes(type)) {
-					let name = i18next.t('MaintainPartners.'+type);
+					let name = i18next.t('MaintainPartners.'+type, type);
 					DataTypeList.append(`<button class='btn btn-secondary selecttype' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
 					let btn = Temp.find('button.selecttype:last');
 					btn.click(function(){self.load_history_data(this)});
@@ -641,7 +637,7 @@ class MaintainPartners {
 		HistPerm.find(".preview [name=Permissions]").text( AllowedPurposes );
 
 		HistPerm.find(".detail [name=Editor]").text( CreatedBy );
-		HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+ChannelCode) );
+		HistPerm.find(".detail [name=Channel]").text( i18next.t('MaintainPartners.'+ChannelCode, ChannelCode) );
 		for (var channel of channels) {
 			if (ChannelCode == channel.p_channel_code_c) {
 				HistPerm.find(".detail [name=Channel]").text( self.translate_label(channel.p_name_c) );
@@ -673,7 +669,7 @@ class MaintainPartners {
 			var purposes = parsed.result.PConsentPurpose;
 
 			let type = datatype;
-			type = i18next.t('MaintainPartners.'+type);
+			type = i18next.t('MaintainPartners.'+type, type);
 			Target.find(".selected-type").text(type);
 			var HistoryList = Target.find("[history]").html("");
 			let first = true;
