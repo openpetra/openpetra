@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,6 +91,9 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 partnerParentNode.AppendChild(newPartnerRow);
                 newPartnerRow.InnerHtml = templateProcessor.InsertParameters("{", "}", newPartnerRow.InnerHtml,
                     HTMLTemplateProcessor.ReplaceOptions.NoQuotes);
+
+                // fix empty email column
+                newPartnerRow.InnerHtml = newPartnerRow.InnerHtml.Replace(">,</div>", "></div>");
 
                 countRow++;
             }
