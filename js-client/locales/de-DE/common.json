@@ -629,6 +629,7 @@
         "transaction_date": "Datum",
         "action": "Aktion",
         "donor": "Spender/Mitglied",
+        "clear_donor": "Auswahl zurücksetzen",
         "EnterDonorName": "Name von Spender/Mitglied eingeben",
         "detail_id": "Detail ID",
         "motivation_group_code": "Verwendungszweck Gruppe",

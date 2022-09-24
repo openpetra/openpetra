@@ -571,3 +571,9 @@ function delete_all_statements() {
 		}
 	});
 }
+
+function clear_donor(self) {
+    let obj_donorName = $(self).parent().find('input[name=p_donor_name_c]');
+    obj_donorName.val("");
+    obj_donorName.attr('key-value', 0);
+}
