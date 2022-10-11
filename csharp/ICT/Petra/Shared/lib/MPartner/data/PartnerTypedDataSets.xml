@@ -138,6 +138,7 @@
       <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
     </CustomTable>
     <Table sqltable="p_country"/>
+    <Table sqltable="p_membership"/>
     <Table sqltable="p_partner_status"/>
     <CustomRelation name="Address"
         parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"

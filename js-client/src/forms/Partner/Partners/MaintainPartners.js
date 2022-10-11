@@ -26,6 +26,7 @@
 var last_opened_entry_data = {};
 var data_changes_log = {};
 var PBankingDetails_Store = {}
+var PPartnerMemberships_Store = {}
 
 $('document').ready(function () {
 	MaintainPartners_Ready();
@@ -206,6 +207,7 @@ class MaintainPartners {
 		m = this.load_subs(parsed.result.PPublication, parsed.ASubscriptions, m);
 		m = this.load_countries(parsed.result.PCountry, parsed.result.PLocation[0].p_country_code_c, m);
 		m = this.load_partner_classes(parsed.result.PPartnerClasses, parsed.result.PPartner[0].p_partner_class_c, m);
+		this.PMembership = parsed.result.PMembership;
 
 		var sendmail = false;
 		if (parsed.result.PPartnerLocation.length > 0) {
@@ -223,6 +225,7 @@ class MaintainPartners {
 		m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
 
 		m = this.display_bankaccounts(parsed.result.PBankingDetails, m);
+		m = this.display_memberships(parsed.result.PPartnerMembership, m);
 
 		let myModal = ShowModal('partneredit' + self.partnerkey, m);
 
@@ -245,6 +248,14 @@ class MaintainPartners {
 					PartnerEditForm.find("input[name='PFamily_p_family_name_c']").val();
 			}
 			self.new_bank_account(self.partnerkey, accountname.trim());
+		});
+		myModal.find('#btnAddMembership').click(function(){
+			if (!self.PartnerStoredInDB) {
+				display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
+				return;
+			}
+			let PartnerEditForm = $('#partneredit' + self.partnerkey);
+			self.new_membership(self.partnerkey);
 		});
 
 		myModal.find("#btnOpenHistory").click(function() {
@@ -283,6 +294,27 @@ class MaintainPartners {
 		return m;
 	}
 
+	display_memberships(PPartnerMemberships, m) {
+		var self = this;
+		PPartnerMemberships_Store = {}
+		m.find('.membership_detail_col').html('');
+		if (PPartnerMemberships.length > 0) {
+			for (var detail of PPartnerMemberships) {
+				let tpl_membership_detail = format_tpl( $('[phantom] .tpl_membership').clone(), detail);
+				m.find('.membership_detail_col').append(tpl_membership_detail);
+				PPartnerMemberships_Store[detail['p_partner_membership_key_i']] = detail;
+				let btnEditMembership = m.find("#btnEditMembership"+detail['p_partner_membership_key_i']);
+				btnEditMembership.attr('membershipkey', detail['p_partner_membership_key_i']);
+				btnEditMembership.click(function() {
+					let membershipkey = $(this).attr('membershipkey');
+					self.edit_membership(membershipkey);
+				});
+			}
+		}
+
+		return m;
+	}
+
 	new_bank_account(partnerkey, accountname) {
 		var self = this;
 		if (!allow_modal()) {return}
@@ -313,6 +345,42 @@ class MaintainPartners {
 		p.find('#btnSaveBankAccount'+detail_key).click(function(){self.save_edit_bank_account(this)});
 		p.find('#btnDeleteBankAccount'+detail_key).click(function(){self.delete_bank_account(this)});
 		p.find('#btnCloseBankAccount'+detail_key).click(function(){CloseModal(this);});
+		tpl_edit_raw.find('[action]').val('edit');
+		tpl_edit_raw.modal('show');
+	}
+
+	new_membership(partnerkey) {
+		var self = this;
+		if (!allow_modal()) {return}
+		let x = {
+			p_partner_key_n: self.partnerkey,
+			p_membership_name_c: '',
+			p_membership_startdate_d: new Date().toISOString().slice(0,10),
+			p_partner_membership_key_i: -1,
+		};
+		let p = format_tpl( $('[phantom] .tpl_edit_membership').clone(), x);
+		p = this.load_memberships(this.PMembership, this.PMembership[0].p_membership_code_c, p);
+		$('#modal_space').append(p);
+		p.find('[edit-only]').hide();
+		p.find('[action]').val('create');
+
+		p.find('#btnSaveMembership'+x.p_partner_membership_key_i).click(function(){self.save_edit_membership(this)});
+		p.find('#btnCloseMembership'+x.p_partner_membership_key_i).click(function(){CloseModal(this);});
+
+		p.modal('show');
+	};
+
+	edit_membership(detail_key) {
+		if (!allow_modal()) {return}
+		var self = this;
+
+		let data = PPartnerMemberships_Store[detail_key];
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_membership').clone(), data);
+		tpl_edit_raw = this.load_memberships(this.PMembership, this.PMembership[0].p_membership_code_c, tpl_edit_raw);
+		let p = $('#modal_space').append(tpl_edit_raw);
+		p.find('#btnSaveMembership'+detail_key).click(function(){self.save_edit_membership(this)});
+		p.find('#btnDeleteMembership'+detail_key).click(function(){self.delete_membership(this)});
+		p.find('#btnCloseMembership'+detail_key).click(function(){CloseModal(this);});
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
 	}
@@ -459,6 +527,21 @@ class MaintainPartners {
 		});
 	}
 
+	updateMemberships() {
+		var self = this;
+
+		let modal = $('#partneredit' + self.partnerkey)
+
+		let payload = {}
+		payload['APartnerKey'] = self.partnerkey;
+		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetMemberships', payload).then(function (result) {
+			let parsed = JSON.parse(result.data.d);
+			if (parsed.result == true) {
+				self.display_memberships(parsed.PMemberships, modal);
+			}
+		});
+	}
+
 	save_edit_bank_account(obj_modal) {
 		var self = this;
 		let obj = $(obj_modal).closest('.modal');
@@ -484,6 +567,38 @@ class MaintainPartners {
 
 	}
 
+	save_edit_membership(obj_modal) {
+		var self = this;
+		let obj = $(obj_modal).closest('.modal');
+		let mode = obj.find('[action]').val();
+
+		// extract information from a jquery object
+		let payload = translate_to_server( extract_data(obj) );
+		payload['action'] = mode;
+		if (payload['APartnerMembershipKey'] == '') payload['APartnerMembershipKey'] = -1;
+		if (payload["AStartDate"] == "") {
+			display_error(i18next.t('MaintainPartners.MembersStartDateRequired'));
+			return;
+		}
+		if (payload["AExpiryDate"] == "") {
+			payload["AExpiryDate"] = "null";
+		}
+
+		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainMemberships', payload).then(function (result) {
+			var parsed = JSON.parse(result.data.d);
+			if (parsed.result == true) {
+				display_message(i18next.t('forms.saved'), "success");
+				CloseModal(obj);
+				self.updateMemberships();
+			}
+			else if (parsed.result == false) {
+				display_error(parsed.AVerificationResult);
+			}
+
+		});
+
+	}
+
 	delete_bank_account(obj_modal) {
 		var self = this;
 
@@ -500,6 +615,29 @@ class MaintainPartners {
 				display_message(i18next.t('forms.saved'), "success");
 				CloseModal(obj);
 				self.updateBankAccounts();
+			}
+			else if (parsed.result == false) {
+				display_error(parsed.AVerificationResult);
+			}
+		});
+	}
+
+	delete_membership(obj_modal) {
+		var self = this;
+
+		let s = confirm( i18next.t('MaintainPartners.ask_delete_membership') );
+		if (!s) {return}
+
+		let obj = $(obj_modal).closest('.modal');
+		let payload = translate_to_server( extract_data(obj) );
+		payload["action"] = "delete";
+
+		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainMemberships', payload).then(function (result) {
+			var parsed = JSON.parse(result.data.d);
+			if (parsed.result == true) {
+				display_message(i18next.t('forms.saved'), "success");
+				CloseModal(obj);
+				self.updateMemberships();
 			}
 			else if (parsed.result == false) {
 				display_error(parsed.AVerificationResult);
@@ -563,6 +701,17 @@ class MaintainPartners {
 			let translated = i18next.t("constants." + country.p_country_name_c, country.p_country_name_c);
 			let y = $('<option value="'+country.p_country_code_c+'"' + selected + '>'+country.p_country_code_c + " " + translated + '</option>');
 			obj.find('#CountryCode').append(y);
+		}
+		return obj;
+	}
+
+	load_memberships(all_memberships, selected_membership, obj) {
+		for (var membership of all_memberships) {
+			if (selected_membership == null) selected_membership=membership.p_membership_code_c;
+			var selected = (selected_membership == membership.p_membership_code_c)?" selected":"";
+			let translated = membership.p_membership_description_c;
+			let y = $('<option value="'+membership.p_membership_code_c+'"' + selected + '>'+ translated + '</option>');
+			obj.find('#MembershipCode').append(y);
 		}
 		return obj;
 	}
