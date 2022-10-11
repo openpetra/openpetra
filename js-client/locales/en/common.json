@@ -65,6 +65,7 @@
         "MaintainPartners_label": "Maintain Partners",
         "MaintainPublications_label": "Configuration of Subscriptions",
         "MaintainTypes_label": "Categories",
+        "MaintainMemberships_label": "Memberships",
         "MaintainConsentChannels_label": "Consent Channels",
         "MaintainConsentPurposes_label": "Consent Purposes",
         "CreatePartner_label": "Create Partner",
@@ -517,6 +518,25 @@
         "entry_name": "Category name",
         "entry_status": "Active",
         "entry_dis": "Category description"
+    },
+    "MaintainMemberships": {
+        "caption": "Manage Memberships",
+        "name": "Name of Membership",
+        "edittitle": "Edit Membership",
+        "addtitle": "Add Membership",
+        "confirm_create": "Membership successfully created",
+        "confirm_edit": "Membership successfully updated",
+        "confirm_delete": "Membership successfully deleted",
+        "ask_delete": "Are you sure you want to delete this membership?",
+        "entry_name": "Name",
+        "entry_status": "Active",
+        "entry_dis": "Description",
+        "entry_frequency": "Payment is due",
+        "entry_fee": "Fee to pay",
+        "entry_hours": "Hours of service",
+        "freq_Annual": "Annually",
+        "freq_Quarterly": "Quarterly",
+        "freq_Monthly": "Monthly"
     },
     "LedgerSetup": {
         "addtitle": "Create Ledger",

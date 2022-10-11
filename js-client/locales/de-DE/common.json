@@ -66,6 +66,7 @@
         "MaintainPartners_label": "Kontakte verwalten",
         "MaintainPublications_label": "Mitteilungslisten verwalten",
         "MaintainTypes_label": "Kategorien",
+        "MaintainMemberships_label": "Mitgliedschaften",
         "MaintainConsentChannels_label": "DSGVO Einwilligungskanäle",
         "MaintainConsentPurposes_label": "DSGVO Verwendungszwecke",
         "CreatePartner_label": "Kontakt anlegen",
@@ -522,6 +523,25 @@
         "entry_name": "Kategoriename",
         "entry_status": "Aktiv",
         "entry_dis": "Kategorie Beschreibung"
+    },
+    "MaintainMemberships": {
+        "caption": "Mitgliedschaft verwalten",
+        "name": "Name der Mitgliedschaft",
+        "edittitle": "Mitgliedschaft bearbeiten",
+        "addtitle": "Mitgliedschaft hinzufügen",
+        "confirm_create": "Mitgliedschaft erfolgreich hinzugefügt",
+        "confirm_edit": "Mitgliedschaft erfolgreich bearbeitet",
+        "confirm_delete": "Mitgliedschaft erfolgreich gelöscht",
+        "ask_delete": "Sind Sie sicher, dass Sie diese Mitgliedschaft löschen möchten?",
+        "entry_name": "Name",
+        "entry_status": "Aktiv",
+        "entry_dis": "Beschreibung",
+        "entry_frequency": "Fälligkeit des Beitrags",
+        "entry_fee": "Mitgliedsbeitrag",
+        "entry_hours": "Dienststunden",
+        "freq_Annual": "Jährlich",
+        "freq_Quarterly": "Vierteljährlich",
+        "freq_Monthly": "Monatlich"
     },
     "LedgerSetup": {
         "addtitle": "Hauptbuch hinzufügen",

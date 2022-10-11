@@ -81,6 +81,8 @@
     <Table sqltable="p_type"/>
     <Table sqltable="p_publication"/>
     <Table sqltable="p_partner_classes"/>
+    <Table sqltable="p_partner_membership"/>
+
 
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>
@@ -421,6 +423,8 @@
     <Table sqltable="p_publication_cost"/>
     <Table sqltable="p_reason_subscription_given"/>
     <Table sqltable="p_reason_subscription_cancelled"/>
+
+    <Table sqltable="p_membership"/>
 
     <Table sqltable="p_consent_channel"/>
     <Table sqltable="p_consent_purpose"/>
