@@ -208,6 +208,9 @@ class MaintainPartners {
 		m = this.load_countries(parsed.result.PCountry, parsed.result.PLocation[0].p_country_code_c, m);
 		m = this.load_partner_classes(parsed.result.PPartnerClasses, parsed.result.PPartner[0].p_partner_class_c, m);
 		this.PMembership = parsed.result.PMembership;
+		if (parsed.result.PMembership.length == 0) {
+			m.find('#nav-item-memberships').hide();
+		}
 
 		var sendmail = false;
 		if (parsed.result.PPartnerLocation.length > 0) {

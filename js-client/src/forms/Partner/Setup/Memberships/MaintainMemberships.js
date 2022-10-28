@@ -115,6 +115,12 @@ function save_entry(update) {
 	let request = translate_to_server(extract_data(modalspace));
 
 	request['action'] = 'update';
+	if (request['AMembershipHoursService'] == '') {
+		request['AMembershipHoursService'] = 0;
+	}
+	if (request['AMembershipFee'] == '') {
+		request['AMembershipFee'] = 0;
+	}
 
 	api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainMemberships", request).then(function (result) {
 		parsed = JSON.parse(result.data.d);
