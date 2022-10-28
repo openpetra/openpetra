@@ -127,6 +127,7 @@ ALTER TABLE p_partner_membership
   ADD CONSTRAINT p_partner_membership_fkmd
     FOREIGN KEY (s_modified_by_c)
     REFERENCES s_user(s_user_id_c);
+
 ALTER TABLE p_membership
   ADD CONSTRAINT p_membership_fk1
     FOREIGN KEY (a_frequency_code_c)
@@ -139,6 +140,7 @@ ALTER TABLE p_membership
   ADD CONSTRAINT p_membership_fkmd
     FOREIGN KEY (s_modified_by_c)
     REFERENCES s_user(s_user_id_c);
+
 CREATE UNIQUE INDEX inx_p_partner_membership_paid_pk0
    ON p_partner_membership_paid
    (p_membership_code_c,p_partner_key_n,p_date_payment_d);
@@ -175,6 +177,7 @@ CREATE INDEX inx__partner_membership_fkmd_key5
 CREATE INDEX p_expiry_k0
    ON p_partner_membership
    (p_expiry_date_d);
+
 CREATE UNIQUE INDEX inx_p_membership_pk0
    ON p_membership
    (p_membership_code_c);
