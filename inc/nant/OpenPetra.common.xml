@@ -442,7 +442,7 @@
     </if>
 
     <!-- we are now using nunit3-console from nuget -->
-    <property name="external.NUnitConsole" value="${dir.nuget}/NUnit.ConsoleRunner.3.16.0/tools/nunit3-console.exe" overwrite="false"/>
+    <property name="external.NUnitConsole" value="${dir.nuget}/NUnit.ConsoleRunner.3.15.2/tools/nunit3-console.exe" overwrite="false"/>
     <if test="${not file::exists(external.NUnitConsole)}">
         <echo>Cannot find nunit3-console.exe! Please run nant generateTools</echo>
     </if>
