@@ -41,6 +41,9 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
@@ -292,6 +295,40 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
 
                             MainDS.PBankingDetailsUsage.Rows.Clear();
+                        }
+
+                        if (true)
+                        {
+                            GiftBatchTDS TempGiftDS = new GiftBatchTDS();
+                            AGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
+                            TempGiftDS.AGift.DefaultView.Sort = "a_date_entered_d DESC";
+
+                            foreach(DataRowView giftview in TempGiftDS.AGift.DefaultView)
+                            {
+                                AGiftRow gift = (AGiftRow)giftview.Row;
+                                TempGiftDS.AGiftDetail.Clear();
+                                AGiftDetailAccess.LoadViaAGift(TempGiftDS, gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber, Transaction);
+
+                                AGiftBatchTable tempBatch = AGiftBatchAccess.LoadByPrimaryKey(gift.LedgerNumber, gift.BatchNumber, Transaction);
+
+                                if (tempBatch[0].BatchStatus != MFinanceConstants.BATCH_POSTED)
+                                {
+                                    continue;
+                                }
+
+                                foreach(AGiftDetailRow detail in TempGiftDS.AGiftDetail.Rows)
+                                {
+                                    if (detail.ModifiedDetail)
+                                    {
+                                        continue;
+                                    }
+
+                                    PartnerEditTDSAGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped();
+                                    DataUtilities.CopyAllColumnValues(detail, giftDetail);
+                                    giftDetail.DateEntered = gift.DateEntered;
+                                    MainDS.AGiftDetail.Rows.Add(giftDetail);
+                                }
+                            }
                         }
 
                         PPartnerStatusAccess.LoadAll(MainDS, Transaction);

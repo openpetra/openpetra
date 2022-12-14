@@ -175,3 +175,16 @@ button.btn-light {
     color: #212529;
     ;
 }
+
+div.scroll40vh {
+    max-height:40vh;
+    overflow: auto;
+}
+
+/* anchor must be lower because of the top bar (height: 50 px) */
+a.anchor {
+    display: block;
+    position: relative;
+    top: -65px;
+    visibility: hidden;
+}
