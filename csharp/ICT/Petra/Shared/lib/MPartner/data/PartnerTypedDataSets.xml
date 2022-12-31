@@ -85,6 +85,7 @@
     <Table sqltable="a_gift_detail">
         <Field sqltable="a_gift" sqlfield="a_date_entered_d"/>
     </Table>
+    <Table sqltable="a_recurring_gift_detail"/>
 
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>

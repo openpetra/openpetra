@@ -331,6 +331,32 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
+                        if (true)
+                        {
+                            GiftBatchTDS TempGiftDS = new GiftBatchTDS();
+                            ARecurringGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
+
+                            foreach(DataRowView giftview in TempGiftDS.ARecurringGift.DefaultView)
+                            {
+                                ARecurringGiftRow gift = (ARecurringGiftRow)giftview.Row;
+
+                                if (!gift.Active)
+                                {
+                                    continue;
+                                }
+
+                                TempGiftDS.ARecurringGiftDetail.Clear();
+                                ARecurringGiftDetailAccess.LoadViaARecurringGift(TempGiftDS, gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber, Transaction);
+
+                                foreach(ARecurringGiftDetailRow detail in TempGiftDS.ARecurringGiftDetail.Rows)
+                                {
+                                    ARecurringGiftDetailRow giftDetail = MainDS.ARecurringGiftDetail.NewRowTyped();
+                                    DataUtilities.CopyAllColumnValues(detail, giftDetail);
+                                    MainDS.ARecurringGiftDetail.Rows.Add(giftDetail);
+                                }
+                            }
+                        }
+
                         PPartnerStatusAccess.LoadAll(MainDS, Transaction);
                         PTypeRow templateRow = MainDS.PType.NewRowTyped();
                         templateRow.SystemType = false;
