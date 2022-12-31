@@ -69,14 +69,32 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                         ADataBase.ExecuteNonQuery(sql, SubmitChangesTransaction);
                     }
 
-                    // insert new tables
-                    string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade202207_202212.sql").Split(new char[]{';'});
 
-                    foreach (string stmt in SqlStmts)
+                    bool TableExists = false;
+                    try
                     {
-                        if (stmt.Trim().Length > 0)
+                        sql = "SELECT COUNT(*) FROM PUB_p_partner_membership_paid";
+                        if (Convert.ToInt32(ADataBase.ExecuteScalar(sql, SubmitChangesTransaction)) >= 0)
                         {
-                            ADataBase.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                            TableExists = true;
+                        }
+                    }
+                    catch (System.Exception)
+                    {
+                        // the table must be added
+                    }
+
+                    if (!TableExists)
+                    {
+                        // insert new tables
+                        string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade202207_202212.sql").Split(new char[]{';'});
+
+                        foreach (string stmt in SqlStmts)
+                        {
+                            if (stmt.Trim().Length > 0)
+                            {
+                                ADataBase.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                            }
                         }
                     }
 
