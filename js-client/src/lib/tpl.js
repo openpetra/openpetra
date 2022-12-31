@@ -63,6 +63,7 @@ function replace_val_variables_in_attr(attr, data) {
 }
 
 // this will replace all {val_something} in this object, by converting it to a string and back
+// check all attributes of a, name, and replace variables
 // check all attributes of div, id and onclick, and replace variables
 // check all attributes of button, onclick, and replace variables
 function replace_val_variables(tpl, data) {
@@ -85,7 +86,7 @@ function replace_val_variables(tpl, data) {
         $(tpl).attr('title', replace_val_variables_in_attr(title, data));
     }
 
-    $(tpl).find('button, div, div span, div div, div div span, div span').each(function() {
+    $(tpl).find('button, div, div span, div div, div div span, div span, a').each(function() {
         let id = $(this).attr('id');
         if (id !== undefined && id != null) {
             $(this).attr('id', replace_val_variables_in_attr(id, data));
@@ -93,6 +94,10 @@ function replace_val_variables(tpl, data) {
         let onclick = $(this).attr('onclick');
         if (onclick !== undefined && onclick != null) {
             $(this).attr('onclick', replace_val_variables_in_attr(onclick, data));
+        }
+        let name = $(this).attr('name');
+        if (name != undefined && name != null) {
+            $(this).attr('name', replace_val_variables_in_attr(name, data));
         }
         let title = $(this).attr('title');
         if (title !== undefined && title != null) {

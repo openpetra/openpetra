@@ -98,6 +98,33 @@
 		</div>
 	</div>
 
+	<div class="tpl_contribution_detail">
+		<div class="row">
+			<div class="col">{val_a_date_entered_d}</div>
+			<div class="col">{val_a_motivation_detail_code_c}</div>
+			<div class="col">{val_a_gift_transaction_amount_n}</div>
+			<div class="col-1">
+				<button id="btnShowGiftBatch{val_a_ledger_number_i}_{val_a_batch_number_i}_{val_a_gift_transaction_number_i}" type="button" class="btn btn-primary" name="button">
+					<i class="fas fa-folder-open"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="tpl_recurr_contribution_detail">
+		<div class="row">
+			<div class="col">{val_a_start_donations_d}</div>
+			<div class="col">{val_a_end_donations_d}</div>
+			<div class="col">{val_a_motivation_detail_code_c}</div>
+			<div class="col">{val_a_gift_amount_n}</div>
+			<div class="col-1">
+				<button id="btnShowRecurringGiftBatch{val_a_ledger_number_i}_{val_a_batch_number_i}_{val_a_gift_transaction_number_i}" type="button" class="btn btn-primary" name="button">
+					<i class="fas fa-folder-open"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
 	<div class="modal modal-wide fade tpl_edit" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -247,6 +274,9 @@
 				</li>
 				<li class="nav-item">
 					<div class="nav-link" style="cursor:pointer;" href="#bankaccounts" aria-controls="bankaccounts" onclick="show_tab(this)">{bankaccounts}</div>
+				</li>
+				<li class="nav-item">
+					<div class="nav-link" style="cursor:pointer;" href="#contributions" aria-controls="contributions" onclick="show_tab(this)">{contributions}</div>
 				</li>
 				<li class="nav-item">
 					<div class="nav-link" style="cursor:pointer;" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</div>
@@ -399,6 +429,41 @@
 								</div>
 
 								<div class="bank_account_detail_col"></div>
+							</div>
+
+						</div>
+
+					</div>
+				</div>
+				<div class="tab-pane" id="contributions">
+					<div class="container">
+						<h2>{recurring payments}</h2>
+						<div class="row">
+							<div class="col">
+								<div class="row">
+									<div class="col">{donationsstart}</div>
+									<div class="col">{donationsend}</div>
+									<div class="col">{motivationdetail}</div>
+									<div class="col">{amount}</div>
+									<div class="col-1"></div>
+								</div>
+
+								<div class="recurring_contribution_col scroll40vh"></div>
+							</div>
+
+						</div>
+
+						<h2>{actual payments}</h2>
+						<div class="row">
+							<div class="col">
+								<div class="row">
+									<div class="col">{donationdate}</div>
+									<div class="col">{motivationdetail}</div>
+									<div class="col">{amount}</div>
+									<div class="col-1"></div>
+								</div>
+
+								<div class="contribution_detail_col scroll40vh"></div>
 							</div>
 
 						</div>

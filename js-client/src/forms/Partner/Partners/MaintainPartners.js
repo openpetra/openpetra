@@ -223,6 +223,8 @@ class MaintainPartners {
 		m.find('.'+parsed.result.PPartner[0].p_partner_class_c).show();
 
 		m = this.display_bankaccounts(parsed.result.PBankingDetails, m);
+		m = this.display_contributions(parsed.result.AGiftDetail, m);
+		m = this.display_recurring_contributions(parsed.result.ARecurringGiftDetail, m);
 
 		let myModal = ShowModal('partneredit' + self.partnerkey, m);
 
@@ -283,6 +285,46 @@ class MaintainPartners {
 		return m;
 	}
 
+	display_contributions(AGiftDetails, m) {
+		var self = this;
+		m.find('.contribution_detail_col').html('');
+		if (AGiftDetails.length > 0) {
+			for (var detail of AGiftDetails) {
+				let tpl_contribution_detail = format_tpl( $('[phantom] .tpl_contribution_detail').clone(), detail);
+				m.find('.contribution_detail_col').append(tpl_contribution_detail);
+				let btnShowGiftBatch = m.find("#btnShowGiftBatch"+detail['a_ledger_number_i']+"_"+detail['a_batch_number_i']+"_"+detail['a_gift_transaction_number_i']);
+				btnShowGiftBatch.attr('a_ledger_number_i', detail['a_ledger_number_i']);
+				btnShowGiftBatch.attr('a_batch_number_i', detail['a_batch_number_i']);
+				btnShowGiftBatch.attr('a_gift_transaction_number_i', detail['a_gift_transaction_number_i']);
+				btnShowGiftBatch.click(function() {
+					self.show_gift_batch($(this).attr('a_ledger_number_i'), $(this).attr('a_batch_number_i'), $(this).attr('a_gift_transaction_number_i'));
+				});
+			}
+		}
+
+		return m;
+	}
+
+	display_recurring_contributions(ARecurringGiftDetails, m) {
+		var self = this;
+		m.find('.recurring_contribution_col').html('');
+		if (ARecurringGiftDetails.length > 0) {
+			for (var detail of ARecurringGiftDetails) {
+				let tpl_contribution_detail = format_tpl( $('[phantom] .tpl_recurr_contribution_detail').clone(), detail);
+				m.find('.recurring_contribution_col').append(tpl_contribution_detail);
+				let btnShowGiftBatch = m.find("#btnShowRecurringGiftBatch"+detail['a_ledger_number_i']+"_"+detail['a_batch_number_i']+"_"+detail['a_gift_transaction_number_i']);
+				btnShowGiftBatch.attr('a_ledger_number_i', detail['a_ledger_number_i']);
+				btnShowGiftBatch.attr('a_batch_number_i', detail['a_batch_number_i']);
+				btnShowGiftBatch.attr('a_gift_transaction_number_i', detail['a_gift_transaction_number_i']);
+				btnShowGiftBatch.click(function() {
+					self.show_recurring_gift_batch($(this).attr('a_ledger_number_i'), $(this).attr('a_batch_number_i'), $(this).attr('a_gift_transaction_number_i'));
+				});
+			}
+		}
+
+		return m;
+	}
+
 	new_bank_account(partnerkey, accountname) {
 		var self = this;
 		if (!allow_modal()) {return}
@@ -316,6 +358,25 @@ class MaintainPartners {
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
 	}
+
+	show_gift_batch(ledger_number, batch_number, gift_transaction_number) {
+		// open new window with this gift batch
+		window.open("/Finance/Gift/GiftEntry/GiftBatches" +
+			"?ledger_number=" + ledger_number +
+			"&batch_number=" + batch_number +
+			"&gift_transaction_number=" + gift_transaction_number,
+			"_blank");
+	}
+
+	show_recurring_gift_batch(ledger_number, batch_number, gift_transaction_number) {
+		// open new window with this gift batch
+		window.open("/Finance/Gift/GiftEntry/RecurringGiftBatches" +
+			"?ledger_number=" + ledger_number +
+			"&batch_number=" + batch_number +
+			"&gift_transaction_number=" + gift_transaction_number,
+			"_blank");
+	}
+
 
 	save_partner(obj) {
 		var self = this;

@@ -30,6 +30,20 @@ $('document').ready(function () {
 });
 
 function load_preset() {
+
+	if (window.location.href.includes('?ledger_number=')) {
+		var url = new URL(window.location.href);
+		var ledger_number = url.searchParams.get("ledger_number");
+		var batch_number = url.searchParams.get("batch_number");
+		var gift_transaction_number = url.searchParams.get("gift_transaction_number");
+
+		if (window.localStorage.getItem('current_ledger') == ledger_number) {
+			display_batch(batch_number, gift_transaction_number);
+		}
+
+		return;
+	}
+
 	var x = window.localStorage.getItem('GiftBatches');
 	if (x != null) {
 		x = JSON.parse(x);
@@ -66,6 +80,24 @@ function display_list(source) {
 			batchNumber = Number.parseInt(batchNumber);
 			open_gift_transactions($('#Batch' + batchNumber), batchNumber);
 		}
+	})
+}
+
+function display_batch(batch_number, gift_transaction_number) {
+	var x = {};
+	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
+	x['ABatchNumber'] = batch_number;
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatch', x).then(function (data) {
+		data = JSON.parse(data.data.d);
+		// on reload, clear content
+		$('#browse_container').html('');
+		for (item of data.result.AGiftBatch) {
+			format_item(item);
+		}
+		format_currency(data.ACurrencyCode);
+		format_date();
+
+		open_gift_transactions($('#Batch' + batch_number), batch_number, false, gift_transaction_number);
 	})
 }
 
@@ -120,7 +152,7 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_gift_transactions(obj, number = -1, reload = false) {
+function open_gift_transactions(obj, number = -1, reload = false, transaction_number = -1) {
 	obj = $(obj)
 	if (number == -1) {
 		while(!obj[0].hasAttribute('id') || !obj[0].id.includes("Batch")) {
@@ -161,6 +193,10 @@ function open_gift_transactions(obj, number = -1, reload = false) {
 			$('.tpl_row .collapse').collapse('hide');
 		}
 		obj.find('.collapse').collapse('show')
+
+		if (transaction_number != -1) {
+			setTimeout(function() { location.hash = "#gift_" + number + "_" + transaction_number }, 500);
+		}
 	})
 
 }
