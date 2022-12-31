@@ -313,6 +313,12 @@ class MaintainPartners {
 				btnEditMembership.click(function() {
 					let membershipkey = $(this).attr('membershipkey');
 					self.edit_membership(membershipkey);
+				});
+			}
+		}
+
+		return m;
+	}
 
 	display_contributions(AGiftDetails, m) {
 		var self = this;
