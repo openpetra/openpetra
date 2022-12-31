@@ -11,7 +11,7 @@
     <mkdir dir="${DeliveryDB.dir}" failonerror="false"/>
     <property name="CleanDatabaseScript" value="${DeliveryDB.dir}/petra_clean.sql"/>
 
-    <target name="patchDatabase" depends="init" description="Update the development database to the latest database version">
+    <target name="patchDatabase" depends="init, prepareDeliveryContent" description="Update the development database to the latest database version">
         <property name="Command" value="UpgradeDatabase"/>
         <call target="startAdmin"/>
     </target>

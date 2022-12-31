@@ -34,8 +34,8 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
     /// </summary>
     public static partial class TDBUpgrade
     {
-        /// Upgrade to version 2022-09
-        public static bool UpgradeDatabase202207_202209(TDataBase ADataBase)
+        /// Upgrade to version 2022-12
+        public static bool UpgradeDatabase202207_202212(TDataBase ADataBase)
         {
             // there are changes to the database structure
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
@@ -67,6 +67,17 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                         ADataBase.ExecuteNonQuery(sql, SubmitChangesTransaction);
                         sql = "ALTER TABLE PUB_a_recurring_gift ADD COLUMN a_sepa_mandate_given_d date DEFAULT NULL AFTER a_sepa_mandate_reference_c";
                         ADataBase.ExecuteNonQuery(sql, SubmitChangesTransaction);
+                    }
+
+                    // insert new tables
+                    string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade202207_202212.sql").Split(new char[]{';'});
+
+                    foreach (string stmt in SqlStmts)
+                    {
+                        if (stmt.Trim().Length > 0)
+                        {
+                            ADataBase.ExecuteNonQuery(stmt, SubmitChangesTransaction);
+                        }
                     }
 
                     SubmitOK = true;
