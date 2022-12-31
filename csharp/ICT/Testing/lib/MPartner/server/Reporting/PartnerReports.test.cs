@@ -134,7 +134,8 @@ namespace Tests.MPartner.Server.Reporting
                 out PartnerTypes,
                 out DefaultEmailAddress,
                 out DefaultPhoneMobile,
-                out DefaultPhoneLandline);
+                out DefaultPhoneLandline,
+                false);
 
             PLocationRow locationRow = MainDS.PLocation[0];
             string address = locationRow.StreetName + ", " + locationRow.PostalCode + " " + locationRow.City + ", " + locationRow.CountryCode;
@@ -171,7 +172,8 @@ namespace Tests.MPartner.Server.Reporting
                 out PartnerTypes,
                 out DefaultEmailAddress,
                 out DefaultPhoneMobile,
-                out DefaultPhoneLandline);
+                out DefaultPhoneLandline,
+                false);
 
             if (!Subscriptions.Contains(APublicationCode))
             {

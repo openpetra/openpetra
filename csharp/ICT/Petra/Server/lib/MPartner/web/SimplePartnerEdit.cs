@@ -182,7 +182,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 out APartnerTypes,
                 out ADefaultEmailAddress,
                 out ADefaultPhoneMobile,
-                out ADefaultPhoneLandline);
+                out ADefaultPhoneLandline,
+                true);
         }
 
         /// <summary>
@@ -195,7 +196,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             out List<string> APartnerTypes,
             out string ADefaultEmailAddress,
             out string ADefaultPhoneMobile,
-            out string ADefaultPhoneLandline)
+            out string ADefaultPhoneLandline,
+            bool AWithDonationHistory)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
             List<string> Subscriptions = new List<string>();
@@ -304,7 +306,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             MainDS.PBankingDetailsUsage.Rows.Clear();
                         }
 
-                        if (true)
+                        if (AWithDonationHistory)
                         {
                             GiftBatchTDS TempGiftDS = new GiftBatchTDS();
                             AGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
@@ -338,7 +340,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (true)
+                        if (AWithDonationHistory)
                         {
                             GiftBatchTDS TempGiftDS = new GiftBatchTDS();
                             ARecurringGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
@@ -422,7 +424,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             // Call the standard method including address details
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, true);
 
             TDBTransaction ReadTransaction = new TDBTransaction();
             string PrimaryPhoneNumber = String.Empty;
@@ -568,7 +570,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             else
             {
-                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
                 DataUtilities.CopyDataSet(AMainDS, SaveDS);
             }
 
@@ -1042,7 +1044,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             PBankingDetails = new PartnerEditTDSPBankingDetailsTable(); // MainDS.PBankingDetails;
             PBankingDetails = MainDS.PBankingDetails;
@@ -1064,7 +1066,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1214,7 +1216,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             PMemberships = new PPartnerMembershipTable();
             PMemberships = MainDS.PPartnerMembership;
@@ -1237,7 +1239,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             AVerificationResult = new TVerificationResultCollection();
 

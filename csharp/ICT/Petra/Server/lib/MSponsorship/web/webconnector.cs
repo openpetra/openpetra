@@ -471,7 +471,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string DefaultEmailAddress, DefaultPhoneMobile, DefaultPhoneLandline;
             PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(ADonorKey,
                 out Subscriptions, out PartnerTypes,
-                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline);
+                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline, false);
 
             DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
             DonorEmailAddress = DefaultEmailAddress;

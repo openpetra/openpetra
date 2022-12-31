@@ -500,6 +500,8 @@ class MaintainPartners {
 		updated_data.result.PPartnerClasses = [];
 		updated_data.result.PBankingDetails = [];
 		updated_data.result.PPartnerBankingDetails = [];
+		updated_data.result.AGiftDetail = [];
+		updated_data.result.ARecurringGiftDetail = [];
 
 		// to be save we have the right address in logs
 		if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = this.getUpdatesAddress(self.partnerkey); }
