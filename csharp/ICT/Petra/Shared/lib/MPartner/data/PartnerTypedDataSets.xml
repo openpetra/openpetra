@@ -6,6 +6,7 @@
   <ImportUnit name="Ict.Petra.Shared.MFinance.Account.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MHospitality.Data"/>
   <ImportUnit name="Ict.Petra.Shared.MCommon.Data"/>
+  <ImportUnit name="Ict.Petra.Shared.MFinance.Gift.Data"/>
 
   <DataSet name="PartnerEditTDS">
     <Table sqltable="p_partner"/>
@@ -82,7 +83,10 @@
     <Table sqltable="p_publication"/>
     <Table sqltable="p_partner_classes"/>
     <Table sqltable="p_partner_membership"/>
-
+    <Table sqltable="a_gift_detail">
+        <Field sqltable="a_gift" sqlfield="a_date_entered_d"/>
+    </Table>
+    <Table sqltable="a_recurring_gift_detail"/>
 
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>

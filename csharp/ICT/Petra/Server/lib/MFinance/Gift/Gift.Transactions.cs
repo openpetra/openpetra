@@ -684,6 +684,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out String ACurrencyCode
             )
         {
+            return LoadAGiftBatchInternal(ALedgerNumber, AYear, APeriod, ABatchStatus, out ACurrencyCode, -1);
+        }
+
+        /// <summary>
+        /// loads a specific gift batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber">The gift batch to be loaded</param>
+        /// <param name="ACurrencyCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadAGiftBatch(
+            Int32 ALedgerNumber, Int32 ABatchNumber,
+            out String ACurrencyCode
+            )
+        {
+            return LoadAGiftBatchInternal(ALedgerNumber, -1, -1, String.Empty, out ACurrencyCode, ABatchNumber);
+        }
+
+        private static GiftBatchTDS LoadAGiftBatchInternal(
+            Int32 ALedgerNumber, Int32 AYear, Int32 APeriod,
+            String ABatchStatus,
+            out String ACurrencyCode,
+            Int32 ABatchNumber = -1
+            )
+        {
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -760,13 +786,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 ABatchStatus);
                         }
 
+                        string FilterSingleBatch = string.Empty;
+
+                        if (ABatchNumber != -1) {
+                            FilterSingleBatch += String.Format(" AND gb.{0} = {1}",
+                                AGiftBatchTable.GetBatchNumberDBName(),
+                                ABatchNumber);
+                        }
+
                         string SelectClause =
                             String.Format("SELECT * FROM PUB_{0} gb WHERE gb.{1} = {2}",
                                 AGiftBatchTable.GetTableDBName(),
                                 AGiftBatchTable.GetLedgerNumberDBName(),
                                 ALedgerNumber);
 
-                        db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus,
+                        db.Select(MainDS, SelectClause + FilterByPeriod + FilterByBatchStatus + FilterSingleBatch,
                             MainDS.AGiftBatch.TableName, Transaction);
 
                         // now get the gift detail transaction amounts for the gift batch total
@@ -1233,7 +1267,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [NoRemoting]
         private static GiftBatchTDS LoadAGiftBatchSingle(Int32 ALedgerNumber, Int32 ABatchNumber, ref TDBTransaction ATransaction)
         {
             #region Validate Arguments
