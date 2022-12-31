@@ -163,6 +163,7 @@ class MaintainPartners {
 		var self = this;
 		var r = {
 					APartnerKey: partner_id,
+					AWithDonationHistory: true,
 				};
 		// on open of a edit modal, we get new data,
 		// so everything is up to date and we don't have to load it, if we only search
