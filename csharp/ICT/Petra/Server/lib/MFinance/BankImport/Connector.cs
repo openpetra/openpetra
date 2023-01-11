@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -532,6 +532,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             DataView APartnerByDonorKey,
             Int64 ADonorKey)
         {
+            if (ADonorKey == 0)
+            {
+                return String.Empty;
+            }
+
             DataRowView[] rows = APartnerByDonorKey.FindRows(new object[] { ADonorKey });
 
             if (rows.Length == 1)
@@ -697,7 +702,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     "FROM PUB_a_ep_transaction t, PUB_a_ep_match m, PUB_p_partner p " +
                     "WHERE t.a_statement_key_i = " + AStatementKey.ToString() + " " +
                     "AND t.a_match_text_c = m.a_match_text_c " +
-                    "AND m.p_donor_key_n = p.p_partner_key_n";
+                    "AND (m.p_donor_key_n = p.p_partner_key_n OR m.p_recipient_key_n = p.p_partner_key_n)";
 
                 PartnerByDonorKey = db.SelectDT(sqlLoadPartnerName, "partnerByDonorKey", Transaction);
                 PartnerByDonorKey.DefaultView.Sort = "PartnerKey";
@@ -938,6 +943,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 }
 
                 row.DonorShortName = FindDonorName(PartnerByDonorKey.DefaultView, row.DonorKey);
+                row.RecipientShortName = FindDonorName(PartnerByDonorKey.DefaultView, row.RecipientKey);
             }
 
             // remove all rows that we do not need on the client side
@@ -1239,6 +1245,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             string AMatchAction,
             Int64 ADonorKey, string AMotivationGroupCode, string AMotivationDetailCode,
             string AAccountCode, string ACostCentreCode,
+            Int64 ARecipientKey,
             Decimal AGiftTransactionAmount,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -1296,6 +1303,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 row.LedgerNumber = ALedgerNumber;
                 row.Action = AMatchAction;
                 row.DonorKey = ADonorKey;
+                row.RecipientKey = ARecipientKey;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.AccountCode = AAccountCode;
@@ -1311,6 +1319,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     {
                         row.Action = AMatchAction;
                         row.DonorKey = ADonorKey;
+                        row.RecipientKey = ARecipientKey;
                         if (row.Detail == ADetail)
                         {
                             row.MotivationGroupCode = AMotivationGroupCode;

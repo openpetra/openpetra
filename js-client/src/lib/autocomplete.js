@@ -61,6 +61,7 @@ function autocompleteWithGroup(input_field_object, input_group_object, auto_list
       else if (event.which == 13) {
         let sub = input_field_object.siblings('.autocomplete-items').find('.autocomplete-active');
         input_field_object.val( sub.text() );
+        input_field_object.attr('groupkey', sub.find('input[type=hidden]').attr('groupkey'));
         input_field_object.attr('key-value', sub.find('input[type=hidden]').val());
         if (onselect) { onselect(input_field_object, sub.find('input[type=hidden]').val()); }
         delete_all_guesses();
@@ -89,6 +90,7 @@ function autocompleteWithGroup(input_field_object, input_group_object, auto_list
     guess_field.attr('key', guess.key);
     guess_field.click(function () {
       input_field_object.val( $(this).attr('key') + ' ' + $(this).attr('label'));
+      input_field_object.attr('groupkey', $(this).find('input[type=hidden]').attr('groupkey'));
       input_field_object.attr('key-value', $(this).find('input[type=hidden]').val());
       if (input_group_object != null) {
         input_group_object.val($(this).find('input[type=hidden]').attr("groupkey"));

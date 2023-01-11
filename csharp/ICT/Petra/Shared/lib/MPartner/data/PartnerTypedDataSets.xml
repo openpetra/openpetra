@@ -348,6 +348,7 @@
       <CustomField name="Address3Match" type="string" initial="BEGINS"/>
       <CustomField name="LocationKey" type="string"/>
       <CustomField name="WorkerFamOnly" type="bool" initial="false"/>
+      <CustomField name="MemberOnly" type="bool" initial="false"/>
       <CustomField name="ExactPartnerKeyMatch" type="bool" initial="false"/>
       <CustomField name="PhoneNumber" type="string"/>
       <CustomField name="PhoneNumberMatch" type="string" initial="BEGINS"/>

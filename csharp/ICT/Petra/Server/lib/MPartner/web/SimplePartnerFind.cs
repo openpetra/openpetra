@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,6 +63,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AIban,
             string APartnerClass,
             bool AActiveOnly,
+            bool AMemberOnly,
             string ANameFormat,
             string ASortBy,
             Int16 AMaxRecords,
@@ -121,6 +122,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             else
             {
                 CriteriaRow.PartnerStatus = "*";
+            }
+
+            if (AMemberOnly)
+            {
+                CriteriaRow.MemberOnly = true;
             }
 
             if (AIban.Length > 0)
@@ -223,7 +229,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         [RequireModulePermission("OR(PTNRUSER,PARTNERVIEW)")]
         public static bool TypeAheadPartnerFind(
-            string ASearch, string APartnerClass, bool AActiveOnly,
+            string ASearch, string APartnerClass, bool AActiveOnly, bool AMemberOnly,
             short ALimit,
             out DataTable AResult)
         {
@@ -254,6 +260,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 String.Empty, // IBAN
                 APartnerClass,
                 AActiveOnly,
+                AMemberOnly,
                 "ShortName",
                 "PartnerName",
                 ALimit,

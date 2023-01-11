@@ -5,7 +5,7 @@
 //	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -174,8 +174,12 @@ function edit_gift_trans(statement_key, trans_order) {
 		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, parsed.ATransactions[0].MatchAction);
-
 	})
+}
+
+function is_membership_fee(motivationgroupcode) {
+	return (motivationgroupcode == 'MEMBERSHIP'
+			|| motivationgroupcode == i18next.t('BankImport.MEMBERSHIP'));
 }
 
 function edit_gift_trans_detail(statement_id, order_id, detail_id) {
@@ -188,15 +192,45 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 	};
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionDetail', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		parsed.TransactionDetail[0]['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), parsed.TransactionDetail[0] );
+		detail = parsed.TransactionDetail[0];
+
+		if (detail['p_recipient_key_n'] != 0) {
+			detail['p_member_name_c'] = detail['p_recipient_key_n'] + ' ' + detail['p_recipient_short_name_c'];
+		} else {
+			detail['p_member_name_c'] = "";
+		}
+
+		detail['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), detail);
 		let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 		$('#modal_space').append(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, sclass);
+
+		if (is_membership_fee(detail['a_motivation_group_code_c'])) {
+			tpl_edit_raw.find('.MEMBERFEE').show();
+		}
+
 	})
+}
+
+function update_motivation_group(input_field_object, selected_value) {
+	let obj = $(input_field_object).closest('.modal');
+	if (is_membership_fee(input_field_object.attr('groupkey'))) {
+		recipient = obj.find('input[name=p_member_name_c]');
+		if (recipient.val() == '') {
+			donorkey = obj.find('input[name=p_donor_key_n]').val();
+			donorname = obj.find('input[name=p_donor_short_name_c]').val();
+			// default to the matched donor
+			recipient.val(donorkey + ' ' + donorname);
+			recipient.attr('key-value', donorkey);
+		}
+		obj.find('.MEMBERFEE').show();
+	} else {
+		obj.find('.MEMBERFEE').hide();
+	}
 }
 
 /////
@@ -576,4 +610,10 @@ function clear_donor(self) {
     let obj_donorName = $(self).parent().find('input[name=p_donor_name_c]');
     obj_donorName.val("");
     obj_donorName.attr('key-value', 0);
+}
+
+function clear_member(self) {
+    let obj_memberName = $(self).parent().find('input[name=p_member_name_c]');
+    obj_memberName.val("");
+    obj_memberName.attr('key-value', 0);
 }

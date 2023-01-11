@@ -4,7 +4,7 @@
 //	Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -24,7 +24,7 @@
 
 var timeout_autocomplete = null;
 
-function autocomplete_donor(input_field, onselect = null) {
+function autocomplete_contact(input_field, onselect = null, memberonly = false) {
 
 	if (timeout_autocomplete) {
 		clearTimeout(timeout_autocomplete);
@@ -34,6 +34,7 @@ function autocomplete_donor(input_field, onselect = null) {
 			ASearch: $(input_field).val(),
 			APartnerClass: '',
 			AActiveOnly: false,
+			AMemberOnly: memberonly,
 			ALimit: 5
 			};
 		api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_TypeAheadPartnerFind', x).then(function (result) {
@@ -55,4 +56,12 @@ function autocomplete_donor(input_field, onselect = null) {
 			}
 		});
 	}, 500);
+}
+
+function autocomplete_donor(input_field, onselect = null) {
+	autocomplete_contact(input_field, onselect, false);
+}
+
+function autocomplete_member(input_field, onselect = null) {
+	autocomplete_contact(input_field, onselect, true);
 }
