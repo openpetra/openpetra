@@ -154,15 +154,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             foreach (SponsorshipFindTDSSearchResultRow child in result.Rows)
             {
-                sql = "SELECT DISTINCT p.* " +
-                    "FROM a_recurring_gift rg, a_recurring_gift_detail rgd, PUB_p_partner p " +
+                sql = "SELECT DISTINCT sponsor.* " +
+                    "FROM a_recurring_gift rg, a_recurring_gift_detail rgd, PUB_p_partner donor, PUB_p_partner sponsor " +
                     "WHERE rgd.a_ledger_number_i = rg.a_ledger_number_i " +
                     "AND rgd.a_batch_number_i = rg.a_batch_number_i " +
                     "AND rgd.a_gift_transaction_number_i = rg.a_gift_transaction_number_i " +
                     "AND rgd.p_recipient_key_n = " + child.PartnerKey + " " +
                     "AND ? >= rgd.a_start_donations_d " +
                     "AND (? <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
-                    "AND rg.p_donor_key_n = p.p_partner_key_n";
+                    "AND rg.p_donor_key_n = donor.p_partner_key_n " +
+                    "AND rgd.p_recipient_key_n = sponsor.p_partner_key_n";
 
                 List <OdbcParameter> parameterList = new List <OdbcParameter>();
 
@@ -178,7 +179,12 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
                 if (ADonorName != String.Empty)
                 {
-                    sql += " AND p.p_partner_short_name_c LIKE ?";
+                    sql += " AND (donor.p_partner_short_name_c LIKE ?";
+                    param = new OdbcParameter("ADonorName", OdbcType.VarChar);
+                    ADonorName = '%' + ADonorName + '%';
+                    param.Value = ADonorName;
+                    parameterList.Add(param);
+                    sql += " OR sponsor.p_partner_short_name_c LIKE ?)";
                     param = new OdbcParameter("ADonorName", OdbcType.VarChar);
                     ADonorName = '%' + ADonorName + '%';
                     param.Value = ADonorName;
@@ -216,26 +222,26 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 {
                     if (!firstName)
                     {
-                        child["DonorName"] += ";";
+                        child["SponsorName"] += ";";
                     }
 
-                    child["DonorName"] += donor.PartnerShortName;
+                    child["SponsorName"] += donor.PartnerShortName;
                     firstName = false;
 
-                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                    string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                     GetDonorContactDetails(donor.PartnerKey,
-                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
+                        out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
 
-                    child["DonorContactDetails"] += donor.PartnerShortName + ";" + DonorAddress + ";";
-                    if (DonorEmailAddress != String.Empty)
+                    child["SponsorContactDetails"] += donor.PartnerShortName + ";" + SponsorAddress + ";";
+                    if (SponsorEmailAddress != String.Empty)
                     {
-                        child["DonorContactDetails"] += "<a href='mailto:" + DonorEmailAddress + "'>" + DonorEmailAddress + "</a>;";
+                        child["SponsorContactDetails"] += "<a href='mailto:" + SponsorEmailAddress + "'>" + SponsorEmailAddress + "</a>;";
                     }
-                    if (DonorPhoneNumber != String.Empty)
+                    if (SponsorPhoneNumber != String.Empty)
                     {
-                        child["DonorContactDetails"] += DonorPhoneNumber + ";";
+                        child["SponsorContactDetails"] += SponsorPhoneNumber + ";";
                     }
-                    child["DonorContactDetails"] += ";";
+                    child["SponsorContactDetails"] += ";";
                 }
             }
 
@@ -542,16 +548,17 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                 foreach (DataRowView drv in MainDS.ARecurringGift.DefaultView)
                                 {
                                     ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
-                                    gdr.DonorKey = recurrGiftRow.DonorKey;
+                                    gdr.DonorKey = gdr.RecipientKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
 
-                                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                                    string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                                     GetDonorContactDetails(recurrGiftRow.DonorKey,
-                                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
+                                        out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
                                     gdr.DonorName = donorRow.PartnerShortName;
-                                    gdr.DonorAddress = DonorAddress;
-                                    gdr.DonorEmailAddress = DonorEmailAddress;
-                                    gdr.DonorPhoneNumber = DonorPhoneNumber;
+                                    gdr.SponsorName = donorRow.PartnerShortName;
+                                    gdr.SponsorAddress = SponsorAddress;
+                                    gdr.SponsorEmailAddress = SponsorEmailAddress;
+                                    gdr.SponsorPhoneNumber = SponsorPhoneNumber;
                                     gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
                             }
@@ -1179,7 +1186,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase DB = DBAccess.Connect("CheckIncomingDonationsForSponsorship");
 
-            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, DB);
+            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, true, DB);
             AEpStatementRow Statement = BankimportDS.AEpStatement[0];
             DataTable SponsorshipAmounts = new DataTable();
             DataTable BankstatementAmounts = new DataTable();

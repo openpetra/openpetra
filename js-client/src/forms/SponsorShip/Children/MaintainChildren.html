@@ -112,7 +112,7 @@
       <span type="text" name="p_type_description_c"></span>
     </div>
     <div class="col">
-      <span type="text" name="DonorName"></span>
+      <span type="text" name="SponsorName"></span>
     </div>
     <div class="col">
       <span type="text" name="p_user_id_c"></span>
@@ -168,6 +168,9 @@
   <div class="sponsorship">
   <div class="row">
     <div class="col">
+      <span name="SponsorName"></span>
+    </div>
+    <div class="col">
       <span name="DonorName"></span>
     </div>
     <div class="col">
@@ -193,9 +196,9 @@
   </div>
   <div class="row">
     <div class="col-12">
-      <span name="DonorAddress"></span>
-      <span name="DonorEmailAddress"></span>
-      <span name="DonorPhoneNumber"></span>
+      <span name="SponsorAddress"></span>
+      <span name="SponsorEmailAddress"></span>
+      <span name="SponsorPhoneNumber"></span>
     </div>
   </div>
   </div>
@@ -359,6 +362,9 @@
               </div>
 
               <div class="row header">
+                <div class="col">
+                  <span>{sponsor}</span>
+                </div>
                 <div class="col">
                   <span>{donor}</span>
                 </div>
@@ -565,6 +571,17 @@
           <data name="a_gift_transaction_number_i" value=""></data>
           <data name="a_detail_number_i" value=""></data>
           <data name="p_recipient_key_n" value=""></data>
+
+          <div class="row">
+            <div class="col">
+              <span>{sponsor}</span>
+            </div>
+            <div class="col">
+              <div class="autocomplete">
+                <input type="text" name="p_recipient_name_c" key-name="p_recipient_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+              </div>
+            </div>
+          </div>
 
           <div class="row">
             <div class="col">
