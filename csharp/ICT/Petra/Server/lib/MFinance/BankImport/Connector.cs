@@ -638,7 +638,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// tries to find matches too
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, bool AInitialLoad = false, TDataBase ADataBase = null)
+        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, bool AInitialLoad = false, bool AClearTables = true, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches", ADataBase);
             bool NewTransaction;
@@ -947,9 +947,12 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
 
             // remove all rows that we do not need on the client side
-            ResultDataset.AGiftDetail.Clear();
-            ResultDataset.AMotivationDetail.Clear();
-            ResultDataset.ACostCentre.Clear();
+            if (AClearTables)
+            {
+                ResultDataset.AGiftDetail.Clear();
+                ResultDataset.AMotivationDetail.Clear();
+                ResultDataset.ACostCentre.Clear();
+            }
 
             ResultDataset.AcceptChanges();
 
@@ -1089,7 +1092,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             Int32 ADetail,
             out BankImportTDSTransactionDetailTable TransactionDetail)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, false, false);
 
             TransactionDetail = new BankImportTDSTransactionDetailTable();
 
@@ -1101,12 +1104,31 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     {
                         if ((match.MatchText == row.MatchText) && (match.Detail == ADetail))
                         {
+                            MainDS.AMotivationDetail.DefaultView.RowFilter =
+                                String.Format("{0}='{1}' and {2}='{3}'",
+                                    AMotivationDetailTable.GetMotivationGroupCodeDBName(),
+                                    match.MotivationGroupCode,
+                                    AMotivationDetailTable.GetMotivationDetailCodeDBName(),
+                                    match.MotivationDetailCode);
+
+                            if (MainDS.AMotivationDetail.DefaultView.Count != 1)
+                            {
+                                throw new Exception("LoadTransactionDetail: cannot find Motivation Detail: " + MainDS.AMotivationDetail.DefaultView.RowFilter);
+                            }
+
+                            AMotivationDetailRow MotivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.DefaultView[0].Row;
+
                             BankImportTDSTransactionDetailRow newRow = TransactionDetail.NewRowTyped(false);
                             DataUtilities.CopyAllColumnValues(match, newRow);
                             newRow.LedgerNumber = ALedgerNumber;
                             newRow.StatementKey = AStatementKey;
                             newRow.Order = AOrder;
+                            newRow.Membership = MotivationDetail.Membership;
+                            newRow.Sponsorship = MotivationDetail.Sponsorship;
+                            newRow.WorkerSupport = MotivationDetail.WorkerSupport;
                             TransactionDetail.Rows.Add(newRow);
+
+                            MainDS.AMotivationDetail.DefaultView.RowFilter = "";
                         }
                     }
                 }
@@ -1361,7 +1383,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 ABatchNumber,
             TDataBase ADataBase = null)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, ADataBase);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, true, ADataBase);
             ABatchNumber = -1;
             string MyClientID = DomainManager.GClientID.ToString();
 

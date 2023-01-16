@@ -10502,6 +10502,24 @@
                 format="X(8)"
                 label="Tax Deductible Account Code"
                 help="The Account Code to be used for the Tax Deductible portion of this Gift"/>
+    <tablefield name="a_sponsorship_l"
+                type="bit"
+                descr="Indicates whether or not the motivation is for a paying a sponsorship. The recipient key might be used."
+                format="yes/no"
+                label="For Sponsorship"
+                initial="no"/>
+    <tablefield name="a_membership_l"
+                type="bit"
+                descr="Indicates whether or not the motivation is for paying a membership. The recipient key should be used."
+                format="yes/no"
+                label="For Membership"
+                initial="no"/>
+    <tablefield name="a_worker_support_l"
+                type="bit"
+                descr="Indicates whether or not the motivation is for supporting a worker. The recipient key must be used."
+                format="yes/no"
+                label="For Support of Worker"
+                initial="no"/>
     <!-- Constraints on table a_motivation_detail -->
     <primarykey name="a_motivation_detail_pk"
                 descr=""

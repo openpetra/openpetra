@@ -177,11 +177,6 @@ function edit_gift_trans(statement_key, trans_order) {
 	})
 }
 
-function is_membership_fee(motivationgroupcode) {
-	return (motivationgroupcode == 'MEMBERSHIP'
-			|| motivationgroupcode == i18next.t('BankImport.MEMBERSHIP'));
-}
-
 function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 	if (!allow_modal()) {return}
 	let x = {
@@ -209,7 +204,7 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, sclass);
 
-		if (is_membership_fee(detail['a_motivation_group_code_c'])) {
+		if (detail['a_membership_l']) {
 			tpl_edit_raw.find('.MEMBERFEE').show();
 		}
 
@@ -218,7 +213,8 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 
 function update_motivation_group(input_field_object, selected_value) {
 	let obj = $(input_field_object).closest('.modal');
-	if (is_membership_fee(input_field_object.attr('groupkey'))) {
+	details = JSON.parse(input_field_object.attr('details'));
+	if (details.membership) {
 		recipient = obj.find('input[name=p_member_name_c]');
 		if (recipient.val() == '') {
 			donorkey = obj.find('input[name=p_donor_key_n]').val();

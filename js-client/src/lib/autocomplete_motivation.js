@@ -62,6 +62,9 @@ function autocomplete_motivation_detail(input_field, onselect=null) {
 				list.push(
 					{
 						groupkey: value.a_motivation_group_code_c,
+						membership: value.a_membership_l,
+						sponsorship: value.a_sponsorship_l,
+						workersupport: value.a_worker_support_l,
 						key: value.a_motivation_detail_code_c,
 						label: value.a_motivation_detail_desc_c,
 						display: "<b>" + value.a_motivation_detail_code_c + "</b><br>" + value.a_motivation_detail_desc_c
