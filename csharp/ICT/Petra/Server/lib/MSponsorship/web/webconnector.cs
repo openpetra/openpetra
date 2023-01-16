@@ -1179,7 +1179,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase DB = DBAccess.Connect("CheckIncomingDonationsForSponsorship");
 
-            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, DB);
+            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, true, DB);
             AEpStatementRow Statement = BankimportDS.AEpStatement[0];
             DataTable SponsorshipAmounts = new DataTable();
             DataTable BankstatementAmounts = new DataTable();
