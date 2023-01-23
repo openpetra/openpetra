@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -335,7 +335,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             Process process = new Process();
             process.StartInfo.FileName = Html2Pdf.GetWkHTMLToPDFPath();
-            process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
+            process.StartInfo.Arguments = "--disable-local-file-access --allow " + Path.GetDirectoryName(HTMLFile) + " " + HTMLFile + " " + AOutputPDFFilename;
             process.Start();
             process.WaitForExit();
 
