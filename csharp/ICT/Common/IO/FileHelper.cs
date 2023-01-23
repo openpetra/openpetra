@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -285,7 +285,7 @@ namespace Ict.Common.IO
             do
             {
                 filename = Path.Combine(
-                    Path.GetTempPath(),
+                    TAppSettingsManager.GetValue("Server.PathTemp"),
                     ASpeakingName.Replace(" ", "_") + "_" +
                     DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() +
                     "_" + Guid.NewGuid () +
