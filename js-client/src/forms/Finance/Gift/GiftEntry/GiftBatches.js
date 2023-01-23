@@ -241,8 +241,11 @@ function new_trans(ledger_number, batch_number) {
 	p.modal('show');
 };
 
-function new_trans_detail(ledger_number, batch_number, trans_id) {
+function new_trans_detail(btn, ledger_number, batch_number, trans_id) {
 	if (!allow_modal()) {return}
+	let obj = $(btn).closest('.modal');
+	donorkey = obj.find('input[name=p_donor_name_c]').attr('key-value');
+	donorname = obj.find('input[name=p_donor_name_c]').val().replace(donorkey + " ", '');
 	var r = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger')
 	};
@@ -253,17 +256,42 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 			a_batch_number_i: batch_number,
 			a_gift_transaction_number_i: trans_id,
 			a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1,
+			p_donor_key_n: donorkey,
+			p_donor_name_c: donorname,
 			a_motivation_group_code_c: parsed.ADefaultMotivationGroup,
 			a_motivation_detail_code_c: parsed.ADefaultMotivationDetail
 		};
 
 		let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
+
+		if (!parsed.AIsForMembership) {
+			p.find('.MEMBERFEE').hide();
+		}
+
 		$('#modal_space').append(p);
 		p.find('[edit-only]').hide();
 		p.find('[action]').val('create');
 		p.modal('show');
 	});
 };
+
+function update_motivation_group(input_field_object, selected_value) {
+	let obj = $(input_field_object).closest('.modal');
+	details = JSON.parse(input_field_object.attr('details'));
+	if (details.membership) {
+		recipient = obj.find('input[name=p_member_name_c]');
+		if (recipient.val() == '') {
+			donorkey = obj.find('input[name=p_donor_key_n]').val();
+			donorname = obj.find('input[name=p_donor_name_c]').val();
+			// default to the matched donor
+			recipient.val(donorkey + ' ' + donorname);
+			recipient.attr('key-value', donorkey);
+		}
+		obj.find('.MEMBERFEE').show();
+	} else {
+		obj.find('.MEMBERFEE').hide();
+	}
+}
 
 /////
 
@@ -302,12 +330,11 @@ function edit_batch(batch_id) {
 function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	if (!allow_modal()) {return}
 
-	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
+	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id, 'AGiftTransactionNumber': trans_id};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 
-	// TODO: use serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsDetail
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionAndDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d, parseDates);
 
 		if (parsed.result == false) {
@@ -354,8 +381,8 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 	if (!allow_modal()) {return}
 
-	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
-	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionsForBatch', x).then(function (data) {
+	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id, 'AGiftTransactionNumber': trans_id, 'ADetailNumber': detail_id};
+	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionAndDetail', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 
 		if (parsed.result == false) {
@@ -374,10 +401,20 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 			return alert('ERROR');
 		}
 
+		if (searched['p_recipient_key_n'] != 0) {
+			searched['p_member_name_c'] = searched['p_recipient_key_n'] + ' ' + searched['RecipientDescription'];
+		} else {
+			searched['p_member_name_c'] = "";
+		}
+
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
 		if (!parsed.ABatchIsUnposted) {
 			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
 			tpl_edit_raw.find('.not_show_when_posted').hide();
+		}
+
+		if (!searched['a_membership_l']) {
+			tpl_edit_raw.find('.MEMBERFEE').hide();
 		}
 
 		$('#modal_space').append(tpl_edit_raw);
@@ -452,7 +489,10 @@ function save_edit_trans_detail(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
- 	payload['action'] = mode;
+	payload['action'] = mode;
+	if (payload['ARecipientKey'] == "") {
+		payload['ARecipientKey'] = 0;
+	}
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
@@ -713,4 +753,10 @@ function adjust_trans(obj_modal) {
 			display_error(parsed.AVerificationResult);
 		}
 	});
+}
+
+function clear_member(self) {
+    let obj_memberName = $(self).parent().find('input[name=p_member_name_c]');
+    obj_memberName.val("");
+    obj_memberName.attr('key-value', 0);
 }

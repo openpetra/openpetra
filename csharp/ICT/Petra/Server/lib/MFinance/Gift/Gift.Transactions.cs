@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1809,6 +1809,140 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return true;
         }
 
+        /// <summary>
+        /// loads the specified gift transaction and its details
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool LoadGiftTransactionAndDetails(Int32 ALedgerNumber, Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber,
+            out Boolean ABatchIsUnposted, out String ACurrencyCode, out GiftBatchTDS AMainDS, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            ABatchIsUnposted = false;
+            ACurrencyCode = String.Empty;
+            AMainDS = null;
+
+            try
+            {
+                GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
+
+                ABatchIsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+                // clear other gifts
+                foreach (GiftBatchTDSAGiftRow giftRow in MainDS.AGift.Rows)
+                {
+                    if (giftRow.GiftTransactionNumber != AGiftTransactionNumber)
+                    {
+                        giftRow.Delete();
+                    }
+                }
+
+                // clear other gifts details
+                foreach (GiftBatchTDSAGiftDetailRow detailRow in MainDS.AGiftDetail.Rows)
+                {
+                    if (detailRow.GiftTransactionNumber != AGiftTransactionNumber)
+                    {
+                        detailRow.Delete();
+                    }
+                }
+
+                // drop all tables apart from AGift and AGiftDetail
+                foreach (DataTable table in MainDS.Tables)
+                {
+                    if ((table.TableName != MainDS.AGift.TableName)
+                        && (table.TableName != MainDS.AGiftDetail.TableName))
+                    {
+                        table.Clear();
+                    }
+                }
+
+                AMainDS = MainDS;
+                AMainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                AVerificationResult.Add(new TVerificationResult(
+                    Catalog.GetString("Load Gift Batch"),
+                    "Cannot load gift batch because of error: " + ex.Message,
+                    "Cannot load",
+                    "ERROR_MODIFY_LOADING_GIFTBATCH",
+                    TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            ACurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber);
+
+            return true;
+        }
+
+        /// <summary>
+        /// loads the specified gift transaction and the specified gift detail
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool LoadGiftTransactionAndDetail(Int32 ALedgerNumber, Int32 ABatchNumber,
+            Int32 AGiftTransactionNumber, Int32 ADetailNumber,
+            out Boolean ABatchIsUnposted, out String ACurrencyCode, out GiftBatchTDS AMainDS, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            ABatchIsUnposted = false;
+            ACurrencyCode = String.Empty;
+            AMainDS = null;
+
+            try
+            {
+                GiftBatchTDS MainDS = LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber);
+
+                ABatchIsUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+
+                // clear other gifts
+                foreach (GiftBatchTDSAGiftRow giftRow in MainDS.AGift.Rows)
+                {
+                    if (giftRow.GiftTransactionNumber != AGiftTransactionNumber)
+                    {
+                        giftRow.Delete();
+                    }
+                }
+
+                // clear other gifts details
+                foreach (GiftBatchTDSAGiftDetailRow detailRow in MainDS.AGiftDetail.Rows)
+                {
+                    if (detailRow.GiftTransactionNumber != AGiftTransactionNumber || detailRow.DetailNumber != ADetailNumber)
+                    {
+                        detailRow.Delete();
+                    }
+                }
+
+                // drop all tables apart from AGift and AGiftDetail
+                foreach (DataTable table in MainDS.Tables)
+                {
+                    if ((table.TableName != MainDS.AGift.TableName)
+                        && (table.TableName != MainDS.AGiftDetail.TableName))
+                    {
+                        table.Clear();
+                    }
+                }
+
+                AMainDS = MainDS;
+                AMainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                AVerificationResult.Add(new TVerificationResult(
+                    Catalog.GetString("Load Gift Batch"),
+                    "Cannot load gift batch because of error: " + ex.Message,
+                    "Cannot load",
+                    "ERROR_MODIFY_LOADING_GIFTBATCH",
+                    TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            ACurrencyCode = TFinanceServerLookupWebConnector.GetLedgerBaseCurrency(ALedgerNumber);
+
+            return true;
+        }
+
         private static void FormatIBAN(ref GiftBatchTDS AGiftDS, bool ADisplayReadable)
         {
             foreach (GiftBatchTDSPPartnerBankingDetailsRow row in AGiftDS.PPartnerBankingDetails.Rows)
@@ -2919,6 +3053,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
+            Int64 RecipientLedgerNumber = 0;
+            if (ARecipientKey != 0)
+            {
+                // TODO: depending on the motivation detail, if it is for workers, call GetRecipientFundNumber
+                // RecipientLedgerNumber = GetRecipientFundNumber(ARecipientKey,
+                //    AGiftBatch.GlEffectiveDate);
+                // for the moment, for membership and sponsorship, we always default to the current ledger
+                RecipientLedgerNumber = ALedgerNumber * 1000000;
+            }
+
             if (action == "create")
             {
                 AGiftDetailRow row = MainDS.AGiftDetail.NewRowTyped();
@@ -2932,6 +3076,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.RecipientKey = ARecipientKey;
+                row.RecipientLedgerNumber = RecipientLedgerNumber;
 
                 if (AMotivationGroupCode == String.Empty && AMotivationDetailCode == String.Empty)
                 {
@@ -2969,6 +3114,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         row.MotivationGroupCode = AMotivationGroupCode;
                         row.MotivationDetailCode = AMotivationDetailCode;
                         row.RecipientKey = ARecipientKey;
+                        row.RecipientLedgerNumber = RecipientLedgerNumber;
                     }
                 }
 
@@ -4138,6 +4284,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Load Ledger Partner types
             MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, ATransaction));
 
+            // load all recipient short names of gift details
+            string sqlLoadPartnerName =
+                "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, " +
+                "p.p_partner_short_name_c AS ShortName " +
+                "FROM PUB_a_gift_detail gd, PUB_p_partner p " +
+                "WHERE gd.a_ledger_number_i = " + ALedgerNumber.ToString() + " " +
+                "AND gd.a_batch_number_i = " + ABatchNumber.ToString() + " " +
+                "AND gd.p_recipient_key_n = p.p_partner_key_n";
+
+            DataTable PartnerByRecipientKey = ATransaction.DataBaseObj.SelectDT(sqlLoadPartnerName, "partnerByRecipientKey", ATransaction);
+            PartnerByRecipientKey.DefaultView.Sort = "PartnerKey";
+
             #region Validate Data 1
 
             //Only the following tables should not be empty when posting.
@@ -4235,6 +4393,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.DonorKey = giftRow.DonorKey;
                 giftDetail.DonorName = donorRow.PartnerShortName;
                 giftDetail.DonorClass = donorRow.PartnerClass;
+                giftDetail.RecipientDescription = FindPartnerName(PartnerByRecipientKey.DefaultView, giftDetail.RecipientKey);
                 giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
                 giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
@@ -4244,6 +4403,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
                     new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
+
+                giftDetail.Membership = motivationDetailRow.Membership;
+                giftDetail.Sponsorship = motivationDetailRow.Sponsorship;
+                giftDetail.WorkerSupport = motivationDetailRow.WorkerSupport;
 
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
@@ -6748,5 +6911,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         static partial void ValidateRecurringGiftDetailManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
+
+        private static string FindPartnerName(
+            DataView APartnerByKey,
+            Int64 APartnerKey)
+        {
+            if (APartnerKey == 0)
+            {
+                return String.Empty;
+            }
+
+            DataRowView[] rows = APartnerByKey.FindRows(new object[] { APartnerKey });
+
+            if (rows.Length == 1)
+            {
+                return rows[0].Row["ShortName"].ToString();
+            }
+
+            return String.Empty;
+        }
     }
 }
