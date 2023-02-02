@@ -3186,6 +3186,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = LoadRecurringGiftTransactionsForBatch(ALedgerNumber, ABatchNumber);
             AVerificationResult = new TVerificationResultCollection();
 
+            Int64 RecipientLedgerNumber = 0;
+            if (ARecipientKey != 0)
+            {
+                // TODO: depending on the motivation detail, if it is for workers, call GetRecipientFundNumber
+                // RecipientLedgerNumber = GetRecipientFundNumber(ARecipientKey,
+                //    AGiftBatch.GlEffectiveDate);
+                // for the moment, for membership and sponsorship, we always default to the current ledger
+                RecipientLedgerNumber = ALedgerNumber * 1000000;
+            }
+
             if (action == "create")
             {
                 ARecurringGiftDetailRow row = MainDS.ARecurringGiftDetail.NewRowTyped();
@@ -3199,6 +3209,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.RecipientKey = ARecipientKey;
+                row.RecipientLedgerNumber = RecipientLedgerNumber;
                 row.StartDonations = AStartDonations;
                 if (AEndDonations.HasValue)
                 {
@@ -3229,6 +3240,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         row.MotivationGroupCode = AMotivationGroupCode;
                         row.MotivationDetailCode = AMotivationDetailCode;
                         row.RecipientKey = ARecipientKey;
+                        row.RecipientLedgerNumber = RecipientLedgerNumber;
                         row.StartDonations = AStartDonations;
                         if (AEndDonations.HasValue)
                         {
@@ -4644,6 +4656,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Load Ledger Partner types
             MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, ATransaction));
 
+            // load all recipient short names of gift details
+            string sqlLoadPartnerName =
+                "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, " +
+                "p.p_partner_short_name_c AS ShortName " +
+                "FROM PUB_a_recurring_gift_detail gd, PUB_p_partner p " +
+                "WHERE gd.a_ledger_number_i = " + ALedgerNumber.ToString() + " " +
+                "AND gd.a_batch_number_i = " + ABatchNumber.ToString() + " " +
+                "AND gd.p_recipient_key_n = p.p_partner_key_n";
+
+            DataTable PartnerByRecipientKey = ATransaction.DataBaseObj.SelectDT(sqlLoadPartnerName, "partnerByRecipientKey", ATransaction);
+            PartnerByRecipientKey.DefaultView.Sort = "PartnerKey";
+
             #region Validate Data 1
 
             //Only the following tables should not be empty when posting.
@@ -4739,6 +4763,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.DonorKey = giftRow.DonorKey;
                 giftDetail.DonorName = donorRow.PartnerShortName;
                 giftDetail.DonorClass = donorRow.PartnerClass;
+                giftDetail.RecipientDescription = FindPartnerName(PartnerByRecipientKey.DefaultView, giftDetail.RecipientKey);
                 giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
                 giftDetail.Active = giftRow.Active;
@@ -4823,6 +4848,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         giftDetail.SetRecipientKeyMinistryNull();
                     }
+
+                    giftDetail.Membership = motivationDetailRow.Membership;
+                    giftDetail.Sponsorship = motivationDetailRow.Sponsorship;
+                    giftDetail.WorkerSupport = motivationDetailRow.WorkerSupport;
                 }
                 else
                 {
