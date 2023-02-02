@@ -406,6 +406,8 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		} else {
 			searched['p_member_name_c'] = "";
 		}
+		searched['p_donor_key_n'] = searched['DonorKey'];
+		searched['p_donor_name_c'] = searched['DonorName'];
 
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
 		if (!parsed.ABatchIsUnposted) {
