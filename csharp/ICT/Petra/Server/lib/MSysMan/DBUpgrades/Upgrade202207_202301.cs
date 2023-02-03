@@ -34,8 +34,8 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
     /// </summary>
     public static partial class TDBUpgrade
     {
-        /// Upgrade to version 2022-12
-        public static bool UpgradeDatabase202207_202212(TDataBase ADataBase)
+        /// Upgrade to version 2023-01
+        public static bool UpgradeDatabase202207_202301(TDataBase ADataBase)
         {
             // there are changes to the database structure
             TDBTransaction SubmitChangesTransaction = new TDBTransaction();
@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MSysMan.DBUpgrades
                     if (!TableExists)
                     {
                         // insert new tables
-                        string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade202207_202212.sql").Split(new char[]{';'});
+                        string[] SqlStmts = TDataBase.ReadSqlFile("Upgrade202207_202301.sql").Split(new char[]{';'});
 
                         foreach (string stmt in SqlStmts)
                         {
