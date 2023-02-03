@@ -471,7 +471,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string DefaultEmailAddress, DefaultPhoneMobile, DefaultPhoneLandline;
             PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(ADonorKey,
                 out Subscriptions, out PartnerTypes,
-                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline);
+                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline, false);
 
             DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
             DonorEmailAddress = DefaultEmailAddress;
@@ -1179,7 +1179,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase DB = DBAccess.Connect("CheckIncomingDonationsForSponsorship");
 
-            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, DB);
+            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, true, DB);
             AEpStatementRow Statement = BankimportDS.AEpStatement[0];
             DataTable SponsorshipAmounts = new DataTable();
             DataTable BankstatementAmounts = new DataTable();

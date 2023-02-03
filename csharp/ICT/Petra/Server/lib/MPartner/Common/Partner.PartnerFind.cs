@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -728,6 +728,16 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 }
             }
 
+            if ((Boolean)(CriteriaRow["MemberOnly"]) == true)
+            {
+                // A custom subquery seems to only speedy way of doing this!
+                CustomWhereCriteria = String.Format(
+                    "{0} AND EXISTS (select * FROM PUB.p_partner_membership " +
+                    "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_membership.p_partner_key_n " +
+                    "AND (PUB.p_partner_membership.p_expiry_date_d IS NULL OR PUB.p_partner_membership.p_expiry_date_d > NOW()))",
+                    CustomWhereCriteria);
+            }
+
             if (CriteriaRow["LocationKey"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_location_key_i'
@@ -1241,6 +1251,16 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     "{0} AND EXISTS (select * FROM PUB.p_partner_gift_destination " +
                     "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
                     "AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))",
+                    CustomWhereCriteria);
+            }
+
+            if ((Boolean)(CriteriaRow["MemberOnly"]) == true)
+            {
+                // A custom subquery seems to only speedy way of doing this!
+                CustomWhereCriteria = String.Format(
+                    "{0} AND EXISTS (select * FROM PUB.p_partner_membership " +
+                    "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_membership.p_partner_key_n " +
+                    "AND (PUB.p_partner_membership.p_expiry_date_d IS NULL OR PUB.p_partner_membership.p_expiry_date_d > NOW()))",
                     CustomWhereCriteria);
             }
 

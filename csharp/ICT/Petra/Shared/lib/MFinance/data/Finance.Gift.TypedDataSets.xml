@@ -26,6 +26,9 @@
             <CustomField name="MethodOfGivingCode" type="String"/>
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="Reference" type="String"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_membership_l"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_sponsorship_l"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_worker_support_l"/>
         </Table>
 
         <Table sqltable="a_recurring_gift_batch"/>
@@ -50,6 +53,9 @@
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
             <CustomField name="CostCentreCode" type="String"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_membership_l"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_sponsorship_l"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_worker_support_l"/>
         </Table>
 
         <Table sqltable="p_partner_banking_details">

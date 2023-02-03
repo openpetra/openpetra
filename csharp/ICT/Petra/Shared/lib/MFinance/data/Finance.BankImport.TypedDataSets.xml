@@ -34,6 +34,9 @@
         <Table name="TransactionDetail" sqltable="a_ep_match">
             <Field sqltable="a_ep_transaction" sqlfield="a_statement_key_i"/>
             <Field sqltable="a_ep_transaction" sqlfield="a_order_i"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_membership_l"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_sponsorship_l"/>
+            <Field sqltable="a_motivation_detail" sqlfield="a_worker_support_l"/>
         </Table>
         <Table sqltable="a_cost_centre"/>
         <Table sqltable="a_motivation_detail"/>

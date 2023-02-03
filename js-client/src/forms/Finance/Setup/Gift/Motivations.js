@@ -4,7 +4,7 @@
 //	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -147,6 +147,8 @@ function new_motivation(group_code) {
 	let p = format_tpl( $('[phantom] .tpl_edit_motivation').clone(), x);
 	$('#modal_space').html(p);
 	p.find('input[name=a_motivation_detail_code_c]').attr('readonly', false);
+	p.find('input[name=a_tax_decuctible_l]').attr('checked', true);
+	p.find('input[name=a_motivation_status_l]').attr('checked', true);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
@@ -237,7 +239,6 @@ function save_edit_detail(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
 	payload['action'] = mode;
-	payload['AMotivationStatus'] = true;
 
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);

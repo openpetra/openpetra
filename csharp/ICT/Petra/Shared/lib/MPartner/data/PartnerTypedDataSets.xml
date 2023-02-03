@@ -82,6 +82,7 @@
     <Table sqltable="p_type"/>
     <Table sqltable="p_publication"/>
     <Table sqltable="p_partner_classes"/>
+    <Table sqltable="p_partner_membership"/>
     <Table sqltable="a_gift_detail">
         <Field sqltable="a_gift" sqlfield="a_date_entered_d"/>
     </Table>
@@ -141,6 +142,7 @@
       <PrimaryKey thisFields="PartnerKey,TypeCode,AddTypeCode"/>
     </CustomTable>
     <Table sqltable="p_country"/>
+    <Table sqltable="p_membership"/>
     <Table sqltable="p_partner_status"/>
     <CustomRelation name="Address"
         parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
@@ -346,6 +348,7 @@
       <CustomField name="Address3Match" type="string" initial="BEGINS"/>
       <CustomField name="LocationKey" type="string"/>
       <CustomField name="WorkerFamOnly" type="bool" initial="false"/>
+      <CustomField name="MemberOnly" type="bool" initial="false"/>
       <CustomField name="ExactPartnerKeyMatch" type="bool" initial="false"/>
       <CustomField name="PhoneNumber" type="string"/>
       <CustomField name="PhoneNumberMatch" type="string" initial="BEGINS"/>
@@ -426,6 +429,8 @@
     <Table sqltable="p_publication_cost"/>
     <Table sqltable="p_reason_subscription_given"/>
     <Table sqltable="p_reason_subscription_cancelled"/>
+
+    <Table sqltable="p_membership"/>
 
     <Table sqltable="p_consent_channel"/>
     <Table sqltable="p_consent_purpose"/>

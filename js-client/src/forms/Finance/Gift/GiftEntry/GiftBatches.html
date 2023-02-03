@@ -244,7 +244,7 @@
 						<div class="row" edit-only>
 							<div class="col" id="Batch{val_a_batch_number_i}Gift{val_a_gift_transaction_number_i}">
 								<h4>Detail</h4>
-								<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
+								<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans_detail(this, {val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
 									<span>{forms.new}</span>
 									<i class="fas fa-plus"></i>
 								</button>
@@ -277,6 +277,8 @@
 
 	<div class="modal modal-wide fade tpl_edit_trans_detail" tabindex="-1" role="dialog">
 		<input type="hidden" action value="create">
+		<input type="hidden" name="p_donor_key_n" value="{val_p_donor_key_n}">
+		<input type="hidden" name="p_donor_name_c" value="{val_p_donor_name_c}">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -340,7 +342,19 @@
 							<div class="col">
 								<input type="hidden" name="a_motivation_group_code_c" value=""/>
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this, update_motivation_group)">
+								</div>
+							</div>
+						</div>
+
+						<div class="row MEMBERFEE" requireClass>
+							<div class="col">
+								<span>{membership_recipient}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="" type="text" name="p_member_name_c" placeholder="{EnterMemberName}" key-name="p_recipient_key_n" value="" size="40" oninput="autocomplete_member(this)">
+									<button class="btn btn-danger" onclick="clear_member(this)">{clear_member}</button>
 								</div>
 							</div>
 						</div>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -113,6 +113,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 delegate
                 {
                     PCountryAccess.LoadAll(MainDS, Transaction);
+                    PMembershipAccess.LoadAll(MainDS, Transaction);
                     PPublicationAccess.LoadAll(MainDS, Transaction);
                     PPartnerStatusAccess.LoadAll(MainDS, Transaction);
                     PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "FAMILY", Transaction);
@@ -181,7 +182,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 out APartnerTypes,
                 out ADefaultEmailAddress,
                 out ADefaultPhoneMobile,
-                out ADefaultPhoneLandline);
+                out ADefaultPhoneLandline,
+                true);
         }
 
         /// <summary>
@@ -194,7 +196,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             out List<string> APartnerTypes,
             out string ADefaultEmailAddress,
             out string ADefaultPhoneMobile,
-            out string ADefaultPhoneLandline)
+            out string ADefaultPhoneLandline,
+            bool AWithDonationHistory)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
             List<string> Subscriptions = new List<string>();
@@ -257,6 +260,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         if (true)
                         {
+                            PMembershipAccess.LoadAll(MainDS, Transaction);
+                            PPartnerMembershipAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                        }
+
+                        if (true)
+                        {
                             PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "FAMILY", Transaction);
                             PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "ORGANISATION", Transaction);
                         }
@@ -297,7 +306,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             MainDS.PBankingDetailsUsage.Rows.Clear();
                         }
 
-                        if (true)
+                        if (AWithDonationHistory)
                         {
                             GiftBatchTDS TempGiftDS = new GiftBatchTDS();
                             AGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
@@ -331,7 +340,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (true)
+                        if (AWithDonationHistory)
                         {
                             GiftBatchTDS TempGiftDS = new GiftBatchTDS();
                             ARecurringGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
@@ -415,7 +424,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             // Call the standard method including address details
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, true);
 
             TDBTransaction ReadTransaction = new TDBTransaction();
             string PrimaryPhoneNumber = String.Empty;
@@ -561,7 +570,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             else
             {
-                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
                 DataUtilities.CopyDataSet(AMainDS, SaveDS);
             }
 
@@ -1035,7 +1044,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             PBankingDetails = new PartnerEditTDSPBankingDetailsTable(); // MainDS.PBankingDetails;
             PBankingDetails = MainDS.PBankingDetails;
@@ -1057,7 +1066,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1169,6 +1178,139 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 // make another bank account the main account
                 if (wasMainAccount && (otherAccount != null)) {
                     otherAccount.MainAccount = true;
+                }
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// this will return the memberships of the partner
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool GetMemberships(Int64 APartnerKey, out PPartnerMembershipTable PMemberships)
+        {
+            List<string> Dummy1, Dummy2;
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
+
+            PMemberships = new PPartnerMembershipTable();
+            PMemberships = MainDS.PPartnerMembership;
+
+            return true;
+        }
+
+        /// <summary>
+        /// this will create, save and delete a membership of a partner
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool MaintainMemberships(
+            string action,
+            Int32 APartnerMembershipKey,
+            Int64 APartnerKey,
+            string AMembershipCode,
+            DateTime AStartDate,
+            DateTime? AExpiryDate,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            List<string> Dummy1, Dummy2;
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
+
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                PPartnerMembershipRow row = MainDS.PPartnerMembership.NewRowTyped();
+                row.PartnerMembershipKey = -1;
+                row.PartnerKey = APartnerKey;
+                row.MembershipCode = AMembershipCode;
+                row.StartDate = AStartDate;
+                row.ExpiryDate = AExpiryDate;
+                MainDS.PPartnerMembership.Rows.Add(row);
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+            else if (action == "edit")
+            {
+                foreach (PPartnerMembershipRow row in MainDS.PPartnerMembership.Rows)
+                {
+                    if (row.PartnerMembershipKey == APartnerMembershipKey)
+                    {
+                        row.MembershipCode = AMembershipCode;
+                        row.StartDate = AStartDate;
+                        row.ExpiryDate = AExpiryDate;
+                    }
+                }
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                foreach (PPartnerMembershipRow row in MainDS.PPartnerMembership.Rows)
+                {
+                    if (row.PartnerMembershipKey == APartnerMembershipKey)
+                    {
+                        row.Delete();
+                    }
                 }
 
                 DataSet ResponseDS = new PartnerEditTDS();

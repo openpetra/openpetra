@@ -98,6 +98,19 @@
 		</div>
 	</div>
 
+	<div class="tpl_membership">
+		<div class="row">
+			<div class="col">{val_p_membership_code_c}</div>
+			<div class="col">{val_p_start_date_d}</div>
+			<div class="col">{val_p_expiry_date_d}</div>
+			<div class="col-1">
+				<button id="btnEditMembership{val_p_partner_membership_key_i}" type="button" class="btn btn-primary" name="button">
+					<i class="fas fa-wrench"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
 	<div class="tpl_contribution_detail">
 		<div class="row">
 			<div class="col">{val_a_date_entered_d}</div>
@@ -263,6 +276,9 @@
 				<li class="nav-item">
 					<div class="nav-link" style="cursor:pointer;" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</div>
 				</li>
+				<li class="nav-item" id="nav-item-memberships">
+					<div class="nav-link" style="cursor:pointer;" href="#memberships" aria-controls="memberships" onclick="show_tab(this)">{memberships}</div>
+				</li>
 				<li class="nav-item">
 					<div class="nav-link" style="cursor:pointer;" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</div>
 				</li>
@@ -361,6 +377,30 @@
 							<div class="col">
 								<input id="phone_mobile" type="text" name="p_default_phone_mobile_c" size="25"/>
 							</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="tab-pane" id="memberships">
+					<div class="container">
+
+						<div class="row" edit-only>
+							<div class="col" id="Membership{val_p_partner_key_n}{val_p_partner_membership_key_i}">
+								<button id="btnAddMembership" type="button" class="btn btn-primary">
+									<span>{forms.new}</span>
+									<i class="fas fa-plus"></i>
+								</button>
+
+								<div class="row">
+									<div class="col">{membership_name}</div>
+									<div class="col">{membership_startdate}</div>
+									<div class="col">{membership_enddate}</div>
+									<div class="col-1"></div>
+								</div>
+
+								<div class="membership_detail_col"></div>
+							</div>
+
 						</div>
 
 					</div>
@@ -541,6 +581,60 @@
 					<button id="btnDeleteBankAccount{val_p_banking_details_key_i}" edit-only class="btn btn-danger">{forms.delete}</button>
 					<button id="btnSaveBankAccount{val_p_banking_details_key_i}" class="btn btn-primary">{forms.save}</button>
 					<button id="btnCloseBankAccount{val_p_banking_details_key_i}" class="btn btn-light">{forms.close}</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal modal-wide fade tpl_edit_membership" tabindex="-1" role="dialog">
+		<input type="hidden" action value="create">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3>{edittitle_membership}</h3>
+				</div>
+				<div class="modal-body">
+
+					<div class="container">
+
+						<input type="hidden" name="p_partner_key_n" value="">
+						<input type="hidden" name="p_partner_membership_key_i" value="">
+
+						<div class="row">
+							<div class="col">
+								<span>{membership_code}</span>
+							</div>
+							<div class="col">
+								<select name="p_membership_code_c" id="MembershipCode">
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{membership_startdate}</span>
+							</div>
+							<div class="col">
+								<input type="date" name="p_start_date_d" required>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{membership_enddate}</span>
+							</div>
+							<div class="col">
+								<input type="date" name="p_expiry_date_d">
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button id="btnDeleteMembership{val_p_partner_membership_key_i}" edit-only class="btn btn-danger">{forms.delete}</button>
+					<button id="btnSaveMembership{val_p_partner_membership_key_i}" class="btn btn-primary">{forms.save}</button>
+					<button id="btnCloseMembership{val_p_partner_membership_key_i}" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
