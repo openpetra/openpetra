@@ -15,9 +15,11 @@
       <Table sqltable="a_recurring_gift_detail">
           <Field sqltable="a_recurring_gift" sqlfield="p_donor_key_n"/>
           <CustomField name="DonorName" type="String"/>
-          <CustomField name="DonorAddress" type="String"/>
-          <CustomField name="DonorEmailAddress" type="String"/>
-          <CustomField name="DonorPhoneNumber" type="String"/>
+          <!-- the sponsor is the p_recipient_key_n -->
+          <CustomField name="SponsorName" type="String"/>
+          <CustomField name="SponsorAddress" type="String"/>
+          <CustomField name="SponsorEmailAddress" type="String"/>
+          <CustomField name="SponsorPhoneNumber" type="String"/>
           <CustomField name="CurrencyCode" type="String"/>
       </Table>
   </DataSet>
@@ -34,7 +36,8 @@
       <Field sqltable="p_person" sqlfield="p_family_name_c"/>
 
       <CustomField name="DonorName" type="String"/>
-      <CustomField name="DonorContactDetails" type="String"/>
+      <CustomField name="SponsorName" type="String"/>
+      <CustomField name="SponsorContactDetails" type="String"/>
     </CustomTable>
   </DataSet>
 </PetraDataSets>
