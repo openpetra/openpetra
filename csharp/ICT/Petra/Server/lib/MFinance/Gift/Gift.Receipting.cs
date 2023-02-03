@@ -566,8 +566,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 bool hasSubscription = HasSubscription(ADonorKey, PublicationCode);
 
-                TLogging.Log(PublicationCode + " " + hasSubscription.ToString());
-
                 msg = ReplaceIfSection(msg, "NOTSUBSCRIPTION(" + PublicationCode + ")", !hasSubscription);
                 msg = ReplaceIfSection(msg, "SUBSCRIPTION(" + PublicationCode + ")", hasSubscription);
             }
