@@ -550,15 +550,15 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 {
                     if (!RowDetails.ContainsKey("Sponsorship") || RowDetails["Sponsorship"] == string.Empty)
                     {
-                        RowDetails["Sponsorship"] = "0";
+                        RowDetails["Sponsorship"] = "false";
                     }
                     if (!RowDetails.ContainsKey("Membership") || RowDetails["Membership"] == string.Empty)
                     {
-                        RowDetails["Membership"] = "0";
+                        RowDetails["Membership"] = "false";
                     }
                     if (!RowDetails.ContainsKey("WorkerSupport") || RowDetails["WorkerSupport"] == string.Empty)
                     {
-                        RowDetails["WorkerSupport"] = "0";
+                        RowDetails["WorkerSupport"] = "false";
                     }
                 }
 
