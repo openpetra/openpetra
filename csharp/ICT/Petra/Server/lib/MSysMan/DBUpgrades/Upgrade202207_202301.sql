@@ -192,8 +192,8 @@ CREATE INDEX inx_p_membership_fkmd_key3
    (s_modified_by_c);
 
 
-ALTER TABLE a_motivation_detail ADD COLUMN a_sponsorship_l boolean DEFAULT 0 AFTER a_tax_deductible_account_code_c;
-ALTER TABLE a_motivation_detail ADD COLUMN a_membership_l boolean DEFAULT 0 AFTER a_sponsorship_l;
-ALTER TABLE a_motivation_detail ADD COLUMN a_worker_support_l boolean DEFAULT 0 AFTER a_membership_l;
+ALTER TABLE a_motivation_detail ADD COLUMN a_sponsorship_l boolean DEFAULT 0 NOT NULL AFTER a_tax_deductible_account_code_c;
+ALTER TABLE a_motivation_detail ADD COLUMN a_membership_l boolean DEFAULT 0 NOT NULL AFTER a_sponsorship_l;
+ALTER TABLE a_motivation_detail ADD COLUMN a_worker_support_l boolean DEFAULT 0 NOT NULL AFTER a_membership_l;
 
 UPDATE a_motivation_detail SET a_tax_deductible_l = 1;

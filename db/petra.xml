@@ -10507,18 +10507,21 @@
                 descr="Indicates whether or not the motivation is for a paying a sponsorship. The recipient key might be used."
                 format="yes/no"
                 label="For Sponsorship"
+                notnull="yes"
                 initial="no"/>
     <tablefield name="a_membership_l"
                 type="bit"
                 descr="Indicates whether or not the motivation is for paying a membership. The recipient key should be used."
                 format="yes/no"
                 label="For Membership"
+                notnull="yes"
                 initial="no"/>
     <tablefield name="a_worker_support_l"
                 type="bit"
                 descr="Indicates whether or not the motivation is for supporting a worker. The recipient key must be used."
                 format="yes/no"
                 label="For Support of Worker"
+                notnull="yes"
                 initial="no"/>
     <!-- Constraints on table a_motivation_detail -->
     <primarykey name="a_motivation_detail_pk"
