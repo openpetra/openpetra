@@ -5,7 +5,7 @@
 //	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -80,13 +80,14 @@ function open_edit(sub_id) {
 		m = load_countries(data.AResultTable, z.a_country_code_c, m);
 
 		p['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
-		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetSepaCreditorDetails', p).then(function (data) {
+		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetLedgerSystemDefaults', p).then(function (data) {
 			data = JSON.parse(data.data.d);
 
 			data["a_sepa_creditor_name_c"] = data["ASepaCreditorName"];
 			data["a_sepa_creditor_iban_c"] = data["ASepaCreditorIban"];
 			data["a_sepa_creditor_bic_c"] = data["ASepaCreditorBic"];
 			data["a_sepa_creditor_scheme_id_c"] = data["ASepaCreditorSchemeId"];
+			data["a_receipt_email_publication_code_c"] = data["AReceiptEmailPublicationCode"];
 			m = format_tpl(m, data);
 
 			var f = format_tpl( m, z);

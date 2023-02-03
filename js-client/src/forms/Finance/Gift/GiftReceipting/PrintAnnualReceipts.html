@@ -71,7 +71,17 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts()">{AnnualReceipts}</button>
+			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts('all')">{DownloadAnnualReceiptsForArchive}</button>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts('print')">{PrintAnnualReceipts}</button>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts('email')">{SendEmailsAnnualReceipts}</button>
 		</td>
 	</tr>
 </table>

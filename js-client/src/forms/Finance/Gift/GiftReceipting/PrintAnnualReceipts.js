@@ -3,7 +3,7 @@
 // @Authors:
 //  Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -55,6 +55,7 @@ function ReadFile(control, fn) {
 var htmltemplate = null;
 var logoimage = null;
 var signatureimage = null;
+var receiptaction = null;
 var DefaultNames = {};
 
 var htmldata = "";
@@ -88,8 +89,8 @@ function SetSignature(filename, filedata) {
 	GenerateAnnualReceiptsRemote();
 }
 
-function GenerateAnnualReceipts() {
-
+function GenerateAnnualReceipts(action) {
+	receiptaction = action;
 	htmltemplate = $('#HTMLTemplate');
 	logoimage = $('#LogoImage');
 	signatureimage = $('#SignatureImage');
@@ -211,6 +212,10 @@ function GenerateAnnualReceiptsRemote() {
 		payload['p_donor_key_n'] = 0;
 	}
 
+	if (receiptaction == "email") {
+		// TODO confirm that emails will actually be sent
+	}
+
 	p = {'AHTMLTemplate': htmldata,
 		'ALogoImage': logodata,
 		'ALogoFilename': logoname,
@@ -223,7 +228,8 @@ function GenerateAnnualReceiptsRemote() {
 		'ALanguage': currentLng(),
 		'ADeceasedFirst': true,
 		'AExtract': '',
-		'ADonorKey': payload['p_donor_key_n']};
+		'ADonorKey': payload['p_donor_key_n'],
+		'AAction': receiptaction};
 
 	api.post('serverMFinance.asmx/TReceiptingWebConnector_CreateAnnualGiftReceipts', p)
 	.then(function (result) {

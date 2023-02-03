@@ -92,7 +92,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out string AHTMLReceipt,
             bool ADeceasedFirst = false,
             string AExtract = null,
-            Int64 ADonorKey = 0)
+            Int64 ADonorKey = 0,
+            string AAction = "all")
         {
             string ResultDocument = string.Empty;
             APDFReceipt = string.Empty;
@@ -112,6 +113,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("AnnualGiftReceipts");
+
+            TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+            string EmailPublicationCode = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_PUBLICATION_CODE, String.Empty);
+
+            if (EmailPublicationCode == String.Empty && (AAction == "email"))
+            {
+                TLogging.Log("Please specify the Email Publication Code in the ledger settings");
+                return false;
+            }
 
             db.ReadTransaction(
                 ref Transaction,
@@ -162,12 +172,29 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         else
                         {
                             SortedList <string, string>Defines = new SortedList <string, string>();
+                            int EmailPublicationCodePos = -1;
                             int CountParameters = 6;
 
                             if (!string.IsNullOrEmpty(AExtract))
                             {
                                 Defines.Add("BYEXTRACT", string.Empty);
                                 CountParameters += 1;
+                            }
+
+                            if (EmailPublicationCode != String.Empty)
+                            {
+                                if (AAction == "print")
+                                {
+                                    Defines.Add("VIAPRINT", string.Empty);
+                                    EmailPublicationCodePos = CountParameters;
+                                    CountParameters += 1;
+                                }
+                                else if (AAction == "email")
+                                {
+                                    Defines.Add("VIAEMAIL", string.Empty);
+                                    EmailPublicationCodePos = CountParameters;
+                                    CountParameters += 1;
+                                }
                             }
 
                             // first get all donors in the given date range
@@ -200,6 +227,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             {
                                 parameters[6] = new OdbcParameter("Extract", OdbcType.VarChar);
                                 parameters[6].Value = AExtract;
+                            }
+
+                            if (EmailPublicationCodePos > 0)
+                            {
+                                parameters[EmailPublicationCodePos] = new OdbcParameter("EmailPublicationCode", OdbcType.VarChar);
+                                parameters[EmailPublicationCodePos].Value = EmailPublicationCode;
                             }
 
                             donorkeys = db.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
