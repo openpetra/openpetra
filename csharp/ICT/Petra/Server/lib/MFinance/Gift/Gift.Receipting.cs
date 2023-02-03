@@ -93,7 +93,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool ADeceasedFirst = false,
             string AExtract = null,
             Int64 ADonorKey = 0,
-            string AAction = "all")
+            string AAction = "all",
+            bool AOnlyTest = true)
         {
             string ResultDocument = string.Empty;
             APDFReceipt = string.Empty;
@@ -286,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (donations.Rows.Count > 0)
                             {
                                 string letter =
-                                    FormatLetter(donorKey, donorName, OnlyThankYouNoReceipt, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
+                                    FormatLetter(donorKey, donorName, AOnlyTest, OnlyThankYouNoReceipt, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
 
                                 if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
                                 {
@@ -425,6 +426,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Does this partner have a given subscription
+        /// </summary>
+        private static bool HasSubscription(Int64 APartnerKey, String APublicationCode)
+        {
+            if ((APublicationCode == null) || (APublicationCode == String.Empty))
+            {
+                return false;
+            }
+
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("HasSubscription");
+            List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
+            bool ResultValue = false;
+
+            DB.ReadTransaction(ref T, delegate {
+
+                string sql = "SELECT " +
+                    "COUNT(*) " +
+                    "FROM `p_subscription` " +
+                    "WHERE `p_subscription`.`p_partner_key_n` = ? " +
+                    "AND `p_publication_code_c` = ? " +
+                    "AND (`p_start_date_d` IS NULL OR `p_start_date_d` <= NOW()) " +
+                    "AND (`p_expiry_date_d` IS NULL OR `p_expiry_date_d` <= NOW())";
+
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
+                SQLParameter.Add(new OdbcParameter("PublicationCode", OdbcType.VarChar) { Value = APublicationCode } );
+
+                ResultValue = (Convert.ToInt32(DB.ExecuteScalar(sql, T, SQLParameter.ToArray())) > 0);
+            });
+
+            return ResultValue;
+        }
+
+        /// <summary>
         /// Should this partner receive a donation receipt, or just a thank you letter
         /// </summary>
         private static bool DoNotSendReceiptButThankyouLetter(Int64 APartnerKey)
@@ -486,6 +521,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <returns>One or more html documents, each in its own body tag, for printing with the HTML printer</returns>
         private static string FormatLetter(Int64 ADonorKey,
             string ADonorName,
+            bool AOnlyTest,
             bool AOnlyThankYouNoReceipt,
             DataTable ADonations,
             string ABaseCurrency,
@@ -520,6 +556,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // replace sections about consent for a defined purpose
             msg = ReplaceIfSection(msg, "UNDEFINEDCONSENT", UndefinedConsent(ADonorKey));
+
+            msg = ReplaceIfSection(msg, "TEST", AOnlyTest);
+
+            while (msg.Contains("SUBSCRIPTION("))
+            {
+                int pos = msg.IndexOf("SUBSCRIPTION(") + "SUBSCRIPTION(".Length;
+                string PublicationCode = msg.Substring(pos, msg.IndexOf(")", pos) - pos);
+
+                bool hasSubscription = HasSubscription(ADonorKey, PublicationCode);
+
+                TLogging.Log(PublicationCode + " " + hasSubscription.ToString());
+
+                msg = ReplaceIfSection(msg, "NOTSUBSCRIPTION(" + PublicationCode + ")", !hasSubscription);
+                msg = ReplaceIfSection(msg, "SUBSCRIPTION(" + PublicationCode + ")", hasSubscription);
+            }
 
             // replace sections about thank you letters vs receipts
             msg = ReplaceIfSection(msg, "THANKYOU", AOnlyThankYouNoReceipt);
