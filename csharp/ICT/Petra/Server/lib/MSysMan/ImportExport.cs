@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -542,6 +542,23 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     if (!RowDetails.ContainsKey("Reference") || RowDetails["Reference"] == string.Empty)
                     {
                         RowDetails["Reference"] = "EMPTY";
+                    }
+                }
+
+                // workaround for 2023.01: a_motivation_detail.a_sponsorship_l, a_membership_l, a_worker_support_l must not be NULL
+                if (ATableName == "a_motivation_detail")
+                {
+                    if (!RowDetails.ContainsKey("Sponsorship") || RowDetails["Sponsorship"] == string.Empty)
+                    {
+                        RowDetails["Sponsorship"] = "0";
+                    }
+                    if (!RowDetails.ContainsKey("Membership") || RowDetails["Membership"] == string.Empty)
+                    {
+                        RowDetails["Membership"] = "0";
+                    }
+                    if (!RowDetails.ContainsKey("WorkerSupport") || RowDetails["WorkerSupport"] == string.Empty)
+                    {
+                        RowDetails["WorkerSupport"] = "0";
                     }
                 }
 

@@ -195,9 +195,5 @@ CREATE INDEX inx_p_membership_fkmd_key3
 ALTER TABLE a_motivation_detail ADD COLUMN a_sponsorship_l boolean DEFAULT 0 AFTER a_tax_deductible_account_code_c;
 ALTER TABLE a_motivation_detail ADD COLUMN a_membership_l boolean DEFAULT 0 AFTER a_sponsorship_l;
 ALTER TABLE a_motivation_detail ADD COLUMN a_worker_support_l boolean DEFAULT 0 AFTER a_membership_l;
--- need this for restoring from yml file
-UPDATE a_motivation_detail SET a_sponsorship_l = 0 WHERE a_sponsorship_l IS NULL;
-UPDATE a_motivation_detail SET a_membership_l = 0 WHERE a_membership_l IS NULL;
-UPDATE a_motivation_detail SET a_worker_support_l = 0 WHERE a_worker_support_l IS NULL;
 
 UPDATE a_motivation_detail SET a_tax_deductible_l = 1;
