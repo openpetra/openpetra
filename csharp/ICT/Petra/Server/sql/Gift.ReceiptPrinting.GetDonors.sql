@@ -14,6 +14,24 @@ AND a_gift.a_batch_number_i = a_gift_batch.a_batch_number_i
 AND p.p_partner_key_n = a_gift.p_donor_key_n
 AND (? OR upper(p.p_receipt_letter_frequency_c) = ?)
 
+{#IFDEF VIAEMAIL}
+AND EXISTS(SELECT *
+    FROM p_subscription
+    WHERE p_subscription.p_partner_key_n = a_gift.p_donor_key_n
+    AND p_publication_code_c = ?
+    AND (p_start_date_d IS NULL OR p_start_date_d <= NOW())
+    AND (p_expiry_date_d IS NULL OR p_expiry_date_d <= NOW()))
+{#ENDIF VIAEMAIL}
+
+{#IFDEF VIAPRINT}
+AND NOT EXISTS(SELECT *
+    FROM p_subscription
+    WHERE p_subscription.p_partner_key_n = a_gift.p_donor_key_n
+    AND p_publication_code_c = ?
+    AND (p_start_date_d IS NULL OR p_start_date_d <= NOW())
+    AND (p_expiry_date_d IS NULL OR p_expiry_date_d <= NOW()))
+{#ENDIF VIAPRINT}
+
 {#IFDEF BYEXTRACT}
 AND a_gift.p_donor_key_n = m_extract.p_partner_key_n
 AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i

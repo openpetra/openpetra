@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -170,11 +170,16 @@ namespace Tests.MFinance.Server.Gift
             //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end and not assume calendar
             string receipts;
             string receiptsPDF;
+            TVerificationResultCollection verification;
             bool result =
                 TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber, "ANNUAL",
                     new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                     FileContent, null, String.Empty, null, String.Empty, "de-DE",
-                    out receiptsPDF, out receipts);
+                    "Jahreszuwendungsbestätigung 2022",
+                    "Hallo {{donorName}}<br/>, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
+                    "buchhaltung@example.org", "Buchhaltung MeinVerein e.V.",
+                    "Zuwendungsbestätigung2022.pdf",
+                    out receiptsPDF, out receipts, out verification);
             receipts = THttpBinarySerializer.DeserializeFromBase64(receipts);
 
             Assert.AreEqual(true, result, "receipt was empty");

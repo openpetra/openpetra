@@ -66,15 +66,72 @@
 			<button class="btn btn-danger" onclick="ClearSignatureTemplateAsDefault()">{clear_as_default}</button>
 		</div>
 	</div>
-</div>
 
-<table id="toolbar">
-	<tr>
-		<td>
-			<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts()">{AnnualReceipts}</button>
-		</td>
-	</tr>
-</table>
+	<table id="toolbar">
+		<tr>
+			<td>
+				<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts('all')">{DownloadAnnualReceiptsForArchive}</button>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts('print')">{PrintAnnualReceipts}</button>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<div class="container">
+				<div class="row">
+					<div class="col">
+						<span>{EmailSubject}</span>
+					</div>
+					<div class="col">
+						<input type="text" name="AEmailSubject">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<span>{EmailBody}</span>
+					</div>
+					<div class="col">
+						<textarea name="AEmailBody"></textarea>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<span>{EmailFrom}</span>
+					</div>
+					<div class="col">
+						<input type="email" name="AEmailFrom">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<span>{EmailFromName}</span>
+					</div>
+					<div class="col">
+						<input type="text" name="AEmailFromName">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<span>{EmailFilename}</span>
+					</div>
+					<div class="col">
+						<input type="text" name="AEmailFilename">
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col">
+					<button type="button" class="btn btn-primary" id="btnAnnualReceipts" onclick="GenerateAnnualReceipts('email')">{SendEmailsAnnualReceipts}</button>
+					</div>
+				</div>
+			</div>
+			</td>
+		</tr>
+	</table>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
