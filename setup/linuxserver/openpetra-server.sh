@@ -260,7 +260,7 @@ mysqlbackup() {
     if [ $userHome = "/home/$userName" ]; then
       chown $userName:$userName $userHome/.my.cnf
     fi
-    runAsUser "mysqldump --defaults-extra-file=$userHome/etc/my.cnf $OPENPETRA_DBNAME | gzip > $backupfile"
+    runAsUser "mysqldump --single-transaction --skip-lock-tables --defaults-extra-file=$userHome/etc/my.cnf $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
 

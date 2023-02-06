@@ -6737,7 +6737,7 @@
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
     <!-- Explicit Indexes on table p_partner_membership  -->
-    <index name="p_expiry_k"
+    <index name="p_membership_expiry_k"
            descr=""
            area="Petra Index">
       <indexfield name="p_expiry_date_d" order="ascending"/>
