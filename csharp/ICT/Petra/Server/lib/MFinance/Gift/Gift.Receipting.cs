@@ -290,6 +290,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             Int64 donorKey = Convert.ToInt64(donorrow[0]);
                             string donorName = donorrow[1].ToString();
+
+                            donorName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donorName,
+                                eShortNameFormat.eReverseWithoutTitle);
+
                             bool OnlyThankYouNoReceipt = (GetStringOrEmpty(donorrow[3]) == PARTNERTYPE_THANKYOU_NO_RECEIPT);
 
                             OdbcParameter[] parameters = new OdbcParameter[4];
