@@ -720,6 +720,7 @@
         "EmailFromName": "Name des Senders",
         "EmailFilename": "Dateiname der angehängten PDF",
         "SendEmailsAnnualReceipts": "Spendenbescheinigungen per E-Mail versenden",
+        "only_test": "Dies ist nur ein Test",
         "annual_receipt_file": "Spendenbescheinigungen",
         "html_template": "HTML Vorlage",
         "html_template_help": "Benutzen Sie diese <a href='https://github.com/openpetra/openpetra/blob/master/demodata/formletters/AnnualReceipt.html' target='_blank'>HTML-Vorlage</a> als Beispiel!",

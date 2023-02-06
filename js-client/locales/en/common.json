@@ -715,6 +715,7 @@
         "EmailFromName": "Name of sender",
         "EmailFilename": "Filename of attached PDF",
         "SendEmailsAnnualReceipts": "Send Receipts via E-Mail",
+        "only_test": "This is only a test",
         "annual_receipt_file": "AnnualReceipts",
         "html_template": "HTML template",
         "html_template_help": "You can use <a href='https://github.com/openpetra/openpetra/blob/master/demodata/formletters/AnnualReceipt.html' target='_blank'>this HTML template</a> as an example!",

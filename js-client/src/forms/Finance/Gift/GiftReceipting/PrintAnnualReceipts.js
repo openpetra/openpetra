@@ -235,7 +235,7 @@ function GenerateAnnualReceiptsRemote() {
 		'AExtract': '',
 		'ADonorKey': payload['p_donor_key_n'],
 		'AAction': receiptaction,
-		'AOnlyTest': true};
+		'AOnlyTest': payload['AOnlyTest']};
 
 	api.post('serverMFinance.asmx/TReceiptingWebConnector_CreateAnnualGiftReceipts', p)
 	.then(function (result) {
