@@ -220,6 +220,7 @@ namespace Ict.Common.IO
         private InternetAddressList FReplyTo;
         private InternetAddressList FCcEverythingTo;
         private InternetAddressList FBccEverythingTo;
+        private Dictionary<string, byte[]> FAttachments = new Dictionary<string, byte[]>();
 
         /// <summary>
         /// After SendMessage, this list should be empty.
@@ -458,6 +459,12 @@ namespace Ict.Common.IO
                         ADisplayName,
                         AAddress), e, TSmtpErrorClassEnum.secClient);
             }
+        }
+
+        /// add an attachment with a different name to avoid temp names in the email
+        public void AddAttachment(string ADisplayFileName, string APhysicalFileName)
+        {
+            FAttachments.Add(ADisplayFileName, File.ReadAllBytes(APhysicalFileName));
         }
 
         /// <summary>
@@ -734,6 +741,13 @@ namespace Ict.Common.IO
                             TLogging.Log(FErrorStatus);
                             return false;
                         }
+                    }
+                }
+                else
+                {
+                    foreach (string filename in FAttachments.Keys)
+                    {
+                        builder.Attachments.Add(filename, FAttachments[filename]);
                     }
                 }
 

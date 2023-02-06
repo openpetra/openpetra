@@ -338,6 +338,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             AEmailSubject, AEmailBody.Replace("{{donorName}}", donorName),
                                             AEmailFrom, AEmailFromName,
                                             AEmailFrom,
+                                            AEmailFilename,
                                             PDFFile,
                                             AOnlyTest,
                                             out EmailVerification))
@@ -476,6 +477,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string AEmailSubject, string AEmailBody,
             string AEmailFrom, string AEmailFromName,
             string AEmailBCC,
+            string ADisplayFilename,
             string AFilenamePDFReceipt,
             bool AOnlyTest,
             out TVerificationResultCollection AVerification)
@@ -492,9 +494,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                List <string>FilesToAttach = new List <string>();
-                FilesToAttach.Add(AFilenamePDFReceipt);
-
                 if (TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
                 {
                     TLogging.Log("There is no configuration for SmtpHost.");
@@ -506,6 +505,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     EmailSender.SetSender("no-reply@" + TAppSettingsManager.GetValue("Server.EmailDomain"), AEmailFromName);
                     EmailSender.ReplyTo = AEmailFrom;
                     EmailSender.BccEverythingTo = AEmailFrom;
+                    EmailSender.AddAttachment(ADisplayFilename, AFilenamePDFReceipt);
                 }
                 catch (Exception e)
                 {
@@ -517,8 +517,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (EmailSender.SendEmail(
                         AEmailRecipientName + " <" + AEmailRecipient + ">",
                         AEmailSubject,
-                        AEmailBody,
-                        FilesToAttach.ToArray()))
+                        AEmailBody))
                 {
                     return true;
                 }
