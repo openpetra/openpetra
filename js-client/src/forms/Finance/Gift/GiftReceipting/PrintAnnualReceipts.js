@@ -221,6 +221,11 @@ function GenerateAnnualReceiptsRemote() {
 		'ALogoFilename': logoname,
 		'ASignatureImage': signaturedata,
 		'ASignatureFilename': signaturename,
+		'AEmailSubject': payload['AEmailSubject'],
+		'AEmailBody': payload['AEmailBody'],
+		'AEmailFrom': payload['AEmailFrom'],
+		'AEmailFromName': payload['AEmailFromName'],
+		'AEmailFilename': payload['AEmailFilename'],
 		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
 		'AFrequency': 'Annual',
 		'AStartDate': payload['AStartDate'],
@@ -229,7 +234,8 @@ function GenerateAnnualReceiptsRemote() {
 		'ADeceasedFirst': true,
 		'AExtract': '',
 		'ADonorKey': payload['p_donor_key_n'],
-		'AAction': receiptaction};
+		'AAction': receiptaction,
+		'AOnlyTest': true};
 
 	api.post('serverMFinance.asmx/TReceiptingWebConnector_CreateAnnualGiftReceipts', p)
 	.then(function (result) {
@@ -262,7 +268,7 @@ function GenerateAnnualReceiptsRemote() {
 		}
 		else
 		{
-			display_message(i18next.t('PrintAnnualReceipts.errorempty'), "fail");
+			display_error(parsed.AVerification);
 		}
 		hidePleaseWait();
 	})

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -148,10 +148,15 @@ namespace Tests.MFinance.Server.Gift
 
             string receiptsBefore;
             string receiptsPDF;
+            TVerificationResultCollection verification;
             TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber, "Annual",
                 new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                 FileContent, null, String.Empty, null, String.Empty, "de-DE",
-                out receiptsPDF, out receiptsBefore);
+                "Jahreszuwendungsbestätigung 2022",
+                "Hallo {{donorName}}<br/>, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
+                "buchhaltung@example.org", "Buchhaltung MeinVerein e.V.",
+                "Zuwendungsbestätigung2022.pdf",
+                out receiptsPDF, out receiptsBefore, out verification);
             Assert.AreNotEqual(0, receiptsBefore.Trim().Length, "old receipt must not be empty");
 
             int AdjustBatchNumber;
@@ -202,7 +207,11 @@ namespace Tests.MFinance.Server.Gift
             TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber, "Annual",
                 new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                 FileContent, null, String.Empty, null, String.Empty, "de-DE",
-                out receiptsPDF, out receiptsAfter);
+                "Jahreszuwendungsbestätigung 2022",
+                "Hallo {{donorName}}<br/>, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
+                "buchhaltung@example.org", "Buchhaltung MeinVerein e.V.",
+                "Zuwendungsbestätigung2022.pdf",
+                out receiptsPDF, out receiptsAfter, out verification);
             receiptsBefore = THttpBinarySerializer.DeserializeFromBase64(receiptsBefore);
             receiptsAfter = THttpBinarySerializer.DeserializeFromBase64(receiptsAfter);
 

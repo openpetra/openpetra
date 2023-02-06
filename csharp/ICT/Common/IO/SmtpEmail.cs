@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -219,6 +219,7 @@ namespace Ict.Common.IO
         private MailboxAddress FSender;
         private InternetAddressList FReplyTo;
         private InternetAddressList FCcEverythingTo;
+        private InternetAddressList FBccEverythingTo;
 
         /// <summary>
         /// After SendMessage, this list should be empty.
@@ -490,6 +491,36 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// Use this to get all the emails blind copied to an address
+        /// </summary>
+        public String BccEverythingTo
+        {
+            set
+            {
+                if (value == "")
+                {
+                    FBccEverythingTo = null;
+                }
+                else
+                {
+                    try
+                    {
+                        FBccEverythingTo = new InternetAddressList();
+                        List<MailboxAddress> list = ConvertAddressList(value);
+                        foreach (MailboxAddress addr in list)
+                        {
+                            FBccEverythingTo.Add(addr);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ESmtpSenderInitializeException(String.Format("Invalid BCC address '{0}'.", value), e, TSmtpErrorClassEnum.secClient);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// If the ReplyTo address should be different, use this.
         /// </summary>
         public String ReplyTo
@@ -542,6 +573,14 @@ namespace Ict.Common.IO
                 foreach (var addr in FCcEverythingTo)
                 {
                     NewMessage.Cc.Add(addr);
+                }
+            }
+
+            if (FBccEverythingTo != null)
+            {
+                foreach (var addr in FBccEverythingTo)
+                {
+                    NewMessage.Bcc.Add(addr);
                 }
             }
 

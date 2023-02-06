@@ -88,8 +88,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             byte[] ASignatureImage,
             string ASignatureFilename,
             string ALanguage,
+            string AEmailSubject,
+            string AEmailBody,
+            string AEmailFrom,
+            string AEmailFromName,
+            string AEmailFilename,
             out string APDFReceipt,
             out string AHTMLReceipt,
+            out TVerificationResultCollection AVerification,
             bool ADeceasedFirst = false,
             string AExtract = null,
             Int64 ADonorKey = 0,
@@ -99,6 +105,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ResultDocument = string.Empty;
             APDFReceipt = string.Empty;
             AHTMLReceipt = String.Empty;
+            AVerification = new TVerificationResultCollection();
 
             Catalog.Init(ALanguage, ALanguage);
 
@@ -120,9 +127,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (EmailPublicationCode == String.Empty && (AAction == "email"))
             {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Please specify the Email Publication Code in the ledger settings"),
+                        "Server problems",
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
                 TLogging.Log("Please specify the Email Publication Code in the ledger settings");
                 return false;
             }
+
+            if (AAction == "all")
+            {
+                AOnlyTest = true;
+            }
+
+            TVerificationResultCollection LocalVerification = new TVerificationResultCollection();
 
             db.ReadTransaction(
                 ref Transaction,
@@ -289,8 +309,55 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 string letter =
                                     FormatLetter(donorKey, donorName, AOnlyTest, OnlyThankYouNoReceipt, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
 
-                                if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
+                                // attach the current receipt to the pdf that contains all receipts
+                                TFormLettersTools.AttachNextPage(ref ResultDocument, letter);
+
+                                bool ReceiptSuccess = false;
+
+                                if (AAction == "email")
                                 {
+                                    // print single receipt to separate temporary pdf file
+                                    string PDFFile = TFileHelper.GetTempFileName(
+                                        AEmailFilename.Replace(".pdf", "") + "_" + donorKey,
+                                        ".pdf");
+
+                                    if (PrintToPDF(PDFFile, letter,
+                                        ALogoImage, ALogoFilename, ASignatureImage, ASignatureFilename))
+                                    {
+                                        TVerificationResultCollection EmailVerification = null;
+
+                                        // TODO: get the valid Email Address of the donor
+                                        string ReceipientEmail = "todo@example.org";
+
+                                        // send email with pdf to donor
+                                        if (!SendEmail(ReceipientEmail, donorName,
+                                            AEmailSubject, AEmailBody.Replace("{{donorName}}", donorName),
+                                            AEmailFrom, AEmailFromName,
+                                            AEmailFrom,
+                                            PDFFile,
+                                            AOnlyTest,
+                                            out EmailVerification))
+                                        {
+                                            TLogging.Log("Cannot send receipt email to " + donorName + " " + donorKey.ToString());
+                                            LocalVerification.AddCollection(EmailVerification);
+                                        }
+                                        else
+                                        {
+                                            ReceiptSuccess = true;
+                                        }
+
+                                        File.Delete(PDFFile);
+                                    }
+                                }
+                                else if (AAction == "print")
+                                {
+                                    ReceiptSuccess = true;
+                                }
+
+                                if (ReceiptSuccess && !AOnlyTest)
+                                {
+                                    // TODO store information that the receipt has been sent
+                                    // so that it will not be sent again
                                     // TODO: store somewhere that the receipt has been printed?
                                     // TODO also store each receipt with the donor in document management, and in contact management?
                                 }
@@ -305,6 +372,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         throw;
                     }
                 });
+
+            AVerification.AddCollection(LocalVerification);
 
             if (ResultDocument.Length > 0)
             {
@@ -321,7 +390,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AHTMLReceipt = THttpBinarySerializer.SerializeToBase64(ResultDocument);
             }
 
-            return ResultDocument.Length > 0;
+            return ResultDocument.Length > 0 && !AVerification.HasCriticalErrors;
         }
 
         private static bool PrintToPDF(string AOutputPDFFilename,
@@ -396,6 +465,87 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             return obj.ToString();
+        }
+
+        private static bool SendEmail(
+            string AEmailRecipient, string AEmailRecipientName,
+            string AEmailSubject, string AEmailBody,
+            string AEmailFrom, string AEmailFromName,
+            string AEmailBCC,
+            string AFilenamePDFReceipt,
+            bool AOnlyTest,
+            out TVerificationResultCollection AVerification)
+        {
+            AVerification = new TVerificationResultCollection();
+
+            if (AOnlyTest)
+            {
+                // do not send to the donor
+                AEmailRecipient = AEmailFrom;
+            }
+
+            TSmtpSender EmailSender = new TSmtpSender();
+
+            try
+            {
+                List <string>FilesToAttach = new List <string>();
+                FilesToAttach.Add(AFilenamePDFReceipt);
+
+                if (TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
+                {
+                    TLogging.Log("There is no configuration for SmtpHost.");
+                    return false;
+                }
+
+                try
+                {
+                    EmailSender.SetSender("no-reply@" + TAppSettingsManager.GetValue("Server.EmailDomain"), AEmailFromName);
+                    EmailSender.ReplyTo = AEmailFrom;
+                    EmailSender.BccEverythingTo = AEmailFrom;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("There is an issue with setting email parameters.");
+                    TLogging.Log(e.ToString());
+                    return false;
+                }
+
+                if (EmailSender.SendEmail(
+                        AEmailRecipientName + " <" + AEmailRecipient + ">",
+                        AEmailSubject,
+                        AEmailBody,
+                        FilesToAttach.ToArray()))
+                {
+                    return true;
+                }
+
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Problem sending email"),
+                        "Server problems",
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+
+                return false;
+            } // try
+            catch (ESmtpSenderInitializeException e)
+            {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        e.Message,
+                        CommonErrorCodes.ERR_MISSINGEMAILCONFIGURATION,
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+
+                return false;
+            }
+            finally
+            {
+                if (EmailSender != null)
+                {
+                    EmailSender.Dispose();
+                }
+            }
         }
 
         /// <summary>
