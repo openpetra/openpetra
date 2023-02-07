@@ -125,6 +125,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TSystemDefaults SystemDefaults = new TSystemDefaults(db);
             string EmailPublicationCode = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_PUBLICATION_CODE, String.Empty);
 
+            if (AEmailSubject != String.Empty)
+            {
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_SUBJECT, AEmailSubject, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_BODY, AEmailBody, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROM, AEmailFrom, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROMNAME, AEmailFromName, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FILENAME, AEmailFilename, db);
+            }
+
             if (EmailPublicationCode == String.Empty && (AAction == "email"))
             {
                 AVerification.Add(new TVerificationResult(
@@ -1696,9 +1705,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return SubmissionOK;
         }
 
-        /// get the filenames of the stored template files for annual gift receipt
+        /// get the filenames of the stored template files for annual gift receipt, and other defaults
         [RequireModulePermission("FINANCE-1")]
-        public static bool LoadDefaultTemplateFileNames(out string AFileNameHTML, out string AFileNameLogo, out string AFileNameSignature)
+        public static bool LoadReceiptDefaults(
+            out string AFileNameHTML, out string AFileNameLogo, out string AFileNameSignature,
+            out string AEmailSubject, out string AEmailBody, out string AEmailFrom, out string AEmailFromName,
+            out string AEmailFilename)
         {
             AFileNameHTML = String.Empty;
             AFileNameLogo = String.Empty;
@@ -1715,6 +1727,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadDefaultFile");
+
+            TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+            AEmailSubject = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_SUBJECT, String.Empty);
+            AEmailBody = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_BODY, String.Empty);
+            AEmailFrom = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROM, String.Empty);
+            AEmailFromName = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROMNAME, String.Empty);
+            AEmailFilename = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FILENAME, String.Empty);
 
             db.ReadTransaction(
                 ref Transaction,

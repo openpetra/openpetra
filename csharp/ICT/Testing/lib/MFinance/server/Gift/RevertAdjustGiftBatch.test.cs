@@ -153,7 +153,7 @@ namespace Tests.MFinance.Server.Gift
                 new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                 FileContent, null, String.Empty, null, String.Empty, "de-DE",
                 "Jahreszuwendungsbestätigung 2022",
-                "Hallo {{donorName}}<br/>, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
+                "Hallo {{donorName}}\n, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
                 "buchhaltung@example.org", "Buchhaltung MeinVerein e.V.",
                 "Zuwendungsbestätigung2022.pdf",
                 out receiptsPDF, out receiptsBefore, out verification);
@@ -208,7 +208,7 @@ namespace Tests.MFinance.Server.Gift
                 new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                 FileContent, null, String.Empty, null, String.Empty, "de-DE",
                 "Jahreszuwendungsbestätigung 2022",
-                "Hallo {{donorName}}<br/>, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
+                "Hallo {{donorName}}\n, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
                 "buchhaltung@example.org", "Buchhaltung MeinVerein e.V.",
                 "Zuwendungsbestätigung2022.pdf",
                 out receiptsPDF, out receiptsAfter, out verification);

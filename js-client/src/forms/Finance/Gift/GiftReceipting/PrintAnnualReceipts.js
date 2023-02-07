@@ -193,13 +193,18 @@ function ClearSignatureTemplateAsDefault() {
 function LoadDefaultTemplateFiles() {
 	p = {};
 
-	api.post('serverMFinance.asmx/TReceiptingWebConnector_LoadDefaultTemplateFileNames', p)
+	api.post('serverMFinance.asmx/TReceiptingWebConnector_LoadReceiptDefaults', p)
 	.then(function (result) {
 		var parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			DefaultNames["DefaultFileNameHTML"] = parsed.AFileNameHTML;
 			DefaultNames["DefaultFileNameLogo"] = parsed.AFileNameLogo;
 			DefaultNames["DefaultFileNameSignature"] = parsed.AFileNameSignature;
+			DefaultNames["AEmailSubject"] = parsed.AEmailSubject;
+			DefaultNames["AEmailBody"] = parsed.AEmailBody;
+			DefaultNames["AEmailFrom"] = parsed.AEmailFrom;
+			DefaultNames["AEmailFromName"] = parsed.AEmailFromName;
+			DefaultNames["AEmailFilename"] = parsed.AEmailFilename;
 			insertData("#parameters", DefaultNames);
 		}
 	});

@@ -103,7 +103,7 @@ namespace Tests.MFinance.Server.Gift
                 "invalid HTML template", null, String.Empty, null, String.Empty,
                 "de-DE",
                 "Jahreszuwendungsbestätigung 2022",
-                "Hallo {{donorName}}<br/>, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
+                "Hallo {{donorName}}\n, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
                 "buchhaltung@example.org", "Buchhaltung MeinVerein e.V.",
                 "Zuwendungsbestätigung2022.pdf",
                 out receiptsPDF, out receipts, out verification);
