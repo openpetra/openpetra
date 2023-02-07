@@ -496,7 +496,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (AOnlyTest)
             {
                 // do not send to the donor
-                AEmailRecipient = AEmailFrom;
+                AEmailRecipient = AEmailFrom.Replace("@", "+testdonor@");
+                AEmailFrom = AEmailFrom.Replace("@", "+test@");
             }
 
             TSmtpSender EmailSender = new TSmtpSender();
