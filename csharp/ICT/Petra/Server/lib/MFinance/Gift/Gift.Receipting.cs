@@ -300,9 +300,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             Int64 donorKey = Convert.ToInt64(donorrow[0]);
                             string donorName = donorrow[1].ToString();
 
-                            donorName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donorName,
-                                eShortNameFormat.eReverseWithoutTitle);
-
                             bool OnlyThankYouNoReceipt = (GetStringOrEmpty(donorrow[3]) == PARTNERTYPE_THANKYOU_NO_RECEIPT);
 
                             OdbcParameter[] parameters = new OdbcParameter[4];
@@ -342,8 +339,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         // TODO: get the valid Email Address of the donor
                                         string ReceipientEmail = "todo@example.org";
 
+                                        string EmailDonorName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donorName,
+                                            eShortNameFormat.eReverseWithoutTitle);
+
                                         // send email with pdf to donor
-                                        if (!SendEmail(ReceipientEmail, donorName,
+                                        if (!SendEmail(ReceipientEmail, EmailDonorName,
                                             AEmailSubject, AEmailBody.Replace("{{donorName}}", donorName),
                                             AEmailFrom, AEmailFromName,
                                             AEmailFrom,
@@ -352,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             AOnlyTest,
                                             out EmailVerification))
                                         {
-                                            TLogging.Log("Cannot send receipt email to " + donorName + " " + donorKey.ToString());
+                                            TLogging.Log("Cannot send receipt email to " + EmailDonorName + " " + donorKey.ToString());
                                             LocalVerification.AddCollection(EmailVerification);
                                         }
                                         else
