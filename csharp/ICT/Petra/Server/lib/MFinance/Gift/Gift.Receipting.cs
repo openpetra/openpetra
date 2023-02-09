@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                         // send email with pdf to donor
                                         if (!SendEmail(ReceipientEmail, EmailDonorName,
-                                            AEmailSubject, AEmailBody.Replace("{{donorName}}", donorName),
+                                            AEmailSubject, AEmailBody.Replace("{{donorName}}", EmailDonorName),
                                             AEmailFrom, AEmailFromName,
                                             AEmailFrom,
                                             AEmailFilename,
