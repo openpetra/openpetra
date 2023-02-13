@@ -237,7 +237,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     child["SponsorContactDetails"] += donor.PartnerShortName + ";" + SponsorAddress + ";";
                     if (SponsorEmailAddress != String.Empty)
                     {
-                        child["SponsorContactDetails"] += "<a href='mailto:" + SponsorEmailAddress + "'>" + SponsorEmailAddress + "</a>;";
+                        child["SponsorContactDetails"] += "mailto(" + SponsorEmailAddress + ");";
                     }
                     if (SponsorPhoneNumber != String.Empty)
                     {

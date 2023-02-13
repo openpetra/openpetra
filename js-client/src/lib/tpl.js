@@ -506,7 +506,15 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
           // avoid cross site scripting. still allow newlines as html code
-          f.html( v.replace('<br/>', 'NEWLINE').replace('<', '&lt;').replace('>', '&gt;').replace('NEWLINE', '<br/>') );
+          html = v.replace(/<br\/>/g, 'NEWLINE').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/NEWLINE/g, '<br/>');
+
+          while ((pos = html.indexOf('mailto(')) >= 0) {
+            email = html.substring(pos + 'mailto('.length);
+            email = email.substring(0, email.indexOf(')'));
+            html = html.replace('mailto(' + email + ')', '<a href="' + email + '">' + email + '</a>');
+          }
+
+          f.html( html );
         } else {
           f.val( v );
         }
