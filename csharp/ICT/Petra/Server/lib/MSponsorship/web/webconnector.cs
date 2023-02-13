@@ -154,16 +154,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             foreach (SponsorshipFindTDSSearchResultRow child in result.Rows)
             {
-                sql = "SELECT DISTINCT sponsor.* " +
-                    "FROM a_recurring_gift rg, a_recurring_gift_detail rgd, PUB_p_partner donor, PUB_p_partner sponsor " +
+                sql = "SELECT DISTINCT donor.* " +
+                    "FROM a_recurring_gift rg, a_recurring_gift_detail rgd, PUB_p_partner donor " +
                     "WHERE rgd.a_ledger_number_i = rg.a_ledger_number_i " +
                     "AND rgd.a_batch_number_i = rg.a_batch_number_i " +
                     "AND rgd.a_gift_transaction_number_i = rg.a_gift_transaction_number_i " +
                     "AND rgd.p_recipient_key_n = " + child.PartnerKey + " " +
                     "AND ? >= rgd.a_start_donations_d " +
                     "AND (? <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
-                    "AND rg.p_donor_key_n = donor.p_partner_key_n " +
-                    "AND rgd.p_recipient_key_n = sponsor.p_partner_key_n";
+                    "AND rg.p_donor_key_n = donor.p_partner_key_n";
 
                 List <OdbcParameter> parameterList = new List <OdbcParameter>();
 
@@ -179,16 +178,19 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
                 if (ADonorName != String.Empty)
                 {
-                    sql += " AND (donor.p_partner_short_name_c LIKE ?";
+                    // TODO: AND (donor...
+                    sql += " AND donor.p_partner_short_name_c LIKE ?";
                     param = new OdbcParameter("ADonorName", OdbcType.VarChar);
                     ADonorName = '%' + ADonorName + '%';
                     param.Value = ADonorName;
                     parameterList.Add(param);
+                    /*
                     sql += " OR sponsor.p_partner_short_name_c LIKE ?)";
                     param = new OdbcParameter("ADonorName", OdbcType.VarChar);
                     ADonorName = '%' + ADonorName + '%';
                     param.Value = ADonorName;
                     parameterList.Add(param);
+                    */
                 }
 
                 PPartnerTable donors = new PPartnerTable();
@@ -555,7 +557,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                 foreach (DataRowView drv in MainDS.ARecurringGift.DefaultView)
                                 {
                                     ARecurringGiftRow recurrGiftRow = (ARecurringGiftRow)drv.Row;
-                                    gdr.DonorKey = gdr.RecipientKey;
+                                    gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
 
                                     string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
