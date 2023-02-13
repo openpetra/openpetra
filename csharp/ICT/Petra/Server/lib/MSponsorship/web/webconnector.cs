@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -479,7 +479,14 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 out Subscriptions, out PartnerTypes,
                 out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline, false);
 
-            DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+            if (DonorTDS.PLocation.Rows.Count == 0)
+            {
+                DonorAddress = String.Empty;
+            }
+            else
+            {
+                DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+            }
             DonorEmailAddress = DefaultEmailAddress;
             DonorPhoneNumber = DefaultPhoneLandline;
             if (DonorPhoneNumber != String.Empty && DefaultPhoneMobile != String.Empty)
