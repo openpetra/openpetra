@@ -100,7 +100,7 @@
 								<span>{description}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="a_description_c" value="" size="40" readonly>
+								<textarea name="a_description_c" cols="40" rows="5" readonly></textarea>
 							</div>
 						</div>
 
@@ -150,7 +150,8 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" size="40" oninput="autocomplete_donor(this)">
+									<input class="" type="text" name="p_donor_name_c" placeholder="{EnterDonorName}" key-name="p_donor_key_n" value="" size="40" oninput="autocomplete_donor(this)">
+									<button class="btn btn-danger" onclick="clear_donor(this)">{clear_donor}</button>
 								</div>
 							</div>
 						</div>
@@ -205,6 +206,7 @@
 			<div class="modal-content">
 				<input type="hidden" action value="create">
 				<input type="hidden" name="p_donor_key_n" value="{val_p_donor_key_n}">
+				<input type="hidden" name="p_donor_short_name_c" value="{val_p_donor_short_name_c}">
 				<div class="modal-header">
 					<h3>{edittitle_trans_detail}</h3>
 				</div>
@@ -246,7 +248,19 @@
 							<div class="col">
 								<input type="hidden" name="a_motivation_group_code_c" value=""/>
 								<div class="autocomplete">
-									<input class="" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+									<input class="" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this, update_motivation_group)" >
+								</div>
+							</div>
+						</div>
+
+						<div class="row MEMBERFEE" requireClass>
+							<div class="col">
+								<span>{membership_recipient}</span>
+							</div>
+							<div class="col">
+								<div class="autocomplete">
+									<input class="" type="text" name="p_member_name_c" placeholder="{EnterMemberName}" key-name="p_recipient_key_n" value="" size="40" oninput="autocomplete_member(this)">
+									<button class="btn btn-danger" onclick="clear_member(this)">{clear_member}</button>
 								</div>
 							</div>
 						</div>
@@ -457,8 +471,12 @@
       </div>
     </div>
 </div>
-	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
-	<button type="button" class="btn btn-light" style="float:right; color:white; background:#22f;margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
+    <button type="button" class="btn btn-primary" style="float:right; margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
+    <button type="button" class="btn btn-primary" style="float:right; margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
+    <!-- TODO disable this button if no permissions for reading sponsorships -->
+    <button type="button" class="btn btn-light" onclick="check_for_sponsorship();">
+            <span>{check_sponsorship}&nbsp;</span><i class="fas fa-question"></i>
+    </button>
 </div>
 </div>
 

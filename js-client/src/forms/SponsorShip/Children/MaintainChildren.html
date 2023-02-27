@@ -112,7 +112,7 @@
       <span type="text" name="p_type_description_c"></span>
     </div>
     <div class="col">
-      <span type="text" name="DonorName"></span>
+      <span type="text" name="SponsorName"></span>
     </div>
     <div class="col">
       <span type="text" name="p_user_id_c"></span>
@@ -145,7 +145,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col"><span type="text" name="DonorContactDetails"></span></div>
+        <div class="col"><span type="text" name="SponsorContactDetails"></span></div>
       </div>
     </div>
   </div>
@@ -193,9 +193,9 @@
   </div>
   <div class="row">
     <div class="col-12">
-      <span name="DonorAddress"></span>
-      <span name="DonorEmailAddress"></span>
-      <span name="DonorPhoneNumber"></span>
+      <span name="SponsorAddress"></span>
+      <span name="SponsorEmailAddress"></span>
+      <span name="SponsorPhoneNumber"></span>
     </div>
   </div>
   </div>
@@ -267,19 +267,19 @@
           <ul class="nav nav-tabs" role="tablist" mode-hide="create">
 
             <li class="nav-item">
-              <a class="nav-link active" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="details">{details}</a>
+              <div class="nav-link active" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="details">{details}</div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="sponsorship">{sponsorship}</a>
+              <div class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="sponsorship">{sponsorship}</div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="dates_reminder">{dates_reminder}</a>
+              <div class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="dates_reminder">{dates_reminder}</div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="family_situations">{family_situations}</a>
+              <div class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="family_situations">{family_situations}</div>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="school_situations">{school_situations}</a>
+              <div class="nav-link" href="javascript:void(0)" onclick="MaintainChildren.showWindow(this)" show="school_situations">{school_situations}</div>
             </li>
 
           </ul>
@@ -479,7 +479,7 @@
       <div class="modal-footer">
         <button class="btn btn-danger" onclick="MaintainChildren.delete()">{forms.delete}</button>
         <button class="btn btn-primary" onclick="MaintainChildren.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this, false)">{forms.close}</button>
       </div>
     </div>
   </div>
@@ -507,7 +507,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="MaintainChildComments.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this, false)">{forms.close}</button>
       </div>
     </div>
   </div>
@@ -544,7 +544,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="MaintainChildReminders.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this, false)">{forms.close}</button>
       </div>
     </div>
   </div>
@@ -622,7 +622,7 @@
       <div class="modal-footer">
         <button class="btn btn-danger" onclick="MaintainChildSponsorship.delete(this)">{forms.delete}</button>
         <button class="btn btn-primary" onclick="MaintainChildSponsorship.saveEdit()">{forms.save}</button>
-        <button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+        <button class="btn btn-light" onclick="CloseModal(this, false)">{forms.close}</button>
       </div>
     </div>
   </div>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -219,6 +219,8 @@ namespace Ict.Common.IO
         private MailboxAddress FSender;
         private InternetAddressList FReplyTo;
         private InternetAddressList FCcEverythingTo;
+        private InternetAddressList FBccEverythingTo;
+        private Dictionary<string, byte[]> FAttachments = new Dictionary<string, byte[]>();
 
         /// <summary>
         /// After SendMessage, this list should be empty.
@@ -459,6 +461,12 @@ namespace Ict.Common.IO
             }
         }
 
+        /// add an attachment with a different name to avoid temp names in the email
+        public void AddAttachment(string ADisplayFileName, string APhysicalFileName)
+        {
+            FAttachments.Add(ADisplayFileName, File.ReadAllBytes(APhysicalFileName));
+        }
+
         /// <summary>
         /// Use this to get all the emails copied to an address
         /// </summary>
@@ -484,6 +492,36 @@ namespace Ict.Common.IO
                     catch (Exception e)
                     {
                         throw new ESmtpSenderInitializeException(String.Format("Invalid CC address '{0}'.", value), e, TSmtpErrorClassEnum.secClient);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Use this to get all the emails blind copied to an address
+        /// </summary>
+        public String BccEverythingTo
+        {
+            set
+            {
+                if (value == "")
+                {
+                    FBccEverythingTo = null;
+                }
+                else
+                {
+                    try
+                    {
+                        FBccEverythingTo = new InternetAddressList();
+                        List<MailboxAddress> list = ConvertAddressList(value);
+                        foreach (MailboxAddress addr in list)
+                        {
+                            FBccEverythingTo.Add(addr);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ESmtpSenderInitializeException(String.Format("Invalid BCC address '{0}'.", value), e, TSmtpErrorClassEnum.secClient);
                     }
                 }
             }
@@ -542,6 +580,14 @@ namespace Ict.Common.IO
                 foreach (var addr in FCcEverythingTo)
                 {
                     NewMessage.Cc.Add(addr);
+                }
+            }
+
+            if (FBccEverythingTo != null)
+            {
+                foreach (var addr in FBccEverythingTo)
+                {
+                    NewMessage.Bcc.Add(addr);
                 }
             }
 
@@ -695,6 +741,13 @@ namespace Ict.Common.IO
                             TLogging.Log(FErrorStatus);
                             return false;
                         }
+                    }
+                }
+                else
+                {
+                    foreach (string filename in FAttachments.Keys)
+                    {
+                        builder.Attachments.Add(filename, FAttachments[filename]);
                     }
                 }
 

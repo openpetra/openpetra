@@ -52,7 +52,7 @@ function loadInConsents() {
 		var parsed = JSON.parse(data.data.d);
 		var Consents = $(`#reportfilter [consents]`);
 		for (var purpose of parsed.result.PConsentPurpose) {
-			let name = i18next.t('MaintainPartners.'+purpose.p_name_c);
+			let name = i18next.t('MaintainPartners.'+purpose.p_name_c, purpose.p_name_c);
 			var ConsentTemp = $(`[phantom] .consent-option`).clone();
 			ConsentTemp.find(".name").text(name);
 			ConsentTemp.find("[name=param_consent]").attr("value", purpose.p_purpose_code_c);

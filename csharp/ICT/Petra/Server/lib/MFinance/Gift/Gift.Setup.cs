@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,7 +60,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber, string AMotivationGroupCode, out string ADefaultMotivationGroup, out string ADefaultMotivationDetail)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            LoadDefaultMotivation(ALedgerNumber, out ADefaultMotivationGroup, out ADefaultMotivationDetail);
+            bool TempIsForMembership, TempIsForSponsorship, TempIsForWorkerSupport;
+            LoadDefaultMotivation(ALedgerNumber, out ADefaultMotivationGroup, out ADefaultMotivationDetail,
+                out TempIsForMembership, out TempIsForSponsorship, out TempIsForWorkerSupport);
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadMotivationDetails");
@@ -70,6 +72,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 delegate
                 {
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                    StringCollection FieldList = new StringCollection();
+                    FieldList.AddRange(new String[]{"a_account_code_c", "a_account_code_long_desc_c"});
+                    AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, FieldList, Transaction);
+                    FieldList = new StringCollection();
+                    FieldList.AddRange(new String[]{"a_cost_centre_code_c", "a_cost_centre_name_c"});
+                    ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, FieldList, Transaction);
 
                     if (AMotivationGroupCode.Length > 0)
                     {
@@ -200,6 +209,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             String AMotivationGroupCode, String AMotivationDetailCode,
             String AMotivationDetailDesc,
             String AAccountCode, String ACostCentreCode, bool AMotivationStatus,
+            Boolean ATaxDeductible,
+            Boolean ASponsorship, Boolean AMembership, Boolean AWorkerSupport,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
@@ -215,6 +226,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 row.AccountCode = AAccountCode;
                 row.CostCentreCode = ACostCentreCode;
                 row.MotivationStatus = AMotivationStatus;
+                row.TaxDeductible = ATaxDeductible;
+                row.Sponsorship = ASponsorship;
+                row.Membership = AMembership;
+                row.WorkerSupport = AWorkerSupport;
                 MainDS.AMotivationDetail.Rows.Add(row);
 
                 try
@@ -240,6 +255,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         row.AccountCode = AAccountCode;
                         row.CostCentreCode = ACostCentreCode;
                         row.MotivationStatus = AMotivationStatus;
+                        row.TaxDeductible = ATaxDeductible;
+                        row.Sponsorship = ASponsorship;
+                        row.Membership = AMembership;
+                        row.WorkerSupport = AWorkerSupport;
                     }
                 }
 
@@ -294,16 +313,43 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         /// returns the default motivation if it has been set in the system defaults
         [RequireModulePermission("FINANCE-1")]
-        public static bool LoadDefaultMotivation(Int32 ALedgerNumber, out string ADefaultMotivationGroup, out string ADefaultMotivationDetail)
+        public static bool LoadDefaultMotivation(Int32 ALedgerNumber,
+            out string ADefaultMotivationGroup, out string ADefaultMotivationDetail,
+            out bool AIsForMembership, out bool AIsForSponsorship, out bool AIsForWorkerSupport)
         {
             ADefaultMotivationGroup = String.Empty;
             ADefaultMotivationDetail = String.Empty;
+            AIsForMembership = false;
+            AIsForSponsorship = false;
+            AIsForWorkerSupport = false;
 
             string DefaultMotivation = new TSystemDefaults().GetSystemDefault("DEFAULTMOTIVATION" + ALedgerNumber.ToString());
             if (DefaultMotivation != SharedConstants.SYSDEFAULT_NOT_FOUND)
             {
-                ADefaultMotivationGroup = DefaultMotivation.Substring(0, DefaultMotivation.IndexOf("::"));
-                ADefaultMotivationDetail = DefaultMotivation.Substring(DefaultMotivation.IndexOf("::") + 2);
+                string DefaultMotivationGroup = DefaultMotivation.Substring(0, DefaultMotivation.IndexOf("::"));
+                string DefaultMotivationDetail = DefaultMotivation.Substring(DefaultMotivation.IndexOf("::") + 2);
+                ADefaultMotivationGroup = DefaultMotivationGroup;
+                ADefaultMotivationDetail = DefaultMotivationDetail;
+
+                GiftBatchTDS MainDS = new GiftBatchTDS();
+
+                TDBTransaction Transaction = new TDBTransaction();
+                TDataBase db = DBAccess.Connect("LoadDefaultMotivation");
+
+                db.ReadTransaction(
+                    ref Transaction,
+                    delegate
+                    {
+                        AMotivationDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, DefaultMotivationGroup, DefaultMotivationDetail, Transaction);
+                    });
+
+                if (MainDS.AMotivationDetail.Count == 1)
+                {
+                    AIsForMembership = MainDS.AMotivationDetail[0].Membership;
+                    AIsForSponsorship = MainDS.AMotivationDetail[0].Sponsorship;
+                    AIsForWorkerSupport = MainDS.AMotivationDetail[0].WorkerSupport;
+                }
+
                 return true;
             }
 

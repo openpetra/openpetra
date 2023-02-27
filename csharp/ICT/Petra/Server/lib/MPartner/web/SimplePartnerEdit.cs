@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,9 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
@@ -110,8 +113,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 delegate
                 {
                     PCountryAccess.LoadAll(MainDS, Transaction);
+                    PMembershipAccess.LoadAll(MainDS, Transaction);
                     PPublicationAccess.LoadAll(MainDS, Transaction);
                     PPartnerStatusAccess.LoadAll(MainDS, Transaction);
+                    PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "FAMILY", Transaction);
+                    PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "ORGANISATION", Transaction);
 
                     PTypeRow templateRow = MainDS.PType.NewRowTyped();
                     templateRow.SystemType = false;
@@ -176,7 +182,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 out APartnerTypes,
                 out ADefaultEmailAddress,
                 out ADefaultPhoneMobile,
-                out ADefaultPhoneLandline);
+                out ADefaultPhoneLandline,
+                true);
         }
 
         /// <summary>
@@ -189,7 +196,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             out List<string> APartnerTypes,
             out string ADefaultEmailAddress,
             out string ADefaultPhoneMobile,
-            out string ADefaultPhoneLandline)
+            out string ADefaultPhoneLandline,
+            bool AWithDonationHistory)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
             List<string> Subscriptions = new List<string>();
@@ -252,6 +260,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         if (true)
                         {
+                            PMembershipAccess.LoadAll(MainDS, Transaction);
+                            PPartnerMembershipAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+                        }
+
+                        if (true)
+                        {
+                            PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "FAMILY", Transaction);
+                            PPartnerClassesAccess.LoadByPrimaryKey(MainDS, "ORGANISATION", Transaction);
+                        }
+
+                        if (true)
+                        {
                             PPublicationAccess.LoadAll(MainDS, Transaction);
                             PSubscriptionAccess.LoadViaPPartnerPartnerKey(MainDS, APartnerKey, Transaction);
 
@@ -272,7 +292,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PBankAccess.LoadByPrimaryKey(MainDS, banking.BankKey, Transaction);
                                 banking.Bic = MainDS.PBank[0].Bic;
                                 banking.BranchName = MainDS.PBank[0].BranchName;
-                                banking.Iban = TSEPAWriterDirectDebit.FormatIBAN(banking.Iban);
+                                banking.Iban = TSEPAWriterDirectDebit.FormatIBAN(banking.Iban, true);
                                 MainDS.PBank.Rows.Clear();
                             }
 
@@ -284,6 +304,66 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
 
                             MainDS.PBankingDetailsUsage.Rows.Clear();
+                        }
+
+                        if (AWithDonationHistory)
+                        {
+                            GiftBatchTDS TempGiftDS = new GiftBatchTDS();
+                            AGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
+                            TempGiftDS.AGift.DefaultView.Sort = "a_date_entered_d DESC";
+
+                            foreach(DataRowView giftview in TempGiftDS.AGift.DefaultView)
+                            {
+                                AGiftRow gift = (AGiftRow)giftview.Row;
+                                TempGiftDS.AGiftDetail.Clear();
+                                AGiftDetailAccess.LoadViaAGift(TempGiftDS, gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber, Transaction);
+
+                                AGiftBatchTable tempBatch = AGiftBatchAccess.LoadByPrimaryKey(gift.LedgerNumber, gift.BatchNumber, Transaction);
+
+                                if (tempBatch[0].BatchStatus != MFinanceConstants.BATCH_POSTED)
+                                {
+                                    continue;
+                                }
+
+                                foreach(AGiftDetailRow detail in TempGiftDS.AGiftDetail.Rows)
+                                {
+                                    if (detail.ModifiedDetail)
+                                    {
+                                        continue;
+                                    }
+
+                                    PartnerEditTDSAGiftDetailRow giftDetail = MainDS.AGiftDetail.NewRowTyped();
+                                    DataUtilities.CopyAllColumnValues(detail, giftDetail);
+                                    giftDetail.DateEntered = gift.DateEntered;
+                                    MainDS.AGiftDetail.Rows.Add(giftDetail);
+                                }
+                            }
+                        }
+
+                        if (AWithDonationHistory)
+                        {
+                            GiftBatchTDS TempGiftDS = new GiftBatchTDS();
+                            ARecurringGiftAccess.LoadViaPPartner(TempGiftDS, APartnerKey, Transaction);
+
+                            foreach(DataRowView giftview in TempGiftDS.ARecurringGift.DefaultView)
+                            {
+                                ARecurringGiftRow gift = (ARecurringGiftRow)giftview.Row;
+
+                                if (!gift.Active)
+                                {
+                                    continue;
+                                }
+
+                                TempGiftDS.ARecurringGiftDetail.Clear();
+                                ARecurringGiftDetailAccess.LoadViaARecurringGift(TempGiftDS, gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber, Transaction);
+
+                                foreach(ARecurringGiftDetailRow detail in TempGiftDS.ARecurringGiftDetail.Rows)
+                                {
+                                    ARecurringGiftDetailRow giftDetail = MainDS.ARecurringGiftDetail.NewRowTyped();
+                                    DataUtilities.CopyAllColumnValues(detail, giftDetail);
+                                    MainDS.ARecurringGiftDetail.Rows.Add(giftDetail);
+                                }
+                            }
                         }
 
                         PPartnerStatusAccess.LoadAll(MainDS, Transaction);
@@ -344,7 +424,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             // Call the standard method including address details
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, true);
 
             TDBTransaction ReadTransaction = new TDBTransaction();
             string PrimaryPhoneNumber = String.Empty;
@@ -490,7 +570,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             else
             {
-                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+                SaveDS = GetPartnerDetails(AMainDS.PPartner[0].PartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
                 DataUtilities.CopyDataSet(AMainDS, SaveDS);
             }
 
@@ -964,7 +1044,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             PBankingDetails = new PartnerEditTDSPBankingDetailsTable(); // MainDS.PBankingDetails;
             PBankingDetails = MainDS.PBankingDetails;
@@ -986,7 +1066,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             List<string> Dummy1, Dummy2;
             string Dummy3, Dummy4, Dummy5;
-            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5);
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1098,6 +1178,139 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 // make another bank account the main account
                 if (wasMainAccount && (otherAccount != null)) {
                     otherAccount.MainAccount = true;
+                }
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// this will return the memberships of the partner
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool GetMemberships(Int64 APartnerKey, out PPartnerMembershipTable PMemberships)
+        {
+            List<string> Dummy1, Dummy2;
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
+
+            PMemberships = new PPartnerMembershipTable();
+            PMemberships = MainDS.PPartnerMembership;
+
+            return true;
+        }
+
+        /// <summary>
+        /// this will create, save and delete a membership of a partner
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool MaintainMemberships(
+            string action,
+            Int32 APartnerMembershipKey,
+            Int64 APartnerKey,
+            string AMembershipCode,
+            DateTime AStartDate,
+            DateTime? AExpiryDate,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            List<string> Dummy1, Dummy2;
+            string Dummy3, Dummy4, Dummy5;
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, out Dummy1, out Dummy2, out Dummy3, out Dummy4, out Dummy5, false);
+
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                PPartnerMembershipRow row = MainDS.PPartnerMembership.NewRowTyped();
+                row.PartnerMembershipKey = -1;
+                row.PartnerKey = APartnerKey;
+                row.MembershipCode = AMembershipCode;
+                row.StartDate = AStartDate;
+                row.ExpiryDate = AExpiryDate;
+                MainDS.PPartnerMembership.Rows.Add(row);
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+            else if (action == "edit")
+            {
+                foreach (PPartnerMembershipRow row in MainDS.PPartnerMembership.Rows)
+                {
+                    if (row.PartnerMembershipKey == APartnerMembershipKey)
+                    {
+                        row.MembershipCode = AMembershipCode;
+                        row.StartDate = AStartDate;
+                        row.ExpiryDate = AExpiryDate;
+                    }
+                }
+
+                DataSet ResponseDS = new PartnerEditTDS();
+                TPartnerEditUIConnector uiconnector = new TPartnerEditUIConnector(APartnerKey);
+
+                try
+                {
+                    TSubmitChangesResult result = uiconnector.SubmitChanges(
+                        ref MainDS,
+                        ref ResponseDS,
+                        out AVerificationResult);
+
+                    return result == TSubmitChangesResult.scrOK;
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log(e.ToString());
+                    AVerificationResult.Add(new TVerificationResult("error", e.Message, TResultSeverity.Resv_Critical));
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                foreach (PPartnerMembershipRow row in MainDS.PPartnerMembership.Rows)
+                {
+                    if (row.PartnerMembershipKey == APartnerMembershipKey)
+                    {
+                        row.Delete();
+                    }
                 }
 
                 DataSet ResponseDS = new PartnerEditTDS();

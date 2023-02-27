@@ -14,7 +14,8 @@ app.config
 *.CollectedGettext.cs
 *.bak
 _bin
-obj
+ob
+/*.yml.gz
 *.yaml.xml
 *.yml.xml
 *.cs.error

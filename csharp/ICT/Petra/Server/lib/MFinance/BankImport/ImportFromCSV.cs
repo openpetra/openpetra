@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -263,7 +263,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
 
                         if (row.Description.Length > 0)
                         {
-                            row.Description += " ";
+                            row.Description += "; ";
                         }
 
                         row.Description += Value;
@@ -299,6 +299,17 @@ namespace Ict.Petra.Server.MFinance.BankImport.Logic
                             throw new Exception("cannot mix several currencies in the same bank statement file");
                         }
                     }
+
+                    else if (UseAs.ToLower() == "iban")
+                    {
+                        row.Iban = TSEPAWriterDirectDebit.FormatIBAN(Value, false);
+                    }
+
+                    else if (UseAs.ToLower() == "bic")
+                    {
+                        row.Bic = Value.ToUpper();
+                    }
+
                 }
 
                 if (row == null)

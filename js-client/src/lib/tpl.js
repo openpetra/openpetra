@@ -5,7 +5,7 @@
 //       Christopher Jäkel <cj@tbits.net>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2022 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,23 +23,47 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+function translate_constants(value) {
+    if (value == "") {
+        return value;
+    }
+    if (!(typeof value === 'string' || value instanceof String)) {
+        return value;
+    }
+    if (value == value.toUpperCase() || value == "true" || value == "false" ) {
+        // translate constant values if available
+        value = i18next.t("constants."+value, value);
+    }
+    return value;
+}
+
 function replace_val_variables_in_attr(attr, data) {
   if (attr !== undefined && attr.indexOf('{val_') !== -1) {
     for (variable in data) {
       if (data[variable] == null) {
         data[variable] = "";
       }
-      else if (typeof data[variable] === 'string' || data[variable] instanceof String) {
-        data[variable] = parseJSONDate(variable, data[variable]);
+      value = data[variable]
+
+      if (typeof value === 'boolean' || value instanceof Boolean) {
+        value = translate_constants(value.toString());
+      }
+      else if (typeof value === 'string' || value instanceof String) {
+        value = translate_constants(value);
       }
 
-      attr = attr.replace(new RegExp('{val_'+variable+'}',"g"), data[variable]);
+      if (typeof value === 'string' || value instanceof String) {
+        value = parseJSONDate(variable, value);
+      }
+
+      attr = attr.replace(new RegExp('{val_'+variable+'}',"g"), value);
     }
   }
   return attr;
 }
 
 // this will replace all {val_something} in this object, by converting it to a string and back
+// check all attributes of a, name, and replace variables
 // check all attributes of div, id and onclick, and replace variables
 // check all attributes of button, onclick, and replace variables
 function replace_val_variables(tpl, data) {
@@ -62,7 +86,7 @@ function replace_val_variables(tpl, data) {
         $(tpl).attr('title', replace_val_variables_in_attr(title, data));
     }
 
-    $(tpl).find('button, div, div span, div div, div div span, div span').each(function() {
+    $(tpl).find('button, div, div span, div div, div div span, div span, a').each(function() {
         let id = $(this).attr('id');
         if (id !== undefined && id != null) {
             $(this).attr('id', replace_val_variables_in_attr(id, data));
@@ -70,6 +94,10 @@ function replace_val_variables(tpl, data) {
         let onclick = $(this).attr('onclick');
         if (onclick !== undefined && onclick != null) {
             $(this).attr('onclick', replace_val_variables_in_attr(onclick, data));
+        }
+        let name = $(this).attr('name');
+        if (name != undefined && name != null) {
+            $(this).attr('name', replace_val_variables_in_attr(name, data));
         }
         let title = $(this).attr('title');
         if (title !== undefined && title != null) {
@@ -170,6 +198,10 @@ function set_values_of_input_variables(tpl, data, limit_to_table) {
       }
       else {
         value = data[variable];
+
+        if (f.attr("type") != "hidden") {
+            value = translate_constants(value);
+        }
         f.attr('value', value);
         f.val(value);
       }
@@ -474,7 +506,15 @@ function insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table=''
           }
         } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
           // avoid cross site scripting. still allow newlines as html code
-          f.html( v.replace('<br/>', 'NEWLINE').replace('<', '&lt;').replace('>', '&gt;').replace('NEWLINE', '<br/>') );
+          html = v.replace(/<br\/>/g, 'NEWLINE').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/NEWLINE/g, '<br/>');
+
+          while ((pos = html.indexOf('mailto(')) >= 0) {
+            email = html.substring(pos + 'mailto('.length);
+            email = email.substring(0, email.indexOf(')'));
+            html = html.replace('mailto(' + email + ')', '<a href="' + email + '">' + email + '</a>');
+          }
+
+          f.html( html );
         } else {
           f.val( v );
         }

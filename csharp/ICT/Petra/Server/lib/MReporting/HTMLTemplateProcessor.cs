@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -458,6 +458,9 @@ namespace Ict.Petra.Server.MReporting
                     InnerHtml = InnerHtml.Replace("{" + c.ColumnName + "}", row[c.ColumnName].ToString());
                 }
 
+                // fix empty email column
+                InnerHtml = InnerHtml.Replace(">,</div>", "></div>");
+
                 NewHTMLRow.InnerHtml = InnerHtml;
 
                 ParentNode.AppendChild(NewHTMLRow);
@@ -492,8 +495,8 @@ namespace Ict.Petra.Server.MReporting
 
             // write the column headings
             var elements = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='column_headings']/div");
-            int colCounter = 1;
-            int rowCounter = 3;
+            int colCounter = 0;
+            int rowCounter = 0;
             wsrow = worksheet.CreateRow(rowCounter);
             foreach (var element in elements)
             {
@@ -502,13 +505,13 @@ namespace Ict.Petra.Server.MReporting
                 wscell.CellStyle = wsstyle_bold;
                 colCounter++;
             }
-            rowCounter+=2;
+            rowCounter+=1;
 
             var rows = HTMLTemplateProcessor.SelectNodes(html.DocumentNode, "//div[@id='content']//div[contains(@class, 'row')]");
             foreach (var row in rows)
             {
                 wsrow = worksheet.CreateRow(rowCounter);
-                colCounter = 1;
+                colCounter = 0;
                 elements = HTMLTemplateProcessor.SelectNodes(row, ".//div[contains(@class, 'col-')]");
                 foreach (var element in elements)
                 {

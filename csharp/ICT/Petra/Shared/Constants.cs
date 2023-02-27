@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -255,6 +255,24 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_SEPA_CREDITOR_SCHEMEID = "Sepa_Creditor_SchemeID";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GIFT_RECEIPT_EMAIL_PUBLICATION_CODE = "Gift_Email_PubCode";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GIFT_RECEIPT_EMAIL_SUBJECT = "Annual_Receipt_Email_Subject";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GIFT_RECEIPT_EMAIL_BODY = "Annual_Receipt_Email_Body";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROM = "Annual_Receipt_Email_From";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROMNAME = "Annual_Receipt_Email_From_Name";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GIFT_RECEIPT_EMAIL_FILENAME = "Annual_Receipt_Email_Filename";
 
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";

@@ -3,19 +3,18 @@
 <!-- Phantom Storage -->
 <div phantom hidden>
 
-	<div class="tpl_row" id="type{val_p_type_code_c_clean}">
+	<div class="tpl_row" id="membership{val_p_membership_code_c_clean}">
 
 		<div class="row">
-			<div class="col">{val_p_type_code_c}</div>
+			<div class="col">{val_p_membership_code_c}</div>
 			<div class="col-2" style="margin-top:0.3em;">
-				<button type="button" class="btn btn-primary" onclick="open_detail(this)">
+				<button membership="button" class="btn btn-primary" onclick="open_detail(this)">
 					<i class="fas fa-folder-open"></i>
 				</button>
-				<button id="btnEdit" type="button" class="btn btn-primary" onclick="open_edit('{val_p_type_code_c}')" title="{forms.edit}">
+				<button id="btnEdit" membership="button" class="btn btn-primary" onclick="open_edit('{val_p_membership_code_c}')" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
-			
 		</div>
 		<div class="row">
 			<div class="col">
@@ -28,22 +27,19 @@
 	<div class="collapse tpl_view">
 		<div class="container group-container">
 			<div class="row">
-				<div class="col">{group_name}</div><div class="col">{val_p_category_code_c}</div>
+				<div class="col">{entry_name}</div><div class="col">{val_p_membership_code_c}</div>
 			</div>
 			<div class="row">
-				<div class="col">{entry_name}</div><div class="col">{val_p_type_code_c}</div>
+				<div class="col">{entry_dis}</div><div class="col">{val_p_membership_description_c}</div>
 			</div>
 			<div class="row">
-				<div class="col">{entry_dis}</div><div class="col">{val_p_type_description_c}</div>
+				<div class="col">{entry_frequency}</div><div class="col">{val_a_frequency_code_c_translated}</div>
 			</div>
 			<div class="row">
-				<div class="col">{entry_status}</div><div class="col">{val_p_valid_type_l}</div>
+				<div class="col">{entry_fee}</div><div class="col">{val_a_membership_fee_n}</div>
 			</div>
 			<div class="row">
-				<div class="col">{system_type}</div><div class="col">{val_p_system_type_l}</div>
-			</div>
-			<div class="row">
-				<div class="col">{type_deletable}</div><div class="col">{val_p_type_deletable_l}</div>
+				<div class="col">{entry_hours}</div><div class="col">{val_a_membership_hours_service_n}</div>
 			</div>
 		</div>
 	</div>
@@ -51,7 +47,7 @@
 	<div class="tpl_check">
 		<div class="row">
 			<div class="col-1">
-				<input type="checkbox">
+				<input membership="checkbox">
 			</div>
 			<div class="col">
 				<span></span>
@@ -71,22 +67,10 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{group_name}</span>
-							</div>
-							<div class="col">
-								<select name="p_category_code_c">
-									<option value="">{without_group}</option>
-									<option value="SPONSORED_CHILD_STATUS">{sponsored_child_status}</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
 								<span>{entry_name}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_type_code_c" readonly/>
+								<input membership="text" name="p_membership_code_c" readonly/>
 							</div>
 						</div>
 
@@ -95,16 +79,38 @@
 								{entry_dis}
 							</div>
 							<div class="col">
-								<textarea name="p_type_description_c"></textarea>
+								<textarea name="p_membership_description_c"></textarea>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col">
-								{entry_status}
+								<span>{entry_frequency}</span>
 							</div>
 							<div class="col">
-								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="p_valid_type_l" name="p_valid_type_l"> {entry_status}</label>
+								<select name="a_frequency_code_c">
+									<option value="Annual">{freq_Annual}</option>
+									<option value="Quarterly">{freq_Quarterly}</option>
+									<option value="Monthly">{freq_Monthly}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_fee}</span>
+							</div>
+							<div class="col">
+								<input type="number" name="a_membership_fee_n">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_hours}</span>
+							</div>
+							<div class="col">
+								<input type="number" name="a_membership_hours_service_n">
 							</div>
 						</div>
 
@@ -132,22 +138,10 @@
 
 						<div class="row">
 							<div class="col">
-								<span>{group_name}</span>
-							</div>
-							<div class="col">
-								<select name="p_category_code_c">
-									<option value="" selected>{without_group}</option>
-									<option value="SPONSORED_CHILD_STATUS">{sponsored_child_status}</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
 								<span>{entry_name}</span>
 							</div>
 							<div class="col">
-								<input type="text" name="p_type_code_c">
+								<input membership="text" name="p_membership_code_c">
 							</div>
 						</div>
 
@@ -156,16 +150,38 @@
 								<span>{entry_dis}</span>
 							</div>
 							<div class="col">
-								<textarea name="p_type_description_c"></textarea>
+								<textarea name="p_membership_description_c"></textarea>
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col">
-								{entry_status}
+								<span>{entry_frequency}</span>
 							</div>
 							<div class="col">
-								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" checked id="p_valid_type_l" name="p_valid_type_l"> {entry_status}</label>
+								<select name="a_frequency_code_c">
+									<option value="Annual">{freq_Annual}</option>
+									<option value="Quarterly">{freq_Quarterly}</option>
+									<option value="Monthly">{freq_Monthly}</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_fee}</span>
+							</div>
+							<div class="col">
+								<input type="number" name="a_membership_fee_n">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<span>{entry_hours}</span>
+							</div>
+							<div class="col">
+								<input type="number" name="a_membership_hours_service_n">
 							</div>
 						</div>
 

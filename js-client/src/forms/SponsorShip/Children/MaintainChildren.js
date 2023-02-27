@@ -92,11 +92,11 @@ var MaintainChildren = new (class {
         var parsed = JSON.parse(data.data.d);
         var List = $("#result").html("");
         for (var entry of parsed.result) {
-          if (entry.DonorName) {
-            entry.DonorName = entry.DonorName.replace(/;/g, ";<br/>");
+          if (entry.SponsorName) {
+            entry.SponsorName = entry.SponsorName.replace(/;/g, ";<br/>");
           }
-          if (entry.DonorContactDetails) {
-            entry.DonorContactDetails = entry.DonorContactDetails.replace(/;/g, "<br/>");
+          if (entry.SponsorContactDetails) {
+            entry.SponsorContactDetails = entry.SponsorContactDetails.replace(/;/g, "<br/>");
           }
 
           var Copy = $("[phantom] .children").clone();

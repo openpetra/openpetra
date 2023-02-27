@@ -60,8 +60,10 @@ function FindMyModal(obj) {
 
 // close the modal closest to the button, which is eg. a Save/Delete/Close button
 // but we can pass the modal element itself as well
-function CloseModal(btn) {
+function CloseModal(btn, remove=true) {
     let m=$(btn).closest('.modal');
     m.modal('hide');
-    setTimeout(function() {m.remove();}, 500);
+    if (remove) {
+        setTimeout(function() {m.remove();}, 500);
+    }
 }

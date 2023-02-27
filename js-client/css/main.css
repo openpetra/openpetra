@@ -157,3 +157,34 @@ html {
 .home .row a i, .dashboard .row a i {
   font-size: 300%;
 }
+
+/* nav-tabs eg. on Partner Edit */
+.modal-dialog .nav-tabs .nav-item {
+    color: white;
+    background: rgb(0, 123, 255);
+    margin-bottom: 0px;
+    margin-left: 2px;
+}
+.modal-dialog .nav-tabs .nav-link.active {
+    color: white;
+    background: rgb(0, 175, 255);
+}
+
+button.btn-light {
+    background-color: rgb(224, 224, 224);
+    color: #212529;
+    ;
+}
+
+div.scroll40vh {
+    max-height:40vh;
+    overflow: auto;
+}
+
+/* anchor must be lower because of the top bar (height: 50 px) */
+a.anchor {
+    display: block;
+    position: relative;
+    top: -65px;
+    visibility: hidden;
+}

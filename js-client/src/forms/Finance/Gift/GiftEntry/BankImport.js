@@ -1,11 +1,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       Christopher Jäkel <cj@tbits.net>
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -24,11 +24,12 @@
 //
 
 $('document').ready(function () {
+	$('#bank_number_id').click(function(){ display_list(); });
 	display_dropdownlist();
 	load_preset();
 });
 
-function display_dropdownlist() {
+function display_dropdownlist(selected_statement = null) {
 	// x is search
 	let x = {};
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
@@ -37,10 +38,18 @@ function display_dropdownlist() {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		let field = $('#bank_number_id').html('');
+		let first = true;
 		for (item of data.result) {
-			field.append( $('<option value="'+item.a_statement_key_i+'">'+
+			if ((selected_statement == null && first) || (selected_statement == item.a_statement_key_i)) {
+				selected = "selected";
+				first = false;
+			} else {
+				selected = "";
+			}
+			field.append( $('<option value="'+item.a_statement_key_i+'" '+selected+'>'+
 				item.a_filename_c + ' ' + printJSONDate(item.a_date_d) + '</option>') );
 		}
+		display_list();
 	})
 }
 
@@ -65,6 +74,11 @@ function display_list() {
 	let x = {};
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	x['AStatementKey'] = $('#bank_number_id').val();
+	if (x['AStatementKey'] == null) {
+		// only clear the list if there is no statement selected
+		let field = $('#browse_container').html('');
+		return;
+	}
 	x['AMatchAction'] = $('#match_status_id').val();
 	api.post('serverMFinance.asmx/TBankImportWebConnector_GetTransactions', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -134,10 +148,20 @@ function edit_gift_trans(statement_key, trans_order) {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		transaction = parsed.ATransactions[0];
-		transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
+		if (transaction['DonorKey'] != 0) {
+			transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
+		} else {
+			transaction['p_donor_name_c'] = "";
+		}
 		transaction['p_donor_key_n'] = transaction['DonorKey'];
+
 		if (transaction['a_iban_c'] != null) {
-			transaction['a_account_name_c'] += "; " + transaction['a_iban_c'];
+			if (transaction['a_account_name_c'] == null) {
+				transaction['a_account_name_c'] = transaction['a_iban_c'];
+			}
+			else {
+				transaction['a_account_name_c'] += "; " + transaction['a_iban_c'];
+			}
 		}
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
@@ -150,7 +174,6 @@ function edit_gift_trans(statement_key, trans_order) {
 		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, parsed.ATransactions[0].MatchAction);
-
 	})
 }
 
@@ -164,15 +187,46 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 	};
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionDetail', x).then(function (data) {
 		parsed = JSON.parse(data.data.d);
-		parsed.TransactionDetail[0]['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), parsed.TransactionDetail[0] );
+		detail = parsed.TransactionDetail[0];
+
+		if (detail['p_recipient_key_n'] != 0) {
+			detail['p_member_name_c'] = detail['p_recipient_key_n'] + ' ' + detail['p_recipient_short_name_c'];
+		} else {
+			detail['p_member_name_c'] = "";
+		}
+
+		detail['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
+		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), detail);
 		let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 		$('#modal_space').append(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('update');
 		tpl_edit_raw.modal('show');
 		update_requireClass(tpl_edit_raw, sclass);
+
+		if (detail['a_membership_l']) {
+			tpl_edit_raw.find('.MEMBERFEE').show();
+		}
+
 	})
+}
+
+function update_motivation_group(input_field_object, selected_value) {
+	let obj = $(input_field_object).closest('.modal');
+	details = JSON.parse(input_field_object.attr('details'));
+	if (details.membership) {
+		recipient = obj.find('input[name=p_member_name_c]');
+		if (recipient.val() == '') {
+			donorkey = obj.find('input[name=p_donor_key_n]').val();
+			donorname = obj.find('input[name=p_donor_short_name_c]').val();
+			// default to the matched donor
+			recipient.val(donorkey + ' ' + donorname);
+			recipient.attr('key-value', donorkey);
+		}
+		obj.find('.MEMBERFEE').show();
+	} else {
+		obj.find('.MEMBERFEE').hide();
+	}
 }
 
 /////
@@ -279,11 +333,11 @@ function import_csv_file(self) {
 
 		api.post('serverMFinance.asmx/TBankImportWebConnector_ImportFromCSVFile', p)
 		.then(function (result) {
-			result = JSON.parse(result.data.d);
-			result = result.result;
+			data = JSON.parse(result.data.d);
+			result = data.result;
 			if (result == true) {
 				display_message(i18next.t('BankImport.upload_success'), "success");
-				display_dropdownlist();
+				display_dropdownlist(data.AStatementKey);
 			} else {
 				display_message(i18next.t('BankImport.upload_fail'), "fail");
 			}
@@ -468,6 +522,23 @@ function transform_to_gift() {
 
 }
 
+function check_for_sponsorship() {
+	let x = {
+		ALedgerNumber: window.localStorage.getItem('current_ledger'),
+		AStatementKey: $('#bank_number_id').val(),
+	};
+
+	api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_CheckIncomingDonationsForSponsorship', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+		if (parsed.result == true) {
+			display_message( i18next.t('TODO'), 'success' );
+		}
+		else {
+			display_error( parsed.AVerificationResult );
+		}
+	});
+}
+
 function delete_current_statement() {
 	let x = {
 		ALedgerNumber: window.localStorage.getItem('current_ledger'),
@@ -529,4 +600,16 @@ function delete_all_statements() {
 			display_error( parsed.AVerificationResult );
 		}
 	});
+}
+
+function clear_donor(self) {
+    let obj_donorName = $(self).parent().find('input[name=p_donor_name_c]');
+    obj_donorName.val("");
+    obj_donorName.attr('key-value', 0);
+}
+
+function clear_member(self) {
+    let obj_memberName = $(self).parent().find('input[name=p_member_name_c]');
+    obj_memberName.val("");
+    obj_memberName.attr('key-value', 0);
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       cjaekel, timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2022 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -166,7 +166,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors {
                         out PartnerTypes,
                         out DefaultEmailAddress,
                         out DefaultPhoneMobile,
-                        out DefaultPhoneLandline);
+                        out DefaultPhoneLandline,
+                        false);
 
                     if (ADataType == MPartnerConstants.CONSENT_TYPE_ADDRESS)
                     {

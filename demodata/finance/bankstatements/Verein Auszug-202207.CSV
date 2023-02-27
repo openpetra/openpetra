@@ -1,0 +1,5 @@
+Auftragskonto;Buchungstag;Valutadatum;Buchungstext;Verwendungszweck;Glaeubiger ID;Mandatsreferenz;Kundenreferenz (End-to-End);Sammlerreferenz;Lastschrift Ursprungsbetrag;Auslagenersatz Ruecklastschrift;Beguenstigter/Zahlungspflichtiger;Kontonummer/IBAN;BIC (SWIFT-Code);Betrag;Waehrung;Info
+...;01.08.2022;30.07.2022;ENTGELTABSCHLUSS;Entgeltabrechnung siehe Anlage ;;;;;;;;0;...;-5,9;EUR;Umsatz gebucht
+...;04.07.2022;02.07.2022;RECHNUNG;Rechnung SPARKASSE Entgelt SpkCard(Debitkarte)für 2022;;;;;;;;0;...;-7,8;EUR;Umsatz gebucht
+...;25.07.2022;25.07.2022;GUTSCHR. UEBERWEISUNG;Max Mustermann Berlin;;;;;;;Max Mustermann;DE02200505501015871393;HASPDEHH;60;EUR;Umsatz gebucht
+

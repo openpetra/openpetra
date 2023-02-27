@@ -697,8 +697,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     newLocation.City,
                     newLocation.PostalCode,
                     String.Empty, // E-Mail Address
+                    String.Empty, // IBAN
                     ANewPartner.PartnerClass,
                     true, // ActiveOnly
+                    false, // MemberOnly
                     String.Empty, // NameFormat
                     String.Empty, // SortBy
                     10, // MaxRecords
@@ -716,8 +718,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         String.Empty, // City
                         String.Empty, // PostCode
                         email,
+                        String.Empty, // IBAN
                         ANewPartner.PartnerClass,
                         true, // ActiveOnly
+                        false, // MemberOnly
                         String.Empty, // NameFormat
                         String.Empty, // SortBy
                         10, // MaxRecords

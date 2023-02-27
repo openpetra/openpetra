@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -4846,6 +4846,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-3")]
         public static bool MaintainLedger(string action, Int32 ALedgerNumber, String ALedgerName,
             string ASepaCreditorName, string ASepaCreditorIban, string ASepaCreditorBic, string ASepaCreditorSchemeId,
+            string AReceiptEmailPublicationCode,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
@@ -4875,6 +4876,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, ASepaCreditorIban, out added, db);
                             SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, ASepaCreditorBic, out added, db);
                             SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, ASepaCreditorSchemeId, out added, db);
+                            SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_PUBLICATION_CODE, AReceiptEmailPublicationCode, out added, db);
 
                             SubmissionOK = true;
                         });
@@ -4933,11 +4935,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// get the sepa creditor details of the ledger
+        /// get the sepa creditor and other details of the ledger
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static bool GetSepaCreditorDetails(Int32 ALedgerNumber,
-            out String ASepaCreditorName, out String ASepaCreditorIban, out String ASepaCreditorBic, out string ASepaCreditorSchemeId)
+        public static bool GetLedgerSystemDefaults(Int32 ALedgerNumber,
+            out String ASepaCreditorName, out String ASepaCreditorIban, out String ASepaCreditorBic, out string ASepaCreditorSchemeId,
+            out String AReceiptEmailPublicationCode)
         {
             TDataBase db = DBAccess.Connect("GetAvailableLedgers");
 
@@ -4946,6 +4949,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ASepaCreditorIban = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_IBAN, String.Empty);
             ASepaCreditorBic = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_BIC, String.Empty);
             ASepaCreditorSchemeId = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SEPA_CREDITOR_SCHEMEID, String.Empty);
+            AReceiptEmailPublicationCode = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_PUBLICATION_CODE, String.Empty);
 
             db.CloseDBConnection();
 

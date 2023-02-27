@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -532,6 +532,11 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             DataView APartnerByDonorKey,
             Int64 ADonorKey)
         {
+            if (ADonorKey == 0)
+            {
+                return String.Empty;
+            }
+
             DataRowView[] rows = APartnerByDonorKey.FindRows(new object[] { ADonorKey });
 
             if (rows.Length == 1)
@@ -633,7 +638,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
         /// tries to find matches too
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, bool AInitialLoad = false, TDataBase ADataBase = null)
+        public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber, bool AInitialLoad = false, bool AClearTables = true, TDataBase ADataBase = null)
         {
             TDataBase db = DBAccess.Connect("GetBankStatementTransactionsAndMatches", ADataBase);
             bool NewTransaction;
@@ -697,7 +702,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     "FROM PUB_a_ep_transaction t, PUB_a_ep_match m, PUB_p_partner p " +
                     "WHERE t.a_statement_key_i = " + AStatementKey.ToString() + " " +
                     "AND t.a_match_text_c = m.a_match_text_c " +
-                    "AND m.p_donor_key_n = p.p_partner_key_n";
+                    "AND (m.p_donor_key_n = p.p_partner_key_n OR m.p_recipient_key_n = p.p_partner_key_n)";
 
                 PartnerByDonorKey = db.SelectDT(sqlLoadPartnerName, "partnerByDonorKey", Transaction);
                 PartnerByDonorKey.DefaultView.Sort = "PartnerKey";
@@ -938,12 +943,16 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 }
 
                 row.DonorShortName = FindDonorName(PartnerByDonorKey.DefaultView, row.DonorKey);
+                row.RecipientShortName = FindDonorName(PartnerByDonorKey.DefaultView, row.RecipientKey);
             }
 
             // remove all rows that we do not need on the client side
-            ResultDataset.AGiftDetail.Clear();
-            ResultDataset.AMotivationDetail.Clear();
-            ResultDataset.ACostCentre.Clear();
+            if (AClearTables)
+            {
+                ResultDataset.AGiftDetail.Clear();
+                ResultDataset.AMotivationDetail.Clear();
+                ResultDataset.ACostCentre.Clear();
+            }
 
             ResultDataset.AcceptChanges();
 
@@ -1083,7 +1092,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             Int32 ADetail,
             out BankImportTDSTransactionDetailTable TransactionDetail)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, false, false);
 
             TransactionDetail = new BankImportTDSTransactionDetailTable();
 
@@ -1095,12 +1104,31 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     {
                         if ((match.MatchText == row.MatchText) && (match.Detail == ADetail))
                         {
+                            MainDS.AMotivationDetail.DefaultView.RowFilter =
+                                String.Format("{0}='{1}' and {2}='{3}'",
+                                    AMotivationDetailTable.GetMotivationGroupCodeDBName(),
+                                    match.MotivationGroupCode,
+                                    AMotivationDetailTable.GetMotivationDetailCodeDBName(),
+                                    match.MotivationDetailCode);
+
+                            if (MainDS.AMotivationDetail.DefaultView.Count != 1)
+                            {
+                                throw new Exception("LoadTransactionDetail: cannot find Motivation Detail: " + MainDS.AMotivationDetail.DefaultView.RowFilter);
+                            }
+
+                            AMotivationDetailRow MotivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.DefaultView[0].Row;
+
                             BankImportTDSTransactionDetailRow newRow = TransactionDetail.NewRowTyped(false);
                             DataUtilities.CopyAllColumnValues(match, newRow);
                             newRow.LedgerNumber = ALedgerNumber;
                             newRow.StatementKey = AStatementKey;
                             newRow.Order = AOrder;
+                            newRow.Membership = MotivationDetail.Membership;
+                            newRow.Sponsorship = MotivationDetail.Sponsorship;
+                            newRow.WorkerSupport = MotivationDetail.WorkerSupport;
                             TransactionDetail.Rows.Add(newRow);
+
+                            MainDS.AMotivationDetail.DefaultView.RowFilter = "";
                         }
                     }
                 }
@@ -1239,6 +1267,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             string AMatchAction,
             Int64 ADonorKey, string AMotivationGroupCode, string AMotivationDetailCode,
             string AAccountCode, string ACostCentreCode,
+            Int64 ARecipientKey,
             Decimal AGiftTransactionAmount,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -1296,6 +1325,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 row.LedgerNumber = ALedgerNumber;
                 row.Action = AMatchAction;
                 row.DonorKey = ADonorKey;
+                row.RecipientKey = ARecipientKey;
                 row.MotivationGroupCode = AMotivationGroupCode;
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.AccountCode = AAccountCode;
@@ -1311,6 +1341,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     {
                         row.Action = AMatchAction;
                         row.DonorKey = ADonorKey;
+                        row.RecipientKey = ARecipientKey;
                         if (row.Detail == ADetail)
                         {
                             row.MotivationGroupCode = AMotivationGroupCode;
@@ -1352,7 +1383,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out Int32 ABatchNumber,
             TDataBase ADataBase = null)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, ADataBase);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, true, ADataBase);
             ABatchNumber = -1;
             string MyClientID = DomainManager.GClientID.ToString();
 

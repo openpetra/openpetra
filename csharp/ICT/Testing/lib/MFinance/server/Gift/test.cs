@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Common.Data;
+using Ict.Common.Verification;
 
 namespace Tests.MFinance.Server.Gift
 {
@@ -97,9 +98,15 @@ namespace Tests.MFinance.Server.Gift
             // the template would need to be loaded from an HTML file
             string receipts;
             string receiptsPDF;
+            TVerificationResultCollection verification;
             bool result = TReceiptingWebConnector.CreateAnnualGiftReceipts(43, "Annual", new DateTime(1978, 1, 1), new DateTime(1978, 1, 31),
                 "invalid HTML template", null, String.Empty, null, String.Empty,
-                "de-DE", out receiptsPDF, out receipts);
+                "de-DE",
+                "Jahreszuwendungsbestätigung 2022",
+                "Hallo {{donorName}}\n, im Anhang ist die Jahreszuwendungsbestätigung für das Jahr 2022",
+                "buchhaltung@example.org", "Buchhaltung MeinVerein e.V.",
+                "Zuwendungsbestätigung2022.pdf",
+                out receiptsPDF, out receipts, out verification);
 
             Assert.AreEqual(false, result, "Testing if using a web connector works");
         }

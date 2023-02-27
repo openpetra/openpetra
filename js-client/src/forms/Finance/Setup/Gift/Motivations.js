@@ -1,10 +1,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -96,10 +96,23 @@ function open_motivations(obj, code, reload = false) {
 	};
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
 		data = JSON.parse(data.data.d);
+
 		// on open, clear content
 		let place_to_put_content = obj.find('.content_col').html('');
 		if (data.result.hasOwnProperty('AMotivationDetail')) {
 			for (item of data.result.AMotivationDetail) {
+
+				for (account of data.result.AAccount) {
+					if (account['a_account_code_c'] == item['a_account_code_c']) {
+						item['account_name'] = account['a_account_code_long_desc_c'];
+					}
+				}
+				for (costcentre of data.result.ACostCentre) {
+					if (costcentre['a_cost_centre_code_c'] == item['a_cost_centre_code_c']) {
+						item['costcentre_name'] = costcentre['a_cost_centre_name_c'];
+					}
+				}
+
 				let motivation_row = $('[phantom] .tpl_motivation').clone();
 				motivation_row = format_tpl(motivation_row, item);
 				place_to_put_content.append(motivation_row);
@@ -134,6 +147,8 @@ function new_motivation(group_code) {
 	let p = format_tpl( $('[phantom] .tpl_edit_motivation').clone(), x);
 	$('#modal_space').html(p);
 	p.find('input[name=a_motivation_detail_code_c]').attr('readonly', false);
+	p.find('input[name=a_tax_decuctible_l]').attr('checked', true);
+	p.find('input[name=a_motivation_status_l]').attr('checked', true);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
 	p.modal('show');
@@ -224,7 +239,6 @@ function save_edit_detail(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
 	payload['action'] = mode;
-	payload['AMotivationStatus'] = true;
 
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);

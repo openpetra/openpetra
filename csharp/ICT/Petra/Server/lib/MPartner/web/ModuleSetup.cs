@@ -71,6 +71,30 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         }
 
         /// <summary>
+        /// Loads all available Membership Types.
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerSetupTDS LoadMemberships()
+        {
+            TDBTransaction ReadTransaction = new TDBTransaction();
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+
+            DBAccess.ReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    PMembershipAccess.LoadAll(MainDS, ReadTransaction);
+                });
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// save modified partner tables
         /// </summary>
         /// <param name="AInspectDS"></param>
@@ -151,6 +175,86 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                             return false;
                         }
                         
+                        row.Delete();
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// save memberships
+        /// </summary>
+        [RequireModulePermission("PTNRADMIN")]
+        public static bool MaintainMemberships(string action, string AMembershipCode, string AMembershipDescription, string AFrequencyCode, Decimal AMembershipFee, Decimal AMembershipHoursService, out TVerificationResultCollection AVerificationResult)
+        {
+            PartnerSetupTDS MainDS = new PartnerSetupTDS();
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (action == "create")
+            {
+                PMembershipRow row = MainDS.PMembership.NewRowTyped();
+                row.MembershipCode = AMembershipCode.ToUpper();
+                row.MembershipDescription = AMembershipDescription;
+                row.MembershipHoursService = AMembershipHoursService;
+                row.MembershipFee = AMembershipFee;
+                row.FrequencyCode = AFrequencyCode;
+                MainDS.PMembership.Rows.Add(row);
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "update")
+            {
+                MainDS = LoadMemberships();
+
+                foreach (PMembershipRow row in MainDS.PMembership.Rows)
+                {
+                    if (row.MembershipCode == AMembershipCode)
+                    {
+                        row.MembershipDescription = AMembershipDescription;
+                        row.MembershipHoursService = AMembershipHoursService;
+                        row.MembershipFee = AMembershipFee;
+                        row.FrequencyCode = AFrequencyCode;
+                    }
+                }
+
+                try
+                {
+                    PartnerSetupTDSAccess.SubmitChanges(MainDS);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else if (action == "delete")
+            {
+                MainDS = LoadMemberships();
+
+                foreach (PMembershipRow row in MainDS.PMembership.Rows)
+                {
+                    if (row.MembershipCode == AMembershipCode)
+                    {
                         row.Delete();
                     }
                 }

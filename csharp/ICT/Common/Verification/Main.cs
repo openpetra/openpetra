@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1062,7 +1062,7 @@ namespace Ict.Common.Verification
                     si.ResultCode = "";
                 }
 
-                ReturnValue+=", \"code\": \"" + si.ResultCode + "\", \"message\": \"" + si.ResultText + "\"}";
+                ReturnValue+=", \"code\": \"" + si.ResultCode + "\", \"message\": \"" + si.ResultText.Replace("\n", "<br/>") + "\"}";
 
             }
 

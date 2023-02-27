@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,13 +40,16 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.BankImport.Data;
 using Ict.Petra.Shared.MSponsorship.Data;
 using Ict.Petra.Server.MSponsorship.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.BankImport.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
@@ -151,15 +154,15 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             foreach (SponsorshipFindTDSSearchResultRow child in result.Rows)
             {
-                sql = "SELECT DISTINCT p.* " +
-                    "FROM a_recurring_gift rg, a_recurring_gift_detail rgd, PUB_p_partner p " +
+                sql = "SELECT DISTINCT donor.* " +
+                    "FROM a_recurring_gift rg, a_recurring_gift_detail rgd, PUB_p_partner donor " +
                     "WHERE rgd.a_ledger_number_i = rg.a_ledger_number_i " +
                     "AND rgd.a_batch_number_i = rg.a_batch_number_i " +
                     "AND rgd.a_gift_transaction_number_i = rg.a_gift_transaction_number_i " +
                     "AND rgd.p_recipient_key_n = " + child.PartnerKey + " " +
                     "AND ? >= rgd.a_start_donations_d " +
                     "AND (? <= a_end_donations_d OR a_end_donations_d IS NULL) " + 
-                    "AND rg.p_donor_key_n = p.p_partner_key_n";
+                    "AND rg.p_donor_key_n = donor.p_partner_key_n";
 
                 List <OdbcParameter> parameterList = new List <OdbcParameter>();
 
@@ -175,11 +178,19 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
                 if (ADonorName != String.Empty)
                 {
-                    sql += " AND p.p_partner_short_name_c LIKE ?";
+                    // TODO: AND (donor...
+                    sql += " AND donor.p_partner_short_name_c LIKE ?";
                     param = new OdbcParameter("ADonorName", OdbcType.VarChar);
                     ADonorName = '%' + ADonorName + '%';
                     param.Value = ADonorName;
                     parameterList.Add(param);
+                    /*
+                    sql += " OR sponsor.p_partner_short_name_c LIKE ?)";
+                    param = new OdbcParameter("ADonorName", OdbcType.VarChar);
+                    ADonorName = '%' + ADonorName + '%';
+                    param.Value = ADonorName;
+                    parameterList.Add(param);
+                    */
                 }
 
                 PPartnerTable donors = new PPartnerTable();
@@ -213,26 +224,26 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 {
                     if (!firstName)
                     {
-                        child["DonorName"] += ";";
+                        child["SponsorName"] += ";";
                     }
 
-                    child["DonorName"] += donor.PartnerShortName;
+                    child["SponsorName"] += donor.PartnerShortName;
                     firstName = false;
 
-                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                    string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                     GetDonorContactDetails(donor.PartnerKey,
-                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
+                        out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
 
-                    child["DonorContactDetails"] += donor.PartnerShortName + ";" + DonorAddress + ";";
-                    if (DonorEmailAddress != String.Empty)
+                    child["SponsorContactDetails"] += donor.PartnerShortName + ";" + SponsorAddress + ";";
+                    if (SponsorEmailAddress != String.Empty)
                     {
-                        child["DonorContactDetails"] += "<a href='mailto:" + DonorEmailAddress + "'>" + DonorEmailAddress + "</a>;";
+                        child["SponsorContactDetails"] += "mailto(" + SponsorEmailAddress + ");";
                     }
-                    if (DonorPhoneNumber != String.Empty)
+                    if (SponsorPhoneNumber != String.Empty)
                     {
-                        child["DonorContactDetails"] += DonorPhoneNumber + ";";
+                        child["SponsorContactDetails"] += SponsorPhoneNumber + ";";
                     }
-                    child["DonorContactDetails"] += ";";
+                    child["SponsorContactDetails"] += ";";
                 }
             }
 
@@ -468,9 +479,16 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             string DefaultEmailAddress, DefaultPhoneMobile, DefaultPhoneLandline;
             PartnerEditTDS DonorTDS = TSimplePartnerEditWebConnector.GetPartnerDetails(ADonorKey,
                 out Subscriptions, out PartnerTypes,
-                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline);
+                out DefaultEmailAddress, out DefaultPhoneMobile, out DefaultPhoneLandline, false);
 
-            DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+            if (DonorTDS.PLocation.Rows.Count == 0)
+            {
+                DonorAddress = String.Empty;
+            }
+            else
+            {
+                DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+            }
             DonorEmailAddress = DefaultEmailAddress;
             DonorPhoneNumber = DefaultPhoneLandline;
             if (DonorPhoneNumber != String.Empty && DefaultPhoneMobile != String.Empty)
@@ -542,13 +560,14 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
 
-                                    string DonorAddress, DonorEmailAddress, DonorPhoneNumber;
+                                    string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                                     GetDonorContactDetails(recurrGiftRow.DonorKey,
-                                        out DonorAddress, out DonorEmailAddress, out DonorPhoneNumber);
+                                        out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
                                     gdr.DonorName = donorRow.PartnerShortName;
-                                    gdr.DonorAddress = DonorAddress;
-                                    gdr.DonorEmailAddress = DonorEmailAddress;
-                                    gdr.DonorPhoneNumber = DonorPhoneNumber;
+                                    gdr.SponsorName = donorRow.PartnerShortName;
+                                    gdr.SponsorAddress = SponsorAddress;
+                                    gdr.SponsorEmailAddress = SponsorEmailAddress;
+                                    gdr.SponsorPhoneNumber = SponsorPhoneNumber;
                                     gdr.CurrencyCode = MainDS.ARecurringGiftBatch[0].CurrencyCode;
                                 }
                             }
@@ -1161,6 +1180,141 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             {
                 DB.CloseDBConnection();
             }
+        }
+
+        /// <summary>
+        /// check the matched gifts against the sponsorship recurring gift batch
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CheckIncomingDonationsForSponsorship(
+            Int32 ALedgerNumber,
+            Int32 AStatementKey,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            TDBTransaction Transaction = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("CheckIncomingDonationsForSponsorship");
+
+            BankImportTDS BankimportDS = TBankImportWebConnector.GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, true, true, DB);
+            AEpStatementRow Statement = BankimportDS.AEpStatement[0];
+            DataTable SponsorshipAmounts = new DataTable();
+            DataTable BankstatementAmounts = new DataTable();
+
+            int SponsorshipBatchNumber = -1;
+            DB.ReadTransaction(ref Transaction, delegate {
+                SponsorshipBatchNumber = GetRecurringGiftBatchForSponsorship(ALedgerNumber, Transaction);
+                if (SponsorshipBatchNumber > -1)
+                {
+                    string GetSponsorshipAmountsSQL = @"SELECT gift.p_donor_key_n, p.p_partner_short_name_c,
+                        detail.a_motivation_group_code_c, detail.a_motivation_detail_code_c,
+                        SUM(detail.a_gift_amount_n) as total
+                        FROM PUB_a_recurring_gift AS gift JOIN PUB_a_recurring_gift_detail AS detail
+                          ON gift.a_ledger_number_i = detail.a_ledger_number_i AND
+                          gift.a_batch_number_i = detail.a_batch_number_i AND
+                          gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i
+                        JOIN p_partner p
+                            ON p.p_partner_key_n = gift.p_donor_key_n
+                        WHERE gift.a_ledger_number_i = ? AND gift.a_batch_number_i = ?
+                        AND detail.a_start_donations_d <= ? AND (detail.a_end_donations_d IS NULL OR detail.a_end_donations_d >= ?)
+                        GROUP BY gift.p_donor_key_n, p.p_partner_short_name_c, detail.a_motivation_group_code_c, detail.a_motivation_detail_code_c";
+
+                    string GetBankstatementAmountsSQL = @"SELECT m.p_donor_key_n, p.p_partner_short_name_c,
+                        m.a_motivation_group_code_c, m.a_motivation_detail_code_c,
+                        SUM(m.a_gift_transaction_amount_n) as total
+                        FROM PUB_a_ep_transaction tr JOIN PUB_a_ep_match m
+                            ON tr.a_match_text_c = m.a_match_text_c
+                        JOIN p_partner p
+                            ON p.p_partner_key_n = m.p_donor_key_n
+                        WHERE m.a_ledger_number_i = ?
+                        AND tr.a_statement_key_i = ?
+                        GROUP BY m.p_donor_key_n, p.p_partner_short_name_c, m.a_motivation_group_code_c, m.a_motivation_detail_code_c";
+
+                    OdbcParameter[] parameters = new OdbcParameter[4];
+                    parameters[0] = new OdbcParameter("ALedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("BatchNumber", OdbcType.Int);
+                    parameters[1].Value = SponsorshipBatchNumber;
+                    parameters[2] = new OdbcParameter("DateEffective", OdbcType.DateTime);
+                    parameters[2].Value = Statement.Date;
+                    parameters[3] = new OdbcParameter("DateEffective2", OdbcType.DateTime);
+                    parameters[3].Value = Statement.Date;
+                    DB.SelectDT(SponsorshipAmounts, GetSponsorshipAmountsSQL, Transaction, parameters);
+
+                    parameters = new OdbcParameter[2];
+                    parameters[0] = new OdbcParameter("ALedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("StatementKey", OdbcType.Int);
+                    parameters[1].Value = Statement.StatementKey;
+                    DB.SelectDT(BankstatementAmounts, GetBankstatementAmountsSQL, Transaction, parameters);
+                }
+            });
+
+            // go through the sponsorships, and check if we have an exact match on the bank account or none at all
+            foreach (DataRow sponsorshipRow in SponsorshipAmounts.Rows)
+            {
+                BankstatementAmounts.DefaultView.RowFilter =
+                    String.Format("{0}={1} and {2} = '{3}' and {4} = '{5}'",
+                        "p_donor_key_n", sponsorshipRow["p_donor_key_n"],
+                        "a_motivation_group_code_c", sponsorshipRow["a_motivation_group_code_c"],
+                        "a_motivation_detail_code_c", sponsorshipRow["a_motivation_detail_code_c"]);
+
+                if (BankstatementAmounts.DefaultView.Count == 0)
+                {
+                    string msg = String.Format("cannot find a donation:; {0}; {4}; {1}/{2}; sponsorship: {3}",
+                        sponsorshipRow["p_donor_key_n"],
+                        sponsorshipRow["a_motivation_group_code_c"], sponsorshipRow["a_motivation_detail_code_c"],
+                        sponsorshipRow["total"],
+                        sponsorshipRow["p_partner_short_name_c"]);
+                    TLogging.Log(msg);
+                    AVerificationResult.Add(new TVerificationResult("error", msg, TResultSeverity.Resv_Critical));
+                }
+
+                if (BankstatementAmounts.DefaultView.Count == 1)
+                {
+                    DataRow statementRow = BankstatementAmounts.DefaultView[0].Row;
+                    if (Convert.ToDecimal(statementRow["total"]) != Convert.ToDecimal(sponsorshipRow["total"]))
+                    {
+                        string msg = String.Format("this is different:; {0}; {5}; {1}/{2}; statement: {3} sponsorship {4}",
+                            sponsorshipRow["p_donor_key_n"],
+                            sponsorshipRow["a_motivation_group_code_c"], sponsorshipRow["a_motivation_detail_code_c"],
+                            statementRow["total"], sponsorshipRow["total"],
+                            sponsorshipRow["p_partner_short_name_c"]);
+                        TLogging.Log(msg);
+                        AVerificationResult.Add(new TVerificationResult("error", msg, TResultSeverity.Resv_Critical));
+                    }
+                }
+            }
+
+            // get all donations on the statement, that have motivation details from sponsorship, but no sponsorship record at all
+            foreach (DataRow statementRow in BankstatementAmounts.Rows)
+            {
+                if (!statementRow["a_motivation_detail_code_c"].ToString().Contains("PATE")
+                    && !statementRow["a_motivation_detail_code_c"].ToString().Contains("SPONSOR"))
+                {
+                    continue;
+                }
+
+                SponsorshipAmounts.DefaultView.RowFilter =
+                    String.Format("{0}={1} and {2} = '{3}' and {4} = '{5}'",
+                        "p_donor_key_n", statementRow["p_donor_key_n"],
+                        "a_motivation_group_code_c", statementRow["a_motivation_group_code_c"],
+                        "a_motivation_detail_code_c", statementRow["a_motivation_detail_code_c"]);
+
+                if (SponsorshipAmounts.DefaultView.Count == 0)
+                {
+                    string msg = String.Format("cannot find a sponsorship:; {0}; {4}; {1}/{2}; statement: {3}",
+                        statementRow["p_donor_key_n"],
+                        statementRow["a_motivation_group_code_c"], statementRow["a_motivation_detail_code_c"],
+                        statementRow["total"],
+                        statementRow["p_partner_short_name_c"]);
+                    TLogging.Log(msg);
+                    AVerificationResult.Add(new TVerificationResult("error", msg, TResultSeverity.Resv_Critical));
+                }
+            }
+
+            DB.CloseDBConnection();
+
+            return !AVerificationResult.HasCriticalErrors;
         }
     }
 }

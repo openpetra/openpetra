@@ -4,7 +4,7 @@
 //		Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2023 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -49,6 +49,19 @@ function display_list(source) {
 		}
 		format_currency(item.a_currency_code_c);
 		format_date();
+
+		if (window.location.href.includes('?ledger_number=')) {
+			var url = new URL(window.location.href);
+			var ledger_number = url.searchParams.get("ledger_number");
+			var batch_number = url.searchParams.get("batch_number");
+			var gift_transaction_number = url.searchParams.get("gift_transaction_number");
+
+			if (window.localStorage.getItem('current_ledger') == ledger_number) {
+				open_gift_transactions($('#Batch' + batch_number), batch_number, true, gift_transaction_number);
+			}
+
+			return;
+		}
 	})
 }
 
@@ -89,7 +102,7 @@ function format_item(item) {
 	$('#browse_container').append(row);
 }
 
-function open_gift_transactions(obj, number = -1, reload = false) {
+function open_gift_transactions(obj, number = -1, reload = false, transaction_number = -1) {
 	obj = $(obj);
 	if (number == -1) {
 		while(!obj[0].hasAttribute('id') || !obj[0].id.includes("Batch")) {
@@ -124,6 +137,10 @@ function open_gift_transactions(obj, number = -1, reload = false) {
 			$('.tpl_row .collapse').collapse('hide');
 		}
 		obj.find('.collapse').collapse('show')
+
+		if (transaction_number != -1) {
+			setTimeout(function() { location.hash = "#gift_" + number + "_" + transaction_number }, 500);
+		}
 	})
 
 }
@@ -173,16 +190,22 @@ function new_trans(ledger_number, batch_number) {
 	install_ContactEdit_and_RefreshAccounts(p, '-1');
 };
 
-function new_trans_detail(ledger_number, batch_number, trans_id) {
+function new_trans_detail(btn, ledger_number, batch_number, trans_id) {
 	if (!allow_modal()) {return}
+	let obj = $(btn).closest('.modal');
+	donorkey = obj.find('input[name=p_donor_name_c]').attr('key-value');
+	donorname = obj.find('input[name=p_donor_name_c]').val().replace(donorkey + " ", '');
 	let x = {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
 		a_gift_transaction_number_i: trans_id,
-		a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1
+		a_detail_number_i:  $("#Batch" + batch_number + "Gift" + trans_id + " .tpl_trans_detail").length + 1,
+		p_donor_key_n: donorkey,
+		p_donor_name_c: donorname,
 	};
 
 	let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
+	p.find('.MEMBERFEE').hide();
 	$('#modal_space').append(p);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
@@ -190,6 +213,24 @@ function new_trans_detail(ledger_number, batch_number, trans_id) {
 	p.find('[name=AStartDonations]').val(new Date().toDateInputValue());
 	p.modal('show');
 };
+
+function update_motivation_group(input_field_object, selected_value) {
+	let obj = $(input_field_object).closest('.modal');
+	details = JSON.parse(input_field_object.attr('details'));
+	if (details.membership) {
+		recipient = obj.find('input[name=p_member_name_c]');
+		if (recipient.val() == '') {
+			donorkey = obj.find('input[name=p_donor_key_n]').val();
+			donorname = obj.find('input[name=p_donor_name_c]').val();
+			// default to the matched donor
+			recipient.val(donorkey + ' ' + donorname);
+			recipient.attr('key-value', donorkey);
+		}
+		obj.find('.MEMBERFEE').show();
+	} else {
+		obj.find('.MEMBERFEE').hide();
+	}
+}
 
 /////
 
@@ -238,6 +279,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		}
 
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
+
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 
 		for (var detail of parsed.result.ARecurringGiftDetail) {
@@ -336,7 +378,19 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 			return alert('ERROR');
 		}
 
+		if (searched['p_recipient_key_n'] != 0) {
+			searched['p_member_name_c'] = searched['p_recipient_key_n'] + ' ' + searched['RecipientDescription'];
+		} else {
+			searched['p_member_name_c'] = "";
+		}
+		searched['p_donor_key_n'] = searched['DonorKey'];
+		searched['p_donor_name_c'] = searched['DonorName'];
+
 		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
+
+		if (!searched['a_membership_l']) {
+			tpl_edit_raw.find('.MEMBERFEE').hide();
+		}
 
 		$('#modal_space').append(tpl_edit_raw);
 		tpl_edit_raw.find('[action]').val('edit');
@@ -403,8 +457,17 @@ function save_edit_trans_detail(obj_modal) {
 
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
+
+	if (!payload['AStartDonations']) {
+		display_error("RecurringGiftBatches.missing_date_start");
+		return;
+	}
+
 	payload['AEndDonations'] = payload['AEndDonations'] ? payload['AEndDonations'] : "null"; // if no date is given give "null" as a string
- 	payload['action'] = mode;
+	payload['action'] = mode;
+	if (payload['ARecipientKey'] == "") {
+		payload['ARecipientKey'] = 0;
+	}
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
@@ -556,4 +619,10 @@ function download_sepa(obj, batch_id) {
 			display_error(parsed.AMessages);
 		}
 	});
+}
+
+function clear_member(self) {
+    let obj_memberName = $(self).parent().find('input[name=p_member_name_c]');
+    obj_memberName.val("");
+    obj_memberName.attr('key-value', 0);
 }

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2023 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,15 +88,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             byte[] ASignatureImage,
             string ASignatureFilename,
             string ALanguage,
+            string AEmailSubject,
+            string AEmailBody,
+            string AEmailFrom,
+            string AEmailFromName,
+            string AEmailFilename,
             out string APDFReceipt,
             out string AHTMLReceipt,
+            out TVerificationResultCollection AVerification,
             bool ADeceasedFirst = false,
             string AExtract = null,
-            Int64 ADonorKey = 0)
+            Int64 ADonorKey = 0,
+            string AAction = "all",
+            bool AOnlyTest = true)
         {
             string ResultDocument = string.Empty;
             APDFReceipt = string.Empty;
             AHTMLReceipt = String.Empty;
+            AVerification = new TVerificationResultCollection();
 
             Catalog.Init(ALanguage, ALanguage);
 
@@ -112,6 +121,37 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("AnnualGiftReceipts");
+
+            TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+            string EmailPublicationCode = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_PUBLICATION_CODE, String.Empty);
+
+            if (AEmailSubject != String.Empty)
+            {
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_SUBJECT, AEmailSubject, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_BODY, AEmailBody, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROM, AEmailFrom, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROMNAME, AEmailFromName, db);
+                SystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FILENAME, AEmailFilename, db);
+            }
+
+            if (EmailPublicationCode == String.Empty && (AAction == "email"))
+            {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Please specify the Email Publication Code in the ledger settings"),
+                        "Server problems",
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+                TLogging.Log("Please specify the Email Publication Code in the ledger settings");
+                return false;
+            }
+
+            if (AAction == "all")
+            {
+                AOnlyTest = true;
+            }
+
+            TVerificationResultCollection LocalVerification = new TVerificationResultCollection();
 
             db.ReadTransaction(
                 ref Transaction,
@@ -162,12 +202,29 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         else
                         {
                             SortedList <string, string>Defines = new SortedList <string, string>();
+                            int EmailPublicationCodePos = -1;
                             int CountParameters = 6;
 
                             if (!string.IsNullOrEmpty(AExtract))
                             {
                                 Defines.Add("BYEXTRACT", string.Empty);
                                 CountParameters += 1;
+                            }
+
+                            if (EmailPublicationCode != String.Empty)
+                            {
+                                if (AAction == "print")
+                                {
+                                    Defines.Add("VIAPRINT", string.Empty);
+                                    EmailPublicationCodePos = CountParameters;
+                                    CountParameters += 1;
+                                }
+                                else if (AAction == "email")
+                                {
+                                    Defines.Add("VIAEMAIL", string.Empty);
+                                    EmailPublicationCodePos = CountParameters;
+                                    CountParameters += 1;
+                                }
                             }
 
                             // first get all donors in the given date range
@@ -200,6 +257,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             {
                                 parameters[6] = new OdbcParameter("Extract", OdbcType.VarChar);
                                 parameters[6].Value = AExtract;
+                            }
+
+                            if (EmailPublicationCodePos > 0)
+                            {
+                                parameters[EmailPublicationCodePos] = new OdbcParameter("EmailPublicationCode", OdbcType.VarChar);
+                                parameters[EmailPublicationCodePos].Value = EmailPublicationCode;
                             }
 
                             donorkeys = db.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
@@ -236,6 +299,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         {
                             Int64 donorKey = Convert.ToInt64(donorrow[0]);
                             string donorName = donorrow[1].ToString();
+
                             bool OnlyThankYouNoReceipt = (GetStringOrEmpty(donorrow[3]) == PARTNERTYPE_THANKYOU_NO_RECEIPT);
 
                             OdbcParameter[] parameters = new OdbcParameter[4];
@@ -253,10 +317,61 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (donations.Rows.Count > 0)
                             {
                                 string letter =
-                                    FormatLetter(donorKey, donorName, OnlyThankYouNoReceipt, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
+                                    FormatLetter(donorKey, donorName, AOnlyTest, OnlyThankYouNoReceipt, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
 
-                                if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
+                                // attach the current receipt to the pdf that contains all receipts
+                                TFormLettersTools.AttachNextPage(ref ResultDocument, letter);
+
+                                bool ReceiptSuccess = false;
+
+                                if (AAction == "email")
                                 {
+                                    // print single receipt to separate temporary pdf file
+                                    string PDFFile = TFileHelper.GetTempFileName(
+                                        AEmailFilename.Replace(".pdf", "") + "_" + donorKey,
+                                        ".pdf");
+
+                                    if (PrintToPDF(PDFFile, letter,
+                                        ALogoImage, ALogoFilename, ASignatureImage, ASignatureFilename))
+                                    {
+                                        TVerificationResultCollection EmailVerification = null;
+
+                                        // TODO: get the valid Email Address of the donor
+                                        string ReceipientEmail = "todo@example.org";
+
+                                        string EmailDonorName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donorName,
+                                            eShortNameFormat.eReverseWithoutTitle);
+
+                                        // send email with pdf to donor
+                                        if (!SendEmail(ReceipientEmail, EmailDonorName,
+                                            AEmailSubject, AEmailBody.Replace("{{donorName}}", EmailDonorName),
+                                            AEmailFrom, AEmailFromName,
+                                            AEmailFrom,
+                                            AEmailFilename,
+                                            PDFFile,
+                                            AOnlyTest,
+                                            out EmailVerification))
+                                        {
+                                            TLogging.Log("Cannot send receipt email to " + EmailDonorName + " " + donorKey.ToString());
+                                            LocalVerification.AddCollection(EmailVerification);
+                                        }
+                                        else
+                                        {
+                                            ReceiptSuccess = true;
+                                        }
+
+                                        File.Delete(PDFFile);
+                                    }
+                                }
+                                else if (AAction == "print")
+                                {
+                                    ReceiptSuccess = true;
+                                }
+
+                                if (ReceiptSuccess && !AOnlyTest)
+                                {
+                                    // TODO store information that the receipt has been sent
+                                    // so that it will not be sent again
                                     // TODO: store somewhere that the receipt has been printed?
                                     // TODO also store each receipt with the donor in document management, and in contact management?
                                 }
@@ -271,6 +386,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         throw;
                     }
                 });
+
+            AVerification.AddCollection(LocalVerification);
 
             if (ResultDocument.Length > 0)
             {
@@ -287,7 +404,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AHTMLReceipt = THttpBinarySerializer.SerializeToBase64(ResultDocument);
             }
 
-            return ResultDocument.Length > 0;
+            return ResultDocument.Length > 0 && !AVerification.HasCriticalErrors;
         }
 
         private static bool PrintToPDF(string AOutputPDFFilename,
@@ -335,7 +452,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             Process process = new Process();
             process.StartInfo.FileName = Html2Pdf.GetWkHTMLToPDFPath();
-            process.StartInfo.Arguments = HTMLFile + " " + AOutputPDFFilename;
+            process.StartInfo.Arguments = "--disable-local-file-access --allow " + Path.GetDirectoryName(HTMLFile) + " " + HTMLFile + " " + AOutputPDFFilename;
             process.Start();
             process.WaitForExit();
 
@@ -364,6 +481,86 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return obj.ToString();
         }
 
+        private static bool SendEmail(
+            string AEmailRecipient, string AEmailRecipientName,
+            string AEmailSubject, string AEmailBody,
+            string AEmailFrom, string AEmailFromName,
+            string AEmailBCC,
+            string ADisplayFilename,
+            string AFilenamePDFReceipt,
+            bool AOnlyTest,
+            out TVerificationResultCollection AVerification)
+        {
+            AVerification = new TVerificationResultCollection();
+
+            if (AOnlyTest)
+            {
+                // do not send to the donor
+                AEmailRecipient = AEmailFrom.Replace("@", "+testdonor@");
+                AEmailFrom = AEmailFrom.Replace("@", "+test@");
+            }
+
+            TSmtpSender EmailSender = new TSmtpSender();
+
+            try
+            {
+                if (TAppSettingsManager.GetValue("SmtpHost").EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
+                {
+                    TLogging.Log("There is no configuration for SmtpHost.");
+                    return false;
+                }
+
+                try
+                {
+                    EmailSender.SetSender("no-reply@" + TAppSettingsManager.GetValue("Server.EmailDomain"), AEmailFromName);
+                    EmailSender.ReplyTo = AEmailFrom;
+                    EmailSender.BccEverythingTo = AEmailFrom;
+                    EmailSender.AddAttachment(ADisplayFilename, AFilenamePDFReceipt);
+                }
+                catch (Exception e)
+                {
+                    TLogging.Log("There is an issue with setting email parameters.");
+                    TLogging.Log(e.ToString());
+                    return false;
+                }
+
+                if (EmailSender.SendEmail(
+                        AEmailRecipientName + " <" + AEmailRecipient + ">",
+                        AEmailSubject,
+                        AEmailBody))
+                {
+                    return true;
+                }
+
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Problem sending email"),
+                        "Server problems",
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+
+                return false;
+            } // try
+            catch (ESmtpSenderInitializeException e)
+            {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        e.Message,
+                        CommonErrorCodes.ERR_MISSINGEMAILCONFIGURATION,
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+
+                return false;
+            }
+            finally
+            {
+                if (EmailSender != null)
+                {
+                    EmailSender.Dispose();
+                }
+            }
+        }
+
         /// <summary>
         /// Do we have any consent at all for this contact.
         /// This method should be in Ict.Petra.Server.MPartner.Partner.WebConnectors.TDataHistoryWebConnector,
@@ -389,6 +586,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             });
 
             return !HasConsent;
+        }
+
+        /// <summary>
+        /// Does this partner have a given subscription
+        /// </summary>
+        private static bool HasSubscription(Int64 APartnerKey, String APublicationCode)
+        {
+            if ((APublicationCode == null) || (APublicationCode == String.Empty))
+            {
+                return false;
+            }
+
+            TDBTransaction T = new TDBTransaction();
+            TDataBase DB = DBAccess.Connect("HasSubscription");
+            List<OdbcParameter> SQLParameter = new List<OdbcParameter>();
+            bool ResultValue = false;
+
+            DB.ReadTransaction(ref T, delegate {
+
+                string sql = "SELECT " +
+                    "COUNT(*) " +
+                    "FROM `p_subscription` " +
+                    "WHERE `p_subscription`.`p_partner_key_n` = ? " +
+                    "AND `p_publication_code_c` = ? " +
+                    "AND (`p_start_date_d` IS NULL OR `p_start_date_d` <= NOW()) " +
+                    "AND (`p_expiry_date_d` IS NULL OR `p_expiry_date_d` <= NOW())";
+
+                SQLParameter.Add(new OdbcParameter("PartnerKey", OdbcType.BigInt) { Value = APartnerKey } );
+                SQLParameter.Add(new OdbcParameter("PublicationCode", OdbcType.VarChar) { Value = APublicationCode } );
+
+                ResultValue = (Convert.ToInt32(DB.ExecuteScalar(sql, T, SQLParameter.ToArray())) > 0);
+            });
+
+            return ResultValue;
         }
 
         /// <summary>
@@ -453,6 +684,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <returns>One or more html documents, each in its own body tag, for printing with the HTML printer</returns>
         private static string FormatLetter(Int64 ADonorKey,
             string ADonorName,
+            bool AOnlyTest,
             bool AOnlyThankYouNoReceipt,
             DataTable ADonations,
             string ABaseCurrency,
@@ -487,6 +719,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // replace sections about consent for a defined purpose
             msg = ReplaceIfSection(msg, "UNDEFINEDCONSENT", UndefinedConsent(ADonorKey));
+
+            msg = ReplaceIfSection(msg, "TEST", AOnlyTest);
+
+            while (msg.Contains("SUBSCRIPTION("))
+            {
+                int pos = msg.IndexOf("SUBSCRIPTION(") + "SUBSCRIPTION(".Length;
+                string PublicationCode = msg.Substring(pos, msg.IndexOf(")", pos) - pos);
+
+                bool hasSubscription = HasSubscription(ADonorKey, PublicationCode);
+
+                msg = ReplaceIfSection(msg, "NOTSUBSCRIPTION(" + PublicationCode + ")", !hasSubscription);
+                msg = ReplaceIfSection(msg, "SUBSCRIPTION(" + PublicationCode + ")", hasSubscription);
+            }
 
             // replace sections about thank you letters vs receipts
             msg = ReplaceIfSection(msg, "THANKYOU", AOnlyThankYouNoReceipt);
@@ -1461,9 +1706,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return SubmissionOK;
         }
 
-        /// get the filenames of the stored template files for annual gift receipt
+        /// get the filenames of the stored template files for annual gift receipt, and other defaults
         [RequireModulePermission("FINANCE-1")]
-        public static bool LoadDefaultTemplateFileNames(out string AFileNameHTML, out string AFileNameLogo, out string AFileNameSignature)
+        public static bool LoadReceiptDefaults(
+            out string AFileNameHTML, out string AFileNameLogo, out string AFileNameSignature,
+            out string AEmailSubject, out string AEmailBody, out string AEmailFrom, out string AEmailFromName,
+            out string AEmailFilename)
         {
             AFileNameHTML = String.Empty;
             AFileNameLogo = String.Empty;
@@ -1480,6 +1728,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = new TDBTransaction();
             TDataBase db = DBAccess.Connect("LoadDefaultFile");
+
+            TSystemDefaults SystemDefaults = new TSystemDefaults(db);
+            AEmailSubject = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_SUBJECT, String.Empty);
+            AEmailBody = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_BODY, String.Empty);
+            AEmailFrom = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROM, String.Empty);
+            AEmailFromName = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FROMNAME, String.Empty);
+            AEmailFilename = SystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GIFT_RECEIPT_EMAIL_FILENAME, String.Empty);
 
             db.ReadTransaction(
                 ref Transaction,
