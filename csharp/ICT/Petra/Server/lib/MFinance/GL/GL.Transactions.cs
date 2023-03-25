@@ -3381,6 +3381,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 string CurrencyCode;
                 MainDS = LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber, out CurrencyCode);
 
+                int MaxTransactionNumber = 0;
                 foreach (ATransactionRow row in MainDS.ATransaction.Rows)
                 {
                     if ((row.JournalNumber == AJournalNumber) && (row.TransactionNumber == ATransactionNumber))
@@ -3390,8 +3391,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     else if ((row.JournalNumber == AJournalNumber) && (row.TransactionNumber > ATransactionNumber))
                     {
                         row.TransactionNumber--;
+                        if (row.TransactionNumber > MaxTransactionNumber)
+                        {
+                            MaxTransactionNumber = row.TransactionNumber;
+                        }
                     }
                 }
+
+                MainDS.AJournal[0].LastTransactionNumber = MaxTransactionNumber;
 
                 ABatchRow BatchRow = MainDS.ABatch[0];
                 GLRoutines.UpdateBatchTotals(ref MainDS, ref BatchRow);
