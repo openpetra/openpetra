@@ -3325,7 +3325,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 row.CostCentreCode = ACostCentreCode.ToUpper();
                 MainDS.ATransaction.Rows.Add(row);
 
-                // TODO update journal last transaction number???
+                // update journal last transaction number???
+                if (row.TransactionNumber > MainDS.AJournal[0].LastTransactionNumber)
+                {
+                    MainDS.AJournal[0].LastTransactionNumber = row.TransactionNumber;
+                }
 
                 ABatchRow BatchRow = MainDS.ABatch[0];
                 GLRoutines.UpdateBatchTotals(ref MainDS, ref BatchRow);

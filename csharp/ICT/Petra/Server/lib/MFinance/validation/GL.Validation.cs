@@ -502,29 +502,6 @@ namespace Ict.Petra.Server.MFinance.Validation
                 }
             }
 
-            if (true)
-            {
-                // "Reference" is mandatory
-                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnReferenceId];
-                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-                    ARow.TransactionNumber,
-                    ARow.BatchNumber,
-                    ARow.JournalNumber);
-
-                if (true)
-                {
-                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
-                        (isImporting) ? String.Empty : "Reference of " + ValidationContext,
-                        AContext, ValidationColumn);
-
-                    // Handle addition/removal to/from TVerificationResultCollection
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult))
-                    {
-                        VerifResultCollAddedCount++;
-                    }
-                }
-            }
-
             // 'CostCentre' must be valid
             ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnCostCentreCodeId];
             ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
