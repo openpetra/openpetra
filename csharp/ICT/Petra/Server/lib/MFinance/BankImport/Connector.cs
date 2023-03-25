@@ -1111,21 +1111,30 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                                     AMotivationDetailTable.GetMotivationDetailCodeDBName(),
                                     match.MotivationDetailCode);
 
-                            if (MainDS.AMotivationDetail.DefaultView.Count != 1)
+                            AMotivationDetailRow MotivationDetail = null;
+                            if (match.MotivationGroupCode != String.Empty)
                             {
-                                throw new Exception("LoadTransactionDetail: cannot find Motivation Detail: " + MainDS.AMotivationDetail.DefaultView.RowFilter);
-                            }
+                                if (MainDS.AMotivationDetail.DefaultView.Count != 1)
+                                {
+                                    throw new Exception("LoadTransactionDetail: cannot find Motivation Detail: " + MainDS.AMotivationDetail.DefaultView.RowFilter);
+                                }
 
-                            AMotivationDetailRow MotivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.DefaultView[0].Row;
+                                MotivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.DefaultView[0].Row;
+                            }
 
                             BankImportTDSTransactionDetailRow newRow = TransactionDetail.NewRowTyped(false);
                             DataUtilities.CopyAllColumnValues(match, newRow);
                             newRow.LedgerNumber = ALedgerNumber;
                             newRow.StatementKey = AStatementKey;
                             newRow.Order = AOrder;
-                            newRow.Membership = MotivationDetail.Membership;
-                            newRow.Sponsorship = MotivationDetail.Sponsorship;
-                            newRow.WorkerSupport = MotivationDetail.WorkerSupport;
+
+                            if (MotivationDetail != null)
+                            {
+                                newRow.Membership = MotivationDetail.Membership;
+                                newRow.Sponsorship = MotivationDetail.Sponsorship;
+                                newRow.WorkerSupport = MotivationDetail.WorkerSupport;
+                            }
+
                             TransactionDetail.Rows.Add(newRow);
 
                             MainDS.AMotivationDetail.DefaultView.RowFilter = "";
@@ -1709,7 +1718,6 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
             Transaction.Rollback();
-            Transaction = db.BeginTransaction(IsolationLevel.Serializable);
 
             GLBatchTDS GLDS = TGLPosting.CreateABatch(ALedgerNumber, db, true);
 
