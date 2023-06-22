@@ -339,11 +339,6 @@
           overwrite="false"/>
 <property name="smtp.enablessl" value="true"
           overwrite="false"/>
-<!-- The smtp.authenticationtype can take the following values:
-          "config" to take the settings from the configuration file
-          "builtin" to use builtin values. -->
-<property name="smtp.authenticationtype" value="config"
-          overwrite="false"/>
 <property name="LocalFieldFinance.EmailAddress" value="finance@myfield.example.org"
           overwrite="false"/>
 <property name="ClearingHouse.EmailAddress" value="ich@example.org"
