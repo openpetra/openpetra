@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
-    "axios": "^0.21.4",
+    "axios": "^1.6.0",
     "bootstrap": "^4.6.1",
     "browserify": "^16.5.2",
     "browserify-css": "^0.15.0",
