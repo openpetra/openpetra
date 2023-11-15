@@ -149,6 +149,7 @@
   <include name="MailKit.dll"/>
   <include name="MimeKit.dll"/>
   <include name="System.Runtime.dll" /> <!-- Needed for MailKit.dll and MimeKit.dll -->
+  <include name="Microsoft.Extensions.Logging.Abstractions.dll" /> <!-- Needed for MySqlConnector -->
   <include name="HtmlAgilityPack.dll"/>
 </patternset>
 
