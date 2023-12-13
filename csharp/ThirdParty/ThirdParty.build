@@ -151,6 +151,7 @@
   <include name="System.Runtime.dll" /> <!-- Needed for MailKit.dll and MimeKit.dll -->
   <include name="Microsoft.Extensions.Logging.Abstractions.dll" /> <!-- Needed for MySqlConnector -->
   <include name="HtmlAgilityPack.dll"/>
+  <include name="BouncyCastle.Cryptography.dll"/> <!-- needed for MailKit -->
 </patternset>
 
 <patternset id="3rdPartyWinPattern">
