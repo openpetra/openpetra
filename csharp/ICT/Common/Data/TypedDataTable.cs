@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,8 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using GNU.Gettext;
+using GetText;
+using Ict.Common;
 
 namespace Ict.Common.Data
 {
@@ -63,18 +64,6 @@ namespace Ict.Common.Data
         public TTypedDataTable() : base()
         {
             this.InitClass();
-            this.InitVars();
-        }
-
-        /// <summary>
-        /// serialization constructor
-        /// </summary>
-        /// <param name="info">required for serialization</param>
-        /// <param name="context">required for serialization</param>
-        public TTypedDataTable(System.Runtime.Serialization.SerializationInfo info,
-            System.Runtime.Serialization.StreamingContext context) : base(info, context)
-        {
-            // Console.WriteLine('TTypeddatatable.create serialization');
             this.InitVars();
         }
 
