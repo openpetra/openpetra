@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Web;
 using System.Threading;
-using System.Web.SessionState;
 using System.Data;
 using System.Data.Odbc;
 using System.Linq;
@@ -35,6 +34,7 @@ using Ict.Common;
 using Ict.Common.DB;
 
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace Ict.Common.Session
 {
@@ -61,7 +61,7 @@ namespace Ict.Common.Session
         /// Each request has its own thread.
         /// Threads can be reused for different users.
         /// </summary>
-        public static void InitThread(string AThreadDescription, string AConfigFileName, string ASessionID = null)
+        public static void InitThread(string AThreadDescription, string AConfigFileName, HttpRequest ARequest, string ASessionID = null)
         {
             TLogWriter.ResetStaticVariables();
             TLogging.ResetStaticVariables();
@@ -71,9 +71,9 @@ namespace Ict.Common.Session
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
             string httprequest = "";
-            if ((HttpContext.Current != null) && (HttpContext.Current.Request != null))
+            if (ARequest != null)
             {
-                httprequest = " for path " + HttpContext.Current.Request.PathInfo;
+                httprequest = " for path " + ARequest.Path;
             }
             
             TLogging.LogAtLevel(4, AThreadDescription + ": Running InitThread for thread id " + Thread.CurrentThread.ManagedThreadId.ToString() + httprequest);
@@ -85,7 +85,7 @@ namespace Ict.Common.Session
 
             if (ASessionID == null)
             {
-                sessionID = FindSessionID();
+                sessionID = FindSessionID(ARequest);
             }
             else
             {
@@ -128,7 +128,7 @@ namespace Ict.Common.Session
                         // load the session values from the database
                         // update the session last access in the database
                         // clean old sessions
-                        newSession = InitSession(sessionID, t);
+                        newSession = InitSession(sessionID, t, ARequest);
 
                         SubmissionOK = true;
                     });
@@ -157,11 +157,11 @@ namespace Ict.Common.Session
         }
 
         /// get the current session id from the http context
-        private static string FindSessionID()
+        private static string FindSessionID(HttpRequest ARequest)
         {
-            if ((HttpContext.Current != null) && (HttpContext.Current.Request.Cookies.AllKeys.Contains("OpenPetraSessionID")))
+            if ((ARequest != null) && (ARequest.Cookies.Keys.Contains("OpenPetraSessionID")))
             {
-                string sessionId = HttpContext.Current.Request.Cookies["OpenPetraSessionID"].Value;
+                string sessionId = ARequest.Cookies["OpenPetraSessionID"];
                 if (sessionId != String.Empty)
                 {
                     TLogging.LogAtLevel(4, "FindSessionID: Session ID found in HttpContext. SessionID: " + sessionId);
@@ -179,7 +179,7 @@ namespace Ict.Common.Session
         /// clean old sessions from the database.
         /// </summary>
         /// <returns>true if new session was started</returns>
-        private static bool InitSession(string ASessionID, TDBTransaction AWriteTransaction)
+        private static bool InitSession(string ASessionID, TDBTransaction AWriteTransaction, HttpRequest ARequest)
         {
             string sessionID = ASessionID;
             bool newSession = false;
@@ -191,10 +191,12 @@ namespace Ict.Common.Session
 
                 sessionID = string.Empty;
 
-                if (HttpContext.Current != null)
+#if DISABLED_DOTNET
+                if (ARequest != null)
                 {
-                    HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
+                    ARequest.Cookies.Remove("OpenPetraSessionID");
                 }
+#endif
             }
 
             // we need a new session
@@ -203,24 +205,26 @@ namespace Ict.Common.Session
                 sessionID = Guid.NewGuid().ToString();
                 TLogging.LogAtLevel(1, "TSession: Creating new session: " + sessionID + " in Thread " + Thread.CurrentThread.ManagedThreadId.ToString());
 
-                if (HttpContext.Current != null)
+#if DISABLED_DOTNET
+                if (ARequest != null)
                 {
                     HttpCookie cookie = new HttpCookie("OpenPetraSessionID", sessionID);
                     // SameSite is not support by Mono 6.6 yet
                     // cookie.SameSite = SameSiteMode.Strict;
 
-                    if (HttpContext.Current.Request.Headers["X-Forwarded-Proto"] != null)
+                    if (ARequest.Headers["X-Forwarded-Proto"] != null)
                     {
-                        cookie.Secure = "https" == HttpContext.Current.Request.Headers["X-Forwarded-Proto"].Split(',').FirstOrDefault();
+                        cookie.Secure = "https" == ARequest.Headers["X-Forwarded-Proto"].Split(',').FirstOrDefault();
                     }
                     else
                     {
-                        cookie.Secure = HttpContext.Current.Request.Url.Scheme == "https";
+                        cookie.Secure = ARequest.Url.Scheme == "https";
                     }
 
-                    HttpContext.Current.Request.Cookies.Add(cookie);
-                    HttpContext.Current.Response.Cookies.Add(cookie);
+                    ARequest.Cookies.Add(cookie);
+                    ARequest.Response.Cookies.Add(cookie);
                 }
+#endif
 
                 // store new session
                 FSessionID = sessionID;
@@ -552,12 +556,14 @@ namespace Ict.Common.Session
             FSessionID = String.Empty;
             FSessionValues = null;
 
+#if DISABLED_DOTNET
             if (HttpContext.Current != null)
             {
                 HttpContext.Current.Request.Cookies.Remove("OpenPetraSessionID");
                 HttpContext.Current.Response.Cookies.Remove("OpenPetraSessionID");
                 HttpContext.Current.Session.Clear();
             }
+#endif
         }
     }
 }
