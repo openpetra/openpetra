@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -229,7 +229,7 @@ namespace Ict.Common.IO
                 return false;
             }
 
-            string TempString = String.Copy(FCurrentLine);
+            string TempString = FCurrentLine;
             string NextStringItem = StringHelper.GetNextCSV(ref TempString, SPACE);
 
             if (NextStringItem == AKeyword)
