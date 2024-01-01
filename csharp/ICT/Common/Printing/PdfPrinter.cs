@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,13 +101,13 @@ namespace Ict.Common.Printing
             XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
 
             // the fonts need to be a little bit bigger so that they have the same size as the GfxPrinter?
-            FXSmallPrintFont = new XFont("Arial", 0.12, XFontStyle.Regular, options); // Point(6 + XFONTSIZE)
-            FXDefaultFont = new XFont("Arial", 0.14, XFontStyle.Regular, options); // Point(8 + XFONTSIZE)
-            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyle.Bold, options); // Point(8 + XFONTSIZE)
-            FXHeadingFont = new XFont("Arial", 0.16, XFontStyle.Bold, options); // Point(10 + XFONTSIZE)
+            FXSmallPrintFont = new XFont("Arial", 0.12, XFontStyleEx.Regular, options); // Point(6 + XFONTSIZE)
+            FXDefaultFont = new XFont("Arial", 0.14, XFontStyleEx.Regular, options); // Point(8 + XFONTSIZE)
+            FXDefaultBoldFont = new XFont("Arial", 0.14, XFontStyleEx.Bold, options); // Point(8 + XFONTSIZE)
+            FXHeadingFont = new XFont("Arial", 0.16, XFontStyleEx.Bold, options); // Point(10 + XFONTSIZE)
 
             // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
-            FXBarCodeFont = new XFont("Code 128", 0.45, XFontStyle.Regular, options); // Point(10 + XFONTSIZE)
+            FXBarCodeFont = new XFont("Code 128", 0.45, XFontStyleEx.Regular, options); // Point(10 + XFONTSIZE)
 
             FXBiggestLastUsedFont = FXDefaultFont;
             FXRight = new XStringFormat();
