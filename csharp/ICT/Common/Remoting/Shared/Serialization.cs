@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,7 +34,6 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Reflection;
 using System.Web;
-using System.Web.Script.Serialization;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
@@ -48,21 +47,8 @@ namespace Ict.Common.Remoting.Shared
     {
         private const int MAXBASE64PREFIX = 80;
 
-        /// <summary>
-        /// determine if the server is contacted from the fat client or from the js client
-        /// </summary>
-        static public bool isJSClient()
-        {
-            return HttpContext.Current != null
-                   && HttpContext.Current.Request != null
-                   && HttpContext.Current.Request.UserAgent != null
-                   && !HttpContext.Current.Request.UserAgent.Contains("OpenPetra");
-        }
-
         static private string DataSetToJson(DataSet ADataset)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-
             Dictionary <string, List <Dictionary <string, object>>>dataset =
                 new Dictionary <string, List <Dictionary <string, object>>>();
             List <Dictionary <string, object>>table = null;
@@ -83,7 +69,7 @@ namespace Ict.Common.Remoting.Shared
                         // we want DateTime in ISO format
                         if (dr[col] is DateTime || dr[col] is DateTime?)
                         {
-                            row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]).Trim('"'));
+                            row.Add(col.ColumnName.Trim(), SerializeObject(dr[col]).Trim('"'));
                         }
                         else
                         {
@@ -97,13 +83,11 @@ namespace Ict.Common.Remoting.Shared
                 dataset.Add(dt.TableName, table);
             }
 
-            return serializer.Serialize(dataset);
+	    return JsonConvert.SerializeObject(dataset);
         }
 
         static private string DataTableToJson(DataTable ATable)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-
             List <Dictionary <string, object>>table = null;
             Dictionary <string, object>row = null;
 
@@ -120,7 +104,7 @@ namespace Ict.Common.Remoting.Shared
                     // we want DateTime in ISO format
                     if (dr[col] is DateTime || dr[col] is DateTime?)
                     {
-                        row.Add(col.ColumnName.Trim(), SerializeObjectJSON(dr[col]).Trim('"'));
+                        row.Add(col.ColumnName.Trim(), SerializeObject(dr[col]).Trim('"'));
                     }
                     else
                     {
@@ -131,21 +115,13 @@ namespace Ict.Common.Remoting.Shared
                 table.Add(row);
             }
 
-            return serializer.Serialize(table);
+	    return JsonConvert.SerializeObject(table);
         }
 
         static private string VerificationResultCollectionToJson(TVerificationResultCollection ACollection)
         {
             // only return the error codes
             return ACollection.GetErrorCodes();
-        }
-
-        /// <summary>
-        /// serialize any object. if it is a complex type, use JSON or Base64 (fat client)
-        /// </summary>
-        static public string SerializeObject(object o)
-        {
-            return THttpBinarySerializer.isJSClient() ? SerializeObjectJSON(o) : SerializeObjectJSON(o).Trim('"');
         }
 
         /// <summary>
@@ -174,7 +150,7 @@ namespace Ict.Common.Remoting.Shared
         /// <summary>
         /// serialize any object. if it is a complex type, use JSON
         /// </summary>
-        static public string SerializeObjectJSON(object o)
+        static public string SerializeObject(object o)
         {
             if (o == null)
             {
@@ -220,8 +196,7 @@ namespace Ict.Common.Remoting.Shared
 
             if (o is IList && o.GetType().IsGenericType)
             {
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                return serializer.Serialize(o);
+		return JsonConvert.SerializeObject(o);
             }
 
             if (o is DataSet)
@@ -346,13 +321,6 @@ namespace Ict.Common.Remoting.Shared
             {
                 return Convert.FromBase64String(s.Substring(s.IndexOf(";base64,") + ";base64,".Length));
             }
-            else if ((s != null) && (s.Length > 9)) // if (type == "binary" || true)
-            {
-                MemoryStream memoryStream = new MemoryStream(Convert.FromBase64String(s));
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                return binaryFormatter.Deserialize(memoryStream);
-            }
             else
             {
                 return null;
@@ -404,8 +372,7 @@ namespace Ict.Common.Remoting.Shared
         /// Deserialize a DataTable
         static public DataTable DeserializeDataTable(string s)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            Object[] list = (Object[])serializer.DeserializeObject(s);
+            List<object> list = JsonConvert.DeserializeObject<List<object>>(s);
             DataTable result = new DataTable();
 
             foreach (Dictionary<string,object> obj in list)
@@ -438,8 +405,7 @@ namespace Ict.Common.Remoting.Shared
         /// Deserialize a DataSet
         static public DataSet DeserializeDataSet(string s, DataSet dataset)
         {
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            Dictionary<string,object> tables = (Dictionary<string,object>)serializer.DeserializeObject(s);
+            Dictionary<string,object> tables = JsonConvert.DeserializeObject<Dictionary<string,object>>(s);
             foreach (KeyValuePair<string, object> entry in tables)
             {
                 object[] list2 = (object[]) entry.Value;

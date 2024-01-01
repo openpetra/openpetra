@@ -253,28 +253,6 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>
-        /// Ensures Logging and an 'ordered cooperative shutdown' in case an Unhandled Exception is
-        /// thrown in Threads, ThreadPool work items or Finalizers anywhere in the PetraServer.
-        /// </summary>
-        /// <remarks>
-        /// <para>Ensures proper handling of the mentioned situations which were non-fatal to
-        /// the PetraServer Process in .NET 1.1, but are fatal with .NET 2.0 (also true when running
-        /// on mono)!
-        /// </para>
-        /// <para>
-        /// See http://msdn.microsoft.com/en-us/netframework/aa497241.aspx
-        /// (Text block with Short Desciption 'Unhandled Exceptions will always be fatal to a process').
-        /// </para>
-        /// </remarks>
-        /// <returns>void</returns>
-        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.ControlAppDomain)]
-        public void HookupProperShutdownProcessing()
-        {
-            AppDomain.CurrentDomain.UnhandledException +=
-                new UnhandledExceptionEventHandler(TExceptionHandling.UnhandledExceptionHandler);
-        }
-
-        /// <summary>
         /// Stops the Petra Server in a more controlled way than the <see cref="StopServer" /> Method.
         /// </summary>
         /// <remarks>

@@ -288,12 +288,14 @@ namespace Ict.Common.Remoting.Server
 
             TLogging.Log("EndSession (for client '" + this.ClientName + "'): Checking whether there is a HttpSession.Current object");
 
+#if DISABLED_DOTNET
             // clear the session object
             if (HttpContext.Current != null)
             {
                 TLogging.Log("EndSession (for client '" + this.ClientName + "'): Clearing Session");
                 TSession.CloseSession();
             }
+#endif
 
             FClientDisconnectionFinishedTime = DateTime.Now;
             FAppDomainStatus = TSessionStatus.adsStopped;
