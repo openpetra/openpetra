@@ -26,7 +26,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using GetText;
+using GNU.Gettext;
 using Ict.Common;
 
 namespace Ict.Common.Data
