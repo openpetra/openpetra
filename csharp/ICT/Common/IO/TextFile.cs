@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -494,12 +494,6 @@ namespace Ict.Common.IO
                 AEncoding = Encoding.UTF8;
                 return true;
             }  // UTF-8
-            else if ((b.Length >= 3) && (b[0] == 0x2b) && (b[1] == 0x2f) && (b[2] == 0x76))
-            {
-                AText = Encoding.UTF7.GetString(b, 3, b.Length - 3);
-                AEncoding = Encoding.UTF7;
-                return true;
-            }  // UTF-7
 
             // So the file did NOT have a BOM
             AHasBOM = false;
