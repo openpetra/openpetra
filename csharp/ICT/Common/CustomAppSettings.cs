@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,7 +91,7 @@ namespace Ict.Common
                 if (FApplicationDirectory == "")
                 {
                     // Default to the current running assemblies location
-                    FApplicationDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                    FApplicationDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
                     // Now proceed to fix it....
                 }
@@ -168,7 +168,7 @@ namespace Ict.Common
 
             LoadCustomAppSettingFile(AFailOnMissingConfigFile);
             FApplicationDirectory = GetValue("Server.ApplicationBinDirectory", System.IO.Path.GetDirectoryName(
-                    System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
+                    System.Reflection.Assembly.GetExecutingAssembly().Location));
         }
 
         /// <summary>
