@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -276,7 +276,6 @@ namespace Ict.Common.Data
         public static void CalculateHashAndSize(DataView AHashDV, out String AHash, out Int32 ASize)
         {
             StringBuilder HashStringBuilder;
-            SHA1CryptoServiceProvider HashingProvider;
             Int32 RowCounter;
             Int32 ColumnCounter;
             Int32 TmpSize = 0;
@@ -313,7 +312,7 @@ namespace Ict.Common.Data
             /*
              * Calculate the hash of the string containing all values of all rows
              */
-            HashingProvider = new SHA1CryptoServiceProvider();
+            var HashingProvider = SHA1.Create();
             AHash = Convert.ToBase64String(HashingProvider.ComputeHash(Encoding.UTF8.GetBytes(HashStringBuilder.ToString())));
         }
 

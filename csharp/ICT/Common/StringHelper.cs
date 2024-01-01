@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -407,7 +407,7 @@ namespace Ict.Common
         /// <returns></returns>
         public static string MD5Sum(string s)
         {
-            MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
+            var cr = MD5.Create();
 
             return BitConverter.ToString(cr.ComputeHash(System.Text.Encoding.Default.GetBytes(s))).Replace("-", "").ToLower();
         }
