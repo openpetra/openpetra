@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2017 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using Ict.Common;
 using Ict.Common.Verification;
-using GNU.Gettext;
 
 namespace Ict.Common.Verification
 {

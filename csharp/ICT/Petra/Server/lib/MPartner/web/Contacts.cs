@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, andreww, peters
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,7 +30,6 @@ using System.Data.Odbc;
 using System.Linq;
 using System.Xml;
 using System.IO;
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;

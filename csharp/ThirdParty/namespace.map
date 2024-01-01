@@ -1,4 +1,4 @@
-GNU.Gettext=${dir.3rdParty}/GNU/GNU.Gettext.dll
+GetText=${dir.nuget}/GetText.NET.*/GetText.dll
 PasswordUtilities*=${dir.3rdParty}/PasswordUtilities/PasswordUtilities.dll
 ICSharpCode.NRefactory*=${dir.3rdParty}/ICSharpCode/ICSharpCode.NRefactory.dll
 PdfSharp*=${dir.nuget}/PDFsharp.*/PdfSharp.dll

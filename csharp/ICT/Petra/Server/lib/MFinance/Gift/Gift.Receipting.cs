@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2023 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,6 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;

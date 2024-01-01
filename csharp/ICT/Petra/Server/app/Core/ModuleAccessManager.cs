@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +35,6 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using GNU.Gettext;
 
 namespace Ict.Petra.Server.App.Core.Security
 {

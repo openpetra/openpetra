@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, morayh, christophert
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,6 @@ using System.Data.Odbc;
 using System.Diagnostics;
 using System.Reflection;
 
-using GNU.Gettext;
 
 using Ict.Common;
 using Ict.Common.Exceptions;

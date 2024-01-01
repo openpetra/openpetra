@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,6 @@ using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
-using GNU.Gettext;
 using System.Data;
 
 namespace Ict.Petra.Server.App.Core.Security

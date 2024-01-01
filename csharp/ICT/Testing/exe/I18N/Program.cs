@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,6 @@ using System;
 using System.Threading;
 using System.IO;
 using System.Globalization;
-using GNU.Gettext;
 using Ict.Common;
 
 namespace Ict.Testing.I18N

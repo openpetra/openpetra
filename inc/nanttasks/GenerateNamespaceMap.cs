@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -474,7 +474,7 @@ namespace Ict.Tools.NAntTasks
                             string dllPath = pkgName + "." + NuPackages[pkgName];
 
                             // if another path is added here, also add in ThirdParty.build
-                            string[] netVersionPaths = new string[] {"/lib/net472", "/lib/net462", "/lib/net461", "/lib/net46", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net5.0", "/lib/net6.0", "/lib/net20" };
+                            string[] netVersionPaths = new string[] {"/lib/net472", "/lib/net462", "/lib/net461", "/lib/net46", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net5.0", "/lib/net6.0", "/lib/net20", "/lib/netstandard2.0" };
                             foreach (string netVersionPath in netVersionPaths)
                             {
                                 if (Directory.Exists(NugetPackagesPath + PSC + dllPath + netVersionPath))
