@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2023 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -655,6 +655,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_EMAIL;
                 partnerattr.Value = ADefaultEmailAddress;
                 partnerattr.Index = 0;
+                partnerattr.Primary = true;
                 SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
             }
 
@@ -665,6 +666,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_PHONE;
                 partnerattr.Value = ADefaultPhoneLandline;
                 partnerattr.Index = 0;
+                partnerattr.Primary = true;
                 SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
             }
 
@@ -675,6 +677,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerattr.AttributeType = MPartnerConstants.ATTR_TYPE_MOBILE_PHONE;
                 partnerattr.Value = ADefaultPhoneMobile;
                 partnerattr.Index = 0;
+                partnerattr.Primary = true;
                 SaveDS.PPartnerAttribute.Rows.Add(partnerattr);
             }
 
