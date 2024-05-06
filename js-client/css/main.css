@@ -29,6 +29,33 @@ html {
 }
 
 /*
+ * Bootstrap 4 behaviour: no underline for links that don't have a class assigned, apart from hover
+*/
+a:not([class]) {
+    text-decoration: none;
+}
+
+a:not([class]):hover {
+    text-decoration: underline;
+}
+
+a.sidebar-item {
+    text-decoration: none;
+}
+
+a.sidebar-item:hover {
+    text-decoration: underline;
+}
+
+/*
+ * Bootstrap 4 behaviour: side
+*/
+
+#LeftNavigation.text-md-left {
+    text-align: left !important;
+}
+
+/*
  * Off Canvas
  * --------------------------------------------------
  */

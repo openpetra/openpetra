@@ -22,15 +22,22 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-var css = require('../css/app.css');
-$ = require('jquery');
-require('bootstrap');
-i18next = require('i18next');
-axios = require('axios');
-i18nextXHRBackend = require('i18next-xhr-backend');
-i18nextBrowserLanguageDetector = require('i18next-browser-languagedetector');
-//require('./lib/ajax.js');
-//require('./lib/auth.js');
-//require('./lib/i18n.js');
-//require('./lib/navigation.js');
-//require('./lib/app.js');
+// Import our custom CSS
+import '../scss/styles.scss'
+
+// Import all of Bootstrap's JS
+import * as bootstrap from 'bootstrap'
+
+import jquery from 'jquery';
+
+//import i18next from 'i18next';
+//import HttpApi from 'i18next-http-backend';
+//import LanguageDetector from 'i18next-browser-languagedetector';
+
+import './lib/checkIE.js';
+import './lib/utils.js';
+import './lib/ajax.js';
+import './lib/auth.js';
+import './lib/i18n.js';
+import './lib/navigation.js';
+import './lib/app.js';
