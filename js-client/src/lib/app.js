@@ -5,7 +5,7 @@
 //	Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -22,6 +22,11 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
+
+import api from './ajax.js';
+import utils from './utils.js';
+import i18next from 'i18next';
+import nav from './navigation.js';
 
 // call the server regularly to keep the connection open
 function keepConnection() {
@@ -44,7 +49,6 @@ function loadNavigation() {
 		return;
 	}
 
-	nav = new Navigation();
 	nav.loadNavigation();
 	$("#logout").click(function(e) {
 			var stateObj = { "logout": "done" };
@@ -54,7 +58,8 @@ function loadNavigation() {
 		});
 }
 
-auth = new Auth();
+import Auth from './auth.js';
+var auth = new Auth();
 
 function resetPassword() {
 	var url = new URL(window.location.href);
@@ -68,10 +73,10 @@ function resetPassword() {
 		$("#setNewPwd").show();
 		$("#btnSetNewPwd").click(function(e) {
 			e.preventDefault();
-			pwd1=$("#txtPasswordReset1").val();
-			pwd2=$("#txtPasswordReset2").val();
+			let pwd1=$("#txtPasswordReset1").val();
+			let pwd2=$("#txtPasswordReset2").val();
 			if (pwd1 != pwd2) {
-				display_message(i18next.t('login.passwords_dont_match'), "fail");
+				utils.display_message(i18next.t('login.passwords_dont_match'), "fail");
 			} else {
 				auth.setNewPassword(UserId, ResetPasswordToken, pwd1);
 			}
@@ -97,14 +102,14 @@ function selfSignUp() {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result == true) {
-					display_message(i18next.t('login.successSignUpConfirmed'), "success");
+					utils.display_message(i18next.t('login.successSignUpConfirmed'), "success");
 					setTimeout(reloadMainPage, 5000);
 				} else {
-					display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
+					utils.display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
 				}
 			})
 			.catch(function(error) {
-				display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
+				utils.display_message(i18next.t('login.errorSignUpConfirmed'), "fail");
 			});
 		return true;
 	}
@@ -126,8 +131,8 @@ auth.checkAuth(function(selfsignupEnabled) {
 		}
 		$("#btnLogin").click(function(e) {
 			e.preventDefault();
-			user=$("#txtEmail").val();
-			pwd=$("#txtPassword").val();
+			let user=$("#txtEmail").val();
+			let pwd=$("#txtPassword").val();
 			auth.login(user, pwd);
 		});
 	}
@@ -154,9 +159,9 @@ function requestNewPassword(emailAddress) {
 	$("#reqNewPwd").show();
 	$("#btnReqNewPwd").click(function(e) {
 		e.preventDefault();
-		user=$("#txtEmailRequestPwd").val();
+		let user=$("#txtEmailRequestPwd").val();
 		if (user == "" || user.indexOf('@') == -1) {
-			display_message(i18next.t('login.enterValidEmail'), "fail");
+			utils.display_message(i18next.t('login.enterValidEmail'), "fail");
 		} else {
 			auth.requestNewPassword(user);
 		}
@@ -169,15 +174,15 @@ function requestSignUp() {
 	$("#signUp").show();
 	$("#btnSignUpSubmit").click(function(e) {
 		e.preventDefault();
-		userEmail=$("#txtEmailSignUp").val();
-		firstName=$("#txtFirstName").val();
-		lastName=$("#txtLastName").val();
-		pwd1=$("#txtPasswordSignUp1").val();
-		pwd2=$("#txtPasswordSignUp2").val();
+		let userEmail=$("#txtEmailSignUp").val();
+		let firstName=$("#txtFirstName").val();
+		let lastName=$("#txtLastName").val();
+		let pwd1=$("#txtPasswordSignUp1").val();
+		let pwd2=$("#txtPasswordSignUp2").val();
 		if ((pwd1 != pwd2) || (pwd1 == '')) {
-			display_message(i18next.t('login.passwords_dont_match'), "fail");
+			utils.display_message(i18next.t('login.passwords_dont_match'), "fail");
 		} else if (userEmail == "" || userEmail.indexOf('@') == -1) {
-			display_message(i18next.t('login.enterValidEmail'), "fail");
+			utils.display_message(i18next.t('login.enterValidEmail'), "fail");
 		} else {
 			auth.signUp(userEmail, firstName, lastName, pwd1);
 		}

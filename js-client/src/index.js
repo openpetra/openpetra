@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//	   Timotheus Pokorra <tp@tbits.net>
+//         Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -29,10 +30,7 @@ import '../scss/styles.scss'
 import * as bootstrap from 'bootstrap'
 
 import jquery from 'jquery';
-
-//import i18next from 'i18next';
-//import HttpApi from 'i18next-http-backend';
-//import LanguageDetector from 'i18next-browser-languagedetector';
+import i18next from 'i18next';
 
 import './lib/checkIE.js';
 import './lib/utils.js';

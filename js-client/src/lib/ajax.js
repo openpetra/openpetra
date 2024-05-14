@@ -5,7 +5,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -28,6 +28,9 @@
 // https://weblogs.asp.net/scottgu/json-hijacking-and-how-asp-net-ajax-1-0-mitigates-these-attacks
 // we can only use POST with json and ASP.Net
 
+import axios from 'axios';
+import utils from './utils.js';
+
 var api = axios.create({
     baseURL: '/api/',
     responseType: 'json'
@@ -42,14 +45,14 @@ api.interceptors.response.use(function (response) {
     if (error.response.data.hasOwnProperty('d')) {
         var parsed = JSON.parse(error.response.data.d);
         if (!parsed.result) {
-          display_error(parsed.AVerificationResult);
+          utils.display_error(parsed.AVerificationResult);
         }
     } 
     else if (error.response.data.hasOwnProperty('Message')) {
-        display_error(error.response.data.Message);
+        utils.display_error(error.response.data.Message);
     }
     else {
-        display_error("undefined error");
+        utils.display_error("undefined error");
     }
     return Promise.reject(error);
   });
@@ -60,3 +63,5 @@ var src = axios.create({
     responseType: 'json'
 });
 src.defaults.headers.get['Content-Type'] = 'application/json';
+
+export default api;

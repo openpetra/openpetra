@@ -3,10 +3,10 @@
 //
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       CJ <cj@tbits.net>
+//       CJ
 //
 // Copyright 2017-2019 by TBits.net
-// Coypright 2019-2021 by SolidCharity.com
+// Coypright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -24,13 +24,27 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import axios from 'axios';
+import i18next from 'i18next';
+import api from './ajax.js';
+import i18n from './i18n.js';
+import utils from './utils.js';
+
+import releasenotes from '../forms/ReleaseNotes.js';
+import about from '../forms/About.js';
+import maintainpartners from '../forms/Partner/Partners/MaintainPartners.js';
+
 class Navigation {
 	constructor() {
 		this.debug = 0;
 		this.develop = 1;
 		// will be replaced by the build script for the release
 		this.currentrelease = "CURRENTRELEASE";
-		this.classesLoaded = [];
+		this.formsLoaded = {
+			'ReleaseNotes': releasenotes,
+			'About': about,
+			'MaintainPartners': maintainpartners
+		};
 		$(window).scrollTop(0);
 
 		this.module = null;
@@ -39,18 +53,14 @@ class Navigation {
 	}
 
 	// some javascript files (eg. MaintainPartners) can only be loaded once, due to global variables. They must have a <formname>_Ready() function.
-	LoadJavascript(name, formname, refresh)
+	async LoadJavascript(name, formname, refresh)
 	{
-		// check if there is a ReadyFunc, then call this and we are done
-		var ReadyFunc = formname + "_Ready";
-		if(eval("typeof(" + ReadyFunc + ") == typeof(Function)")) {
-			ReadyFunc += "();";
-			eval(ReadyFunc);
-			return;
-		}
-
-		$.getScript(("/src/forms/" + name + '.js' + refresh).replace("//", "/"));
-	}
+        if (formname in this.formsLoaded) {
+            this.formsLoaded[formname].Ready()
+        } else {
+            console.log("Problem in navigation.js: missing form " + formname)
+        }
+    }
 
 	OpenForm(name, title = "", pushState=true, parameter="")
 	{
@@ -83,9 +93,9 @@ class Navigation {
 			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
 					var content = response.data;
-					content = replaceAll(content, ".js", ".js" + refresh);
+					content = content.replaceAll(".js", ".js" + refresh);
 					var formname = name.substring(name.lastIndexOf('/')+1);
-					content = translate(content, formname);
+					content = i18n.translate(content, formname);
 					$("#containerIFrames").html(content);
 					self.LoadJavascript(name, formname, refresh);
 			});
@@ -265,7 +275,7 @@ class Navigation {
 	AddModuleToTopBar(name, title, icon, enabled)
 	{
 		if (enabled) {
-			$("#ModuleNavBar").append("<li class='nav-item'><a id='mnu" + name + "' class='nav-link top-icon href='#' title='" + title + "'><i class='fas fa-" + icon + "'></i><span class='topnav-icontext'>" + title + "</span></a></li>");
+			$("#ModuleNavBar").append("<li class='nav-item'><a id='mnu" + name + "' class='nav-link top-icon' href='#' title='" + title + "'><i class='fas fa-" + icon + "'></i><span class='topnav-icontext'>" + title + "</span></a></li>");
 		}
 	}
 
@@ -287,7 +297,7 @@ class Navigation {
 	AddMenuItem(folderid, parent, item, title, tabtitle, icon, indent)
 	{
 		var url = folderid + "/" + parent.name + "/" + item.caption.replace("_label","");
-		name = url.replace(/\//g, '_');
+		var name = url.replace(/\//g, '_');
 		$("#LeftNavigation").append("<a href='#' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
@@ -299,7 +309,7 @@ class Navigation {
 		if (item.hasOwnProperty('path')) {
 			url = item.path + "/" + item.form;
 		}
-		name = url.replace(/\//g, '_');
+		var name = url.replace(/\//g, '_');
 		if (item.action != '') {
 			name += "_" + item.action;
 		}
@@ -473,7 +483,7 @@ class Navigation {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
-					result.htmlpage = translate(result.htmlpage, "navigation");
+					result.htmlpage = i18n.translate(result.htmlpage, "navigation");
 					$("#containerIFrames").html(result.htmlpage);
 				} else {
 					console.log(response.data.d);
@@ -489,7 +499,7 @@ class Navigation {
 		// TODO: caching for this user??? see window.localStorage below
 		self = this;
 		// load sidebar navigation from UINavigation.yml
-		api.post('serverSessionManager.asmx/GetNavigationMenu', null, null)
+		api.post('serverSessionManager.asmx/GetNavigationMenu', {})
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
@@ -498,7 +508,7 @@ class Navigation {
 					self.displayNavigationSideBar(result.navigation);
 					window.onpopstate = function(e) {
 						if (e.state != null) {
-							nav.OpenForm(e.state.name, e.state.title, false);
+							self.OpenForm(e.state.name, e.state.title, false);
 						}
 					};
 					if (result.assistant != "" && window.location.pathname == "/") {
@@ -526,11 +536,11 @@ $('document').ready(function () {
 
 function LoadAvailableLedgerDropDown() {
 	// check for FINANCE-1 permission. else: hide the ledger selection
-	permissions = window.localStorage.getItem('ModulePermissions');
+	let permissions = window.localStorage.getItem('ModulePermissions');
 	if (permissions == null) {
 		permissions = "";
 	}
-	permissionsFormatted = (" " + permissions.replace(/\n/g, ' ') + " ");
+	let permissionsFormatted = (" " + permissions.replace(/\n/g, ' ') + " ");
 	if (!permissionsFormatted.includes(" FINANCE-1 ")) {
 
 		// if the user still has access to a ledger (e.g. SponsorADMIN), then store that as default ledger
@@ -547,19 +557,23 @@ function LoadAvailableLedgerDropDown() {
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
 		data = JSON.parse(data.data.d);
 		let dump = $('#ledger_select_dropdown').html('');
-		current_selected_ledger = null;
-		for (ledger of data.result) {
+		let menu = '';
+		let current_selected_ledger = null;
+		for (var ledger of data.result) {
 			if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') || data.result.length == 1) {
 				current_selected_ledger = ledger;
 				if (data.result.length == 1 && window.localStorage.getItem('current_ledger') == null) {
 					change_standard_ledger(current_selected_ledger.a_ledger_number_i);
 				}
 			}
-			let z = $('<a class="dropdown-item"></a>');
-			z.text(ledger.a_ledger_name_c);
-			z.attr("onclick", "change_standard_ledger("+ledger.a_ledger_number_i+")");
-			dump.append(z);
+			menu += '<li>';
+			menu += '<a class="dropdown-item" href="#" '+
+				'onclick="change_standard_ledger(' + ledger.a_ledger_number_i + ')">' +
+				ledger.a_ledger_name_c + '</a>';
+			menu += '</li>';
 		}
+		menu += '';
+		dump.append($(menu));
 		if (current_selected_ledger == null) {
 			$('#current_ledger_field').html('<b style="color:#f88;">'+i18next.t('navigation.ledgerselect_none')+'</b>');
 		} else {
@@ -574,9 +588,13 @@ function change_standard_ledger(ledger_id) {
 		data = JSON.parse(data.data.d);
 		for (ledger of data.result) {
 			if (ledger.a_ledger_number_i == ledger_id) {
-				display_message(i18next.t("navigation.switchledger")+" "+ledger.a_ledger_name_c, "success");
+				utils.display_message(i18next.t("navigation.switchledger")+" "+ledger.a_ledger_name_c, "success");
 				$('#current_ledger_field').text(ledger.a_ledger_name_c);
 			}
 		}
 	})
 }
+
+let nav = new Navigation();
+
+export default nav;

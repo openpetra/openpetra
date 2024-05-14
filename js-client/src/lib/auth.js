@@ -5,7 +5,7 @@
 //	Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -22,6 +22,10 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
+
+import api from './ajax.js';
+import utils from './utils.js';
+import i18next from 'i18next';
 
 class Auth {
 	constructor() {
@@ -47,9 +51,9 @@ class Auth {
 						window.location.reload();
 					}
 				} else if (result.resultcode == "eLoginLicenseExpired") {
-					display_message(i18next.t("login.licenseexpired"), "fail");
+					utils.display_message(i18next.t("login.licenseexpired"), "fail");
 				} else {
-					display_message(i18next.t("login.failedlogin"), "fail");
+					utils.display_message(i18next.t("login.failedlogin"), "fail");
 				}
 			})
 			.catch(function(error) {
@@ -114,16 +118,16 @@ class Auth {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.result == true) {
-					display_message(i18next.t('login.successSignUp'), "success");
+					utils.display_message(i18next.t('login.successSignUp'), "success");
 					setTimeout(function() {
 						window.location.reload();
 						}, 3000);
 				} else {
-					display_error(result.AVerification);
+					utils.display_error(result.AVerification);
 				}
 			})
 			.catch(function(error) {
-				display_message(i18next.t('login.errorSignUp'), "fail");
+				utils.display_message(i18next.t('login.errorSignUp'), "fail");
 			});
 	}
 
@@ -132,7 +136,7 @@ class Auth {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result == true) {
-					display_message(i18next.t('login.successPwdResetEmailSent'), "success");
+					utils.display_message(i18next.t('login.successPwdResetEmailSent'), "success");
 					setTimeout(function() {
 						window.location = window.location.pathname;
 						}, 3000);
@@ -141,7 +145,7 @@ class Auth {
 				}
 			})
 			.catch(function(error) {
-				display_message(i18next.t('login.errorPwdResetEmailSent'), "fail");
+				utils.display_message(i18next.t('login.errorPwdResetEmailSent'), "fail");
 			});
 	}
 
@@ -150,16 +154,18 @@ class Auth {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.result == true) {
-					display_message(i18next.t('login.successPwdChanged'), "success");
+					utils.display_message(i18next.t('login.successPwdChanged'), "success");
 					setTimeout(function() {
 						window.location.replace('/');
 						}, 3000);
 				} else {
-					display_error(result.AVerificationResult, 'login', i18next.t('login.errorPwdChanged'));
+					utils.display_error(result.AVerificationResult, 'login', i18next.t('login.errorPwdChanged'));
 				}
 			})
 			.catch(function(error) {
-				display_message(i18next.t('login.errorPwdChanged'), "fail");
+				utils.display_message(i18next.t('login.errorPwdChanged'), "fail");
 			});
 	}
 }
+
+export default Auth;
