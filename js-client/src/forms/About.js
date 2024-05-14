@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,10 +21,17 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-$('document').ready(function () {
-  let x = {};
-  api.post('serverSessionManager.asmx/GetVersion', x).then(function (data) {
-    version = data.data.d;
-    $('.version').html( version );
-  });
-});
+import api from '../lib/ajax.js';
+
+class About {
+
+    Ready() {
+        let x = {};
+        api.post('serverSessionManager.asmx/GetVersion', x).then(function (data) {
+            let version = data.data.d;
+            $('.version').html( version );
+        });
+    }
+}
+
+export default new About();

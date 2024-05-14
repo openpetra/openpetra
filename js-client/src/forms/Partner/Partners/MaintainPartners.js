@@ -5,7 +5,7 @@
 //	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,32 +23,11 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-var last_opened_entry_data = {};
-var data_changes_log = {};
-var PBankingDetails_Store = {}
-var PPartnerMemberships_Store = {}
-
-$('document').ready(function () {
-	MaintainPartners_Ready();
-});
-
-function MaintainPartners_Ready() {
-	let obj = new MaintainPartners();
-
-	obj.load_preset();
-
-	if (window.location.href.endsWith('?NewFamily')) {
-		obj.open_new_family();
-	} else if (window.location.href.endsWith('?NewOrganisation')) {
-		obj.open_new_organisation();
-	} else if (window.location.href.includes('?partnerkey=')) {
-		var url = new URL(window.location.href);
-		var partnerkey = url.searchParams.get("partnerkey");
-		obj.open_edit(partnerkey);
-	} else {
-		obj.display_list();
-	}
-}
+import i18next from 'i18next'
+import tpl from '../../../lib/tpl.js'
+import api from '../../../lib/ajax.js'
+import utils from '../../../lib/utils.js'
+import modal from '../../../lib/modal.js'
 
 function show_tab(tab_id) {
 	// used to control tabs in modal, because there are issues with bootstrap
@@ -65,13 +44,38 @@ function show_tab(tab_id) {
 
 class MaintainPartners {
 
+	constructor() {
+		this.last_opened_entry_data = {};
+		this.data_changes_log = {};
+		this.PBankingDetails_Store = {}
+		this.PPartnerMemberships_Store = {}
+	}
+
+	Ready() {
+		this.load_preset();
+
+		if (window.location.href.endsWith('?NewFamily')) {
+			this.open_new_family();
+		} else if (window.location.href.endsWith('?NewOrganisation')) {
+			this.open_new_organisation();
+		} else if (window.location.href.includes('?partnerkey=')) {
+			var url = new URL(window.location.href);
+			var partnerkey = url.searchParams.get("partnerkey");
+			this.open_edit(partnerkey);
+		} else {
+			this.display_list();
+		}
+
+		$('#btnSavePreset').click(function() { utils.save_preset('MaintainPartners') })
+	}
+
 	load_preset() {
 		var self = this;
 
 		var x = window.localStorage.getItem('MaintainPartners');
 		if (x != null) {
 			x = JSON.parse(x);
-			format_tpl($('#tabfilter'), x);
+			tpl.format_tpl($('#tabfilter'), x);
 		}
 
 		$('#btnSearch').click(function(){ self.display_list(); $('#tabfilter').collapse('toggle'); });
@@ -87,7 +91,7 @@ class MaintainPartners {
 	}
 
 	display_list() {
-		var x = extract_data($('#tabfilter'));
+		var x = tpl.extract_data($('#tabfilter'));
 		var self = this;
 		x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 		api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_FindPartners', x).then(function (data) {
@@ -116,8 +120,8 @@ class MaintainPartners {
 	}
 
 	format_item(item) {
-		let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-		let view = format_tpl($("[phantom] .tpl_view").clone(), item);
+		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+		let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 		$('#browse_container').append(row);
 		$('#partner'+item['p_partner_key_n']).find('.collapse_col').append(view);
 	}
@@ -176,31 +180,31 @@ class MaintainPartners {
 
 	display_partner(parsed) {
 		var self = this;
-		if (!allow_modal()) {return}
+		if (!modal.allow_modal()) {return}
 		self.partnerkey = parsed.result.PPartner[0].p_partner_key_n
 
 		// make a deep copy of the server data and set it as a global var.
-		last_opened_entry_data = $.extend(true, {}, parsed);
+		self.last_opened_entry_data = $.extend(true, {}, parsed);
 		// reset the changes object
-		data_changes_log = {};
+		self.data_changes_log = {};
 		let m = $('[phantom] .tpl_edit').clone();
 		// normal info input
-		m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
-		m = format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
+		m = tpl.format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
+		m = tpl.format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
 		if (parsed.result.PFamily != undefined) {
-			m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
+			m = tpl.format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
 		}
 		if (parsed.result.PPerson != undefined) {
-			m = format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
+			m = tpl.format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
 		}
 		if (parsed.result.POrganisation != undefined) {
-			m = format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
+			m = tpl.format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
 		}
 		if (parsed.result.PUnit != undefined) {
-			m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
+			m = tpl.format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
 		}
 		if (parsed.result.PBank != undefined) {
-			m = format_tpl(m ,parsed.result.PBank[0],"PBank_");
+			m = tpl.format_tpl(m ,parsed.result.PBank[0],"PBank_");
 		}
 
 		// generated fields
@@ -218,7 +222,7 @@ class MaintainPartners {
 			sendmail = parsed.result.PPartnerLocation[0].p_send_mail_l;
 		}
 
-		m = format_tpl(m,
+		m = tpl.format_tpl(m,
 			{'p_default_email_address_c': parsed.ADefaultEmailAddress,
 			'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
 			'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile,
@@ -233,7 +237,7 @@ class MaintainPartners {
 		m = this.display_contributions(parsed.result.AGiftDetail, m);
 		m = this.display_recurring_contributions(parsed.result.ARecurringGiftDetail, m);
 
-		let myModal = ShowModal('partneredit' + self.partnerkey, m);
+		let myModal = modal.ShowModal('partneredit' + self.partnerkey, m);
 
 		myModal.find('#btnSavePartner').click(function(){ self.save_partner(this); });
 		myModal.find('#btnDeletePartner').click(function(){ self.delete_partner(this); });
@@ -280,14 +284,14 @@ class MaintainPartners {
 
 	display_bankaccounts(PBankingDetails, m) {
 		var self = this;
-		PBankingDetails_Store = {}
+		self.PBankingDetails_Store = {}
 		m.find('.bank_account_detail_col').html('');
 		if (PBankingDetails.length > 0) {
 			for (var detail of PBankingDetails) {
 				detail['p_partner_key_n'] = self.partnerkey;
-				let tpl_bank_account_detail = format_tpl( $('[phantom] .tpl_account_detail').clone(), detail);
+				let tpl_bank_account_detail = tpl.format_tpl( $('[phantom] .tpl_account_detail').clone(), detail);
 				m.find('.bank_account_detail_col').append(tpl_bank_account_detail);
-				PBankingDetails_Store[detail['p_banking_details_key_i']] = detail;
+				self.PBankingDetails_Store[detail['p_banking_details_key_i']] = detail;
 				let btnEditAccount = m.find("#btnEditBankAccount"+detail['p_banking_details_key_i']);
 				btnEditAccount.attr('bankingdetailkey', detail['p_banking_details_key_i']);
 				btnEditAccount.click(function() {
@@ -302,13 +306,13 @@ class MaintainPartners {
 
 	display_memberships(PPartnerMemberships, m) {
 		var self = this;
-		PPartnerMemberships_Store = {}
+		self.PPartnerMemberships_Store = {}
 		m.find('.membership_detail_col').html('');
 		if (PPartnerMemberships.length > 0) {
 			for (var detail of PPartnerMemberships) {
-				let tpl_membership_detail = format_tpl( $('[phantom] .tpl_membership').clone(), detail);
+				let tpl_membership_detail = tpl.format_tpl( $('[phantom] .tpl_membership').clone(), detail);
 				m.find('.membership_detail_col').append(tpl_membership_detail);
-				PPartnerMemberships_Store[detail['p_partner_membership_key_i']] = detail;
+				self.PPartnerMemberships_Store[detail['p_partner_membership_key_i']] = detail;
 				let btnEditMembership = m.find("#btnEditMembership"+detail['p_partner_membership_key_i']);
 				btnEditMembership.attr('membershipkey', detail['p_partner_membership_key_i']);
 				btnEditMembership.click(function() {
@@ -326,7 +330,7 @@ class MaintainPartners {
 		m.find('.contribution_detail_col').html('');
 		if (AGiftDetails.length > 0) {
 			for (var detail of AGiftDetails) {
-				let tpl_contribution_detail = format_tpl( $('[phantom] .tpl_contribution_detail').clone(), detail);
+				let tpl_contribution_detail = tpl.format_tpl( $('[phantom] .tpl_contribution_detail').clone(), detail);
 				m.find('.contribution_detail_col').append(tpl_contribution_detail);
 				let btnShowGiftBatch = m.find("#btnShowGiftBatch"+detail['a_ledger_number_i']+"_"+detail['a_batch_number_i']+"_"+detail['a_gift_transaction_number_i']);
 				btnShowGiftBatch.attr('a_ledger_number_i', detail['a_ledger_number_i']);
@@ -346,7 +350,7 @@ class MaintainPartners {
 		m.find('.recurring_contribution_col').html('');
 		if (ARecurringGiftDetails.length > 0) {
 			for (var detail of ARecurringGiftDetails) {
-				let tpl_contribution_detail = format_tpl( $('[phantom] .tpl_recurr_contribution_detail').clone(), detail);
+				let tpl_contribution_detail = tpl.format_tpl( $('[phantom] .tpl_recurr_contribution_detail').clone(), detail);
 				m.find('.recurring_contribution_col').append(tpl_contribution_detail);
 				let btnShowGiftBatch = m.find("#btnShowRecurringGiftBatch"+detail['a_ledger_number_i']+"_"+detail['a_batch_number_i']+"_"+detail['a_gift_transaction_number_i']);
 				btnShowGiftBatch.attr('a_ledger_number_i', detail['a_ledger_number_i']);
@@ -363,70 +367,70 @@ class MaintainPartners {
 
 	new_bank_account(partnerkey, accountname) {
 		var self = this;
-		if (!allow_modal()) {return}
+		if (!modal.allow_modal()) {return}
 		let x = {
 			p_partner_key_n: self.partnerkey,
 			p_account_name_c: accountname,
 			p_banking_details_key_i: -1
 		};
-		let p = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), x);
+		let p = tpl.format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), x);
 		$('#modal_space').append(p);
 		p.find('[edit-only]').hide();
 		p.find('[action]').val('create');
 
 		p.find('#btnSaveBankAccount'+x.p_banking_details_key_i).click(function(){self.save_edit_bank_account(this)});
-		p.find('#btnCloseBankAccount'+x.p_banking_details_key_i).click(function(){CloseModal(this);});
+		p.find('#btnCloseBankAccount'+x.p_banking_details_key_i).click(function(){modal.CloseModal(this);});
 
 		p.modal('show');
 	};
 
 	edit_account(detail_key) {
-		if (!allow_modal()) {return}
+		if (!modal.allow_modal()) {return}
 		var self = this;
 
-		let data = PBankingDetails_Store[detail_key];
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), data);
+		let data = self.PBankingDetails_Store[detail_key];
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_bank_account').clone(), data);
 
 		let p = $('#modal_space').append(tpl_edit_raw);
 		p.find('#btnSaveBankAccount'+detail_key).click(function(){self.save_edit_bank_account(this)});
 		p.find('#btnDeleteBankAccount'+detail_key).click(function(){self.delete_bank_account(this)});
-		p.find('#btnCloseBankAccount'+detail_key).click(function(){CloseModal(this);});
+		p.find('#btnCloseBankAccount'+detail_key).click(function(){modal.CloseModal(this);});
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
 	}
 
 	new_membership(partnerkey) {
 		var self = this;
-		if (!allow_modal()) {return}
+		if (!modal.allow_modal()) {return}
 		let x = {
 			p_partner_key_n: self.partnerkey,
 			p_membership_name_c: '',
 			p_membership_startdate_d: new Date().toISOString().slice(0,10),
 			p_partner_membership_key_i: -1,
 		};
-		let p = format_tpl( $('[phantom] .tpl_edit_membership').clone(), x);
+		let p = tpl.format_tpl( $('[phantom] .tpl_edit_membership').clone(), x);
 		p = this.load_memberships(this.PMembership, this.PMembership[0].p_membership_code_c, p);
 		$('#modal_space').append(p);
 		p.find('[edit-only]').hide();
 		p.find('[action]').val('create');
 
 		p.find('#btnSaveMembership'+x.p_partner_membership_key_i).click(function(){self.save_edit_membership(this)});
-		p.find('#btnCloseMembership'+x.p_partner_membership_key_i).click(function(){CloseModal(this);});
+		p.find('#btnCloseMembership'+x.p_partner_membership_key_i).click(function(){modal.CloseModal(this);});
 
 		p.modal('show');
 	};
 
 	edit_membership(detail_key) {
-		if (!allow_modal()) {return}
+		if (!modal.allow_modal()) {return}
 		var self = this;
 
-		let data = PPartnerMemberships_Store[detail_key];
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_membership').clone(), data);
+		let data = self.PPartnerMemberships_Store[detail_key];
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_membership').clone(), data);
 		tpl_edit_raw = this.load_memberships(this.PMembership, this.PMembership[0].p_membership_code_c, tpl_edit_raw);
 		let p = $('#modal_space').append(tpl_edit_raw);
 		p.find('#btnSaveMembership'+detail_key).click(function(){self.save_edit_membership(this)});
 		p.find('#btnDeleteMembership'+detail_key).click(function(){self.delete_membership(this)});
-		p.find('#btnCloseMembership'+detail_key).click(function(){CloseModal(this);});
+		p.find('#btnCloseMembership'+detail_key).click(function(){modal.CloseModal(this);});
 		tpl_edit_raw.find('[action]').val('edit');
 		tpl_edit_raw.modal('show');
 	}
@@ -452,32 +456,32 @@ class MaintainPartners {
 
 	save_partner(obj) {
 		var self = this;
-		let modal = FindMyModal(obj)
-		self.partnerkey = modal.find("[name=p_partner_key_n]").val();
+		let m = modal.FindMyModal(obj)
+		self.partnerkey = m.find("[name=p_partner_key_n]").val();
 
 		// extract information from a jquery object
-		let x = extract_data(modal);
+		let x = tpl.extract_data(m);
 
 		if (x['p_send_mail_l'] == false) {
 			if ((x['p_street_name_c'] != '') && (x['p_postal_code_c'] != '') &&
 				(x['p_city_c'] != '') && (x['p_country_code_c'] != '')) {
 				if (confirm(i18next.t('MaintainPartners.set_send_mail'))) {
-					modal.find("[name=p_send_mail_l]")[0].checked = true;
+					m.find("[name=p_send_mail_l]")[0].checked = true;
 					x['p_send_mail_l'] = true;
 				}
 			}
 		}
 
 		// replace all new information in the original data
-		last_opened_entry_data.p_default_email_address_c = last_opened_entry_data.ADefaultEmailAddress;
-		last_opened_entry_data.p_default_phone_landline_c = last_opened_entry_data.ADefaultPhoneLandline;
-		last_opened_entry_data.p_default_phone_mobile_c = last_opened_entry_data.ADefaultPhoneMobile;
+		self.last_opened_entry_data.p_default_email_address_c = self.last_opened_entry_data.ADefaultEmailAddress;
+		self.last_opened_entry_data.p_default_phone_landline_c = self.last_opened_entry_data.ADefaultPhoneLandline;
+		self.last_opened_entry_data.p_default_phone_mobile_c = self.last_opened_entry_data.ADefaultPhoneMobile;
 
-		let updated_data = replace_data(last_opened_entry_data, x);
+		let updated_data = replace_data(self.last_opened_entry_data, x);
 
 		// get all tags for the partner
 		let applied_tags = []
-		modal.find('#types').find('.tpl_check').each(function (i, o) {
+		m.find('#types').find('.tpl_check').each(function (i, o) {
 			o = $(o);
 			if (o.find('input').is(':checked')) {
 				applied_tags.push(o.find('data').attr('value'));
@@ -486,7 +490,7 @@ class MaintainPartners {
 
 		// get all subscribed options
 		let applied_subs = []
-		modal.find('#subscriptions').find('.tpl_check').each(function (i, o) {
+		m.find('#subscriptions').find('.tpl_check').each(function (i, o) {
 			o = $(o);
 			if (o.find('input').is(':checked')) {
 				applied_subs.push(o.find('data').attr('value'));
@@ -505,9 +509,9 @@ class MaintainPartners {
 		updated_data.result.ARecurringGiftDetail = [];
 
 		// to be save we have the right address in logs
-		if (data_changes_log["address"] != null) { data_changes_log["address"]["Value"] = this.getUpdatesAddress(self.partnerkey); }
+		if (self.data_changes_log["address"] != null) { self.data_changes_log["address"]["Value"] = this.getUpdatesAddress(self.partnerkey); }
 		var applied_perms = [];
-		for (var perm of Object.values(data_changes_log) ) {
+		for (var perm of Object.values(self.data_changes_log) ) {
 			if (perm["Valid"] == false) { return display_message( i18next.t("MaintainPartners.consent_error"), 'fail'); }
 			applied_perms.push( JSON.stringify(perm) );
 		}
@@ -537,7 +541,7 @@ class MaintainPartners {
 					var parsed = JSON.parse(data.data.d);
 					self.PartnerStoredInDB = true;
 					// make a deep copy of the server data and set it as a global var.
-					last_opened_entry_data = $.extend(true, {}, parsed);
+					self.last_opened_entry_data = $.extend(true, {}, parsed);
 				});
 			}
 			else if (parsed.AVerificationResult[0].code == "consent_error") {
@@ -552,14 +556,14 @@ class MaintainPartners {
 
 	close_partner(obj) {
 		var self = this;
-		let modal = FindMyModal(obj)
-		CloseModal(modal);
+		let m = modal.FindMyModal(obj)
+		modal.CloseModal(m);
 		self.display_list();
 	}
 
 	delete_partner(obj) {
 		var self = this;
-		let modal = FindMyModal(obj)
+		let m = modal.FindMyModal(obj)
 
 		let s = confirm( i18next.t('MaintainPartners.ask_delete_contact') );
 		if (!s) {return}
@@ -569,7 +573,7 @@ class MaintainPartners {
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeletePartner', r).then(function (data) {
 			var parsed = JSON.parse(data.data.d);
 			if (parsed.result == true) {
-				CloseModal(modal);
+				modal.CloseModal(m);
 				display_message(i18next.t('MaintainPartners.contact_was_deleted'), "success");
 				self.display_list();
 			}
@@ -582,14 +586,14 @@ class MaintainPartners {
 	updateBankAccounts() {
 		var self = this;
 
-		let modal = $('#partneredit' + self.partnerkey)
+		let m = $('#partneredit' + self.partnerkey)
 
 		let payload = {}
 		payload['APartnerKey'] = self.partnerkey;
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetBankAccounts', payload).then(function (result) {
 			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				self.display_bankaccounts(parsed.PBankingDetails, modal);
+				self.display_bankaccounts(parsed.PBankingDetails, m);
 			}
 		});
 	}
@@ -597,14 +601,14 @@ class MaintainPartners {
 	updateMemberships() {
 		var self = this;
 
-		let modal = $('#partneredit' + self.partnerkey)
+		let m = $('#partneredit' + self.partnerkey)
 
 		let payload = {}
 		payload['APartnerKey'] = self.partnerkey;
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_GetMemberships', payload).then(function (result) {
 			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				self.display_memberships(parsed.PMemberships, modal);
+				self.display_memberships(parsed.PMemberships, m);
 			}
 		});
 	}
@@ -615,7 +619,7 @@ class MaintainPartners {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = translate_to_server( extract_data(obj) );
+		let payload = translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		if (payload['ABankingDetailsKey'] == '') payload['ABankingDetailsKey'] = -1;
 
@@ -623,7 +627,7 @@ class MaintainPartners {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				display_message(i18next.t('forms.saved'), "success");
-				CloseModal(obj);
+				modal.CloseModal(obj);
 				self.updateBankAccounts();
 			}
 			else if (parsed.result == false) {
@@ -640,7 +644,7 @@ class MaintainPartners {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = translate_to_server( extract_data(obj) );
+		let payload = translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		if (payload['APartnerMembershipKey'] == '') payload['APartnerMembershipKey'] = -1;
 		if (payload["AStartDate"] == "") {
@@ -655,7 +659,7 @@ class MaintainPartners {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				display_message(i18next.t('forms.saved'), "success");
-				CloseModal(obj);
+				modal.CloseModal(obj);
 				self.updateMemberships();
 			}
 			else if (parsed.result == false) {
@@ -673,14 +677,14 @@ class MaintainPartners {
 		if (!s) {return}
 
 		let obj = $(obj_modal).closest('.modal');
-		let payload = translate_to_server( extract_data(obj) );
+		let payload = translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				display_message(i18next.t('forms.saved'), "success");
-				CloseModal(obj);
+				modal.CloseModal(obj);
 				self.updateBankAccounts();
 			}
 			else if (parsed.result == false) {
@@ -696,14 +700,14 @@ class MaintainPartners {
 		if (!s) {return}
 
 		let obj = $(obj_modal).closest('.modal');
-		let payload = translate_to_server( extract_data(obj) );
+		let payload = translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainMemberships', payload).then(function (result) {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				display_message(i18next.t('forms.saved'), "success");
-				CloseModal(obj);
+				modal.CloseModal(obj);
 				self.updateMemberships();
 			}
 			else if (parsed.result == false) {
@@ -814,7 +818,7 @@ class MaintainPartners {
 				btn.click(function(){self.load_history_data(this)});
 			}
 
-			for (var type of Object.keys(data_changes_log)) {
+			for (var type of Object.keys(self.data_changes_log)) {
 				if (! types.includes(type)) {
 					let name = i18next.t('MaintainPartners.'+type, type);
 					DataTypeList.append(`<button class='btn btn-secondary selecttype' data-type='${type}' style='width:100%; margin:2px;'>${name}</button>`);
@@ -823,12 +827,12 @@ class MaintainPartners {
 				}
 			}
 
-			modal = ShowModal('history'+self.partnerkey, Temp);
+			let m = modal.ShowModal('history'+self.partnerkey, Temp);
 
-			modal.find('#btnSubmitConsentEditHistory').click(function(){self.submit_consent_edit(this,false);});
+			m.find('#btnSubmitConsentEditHistory').click(function(){self.submit_consent_edit(this,false);});
 
 			// select the first data type by default
-			let firstPermission = modal.find('button.selecttype:first');
+			let firstPermission = m.find('button.selecttype:first');
 			if (firstPermission.length) {
 				firstPermission.click();
 			}
@@ -891,8 +895,8 @@ class MaintainPartners {
 			let first = true;
 
 			// show local entries that have not been saved yet
-			if (data_changes_log[datatype] != null) {
-				var entry = data_changes_log[datatype];
+			if (self.data_changes_log[datatype] != null) {
+				var entry = self.data_changes_log[datatype];
 
 				var HistPerm = self.add_history_entry(
 					purposes, channels,
@@ -929,8 +933,8 @@ class MaintainPartners {
 			}
 
 			// show local entries that have not been saved yet
-			if (data_changes_log[datatype] != null) {
-				var entry = data_changes_log[datatype];
+			if (self.data_changes_log[datatype] != null) {
+				var entry = self.data_changes_log[datatype];
 				last_known_configuration = {AllowedPurposes: entry.Permissions};
 			}
 
@@ -951,12 +955,12 @@ class MaintainPartners {
 		var self = this;
 		var Obj = $(HTMLField);
 		var value = Obj.val();
-		var modal = FindMyModal(Obj);
+		var m = modal.FindMyModal(Obj);
 
 		// special cases
 		if (data_name == "address") { value = this.getUpdatesAddress(self.partnerkey); }
 
-		data_changes_log[data_name] = {
+		self.data_changes_log[data_name] = {
 			PartnerKey: self.partnerkey,
 			Type: data_name,
 			Value: value,
@@ -1014,61 +1018,61 @@ class MaintainPartners {
 				// TargetPurpose.append(`<label><span>${name}</span><input ${checked} type='checkbox' purposecode='${purpose.p_purpose_code_c}'></label><br>`);
 			}
 
-			var modal = ShowModal('consent' + self.partnerkey, Temp);
+			var m = modal.ShowModal('consent' + self.partnerkey, Temp);
 
 			if (mode == "partner_edit") {
-				modal.find("[mode]").hide();
-				modal.find("[mode=partner_edit]").show();
-				modal.find('#btnSubmitChangesConsent').click(function() {self.submit_changes_consent(this);});
+				m.find("[mode]").hide();
+				m.find("[mode=partner_edit]").show();
+				m.find('#btnSubmitChangesConsent').click(function() {self.submit_changes_consent(this);});
 			}
 
 			if (mode == "consent_edit") {
-				modal.find("[mode]").hide();
-				modal.find("[mode=consent_edit]").show();
-				modal.find('#btnSubmitConsentEdit').click(function(){self.submit_consent_edit(this,true);});
+				m.find("[mode]").hide();
+				m.find("[mode=consent_edit]").show();
+				m.find('#btnSubmitConsentEdit').click(function(){self.submit_consent_edit(this,true);});
 			}
 		})
 	}
 
 	submit_changes_consent(obj) {
-		let modal = FindMyModal(obj);
+		let m = modal.FindMyModal(obj);
 
-		var current_field = modal.find("data[name=field]").val();
-		var channel_code = modal.find("[name=consent_channel]").val();
-		var consent_date = modal.find("[name=consent_date]").val();
+		var current_field = m.find("data[name=field]").val();
+		var channel_code = m.find("[name=consent_channel]").val();
+		var consent_date = m.find("[name=consent_date]").val();
 
 		// get all permissions
 		var perm_list = [];
-		var perms = modal.find(".permissions input[purposecode]:checked");
+		var perms = m.find(".permissions input[purposecode]:checked");
 		for (var Perm of perms) {
 			perm_list.push( $(Perm).attr("purposecode") );
 		}
 
-		data_changes_log[current_field]["Valid"] = true;
-		data_changes_log[current_field]["ChannelCode"] = channel_code;
-		data_changes_log[current_field]["ConsentDate"] = consent_date;
-		data_changes_log[current_field]["Permissions"] = perm_list.join(',');
+		self.data_changes_log[current_field]["Valid"] = true;
+		self.data_changes_log[current_field]["ChannelCode"] = channel_code;
+		self.data_changes_log[current_field]["ConsentDate"] = consent_date;
+		self.data_changes_log[current_field]["Permissions"] = perm_list.join(',');
 
-		CloseModal(modal);
+		modal.CloseModal(m);
 	}
 
 	getUpdatesAddress(partnerkey) {
-		let modal = FindModal('partneredit'+partnerkey);
-		let street = modal.find("#addresses").find("[name=p_street_name_c]").val();
-		let city = modal.find("#addresses").find("[name=p_city_c]").val();
-		let postal = modal.find("#addresses").find("[name=p_postal_code_c]").val();
-		let land = modal.find("#addresses").find("[name=p_country_code_c]").val();
+		let m = modal.FindModal('partneredit'+partnerkey);
+		let street = m.find("#addresses").find("[name=p_street_name_c]").val();
+		let city = m.find("#addresses").find("[name=p_city_c]").val();
+		let postal = m.find("#addresses").find("[name=p_postal_code_c]").val();
+		let land = m.find("#addresses").find("[name=p_country_code_c]").val();
 		return `${street}, ${postal} ${city}, ${land}`;
 	}
 
 	submit_consent_edit(Obj, from_modal=false) {
 		var self = this;
-		let modal = FindMyModal(Obj);
+		let m = modal.FindMyModal(Obj);
 
-		var ty = modal.attr("selected-data-type");
+		var ty = m.attr("selected-data-type");
 
 		if (!from_modal) {
-			if (data_changes_log[ty] != null) {
+			if (self.data_changes_log[ty] != null) {
 				// don't submit consent here, because we have unsaved consents. The order would be messed up.
 				display_error( "MaintainPartners.error_consent_unsaved_changes" );
 				return;
@@ -1080,7 +1084,7 @@ class MaintainPartners {
 		}
 
 		var perm_list = [];
-		var historyModal = FindModal('history'+self.partnerkey);
+		var historyModal = modal.FindModal('history'+self.partnerkey);
 		var perms = historyModal.find("input[purposecode]:checked");
 		for (var Perm of perms) {
 			perm_list.push( $(Perm).attr("purposecode") );
@@ -1088,21 +1092,21 @@ class MaintainPartners {
 
 		var req = {
 			APartnerKey: self.partnerkey,
-			ADataType: modal.find("data[name=field]").val(),
-			AChannelCode: modal.find("[name=consent_channel]").val(),
-			AConsentDate: modal.find("[name=consent_date]").val(),
+			ADataType: m.find("data[name=field]").val(),
+			AChannelCode: m.find("[name=consent_channel]").val(),
+			AConsentDate: m.find("[name=consent_date]").val(),
 			AConsentCodes: perm_list.join(',')
 		};
 
 		api.post('serverMPartner.asmx/TDataHistoryWebConnector_EditHistory', req).then(function (data) {
 			var parsed = JSON.parse(data.data.d);
 			if (parsed.result) {
-				CloseModal(modal);
+				modal.CloseModal(m);
 				var HTMLDataButton = historyModal.find(`button[data-type='${req.ADataType}']`);
 				self.load_history_data(HTMLDataButton);
 			} else {
 				if (parsed.AVerificationResult[0].message == "no_changes") {
-					CloseModal(modal);
+					modal.CloseModal(m);
 				} else {
 					display_error( parsed.AVerificationResult );
 				}
@@ -1113,3 +1117,5 @@ class MaintainPartners {
 	}
 
 } // end of class
+
+export default new MaintainPartners();
