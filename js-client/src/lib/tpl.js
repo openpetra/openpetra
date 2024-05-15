@@ -95,6 +95,11 @@ class Tpl {
             $(tpl).attr('onclick', self.replace_val_variables_in_attr(onclick, data));
         }
 
+        let objid = $(tpl).attr('objid');
+        if (objid != undefined && objid != null) {
+            $(tpl).attr('objid', self.replace_val_variables_in_attr(objid, data));
+        }
+
         let title = $(tpl).attr('title');
         if (title !== undefined && title != null) {
             $(tpl).attr('title', self.replace_val_variables_in_attr(title, data));
@@ -108,6 +113,10 @@ class Tpl {
             let onclick = $(this).attr('onclick');
             if (onclick !== undefined && onclick != null) {
                 $(this).attr('onclick', self.replace_val_variables_in_attr(onclick, data));
+            }
+            let objid = $(this).attr('objid');
+            if (objid !== undefined && objid != null) {
+                $(this).attr('objid', self.replace_val_variables_in_attr(objid, data));
             }
             let name = $(this).attr('name');
             if (name != undefined && name != null) {
@@ -342,15 +351,15 @@ class Tpl {
             r[obj.attr('name')] = obj.val();
             if (obj.attr('type') == 'checkbox') {
 
-            if (obj.is(':checked')) {
-                r[obj.attr('name')] = true;
-            } else {
-                r[obj.attr('name')] = false;
-            }
+                if (obj.is(':checked')) {
+                    r[obj.attr('name')] = true;
+                } else {
+                    r[obj.attr('name')] = false;
+                }
 
             }
             if (obj.attr('type') == 'radio') {
-            r[obj.attr('name')] = object.find('[name='+obj.attr('name')+']:checked').val();
+                r[obj.attr('name')] = object.find('[name='+obj.attr('name')+']:checked').val();
             }
         });
 
@@ -539,7 +548,7 @@ class Tpl {
 
     ValidateStringForInjectedHTML(value)
     {
-        if ((value.indexOf('>') != -1) && (value.indexOf('<') != -1) && (value.indexOf('=') != -1)) {
+        if ((value != null) && (value.indexOf('>') != -1) && (value.indexOf('<') != -1) && (value.indexOf('=') != -1)) {
             alert('We do not allow a combination of certain characters in ' + value);
             throw ('We do not allow a combination of certain characters in ' + value);
         }

@@ -172,8 +172,8 @@ class Utils {
             } else {
                 let x = n_key[1].split('_');
                 n_key = "A";
-                for (word of x) {
-                n_key += capitalizeFirstLetter(word);
+                for (var word of x) {
+                    n_key += this.capitalizeFirstLetter(word);
                 }
 
                 new_a[n_key] = array[key];
