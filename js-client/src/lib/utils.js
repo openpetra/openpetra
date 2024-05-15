@@ -132,7 +132,7 @@ class Utils {
         }
         let msgCount = 0;
         let errormsg = "";
-        for (error of VerificationResult) {
+        for (var error of VerificationResult) {
             if (error.code == "" && error.message == "") {
                 continue;
             }
