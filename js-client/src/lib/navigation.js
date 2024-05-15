@@ -33,6 +33,7 @@ import utils from './utils.js';
 import releasenotes from '../forms/ReleaseNotes.js';
 import about from '../forms/About.js';
 import maintainpartners from '../forms/Partner/Partners/MaintainPartners.js';
+import maintainusers from '../forms/SystemManager/MaintainUsers.js';
 
 class Navigation {
 	constructor() {
@@ -43,7 +44,8 @@ class Navigation {
 		this.formsLoaded = {
 			'ReleaseNotes': releasenotes,
 			'About': about,
-			'MaintainPartners': maintainpartners
+			'MaintainPartners': maintainpartners,
+			'MaintainUsers': maintainusers,
 		};
 		$(window).scrollTop(0);
 
