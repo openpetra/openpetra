@@ -66,7 +66,7 @@ class MaintainPartners {
 			this.display_list();
 		}
 
-		$('#btnSavePreset').click(function() { utils.save_preset('MaintainPartners') })
+		$('#btnSavePreset').on('click', function() { utils.save_preset('MaintainPartners') })
 	}
 
 	load_preset() {
