@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2023 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,6 +56,8 @@ using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Server.MReporting;
 
 using HtmlAgilityPack;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Ict.Petra.Server.MSponsorship.WebConnectors
 {
@@ -228,12 +230,22 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     }
 
                     child["SponsorName"] += donor.PartnerShortName;
+                    child["SponsorNameReverse"] +=
+                        Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donor.PartnerShortName,
+                                eShortNameFormat.eReverseShortname);
                     firstName = false;
 
+                    string SponsorStreet, SponsorPostCode, SponsorCity;
                     string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                     GetDonorContactDetails(donor.PartnerKey,
+                        out SponsorStreet, out SponsorPostCode, out SponsorCity,
                         out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
 
+                    child["SponsorStreet"] = SponsorStreet;
+                    child["SponsorPostCode"] = SponsorPostCode;
+                    child["SponsorCity"] = SponsorCity;
+                    child["SponsorEmail"] = SponsorEmailAddress;
+                    child["SponsorPhone"] = SponsorPhoneNumber;
                     child["SponsorContactDetails"] += donor.PartnerShortName + ";" + SponsorAddress + ";";
                     if (SponsorEmailAddress != String.Empty)
                     {
@@ -284,6 +296,48 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 byte[] data = System.IO.File.ReadAllBytes(PDFFile);
                 string result = Convert.ToBase64String(data);
                 System.IO.File.Delete(PDFFile);
+                return result;
+            }
+
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// find children using filters, and then export a list as Excel file
+        /// </summary>
+        [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
+        public static string ExportChildrenAndSponsorAddresses(
+            string AChildName,
+            string ADonorName,
+            bool AChildWithoutDonor,
+            string APartnerStatus,
+            string ASponsorshipStatus,
+            string ASponsorAdmin,
+            string ASortBy,
+            string AReportLanguage)
+        {
+            SponsorshipFindTDSSearchResultTable table = FindChildren(AChildName, ADonorName, AChildWithoutDonor, APartnerStatus, ASponsorshipStatus, ASponsorAdmin, ASortBy);
+
+            HtmlDocument HTMLDocument = HTMLTemplateProcessor.Table2Html(table, "Sponsorship/SponsoredChildrenListWithSponsorAddress.html", AReportLanguage);
+
+            // transform the HTML output to xlsx file
+            XSSFWorkbook workbook = HTMLTemplateProcessor.HTMLToCalc(HTMLDocument);
+
+            if (workbook != null)
+            {
+                string ExcelFilename = TFileHelper.GetTempFileName(
+                    "printchildrenlist",
+                    ".xlsx");
+
+                using (FileStream fs = new FileStream(ExcelFilename, FileMode.Create))
+                {
+                    workbook.Write(fs);
+                    fs.Close();
+                }
+
+                byte[] data = System.IO.File.ReadAllBytes(ExcelFilename);
+                string result = Convert.ToBase64String(data);
+                System.IO.File.Delete(ExcelFilename);
                 return result;
             }
 
@@ -471,6 +525,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
 
         private static void GetDonorContactDetails(Int64 ADonorKey,
+            out string DonorStreet, out string DonorPostCode, out string DonorCity,
             out string DonorAddress, out string DonorEmailAddress, out string DonorPhoneNumber)
         {
             List<string> Subscriptions;
@@ -483,11 +538,14 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (DonorTDS.PLocation.Rows.Count == 0)
             {
-                DonorAddress = String.Empty;
+                DonorAddress = DonorStreet = DonorPostCode = DonorCity = String.Empty;
             }
             else
             {
-                DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+                DonorStreet = DonorTDS.PLocation[0].StreetName;
+                DonorPostCode = DonorTDS.PLocation[0].PostalCode;
+                DonorCity = DonorTDS.PLocation[0].City;
+                DonorAddress = DonorStreet + ", " + DonorPostCode + " " + DonorCity;
             }
             DonorEmailAddress = DefaultEmailAddress;
             DonorPhoneNumber = DefaultPhoneLandline;
@@ -560,8 +618,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
 
+                                    string SponsorStreet, SponsorPostCode, SponsorCity;
                                     string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                                     GetDonorContactDetails(recurrGiftRow.DonorKey,
+                                        out SponsorStreet, out SponsorPostCode, out SponsorCity,
                                         out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
                                     gdr.DonorName = donorRow.PartnerShortName;
                                     gdr.SponsorName = donorRow.PartnerShortName;
