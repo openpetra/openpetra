@@ -28,6 +28,7 @@ using System.Data.Odbc;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Data;
@@ -835,14 +836,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (APhotoFilename.Length > 0)
             {
-                string tempFileName = TFileHelper.GetTempFileName(
-                    "photo",
-                    Path.GetExtension(APhotoFilename));
-                File.WriteAllBytes(tempFileName, APhoto);
-
-                using (var srcImage = Image.FromFile(tempFileName))
+                using (var srcImage = Image.FromStream(new MemoryStream(APhoto)))
                 {
-                    var newHeight = 256;
+                    var newHeight = 512;
                     var newWidth = (int)(srcImage.Width * ((float)newHeight / (float)srcImage.Height));
 
                     using (var newImage = new Bitmap(newWidth, newHeight))
@@ -854,16 +850,32 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                             graphics.DrawImage(srcImage, new Rectangle(0, 0, newWidth, newHeight));
 
+                            // https://stackoverflow.com/questions/6222053/problem-reading-jpeg-metadata-orientation/38459903#38459903
+                            foreach (var prop in srcImage.PropertyItems) {
+                                if ((prop.Id == 0x0112 || prop.Id == 5029 || prop.Id == 274)) {
+                                    var value = (int)prop.Value[0];
+                                    if (value == 6) {
+                                        newImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                                        break;
+                                    } else if (value == 8) {
+                                        newImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                                        break;
+                                    } else if (value == 3) {
+                                        newImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                                        break;
+                                    }
+                                }
+                            }
+
                             using (var ms = new MemoryStream())
                             {
-                                newImage.Save(ms, newImage.RawFormat);
+                                newImage.Save(ms, ImageFormat.Jpeg);
                                 CurrentEdit.PFamily[0].Photo = Convert.ToBase64String(ms.ToArray());
                             }
 
                             try
                             {
                                 SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
-                                File.Delete(tempFileName);
                                 return true;
                             }
                             catch (Exception e)
@@ -874,8 +886,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                         }
                     }
                 }
-
-                File.Delete(tempFileName);
             }
 
             return false;
