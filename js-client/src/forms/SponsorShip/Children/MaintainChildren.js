@@ -131,6 +131,26 @@ var MaintainChildren = new (class {
     );
   }
 
+  // same as show, but export file with addresses of sponsors
+  export() {
+    var req = this.getFilter();
+    req["AReportLanguage"] = currentLng();
+
+    api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_ExportChildrenAndSponsorAddresses', req).then(
+      function (data) {
+        var report = data.data.d;
+        var link = document.createElement("a");
+        link.style = "display: none";
+        link.href = 'data:application/excel;base64,'+report;
+        link.download = i18next.t('MaintainChildren.sponsorships') + '.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        display_message( i18next.t("forms.exported_success"), "success");
+      }
+    );
+  }
+
   edit(HTMLBottom, overwrite, OpenTab=null) {
     // get details for the child the user clicked on and open modal
 

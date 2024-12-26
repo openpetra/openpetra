@@ -37,7 +37,13 @@
 
       <CustomField name="DonorName" type="String"/>
       <CustomField name="SponsorName" type="String"/>
+      <CustomField name="SponsorNameReverse" type="String"/>
       <CustomField name="SponsorContactDetails" type="String"/>
+      <CustomField name="SponsorStreet" type="String"/>
+      <CustomField name="SponsorPostCode" type="String"/>
+      <CustomField name="SponsorCity" type="String"/>
+      <CustomField name="SponsorEmail" type="String"/>
+      <CustomField name="SponsorPhone" type="String"/>
     </CustomTable>
   </DataSet>
 </PetraDataSets>
