@@ -2,8 +2,8 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       CJ
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   CJ
 //
 // Copyright 2017-2019 by TBits.net
 // Coypright 2019-2024 by SolidCharity.com
@@ -57,12 +57,12 @@ class Navigation {
 	// some javascript files (eg. MaintainPartners) can only be loaded once, due to global variables. They must have a <formname>_Ready() function.
 	async LoadJavascript(name, formname, refresh)
 	{
-        if (formname in this.formsLoaded) {
-            this.formsLoaded[formname].Ready()
-        } else {
-            console.log("Problem in navigation.js: missing form " + formname)
-        }
-    }
+		if (formname in this.formsLoaded) {
+			this.formsLoaded[formname].Ready()
+		} else {
+			console.log("Problem in navigation.js: missing form " + formname)
+		}
+	}
 
 	OpenForm(name, title = "", pushState=true, parameter="")
 	{
@@ -194,8 +194,7 @@ class Navigation {
 		}
 
 		if (node != null && this.debug) {
-			console.log("GetNavigationItem:");
-			console.log(node);
+			console.log("GetNavigationItem:", node);
 		}
 
 		return node;
@@ -413,9 +412,8 @@ class Navigation {
 			var caption = i18next.t('navigation.' + child.caption);
 
 			if (child.action != undefined && child.form != undefined) {
-				html += "<a href='javascript:nav.OpenForm(\"" +
-					child.path + "/" + child.form +
-					"\", \"" + caption + "\", true, \"" + child.action + "\")'>" +
+				html += "<a href='/" + child.path + "/" + child.form + "' " +
+					"op_caption='" + caption + "', op_pushstate='true', op_action='" + child.action + "'>" +
 					"<i class='fas fa-" + child.icon + "'></i>" +
 					"<span>" + caption + "</span></a>";
 			} else {
@@ -423,9 +421,8 @@ class Navigation {
 				if (child.form == undefined) {
 					path = child.path;
 				}
-				html += "<a href='javascript:nav.OpenForm(\"" +
-					path +
-					"\", \"" + caption + "\")'>" +
+				html += "<a href='/" + path + "' " +
+					"op_caption = '" + caption + "'>" +
 					"<i class='fas fa-" + child.icon + "'></i>" +
 					"<span>" + caption + "</span></a>";
 			}
@@ -440,6 +437,7 @@ class Navigation {
 
 	loadDashboard(navpage) {
 		var node = this.GetNavigationItem(navpage);
+		let self = this;
 
 		if (node != null && node['htmlexists'] != true) {
 
@@ -469,6 +467,13 @@ class Navigation {
 			html += '</div>';
 
 			$("#containerIFrames").html(html);
+
+			let elements = $("#containerIFrames a[op_caption]");
+			elements.each(function(index) {$(this).on("click", function(e) {
+				e.preventDefault();
+				let element = $(this);
+				self.OpenForm(element.attr('href'), element.attr('op_caption'), element.attr('op_pushstate'), element.attr('op_action'))});
+			});
 		}
 
 		return;
